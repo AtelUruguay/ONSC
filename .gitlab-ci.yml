@@ -1,45 +1,77 @@
-# This file is a template, and might need editing before it works on your project.
-# To contribute improvements to CI/CD templates, please follow the Development guide at:
-# https://docs.gitlab.com/ee/development/cicd/templates.html
-# This specific template is located at:
-# https://gitlab.com/gitlab-org/gitlab/-/blob/master/lib/gitlab/ci/templates/Getting-Started.gitlab-ci.yml
-
-# This is a sample GitLab CI/CD configuration file that should run without any modifications.
-# It demonstrates a basic 3 stage CI/CD pipeline. Instead of real tests or scripts,
-# it uses echo commands to simulate the pipeline execution.
-#
-# A pipeline is composed of independent jobs that run scripts, grouped into stages.
-# Stages run in sequential order, but jobs within stages run in parallel.
-#
-# For more information, see: https://docs.gitlab.com/ee/ci/yaml/index.html#stages
-
-stages:          # List of stages for jobs, and their order of execution
-  - build
+image: python:3.7
+stages:
   - test
-  - deploy
 
-build-job:       # This job runs in the build stage, which runs first.
-  stage: build
-  script:
-    - echo "Compiling the code..."
-    - echo "Compile complete."
+services:
+  - postgres:10
 
-unit-test-job:   # This job runs in the test stage.
-  stage: test    # It only starts when the job in the build stage completes successfully.
-  script:
-    - echo "Running unit tests... This will take about 60 seconds."
-    - sleep 60
-    - echo "Code coverage is 90%"
+variables:
+  POSTGRES_HOST_AUTH_METHOD: trust
+  POSTGRES_DB: project_ci_test
+  POSTGRES_USER: postgres
+  POSTGRES_PASSWORD: ""
+#  EXCLUDE: "base_technical_features,custom_tree_view,url_access_restriction"
+  TEST_DBNAME: '${CI_PROJECT_PATH_SLUG}-pipeline-${CI_PIPELINE_ID}'
+  DEPLOY_DBNAME: '${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}'
+  RUNNER_HOME: '/home/gitlab-runner'
+  INSTANCE_PATH: '${RUNNER_HOME}/instances/${CI_PROJECT_PATH_SLUG}-${CI_COMMIT_REF_SLUG}'
+  TRAVIS_BUILD_DIR: "$CI_PROJECT_DIR"
+  VERSION: "15.0"
+  ODOO_BRANCH: "15.0"
+  ODOO_REPO: "odoo/odoo"
 
-lint-test-job:   # This job also runs in the test stage.
-  stage: test    # It can run at the same time as unit-test-job (in parallel).
-  script:
-    - echo "Linting code... This will take about 10 seconds."
-    - sleep 10
-    - echo "No lint issues found."
 
-deploy-job:      # This job runs in the deploy stage.
-  stage: deploy  # It only runs when *both* jobs in the test stage complete successfully.
+before_script:
+  - curl -sL https://deb.nodesource.com/setup_14.x | bash -
+  - apt-get install -y  sudo postgresql-client expect-dev nodejs python-dev python3-pip build-essential libsasl2-dev libldap2-dev libssl-dev libxml2-dev libxslt1-dev
+  - pip3 install coverage coveralls codecov pylint
+
+lint:
+  stage: test
+  tags:
+    - postgres
+    - docker
+  variables:
+    LINT_CHECK: "1"
+    TESTS: "0"
   script:
-    - echo "Deploying application..."
-    - echo "Application successfully deployed."
+    # We need to export the PG* here, otherwise the postgresql container
+    # Wil pick them up
+    - export PGHOST="postgres"
+    - export PGUSER="postgres"
+    - export PGPASSWORD=""
+    - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    - update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+    - travis_install_nightly
+    - travis_run_tests
+    - travis_after_tests_success || true
+
+test:
+  stage: test
+  tags:
+    - postgres
+    - docker
+  variables:
+    LINT_CHECK: "0"
+    TESTS: "1"
+  script:
+    # We need to export the PG* here, otherwise the postgresql container
+    # Wil pick them up
+    - export PGHOST="postgres"
+    - export PGUSER="postgres"
+    - export PGPASSWORD=""
+    #   adapt patch to sec-wall library
+    - git clone https://gitlab.quanam.com/quanam/sec-wall.git -b master ${HOME}/sec-wall
+    # - git clone https://github.com/flomincucci/sec-wall.git -b master ${HOME}/sec-wall
+    - cd ${HOME} && cd sec-wall
+    - python setup.py install --user
+    - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    - psql -c 'CREATE ROLE odoo SUPERUSER LOGIN;'
+    - export PGUSER="odoo"
+    - sed -i '/QUnitSuite/d' ${HOME}/maintainer-quality-tools/travis/travis_install_nightly
+    - travis_install_nightly
+    - travis_run_tests
+    - travis_after_tests_success || true
+  coverage: '/TOTAL.+ ([0-9]{1,3}%)/'
