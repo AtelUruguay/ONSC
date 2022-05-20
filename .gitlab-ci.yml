@@ -70,7 +70,7 @@ test:
     - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
     - psql -c 'CREATE ROLE odoo SUPERUSER LOGIN;'
     - export PGUSER="odoo"
-    - sed -i '/QUnitSuite/d' ${HOME}/maintainer-quality-tools/travis/travis_install_nightly
+    - whoami
     - travis_install_nightly
     - travis_run_tests
     - travis_after_tests_success || true
