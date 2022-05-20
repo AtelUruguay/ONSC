@@ -60,6 +60,7 @@ test:
     - export PGHOST="postgres"
     - export PGUSER="postgres"
     - export PGPASSWORD=""
+    - export HOME="/tmp"
     #   adapt patch to sec-wall library
     - git clone https://gitlab.quanam.com/quanam/sec-wall.git -b master ${HOME}/sec-wall
     # - git clone https://github.com/flomincucci/sec-wall.git -b master ${HOME}/sec-wall
@@ -69,7 +70,6 @@ test:
     - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
     - psql -c 'CREATE ROLE odoo SUPERUSER LOGIN;'
     - export PGUSER="odoo"
-    - cd /tmp
     - travis_install_nightly
     - travis_run_tests
     - travis_after_tests_success || true
