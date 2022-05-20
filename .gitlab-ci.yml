@@ -29,8 +29,7 @@ before_script:
 lint:
   stage: test
   tags:
-    - postgres
-    - docker
+    - lint
   variables:
     LINT_CHECK: "1"
     TESTS: "0"
@@ -50,8 +49,8 @@ lint:
 test:
   stage: test
   tags:
-    - postgres
-    - docker
+    - odoo
+    - test
   variables:
     LINT_CHECK: "0"
     TESTS: "1"
