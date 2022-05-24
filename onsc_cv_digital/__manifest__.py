@@ -18,7 +18,8 @@ ONSC CV Digital
         'views/onsc_cv_race_views.xml',
 
         'views/onsc_cv_menuitems.xml',
-        'data/onsc_cv_data.xml',
+        'data/onsc_cv_gender_data.xml',
+        'data/onsc_cv_race_data.xml',
     ],
     'demo': [
         'demo/onsc_cv_demo.xml',

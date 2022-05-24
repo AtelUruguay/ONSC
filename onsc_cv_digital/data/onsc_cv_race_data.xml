@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <record id="onsc_cv_race_afro" model="onsc.cv.race">
+            <field name="name">Afro o negro/a</field>
+        </record>
+
+        <record id="onsc_cv_race_asian" model="onsc.cv.race">
+            <field name="name">Asiático/a</field>
+        </record>
+
+        <record id="onsc_cv_race_indigenous" model="onsc.cv.race">
+            <field name="name">Indígena</field>
+        </record>
+
+        <record id="onsc_cv_race_white" model="onsc.cv.race">
+            <field name="name">Blanco/a</field>
+        </record>
+
+        <record id="onsc_cv_race_other" model="onsc.cv.race">
+            <field name="name">Otra (debe especificarla)</field>
+        </record>
+    </data>
+</odoo>

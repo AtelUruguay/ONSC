@@ -13,7 +13,6 @@ class ONSCCVGender(models.Model):
     active = fields.Boolean(string='Activo', default=True)
     is_option_other_enable = fields.Boolean(u'¿Permitir opción Otra/o ?')
 
-
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
          u'El nombre del género debe ser único'),

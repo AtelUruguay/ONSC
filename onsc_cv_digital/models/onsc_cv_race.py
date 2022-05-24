@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, _
+from odoo import fields, models
 
 
 class ONSCCVRace(models.Model):
@@ -14,7 +14,7 @@ class ONSCCVRace(models.Model):
         string=u'Tipo',
         selection=[('race', u'Raza'),
                    ('recognition', u'Reconocimiento'),
-                   ('both', u'Ambos'),],
+                   ('both', u'Ambos')],
         required=False, )
     is_option_other_enable = fields.Boolean(u'¿Permitir opción Otra/o ?')
 
