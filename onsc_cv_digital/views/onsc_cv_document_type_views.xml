@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_document_type_search" model="ir.ui.view">
+        <field name="name">onsc.cv.document.type.search</field>
+        <field name="model">onsc.cv.document.type</field>
+        <field name="arch" type="xml">
+            <search string="Tipos de Documento">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_document_type_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.document.type.tree</field>
+        <field name="model">onsc.cv.document.type</field>
+        <field name="arch" type="xml">
+            <tree string="Tipos de Documento">
+                <field name="code"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_document_type_form" model="ir.ui.view">
+        <field name="name">onsc.cv.document.type.form</field>
+        <field name="model">onsc.cv.document.type</field>
+        <field name="arch" type="xml">
+            <form string="Tipo de Documento">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="code_other"/>
+                        <field name="is_org"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string="RUPE">
+                            <group>
+                                <field name="is_rupe"/>
+                                <field name="code_rupe" attrs="{'required': [('is_rupe', '=', True)]}"/>
+                            </group>
+                        </page>
+                        <page string="SICE">
+                            <group>
+                                 <field name="is_sice"/>
+                                <field name="code_sice" attrs="{'required': [('is_sice', '=', True)]}"/>
+                            </group>
+                        </page>
+                        <page string="DGI">
+                            <group>
+                                <field name="is_dgi"/>
+                                <field name="code_dgi" attrs="{'required': [('is_dgi', '=', True)]}"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_document_type_action' model='ir.actions.act_window'>
+        <field name="name">Tipos de Documento</field>
+        <field name="res_model">onsc.cv.document.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Crear un nuevo Tipo de Documento
+          </p>
+        </field>
+    </record>
+</odoo>

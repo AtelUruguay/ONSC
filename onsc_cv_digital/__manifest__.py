@@ -13,8 +13,12 @@ ONSC CV Digital
     'data': [
         'security/onsc_cv_digital_security.xml',
         'security/ir.model.access.csv',
+        'views/onsc_cv_document_type_views.xml',
+
+        'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
+        'demo/onsc_cv_demo.xml',
     ],
     'installable': True,
     'application': True,

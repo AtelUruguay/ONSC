@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <menuitem id="onsc_cv_root_menu"
+              name="CV Digital"
+              sequence="2"/>
+
+    <menuitem id="onsc_cv_config_menu"
+              name="Configuración"
+              parent="onsc_cv_root_menu"
+              sequence="50"/>
+        <menuitem id="onsc_cv_document_type_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_document_type_action"
+                  sequence="1"/>
+
+</odoo>
