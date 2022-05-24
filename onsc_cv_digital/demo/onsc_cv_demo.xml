@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="onsc_cv_document_type_1" model="onsc.cv.document.type">
+            <field name="code">01</field>
+            <field name="name">Tipo de Documento 1</field>
+        </record>
+    </data>
+</odoo>
