@@ -8,7 +8,7 @@ class ONSCCVDocumentType(models.Model):
     _description = 'Tipo de Documento'
 
     code = fields.Char(string=u"Código")
-    name = fields.Char(string=u"Nombre del tipo de documento", required=True)
+    name = fields.Char(string=u"Nombre del Tipo de documento", required=True)
     active = fields.Boolean(string="Activo", default=True)
     code_other = fields.Char(string=u"Otro código")
     is_org = fields.Boolean(u'Aplica organismo')
