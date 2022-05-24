@@ -44,5 +44,33 @@
 
 <!--        ###############   GENDER END     ####################-->
 
+<!--        ###############   RACE BEGIN     ####################-->
+
+        <record id="onsc_cv_race_1" model="onsc.cv.race">
+            <field name="code">01</field>
+            <field name="name">Afro o negro/a</field>
+        </record>
+
+        <record id="onsc_cv_race_2" model="onsc.cv.race">
+            <field name="code">02</field>
+            <field name="name">Asiático/a</field>
+        </record>
+
+        <record id="onsc_cv_race_3" model="onsc.cv.race">
+            <field name="code">03</field>
+            <field name="name">Indígena</field>
+        </record>
+
+        <record id="onsc_cv_race_4" model="onsc.cv.race">
+            <field name="code">04</field>
+            <field name="name">Blanco/a</field>
+        </record>
+
+        <record id="onsc_cv_race_5" model="onsc.cv.race">
+            <field name="code">05</field>
+            <field name="name">Otra (debe especificarla)</field>
+        </record>
+
+<!--        ###############   RACE END     ####################-->
     </data>
 </odoo>

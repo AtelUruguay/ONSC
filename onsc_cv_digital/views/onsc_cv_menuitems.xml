@@ -19,4 +19,10 @@
                   groups="group_gestor_catalogos_cv"
                   sequence="2"/>
 
+        <menuitem id="onsc_cv_race_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_race_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="2"/>
+
 </odoo>
