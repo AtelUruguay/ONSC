@@ -8,10 +8,10 @@ class ONSCCVDocumentType(models.Model):
     _description = 'Tipo de Documento'
 
     code = fields.Char(string=u"Código")
-    name = fields.Char(string=u"Descripción", required=True)
+    name = fields.Char(string=u"Nombre del tipo de documento", required=True)
     active = fields.Boolean(string="Activo", default=True)
     code_other = fields.Char(string=u"Otro código")
-    is_org = fields.Boolean(u'Aplica Organismo')
+    is_org = fields.Boolean(u'Aplica organismo')
     is_sice = fields.Boolean(u'Aplica SICE')
     code_sice = fields.Char(u'Código SICE')
     is_rupe = fields.Boolean(u'Aplica RUPE')
@@ -21,5 +21,5 @@ class ONSCCVDocumentType(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del Tipo de Documento debe ser único!'),
+         u'El nombre del Tipo de Documento debe ser único'),
     ]
