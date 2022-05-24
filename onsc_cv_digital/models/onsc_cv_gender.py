@@ -17,4 +17,3 @@ class ONSCCVGender(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre del género debe ser único'),
     ]
-    

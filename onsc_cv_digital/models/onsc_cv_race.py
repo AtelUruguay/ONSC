@@ -22,4 +22,3 @@ class ONSCCVRace(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre de la raza debe ser único'),
     ]
-    
