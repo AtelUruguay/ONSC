@@ -3,39 +3,30 @@
     <data noupdate="1">
         <record id="onsc_cv_drivers_license_categories_A" model="onsc.cv.drivers.license.categories">
             <field name="name">A</field>
-            <field name="code">1</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_B" model="onsc.cv.drivers.license.categories">
             <field name="name">B</field>
-            <field name="code">2</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_C" model="onsc.cv.drivers.license.categories">
             <field name="name">C</field>
-            <field name="code">3</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_D" model="onsc.cv.drivers.license.categories">
             <field name="name">D</field>
-            <field name="code">4</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_F" model="onsc.cv.drivers.license.categories">
             <field name="name">F</field>
-            <field name="code">5</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_G1" model="onsc.cv.drivers.license.categories">
             <field name="name">G1</field>
-            <field name="code">6</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_G2" model="onsc.cv.drivers.license.categories">
             <field name="name">G2</field>
-            <field name="code">7</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_G3" model="onsc.cv.drivers.license.categories">
             <field name="name">G3</field>
-            <field name="code">8</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_H" model="onsc.cv.drivers.license.categories">
             <field name="name">H</field>
-            <field name="code">9</field>
         </record>
     </data>
 </odoo>
