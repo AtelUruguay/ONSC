@@ -11,6 +11,7 @@
         <menuitem id="onsc_cv_document_type_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_document_type_action"
+                  groups="group_gestor_catalogos_cv"
                   sequence="1"/>
 
 </odoo>
