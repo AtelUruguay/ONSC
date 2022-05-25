@@ -19,5 +19,5 @@ class ONSCCVRace(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre de la raza debe ser único'),
+         u'El nombre de la Raza debe ser único'),
     ]

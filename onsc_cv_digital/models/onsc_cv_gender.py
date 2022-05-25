@@ -14,5 +14,5 @@ class ONSCCVGender(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del género debe ser único'),
+         u'El nombre del Género debe ser único'),
     ]

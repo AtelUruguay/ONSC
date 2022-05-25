@@ -13,5 +13,5 @@ class ONSCCVStatusCivil(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre debe ser único'),
+         u'El nombre del Estado Civil debe ser único'),
     ]

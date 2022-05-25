@@ -13,5 +13,5 @@ class ONSCCVDriversLicenseCategories(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre debe ser único'),
+         u'El nombre de la Categoría de Licencia de conducir debe ser único'),
     ]
