@@ -17,5 +17,10 @@
                   action="onsc_cv_status_civil_action"
                   sequence="12"
                   groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
+        <menuitem id="onsc_cv_drivers_license_categories_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_drivers_license_categories_action"
+                  sequence="14"
+                  groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
 
 </odoo>
