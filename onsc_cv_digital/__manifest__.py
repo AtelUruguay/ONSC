@@ -9,12 +9,15 @@ ONSC CV Digital
 ====================
     """,
     'category': 'ONSC',
-    'depends' : ['base'],
+    'depends': ['base'],
     'data': [
         'security/onsc_cv_digital_security.xml',
         'security/ir.model.access.csv',
+        'data/onsc_cv_civil_status_data.xml',
+        'data/onsc_cv_drivers_license_categories_data.xml',
         'views/onsc_cv_document_type_views.xml',
-
+        'views/onsc_cv_civil_status_views.xml',
+        'views/onsc_cv_drivers_license_categories_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_drivers_license_categories_search" model="ir.ui.view">
+        <field name="name">onsc.cv.drivers.license.categories.search</field>
+        <field name="model">onsc.cv.drivers.license.categories</field>
+        <field name="arch" type="xml">
+            <search string="Categorías de licencia de conducir">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_drivers_license_categories_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.drivers.license.categories.tree</field>
+        <field name="model">onsc.cv.drivers.license.categories</field>
+        <field name="arch" type="xml">
+            <tree string="Categorías de licencia de conducir">
+                <field name="code"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_drivers_license_categories_form" model="ir.ui.view">
+        <field name="name">onsc.cv.drivers.license.categories.form</field>
+        <field name="model">onsc.cv.drivers.license.categories</field>
+        <field name="arch" type="xml">
+            <form string="Categoría de licencia de conducir">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_drivers_license_categories_action' model='ir.actions.act_window'>
+        <field name="name">Categorías de Licencia de conducir</field>
+        <field name="res_model">onsc.cv.drivers.license.categories</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva Categoría de licencia de conducir
+            </p>
+        </field>
+    </record>
+</odoo>
