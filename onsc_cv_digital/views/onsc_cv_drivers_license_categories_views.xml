@@ -15,9 +15,10 @@
         <field name="name">onsc.cv.drivers.license.categories.tree</field>
         <field name="model">onsc.cv.drivers.license.categories</field>
         <field name="arch" type="xml">
-            <tree string="Categorías de licencia de conducir">
+            <tree string="Categorías de licencia de conducir" editable="top">
                 <field name="code"/>
                 <field name="name"/>
+                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
