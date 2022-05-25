@@ -14,8 +14,7 @@ class ONSCCVRace(models.Model):
         string=u'Tipo',
         selection=[('race', u'Raza'),
                    ('recognition', u'Reconocimiento'),
-                   ('both', u'Ambos')],
-        required=False, )
+                   ('both', u'Ambos')])
     is_option_other_enable = fields.Boolean(u'¿Permitir opción Otra/o ?')
 
     _sql_constraints = [
