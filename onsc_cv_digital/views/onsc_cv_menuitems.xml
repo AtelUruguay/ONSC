@@ -24,4 +24,16 @@
                   sequence="14"
                   groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
 
+        <menuitem id="onsc_cv_gender_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_gender_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="2"/>
+
+        <menuitem id="onsc_cv_race_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_race_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="2"/>
+
 </odoo>

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_gender_search" model="ir.ui.view">
+        <field name="name">onsc.cv.gender.search</field>
+        <field name="model">onsc.cv.gender</field>
+        <field name="arch" type="xml">
+            <search string="Géneros">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_gender_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.gender.tree</field>
+        <field name="model">onsc.cv.gender</field>
+        <field name="arch" type="xml">
+            <tree string="Géneros" editable="top">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="is_option_other_enable"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_gender_form" model="ir.ui.view">
+        <field name="name">onsc.cv.gender.form</field>
+        <field name="model">onsc.cv.gender</field>
+        <field name="arch" type="xml">
+            <form string="Género">
+                <sheet>
+                    <group>
+                        <field name="code"/>
+                        <field name="name"/>
+                        <field name="is_option_other_enable"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_gender_action' model='ir.actions.act_window'>
+        <field name="name">Géneros</field>
+        <field name="res_model">onsc.cv.gender</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Crear un nuevo Género
+          </p>
+        </field>
+    </record>
+</odoo>

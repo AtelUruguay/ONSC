@@ -15,9 +15,13 @@ ONSC CV Digital
         'security/ir.model.access.csv',
         'data/onsc_cv_civil_status_data.xml',
         'data/onsc_cv_drivers_license_categories_data.xml',
+        'data/onsc_cv_gender_data.xml',
+        'data/onsc_cv_race_data.xml',
         'views/onsc_cv_document_type_views.xml',
         'views/onsc_cv_civil_status_views.xml',
         'views/onsc_cv_drivers_license_categories_views.xml',
+        'views/onsc_cv_gender_views.xml',
+        'views/onsc_cv_race_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
