@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.drivers.license.categories.search</field>
         <field name="model">onsc.cv.drivers.license.categories</field>
         <field name="arch" type="xml">
-            <search string="Categorías de Licencia de conducir">
+            <search string="Categorías de licencia de conducir">
                 <field name="code"/>
                 <field name="name"/>
             </search>
@@ -15,7 +15,7 @@
         <field name="name">onsc.cv.drivers.license.categories.tree</field>
         <field name="model">onsc.cv.drivers.license.categories</field>
         <field name="arch" type="xml">
-            <tree string="Categorías de Licencia de conducir">
+            <tree string="Categorías de licencia de conducir">
                 <field name="code"/>
                 <field name="name"/>
             </tree>
@@ -26,7 +26,7 @@
         <field name="name">onsc.cv.drivers.license.categories.form</field>
         <field name="model">onsc.cv.drivers.license.categories</field>
         <field name="arch" type="xml">
-            <form string="Categorías de Licencia de conducir">
+            <form string="Categoría de licencia de conducir">
                 <sheet>
                     <group>
                         <field name="code"/>
@@ -44,7 +44,7 @@
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nueva Categorías de Licencia de conducir
+                Crear una nueva Categoría de licencia de conducir
             </p>
         </field>
     </record>
