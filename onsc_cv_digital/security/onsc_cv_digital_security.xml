@@ -11,5 +11,11 @@
         <field name="comment">Configurador de catálogos CV Digital</field>
         <field name="category_id" ref="module_category_onsc_cv_digital"/>
     </record>
+
+    <record id="group_validador_catalogos_cv" model="res.groups">
+        <field name="name">Validador de catálogos de CV</field>
+        <field name="comment">Validador de catálogos CV Digital</field>
+        <field name="category_id" ref="module_category_onsc_cv_digital"/>
+    </record>
 </data>
 </odoo>
