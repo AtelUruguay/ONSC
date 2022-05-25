@@ -24,6 +24,7 @@ ONSC CV Digital
         'views/onsc_cv_gender_views.xml',
         'views/onsc_cv_race_views.xml',
         'views/onsc_cv_location_views.xml',
+        'views/res_country_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
