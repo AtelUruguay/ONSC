@@ -7,7 +7,6 @@ class ONSCCVGender(models.Model):
     _name = 'onsc.cv.gender'
     _description = 'Género'
 
-    # _rec_name = 'name'
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre del género', required=True)
     active = fields.Boolean(string='Activo', default=True)
