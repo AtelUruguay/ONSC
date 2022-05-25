@@ -44,7 +44,7 @@
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear un nuevo Catálogo de Estado Civil
+                Crear un nuevo Estado Civil
             </p>
         </field>
     </record>
