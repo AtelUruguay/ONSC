@@ -17,7 +17,7 @@ ONSC CV Digital
         'data/onsc_cv_drivers_license_categories_data.xml',
         'data/onsc_cv_gender_data.xml',
         'data/onsc_cv_race_data.xml',
-        'wizard/onsc_cv_location_reject_wizard_views.xml',
+        'wizard/onsc_cv_reject_wizard_views.xml',
         'views/onsc_cv_document_type_views.xml',
         'views/onsc_cv_civil_status_views.xml',
         'views/onsc_cv_drivers_license_categories_views.xml',
@@ -25,6 +25,7 @@ ONSC CV Digital
         'views/onsc_cv_race_views.xml',
         'views/onsc_cv_location_views.xml',
         'views/res_country_views.xml',
+        'views/onsc_cv_subinstitution_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
