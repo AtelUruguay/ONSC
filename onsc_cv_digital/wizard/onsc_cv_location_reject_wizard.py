@@ -12,6 +12,3 @@ class ONSCCVLocation(models.Model):
     def action_reject(self):
         locations = self.env['onsc.cv.location'].browse(self.env.context.get('active_ids'))
         locations.write({'state': 'rejected', 'reject_reason': self.reject_reason})
-
-
-
