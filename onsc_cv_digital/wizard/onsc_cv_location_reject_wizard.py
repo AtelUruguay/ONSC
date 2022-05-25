@@ -14,3 +14,4 @@ class ONSCCVLocation(models.Model):
         locations.write({'state': 'rejected', 'reject_reason': self.reject_reason})
 
 
+
