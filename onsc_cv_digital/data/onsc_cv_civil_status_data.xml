@@ -4,27 +4,21 @@
 
         <record id="onsc_cv_status_civil_single" model="onsc.cv.status.civil">
             <field name="name">Soltero(a)</field>
-            <field name="code">1</field>
         </record>
         <record id="onsc_cv_status_civil_married" model="onsc.cv.status.civil">
             <field name="name">Casado(a)</field>
-            <field name="code">2</field>
         </record>
         <record id="onsc_cv_status_civil_divorced" model="onsc.cv.status.civil">
             <field name="name">Divorciado(a)</field>
-            <field name="code">3</field>
         </record>
         <record id="onsc_cv_status_civil_widower" model="onsc.cv.status.civil">
             <field name="name">Viudo(a)</field>
-            <field name="code">4</field>
         </record>
         <record id="onsc_cv_status_civil_free_union" model="onsc.cv.status.civil">
             <field name="name">Unión libre</field>
-            <field name="code">5</field>
         </record>
         <record id="onsc_cv_status_civil_concubinage" model="onsc.cv.status.civil">
             <field name="name">Concubinato</field>
-            <field name="code">6</field>
         </record>
     </data>
 </odoo>
