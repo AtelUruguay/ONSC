@@ -13,11 +13,7 @@ class ONSCCVLocation(models.Model):
     country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True)
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
                                domain="[('country_id','=',country_id)]")
-
-    code = fields.Char(string=u'Código', size=5)
-    active = fields.Boolean(string='Activo', default=True)
     other_code = fields.Integer(string=u'Otro código')
-    create_uid = fields.Many2one('res.users', index=True)
 
     _sql_constraints = [
         ('localidad_name_by_state_unique', 'unique(name, state_id)',

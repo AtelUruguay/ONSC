@@ -17,6 +17,7 @@ class ONSCCVAbstractConfig(models.Model):
                              selection=SATES,
                              default='validated')
     reject_reason = fields.Char(string=u'Motivo de rechazo')
+    create_uid = fields.Many2one('res.users', index=True)
 
     def action_reject(self):
         ctx = self._context.copy()
