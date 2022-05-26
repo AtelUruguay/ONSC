@@ -10,6 +10,9 @@
         <record id="onsc_cv_drivers_license_categories_C" model="onsc.cv.drivers.license.categories">
             <field name="name">C</field>
         </record>
+        <record id="onsc_cv_drivers_license_categories_E" model="onsc.cv.drivers.license.categories">
+            <field name="name">E</field>
+        </record>
         <record id="onsc_cv_drivers_license_categories_D" model="onsc.cv.drivers.license.categories">
             <field name="name">D</field>
         </record>
