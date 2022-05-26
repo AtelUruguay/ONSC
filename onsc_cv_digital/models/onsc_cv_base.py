@@ -36,7 +36,7 @@ class ONSCCVGender(models.Model):
     _description = 'Género'
 
     code = fields.Char(u'Código')
-    name = fields.Char(u'Nombre del género', required=True)
+    name = fields.Char(u'Nombre del Género', required=True)
     active = fields.Boolean(string='Activo', default=True)
     is_option_other_enable = fields.Boolean(u'¿Permitir opción Otra/o ?')
 
@@ -51,7 +51,7 @@ class ONSCCVRace(models.Model):
     _description = 'Raza'
 
     code = fields.Char(u'Código')
-    name = fields.Char(u'Nombre de la raza', required=True)
+    name = fields.Char(u'Nombre de la Raza', required=True)
     active = fields.Boolean(string='Activo', default=True)
     race_type = fields.Selection(
         string=u'Tipo',

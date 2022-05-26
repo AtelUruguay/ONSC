@@ -42,4 +42,15 @@
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="6"/>
 
+        <menuitem id="menu_country_state_partner"
+                  action="onsc_cv_action_country_state"
+                  parent="onsc_cv_config_menu"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="7"/>
+
+         <menuitem id="onsc_cv_subinstitution_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_subinstitution_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="8"/>
 </odoo>
