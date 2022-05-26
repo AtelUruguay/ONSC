@@ -17,8 +17,8 @@
         <field name="model">onsc.cv.race</field>
         <field name="arch" type="xml">
             <tree string="Razas" editable="top">
-                <field name="code"/>
                 <field name="name"/>
+                <field name="code"/>
                 <field name="race_type"/>
                 <field name="is_option_other_enable"/>
                 <field name="active" invisible="1"/>
@@ -33,8 +33,8 @@
             <form string="Raza">
                 <sheet>
                     <group>
-                        <field name="code"/>
                         <field name="name"/>
+                        <field name="code"/>
                         <field name="race_type"/>
                         <field name="is_option_other_enable"/>
                         <field name="active" invisible="1"/>

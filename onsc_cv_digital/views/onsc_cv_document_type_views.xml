@@ -16,8 +16,8 @@
         <field name="model">onsc.cv.document.type</field>
         <field name="arch" type="xml">
             <tree string="Tipos de Documento">
-                <field name="code"/>
                 <field name="name"/>
+                <field name="code"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -30,8 +30,8 @@
             <form string="Tipo de Documento">
                 <sheet>
                     <group>
-                        <field name="code"/>
                         <field name="name"/>
+                        <field name="code"/>
                         <field name="code_other"/>
                         <field name="is_org"/>
                         <field name="active" invisible="1"/>

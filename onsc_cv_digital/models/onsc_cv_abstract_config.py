@@ -2,9 +2,9 @@
 
 from odoo import api, fields, models, _, SUPERUSER_ID
 
-SATES = [('to_validate', 'Para validar'),
-         ('validated', 'Validado'),
-         ('rejected', 'Rechazado')]
+STATES = [('to_validate', 'Para validar'),
+          ('validated', 'Validado'),
+          ('rejected', 'Rechazado')]
 
 
 class ONSCCVAbstractConfig(models.Model):
@@ -14,7 +14,7 @@ class ONSCCVAbstractConfig(models.Model):
     active = fields.Boolean(string='Activo', default=True)
     code = fields.Char(string=u'Código', size=5)
     state = fields.Selection(string="Estado",
-                             selection=SATES,
+                             selection=STATES,
                              default='validated')
     reject_reason = fields.Char(string=u'Motivo de rechazo')
     create_uid = fields.Many2one('res.users', index=True)

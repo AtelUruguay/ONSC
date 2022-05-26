@@ -10,5 +10,5 @@ class ONSCCVSubintitution(models.Model):
 
     name = fields.Char("Nombre de la Sub institución", required=True)
     country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True)
-    # Todo
+    # TODO
     # institution_id = fields.Many2one()

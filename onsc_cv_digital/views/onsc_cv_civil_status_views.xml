@@ -16,8 +16,8 @@
         <field name="model">onsc.cv.status.civil</field>
         <field name="arch" type="xml">
             <tree string="Estados Civiles" editable="top">
-                <field name="code"/>
                 <field name="name"/>
+                <field name="code"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -30,8 +30,8 @@
             <form string="Estado Civil">
                 <sheet>
                     <group>
-                        <field name="code"/>
                         <field name="name"/>
+                        <field name="code"/>
                         <field name="active" invisible="1"/>
                     </group>
                 </sheet>

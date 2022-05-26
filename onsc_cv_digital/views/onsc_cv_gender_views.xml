@@ -16,8 +16,8 @@
         <field name="model">onsc.cv.gender</field>
         <field name="arch" type="xml">
             <tree string="Géneros" editable="top">
-                <field name="code"/>
                 <field name="name"/>
+                <field name="code"/>
                 <field name="is_option_other_enable"/>
                 <field name="active" invisible="1"/>
             </tree>
@@ -31,8 +31,8 @@
             <form string="Género">
                 <sheet>
                     <group>
-                        <field name="code"/>
                         <field name="name"/>
+                        <field name="code"/>
                         <field name="is_option_other_enable"/>
                         <field name="active" invisible="1"/>
                     </group>
