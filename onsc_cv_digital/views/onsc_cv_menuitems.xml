@@ -16,24 +16,41 @@
         <menuitem id="onsc_cv_status_civil_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_status_civil_action"
-                  sequence="12"
+                  sequence="2"
                   groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
         <menuitem id="onsc_cv_drivers_license_categories_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_drivers_license_categories_action"
-                  sequence="14"
+                  sequence="3"
                   groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
 
         <menuitem id="onsc_cv_gender_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_gender_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="2"/>
+                  sequence="4"/>
 
         <menuitem id="onsc_cv_race_action_menu"
-                      parent="onsc_cv_config_menu"
-                      action="onsc_cv_race_action"
-                      groups="group_gestor_catalogos_cv"
-                      sequence="2"/>
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_race_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="5"/>
 
+        <menuitem id="onsc_cv_location_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_location_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="6"/>
+
+        <menuitem id="menu_country_state_partner"
+                  action="onsc_cv_action_country_state"
+                  parent="onsc_cv_config_menu"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="7"/>
+
+         <menuitem id="onsc_cv_subinstitution_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_subinstitution_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="8"/>
 </odoo>
