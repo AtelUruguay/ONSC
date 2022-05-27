@@ -21,6 +21,6 @@ class ONSCCVIntitution(models.Model):
     def _compute_name_country_id(self):
         for record in self:
             if record.name or record.country_id.name:
-                record.name_country = '%s (%s)' % (record.name or '', record.country_id.name or '')
+                record.name_country = '%s (%s)' % (record.name or '', record.country_id.code or '')
             else:
                 record.name_country = ''
