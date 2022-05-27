@@ -40,7 +40,7 @@
     </record>
 
     <record id='onsc_cv_drivers_license_categories_action' model='ir.actions.act_window'>
-        <field name="name">Categorías de Licencia de conducir</field>
+        <field name="name">Categorías de licencia de conducir</field>
         <field name="res_model">onsc.cv.drivers.license.categories</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">

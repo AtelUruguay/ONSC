@@ -62,7 +62,7 @@
     </record>
 
     <record id='onsc_cv_document_type_action' model='ir.actions.act_window'>
-        <field name="name">Tipos de Documento</field>
+        <field name="name">Tipos de documento</field>
         <field name="res_model">onsc.cv.document.type</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">

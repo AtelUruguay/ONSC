@@ -40,7 +40,7 @@
     </record>
 
     <record id='onsc_cv_status_civil_action' model='ir.actions.act_window'>
-        <field name="name">Estados Civiles</field>
+        <field name="name">Estados civiles</field>
         <field name="res_model">onsc.cv.status.civil</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
