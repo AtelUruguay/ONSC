@@ -19,4 +19,7 @@ class ONSCCVIntitution(models.Model):
     @api.depends('name', 'country_id')
     def _compute_name_country_id(self):
         for record in self:
-            record.name_country = '%s (%s)' % (record.name, record.country_id.name)
+            if record.name or record.country_id.name:
+                record.name_country = '%s (%s)' % (record.name or '', record.country_id.name or '')
+            else:
+                record.name_country = ''

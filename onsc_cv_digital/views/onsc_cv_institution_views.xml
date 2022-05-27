@@ -54,6 +54,9 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_title oe_inline">
+                        <h1><field name="name_country"/></h1>
+                    </div>
                     <group>
                         <group>
                             <field name="name"/>
@@ -64,7 +67,6 @@
                         <group>
                             <field name="country_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="name_country"/>
                         </group>
                     </group>
                     <notebook>
