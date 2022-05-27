@@ -69,7 +69,7 @@
                     </group>
                     <notebook>
                         <page string="Sub instituciones">
-                            <field name="sub_institution_id"/>
+                            <field name="sub_institution_ids"/>
                         </page>
                     </notebook>
                 </sheet>

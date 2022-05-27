@@ -14,10 +14,9 @@ class ONSCCVIntitution(models.Model):
     enable_mec = fields.Boolean(string=u'Habilitada por el MEC')
     name_country = fields.Char("Nombre y país de la institución", compute='_compute_name_country_id',
                                store=True)
-    subinstitution_id = fields.One2many('onsc.cv.subinstitution', 'institution_id', string=u"Sub institución")
+    sub_institution_ids = fields.One2many('onsc.cv.subinstitution', 'institution_id', string=u"Sub institución")
 
     @api.depends('name', 'country_id')
     def _compute_name_country_id(self):
         for record in self:
-            if record.name and record.country_id.name:
-                record.name_country = record.name + ' (' + record.country_id.name + ')'
+            record.name_country = '%s (%s)' % (record.name, record.country_id.name)
