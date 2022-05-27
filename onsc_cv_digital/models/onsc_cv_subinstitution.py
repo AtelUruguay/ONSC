@@ -15,3 +15,8 @@ class ONSCCVSubintitution(models.Model):
     @api.onchange('country_id')
     def onchange_country_id(self):
         self.institution_id = False
+
+    @api.onchange('institution_id')
+    def onchange_institution_id(self):
+        if self.institution_id.country_id:
+            self.country_id = self.institution_id.country_id
