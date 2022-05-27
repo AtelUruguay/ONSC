@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models
 
 
 class ONSCCVIntitution(models.Model):
@@ -17,5 +17,6 @@ class ONSCCVIntitution(models.Model):
 
     @api.depends('name', 'country_id')
     def _compute_name_country_id(self):
-        if self.name and self.country_id.name:
-            self.name_country = self.name + ' (' + self.country_id.name + ')'
+        for record in self:
+            if record.name and record.country_id.name:
+                record.name_country = record.name + ' (' + record.country_id.name + ')'
