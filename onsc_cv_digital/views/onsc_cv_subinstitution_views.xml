@@ -27,8 +27,8 @@
             <tree string="Subinstituciones">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="institution_id"/>
                 <field name="country_id"/>
+                <field name="institution_id"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -56,9 +56,8 @@
                         <group>
                             <field name="name"/>
                             <field name="code"/>
-                            <field name="institution_id"/>
-                            <field name="country_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="country_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="institution_id" domain="[('country_id', '=?', country_id)]" context="{'default_country_id': country_id}"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>

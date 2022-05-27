@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class ONSCCVSubintitution(models.Model):
@@ -11,3 +11,7 @@ class ONSCCVSubintitution(models.Model):
     name = fields.Char("Nombre de la Subinstitución", required=True, tracking=True)
     country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True, tracking=True)
     institution_id = fields.Many2one('onsc.cv.institution', string=u'Institución', tracking=True, required=True)
+
+    @api.onchange('country_id')
+    def onchange_method(self):
+        self.institution_id = False
