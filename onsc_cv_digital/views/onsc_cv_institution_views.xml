@@ -31,6 +31,7 @@
                 <field name="country_id"/>
                 <field name="name_country"/>
                 <field name="enable_mec"/>
+                <field name="company_id" groups="base.group_multi_company"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -62,6 +63,7 @@
                             <field name="name"/>
                             <field name="code"/>
                             <field name="enable_mec"/>
+                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>

@@ -12,4 +12,6 @@ class ONSCCVRejectWizard(models.TransientModel):
     res_id = fields.Integer("Id del registro relacionado")
 
     def action_reject(self):
-        self.env[self.model_name].browse(self.res_id).write({'state': 'rejected', 'reject_reason': self.reject_reason})
+        record = self.env[self.model_name].browse(self.res_id)
+        record.sudo()._send_reject_email()
+        record.write({'state': 'rejected', 'reject_reason': self.reject_reason})
