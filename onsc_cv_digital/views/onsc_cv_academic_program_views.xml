@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_cv_institution_search" model="ir.ui.view">
-        <field name="name">onsc.cv.institution.search</field>
-        <field name="model">onsc.cv.institution</field>
+    <record id="onsc_cv_academic_program_search" model="ir.ui.view">
+        <field name="name">onsc.cv.academic.program.search</field>
+        <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
-            <search string="Instituciones">
+            <search string="Programa Académico">
                 <field name="name"/>
                 <field name="country_id"/>
                 <separator/>
@@ -21,26 +21,26 @@
         </field>
     </record>
 
-    <record id="onsc_cv_institution_tree" model="ir.ui.view">
-        <field name="name">onsc.cv.institution.tree</field>
-        <field name="model">onsc.cv.institution</field>
+    <record id="onsc_cv_academic_program_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.academic.program.tree</field>
+        <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
-            <tree string="Instituciones">
-                <field name="name"/>
+            <tree string="Programa Académico">
                 <field name="code"/>
+                <field name="name"/>
                 <field name="country_id"/>
-                <field name="name_country"/>
-                <field name="enable_mec"/>
+                <field name="institution_id"/>
+                <field name="subinstitution_id"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
 
-    <record id="onsc_cv_institution_form" model="ir.ui.view">
-        <field name="name">onsc.cv.institution.form</field>
-        <field name="model">onsc.cv.institution</field>
+    <record id="onsc_cv_academic_program_form" model="ir.ui.view">
+        <field name="name">onsc.cv.academic.program.form</field>
+        <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
-            <form string="Instituciones">
+            <form string="Programa Académico">
                 <header>
                     <button name="action_validate" string="Validar"
                             class="oe_highlight"
@@ -54,44 +54,32 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
-                    <div class="oe_title oe_inline">
-                        <h1><field name="name_country"/></h1>
-                    </div>
                     <group>
                         <group>
-                            <field name="name"/>
                             <field name="code"/>
-                            <field name="enable_mec"/>
+                            <field name="name"/>
+                            <field name="country_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
-                            <field name="country_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="institution_id" domain="[('country_id', '=', country_id)]"/>
+                            <field name="subinstitution_id" domain="[('institution_id', '=', institution_id)]"/>
                         </group>
                     </group>
-                    <notebook>
-                        <page string="Subinstituciones">
-                            <field name="subinstitution_ids"/>
-                        </page>
-                    </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" groups="base.group_user"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
             </form>
         </field>
     </record>
 
-    <record id='onsc_cv_institution_action' model='ir.actions.act_window'>
-        <field name="name">Instituciones</field>
-        <field name="res_model">onsc.cv.institution</field>
+    <record id='onsc_cv_academic_program_action' model='ir.actions.act_window'>
+        <field name="name">Programa Académico</field>
+        <field name="res_model">onsc.cv.academic.program</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'is_config': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nueva Institución
+                Crear un nuevo Programa Académico
             </p>
         </field>
     </record>
