@@ -48,9 +48,15 @@
                   groups="group_gestor_catalogos_cv"
                   sequence="7"/>
 
-         <menuitem id="onsc_cv_subinstitution_action_menu"
+        <menuitem id="onsc_cv_subinstitution_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_subinstitution_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="8"/>
+
+        <menuitem id="onsc_cv_institution_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_institution_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="9"/>
 </odoo>
