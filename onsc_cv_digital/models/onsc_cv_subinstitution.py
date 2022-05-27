@@ -13,5 +13,5 @@ class ONSCCVSubintitution(models.Model):
     institution_id = fields.Many2one('onsc.cv.institution', string=u'Institución', tracking=True, required=True)
 
     @api.onchange('country_id')
-    def onchange_method(self):
+    def onchange_country_id(self):
         self.institution_id = False

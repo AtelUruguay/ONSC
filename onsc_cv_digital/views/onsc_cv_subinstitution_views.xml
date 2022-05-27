@@ -14,7 +14,7 @@
                 <group expand="1" string="Group By">
                     <filter name="filter_country_id" string="País" context="{'group_by':'country_id'}"/>
                     <filter name="filter_state" string="Estado"  context="{'group_by':'state'}"/>
-                    <filter name="filter_institution_id" string="Insitución" context="{'group_by':'institution_id'}"/>
+                    <filter name="filter_institution_id" string="Institución" context="{'group_by':'institution_id'}"/>
                 </group>
             </search>
         </field>
