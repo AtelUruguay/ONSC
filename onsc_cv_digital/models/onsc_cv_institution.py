@@ -15,7 +15,7 @@ class ONSCCVIntitution(models.Model):
     name_country = fields.Char("Nombre y país de la institución", compute='_compute_name_country_id',
                                store=True)
     subinstitution_ids = fields.One2many('onsc.cv.subinstitution', 'institution_id', string=u"Sub institución",
-                                          tracking=True)
+                                         tracking=True)
 
     @api.depends('name', 'country_id')
     def _compute_name_country_id(self):
