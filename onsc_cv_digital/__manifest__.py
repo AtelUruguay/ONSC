@@ -26,6 +26,7 @@ ONSC CV Digital
         'views/onsc_cv_location_views.xml',
         'views/res_country_views.xml',
         'views/onsc_cv_subinstitution_views.xml',
+        'views/onsc_cv_institution_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
