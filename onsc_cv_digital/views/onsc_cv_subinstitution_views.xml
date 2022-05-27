@@ -12,10 +12,9 @@
                         domain="[('country_id.code','=','UY')]"/>
                 <separator/>
                 <group expand="1" string="Group By">
-                    <filter name="filter_country_id" string="País" domain="[]"
-                            context="{'group_by':'country_id'}"/>
-                    <filter name="filter_state" string="Estado" domain="[]"
-                            context="{'group_by':'state'}"/>
+                    <filter name="filter_country_id" string="País" context="{'group_by':'country_id'}"/>
+                    <filter name="filter_state" string="Estado"  context="{'group_by':'state'}"/>
+                    <filter name="filter_institution_id" string="Insitución" context="{'group_by':'institution_id'}"/>
                 </group>
             </search>
         </field>
@@ -28,6 +27,7 @@
             <tree string="Subinstituciones">
                 <field name="name"/>
                 <field name="code"/>
+                <field name="institution_id"/>
                 <field name="country_id"/>
                 <field name="active" invisible="1"/>
             </tree>
@@ -56,6 +56,7 @@
                         <group>
                             <field name="name"/>
                             <field name="code"/>
+                            <field name="institution_id"/>
                             <field name="country_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="active" invisible="1"/>
