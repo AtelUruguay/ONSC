@@ -9,6 +9,9 @@
             <tree position="attributes">
                 <attribute name="string">Departamentos</attribute>
             </tree>
+            <tree position="inside">
+                <field name="active" invisible="1"/>
+            </tree>
         </field>
     </record>
 
@@ -20,7 +23,9 @@
             <form position="attributes">
                 <attribute name="string">Departamentos</attribute>
             </form>
-
+            <form position="inside">
+                <field name="active" invisible="1"/>
+            </form>
         </field>
     </record>
 

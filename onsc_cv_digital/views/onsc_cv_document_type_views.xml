@@ -15,7 +15,7 @@
         <field name="name">onsc.cv.document.type.tree</field>
         <field name="model">onsc.cv.document.type</field>
         <field name="arch" type="xml">
-            <tree string="Tipos de Documento">
+            <tree string="Tipos de Documento de Identidad">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="active" invisible="1"/>
@@ -27,7 +27,7 @@
         <field name="name">onsc.cv.document.type.form</field>
         <field name="model">onsc.cv.document.type</field>
         <field name="arch" type="xml">
-            <form string="Tipo de Documento">
+            <form string="Tipo de Documento de Identidad">
                 <sheet>
                     <group>
                         <field name="name"/>
@@ -62,7 +62,7 @@
     </record>
 
     <record id='onsc_cv_document_type_action' model='ir.actions.act_window'>
-        <field name="name">Tipos de documento</field>
+        <field name="name">Tipos de documento de identidad</field>
         <field name="res_model">onsc.cv.document.type</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">

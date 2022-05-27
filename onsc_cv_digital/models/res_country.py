@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, _
+from odoo import models, fields, _
 
 
 class ResCountryState(models.Model):
     _inherit = 'res.country.state'
+
+    active = fields.Boolean(string="Activo", default=True)
 
     def fields_get(self, allfields=None, attributes=None):
         res = super(ResCountryState, self).fields_get(allfields, attributes)

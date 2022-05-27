@@ -9,11 +9,12 @@ class ONSCCVLocation(models.Model):
     _order = 'state_id, name'
     _inherit = ['onsc.cv.abstract.config']
 
-    name = fields.Char(string='Nombre de Localidad', required=True, index=True)
-    country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True)
+    name = fields.Char(string='Nombre de Localidad', required=True, index=True, tracking=True)
+    country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True, tracking=True)
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
+                               tracking=True,
                                domain="[('country_id','=',country_id)]")
-    other_code = fields.Integer(string=u'Otro código')
+    other_code = fields.Integer(string=u'Otro código', tracking=True)
 
     _sql_constraints = [
         ('localidad_name_by_state_unique', 'unique(name, state_id)',

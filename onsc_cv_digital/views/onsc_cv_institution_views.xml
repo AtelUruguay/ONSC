@@ -70,11 +70,16 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Sub instituciones">
+                        <page string="Subinstituciones">
                             <field name="sub_institution_ids"/>
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>

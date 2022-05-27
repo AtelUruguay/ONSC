@@ -15,7 +15,7 @@
         <field name="name">onsc.cv.status.civil.tree</field>
         <field name="model">onsc.cv.status.civil</field>
         <field name="arch" type="xml">
-            <tree string="Estados Civiles" editable="top">
+            <tree string="Estado Civil" editable="top">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="active" invisible="1"/>
@@ -40,7 +40,7 @@
     </record>
 
     <record id='onsc_cv_status_civil_action' model='ir.actions.act_window'>
-        <field name="name">Estados civiles</field>
+        <field name="name">Estado civil</field>
         <field name="res_model">onsc.cv.status.civil</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
