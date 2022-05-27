@@ -20,6 +20,7 @@ class ONSCCVStatusCivil(models.Model):
 class ONSCCVDriversLicenseCategories(models.Model):
     _name = 'onsc.cv.drivers.license.categories'
     _description = 'Categoría de Licencia de conducir'
+    _order = 'name'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre de la Categoría de licencia de conducir', required=True)
