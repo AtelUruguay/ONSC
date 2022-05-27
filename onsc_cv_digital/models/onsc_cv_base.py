@@ -87,3 +87,17 @@ class ONSCCVDocumentType(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre del Tipo de Documento debe ser único'),
     ]
+
+
+class ONSCCVStudyLevel(models.Model):
+    _name = 'onsc.cv.study.level'
+    _description = 'Nivel de Estudio'
+
+    code = fields.Char(u'Código')
+    name = fields.Char(u'Nombre del nivel de estudio', required=True)
+    active = fields.Boolean(string='Activo', default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del Nivel de Estudio debe ser único'),
+    ]
