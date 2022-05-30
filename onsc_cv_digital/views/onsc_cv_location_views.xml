@@ -31,6 +31,7 @@
                 <field name="code"/>
                 <field name="country_id"/>
                 <field name="state_id"/>
+                <field name="company_id" groups="base.group_multi_company"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -63,6 +64,7 @@
                             <field name="state_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="other_code"/>
+                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
