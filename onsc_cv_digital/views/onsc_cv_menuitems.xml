@@ -60,9 +60,21 @@
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="9"/>
 
+		<menuitem id="onsc_cv_study_level_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_study_level_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="10"/>
+
+        <menuitem id="onsc_cv_academic_program_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_academic_program_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="11"/>
+
         <menuitem id="onsc_cv_certificate_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_certificate_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="10"/>
+                  sequence="12"/>
 </odoo>
