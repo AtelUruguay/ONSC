@@ -31,6 +31,7 @@
                 <field name="country_id"/>
                 <field name="institution_id"/>
                 <field name="subinstitution_id"/>
+                <field name="study_level_id"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -65,6 +66,7 @@
                         <group>
                             <field name="institution_id" domain="[('country_id', '=', country_id)]"/>
                             <field name="subinstitution_id" domain="[('institution_id', '=', institution_id)]"/>
+                            <field name="study_level_id"/>
                         </group>
                     </group>
                 </sheet>

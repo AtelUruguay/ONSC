@@ -12,5 +12,4 @@ class ONSCCVAcademicProgram(models.Model):
     country_id = fields.Many2one('res.country', string=u'País de la institución', ondelete='restrict', required=True)
     institution_id = fields.Many2one('onsc.cv.institution', string=u'Institución')
     subinstitution_id = fields.Many2one('onsc.cv.subinstitution', string=u'Sub institución')
-    # Todo
-    # study_level_id = fields.Many2one()
+    study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de Estudio')
