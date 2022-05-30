@@ -130,3 +130,18 @@ class ONSCCV(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre del Nivel jeráquico de experiencia debe ser único'),
     ]
+
+
+class ONSCCVSEducationalAreas(models.Model):
+    _name = 'onsc.cv.educational.subarea'
+    _description = 'Sub Áreas Educativas'
+
+    code = fields.Char(u'Código')
+    name = fields.Char(u'Nombre de la sub área educativa', required=True)
+    area_id = fields.Many2one('onsc.cv.educational.areas', string=u'Área Educativa', required=True)
+    active = fields.Boolean(string='Activo', default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El Nombre de la Sub Área Educativa debe ser único'),
+    ]
