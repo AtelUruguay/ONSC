@@ -72,9 +72,21 @@
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="11"/>
 
+        <menuitem id="onsc_cv_certifying_institution_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_certifying_institution_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="10"/>
+
+        <menuitem id="onsc_cv_certifying_subinstitution_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_certifying_subinstitution_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="12"/>
+
         <menuitem id="onsc_cv_certificate_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_certificate_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="12"/>
+                  sequence="13"/>
 </odoo>
