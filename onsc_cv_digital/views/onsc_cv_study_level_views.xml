@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_cv_status_civil_search" model="ir.ui.view">
-        <field name="name">onsc.cv.status.civil.search</field>
-        <field name="model">onsc.cv.status.civil</field>
+    <record id="onsc_cv_study_level_search" model="ir.ui.view">
+        <field name="name">onsc.cv.study.level.search</field>
+        <field name="model">onsc.cv.study.level</field>
         <field name="arch" type="xml">
-            <search string="Estado Civil">
+            <search string="Niveles de estudio">
                 <field name="code"/>
                 <field name="name"/>
             </search>
         </field>
     </record>
 
-    <record id="onsc_cv_status_civil_tree" model="ir.ui.view">
-        <field name="name">onsc.cv.status.civil.tree</field>
-        <field name="model">onsc.cv.status.civil</field>
+    <record id="onsc_cv_study_level_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.study.level.tree</field>
+        <field name="model">onsc.cv.study.level</field>
         <field name="arch" type="xml">
-            <tree string="Estado Civil" editable="top">
+            <tree string="Niveles de estudio" editable="top">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="active" invisible="1"/>
@@ -23,11 +23,11 @@
         </field>
     </record>
 
-    <record id="onsc_cv_status_civil_form" model="ir.ui.view">
-        <field name="name">onsc.cv.status.civil.form</field>
-        <field name="model">onsc.cv.status.civil</field>
+    <record id="onsc_cv_study_level_form" model="ir.ui.view">
+        <field name="name">onsc.cv.study.level.form</field>
+        <field name="model">onsc.cv.study.level</field>
         <field name="arch" type="xml">
-            <form string="Estado Civil">
+            <form string="Niveles de estudio">
                 <sheet>
                     <group>
                         <field name="name"/>
@@ -39,13 +39,13 @@
         </field>
     </record>
 
-    <record id='onsc_cv_status_civil_action' model='ir.actions.act_window'>
-        <field name="name">Estado civil</field>
-        <field name="res_model">onsc.cv.status.civil</field>
+    <record id='onsc_cv_study_level_action' model='ir.actions.act_window'>
+        <field name="name">Niveles de estudio</field>
+        <field name="res_model">onsc.cv.study.level</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear un nuevo Estado Civil
+                Crear un Nivel de Estudio
             </p>
         </field>
     </record>

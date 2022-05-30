@@ -89,6 +89,34 @@ class ONSCCVDocumentType(models.Model):
     ]
 
 
+class ONSCCVStudyLevel(models.Model):
+    _name = 'onsc.cv.study.level'
+    _description = 'Nivel de Estudio'
+
+    code = fields.Char(u'Código')
+    name = fields.Char(u'Nombre del nivel de estudio', required=True)
+    active = fields.Boolean(string='Activo', default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del Nivel de Estudio debe ser único'),
+    ]
+
+
+class ONSCCVEducationalAreas(models.Model):
+    _name = 'onsc.cv.educational.areas'
+    _description = 'Areas Educativas'
+
+    code = fields.Char(u'Código')
+    name = fields.Char(u'Nombre del área educativa', required=True)
+    active = fields.Boolean(string='Activo', default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El Nombre del Área Educativa debe ser único'),
+    ]
+
+
 class ONSCCV(models.Model):
     _name = 'onsc.cv.experience.hierarchical.level'
     _description = 'Nivel jeráquico de experiencia'

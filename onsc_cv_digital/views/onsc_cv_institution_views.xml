@@ -50,9 +50,8 @@
                             confirm="Está seguro que desea Validarlo"/>
                     <button name="action_reject" string="Rechazar"
                             states="to_validate" type="object"
-                            groups="onsc_cv_digital.group_validador_catalogos_cv"
-                            confirm="Está seguro que desea Rechazarlo"/>
-                    <field name="state" widget="statusbar"/>
+                            groups="onsc_cv_digital.group_validador_catalogos_cv"/>
+                    <field name="state" widget="statusbar" clickable="1"/>
                 </header>
                 <sheet>
                     <div class="oe_title oe_inline">
@@ -72,8 +71,8 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Subinstituciones">
-                            <field name="sub_institution_ids"/>
+                        <page string="Sub Instituciones">
+                            <field name="subinstitution_ids"/>
                         </page>
                     </notebook>
                 </sheet>

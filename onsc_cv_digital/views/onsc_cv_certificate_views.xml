@@ -1,47 +1,37 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_cv_location_search" model="ir.ui.view">
-        <field name="name">onsc.cv.location.search</field>
-        <field name="model">onsc.cv.location</field>
+    <record id="onsc_cv_certificate_search" model="ir.ui.view">
+        <field name="name">onsc.cv.certificate.search</field>
+        <field name="model">onsc.cv.certificate</field>
         <field name="arch" type="xml">
-            <search string="Ciudades/Localidades">
+            <search string="Certificados">
                 <field name="name"/>
-                <field name="country_id"/>
-                <field name="state_id"/>
-                <separator/>
-                <filter string="Uruguay" name="filter_uruguay_country" icon="terp-personal"
-                        domain="[('country_id.code','=','UY')]"/>
                 <separator/>
                 <group expand="1" string="Group By">
-                    <filter name="filter_country_id" string="País" domain="[]"
-                            context="{'group_by':'country_id'}"/>
-                    <filter name="filter_state_id" string="Departamento" domain="[]"
-                            context="{'group_by':'state_id'}"/>
+                    <filter name="filter_state" string="Estado"  context="{'group_by':'state'}"/>
                 </group>
             </search>
         </field>
     </record>
 
-    <record id="onsc_cv_location_tree" model="ir.ui.view">
-        <field name="name">onsc.cv.location.tree</field>
-        <field name="model">onsc.cv.location</field>
+    <record id="onsc_cv_certificate_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.certificate.tree</field>
+        <field name="model">onsc.cv.certificate</field>
         <field name="arch" type="xml">
-            <tree string="Ciudades/Localidades">
+            <tree string="Certificados">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="country_id"/>
-                <field name="state_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
 
-    <record id="onsc_cv_location_form" model="ir.ui.view">
-        <field name="name">onsc.cv.location.form</field>
-        <field name="model">onsc.cv.location</field>
+    <record id="onsc_cv_certificate_form" model="ir.ui.view">
+        <field name="name">onsc.cv.certificate.form</field>
+        <field name="model">onsc.cv.certificate</field>
         <field name="arch" type="xml">
-            <form string="Ciudades/Localidades">
+            <form string="Certificados">
                 <header>
                     <button name="action_validate" string="Validar"
                             class="oe_highlight"
@@ -58,11 +48,6 @@
                         <group>
                             <field name="name"/>
                             <field name="code"/>
-                            <field name="country_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="state_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="other_code"/>
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -70,6 +55,16 @@
                             <field name="reject_reason" states="rejected"/>
                         </group>
                     </group>
+                     <notebook>
+                        <page string="Instituciones/Sub instituciones">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="institution_cert_id"/>
+                                    <field name="subinstitution_cert_id" context="{'institution_cert_id': institution_cert_id}"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" groups="base.group_user"/>
@@ -80,14 +75,14 @@
         </field>
     </record>
 
-    <record id='onsc_cv_location_action' model='ir.actions.act_window'>
-        <field name="name">Ciudades/Localidades</field>
-        <field name="res_model">onsc.cv.location</field>
+    <record id='onsc_cv_certificate_action' model='ir.actions.act_window'>
+        <field name="name">Certificados</field>
+        <field name="res_model">onsc.cv.certificate</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'is_config': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nueva Ciudad/Localidad
+                Crear un nuevo Certificado
             </p>
         </field>
     </record>

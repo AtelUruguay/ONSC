@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.subinstitution.search</field>
         <field name="model">onsc.cv.subinstitution</field>
         <field name="arch" type="xml">
-            <search string="Subinstituciones">
+            <search string="Sub Instituciones">
                 <field name="name"/>
                 <field name="country_id"/>
                 <separator/>
@@ -24,7 +24,7 @@
         <field name="name">onsc.cv.subinstitution.tree</field>
         <field name="model">onsc.cv.subinstitution</field>
         <field name="arch" type="xml">
-            <tree string="Subinstituciones">
+            <tree string="Sub Instituciones">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="country_id"/>
@@ -39,7 +39,7 @@
         <field name="name">onsc.cv.subinstitution.form</field>
         <field name="model">onsc.cv.subinstitution</field>
         <field name="arch" type="xml">
-            <form string="Subinstituciones">
+            <form string="Sub Instituciones">
                 <header>
                     <button name="action_validate" string="Validar"
                             class="oe_highlight"
@@ -48,9 +48,8 @@
                             confirm="Está seguro que desea Validarlo"/>
                     <button name="action_reject" string="Rechazar"
                             states="to_validate" type="object"
-                            groups="onsc_cv_digital.group_validador_catalogos_cv"
-                            confirm="Está seguro que desea Rechazarlo"/>
-                    <field name="state" widget="statusbar"/>
+                            groups="onsc_cv_digital.group_validador_catalogos_cv"/>
+                    <field name="state" widget="statusbar" clickable="1"/>
                 </header>
                 <sheet>
                     <group>
@@ -77,13 +76,13 @@
     </record>
 
     <record id='onsc_cv_subinstitution_action' model='ir.actions.act_window'>
-        <field name="name">Subinstituciones</field>
+        <field name="name">Sub Instituciones</field>
         <field name="res_model">onsc.cv.subinstitution</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'is_config': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nueva Subinstitución
+                Crear una nueva Sub Institución
             </p>
         </field>
     </record>

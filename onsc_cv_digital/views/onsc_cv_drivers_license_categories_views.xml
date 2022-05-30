@@ -27,7 +27,7 @@
         <field name="name">onsc.cv.drivers.license.categories.form</field>
         <field name="model">onsc.cv.drivers.license.categories</field>
         <field name="arch" type="xml">
-            <form string="Categoría de licencia de conducir">
+            <form string="Categorías de licencia de conducir">
                 <sheet>
                     <group>
                         <field name="name"/>
