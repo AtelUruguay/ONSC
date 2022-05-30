@@ -42,39 +42,61 @@ class ONSCCVAbstractConfig(models.Model):
 
     def _send_validation_email(self):
         """
-        Crea una nueva plantilla de email que utiliza para enviar el correo
-        Una vez enviado se elimina la plantilla
+        Primero busca si la plantilla de correo existe, sino la crea
+        Envía un mail notificando el validación de un catálogo
         :return:
         """
-        validation_email_template_id = self.env.ref('onsc_cv_digital.email_template_validated')
+        main_validation_email_template_id = self.env.ref('onsc_cv_digital.email_template_validated')
         model_id = self.env['ir.model']._get_id(self._name)
-        new_template = validation_email_template_id.copy(
-            {'model_id': model_id,
-             'name': _('Plantilla para %s') % self._description,
-             'subject': _('Notificación de validación de %s') % self._description
-             },
-        )
+
+        onsc_mail_template_model_id = self.env['onsc.cv.mail.template.model'].search(
+            [('model_id', '=', model_id)], limit=1)
+
+        if not onsc_mail_template_model_id:
+            onsc_mail_template_model_id = self.env['onsc.cv.mail.template.model'].create(
+                {'model_id': model_id})
+        validation_email_template_id = onsc_mail_template_model_id.validation_mail_template_id
+
+        if not validation_email_template_id:
+            validation_email_template_id = main_validation_email_template_id.copy(
+                {'model_id': model_id,
+                 'name': _('Plantilla para %s') % self._description,
+                 'subject': _('Notificación de validación de %s') % self._description
+                 },
+            )
+            onsc_mail_template_model_id.validation_mail_template_id = validation_email_template_id
+
         self.with_context(force_send=True).message_post_with_template(
-            new_template.id, email_layout_xmlid='mail.mail_notification_light')
-        new_template.unlink()
+            validation_email_template_id.id, email_layout_xmlid='mail.mail_notification_light')
 
     def _send_reject_email(self):
         """
-        Crea una nueva plantilla de email que utiliza para enviar el correo
-        Una vez enviado se elimina la plantilla
+        Primero busca si la plantilla de correo existe, sino la crea
+        Envía un mail notificando el rechazo de un catálogo
         :return:
         """
-        reject_email_template_id = self.env.ref('onsc_cv_digital.email_template_rejected')
+        main_reject_email_template_id = self.env.ref('onsc_cv_digital.email_template_rejected')
         model_id = self.env['ir.model']._get_id(self._name)
-        new_template = reject_email_template_id.copy(
-            {'model_id': model_id,
-             'name': _('Plantilla para %s') % self._description,
-             'subject': _('Notificación de rechazo de %s') % self._description
-             },
-        )
+
+        onsc_mail_template_model_id = self.env['onsc.cv.mail.template.model'].search(
+            [('model_id', '=', model_id)], limit=1)
+
+        if not onsc_mail_template_model_id:
+            onsc_mail_template_model_id = self.env['onsc.cv.mail.template.model'].create(
+                {'model_id': model_id})
+        reject_mail_template_id = onsc_mail_template_model_id.reject_mail_template_id
+
+        if not reject_mail_template_id:
+            reject_mail_template_id = main_reject_email_template_id.copy(
+                {'model_id': model_id,
+                 'name': _('Plantilla para %s') % self._description,
+                 'subject': _('Notificación de rechazo de %s') % self._description
+                 },
+            )
+            onsc_mail_template_model_id.reject_mail_template_id = reject_mail_template_id
+
         self.with_context(force_send=True).message_post_with_template(
-            new_template.id, email_layout_xmlid='mail.mail_notification_light')
-        new_template.unlink()
+            reject_mail_template_id.id, email_layout_xmlid='mail.mail_notification_light')
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -91,3 +113,16 @@ class ONSCCVAbstractConfig(models.Model):
             args += ['|', ('state', '=', 'validated'), ('create_uid', '=', self.env.uid)]
         return super(ONSCCVAbstractConfig, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                          access_rights_uid=access_rights_uid)
+    
+
+class MailTemplateModel(models.Model):
+    _name = 'onsc.cv.mail.template.model'
+    _description = 'Plantilla de correo por modelo'
+
+    model_id = fields.Many2one('ir.model', 'Modelo')
+    validation_mail_template_id = fields.Many2one('mail.template', 'Plantilla de correo de validación')
+    reject_mail_template_id = fields.Many2one('mail.template', 'Plantilla de correo de rechazo')
+
+
+        
+    
