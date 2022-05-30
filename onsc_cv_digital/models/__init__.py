@@ -6,3 +6,4 @@ from . import onsc_cv_location
 from . import res_country
 from . import onsc_cv_subinstitution
 from . import onsc_cv_institution
+from . import onsc_cv_certificate
