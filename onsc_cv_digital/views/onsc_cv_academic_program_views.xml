@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.academic.program.search</field>
         <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
-            <search string="Programas Académicos">
+            <search string="Programas académicos">
                 <field name="name"/>
                 <field name="country_id"/>
                 <separator/>
@@ -26,7 +26,7 @@
         <field name="name">onsc.cv.academic.program.tree</field>
         <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
-            <tree string="Programa Académico">
+            <tree string="Programas académicos">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="country_id"/>
@@ -42,7 +42,7 @@
         <field name="name">onsc.cv.academic.program.form</field>
         <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
-            <form string="Programa Académico">
+            <form string="Programa académico">
                 <header>
                     <button name="action_validate" string="Validar"
                             class="oe_highlight"
