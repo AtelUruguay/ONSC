@@ -71,7 +71,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Subinstituciones">
+                        <page string="Sub Instituciones">
                             <field name="subinstitution_ids"/>
                         </page>
                     </notebook>
