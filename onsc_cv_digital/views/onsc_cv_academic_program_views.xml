@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.academic.program.search</field>
         <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
-            <search string="Programa Académico">
+            <search string="Programas Académicos">
                 <field name="name"/>
                 <field name="country_id"/>
                 <separator/>
@@ -12,10 +12,11 @@
                         domain="[('country_id.code','=','UY')]"/>
                 <separator/>
                 <group expand="1" string="Group By">
-                    <filter name="filter_country_id" string="País" domain="[]"
-                            context="{'group_by':'country_id'}"/>
-                    <filter name="filter_state" string="Estado" domain="[]"
-                            context="{'group_by':'state'}"/>
+                    <filter name="filter_country_id" string="País" context="{'group_by':'country_id'}"/>
+                    <filter name="filter_state" string="Estado" context="{'group_by':'state'}"/>
+                    <filter name="filter_institution_id" string="Institución" context="{'group_by':'institution_id'}"/>
+                    <filter name="filter_subinstitution_id" string="Sub institución"
+                            context="{'group_by':'subinstitution_id'}"/>
                 </group>
             </search>
         </field>
@@ -60,16 +61,22 @@
                             <field name="code"/>
                             <field name="name"/>
                             <field name="country_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   context="{'default_country_id': country_id}"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
-                            <field name="institution_id" domain="[('country_id', '=', country_id)]"/>
-                            <field name="subinstitution_id" domain="[('institution_id', '=', institution_id)]"/>
+                            <field name="institution_id" domain="[('country_id', '=?', country_id)]"/>
+                            <field name="subinstitution_id" domain="[('institution_id', '=?', institution_id)]"/>
                             <field name="study_level_id"/>
                         </group>
                     </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>

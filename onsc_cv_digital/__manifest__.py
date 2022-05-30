@@ -13,6 +13,7 @@ ONSC CV Digital
     'data': [
         'security/onsc_cv_digital_security.xml',
         'security/ir.model.access.csv',
+        'data/mail_template_data.xml',
         'data/onsc_cv_civil_status_data.xml',
         'data/onsc_cv_drivers_license_categories_data.xml',
         'data/onsc_cv_gender_data.xml',
@@ -30,6 +31,7 @@ ONSC CV Digital
         'views/onsc_cv_subinstitution_views.xml',
         'views/onsc_cv_institution_views.xml',
         'views/onsc_cv_academic_program_views.xml',
+        'views/onsc_cv_certificate_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [

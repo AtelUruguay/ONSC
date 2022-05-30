@@ -13,6 +13,7 @@ class ONSCCVAbstractConfig(models.Model):
     _description = 'Modelo abstracto de catálogos'
 
     active = fields.Boolean(string='Activo', default=True, tracking=True)
+    company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
     code = fields.Char(string=u'Código', size=5)
     state = fields.Selection(string="Estado",
                              selection=STATES,
@@ -20,6 +21,9 @@ class ONSCCVAbstractConfig(models.Model):
                              default='validated')
     reject_reason = fields.Char(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
+
+    def get_description_model(self):
+        return self._description
 
     def action_reject(self):
         ctx = self._context.copy()
@@ -36,7 +40,30 @@ class ONSCCVAbstractConfig(models.Model):
         }
 
     def action_validate(self):
+        self.sudo()._send_validation_email()
         self.write({'state': 'validated'})
+
+    def _send_validation_email(self):
+        """
+        Envía un correo electrónico de validación
+        :return:
+        """
+        validation_email_template_id = self.env.ref('onsc_cv_digital.email_template_validated')
+        model_id = self.env['ir.model']._get_id(self._name)
+        validation_email_template_id.model_id = model_id
+        self.with_context(force_send=True).message_post_with_template(
+            validation_email_template_id.id, email_layout_xmlid='mail.mail_notification_light')
+
+    def _send_reject_email(self):
+        """
+        Envía un correo electrónico de rechazo
+        :return:
+        """
+        reject_email_template_id = self.env.ref('onsc_cv_digital.email_template_rejected')
+        model_id = self.env['ir.model']._get_id(self._name)
+        reject_email_template_id.model_id = model_id
+        self.with_context(force_send=True).message_post_with_template(
+            reject_email_template_id.id, email_layout_xmlid='mail.mail_notification_light')
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
