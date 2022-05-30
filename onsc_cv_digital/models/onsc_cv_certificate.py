@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models
 
 
 class ONSCCVCertificate(models.Model):
@@ -21,7 +21,3 @@ class ONSCCVCertificateLine(models.Model):
     institution_id = fields.Many2one('onsc.cv.institution', string=u'Institución', required=True, ondelete='cascade')
     subinstitution_id = fields.Many2one('onsc.cv.subinstitution', string=u'Sub institución', required=True,
                                         ondelete='cascade')
-
-    @api.onchange('institution_id')
-    def onchange_institution_id(self):
-        self.subinstitution_id = False

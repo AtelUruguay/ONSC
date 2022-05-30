@@ -56,7 +56,7 @@
                         </group>
                     </group>
                      <notebook>
-                        <page string="Instituciones/Subinstituciones">
+                        <page string="Instituciones/Sub instituciones">
                             <field name="line_ids">
                                 <tree editable="bottom">
                                     <field name="institution_id"/>
