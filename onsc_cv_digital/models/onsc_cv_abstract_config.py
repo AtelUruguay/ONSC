@@ -22,6 +22,9 @@ class ONSCCVAbstractConfig(models.Model):
     reject_reason = fields.Char(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
 
+    def get_description_model(self):
+        return self._description
+
     def action_reject(self):
         ctx = self._context.copy()
         ctx.update({'default_model_name': self._name,
@@ -42,39 +45,25 @@ class ONSCCVAbstractConfig(models.Model):
 
     def _send_validation_email(self):
         """
-        Crea una nueva plantilla de email que utiliza para enviar el correo
-        Una vez enviado se elimina la plantilla
+        Envía un correo electrónico de validación
         :return:
         """
         validation_email_template_id = self.env.ref('onsc_cv_digital.email_template_validated')
         model_id = self.env['ir.model']._get_id(self._name)
-        new_template = validation_email_template_id.copy(
-            {'model_id': model_id,
-             'name': _('Plantilla para %s') % self._description,
-             'subject': _('Notificación de validación de %s') % self._description
-             },
-        )
+        validation_email_template_id.model_id = model_id
         self.with_context(force_send=True).message_post_with_template(
-            new_template.id, email_layout_xmlid='mail.mail_notification_light')
-        new_template.unlink()
+            validation_email_template_id.id, email_layout_xmlid='mail.mail_notification_light')
 
     def _send_reject_email(self):
         """
-        Crea una nueva plantilla de email que utiliza para enviar el correo
-        Una vez enviado se elimina la plantilla
+        Envía un correo electrónico de rechazo
         :return:
         """
         reject_email_template_id = self.env.ref('onsc_cv_digital.email_template_rejected')
         model_id = self.env['ir.model']._get_id(self._name)
-        new_template = reject_email_template_id.copy(
-            {'model_id': model_id,
-             'name': _('Plantilla para %s') % self._description,
-             'subject': _('Notificación de rechazo de %s') % self._description
-             },
-        )
+        reject_email_template_id.model_id = model_id
         self.with_context(force_send=True).message_post_with_template(
-            new_template.id, email_layout_xmlid='mail.mail_notification_light')
-        new_template.unlink()
+            reject_email_template_id.id, email_layout_xmlid='mail.mail_notification_light')
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
