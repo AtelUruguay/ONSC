@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class ONSCCVStatusCivil(models.Model):
@@ -145,3 +145,24 @@ class ONSCCVSEducationalAreas(models.Model):
         ('name_uniq', 'unique(name)',
          u'El Nombre de la Sub Área Educativa debe ser único'),
     ]
+
+
+class ONSCCVDisciplineEducational(models.Model):
+    _name = 'onsc.cv.discipline.educational'
+    _description = 'Disciplina Educativa'
+
+    code = fields.Char(u'Código')
+    name = fields.Char(u'Nombre de la disciplina educativa', required=True)
+    area_id = fields.Many2one('onsc.cv.educational.areas', string=u'Área Educativa', required=True)
+    subarea_id = fields.Many2one('onsc.cv.educational.subarea', string=u'Sub área educativa', required=True)
+    active = fields.Boolean(string='Activo', default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El Nombre de la Disciplina Educativa debe ser único'),
+    ]
+
+    @api.onchange('area_id')
+    def onchange_area_id(self):
+        if self.area_id != self.subarea_id.area_id or self.area_id is False:
+            self.subarea_id = False
