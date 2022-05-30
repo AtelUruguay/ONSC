@@ -25,4 +25,3 @@ class ONSCCVCertificateLine(models.Model):
     @api.onchange('institution_id')
     def onchange_institution_id(self):
         self.subinstitution_id = False
-
