@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.status.civil.search</field>
         <field name="model">onsc.cv.status.civil</field>
         <field name="arch" type="xml">
-            <search string="Estados Civiles">
+            <search string="Estado Civil">
                 <field name="code"/>
                 <field name="name"/>
             </search>

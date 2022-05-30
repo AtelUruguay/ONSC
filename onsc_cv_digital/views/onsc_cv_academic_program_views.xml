@@ -42,7 +42,7 @@
         <field name="name">onsc.cv.academic.program.form</field>
         <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
-            <form string="Programa académico">
+            <form string="Programas académicos">
                 <header>
                     <button name="action_validate" string="Validar"
                             class="oe_highlight"
@@ -82,13 +82,13 @@
     </record>
 
     <record id='onsc_cv_academic_program_action' model='ir.actions.act_window'>
-        <field name="name">Programa Académico</field>
+        <field name="name">Programas académicos</field>
         <field name="res_model">onsc.cv.academic.program</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'is_config': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear un nuevo Programa Académico
+                Crear un nuevo Programa académico
             </p>
         </field>
     </record>

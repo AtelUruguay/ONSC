@@ -30,7 +30,7 @@
         <field name="name">onsc.cv.race.form</field>
         <field name="model">onsc.cv.race</field>
         <field name="arch" type="xml">
-            <form string="Raza">
+            <form string="Razas">
                 <sheet>
                     <group>
                         <field name="name"/>

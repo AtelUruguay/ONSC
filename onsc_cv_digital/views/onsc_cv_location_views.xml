@@ -41,7 +41,7 @@
         <field name="name">onsc.cv.location.form</field>
         <field name="model">onsc.cv.location</field>
         <field name="arch" type="xml">
-            <form string="Ciudad/Localidad">
+            <form string="Ciudades/Localidades">
                 <header>
                     <button name="action_validate" string="Validar"
                             class="oe_highlight"

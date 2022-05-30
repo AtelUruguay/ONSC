@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.study.level.search</field>
         <field name="model">onsc.cv.study.level</field>
         <field name="arch" type="xml">
-            <search string="Nivel de Estudio">
+            <search string="Niveles de estudio">
                 <field name="code"/>
                 <field name="name"/>
             </search>
@@ -15,7 +15,7 @@
         <field name="name">onsc.cv.study.level.tree</field>
         <field name="model">onsc.cv.study.level</field>
         <field name="arch" type="xml">
-            <tree string="Nivel de Estudio" editable="top">
+            <tree string="Niveles de estudio" editable="top">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="active" invisible="1"/>
@@ -27,7 +27,7 @@
         <field name="name">onsc.cv.study.level.form</field>
         <field name="model">onsc.cv.study.level</field>
         <field name="arch" type="xml">
-            <form string="Nivel de Estudio">
+            <form string="Niveles de estudio">
                 <sheet>
                     <group>
                         <field name="name"/>
@@ -40,7 +40,7 @@
     </record>
 
     <record id='onsc_cv_study_level_action' model='ir.actions.act_window'>
-        <field name="name">Nivel de Estudio</field>
+        <field name="name">Niveles de estudio</field>
         <field name="res_model">onsc.cv.study.level</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">

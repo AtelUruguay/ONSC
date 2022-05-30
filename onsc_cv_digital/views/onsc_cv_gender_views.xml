@@ -28,7 +28,7 @@
         <field name="name">onsc.cv.gender.form</field>
         <field name="model">onsc.cv.gender</field>
         <field name="arch" type="xml">
-            <form string="Género">
+            <form string="Géneros">
                 <sheet>
                     <group>
                         <field name="name"/>

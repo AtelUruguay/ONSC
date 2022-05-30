@@ -31,7 +31,7 @@
         <field name="name">onsc.cv.certificate.form</field>
         <field name="model">onsc.cv.certificate</field>
         <field name="arch" type="xml">
-            <form string="Subinstituciones">
+            <form string="Certificados">
                 <header>
                     <button name="action_validate" string="Validar"
                             class="oe_highlight"
