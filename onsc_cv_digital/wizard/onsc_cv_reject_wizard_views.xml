@@ -5,6 +5,11 @@
         <field name="model">onsc.cv.reject.wizard</field>
         <field name="arch" type="xml">
             <form>
+                <div class="alert alert-info" role="alert">
+                    <p class="mb-0">
+                        <strong>Al confirmar este Asistente el Catálogo pasará al estado Rechazado.</strong>
+                    </p>
+                </div>
                 <group>
                     <group>
                         <field name="reject_reason"/>
