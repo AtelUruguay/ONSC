@@ -89,4 +89,10 @@
                   action="onsc_cv_certificate_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="13"/>
+
+        <menuitem id="onsc_cv_educational_areas_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_educational_areas_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="14"/>
 </odoo>
