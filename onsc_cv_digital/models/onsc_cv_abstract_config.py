@@ -13,6 +13,7 @@ class ONSCCVAbstractConfig(models.Model):
     _description = 'Modelo abstracto de catálogos'
 
     active = fields.Boolean(string='Activo', default=True, tracking=True)
+    company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
     code = fields.Char(string=u'Código', size=5)
     state = fields.Selection(string="Estado",
                              selection=STATES,
@@ -36,7 +37,44 @@ class ONSCCVAbstractConfig(models.Model):
         }
 
     def action_validate(self):
+        self.sudo()._send_validation_email()
         self.write({'state': 'validated'})
+
+    def _send_validation_email(self):
+        """
+        Crea una nueva plantilla de email que utiliza para enviar el correo
+        Una vez enviado se elimina la plantilla
+        :return:
+        """
+        validation_email_template_id = self.env.ref('onsc_cv_digital.email_template_validated')
+        model_id = self.env['ir.model']._get_id(self._name)
+        new_template = validation_email_template_id.copy(
+            {'model_id': model_id,
+             'name': _('Plantilla para %s') % self._description,
+             'subject': _('Notificación de validación de %s') % self._description
+             },
+        )
+        self.with_context(force_send=True).message_post_with_template(
+            new_template.id, email_layout_xmlid='mail.mail_notification_light')
+        new_template.unlink()
+
+    def _send_reject_email(self):
+        """
+        Crea una nueva plantilla de email que utiliza para enviar el correo
+        Una vez enviado se elimina la plantilla
+        :return:
+        """
+        reject_email_template_id = self.env.ref('onsc_cv_digital.email_template_rejected')
+        model_id = self.env['ir.model']._get_id(self._name)
+        new_template = reject_email_template_id.copy(
+            {'model_id': model_id,
+             'name': _('Plantilla para %s') % self._description,
+             'subject': _('Notificación de rechazo de %s') % self._description
+             },
+        )
+        self.with_context(force_send=True).message_post_with_template(
+            new_template.id, email_layout_xmlid='mail.mail_notification_light')
+        new_template.unlink()
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
