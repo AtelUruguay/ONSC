@@ -24,5 +24,6 @@ class ONSCCVAcademicProgram(models.Model):
     def onchange_institution_id(self):
         if self.institution_id.country_id:
             self.country_id = self.institution_id.country_id
-        if self.institution_id and self.institution_id != self.subinstitution_id.institution_id:
+        if (self.institution_id and self.institution_id != self.subinstitution_id.institution_id) or \
+                self.institution_id is False:
             self.subinstitution_id = False
