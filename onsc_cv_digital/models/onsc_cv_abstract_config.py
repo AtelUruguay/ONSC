@@ -113,7 +113,7 @@ class ONSCCVAbstractConfig(models.Model):
             args += ['|', ('state', '=', 'validated'), ('create_uid', '=', self.env.uid)]
         return super(ONSCCVAbstractConfig, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                          access_rights_uid=access_rights_uid)
-    
+
 
 class MailTemplateModel(models.Model):
     _name = 'onsc.cv.mail.template.model'
@@ -122,7 +122,3 @@ class MailTemplateModel(models.Model):
     model_id = fields.Many2one('ir.model', 'Modelo')
     validation_mail_template_id = fields.Many2one('mail.template', 'Plantilla de correo de validación')
     reject_mail_template_id = fields.Many2one('mail.template', 'Plantilla de correo de rechazo')
-
-
-        
-    
