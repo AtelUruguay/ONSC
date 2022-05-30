@@ -95,4 +95,10 @@
                   action="onsc_cv_educational_areas_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="14"/>
+
+        <menuitem id="onsc_cv_experience_hierarchical_level_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_experience_hierarchical_level_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="15"/>
 </odoo>

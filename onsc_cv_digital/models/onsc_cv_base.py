@@ -115,3 +115,18 @@ class ONSCCVEducationalAreas(models.Model):
         ('name_uniq', 'unique(name)',
          u'El Nombre del Área Educativa debe ser único'),
     ]
+
+
+class ONSCCV(models.Model):
+    _name = 'onsc.cv.experience.hierarchical.level'
+    _description = 'Nivel jeráquico de experiencia'
+    _order = 'name'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del Nivel jerárquico', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del Nivel jeráquico de experiencia debe ser único'),
+    ]

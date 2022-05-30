@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="onsc_cv_experience_hierarchical_level_independiente" model="onsc.cv.experience.hierarchical.level">
+            <field name="name">Independiente</field>
+        </record>
+        <record id="onsc_cv_experience_hierarchical_level_empleado" model="onsc.cv.experience.hierarchical.level">
+            <field name="name">Empleado</field>
+        </record>
+        <record id="onsc_cv_experience_hierarchical_level_supervisor" model="onsc.cv.experience.hierarchical.level">
+            <field name="name">Supervisor</field>
+        </record>
+        <record id="onsc_cv_experience_hierarchical_level_encargado" model="onsc.cv.experience.hierarchical.level">
+            <field name="name">Encargado</field>
+        </record>
+        <record id="onsc_cv_experience_hierarchical_level_gerente" model="onsc.cv.experience.hierarchical.level">
+            <field name="name">Gerente</field>
+        </record>
+        <record id="onsc_cv_experience_hierarchical_level_director" model="onsc.cv.experience.hierarchical.level">
+            <field name="name">Director</field>
+        </record>
+    </data>
+</odoo>
