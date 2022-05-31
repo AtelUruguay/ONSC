@@ -96,19 +96,38 @@
                   groups="group_gestor_catalogos_cv"
                   sequence="14"/>
 
+        <menuitem id="onsc_cv_educational_subarea_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_educational_subarea_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="15"/>
+
         <menuitem id="onsc_cv_experience_hierarchical_level_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_experience_hierarchical_level_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="15"/>
+                  sequence="16"/>
+
+        <menuitem id="onsc_cv_discipline_educational_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_discipline_educational_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="17"/>
+
+        <menuitem id="onsc_cv_knowledge_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_knowledge_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="18"/>
+
         <menuitem id="onsc_cv_key_task_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_key_task_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="16"/>
+                  sequence="19"/>
         <menuitem id="onsc_cv_work_area_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_work_area_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="17"/>
+                  sequence="20"/>
 </odoo>

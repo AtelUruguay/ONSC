@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_educational_subarea_search" model="ir.ui.view">
+        <field name="name">onsc.cv.educational.subarea.search</field>
+        <field name="model">onsc.cv.educational.subarea</field>
+        <field name="arch" type="xml">
+            <search string="Sub Áreas Educativas">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_educational_subarea_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.educational.subarea.tree</field>
+        <field name="model">onsc.cv.educational.subarea</field>
+        <field name="arch" type="xml">
+            <tree string="Sub Áreas Educativas" editable="top">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="area_id"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_educational_subarea_form" model="ir.ui.view">
+        <field name="name">onsc.cv.educational.subarea.form</field>
+        <field name="model">onsc.cv.educational.subarea</field>
+        <field name="arch" type="xml">
+            <form string="Sub Áreas Educativas">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="area_id"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_educational_subarea_action' model='ir.actions.act_window'>
+        <field name="name">Sub Áreas Educativas</field>
+        <field name="res_model">onsc.cv.educational.subarea</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una Sub Área Educativa
+            </p>
+        </field>
+    </record>
+</odoo>
