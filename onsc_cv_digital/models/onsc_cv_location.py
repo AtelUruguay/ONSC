@@ -9,7 +9,7 @@ class ONSCCVLocation(models.Model):
     _order = 'state_id, name'
     _inherit = ['onsc.cv.abstract.config']
 
-    name = fields.Char(string='Nombre de Localidad', required=True, index=True, tracking=True)
+    name = fields.Char(string='Nombre de localidad', required=True, index=True, tracking=True)
     country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True, tracking=True)
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
                                tracking=True,
@@ -18,7 +18,7 @@ class ONSCCVLocation(models.Model):
 
     _sql_constraints = [
         ('localidad_name_by_state_unique', 'unique(name, state_id)',
-         'Ya existe una Localidad con ese nombre en el mismo Departamento'), ]
+         'Ya existe una localidad con ese nombre en el mismo departamento'), ]
 
     @api.onchange('country_id')
     def _onchange_country_id(self):

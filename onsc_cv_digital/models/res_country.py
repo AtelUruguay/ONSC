@@ -17,8 +17,8 @@ class ResCountryState(models.Model):
     def _apply_fix_label(self, res):
         for field in res:
             if field == 'name':
-                res[field]['string'] = _('Nombre del Departamento')
+                res[field]['string'] = _('Nombre del departamento')
             if field == 'code':
-                res[field]['string'] = _('Código del Departamento')
-                res[field]['help'] = _('Código del Departamento')
+                res[field]['string'] = _('Código del departamento')
+                res[field]['help'] = _('Código del departamento')
         return res

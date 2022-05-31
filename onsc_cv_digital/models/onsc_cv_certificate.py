@@ -8,7 +8,7 @@ class ONSCCVCertificate(models.Model):
     _description = 'Certificado'
     _inherit = ['onsc.cv.abstract.config']
 
-    name = fields.Char("Nombre del Certificado", required=True, tracking=True)
+    name = fields.Char("Nombre del certificado", required=True, tracking=True)
     line_ids = fields.One2many('onsc.cv.certificate.line', inverse_name='certificate_id', string='Líneas',
                                required=True)
 
@@ -22,7 +22,7 @@ class ONSCCVCertificateLine(models.Model):
                                           required=True, ondelete='cascade')
     subinstitution_cert_id = fields.Many2one('onsc.cv.certifying.subinstitution',
                                              string=u'Sub institución certificadora', required=True,
-                                             domain="[('institution_cert_id', '=?', institution_cert_id)]",
+                                             domain="[('institution_cert_id', '=', institution_cert_id)]",
                                              ondelete='cascade')
 
     @api.onchange('institution_cert_id')

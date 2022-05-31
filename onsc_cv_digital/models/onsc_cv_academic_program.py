@@ -13,7 +13,7 @@ class ONSCCVAcademicProgram(models.Model):
     institution_id = fields.Many2one('onsc.cv.institution', string=u'Institución', tracking=True, required=True)
     subinstitution_id = fields.Many2one('onsc.cv.subinstitution', string=u'Sub institución', tracking=True,
                                         required=True)
-    study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de Estudio', tracking=True, required=True)
+    study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de estudio', tracking=True, required=True)
 
     @api.onchange('country_id')
     def onchange_country_id(self):

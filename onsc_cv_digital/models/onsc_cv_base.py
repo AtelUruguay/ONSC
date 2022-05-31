@@ -8,12 +8,12 @@ class ONSCCVStatusCivil(models.Model):
     _description = 'Estado Civil'
 
     code = fields.Char(string=u"Código")
-    name = fields.Char(string='Nombre del Estado Civil', required=True)
+    name = fields.Char(string='Nombre del estado civil', required=True)
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del Estado Civil debe ser único'),
+         u'El nombre del estado civil debe ser único'),
     ]
 
 
@@ -23,12 +23,12 @@ class ONSCCVDriversLicenseCategories(models.Model):
     _order = 'name'
 
     code = fields.Char(string=u"Código")
-    name = fields.Char(string='Nombre de la Categoría de licencia de conducir', required=True)
+    name = fields.Char(string='Nombre de la categoría de licencia de conducir', required=True)
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre de la Categoría de Licencia de conducir debe ser único'),
+         u'El nombre de la categoría de licencia de conducir debe ser único'),
     ]
 
 
@@ -37,13 +37,13 @@ class ONSCCVGender(models.Model):
     _description = 'Género'
 
     code = fields.Char(u'Código')
-    name = fields.Char(u'Nombre del Género', required=True)
+    name = fields.Char(u'Nombre del género', required=True)
     active = fields.Boolean(string='Activo', default=True)
-    is_option_other_enable = fields.Boolean(u'¿Permitir opción Otra/o ?')
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del Género debe ser único'),
+         u'El nombre del género debe ser único'),
     ]
 
 
@@ -52,18 +52,18 @@ class ONSCCVRace(models.Model):
     _description = 'Raza'
 
     code = fields.Char(u'Código')
-    name = fields.Char(u'Nombre de la Raza', required=True)
+    name = fields.Char(u'Nombre de la raza', required=True)
     active = fields.Boolean(string='Activo', default=True)
     race_type = fields.Selection(
         string=u'Tipo',
         selection=[('race', u'Raza'),
                    ('recognition', u'Reconocimiento'),
                    ('both', u'Ambos')])
-    is_option_other_enable = fields.Boolean(u'¿Permitir opción Otra/o ?')
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre de la Raza debe ser único'),
+         u'El nombre de la raza debe ser único'),
     ]
 
 
@@ -72,7 +72,7 @@ class ONSCCVDocumentType(models.Model):
     _description = 'Tipo de documento'
 
     code = fields.Char(string=u"Código")
-    name = fields.Char(string=u"Nombre del Tipo de documento", required=True)
+    name = fields.Char(string=u"Nombre del tipo de documento", required=True)
     active = fields.Boolean(string="Activo", default=True)
     code_other = fields.Char(string=u"Otro código")
     is_org = fields.Boolean(u'Aplica organismo')
@@ -85,7 +85,7 @@ class ONSCCVDocumentType(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del Tipo de Documento debe ser único'),
+         u'El nombre del tipo de documento debe ser único'),
     ]
 
 
@@ -99,7 +99,7 @@ class ONSCCVStudyLevel(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del Nivel de Estudio debe ser único'),
+         u'El nombre del nivel de estudio debe ser único'),
     ]
 
 
@@ -113,7 +113,7 @@ class ONSCCVEducationalAreas(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El Nombre del Área Educativa debe ser único'),
+         u'El nombre del área educativa debe ser único'),
     ]
 
 
@@ -123,12 +123,12 @@ class ONSCCVExperienceHierarchicalLevel(models.Model):
     _order = 'name'
 
     code = fields.Char(string=u"Código")
-    name = fields.Char(string='Nombre del Nivel jerárquico', required=True)
+    name = fields.Char(string='Nombre del nivel jerárquico', required=True)
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del Nivel jeráquico de experiencia debe ser único'),
+         u'El nombre del nivel jeráquico de experiencia debe ser único'),
     ]
 
 
@@ -138,12 +138,12 @@ class ONSCCVSEducationalAreas(models.Model):
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre de la sub área educativa', required=True)
-    area_id = fields.Many2one('onsc.cv.educational.areas', string=u'Área Educativa', required=True)
+    area_id = fields.Many2one('onsc.cv.educational.areas', string=u'Área educativa', required=True)
     active = fields.Boolean(string='Activo', default=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El Nombre de la Sub Área Educativa debe ser único'),
+         u'El nombre de la sub área educativa debe ser único'),
     ]
 
 
@@ -153,13 +153,13 @@ class ONSCCVDisciplineEducational(models.Model):
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre de la disciplina educativa', required=True)
-    area_id = fields.Many2one('onsc.cv.educational.areas', string=u'Área Educativa', required=True)
+    area_id = fields.Many2one('onsc.cv.educational.areas', string=u'Área educativa', required=True)
     subarea_id = fields.Many2one('onsc.cv.educational.subarea', string=u'Sub área educativa', required=True)
     active = fields.Boolean(string='Activo', default=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El Nombre de la Disciplina Educativa debe ser único'),
+         u'El nombre de la disciplina educativa debe ser único'),
     ]
 
     @api.onchange('area_id')
@@ -178,7 +178,7 @@ class ONSCCVKnowledge(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El Nombre del Conocimiento debe ser único'),
+         u'El nombre del conocimiento debe ser único'),
     ]
 
 
@@ -188,12 +188,12 @@ class ONSCCVKeyTask(models.Model):
     _order = 'name'
 
     code = fields.Char(string=u"Código")
-    name = fields.Char(string='Nombre de la Tarea clave', required=True)
+    name = fields.Char(string='Nombre de la tarea clave', required=True)
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre de la Tarea clave debe ser único'),
+         u'El nombre de la tarea clave debe ser único'),
     ]
 
 
@@ -203,10 +203,10 @@ class ONSCCVWorkArea(models.Model):
     _order = 'name'
 
     code = fields.Char(string=u"Código")
-    name = fields.Char(string='Nombre del Área de trabajo', required=True)
+    name = fields.Char(string='Nombre del área de trabajo', required=True)
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del Área de trabajo debe ser único'),
+         u'El nombre del área de trabajo debe ser único'),
     ]
