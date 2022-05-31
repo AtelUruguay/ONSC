@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.discipline.educational.search</field>
         <field name="model">onsc.cv.discipline.educational</field>
         <field name="arch" type="xml">
-            <search string="Disciplinas Educativas">
+            <search string="Disciplinas educativas">
                 <field name="code"/>
                 <field name="name"/>
                 <separator/>
@@ -20,7 +20,7 @@
         <field name="name">onsc.cv.discipline.educational.tree</field>
         <field name="model">onsc.cv.discipline.educational</field>
         <field name="arch" type="xml">
-            <tree string="Disciplinas Educativas">
+            <tree string="Disciplinas educativas">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="area_id"/>
@@ -34,7 +34,7 @@
         <field name="name">onsc.cv.discipline.educational.form</field>
         <field name="model">onsc.cv.discipline.educational</field>
         <field name="arch" type="xml">
-            <form string="Disciplinas Educativas">
+            <form string="Disciplinas educativas">
                 <sheet>
                     <group>
                         <group>
@@ -53,12 +53,12 @@
     </record>
 
     <record id='onsc_cv_discipline_educational_action' model='ir.actions.act_window'>
-        <field name="name">Disciplinas Educativas</field>
+        <field name="name">Disciplinas educativas</field>
         <field name="res_model">onsc.cv.discipline.educational</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una Disciplina Educativa
+                Crear una Disciplina educativa
             </p>
         </field>
     </record>

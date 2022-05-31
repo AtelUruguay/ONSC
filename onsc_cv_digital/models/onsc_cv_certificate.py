@@ -15,7 +15,7 @@ class ONSCCVCertificate(models.Model):
 
 class ONSCCVCertificateLine(models.Model):
     _name = 'onsc.cv.certificate.line'
-    _description = 'Líneas de Certificado'
+    _description = 'Líneas de certificado'
 
     certificate_id = fields.Many2one('onsc.cv.certificate', string='Certificado', required=True, ondelete='cascade')
     institution_cert_id = fields.Many2one('onsc.cv.certifying.institution', string=u'Institución certificadora',

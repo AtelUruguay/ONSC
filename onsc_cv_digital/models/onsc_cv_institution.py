@@ -12,7 +12,7 @@ class ONSCCVIntitution(models.Model):
     name = fields.Char("Nombre de la Institución", required=True, tracking=True)
     country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True, tracking=True)
     enable_mec = fields.Boolean(string=u'Habilitada por el MEC', tracking=True)
-    name_country = fields.Char("Nombre y país de la institución", compute='_compute_name_country_id',
+    name_country = fields.Char("Nombre y país de la Institución", compute='_compute_name_country_id',
                                store=True)
     subinstitution_ids = fields.One2many('onsc.cv.subinstitution', 'institution_id', string=u"Sub institución",
                                          tracking=True)

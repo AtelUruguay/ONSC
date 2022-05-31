@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.educational.subarea.search</field>
         <field name="model">onsc.cv.educational.subarea</field>
         <field name="arch" type="xml">
-            <search string="Sub Áreas Educativas">
+            <search string="Sub áreas educativas">
                 <field name="code"/>
                 <field name="name"/>
             </search>
@@ -15,7 +15,7 @@
         <field name="name">onsc.cv.educational.subarea.tree</field>
         <field name="model">onsc.cv.educational.subarea</field>
         <field name="arch" type="xml">
-            <tree string="Sub Áreas Educativas" editable="top">
+            <tree string="Sub áreas educativas" editable="top">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="area_id"/>
@@ -28,7 +28,7 @@
         <field name="name">onsc.cv.educational.subarea.form</field>
         <field name="model">onsc.cv.educational.subarea</field>
         <field name="arch" type="xml">
-            <form string="Sub Áreas Educativas">
+            <form string="Sub áreas educativas">
                 <sheet>
                     <group>
                         <field name="name"/>
@@ -42,12 +42,12 @@
     </record>
 
     <record id='onsc_cv_educational_subarea_action' model='ir.actions.act_window'>
-        <field name="name">Sub Áreas Educativas</field>
+        <field name="name">Sub áreas educativas</field>
         <field name="res_model">onsc.cv.educational.subarea</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una Sub Área Educativa
+                Crear una nueva Sub área educativa
             </p>
         </field>
     </record>

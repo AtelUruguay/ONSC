@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.document.type.search</field>
         <field name="model">onsc.cv.document.type</field>
         <field name="arch" type="xml">
-            <search string="Tipos de Documento">
+            <search string="Tipos de documento de identidad">
                 <field name="code"/>
                 <field name="name"/>
             </search>
@@ -67,7 +67,7 @@
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
           <p class="o_view_nocontent_smiling_face">
-            Crear un nuevo tipo de documento
+            Crear un nuevo tipo de documento de identidad
           </p>
         </field>
     </record>

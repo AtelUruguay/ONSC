@@ -5,7 +5,7 @@ from odoo import fields, models, api
 
 class ONSCCVAcademicProgram(models.Model):
     _name = 'onsc.cv.academic.program'
-    _description = 'Programa Académico'
+    _description = 'Programa académico'
     _inherit = ['onsc.cv.abstract.config']
 
     name = fields.Char("Nombre del programa académico", required=True)

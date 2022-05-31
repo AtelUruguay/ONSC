@@ -19,7 +19,7 @@ class ONSCCVStatusCivil(models.Model):
 
 class ONSCCVDriversLicenseCategories(models.Model):
     _name = 'onsc.cv.drivers.license.categories'
-    _description = 'Categoría de Licencia de conducir'
+    _description = 'Categoría de licencia de conducir'
     _order = 'name'
 
     code = fields.Char(string=u"Código")
@@ -69,7 +69,7 @@ class ONSCCVRace(models.Model):
 
 class ONSCCVDocumentType(models.Model):
     _name = 'onsc.cv.document.type'
-    _description = 'Tipo de Documento'
+    _description = 'Tipo de documento'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string=u"Nombre del Tipo de documento", required=True)
@@ -91,7 +91,7 @@ class ONSCCVDocumentType(models.Model):
 
 class ONSCCVStudyLevel(models.Model):
     _name = 'onsc.cv.study.level'
-    _description = 'Nivel de Estudio'
+    _description = 'Nivel de estudio'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre del nivel de estudio', required=True)
@@ -105,7 +105,7 @@ class ONSCCVStudyLevel(models.Model):
 
 class ONSCCVEducationalAreas(models.Model):
     _name = 'onsc.cv.educational.areas'
-    _description = 'Areas Educativas'
+    _description = 'Areas educativas'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre del área educativa', required=True)
@@ -134,7 +134,7 @@ class ONSCCV(models.Model):
 
 class ONSCCVSEducationalAreas(models.Model):
     _name = 'onsc.cv.educational.subarea'
-    _description = 'Sub Áreas Educativas'
+    _description = 'Sub áreas educativas'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre de la sub área educativa', required=True)
@@ -149,7 +149,7 @@ class ONSCCVSEducationalAreas(models.Model):
 
 class ONSCCVDisciplineEducational(models.Model):
     _name = 'onsc.cv.discipline.educational'
-    _description = 'Disciplina Educativa'
+    _description = 'Disciplina educativa'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre de la disciplina educativa', required=True)
