@@ -20,6 +20,8 @@
                         <br/>
                         Se le notifica que ha sido validado el registro:
                         <strong t-out="object.name or ''"/>
+                        del Catálogo
+                        <strong t-out="object._description or ''"/>
                         <br/>
                         <br/>
                         <t t-if="user.signature">
@@ -50,8 +52,10 @@
 
                         <br/>
                         <br/>
-                        Se le notifica que ha sido rechazado el registro:
+                        Se le notifica que ha sido rechazado el registro
                         <strong t-out="object.name or ''"/>
+                        del Catálogo
+                        <strong t-out="object._description or ''"/>
                         <br/>
                         Motivo: <t t-out="object.reject_reason or ''"></t>
                         <br/>
