@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_key_task_search" model="ir.ui.view">
+        <field name="name">onsc.cv.key.task.search</field>
+        <field name="model">onsc.cv.key.task</field>
+        <field name="arch" type="xml">
+            <search string="Tareas claves">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_key_task_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.key.task.tree</field>
+        <field name="model">onsc.cv.key.task</field>
+        <field name="arch" type="xml">
+            <tree string="Tareas claves" editable="top">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_key_task_form" model="ir.ui.view">
+        <field name="name">onsc.cv.key.task.form</field>
+        <field name="model">onsc.cv.key.task</field>
+        <field name="arch" type="xml">
+            <form string="Tareas claves">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_key_task_action' model='ir.actions.act_window'>
+        <field name="name">Tareas claves</field>
+        <field name="res_model">onsc.cv.key.task</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva Tarea clave
+            </p>
+        </field>
+    </record>
+</odoo>
