@@ -60,7 +60,7 @@
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="9"/>
 
-		<menuitem id="onsc_cv_study_level_action_menu"
+        <menuitem id="onsc_cv_study_level_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_study_level_action"
                   groups="group_gestor_catalogos_cv"
@@ -120,4 +120,14 @@
                   groups="group_gestor_catalogos_cv"
                   sequence="18"/>
 
+        <menuitem id="onsc_cv_key_task_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_key_task_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="19"/>
+        <menuitem id="onsc_cv_work_area_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_work_area_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="20"/>
 </odoo>

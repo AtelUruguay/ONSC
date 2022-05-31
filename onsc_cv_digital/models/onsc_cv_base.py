@@ -105,7 +105,7 @@ class ONSCCVStudyLevel(models.Model):
 
 class ONSCCVEducationalAreas(models.Model):
     _name = 'onsc.cv.educational.areas'
-    _description = 'Areas Educativas'
+    _description = 'Area Educativa'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre del área educativa', required=True)
@@ -117,7 +117,7 @@ class ONSCCVEducationalAreas(models.Model):
     ]
 
 
-class ONSCCV(models.Model):
+class ONSCCVExperienceHierarchicalLevel(models.Model):
     _name = 'onsc.cv.experience.hierarchical.level'
     _description = 'Nivel jeráquico de experiencia'
     _order = 'name'
@@ -179,4 +179,34 @@ class ONSCCVKnowledge(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
          u'El Nombre del Conocimiento debe ser único'),
+    ]
+
+
+class ONSCCVKeyTask(models.Model):
+    _name = 'onsc.cv.key.task'
+    _description = 'Tarea clave'
+    _order = 'name'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre de la Tarea clave', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre de la Tarea clave debe ser único'),
+    ]
+
+
+class ONSCCVWorkArea(models.Model):
+    _name = 'onsc.cv.work.area'
+    _description = 'Área de trabajo'
+    _order = 'name'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del Área de trabajo', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del Área de trabajo debe ser único'),
     ]

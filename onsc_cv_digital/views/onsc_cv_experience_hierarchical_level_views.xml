@@ -27,7 +27,7 @@
         <field name="name">onsc.cv.experience.hierarchical.level.form</field>
         <field name="model">onsc.cv.experience.hierarchical.level</field>
         <field name="arch" type="xml">
-            <form string="Nivel jerárquico de experiencia">
+            <form string="Niveles jerárquicos de experiencia">
                 <sheet>
                     <group>
                         <field name="name"/>
@@ -45,7 +45,7 @@
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nueva Nivel jerárquico de experiencia
+                Crear un nuevo Nivel jerárquico de experiencia
             </p>
         </field>
     </record>

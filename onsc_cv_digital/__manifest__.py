@@ -40,6 +40,8 @@ ONSC CV Digital
         'views/onsc_cv_educational_subarea_views.xml',
         'views/onsc_cv_discipline_educational_views.xml',
         'views/onsc_cv_knowledge_views.xml',
+        'views/onsc_cv_key_task_views.xml',
+        'views/onsc_cv_work_area_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
