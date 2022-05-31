@@ -5,5 +5,15 @@
             <field name="code">01</field>
             <field name="name">Tipo de Documento 1</field>
         </record>
+
+        <record id="onsc_cv_key_task_1" model="onsc.cv.key.task">
+            <field name="code">01</field>
+            <field name="name">Tarea clave 1</field>
+        </record>
+
+        <record id="onsc_cv_work_area_1" model="onsc.cv.work.area">
+            <field name="code">01</field>
+            <field name="name">Área de trabajo 1</field>
+        </record>
     </data>
 </odoo>
