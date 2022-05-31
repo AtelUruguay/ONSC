@@ -87,7 +87,7 @@
         <field name="context">{'is_config': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nueva Ciudad/Localidad
+                Crear una nueva ciudad/localidad
             </p>
         </field>
     </record>
