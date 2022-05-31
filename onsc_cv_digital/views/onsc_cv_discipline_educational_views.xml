@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_discipline_educational_search" model="ir.ui.view">
+        <field name="name">onsc.cv.discipline.educational.search</field>
+        <field name="model">onsc.cv.discipline.educational</field>
+        <field name="arch" type="xml">
+            <search string="Disciplinas Educativas">
+                <field name="code"/>
+                <field name="name"/>
+                <separator/>
+                <group expand="1" string="Group By">
+                    <filter name="filter_area_id" string="Área Educativa" context="{'group_by':'area_id'}"/>
+                    <filter name="filter_subarea_id" string="Sub área educativa" context="{'group_by':'subarea_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_discipline_educational_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.discipline.educational.tree</field>
+        <field name="model">onsc.cv.discipline.educational</field>
+        <field name="arch" type="xml">
+            <tree string="Disciplinas Educativas">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="area_id"/>
+                <field name="subarea_id"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_discipline_educational_form" model="ir.ui.view">
+        <field name="name">onsc.cv.discipline.educational.form</field>
+        <field name="model">onsc.cv.discipline.educational</field>
+        <field name="arch" type="xml">
+            <form string="Disciplinas Educativas">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="area_id"/>
+                            <field name="subarea_id" domain="[('area_id', '=', area_id)]"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_discipline_educational_action' model='ir.actions.act_window'>
+        <field name="name">Disciplinas Educativas</field>
+        <field name="res_model">onsc.cv.discipline.educational</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una Disciplina Educativa
+            </p>
+        </field>
+    </record>
+</odoo>
