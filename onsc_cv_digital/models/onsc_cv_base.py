@@ -131,6 +131,7 @@ class ONSCCVExperienceHierarchicalLevel(models.Model):
          u'El nombre del Nivel jeráquico de experiencia debe ser único'),
     ]
 
+
 class ONSCCVKeyTask(models.Model):
     _name = 'onsc.cv.key.task'
     _description = 'Tarea clave'
@@ -144,6 +145,7 @@ class ONSCCVKeyTask(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre de la Tarea clave debe ser único'),
     ]
+
 
 class ONSCCVWorkArea(models.Model):
     _name = 'onsc.cv.work.area'
