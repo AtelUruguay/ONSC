@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 
 class ONSCCVCertificate(models.Model):
@@ -11,6 +11,15 @@ class ONSCCVCertificate(models.Model):
     name = fields.Char("Nombre del certificado", required=True, tracking=True)
     line_ids = fields.One2many('onsc.cv.certificate.line', inverse_name='certificate_id', string='Líneas',
                                required=True)
+
+    def _check_validate(self, args2validate=[], message=""):
+        args2validate = [
+            ('name', '=', self.name),
+        ]
+        return super(ONSCCVCertificate, self)._check_validate(
+            args2validate,
+            _("Ya existe un registro validado para %s" % (self.name))
+        )
 
 
 class ONSCCVCertificateLine(models.Model):

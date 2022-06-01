@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 
 class ONSCCVAcademicProgram(models.Model):
@@ -27,3 +27,14 @@ class ONSCCVAcademicProgram(models.Model):
         if (self.institution_id and self.institution_id != self.subinstitution_id.institution_id) or \
                 self.institution_id is False:
             self.subinstitution_id = False
+
+    def _check_validate(self, args2validate=[], message=""):
+        args2validate = [
+            ('name', '=', self.name),
+            ('subinstitution_id', '=', self.subinstitution_id.id),
+        ]
+        return super(ONSCCVAcademicProgram, self)._check_validate(
+            args2validate,
+            _("Ya existe un registro validado para %s, Subinstitución %s" % (
+                self.name, self.subinstitution_id.display_name))
+        )
