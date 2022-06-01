@@ -125,15 +125,22 @@
                   action="onsc_cv_key_task_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="19"/>
-        <menuitem id="onsc_cv_work_area_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_work_area_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="20"/>
 
-    <menuitem id="onsc_cv_entry_action_menu"
+        <menuitem id="onsc_cv_work_area_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_work_area_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="20"/>
+
+        <menuitem id="onsc_cv_entry_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_entry_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="21"/>
+
+        <menuitem id="onsc_cv_professional_link_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_entry_action"
-                  groups="group_gestor_catalogos_cv"
+                  action="onsc_cv_professional_link_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="21"/>
 </odoo>
