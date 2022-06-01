@@ -21,3 +21,14 @@ class ONSCCVSubintitution(models.Model):
     def onchange_institution_id(self):
         if self.institution_id.country_id:
             self.country_id = self.institution_id.country_id
+
+    def _check_validate(self, args2validate=[], message=""):
+        args2validate = [
+            ('name', '=', self.name),
+            ('institution_id', '=', self.institution_id.id),
+        ]
+        return super(ONSCCVSubintitution, self)._check_validate(
+            args2validate,
+            _("Ya existe un registro validado para %s, Institución %s" % (
+                self.name, self.institution_id.display_name))
+        )

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 
 
 class ONSCCVIntitution(models.Model):
@@ -24,3 +24,14 @@ class ONSCCVIntitution(models.Model):
                 record.name_country = '%s (%s)' % (record.name or '', record.country_id.code or '')
             else:
                 record.name_country = ''
+
+    def _check_validate(self, args2validate=[], message=""):
+        args2validate = [
+            ('name', '=', self.name),
+            ('country_id', '=', self.country_id.id),
+        ]
+        return super(ONSCCVIntitution, self)._check_validate(
+            args2validate,
+            _("Ya existe un registro validado para %s, País %s" % (
+                self.name, self.country_id.display_name))
+        )

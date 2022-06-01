@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 
 class ONSCCVLocation(models.Model):
@@ -33,3 +33,14 @@ class ONSCCVLocation(models.Model):
         if values.get('name', False):
             values['name'] = values.get('name', '').upper()
         return super(ONSCCVLocation, self).write(values)
+
+    def _check_validate(self, args2validate=[], message=""):
+        args2validate = [
+            ('name', '=', self.name),
+            ('state_id', '=', self.state_id.id),
+        ]
+        return super(ONSCCVLocation, self)._check_validate(
+            args2validate,
+            _("Ya existe un registro validado para %s, Departamento %s" % (
+                self.name, self.state_id.display_name))
+        )

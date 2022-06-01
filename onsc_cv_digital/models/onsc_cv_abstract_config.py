@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import api, fields, models, _, SUPERUSER_ID
+from odoo.exceptions import ValidationError
 
 STATES = [('to_validate', 'Para validar'),
           ('validated', 'Validado'),
@@ -40,6 +41,8 @@ class ONSCCVAbstractConfig(models.Model):
         }
 
     def action_validate(self):
+        for record in self:
+            record._check_validate()
         self.sudo()._send_validation_email()
         self.write({'state': 'validated'})
 
@@ -80,3 +83,16 @@ class ONSCCVAbstractConfig(models.Model):
             args += ['|', ('state', '=', 'validated'), ('create_uid', '=', self.env.uid)]
         return super(ONSCCVAbstractConfig, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                          access_rights_uid=access_rights_uid)
+
+    def _check_validate(self, args2validate=[], message=""):
+        """
+
+        :param args2validate: Lista formato OdooWay para search_count
+        :param message: Mensaje para mostrar al usuario en caso de no pasar la Validación
+        :return: True si debe seguir con la validación, Mensaje de Validación(message) de lo contrario
+        """
+        if len(args2validate) == 0:
+            return True
+        args2validate.extend([('state', '=', 'validated'), ('id', '!=', self.id)])
+        if self.search_count(args2validate):
+            raise ValidationError(message)
