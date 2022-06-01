@@ -47,6 +47,7 @@ ONSC CV Digital
         'views/onsc_cv_professional_link_views.xml',
         'views/onsc_cv_research_types_classes_views.xml',
         'views/onsc_cv_language_views.xml',
+        'views/onsc_cv_type_support_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [

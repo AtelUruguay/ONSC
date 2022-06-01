@@ -155,4 +155,10 @@
                   action="onsc_cv_language_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="24"/>
+
+        <menuitem id="onsc_cv_type_support_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_type_support_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="25"/>
 </odoo>

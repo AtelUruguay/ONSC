@@ -238,5 +238,25 @@ class ONSCCVLanguage(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre nombre del idioma debe ser único'),
+         u'El nombre del idioma debe ser único'),
+    ]
+
+
+class ONSCCVTypeSupport(models.Model):
+    _name = 'onsc.cv.type.support'
+    _description = 'Tipo de apoyo'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del apoyo', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+    see = fields.Boolean(string="Ver, ¿aún si usa anteojos o lentes?")
+    hear = fields.Boolean(string="Oír, ¿aún si usa audífono?")
+    walk = fields.Boolean(string="¿Caminar o subir escalones?")
+    slide = fields.Boolean(string="¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?")
+    understand = fields.Boolean(string="Entender/ y o aprender?")
+    interaction = fields.Boolean(string="¿Interacciones y/o relaciones interpersonales?")
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del apoyo debe ser único'),
     ]
