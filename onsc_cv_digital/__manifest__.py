@@ -20,6 +20,7 @@ ONSC CV Digital
         'data/onsc_cv_race_data.xml',
         'data/onsc_cv_experience_hierarchical_level_data.xml',
         'data/onsc_cv_study_level_data.xml',
+        'data/onsc_cv_research_types_classes_data.xml',
         'wizard/onsc_cv_reject_wizard_views.xml',
         'views/onsc_cv_document_type_views.xml',
         'views/onsc_cv_civil_status_views.xml',
@@ -44,6 +45,7 @@ ONSC CV Digital
         'views/onsc_cv_work_area_views.xml',
         'views/onsc_cv_entry_views.xml',
         'views/onsc_cv_professional_link_views.xml',
+        'views/onsc_cv_research_types_classes_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [

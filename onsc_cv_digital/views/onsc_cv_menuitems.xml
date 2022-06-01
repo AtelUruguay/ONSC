@@ -142,5 +142,11 @@
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_professional_link_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="21"/>
+                  sequence="22"/>
+
+        <menuitem id="onsc_cv_research_types_classes_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_research_types_classes_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="23"/>
 </odoo>

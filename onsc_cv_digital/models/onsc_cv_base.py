@@ -210,3 +210,19 @@ class ONSCCVWorkArea(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre del área de trabajo debe ser único'),
     ]
+
+
+class ONSCCVResearchTypesClasses(models.Model):
+    _name = 'onsc.cv.research.types.classes'
+    _description = 'Tipos o Clases de Investigación'
+
+    code = fields.Char(u'Código')
+    name = fields.Char(u'Nombre de clase de investigación', required=True)
+    active = fields.Boolean(string='Activo', default=True)
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
+    other_class = fields.Char(u'Otra clase')
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre de la clase de investigación debe ser único'),
+    ]
