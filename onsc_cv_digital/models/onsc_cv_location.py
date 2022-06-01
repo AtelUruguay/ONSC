@@ -34,7 +34,7 @@ class ONSCCVLocation(models.Model):
             values['name'] = values.get('name', '').upper()
         return super(ONSCCVLocation, self).write(values)
 
-    def _check_validate(self, args2validate=[], message=""):
+    def _check_validate(self, args2validate, message=""):
         args2validate = [
             ('name', '=', self.name),
             ('state_id', '=', self.state_id.id),

@@ -28,7 +28,7 @@ class ONSCCVAcademicProgram(models.Model):
                 self.institution_id is False:
             self.subinstitution_id = False
 
-    def _check_validate(self, args2validate=[], message=""):
+    def _check_validate(self, args2validate, message=""):
         args2validate = [
             ('name', '=', self.name),
             ('subinstitution_id', '=', self.subinstitution_id.id),

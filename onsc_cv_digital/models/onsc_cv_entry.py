@@ -10,7 +10,7 @@ class ONSCCVEntry(models.Model):
 
     name = fields.Char("Nombre del rubro", required=True, tracking=True)
 
-    def _check_validate(self, args2validate=[], message=""):
+    def _check_validate(self, args2validate, message=""):
         args2validate = [
             ('name', '=', self.name),
         ]
