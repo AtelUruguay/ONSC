@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="onsc_cv_divulgation_media_cdrom" model="onsc.cv.divulgation.media">
+            <field name="name">CD-ROM</field>
+        </record>
+        <record id="onsc_cv_divulgation_floppy_disk" model="onsc.cv.divulgation.media">
+            <field name="name">Disquetes</field>
+        </record>
+        <record id="onsc_cv_divulgation_internet" model="onsc.cv.divulgation.media">
+            <field name="name">Internet</field>
+        </record>
+        <record id="onsc_cv_divulgation_micro_film" model="onsc.cv.divulgation.media">
+            <field name="name">Microfilme</field>
+        </record>
+        <record id="onsc_cv_divulgation_film" model="onsc.cv.divulgation.media">
+            <field name="name">Película</field>
+        </record>
+        <record id="onsc_cv_divulgation_paper" model="onsc.cv.divulgation.media">
+            <field name="name">Papel</field>
+        </record>
+        <record id="onsc_cv_divulgation_other" model="onsc.cv.divulgation.media">
+            <field name="name">Otro</field>
+        </record>
+    </data>
+</odoo>

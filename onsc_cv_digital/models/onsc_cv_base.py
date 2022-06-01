@@ -210,3 +210,48 @@ class ONSCCVWorkArea(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre del área de trabajo debe ser único'),
     ]
+
+
+class ONSCCVTypeTutor(models.Model):
+    _name = 'onsc.cv.type.tutor'
+    _description = 'Tipos de tutoría'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del tipo de tutoría', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del tipo de tutoría debe ser único')
+    ]
+
+
+class ONSCCVTypeOrientation(models.Model):
+    _name = 'onsc.cv.type.orientation'
+    _description = 'Tipos de orientación'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del tipo de orientación', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del tipo de orientación debe ser único')
+    ]
+
+
+class ONSCCVDivulgationMedia(models.Model):
+    _name = 'onsc.cv.divulgation.media'
+    _description = 'Medios de divulgación'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del medio de divulgación', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del medio de divulgación debe ser único')
+    ]

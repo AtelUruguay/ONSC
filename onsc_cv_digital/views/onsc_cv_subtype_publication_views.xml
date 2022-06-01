@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_subtype_publication_search" model="ir.ui.view">
+        <field name="name">onsc.cv.subtype.publication.search</field>
+        <field name="model">onsc.cv.subtype.publication</field>
+        <field name="arch" type="xml">
+            <search string="Sub tipos de publicación">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_subtype_publication_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.subtype.publication.tree</field>
+        <field name="model">onsc.cv.subtype.publication</field>
+        <field name="arch" type="xml">
+            <tree string="Sub tipos de publicación" editable="top">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="is_option_other_enable"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_subtype_publication_form" model="ir.ui.view">
+        <field name="name">onsc.cv.subtype.publication.form</field>
+        <field name="model">onsc.cv.subtype.publication</field>
+        <field name="arch" type="xml">
+            <form string="Sub tipos de publicación">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="is_option_other_enable"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_subtype_publication_action' model='ir.actions.act_window'>
+        <field name="name">Sub tipos de publicación</field>
+        <field name="res_model">onsc.cv.subtype.publication</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Crear un nuevo sub tipo de publicación
+          </p>
+        </field>
+    </record>
+</odoo>
