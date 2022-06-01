@@ -9,3 +9,4 @@ from . import onsc_cv_institution
 from . import onsc_cv_academic_program
 from . import onsc_cv_certifying
 from . import onsc_cv_certificate
+from . import onsc_cv_entry
