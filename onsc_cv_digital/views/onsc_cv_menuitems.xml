@@ -149,4 +149,10 @@
                   action="onsc_cv_research_types_classes_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="23"/>
+
+        <menuitem id="onsc_cv_language_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_language_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="24"/>
 </odoo>

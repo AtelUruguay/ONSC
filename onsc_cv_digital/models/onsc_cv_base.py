@@ -226,3 +226,17 @@ class ONSCCVResearchTypesClasses(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre de la clase de investigación debe ser único'),
     ]
+
+
+class ONSCCVLanguage(models.Model):
+    _name = 'onsc.cv.language'
+    _description = 'Idioma'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del idioma', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre nombre del idioma debe ser único'),
+    ]
