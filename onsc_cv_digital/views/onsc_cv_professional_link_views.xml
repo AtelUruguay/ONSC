@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_professional_link_search" model="ir.ui.view">
+        <field name="name">onsc.cv.professional.link.search</field>
+        <field name="model">onsc.cv.professional.link</field>
+        <field name="arch" type="xml">
+            <search string="Vínculos profesionales">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_professional_link_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.professional.link.tree</field>
+        <field name="model">onsc.cv.professional.link</field>
+        <field name="arch" type="xml">
+            <tree string="Vínculos profesionales">
+                <field name="code"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_professional_link_form" model="ir.ui.view">
+        <field name="name">onsc.cv.professional.link.form</field>
+        <field name="model">onsc.cv.professional.link</field>
+        <field name="arch" type="xml">
+            <form string="Vínculos profesionales">
+                <header>
+                    <button name="action_validate" string="Validar"
+                            class="oe_highlight"
+                            states="to_validate" type="object"
+                            groups="onsc_cv_digital.group_validador_catalogos_cv"
+                            confirm="Está seguro que desea Validarlo"/>
+                    <button name="action_reject" string="Rechazar"
+                            states="to_validate" type="object"
+                            groups="onsc_cv_digital.group_validador_catalogos_cv"/>
+                    <field name="state" widget="statusbar" clickable="1"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_professional_link_action' model='ir.actions.act_window'>
+        <field name="name">Vínculos profesionales</field>
+        <field name="res_model">onsc.cv.professional.link</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'is_config': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo vínculo profesional
+            </p>
+        </field>
+    </record>
+</odoo>
