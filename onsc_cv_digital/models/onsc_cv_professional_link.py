@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, _
 
 
 class ONSCCVProfessionalLink(models.Model):
@@ -14,7 +14,7 @@ class ONSCCVProfessionalLink(models.Model):
         args2validate = [
             ('name', '=', self.name),
         ]
-        return super(ONSCCVSubintitution, self)._check_validate(
+        return super(ONSCCVProfessionalLink, self)._check_validate(
             args2validate,
             _("Ya existe un registro validado para %s" % (self.name))
         )
