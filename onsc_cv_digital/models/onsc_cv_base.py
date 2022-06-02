@@ -258,7 +258,7 @@ class ONSCCVTypeSupport(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del apoyo debe ser único'),
+         u'El nombre del tipo de apoyo debe ser único'),
     ]
 
 
@@ -272,5 +272,5 @@ class ONSCCVRollEvent(models.Model):
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
-         u'El nombre del rol en el evento debe ser único'),
+         u'El nombre del rol en evento debe ser único'),
     ]
