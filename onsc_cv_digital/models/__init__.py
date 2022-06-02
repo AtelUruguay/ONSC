@@ -10,4 +10,5 @@ from . import onsc_cv_academic_program
 from . import onsc_cv_certifying
 from . import onsc_cv_certificate
 from . import onsc_cv_entry
+from . import onsc_cv_professional_link
 from . import onsc_cv_subtypes

@@ -15,5 +15,15 @@
             <field name="code">01</field>
             <field name="name">Área de trabajo 1</field>
         </record>
+
+        <record id="onsc_cv_knowledge_1" model="onsc.cv.knowledge">
+            <field name="code">01</field>
+            <field name="name">Conocimiento 1</field>
+        </record>
+
+        <record id="onsc_cv_professional_link_1" model="onsc.cv.professional.link">
+            <field name="code">01</field>
+            <field name="name">Vínculo profesional 1</field>
+        </record>
     </data>
 </odoo>

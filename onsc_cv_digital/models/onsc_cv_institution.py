@@ -25,7 +25,7 @@ class ONSCCVIntitution(models.Model):
             else:
                 record.name_country = ''
 
-    def _check_validate(self, args2validate=[], message=""):
+    def _check_validate(self, args2validate, message=""):
         args2validate = [
             ('name', '=', self.name),
             ('country_id', '=', self.country_id.id),

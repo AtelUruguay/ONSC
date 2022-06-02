@@ -42,7 +42,7 @@ class ONSCCVAbstractConfig(models.Model):
 
     def action_validate(self):
         for record in self:
-            record._check_validate()
+            record._check_validate([])
         self.sudo()._send_validation_email()
         self.write({'state': 'validated'})
 
@@ -84,7 +84,7 @@ class ONSCCVAbstractConfig(models.Model):
         return super(ONSCCVAbstractConfig, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                          access_rights_uid=access_rights_uid)
 
-    def _check_validate(self, args2validate=[], message=""):
+    def _check_validate(self, args2validate, message=""):
         """
 
         :param args2validate: Lista formato OdooWay para search_count

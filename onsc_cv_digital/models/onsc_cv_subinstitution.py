@@ -22,7 +22,7 @@ class ONSCCVSubintitution(models.Model):
         if self.institution_id.country_id:
             self.country_id = self.institution_id.country_id
 
-    def _check_validate(self, args2validate=[], message=""):
+    def _check_validate(self, args2validate, message=""):
         args2validate = [
             ('name', '=', self.name),
             ('institution_id', '=', self.institution_id.id),

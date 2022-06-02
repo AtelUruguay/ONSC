@@ -14,7 +14,7 @@ class ONSCCVCertifyingInstitution(models.Model):
                                               inverse_name='institution_cert_id',
                                               string='Sub instituciones certificadoras')
 
-    def _check_validate(self, args2validate=[], message=""):
+    def _check_validate(self, args2validate, message=""):
         args2validate = [
             ('name', '=', self.name),
             ('institution_id', '=', self.institution_id.id),
@@ -34,7 +34,7 @@ class ONSCCVCertifyingSubinstitution(models.Model):
     name = fields.Char(u'Nombre de la sub institución certificadora', required=True)
     institution_cert_id = fields.Many2one('onsc.cv.certifying.institution', string=u'Sub institución', required=True)
 
-    def _check_validate(self, args2validate=[], message=""):
+    def _check_validate(self, args2validate, message=""):
         args2validate = [
             ('name', '=', self.name),
             ('institution_cert_id', '=', self.institution_cert_id.id),
