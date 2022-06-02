@@ -38,7 +38,7 @@
                             <field name="code"/>
                         </group>
                     </group>
-                    <group class="border">
+                    <group>
                         <group>
                             <field name="see"/>
                             <field name="hear"/>
