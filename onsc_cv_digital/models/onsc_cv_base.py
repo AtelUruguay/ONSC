@@ -214,7 +214,7 @@ class ONSCCVWorkArea(models.Model):
 
 class ONSCCVResearchTypesClasses(models.Model):
     _name = 'onsc.cv.research.types.classes'
-    _description = 'Tipos o Clases de Investigación'
+    _description = 'Tipos o clases de investigación'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre de clase de investigación', required=True)
@@ -264,7 +264,7 @@ class ONSCCVTypeSupport(models.Model):
 
 class ONSCCVRollEvent(models.Model):
     _name = 'onsc.cv.roll.event'
-    _description = 'Rol en Evento'
+    _description = 'Rol en evento'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del rol en el evento', required=True)
