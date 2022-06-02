@@ -214,7 +214,7 @@ class ONSCCVWorkArea(models.Model):
 
 class ONSCCVResearchTypesClasses(models.Model):
     _name = 'onsc.cv.research.types.classes'
-    _description = 'Tipos o clases de investigación'
+    _description = 'Tipos o clase de investigación'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre de clase de investigación', required=True)
