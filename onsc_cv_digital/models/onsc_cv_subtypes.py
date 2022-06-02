@@ -5,7 +5,7 @@ from odoo import fields, models
 
 class ONSCCVSubtypePublication(models.Model):
     _name = 'onsc.cv.subtype.publication'
-    _description = 'Sub tipos de publicación'
+    _description = 'Sub tipo de publicación'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del sub tipo de publicación', required=True)
@@ -20,7 +20,7 @@ class ONSCCVSubtypePublication(models.Model):
 
 class ONSCCVSubtypeProduction(models.Model):
     _name = 'onsc.cv.subtype.production'
-    _description = 'Sub tipos de producción'
+    _description = 'Sub tipo de producción'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del sub tipo de producción', required=True)
@@ -35,7 +35,7 @@ class ONSCCVSubtypeProduction(models.Model):
 
 class ONSCCVSubtypeEvaluation(models.Model):
     _name = 'onsc.cv.subtype.evaluation'
-    _description = 'Sub tipos de evaluación'
+    _description = 'Sub tipo de evaluación'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del sub tipo de evaluación', required=True)
@@ -50,7 +50,7 @@ class ONSCCVSubtypeEvaluation(models.Model):
 
 class ONSCCVSubtypeOther(models.Model):
     _name = 'onsc.cv.subtype.other'
-    _description = 'Sub tipos otros'
+    _description = 'Sub tipo otro'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del sub tipo otro', required=True)
