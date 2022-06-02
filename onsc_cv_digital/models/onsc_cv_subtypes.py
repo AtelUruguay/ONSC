@@ -10,7 +10,7 @@ class ONSCCVSubtypePublication(models.Model):
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del sub tipo de publicación', required=True)
     active = fields.Boolean(string="Activo", default=True)
-    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o?')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
@@ -25,7 +25,7 @@ class ONSCCVSubtypeProduction(models.Model):
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del sub tipo de producción', required=True)
     active = fields.Boolean(string="Activo", default=True)
-    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o?')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
@@ -40,7 +40,7 @@ class ONSCCVSubtypeEvaluation(models.Model):
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del sub tipo de evaluación', required=True)
     active = fields.Boolean(string="Activo", default=True)
-    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o?')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
@@ -55,7 +55,7 @@ class ONSCCVSubtypeOther(models.Model):
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del sub tipo otro', required=True)
     active = fields.Boolean(string="Activo", default=True)
-    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o?')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
