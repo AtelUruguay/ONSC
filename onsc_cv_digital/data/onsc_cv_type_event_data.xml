@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="onsc_cv_type_event_cong" model="onsc.cv.type.event">
+            <field name="name">Congreso</field>
+        </record>
+
+        <record id="onsc_cv_type_event_conf" model="onsc.cv.type.event">
+            <field name="name">Conferencia</field>
+        </record>
+
+        <record id="onsc_cv_type_event_meet" model="onsc.cv.type.event">
+            <field name="name">Encuentro</field>
+        </record>
+
+        <record id="onsc_cv_type_event_seminar" model="onsc.cv.type.event">
+            <field name="name">Seminario</field>
+        </record>
+
+        <record id="onsc_cv_type_event_simp" model="onsc.cv.type.event">
+            <field name="name">Simposio</field>
+        </record>
+
+        <record id="onsc_cv_type_event_workshop" model="onsc.cv.type.event">
+            <field name="name">Taller</field>
+        </record>
+    </data>
+</odoo>

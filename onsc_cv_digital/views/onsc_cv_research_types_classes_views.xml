@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_research_types_classes_search" model="ir.ui.view">
+        <field name="name">onsc.cv.research.types.classes.search</field>
+        <field name="model">onsc.cv.research.types.classes</field>
+        <field name="arch" type="xml">
+            <search string="Tipos o clases de investigación">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_research_types_classes_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.research.types.classes.tree</field>
+        <field name="model">onsc.cv.research.types.classes</field>
+        <field name="arch" type="xml">
+            <tree string="Tipos o clases de investigación">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="is_option_other_enable"/>
+                <field name="other_class"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_research_types_classes_form" model="ir.ui.view">
+        <field name="name">onsc.cv.research.types.classes.form</field>
+        <field name="model">onsc.cv.research.types.classes</field>
+        <field name="arch" type="xml">
+            <form string="Tipos o clases de investigación">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="is_option_other_enable"/>
+                            <field name="other_class" attrs="{'invisible': [('is_option_other_enable', '=', False)]}"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_research_types_classes_action' model='ir.actions.act_window'>
+        <field name="name">Tipos o clases de investigación</field>
+        <field name="res_model">onsc.cv.research.types.classes</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo tipo o clase de investigación
+            </p>
+        </field>
+    </record>
+</odoo>

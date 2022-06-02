@@ -25,5 +25,10 @@
             <field name="code">01</field>
             <field name="name">Vínculo profesional 1</field>
         </record>
+
+        <record id="onsc_cv_language_1" model="onsc.cv.language">
+            <field name="code">01</field>
+            <field name="name">Inglés</field>
+        </record>
     </data>
 </odoo>
