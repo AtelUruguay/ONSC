@@ -260,3 +260,17 @@ class ONSCCVTypeSupport(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre del apoyo debe ser único'),
     ]
+
+
+class ONSCCVRollEvent(models.Model):
+    _name = 'onsc.cv.roll.event'
+    _description = 'Rol en Evento'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del rol en el evento', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del rol en el evento debe ser único'),
+    ]

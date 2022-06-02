@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.type.event.search</field>
         <field name="model">onsc.cv.type.event</field>
         <field name="arch" type="xml">
-            <search string="Tipos de evento">
+            <search string="Tipos de eventos">
                 <field name="name"/>
                 <separator/>
                 <group expand="1" string="Group By">
@@ -18,7 +18,7 @@
         <field name="name">onsc.cv.type.event.tree</field>
         <field name="model">onsc.cv.type.event</field>
         <field name="arch" type="xml">
-            <tree string="Tipos de evento">
+            <tree string="Tipos de eventos">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="active" invisible="1"/>
@@ -30,7 +30,7 @@
         <field name="name">onsc.cv.type.event.form</field>
         <field name="model">onsc.cv.type.event</field>
         <field name="arch" type="xml">
-            <form string="Tipos de evento">
+            <form string="Tipos de eventos">
                 <header>
                     <button name="action_validate" string="Validar"
                             class="oe_highlight"
@@ -64,7 +64,7 @@
     </record>
 
     <record id='onsc_cv_type_event_action' model='ir.actions.act_window'>
-        <field name="name">Tipos de evento</field>
+        <field name="name">Tipos de eventos</field>
         <field name="res_model">onsc.cv.type.event</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'is_config': True}</field>

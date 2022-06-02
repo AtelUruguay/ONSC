@@ -167,4 +167,10 @@
                   action="onsc_cv_type_event_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="26"/>
+
+        <menuitem id="onsc_cv_roll_event_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_roll_event_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="27"/>
 </odoo>

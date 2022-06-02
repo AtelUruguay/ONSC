@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_roll_event_search" model="ir.ui.view">
+        <field name="name">onsc.cv.roll.event.search</field>
+        <field name="model">onsc.cv.roll.event</field>
+        <field name="arch" type="xml">
+            <search string="Roles en eventos">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_roll_event_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.roll.event.tree</field>
+        <field name="model">onsc.cv.roll.event</field>
+        <field name="arch" type="xml">
+            <tree string="Roles en eventos" editable="top">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_roll_event_form" model="ir.ui.view">
+        <field name="name">onsc.cv.roll.event.form</field>
+        <field name="model">onsc.cv.roll.event</field>
+        <field name="arch" type="xml">
+            <form string="Roles en eventos">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_roll_event_action' model='ir.actions.act_window'>
+        <field name="name">Roles en eventos</field>
+        <field name="res_model">onsc.cv.roll.event</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Crear un nuevo rol en evento
+          </p>
+        </field>
+    </record>
+</odoo>
