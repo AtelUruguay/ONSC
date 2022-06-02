@@ -255,3 +255,67 @@ class ONSCCVDivulgationMedia(models.Model):
         ('name_uniq', 'unique(name)',
          u'El nombre del medio de divulgación debe ser único')
     ]
+
+
+class ONSCCVResearchTypesClasses(models.Model):
+    _name = 'onsc.cv.research.types.classes'
+    _description = 'Tipos o clase de investigación'
+
+    code = fields.Char(u'Código')
+    name = fields.Char(u'Nombre de clase de investigación', required=True)
+    active = fields.Boolean(string='Activo', default=True)
+    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o ?')
+    other_class = fields.Char(u'Otra clase')
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre de la clase de investigación debe ser único'),
+    ]
+
+
+class ONSCCVLanguage(models.Model):
+    _name = 'onsc.cv.language'
+    _description = 'Idioma'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del idioma', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del idioma debe ser único'),
+    ]
+
+
+class ONSCCVTypeSupport(models.Model):
+    _name = 'onsc.cv.type.support'
+    _description = 'Tipo de apoyo'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del apoyo', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+    see = fields.Boolean(string="Ver, ¿aún si usa anteojos o lentes?")
+    hear = fields.Boolean(string="Oír, ¿aún si usa audífono?")
+    walk = fields.Boolean(string="¿Caminar o subir escalones?")
+    slide = fields.Boolean(string="¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?")
+    understand = fields.Boolean(string="Entender/ y o aprender?")
+    interaction = fields.Boolean(string="¿Interacciones y/o relaciones interpersonales?")
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del tipo de apoyo debe ser único'),
+    ]
+
+
+class ONSCCVRollEvent(models.Model):
+    _name = 'onsc.cv.roll.event'
+    _description = 'Rol en evento'
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string='Nombre del rol en el evento', required=True)
+    active = fields.Boolean(string="Activo", default=True)
+
+    _sql_constraints = [
+        ('name_uniq', 'unique(name)',
+         u'El nombre del rol en evento debe ser único'),
+    ]

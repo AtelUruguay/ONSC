@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="onsc_cv_roll_event_exhibitor" model="onsc.cv.roll.event">
+            <field name="name">Expositor</field>
+        </record>
+
+        <record id="onsc_cv_roll_event_listener" model="onsc.cv.roll.event">
+            <field name="name">Oyente</field>
+        </record>
+
+        <record id="onsc_cv_roll_event_moderator" model="onsc.cv.roll.event">
+            <field name="name">Moderador</field>
+        </record>
+
+        <record id="onsc_cv_roll_event_commentator" model="onsc.cv.roll.event">
+            <field name="name">Comentarista</field>
+        </record>
+
+        <record id="onsc_cv_roll_event_panelist" model="onsc.cv.roll.event">
+            <field name="name">Panelista</field>
+        </record>
+
+        <record id="onsc_cv_roll_event_speaker_quest" model="onsc.cv.roll.event">
+            <field name="name">Conferencista invitado</field>
+        </record>
+
+        <record id="onsc_cv_roll_event_poster" model="onsc.cv.roll.event">
+            <field name="name">Poster</field>
+        </record>
+    </data>
+</odoo>
