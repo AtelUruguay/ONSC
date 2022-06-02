@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_subtype_production_search" model="ir.ui.view">
+        <field name="name">onsc.cv.subtype.production.search</field>
+        <field name="model">onsc.cv.subtype.production</field>
+        <field name="arch" type="xml">
+            <search string="Sub tipos de producción">
+                <field name="code"/>
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_subtype_production_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.subtype.production.tree</field>
+        <field name="model">onsc.cv.subtype.production</field>
+        <field name="arch" type="xml">
+            <tree string="Sub tipos de producción" editable="top">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="is_option_other_enable"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_subtype_production_form" model="ir.ui.view">
+        <field name="name">onsc.cv.subtype.production.form</field>
+        <field name="model">onsc.cv.subtype.production</field>
+        <field name="arch" type="xml">
+            <form string="Sub tipos de producción">
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="is_option_other_enable"/>
+                        <field name="active" invisible="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_subtype_production_action' model='ir.actions.act_window'>
+        <field name="name">Sub tipos de producción</field>
+        <field name="res_model">onsc.cv.subtype.production</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+          <p class="o_view_nocontent_smiling_face">
+            Crear un nuevo sub tipo de producción
+          </p>
+        </field>
+    </record>
+</odoo>
