@@ -134,7 +134,7 @@ class ONSCCVExperienceHierarchicalLevel(models.Model):
 
 class ONSCCVSEducationalAreas(models.Model):
     _name = 'onsc.cv.educational.subarea'
-    _description = 'Sub áreas educativas'
+    _description = 'Sub área educativa'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre de la sub área educativa', required=True)
@@ -214,7 +214,7 @@ class ONSCCVWorkArea(models.Model):
 
 class ONSCCVTypeTutor(models.Model):
     _name = 'onsc.cv.type.tutor'
-    _description = 'Tipos de tutoría'
+    _description = 'Tipo de tutoría'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del tipo de tutoría', required=True)
@@ -229,7 +229,7 @@ class ONSCCVTypeTutor(models.Model):
 
 class ONSCCVTypeOrientation(models.Model):
     _name = 'onsc.cv.type.orientation'
-    _description = 'Tipos de orientación'
+    _description = 'Tipo de orientación'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del tipo de orientación', required=True)
@@ -244,7 +244,7 @@ class ONSCCVTypeOrientation(models.Model):
 
 class ONSCCVDivulgationMedia(models.Model):
     _name = 'onsc.cv.divulgation.media'
-    _description = 'Medios de divulgación'
+    _description = 'Medio de divulgación'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del medio de divulgación', required=True)
