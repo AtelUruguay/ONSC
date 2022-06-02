@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.type.support.search</field>
         <field name="model">onsc.cv.type.support</field>
         <field name="arch" type="xml">
-            <search string="Tipos de apoyos">
+            <search string="Tipos de apoyo">
                 <field name="code"/>
                 <field name="name"/>
             </search>
@@ -15,7 +15,7 @@
         <field name="name">onsc.cv.type.support.tree</field>
         <field name="model">onsc.cv.type.support</field>
         <field name="arch" type="xml">
-            <tree string="Tipos de apoyos">
+            <tree string="Tipos de apoyo">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="active" invisible="1"/>
@@ -27,7 +27,7 @@
         <field name="name">onsc.cv.type.support.form</field>
         <field name="model">onsc.cv.type.support</field>
         <field name="arch" type="xml">
-            <form string="Tipos de apoyos">
+            <form string="Tipos de apoyo">
                 <sheet>
                     <group>
                         <group>
@@ -56,7 +56,7 @@
     </record>
 
     <record id='onsc_cv_type_support_action' model='ir.actions.act_window'>
-        <field name="name">Tipos de apoyos</field>
+        <field name="name">Tipos de apoyo</field>
         <field name="res_model">onsc.cv.type.support</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
