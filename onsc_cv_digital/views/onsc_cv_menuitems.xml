@@ -13,11 +13,13 @@
                   action="onsc_cv_document_type_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="1"/>
+
         <menuitem id="onsc_cv_status_civil_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_status_civil_action"
                   sequence="2"
                   groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
+
         <menuitem id="onsc_cv_drivers_license_categories_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_drivers_license_categories_action"
@@ -143,32 +145,38 @@
                   action="onsc_cv_professional_link_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="21"/>
-    <menuitem id="onsc_cv_subtype_evaluation_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_subtype_evaluation_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="22"/>
-    <menuitem id="onsc_cv_subtype_other_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_subtype_other_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="23"/>
-    <menuitem id="onsc_cv_subtype_production_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_subtype_production_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="24"/>
-    <menuitem id="onsc_cv_type_orientation_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_type_orientation_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="25"/>
-    <menuitem id="onsc_cv_type_tutor_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_type_tutor_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="25"/>
-                  sequence="22"/>
+
+
+        <menuitem id="onsc_cv_subtype_evaluation_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_subtype_evaluation_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="22"/>
+
+        <menuitem id="onsc_cv_subtype_other_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_subtype_other_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="23"/>
+
+        <menuitem id="onsc_cv_subtype_production_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_subtype_production_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="24"/>
+
+        <menuitem id="onsc_cv_type_orientation_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_type_orientation_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="25"/>
+
+        <menuitem id="onsc_cv_type_tutor_action_menu"
+                      parent="onsc_cv_config_menu"
+                      action="onsc_cv_type_tutor_action"
+                      groups="group_gestor_catalogos_cv"
+                      sequence="25"/>
+                      sequence="22"/>
 
         <menuitem id="onsc_cv_research_types_classes_action_menu"
                   parent="onsc_cv_config_menu"
