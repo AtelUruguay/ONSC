@@ -44,7 +44,7 @@ class ONSCCVAbstractConfig(models.Model):
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         """
         Sobreesctito para Agregar a los Catálogos condicionales un campo en la vista form
-        can_edit, luego se modfica cada atributo para que pueda editar o no segun el valor de este campo
+        can_edit, luego se modifica cada atributo para que pueda editar o no segun el valor de este campo
         """
         res = super(ONSCCVAbstractConfig, self).fields_view_get(view_id, view_type, toolbar, submenu)
         if view_type == 'form':
