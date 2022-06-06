@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from lxml import etree
+
 from odoo import api, fields, models, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError
 
@@ -15,16 +17,82 @@ class ONSCCVAbstractConfig(models.Model):
 
     active = fields.Boolean(string='Activo', default=True, tracking=True)
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
-    code = fields.Char(string=u'Código', size=5)
+    code = fields.Char(string=u'Código', size=5, )
     state = fields.Selection(string="Estado",
                              selection=STATES,
                              tracking=True,
-                             default='validated')
+                             default=lambda self: self.user_has_groups(
+                                 'onsc_cv_digital.group_gestor_catalogos_cv') and 'validated' or 'to_validate')
     reject_reason = fields.Char(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
+    can_edit = fields.Boolean(compute='_calc_can_edit')
+
+    @api.depends('state')
+    def _calc_can_edit(self):
+        for rec in self:
+            rec.can_edit = rec._check_can_write()
 
     def get_description_model(self):
         return self._description
+
+    # def check_access_rule_all(self, operations=None):
+    #     res = super(ONSCCVAbstractConfig, self).check_access_rule_all(operations)
+    #     if not self._check_can_write() and 'write' in res:
+    #         res['write'] = False
+    #     return res
+
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super(ONSCCVAbstractConfig, self).fields_view_get(view_id, view_type, toolbar, submenu)
+        if view_type == 'form':
+            doc = etree.XML(res['arch'])
+            if len(doc.xpath("//field[@name='can_edit']")) == 0:
+                for node in doc.xpath("//field"):
+                    node.set('attrs', "{'readonly': [('can_edit', '=', False)]}")
+                if doc.tag == 'form':
+                    doc.insert(0, etree.Element('field', attrib={
+                        'name': 'can_edit',
+                        'invisible': '1',
+                    }))
+                form_view = self.env['ir.ui.view'].sudo().search([
+                    ('model', '=', self._name), ('type', '=', 'form')], limit=1)
+                form_view.sudo().write({'arch': etree.tostring(doc)})
+                return super(ONSCCVAbstractConfig, self).fields_view_get(view_id, view_type, toolbar, submenu)
+        return res
+
+    # def get_formview_id(self, access_uid=None):
+    #     """ Sobreescrito para no permitir editar en los modelos relacionados
+    #     Crea una vista form con campos readonly la primera vez y luego es llamada para los usuarios que no tienen
+    #     permiso de escribir"""
+    #     if access_uid:
+    #         self_sudo = self.with_user(access_uid)
+    #     else:
+    #         self_sudo = self
+    #
+    #     if self_sudo._check_can_write():
+    #         return super(ONSCCVAbstractConfig, self).get_formview_id(access_uid=access_uid)
+    #     # Hardcode the form view for public employee
+    #     self = self.sudo()
+    #     form_id = self.env['ir.ui.view'].search([('name', '=', '%s.form.readonly' % self._name)], limit=1)
+    #     if not form_id:
+    #         form_parent_id = self.env['ir.ui.view'].search([('model', '=', self._name), ('type', '=', 'form')], limit=1)
+    #         if form_parent_id:
+    #             arch = form_parent_id.arch
+    #             doc = etree.XML(arch)
+    #             for node in doc.xpath("//field"):
+    #                 node.set("readonly", "1")
+    #             form_id = self.env['ir.ui.view'].create(
+    #                 {'name': '%s.form.readonly' % self._name,
+    #                  "model": self._name,
+    #                  'arch': etree.tostring(doc, encoding='unicode')
+    #                  })
+    #
+    #     return form_id.id
+
+    # CRUD methods
+    def write(self, values):
+        if not self._check_can_write():
+            raise ValidationError(_("No puede mofificar un registro en estado validado."))
+        return super(ONSCCVAbstractConfig, self).write(values)
 
     def action_reject(self):
         ctx = self._context.copy()
@@ -96,3 +164,8 @@ class ONSCCVAbstractConfig(models.Model):
         args2validate.extend([('state', '=', 'validated'), ('id', '!=', self.id)])
         if self.search_count(args2validate):
             raise ValidationError(message)
+
+    def _check_can_write(self):
+        """Los usuarios CV solo pueden modificar si el estado no es validado"""
+        return not (self.filtered(lambda x: x.state == 'validated') and self.user_has_groups(
+            'onsc_cv_digital.group_user_cv'))
