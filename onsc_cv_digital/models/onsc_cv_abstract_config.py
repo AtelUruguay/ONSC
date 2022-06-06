@@ -25,10 +25,10 @@ class ONSCCVAbstractConfig(models.Model):
                                  'onsc_cv_digital.group_gestor_catalogos_cv') and 'validated' or 'to_validate')
     reject_reason = fields.Char(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
-    can_edit = fields.Boolean(compute='_calc_can_edit')
+    can_edit = fields.Boolean(compute='_compute_can_edit')
 
     @api.depends('state')
-    def _calc_can_edit(self):
+    def _compute_can_edit(self):
         for rec in self:
             rec.can_edit = rec._check_can_write()
 
@@ -67,7 +67,7 @@ class ONSCCVAbstractConfig(models.Model):
 
     # CRUD methods
     def write(self, values):
-        if not self._check_can_write():
+        if self.filtered(lambda x: not x.can_edit):
             raise ValidationError(_("No puede mofificar un registro en estado validado."))
         return super(ONSCCVAbstractConfig, self).write(values)
 
