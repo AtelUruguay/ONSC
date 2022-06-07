@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from lxml import etree
+
 from odoo import api, fields, models, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError
 
@@ -19,12 +21,49 @@ class ONSCCVAbstractConfig(models.Model):
     state = fields.Selection(string="Estado",
                              selection=STATES,
                              tracking=True,
-                             default='validated')
+                             default=lambda self: self.user_has_groups(
+                                 'onsc_cv_digital.group_gestor_catalogos_cv') and 'validated' or 'to_validate')
     reject_reason = fields.Char(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
+    can_edit = fields.Boolean(compute='_compute_can_edit')
+
+    @api.depends('state')
+    def _compute_can_edit(self):
+        for rec in self:
+            rec.can_edit = rec._check_can_write()
 
     def get_description_model(self):
         return self._description
+
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        """
+        Sobre escrito para Agregar a los Catálogos condicionales un campo en la vista form
+        can_edit, luego se modifica cada atributo para que pueda editar o no segun el valor de este campo
+        """
+        res = super(ONSCCVAbstractConfig, self).fields_view_get(view_id, view_type, toolbar, submenu)
+        if view_type == 'form':
+            doc = etree.XML(res['arch'])
+            if len(doc.xpath("//field[@name='can_edit']")) == 0:
+                # Si nunca se ha agregado el campo can_edit entonces se agrega en el formulario
+                for node in doc.xpath("//field"):
+                    node.set('attrs', "{'readonly': [('can_edit', '=', False)]}")
+                if doc.tag == 'form':
+                    doc.insert(0, etree.Element('field', attrib={
+                        'name': 'can_edit',
+                        'invisible': '1',
+                    }))
+                form_view = self.env['ir.ui.view'].sudo().search([
+                    ('model', '=', self._name), ('type', '=', 'form')], limit=1)
+                form_view.sudo().write({'arch': etree.tostring(doc)})
+                # Llamamos al super nuevamente para que tome los cambios que hemos realizado
+                return super(ONSCCVAbstractConfig, self).fields_view_get(view_id, view_type, toolbar, submenu)
+        return res
+
+    # CRUD methods
+    def write(self, values):
+        if self.filtered(lambda x: not x.can_edit):
+            raise ValidationError(_("No puede modificar un registro en estado validado."))
+        return super(ONSCCVAbstractConfig, self).write(values)
 
     def action_reject(self):
         ctx = self._context.copy()
@@ -96,3 +135,8 @@ class ONSCCVAbstractConfig(models.Model):
         args2validate.extend([('state', '=', 'validated'), ('id', '!=', self.id)])
         if self.search_count(args2validate):
             raise ValidationError(message)
+
+    def _check_can_write(self):
+        """Los usuarios CV solo pueden modificar si el estado no es validado"""
+        return not (self.filtered(lambda x: x.state == 'validated') and self.user_has_groups(
+            'onsc_cv_digital.group_user_cv'))
