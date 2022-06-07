@@ -19,7 +19,6 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="is_option_other_enable"/>
-                <field name="other_class"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -39,7 +38,6 @@
                         </group>
                         <group>
                             <field name="is_option_other_enable"/>
-                            <field name="other_class" attrs="{'invisible': [('is_option_other_enable', '=', False)]}"/>
                         </group>
                     </group>
                 </sheet>

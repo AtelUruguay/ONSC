@@ -18,7 +18,6 @@
             <tree string="Tipos de orientación" editable="top">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="is_option_other_enable"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -33,7 +32,6 @@
                     <group>
                         <field name="name"/>
                         <field name="code"/>
-                        <field name="is_option_other_enable"/>
                         <field name="active" invisible="1"/>
                     </group>
                 </sheet>
