@@ -17,7 +17,7 @@ class ONSCCVAbstractConfig(models.Model):
 
     active = fields.Boolean(string='Activo', default=True, tracking=True)
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
-    code = fields.Char(string=u'Código', size=5, )
+    code = fields.Char(string=u'Código', size=5)
     state = fields.Selection(string="Estado",
                              selection=STATES,
                              tracking=True,
@@ -35,15 +35,9 @@ class ONSCCVAbstractConfig(models.Model):
     def get_description_model(self):
         return self._description
 
-    # def check_access_rule_all(self, operations=None):
-    #     res = super(ONSCCVAbstractConfig, self).check_access_rule_all(operations)
-    #     if not self._check_can_write() and 'write' in res:
-    #         res['write'] = False
-    #     return res
-
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         """
-        Sobreesctito para Agregar a los Catálogos condicionales un campo en la vista form
+        Sobre escrito para Agregar a los Catálogos condicionales un campo en la vista form
         can_edit, luego se modifica cada atributo para que pueda editar o no segun el valor de este campo
         """
         res = super(ONSCCVAbstractConfig, self).fields_view_get(view_id, view_type, toolbar, submenu)
@@ -68,7 +62,7 @@ class ONSCCVAbstractConfig(models.Model):
     # CRUD methods
     def write(self, values):
         if self.filtered(lambda x: not x.can_edit):
-            raise ValidationError(_("No puede mofificar un registro en estado validado."))
+            raise ValidationError(_("No puede modificar un registro en estado validado."))
         return super(ONSCCVAbstractConfig, self).write(values)
 
     def action_reject(self):
