@@ -32,7 +32,9 @@ class ONSCCVCertifyingSubinstitution(models.Model):
     _inherit = ['onsc.cv.abstract.config']
 
     name = fields.Char(u'Nombre de la sub institución certificadora', required=True)
-    institution_cert_id = fields.Many2one('onsc.cv.certifying.institution', string=u'Sub institución', required=True)
+    institution_cert_id = fields.Many2one('onsc.cv.certifying.institution',
+                                          string=u'Institución certificadora',
+                                          required=True)
 
     def _check_validate(self, args2validate, message=""):
         args2validate = [

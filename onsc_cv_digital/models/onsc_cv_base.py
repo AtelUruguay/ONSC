@@ -234,7 +234,6 @@ class ONSCCVTypeOrientation(models.Model):
     code = fields.Char(string=u"Código")
     name = fields.Char(string='Nombre del tipo de orientación', required=True)
     active = fields.Boolean(string="Activo", default=True)
-    is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o?')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',
@@ -265,7 +264,6 @@ class ONSCCVResearchTypesClasses(models.Model):
     name = fields.Char(u'Nombre de clase de investigación', required=True)
     active = fields.Boolean(string='Activo', default=True)
     is_option_other_enable = fields.Boolean(u'¿Permitir opción otra/o?')
-    other_class = fields.Char(u'Otra clase')
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',

@@ -137,7 +137,7 @@
         <menuitem id="onsc_cv_entry_action_menu"
                       parent="onsc_cv_config_menu"
                       action="onsc_cv_entry_action"
-                      groups="group_gestor_catalogos_cv"
+                      groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                       sequence="21"/>
 
         <menuitem id="onsc_cv_professional_link_action_menu"
@@ -164,6 +164,12 @@
                       action="onsc_cv_subtype_production_action"
                       groups="group_gestor_catalogos_cv"
                       sequence="24"/>
+
+        <menuitem id="onsc_cv_subtype_publication_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_subtype_publication_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="24"/>
 
         <menuitem id="onsc_cv_type_orientation_action_menu"
                       parent="onsc_cv_config_menu"
@@ -199,13 +205,20 @@
         <menuitem id="onsc_cv_type_event_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_type_event_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="26"/>
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="29"/>
 
         <menuitem id="onsc_cv_roll_event_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_roll_event_action"
                   groups="group_gestor_catalogos_cv"
+                  sequence="30"/>
+
+        <menuitem id="onsc_cv_divulgation_media_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_divulgation_media_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="31"/>
                   sequence="29"/>
 
 <!--    Menú Contactos-->
