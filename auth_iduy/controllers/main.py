@@ -1,3 +1,4 @@
+# pylint: disable=E8102
 import base64
 import functools
 import json
