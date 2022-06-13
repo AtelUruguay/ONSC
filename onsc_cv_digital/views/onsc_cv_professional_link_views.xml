@@ -16,8 +16,8 @@
         <field name="model">onsc.cv.professional.link</field>
         <field name="arch" type="xml">
             <tree string="Vínculos profesionales">
-                <field name="code"/>
                 <field name="name"/>
+                <field name="code"/>
             </tree>
         </field>
     </record>
