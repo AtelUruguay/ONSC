@@ -219,4 +219,12 @@
                   action="onsc_cv_divulgation_media_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="31"/>
+                  sequence="29"/>
+
+<!--    Menú Contactos-->
+    <menuitem id="onsc_cv_partner_menu"
+              name="Contactos"
+              action="onsc_cv_action_res_partner"
+              parent="onsc_cv_root_menu"
+              sequence="100"/>
 </odoo>

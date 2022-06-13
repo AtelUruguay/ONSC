@@ -30,5 +30,6 @@
             <field name="code">01</field>
             <field name="name">Inglés</field>
         </record>
+
     </data>
 </odoo>
