@@ -16,8 +16,8 @@
         <field name="model">onsc.cv.experience.hierarchical.level</field>
         <field name="arch" type="xml">
             <tree string="Niveles jerárquicos de experiencia" editable="top">
-                <field name="code"/>
                 <field name="name"/>
+                <field name="code"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>

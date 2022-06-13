@@ -16,8 +16,8 @@
         <field name="model">onsc.cv.knowledge</field>
         <field name="arch" type="xml">
             <tree string="Conocimientos" editable="top">
-                <field name="code"/>
                 <field name="name"/>
+                <field name="code"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>

@@ -4,6 +4,9 @@
         <record id="onsc_cv_study_level_professional_technician" model="onsc.cv.study.level">
             <field name="name">Técnico profesional</field>
         </record>
+        <record id="onsc_cv_study_level_technologist" model="onsc.cv.study.level">
+            <field name="name">Tecnólogo</field>
+        </record>
         <record id="onsc_cv_study_level_tertiary_title" model="onsc.cv.study.level">
             <field name="name">Título terciario</field>
         </record>

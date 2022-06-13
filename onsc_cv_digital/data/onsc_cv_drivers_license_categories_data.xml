@@ -2,33 +2,43 @@
 <odoo>
     <data noupdate="1">
         <record id="onsc_cv_drivers_license_categories_A" model="onsc.cv.drivers.license.categories">
+            <field name="code">A</field>
             <field name="name">A</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_B" model="onsc.cv.drivers.license.categories">
+            <field name="code">B</field>
             <field name="name">B</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_C" model="onsc.cv.drivers.license.categories">
+            <field name="code">C</field>
             <field name="name">C</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_E" model="onsc.cv.drivers.license.categories">
+            <field name="code">E</field>
             <field name="name">E</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_D" model="onsc.cv.drivers.license.categories">
+            <field name="code">D</field>
             <field name="name">D</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_F" model="onsc.cv.drivers.license.categories">
+            <field name="code">F</field>
             <field name="name">F</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_G1" model="onsc.cv.drivers.license.categories">
+            <field name="code">G1</field>
             <field name="name">G1</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_G2" model="onsc.cv.drivers.license.categories">
+            <field name="code">G2</field>
             <field name="name">G2</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_G3" model="onsc.cv.drivers.license.categories">
+            <field name="code">G3</field>
             <field name="name">G3</field>
         </record>
         <record id="onsc_cv_drivers_license_categories_H" model="onsc.cv.drivers.license.categories">
+            <field name="code">H</field>
             <field name="name">H</field>
         </record>
     </data>

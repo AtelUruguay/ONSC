@@ -16,8 +16,8 @@
         <field name="model">onsc.cv.type.support</field>
         <field name="arch" type="xml">
             <tree string="Tipos de apoyo">
-                <field name="code"/>
                 <field name="name"/>
+                <field name="code"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -32,10 +32,10 @@
                     <group>
                         <group>
                             <field name="name"/>
+                            <field name="code"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
-                            <field name="code"/>
                         </group>
                     </group>
                     <group>

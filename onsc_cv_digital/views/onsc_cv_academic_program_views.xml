@@ -27,8 +27,8 @@
         <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
             <tree string="Programas académicos">
-                <field name="code"/>
                 <field name="name"/>
+                <field name="code"/>
                 <field name="country_id"/>
                 <field name="institution_id"/>
                 <field name="subinstitution_id"/>
@@ -57,8 +57,8 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="code"/>
                             <field name="name"/>
+                            <field name="code"/>
                             <field name="country_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    context="{'default_country_id': country_id}"/>
