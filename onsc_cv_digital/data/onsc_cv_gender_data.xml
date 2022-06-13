@@ -2,35 +2,59 @@
 <odoo>
     <data noupdate="1">
         <record id="onsc_cv_gender_female" model="onsc.cv.gender">
+            <field name="code">1</field>
             <field name="name">Mujer</field>
+            <field name="is_option_other_enable">False</field>
+            <field name="record">False</field>
         </record>
 
         <record id="onsc_cv_gender_female_trans" model="onsc.cv.gender">
+            <field name="code">3</field>
             <field name="name">Mujer trans</field>
+            <field name="is_option_other_enable">False</field>
+            <field name="record">True</field>
         </record>
 
         <record id="onsc_cv_gender_transvestite" model="onsc.cv.gender">
+            <field name="code">8</field>
             <field name="name">Travesti</field>
+            <field name="is_option_other_enable">False</field>
+            <field name="record">True</field>
         </record>
 
         <record id="onsc_cv_gender_man" model="onsc.cv.gender">
+            <field name="code">2</field>
             <field name="name">Varón</field>
+            <field name="is_option_other_enable">False</field>
+            <field name="record">False</field>
         </record>
 
         <record id="onsc_cv_gender_man_trans" model="onsc.cv.gender">
+            <field name="code">4</field>
             <field name="name">Varón trans</field>
+            <field name="is_option_other_enable">False</field>
+            <field name="record">True</field>
         </record>
 
         <record id="onsc_cv_gender_binary" model="onsc.cv.gender">
+            <field name="code">7</field>
             <field name="name">No binario (incluye género fluido y queer)</field>
+            <field name="is_option_other_enable">False</field>
+            <field name="record">False</field>
         </record>
 
         <record id="onsc_cv_gender_other" model="onsc.cv.gender">
+            <field name="code">5</field>
             <field name="name">Otra (debe especificarla)</field>
+            <field name="is_option_other_enable">True</field>
+            <field name="record">False</field>
         </record>
 
         <record id="onsc_cv_gender_unknown" model="onsc.cv.gender">
+            <field name="code">6</field>
             <field name="name">No sabe - No contesta</field>
+            <field name="is_option_other_enable">False</field>
+            <field name="record">False</field>
         </record>
 
     </data>
