@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <record id="view_partner_search_cv" model="ir.ui.view">
-       <field name="name">onsc.cv.res.partner.search</field>
-       <field name="model">res.partner</field>
+        <field name="name">onsc.cv.res.partner.search</field>
+        <field name="model">res.partner</field>
         <field name="priority">1000</field>
         <field name="arch" type="xml">
             <search string="Contactos">
@@ -13,14 +13,16 @@
                         domain="[('cv_emissor_country_id.code','=','UY')]"/>
                 <separator/>
                 <group expand="1" string="Group By">
-                    <filter name="filter_emissor_country_id" string="País" context="{'group_by':'cv_emissor_country_id'}"/>
-                    <filter name="filter_document_type_id" string="Tipo de documento" context="{'group_by':'cv_document_type_id'}"/>
+                    <filter name="filter_emissor_country_id" string="País"
+                            context="{'group_by':'cv_emissor_country_id'}"/>
+                    <filter name="filter_document_type_id" string="Tipo de documento"
+                            context="{'group_by':'cv_document_type_id'}"/>
                 </group>
             </search>
-       </field>
+        </field>
     </record>
 
-     <record id="view_partner_tree_cv" model="ir.ui.view">
+    <record id="view_partner_tree_cv" model="ir.ui.view">
         <field name="name">onsc.cv.res.partner.tree</field>
         <field name="model">res.partner</field>
         <field name="arch" type="xml">
@@ -41,9 +43,11 @@
         <field name="arch" type="xml">
             <form string="Contactos" create="0" edit="0" delete="0">
                 <sheet>
-                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
+                            attrs="{'invisible': [('active', '=', True)]}"/>
                     <field name="avatar_128" invisible="1"/>
-                    <field name="image_1920" widget='image' class="oe_avatar" options='{"preview_image": "avatar_128"}' readonly="1"/>
+                    <field name="image_1920" widget='image' class="oe_avatar" options='{"preview_image": "avatar_128"}'
+                           readonly="1"/>
                     <field name="active" invisible="1"/>
                     <field name="is_cv_uruguay" invisible="1"/>
                     <field name="is_partner_cv" invisible="1"/>
@@ -64,16 +68,24 @@
                             <field name="cv_last_name_2" readonly="1"/>
                         </group>
                         <group string="Datos de la cédula de identidad">
-                            <field name="cv_ci_name" readonly="1"/><!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
+                            <field name="cv_ci_name"
+                                   readonly="1"/>
+                            <!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
                             <field name="cv_ci_name_updated" readonly="1"/>
                             <field name="cv_name_adoptive" readonly="1"/>
                             <field name="cv_last_name_adoptive_1" readonly="1"/>
                             <field name="cv_last_name_adoptive_2" readonly="1"/>
                         </group>
                         <group string="Otros Datos">
-                            <field name="cv_birthdate" readonly="1"/> <!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
-                            <field name="cv_sex" readonly="1"/><!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
-                            <field name="cv_expiration_date" readonly="1"/><!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
+                            <field name="cv_birthdate"
+                                   readonly="1"/>
+                            <!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
+                            <field name="cv_sex"
+                                   readonly="1"/>
+                            <!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
+                            <field name="cv_expiration_date"
+                                   readonly="1"/>
+                            <!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
                         </group>
                         <group string="Fechas de cambios">
                             <field name="cv_full_name_updated_date" readonly="1"/>
@@ -91,7 +103,8 @@
         </field>
     </record>
 
-<!--    Vista formulario de Contactos extendida para no permitir editar los campos name, is_company y image image_1920 si el contacto es de CV-->
+    <!--    Vista formulario de Contactos extendida para no permitir editar los campos name, is_company y image image_1920 si el contacto es de CV-->
+
     <record id="view_partner_form_inherit" model="ir.ui.view">
         <field name="name">onsc_cv_view_partner_form_inherit</field>
         <field name="model">res.partner</field>
@@ -113,74 +126,91 @@
     </record>
 
     <record model="ir.ui.view" id="res_partner_kanban_cv">
-            <field name="name">res.partner.kanban</field>
-            <field name="model">res.partner</field>
-            <field name="priority" eval="1000"/>
-            <field name="arch" type="xml">
-                <kanban class="o_res_partner_kanban" create="0" edit="0" delete="0">
-                    <field name="id"/>
-                    <field name="color"/>
-                    <field name="parent_id"/>
-                    <field name="display_name"/>
-                    <field name="title"/>
-                    <field name="email"/>
-                    <field name="cv_nro_doc"/>
-                    <field name="is_company"/>
-                    <field name="function"/>
-                    <field name="cv_emissor_country_id"/>
-                    <field name="avatar_128"/>
-                    <templates>
-                        <t t-name="kanban-box">
-                            <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
-                                <t t-if="!record.is_company.raw_value">
-                                    <t t-set="background_image" t-value="kanban_image('res.partner', 'avatar_128', record.id.raw_value)"/>
-                                    <div class="o_kanban_image_fill_left d-none d-md-block" t-attf-style="background-image:url('#{background_image}')">
-                                        <img class="o_kanban_image_inner_pic" t-if="record.parent_id.raw_value" t-att-alt="record.parent_id.value" t-att-src="kanban_image('res.partner', 'avatar_128', record.parent_id.raw_value)"/>
-                                    </div>
-                                    <div class="o_kanban_image d-md-none" t-attf-style="background-image: url(#{background_image})">
-                                        <img class="o_kanban_image_inner_pic" t-if="record.parent_id.raw_value" t-att-alt="record.parent_id.value" t-att-src="kanban_image('res.partner', 'avatar_128', record.parent_id.raw_value)"/>
-                                    </div>
-                                </t>
-                                <t t-else="">
-                                    <div class="o_kanban_image_fill_left o_kanban_image_full" t-attf-style="background-image: url(#{kanban_image('res.partner', 'avatar_128', record.id.raw_value)})" role="img"/>
-                                </t>
-                                <div class="oe_kanban_details d-flex flex-column">
-                                    <strong class="o_kanban_record_title oe_partner_heading"><field name="display_name"/></strong>
-                                    <div class="o_kanban_tags_section oe_kanban_partner_categories"/>
-                                    <ul>
-                                        <li t-if="record.cv_emissor_country_id.raw_value">
-                                            <t><field name="cv_emissor_country_id"/></t>
-                                        </li>
-                                        <li t-if="record.email.raw_value" class="o_text_overflow"><field name="email"/></li>
-                                        <li t-if="record.email.cv_nro_doc" class="o_text_overflow"><field name="cv_nro_doc"/></li>
-                                    </ul>
-                                    <div class="o_row">
-                                        <span class="oe_kanban_partner_links"/>
-                                    </div>
+        <field name="name">res.partner.kanban</field>
+        <field name="model">res.partner</field>
+        <field name="priority" eval="1000"/>
+        <field name="arch" type="xml">
+            <kanban class="o_res_partner_kanban" create="0" edit="0" delete="0">
+                <field name="id"/>
+                <field name="color"/>
+                <field name="parent_id"/>
+                <field name="display_name"/>
+                <field name="title"/>
+                <field name="email"/>
+                <field name="cv_nro_doc"/>
+                <field name="is_company"/>
+                <field name="function"/>
+                <field name="cv_emissor_country_id"/>
+                <field name="avatar_128"/>
+                <templates>
+                    <t t-name="kanban-box">
+                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
+                            <t t-if="!record.is_company.raw_value">
+                                <t t-set="background_image"
+                                   t-value="kanban_image('res.partner', 'avatar_128', record.id.raw_value)"/>
+                                <div class="o_kanban_image_fill_left d-none d-md-block"
+                                     t-attf-style="background-image:url('#{background_image}')">
+                                    <img class="o_kanban_image_inner_pic" t-if="record.parent_id.raw_value"
+                                         t-att-alt="record.parent_id.value"
+                                         t-att-src="kanban_image('res.partner', 'avatar_128', record.parent_id.raw_value)"/>
+                                </div>
+                                <div class="o_kanban_image d-md-none"
+                                     t-attf-style="background-image: url(#{background_image})">
+                                    <img class="o_kanban_image_inner_pic" t-if="record.parent_id.raw_value"
+                                         t-att-alt="record.parent_id.value"
+                                         t-att-src="kanban_image('res.partner', 'avatar_128', record.parent_id.raw_value)"/>
+                                </div>
+                            </t>
+                            <t t-else="">
+                                <div class="o_kanban_image_fill_left o_kanban_image_full"
+                                     t-attf-style="background-image: url(#{kanban_image('res.partner', 'avatar_128', record.id.raw_value)})"
+                                     role="img"/>
+                            </t>
+                            <div class="oe_kanban_details d-flex flex-column">
+                                <strong class="o_kanban_record_title oe_partner_heading">
+                                    <field name="display_name"/>
+                                </strong>
+                                <div class="o_kanban_tags_section oe_kanban_partner_categories"/>
+                                <ul>
+                                    <li t-if="record.cv_emissor_country_id.raw_value">
+                                        <t>
+                                            <field name="cv_emissor_country_id"/>
+                                        </t>
+                                    </li>
+                                    <li t-if="record.email.raw_value" class="o_text_overflow">
+                                        <field name="email"/>
+                                    </li>
+                                    <li t-if="record.email.cv_nro_doc" class="o_text_overflow">
+                                        <field name="cv_nro_doc"/>
+                                    </li>
+                                </ul>
+                                <div class="o_row">
+                                    <span class="oe_kanban_partner_links"/>
                                 </div>
                             </div>
-                        </t>
-                    </templates>
-                </kanban>
-            </field>
+                        </div>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
     </record>
 
-     <record id="onsc_cv_action_res_partner" model="ir.actions.act_window">
+    <record id="onsc_cv_action_res_partner" model="ir.actions.act_window">
         <field name="name">Contactos</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">res.partner</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="search_view_id" ref="view_partner_search_cv"/>
         <field name="context">{'default_is_company': False, 'default_is_partner_cv': True,
-                                'tree_view_ref': 'onsc_cv_digital.view_partner_tree_cv',
-                                'kanban_view_ref': 'onsc_cv_digital.res_partner_kanban_cv',
-                                'form_view_ref': 'onsc_cv_digital.view_partner_form_cv'}
+            'tree_view_ref': 'onsc_cv_digital.view_partner_tree_cv',
+            'kanban_view_ref': 'onsc_cv_digital.res_partner_kanban_cv',
+            'form_view_ref': 'onsc_cv_digital.view_partner_form_cv'}
         </field>
-         <field name="domain">[('is_partner_cv', '=', True)]</field>
+        <field name="domain">[('is_partner_cv', '=', True)]</field>
         <field name="help" type="html">
-          <p class="o_view_nocontent_smiling_face">
-            No existen contactos creados
-          </p>
+            <p class="o_view_nocontent_smiling_face">
+                No existen contactos creados
+            </p>
         </field>
     </record>
 

@@ -88,7 +88,7 @@ class ResPartner(models.Model):
             return len(self.filtered(lambda x: x.is_partner_cv)) == 0
         return True
 
-    def write(self, values={}):
+    def write(self, values):
         if set([x for x in values]).intersection(set(COLUMNS_FROZEN)) and not self.check_can_update():
             raise ValidationError(_('No puede modificar un Contacto de ONSC'))
         return super(ResPartner, self).write(values)
