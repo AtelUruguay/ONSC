@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'Partner DNIC Integration',
-    'version': '15.0.0.1',
+    'version': '1.0',
     'license': '',
     'author': "Quanam",
     'website': "https://www.quanam.com",

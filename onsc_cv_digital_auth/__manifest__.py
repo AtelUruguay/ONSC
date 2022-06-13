@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital Auth',
-    'version': '15.0.0.1',
+    'version': '1.0',
     'license': '',
     'author': "Quanam",
     'website': "https://www.quanam.com",

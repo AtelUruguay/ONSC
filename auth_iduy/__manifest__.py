@@ -1,8 +1,6 @@
-# Part of Odoo. See LICENSE file for full copyright and licensing details.
-
 {
     'name': 'Authentication IdUY Connect',
-    'version': '1.2',
+    'version': '1.0',
     'license': '',
     'author': "Quanam",
     'website': "https://www.quanam.com",
