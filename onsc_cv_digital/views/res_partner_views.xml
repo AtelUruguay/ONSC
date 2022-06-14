@@ -71,14 +71,7 @@
                             <field name="cv_last_name_1" readonly="1"/>
                             <field name="cv_last_name_2" readonly="1"/>
                         </group>
-                        <group string="Información adicional">
-                            <!--                            <field name="cv_ci_name_1" readonly="1"/>-->
-                            <!--                            <field name="cv_ci_name_2" readonly="1"/>-->
-                            <!--                            <field name="cv_ci_lastname_1" readonly="1"/>-->
-                            <!--                            <field name="cv_ci_lastname_2" readonly="1"/>-->
-                            <!--                            <field name="cv_name_adoptive" readonly="1"/>-->
-                            <field name="cv_last_name_adoptive_1" readonly="1"/>
-                            <field name="cv_last_name_adoptive_2" readonly="1"/>
+                        <group name="cv_other_info">
                         </group>
                         <group string="Otros Datos">
                             <field name="cv_birthdate" readonly="1"/>

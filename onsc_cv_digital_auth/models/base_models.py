@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, api
+from odoo import models, api, fields
 
 
 class ResUsers(models.Model):
-    """Adiciona info de Id Digita la creacion del Partner"""
+    """INFORMACION Y COMPORTAMIENTO PROPIO DE INTEGRACIONES DNIC E IDUY"""
     _inherit = 'res.users'
 
     @api.model
@@ -16,12 +16,12 @@ class ResUsers(models.Model):
 
 
 class ResPartner(models.Model):
+    """INFORMACION Y COMPORTAMIENTO PROPIO DE INTEGRACIONES DNIC E IDUY"""
     _inherit = 'res.partner'
 
-    @api.model
-    def create(self, values):
-        values['name'] = values.get('name', '').upper()
-        return super(ResPartner, self).create(values)
-
-    def write(self, values):
-        return super(ResPartner, self).write(values)
+    cv_dnic_name_1 = fields.Char(u'Primer nombre CI')
+    cv_dnic_name_2 = fields.Char(u'Segundo nombre CI')
+    cv_dnic_lastname_1 = fields.Char(u'Primer apellido CI')
+    cv_dnic_lastname_2 = fields.Char(u'Segundo apellido CI')
+    cv_last_name_adoptive_1 = fields.Char(u'Primer apellido adoptivo')
+    cv_last_name_adoptive_2 = fields.Char(u'Segundo apellido adoptivo')

@@ -16,15 +16,10 @@ COLUMNS_FROZEN = [
     'cv_second_name',
     'cv_last_name_1',
     'cv_last_name_2',
-    # 'cv_ci_name_1',
-    # 'cv_ci_name_2',
-    # 'cv_ci_lastname_1',
-    # 'cv_ci_lastname_2',
     'cv_birthdate',
     'cv_sex',
-    'cv_last_name_adoptive_1',
-    'cv_last_name_adoptive_2',
-    'cv_name_adoptive',
+    # 'cv_last_name_adoptive_1',
+    # 'cv_last_name_adoptive_2',
     'cv_expiration_date',
     'is_partner_cv',
 ]
@@ -36,19 +31,14 @@ class ResPartner(models.Model):
     cv_emissor_country_id = fields.Many2one('res.country', u'País emisor del documento')
     cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento')
     cv_nro_doc = fields.Char(u'Número de documento')
+
     cv_first_name = fields.Char(u'Primer nombre')
     cv_second_name = fields.Char(u'Segundo nombre')
     cv_last_name_1 = fields.Char(u'Primer apellido')
     cv_last_name_2 = fields.Char(u'Segundo apellido')
-    # cv_ci_name_1 = fields.Char(u'Primer nombre CI')
-    # cv_ci_name_2 = fields.Char(u'Segundo nombre CI')
-    # cv_ci_lastname_1 = fields.Char(u'Primer apellido CI')
-    # cv_ci_lastname_2 = fields.Char(u'Segundo apellido CI')
+
     cv_birthdate = fields.Date(u'Fecha de nacimiento')
     cv_sex = fields.Selection(CV_SEX, u'Sexo')
-    cv_last_name_adoptive_1 = fields.Char(u'Primer apellido adoptivo')
-    cv_last_name_adoptive_2 = fields.Char(u'Segundo apellido adoptivo')
-    cv_name_adoptive = fields.Char(u'Nombre adoptivo')
     cv_full_name_updated_date = fields.Date(u'Fecha de información nombre completo',
                                             compute='_compute_full_name', store=True)
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo', compute='_compute_cv_sex_updated_date')
@@ -69,20 +59,11 @@ class ResPartner(models.Model):
             record.is_cv_uruguay = record.cv_emissor_country_id.code == 'UY'
 
     @api.depends('is_partner_cv', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
-                 # 'cv_ci_name_1', 'cv_ci_name_2', 'cv_ci_lastname_1', 'cv_ci_lastname_2'
                  )
     def _compute_cv_full_name(self):
         for record in self:
             record.cv_full_name_updated_date = fields.Date.today()
             if record.is_partner_cv:
-                # if record.is_cv_uruguay:
-                #     name_values = [record.cv_ci_name_1,
-                #                    record.cv_ci_name_2,
-                #                    record.cv_ci_lastname_1,
-                #                    record.cv_ci_lastname_2,
-                #                    ]
-                #
-                # else:
                 name_values = [record.cv_first_name,
                                record.cv_second_name,
                                record.cv_last_name_1,

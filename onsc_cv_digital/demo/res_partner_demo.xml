@@ -10,16 +10,8 @@
             <field name="cv_second_name"/>
             <field name="cv_last_name_1">Miranda</field>
             <field name="cv_last_name_2">Guerrero</field>
-            <!--            <field name="cv_ci_name_1">Pablo</field>-->
-            <!--            <field name="cv_ci_name_2">Armando</field>-->
-            <!--            <field name="cv_ci_lastname_1">Paredes</field>-->
-            <!--            <field name="cv_ci_lastname_2">Picazo</field>-->
-
             <field name="cv_birthdate" eval="DateTime.now() - relativedelta(years=28)"/>
             <field name="cv_sex">male</field>
-            <field name="cv_last_name_adoptive_1"/>
-            <field name="cv_last_name_adoptive_2"/>
-            <field name="cv_name_adoptive"/>
             <field name="cv_expiration_date" eval="DateTime.now() + relativedelta(years=2)"/>
             <field name="is_company">0</field>
             <field name="is_partner_cv">True</field>
@@ -33,16 +25,8 @@
             <field name="cv_nro_doc">02</field>
             <field name="cv_first_name">Ana</field>
             <field name="cv_second_name">Paula</field>
-            <!--            <field name="cv_last_name_1">Castillos</field>-->
-            <!--            <field name="cv_ci_name_1">Ana</field>-->
-            <!--            <field name="cv_ci_name_2">María</field>-->
-            <!--            <field name="cv_ci_lastname_1">García</field>-->
-            <!--            <field name="cv_ci_lastname_2">Pimienta</field>-->
             <field name="cv_birthdate" eval="DateTime.now() - relativedelta(years=21)"/>
             <field name="cv_sex">feminine</field>
-            <field name="cv_last_name_adoptive_1">Torres</field>
-            <field name="cv_last_name_adoptive_2">Cabrera</field>
-            <field name="cv_name_adoptive">María Eugenia</field>
             <field name="cv_expiration_date" eval="DateTime.now() + relativedelta(years=1)"/>
             <field name="is_company">False</field>
             <field name="is_partner_cv">True</field>
