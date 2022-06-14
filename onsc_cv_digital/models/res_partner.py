@@ -16,8 +16,10 @@ COLUMNS_FROZEN = [
     'cv_second_name',
     'cv_last_name_1',
     'cv_last_name_2',
-    'cv_ci_name',
-    'cv_ci_name_updated',
+    # 'cv_ci_name_1',
+    # 'cv_ci_name_2',
+    # 'cv_ci_lastname_1',
+    # 'cv_ci_lastname_2',
     'cv_birthdate',
     'cv_sex',
     'cv_last_name_adoptive_1',
@@ -38,20 +40,23 @@ class ResPartner(models.Model):
     cv_second_name = fields.Char(u'Segundo nombre')
     cv_last_name_1 = fields.Char(u'Primer apellido')
     cv_last_name_2 = fields.Char(u'Segundo apellido')
-    cv_ci_name = fields.Char(u'Nombre en cédula')
-    cv_ci_name_updated = fields.Char(u'Nombre en cédula actualizado')
+    # cv_ci_name_1 = fields.Char(u'Primer nombre CI')
+    # cv_ci_name_2 = fields.Char(u'Segundo nombre CI')
+    # cv_ci_lastname_1 = fields.Char(u'Primer apellido CI')
+    # cv_ci_lastname_2 = fields.Char(u'Segundo apellido CI')
     cv_birthdate = fields.Date(u'Fecha de nacimiento')
     cv_sex = fields.Selection(CV_SEX, u'Sexo')
     cv_last_name_adoptive_1 = fields.Char(u'Primer apellido adoptivo')
     cv_last_name_adoptive_2 = fields.Char(u'Segundo apellido adoptivo')
     cv_name_adoptive = fields.Char(u'Nombre adoptivo')
     cv_full_name_updated_date = fields.Date(u'Fecha de información nombre completo',
-                                            compute='_compute_full_name_updated_date', store=True)
+                                            compute='_compute_full_name', store=True)
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo', compute='_compute_cv_sex_updated_date')
     cv_expiration_date = fields.Date(u'Fecha de vencimiento documento de identidad')
     cv_photo_updated_date = fields.Date(u'Fecha de foto del/de la funcionario/a', compute='_compute_photo_updated_date')
     is_partner_cv = fields.Boolean(u'¿Es un contacto de CV?')
     is_cv_uruguay = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay')
+    cv_full_name = fields.Char('Nombre', compute='_compute_cv_full_name', store=True)
 
     _sql_constraints = [
         ('country_doc_type_nro_doc_uniq', 'unique(cv_emissor_country_id, cv_document_type_id, cv_nro_doc)',
@@ -63,10 +68,28 @@ class ResPartner(models.Model):
         for record in self:
             record.is_cv_uruguay = record.cv_emissor_country_id.code == 'UY'
 
-    @api.depends('cv_first_name', 'cv_last_name_1', 'cv_last_name_2')
-    def _compute_full_name_updated_date(self):
+    @api.depends('is_partner_cv', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
+                 # 'cv_ci_name_1', 'cv_ci_name_2', 'cv_ci_lastname_1', 'cv_ci_lastname_2'
+                 )
+    def _compute_cv_full_name(self):
         for record in self:
             record.cv_full_name_updated_date = fields.Date.today()
+            if record.is_partner_cv:
+                # if record.is_cv_uruguay:
+                #     name_values = [record.cv_ci_name_1,
+                #                    record.cv_ci_name_2,
+                #                    record.cv_ci_lastname_1,
+                #                    record.cv_ci_lastname_2,
+                #                    ]
+                #
+                # else:
+                name_values = [record.cv_first_name,
+                               record.cv_second_name,
+                               record.cv_last_name_1,
+                               record.cv_last_name_2]
+                record.cv_full_name = ' '.join([x for x in name_values if x])
+            else:
+                record.cv_full_name = record.name
 
     @api.depends('cv_sex')
     def _compute_cv_sex_updated_date(self):
@@ -81,19 +104,35 @@ class ResPartner(models.Model):
     def check_can_update(self):
         """ Para actualizar los partner que tienen is_partner_cv en True
         se debe pasar por contexto can_update_contact_cv=True
-        :return:
+        :return: Retorna True si el usuario puede modificar/eliminar los registros
         """
         context = self._context or {}
         if not context.get('can_update_contact_cv') and 'install_xmlid' not in context:
             return len(self.filtered(lambda x: x.is_partner_cv)) == 0
         return True
 
+    @api.model
+    def create(self, values):
+        # Si no se envía el nombre en los partner de tipo cv
+        if 'name' not in values and values.get('is_partner_cv', False):
+            values.update({'name': 'Temp'})
+
+        res = super(ResPartner, self).create(values)
+        # Actualizar el nombre en el registro con el campo calculado en caso que existan diferencias
+        if res.cv_full_name and res.name != res.cv_full_name:
+            res.name = res.cv_full_name
+        return res
+
     def write(self, values):
         if set([x for x in values]).intersection(set(COLUMNS_FROZEN)) and not self.check_can_update():
             raise ValidationError(_('No puede modificar un Contacto de ONSC'))
-        return super(ResPartner, self).write(values)
+        res = super(ResPartner, self).write(values)
+        # Actualizar los nombres en los registros con el campo calculado en caso que existan diferencias
+        for rec in self.filtered(lambda x: x.name != x.cv_full_name and x.cv_full_name):
+            rec.name = rec.cv_full_name
+        return res
 
     def unlink(self):
-        if not self.check_can_update():
+        if self.check_can_update():
             return super(ResPartner, self).unlink()
         raise ValidationError(_('No puede eliminar un Contacto de ONSC'))
