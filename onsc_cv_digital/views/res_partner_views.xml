@@ -17,6 +17,10 @@
                             context="{'group_by':'cv_emissor_country_id'}"/>
                     <filter name="filter_document_type_id" string="Tipo de documento"
                             context="{'group_by':'cv_document_type_id'}"/>
+                    <filter name="filter_cv_first_name" string="Primer Apellido"
+                            context="{'group_by':'cv_first_name'}"/>
+                    <filter name="filter_cv_second_name" string="Segundo Apellido"
+                            context="{'group_by':'cv_first_name'}"/>
                 </group>
             </search>
         </field>
@@ -54,7 +58,7 @@
                     <field name="is_company" invisible="1"/>
                     <div class="oe_title">
                         <h1>
-                            <field name="name" readonly="1"/>
+                            <field name="cv_full_name" readonly="1"/>
                         </h1>
                     </div>
                     <group>
@@ -67,25 +71,19 @@
                             <field name="cv_last_name_1" readonly="1"/>
                             <field name="cv_last_name_2" readonly="1"/>
                         </group>
-                        <group string="Datos de la cédula de identidad">
-                            <field name="cv_ci_name"
-                                   readonly="1"/>
-                            <!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
-                            <field name="cv_ci_name_updated" readonly="1"/>
-                            <field name="cv_name_adoptive" readonly="1"/>
+                        <group string="Información adicional">
+                            <!--                            <field name="cv_ci_name_1" readonly="1"/>-->
+                            <!--                            <field name="cv_ci_name_2" readonly="1"/>-->
+                            <!--                            <field name="cv_ci_lastname_1" readonly="1"/>-->
+                            <!--                            <field name="cv_ci_lastname_2" readonly="1"/>-->
+                            <!--                            <field name="cv_name_adoptive" readonly="1"/>-->
                             <field name="cv_last_name_adoptive_1" readonly="1"/>
                             <field name="cv_last_name_adoptive_2" readonly="1"/>
                         </group>
                         <group string="Otros Datos">
-                            <field name="cv_birthdate"
-                                   readonly="1"/>
-                            <!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
-                            <field name="cv_sex"
-                                   readonly="1"/>
-                            <!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
-                            <field name="cv_expiration_date"
-                                   readonly="1"/>
-                            <!--attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"-->
+                            <field name="cv_birthdate" readonly="1"/>
+                            <field name="cv_sex" readonly="1"/>
+                            <field name="cv_expiration_date" readonly="1"/>
                         </group>
                         <group string="Fechas de cambios">
                             <field name="cv_full_name_updated_date" readonly="1"/>
