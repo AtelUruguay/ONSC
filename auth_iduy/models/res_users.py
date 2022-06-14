@@ -32,6 +32,22 @@ class ResUsers(models.Model):
         return (self.env.cr.dbname, user.login, user.oauth_access_token)
 
     @api.model
+    def _prepare_userinfo_dict(self, provider, params):
+        result = {
+            'login': params.get('name', ''),
+            'name': params.get('name', ''),
+            'oauth_uid': params.get('uid', False),
+            'oauth_access_token': params.get('access_token'),
+            'vat': params.get('id_uy_document', ''),
+            'oauth_provider_id': provider,
+
+        }
+        country = self._get_country_code(params)
+        if country:
+            result['country_id'] = country.id
+        return result
+
+    @api.model
     def _auth_iduy_signin(self, provider, params):
         """
         Se guarda en el usuario el access_token con el fin de usarlo como contrasena
@@ -44,24 +60,11 @@ class ResUsers(models.Model):
                 args = [("login", "=", params.get('id_uy_email'))]
             args.append(('oauth_provider_id', '=', provider))
             oauth_user = self.search(args)
+            userinfo_dict = self._prepare_userinfo_dict(provider, params)
             if not oauth_user:
-                oauth_user = self.sudo().create({
-                    'login': params.get('id_uy_name', ''),
-                    'name': params.get('id_uy_name'),
-                    'oauth_uid': params.get('id_uy_uid', False),
-                    'oauth_access_token': params.get('access_token'),
-                    'oauth_provider_id': provider
-                })
-                partner_dict = {
-                    'vat': params.get('id_uy_document', ''),
-                }
-                country = self._get_country_code(params)
-                if country:
-                    partner_dict['country_id'] = country.id
-                if bool(partner_dict):
-                    oauth_user.partner_id.write(partner_dict)
+                oauth_user = self.sudo().create(userinfo_dict)
             else:
-                oauth_user.write({'oauth_access_token': params.get('access_token')})
+                oauth_user.write(userinfo_dict)
             assert len(oauth_user) == 1
             return oauth_user
         except AccessDenied:

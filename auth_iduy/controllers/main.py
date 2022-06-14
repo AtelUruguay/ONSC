@@ -140,15 +140,7 @@ class OAuthController(http.Controller):
                     raise Exception
                 userinfo_content_dict = eval(
                     userinfo_req.content.decode().replace('true', 'True'))
-                state_info_dict = userinfo_content_dict.get('pais_documento', {})
-                kw.update({
-                    'id_uy_email': userinfo_content_dict.get('email', ''),
-                    'id_uy_uid': userinfo_content_dict.get('uid', ''),
-                    'id_uy_document': userinfo_content_dict.get('numero_documento', ''),
-                    'id_uy_name': userinfo_content_dict.get('name', ''),
-                    'id_uy_country_code': state_info_dict.get('codigo', ''),
-                    'id_uy_country_nombre': state_info_dict.get('nombre', ''),
-                })
+                kw.update(userinfo_content_dict)
 
                 credentials = env['res.users'].sudo().auth_oauth(provider, kw)
                 cr.commit()
