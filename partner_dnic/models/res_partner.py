@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models
 
 
 class ResPartner(models.Model):
@@ -12,4 +12,3 @@ class ResPartner(models.Model):
     cv_dnic_lastname_2 = fields.Char(u'Segundo apellido CI')
     cv_last_name_adoptive_1 = fields.Char(u'Primer apellido adoptivo')
     cv_last_name_adoptive_2 = fields.Char(u'Segundo apellido adoptivo')
-
