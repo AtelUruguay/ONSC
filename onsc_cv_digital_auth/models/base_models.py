@@ -35,6 +35,11 @@ class ResUsers(models.Model):
         })
         return result
 
+    @api.model
+    def _get_user(self, provider, params):
+        oauth_user = super(ResUsers, self.with_context(can_update_contact_cv=True))._get_user(provider, params)
+        return oauth_user
+
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -51,7 +56,7 @@ class ResPartner(models.Model):
         for record in self:
             record.cv_full_name_updated_date = fields.Date.today()
             if record.is_partner_cv:
-                if record.is_cv_uruguay or not self.env.company.is_dnic_integrated:
+                if record.is_cv_uruguay:
                     name_values = [record.cv_dnic_name_1,
                                    record.cv_dnic_name_2,
                                    record.cv_dnic_lastname_1,

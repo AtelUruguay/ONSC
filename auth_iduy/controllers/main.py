@@ -7,14 +7,13 @@ import logging
 import requests
 import werkzeug.urls
 import werkzeug.utils
-from odoo.addons.auth_oauth.controllers.main import OAuthLogin
-from odoo.addons.web.controllers.main import set_cookie_and_redirect, login_and_redirect
-from werkzeug.exceptions import BadRequest
-
 from odoo import api, http, SUPERUSER_ID, _
 from odoo import registry as registry_get
+from odoo.addons.auth_oauth.controllers.main import OAuthLogin
+from odoo.addons.web.controllers.main import set_cookie_and_redirect, login_and_redirect
 from odoo.exceptions import AccessDenied
 from odoo.http import request
+from werkzeug.exceptions import BadRequest
 
 _logger = logging.getLogger(__name__)
 
@@ -80,7 +79,7 @@ class OAuthController(http.Controller):
             'redirect_uri': provider.redirect_uri,
         }
 
-        authorization = base64.encodestring(
+        authorization = base64.encode(
             ("%s:%s" % (provider.client_id, provider.secret_key)).encode())
         authorization = 'Basic %s' % authorization.decode().replace('\n', '')
 
@@ -108,10 +107,6 @@ class OAuthController(http.Controller):
     @http.route('/auth_oauth/signin', type='http', auth='none')
     @fragment_to_query_string
     def signin(self, **kw):
-        """
-        User sigin controller
-        @type kw: object
-        """
         state = json.loads(kw['state'])
         dbname = state['d']
         if not http.db_filter([dbname]):
@@ -122,32 +117,11 @@ class OAuthController(http.Controller):
         with registry.cursor() as cr:
             try:
                 env = api.Environment(cr, SUPERUSER_ID, context)
-
-                provider = env['auth.oauth.provider'].browse(provider)
-
-                token_req = self._get_token_req(provider, kw)
-                if token_req.status_code != 200:
-                    raise Exception
-                token_resp_content_dict = eval(token_req.content.decode())
-
-                access_token = token_resp_content_dict.get('access_token', 'empty')
-                kw.update({
-                    'access_token': access_token
-                })
-
-                userinfo_req = self._get_userinfo(provider, access_token)
-                if userinfo_req.status_code != 200:
-                    raise Exception
-                userinfo_content_dict = eval(
-                    userinfo_req.content.decode().replace('true', 'True'))
-                kw.update(userinfo_content_dict)
-
                 credentials = env['res.users'].sudo().auth_oauth(provider, kw)
                 cr.commit()
                 action = state.get('a')
                 menu = state.get('m')
-                redirect = werkzeug.url_unquote_plus(state['r']) if state.get(
-                    'r') else False
+                redirect = werkzeug.urls.url_unquote_plus(state['r']) if state.get('r') else False
                 url = '/web'
                 if redirect:
                     url = redirect

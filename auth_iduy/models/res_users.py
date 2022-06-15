@@ -34,7 +34,7 @@ class ResUsers(models.Model):
     @api.model
     def _prepare_userinfo_dict(self, provider, params):
         result = {
-            'login': params.get('name', ''),
+            'login': params.get('email', ''),
             'name': params.get('name', ''),
             'oauth_uid': params.get('uid', False),
             'oauth_access_token': params.get('access_token'),
@@ -52,14 +52,15 @@ class ResUsers(models.Model):
         if params.get('id_uy_uid', False):
             args = [("oauth_uid", "=", params.get('id_uy_uid'))]
         else:
-            args = [("login", "=", params.get('id_uy_email'))]
+            args = [("login", "=", params.get('email'))]
         args.append(('oauth_provider_id', '=', provider))
         oauth_user = self.search(args)
         userinfo_dict = self._prepare_userinfo_dict(provider, params)
         if not oauth_user:
-            oauth_user = self.sudo().with_context(can_update_contact_cv=True).create(userinfo_dict)
+            oauth_user = self.sudo().create(userinfo_dict)
         else:
-            oauth_user.sudo().with_context(can_update_contact_cv=True).write(userinfo_dict)
+            userinfo_dict['cv_first_name'] = 'QWERTY'
+            oauth_user.sudo().write(userinfo_dict)
         return oauth_user
 
     @api.model
@@ -80,7 +81,10 @@ class ResUsers(models.Model):
 
         @rtype: object of country
         """
-        country_code = params.get('id_uy_country_code', 'NCCODE')
+        _pais_documento = params.get('pais_documento', False)
+        if _pais_documento and _pais_documento.get('codigo', False):
+            country_code = _pais_documento.get('codigo', 'UY')
+
         return self.env['res.country'].search([
             ('code', 'in', [country_code.upper(), country_code.lower()])
         ], limit=1)

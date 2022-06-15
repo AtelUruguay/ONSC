@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
+from odoo import SUPERUSER_ID, models, fields, api, _
 from odoo.exceptions import ValidationError
 
 CV_SEX = [('male', 'Masculino'), ('feminine', 'Femenino')]
@@ -85,10 +85,11 @@ class ResPartner(models.Model):
     def check_can_update(self):
         """ Para actualizar los partner que tienen is_partner_cv en True
         se debe pasar por contexto can_update_contact_cv=True
-        :return: Retorna True si el usuario puede modificar/eliminar los registros
+        :return: True si el usuario puede modificar/eliminar los registros
         """
         context = self._context or {}
-        if not context.get('can_update_contact_cv') and 'install_xmlid' not in context:
+        if not context.get(
+                'can_update_contact_cv') and 'install_xmlid' not in context and not self.env.uid != SUPERUSER_ID:
             return len(self.filtered(lambda x: x.is_partner_cv)) == 0
         return True
 
