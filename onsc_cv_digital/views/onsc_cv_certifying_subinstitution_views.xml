@@ -34,7 +34,7 @@
         <field name="name">onsc.cv.certifying_subinstitution.form</field>
         <field name="model">onsc.cv.certifying.subinstitution</field>
         <field name="arch" type="xml">
-            <form string="Sub institución certificadora">
+            <form string="Sub instituciones certificadoras">
                 <header>
                     <button name="action_validate" string="Validar"
                             class="oe_highlight"
@@ -71,7 +71,7 @@
     </record>
 
     <record id='onsc_cv_certifying_subinstitution_action' model='ir.actions.act_window'>
-        <field name="name">Sub institución certificadora</field>
+        <field name="name">Sub instituciones certificadoras</field>
         <field name="res_model">onsc.cv.certifying.subinstitution</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'is_config': True}</field>
