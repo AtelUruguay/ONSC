@@ -40,7 +40,7 @@ class ResPartner(models.Model):
     cv_birthdate = fields.Date(u'Fecha de nacimiento')
     cv_sex = fields.Selection(CV_SEX, u'Sexo')
     cv_full_name_updated_date = fields.Date(u'Fecha de información nombre completo',
-                                            compute='_compute_full_name', store=True)
+                                            compute='_compute_cv_full_name', store=True)
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo', compute='_compute_cv_sex_updated_date')
     cv_expiration_date = fields.Date(u'Fecha de vencimiento documento de identidad')
     cv_photo_updated_date = fields.Date(u'Fecha de foto del/de la funcionario/a', compute='_compute_photo_updated_date')
