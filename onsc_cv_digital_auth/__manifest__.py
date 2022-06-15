@@ -10,7 +10,10 @@ ONSC CV Digital Auth
 =====================================================
 
 """,
-    'depends': ['auth_iduy_primary_login', 'partner_dnic_int'],
-    'data': [],
+    'depends': ['auth_iduy_primary_login', 'partner_dnic'],
+    'data': [
+        'views/res_partner_view.xml',
+
+    ],
 }
 

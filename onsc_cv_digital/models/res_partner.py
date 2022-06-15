@@ -104,8 +104,12 @@ class ResPartner(models.Model):
             res.name = res.cv_full_name
         return res
 
+    @api.model
+    def _get_frozen_columns(self):
+        return COLUMNS_FROZEN
+
     def write(self, values):
-        if set([x for x in values]).intersection(set(COLUMNS_FROZEN)) and not self.check_can_update():
+        if set([x for x in values]).intersection(set(self._get_frozen_columns())) and not self.check_can_update():
             raise ValidationError(_('No puede modificar un Contacto de ONSC'))
         res = super(ResPartner, self).write(values)
         # Actualizar los nombres en los registros con el campo calculado en caso que existan diferencias

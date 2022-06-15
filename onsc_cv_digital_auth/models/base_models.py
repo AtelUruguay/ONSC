@@ -2,6 +2,15 @@
 
 from odoo import models, api, fields
 
+DNIC_FROZEN_COLUMNS = [
+    'cv_dnic_name_1',
+    'cv_dnic_name_2',
+    'cv_dnic_lastname_1',
+    'cv_dnic_lastname_2',
+    'cv_last_name_adoptive_1',
+    'cv_last_name_adoptive_2',
+]
+
 
 class ResUsers(models.Model):
     """INFORMACION Y COMPORTAMIENTO PROPIO DE INTEGRACIONES DNIC E IDUY"""
@@ -16,12 +25,30 @@ class ResUsers(models.Model):
 
 
 class ResPartner(models.Model):
-    """INFORMACION Y COMPORTAMIENTO PROPIO DE INTEGRACIONES DNIC E IDUY"""
     _inherit = 'res.partner'
 
-    cv_dnic_name_1 = fields.Char(u'Primer nombre CI')
-    cv_dnic_name_2 = fields.Char(u'Segundo nombre CI')
-    cv_dnic_lastname_1 = fields.Char(u'Primer apellido CI')
-    cv_dnic_lastname_2 = fields.Char(u'Segundo apellido CI')
-    cv_last_name_adoptive_1 = fields.Char(u'Primer apellido adoptivo')
-    cv_last_name_adoptive_2 = fields.Char(u'Segundo apellido adoptivo')
+    @api.model
+    def _get_frozen_columns(self):
+        "Sobreescrito para incorporar las columnas DNIC como de no modificacion"
+        return super(ResPartner, self)._get_frozen_columns() + DNIC_FROZEN_COLUMNS
+
+    @api.depends('is_partner_cv', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
+                 'cv_dnic_name_1', 'cv_dnic_name_2', 'cv_dnic_lastname_1', 'cv_dnic_lastname_2')
+    def _compute_cv_full_name(self):
+        "Sobreescrito para calcular el cv_full_name si "
+        for record in self:
+            record.cv_full_name_updated_date = fields.Date.today()
+            if record.is_partner_cv:
+                if record.is_cv_uruguay or not self.env.company.is_dnic_integrated:
+                    name_values = [record.cv_dnic_name_1,
+                                   record.cv_dnic_name_2,
+                                   record.cv_dnic_lastname_1,
+                                   record.cv_dnic_lastname_2]
+                else:
+                    name_values = [record.cv_first_name,
+                                   record.cv_second_name,
+                                   record.cv_last_name_1,
+                                   record.cv_last_name_2]
+                record.cv_full_name = ' '.join([x for x in name_values if x])
+            else:
+                record.cv_full_name = record.name
