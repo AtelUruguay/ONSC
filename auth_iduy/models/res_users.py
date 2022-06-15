@@ -48,23 +48,28 @@ class ResUsers(models.Model):
         return result
 
     @api.model
+    def _get_user(self, provider, params):
+        if params.get('id_uy_uid', False):
+            args = [("oauth_uid", "=", params.get('id_uy_uid'))]
+        else:
+            args = [("login", "=", params.get('id_uy_email'))]
+        args.append(('oauth_provider_id', '=', provider))
+        oauth_user = self.search(args)
+        userinfo_dict = self._prepare_userinfo_dict(provider, params)
+        if not oauth_user:
+            oauth_user = self.sudo().with_context(can_update_contact_cv=True).create(userinfo_dict)
+        else:
+            oauth_user.sudo().with_context(can_update_contact_cv=True).write(userinfo_dict)
+        return oauth_user
+
+    @api.model
     def _auth_iduy_signin(self, provider, params):
         """
         Se guarda en el usuario el access_token con el fin de usarlo como contrasena
         @rtype: res.user identificado y con su access_token actualizado
         """
         try:
-            if params.get('id_uy_uid', False):
-                args = [("oauth_uid", "=", params.get('id_uy_uid'))]
-            else:
-                args = [("login", "=", params.get('id_uy_email'))]
-            args.append(('oauth_provider_id', '=', provider))
-            oauth_user = self.search(args)
-            userinfo_dict = self._prepare_userinfo_dict(provider, params)
-            if not oauth_user:
-                oauth_user = self.sudo().create(userinfo_dict)
-            else:
-                oauth_user.write(userinfo_dict)
+            oauth_user = self._get_user(provider, params)
             assert len(oauth_user) == 1
             return oauth_user
         except AccessDenied:
