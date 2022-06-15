@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 
 
 class ONSCCVCertificate(models.Model):
@@ -11,6 +12,12 @@ class ONSCCVCertificate(models.Model):
     name = fields.Char("Nombre del certificado", required=True, tracking=True)
     line_ids = fields.One2many('onsc.cv.certificate.line', inverse_name='certificate_id', string='Líneas',
                                required=True)
+
+    @api.constrains('name', 'line_ids')
+    def _check_valid_certificate(self):
+        for record in self:
+            if len(record.line_ids) == 0:
+                raise ValidationError(_("Debe cargar al menos una Institución/Sub institución certificadora"))
 
     def _check_validate(self, args2validate, message=""):
         args2validate = [

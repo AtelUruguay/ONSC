@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 
 
 class ONSCCVAcademicProgram(models.Model):
@@ -29,6 +30,8 @@ class ONSCCVAcademicProgram(models.Model):
             self.subinstitution_id = False
 
     def _check_validate(self, args2validate, message=""):
+        if self.institution_id.state != 'validated' or self.subinstitution_id.state != 'validated':
+            raise ValidationError(_("La Institución o la Sub institución no ha sido validada"))
         args2validate = [
             ('name', '=', self.name),
             ('subinstitution_id', '=', self.subinstitution_id.id),
