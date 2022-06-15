@@ -10,7 +10,8 @@ Partner DNIC Integration
 =====================================================
 
 """,
-    'depends': ['base'],
-    'data': [],
+    'depends': ['base', 'base_setup'],
+    'data': [
+        'views/res_config_settings_view.xml',
+    ],
 }
-
