@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="auth_openid_iduy" model="auth.oauth.provider">
+            <field name="name">Id Uruguay</field>
+            <field name="css_class"></field>
+            <field name="body">ID Uruguay</field>
+            <field name="flow">id_uy</field>
+            <field name="enabled">True</field>
+            <field name="sequence">0</field>
+            <field name="redirect_uri">https://URL Base de Odoo/auth_oauth/signin</field>
+            <field name="auth_endpoint">https://URL Base Id UY/oidc/v1/authorize</field>
+            <field name="data_endpoint">https://URL Base Id UY/oidc/v1/userinfo</field>
+            <field name="validation_endpoint">https://URL Base Id UY/oidc/v1/token</field>
+            <field name="scope">openid document personal_info profile auth_info email</field>
+        </record>
+    </data>
+</odoo>

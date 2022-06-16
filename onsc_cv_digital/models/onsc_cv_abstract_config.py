@@ -13,7 +13,7 @@ STATES = [('to_validate', 'Para validar'),
 class ONSCCVAbstractConfig(models.Model):
     _name = 'onsc.cv.abstract.config'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _description = 'Modelo abstracto de catálogos'
+    _description = 'Modelo abstracto de catálogos condicionales'
 
     active = fields.Boolean(string='Activo', default=True, tracking=True)
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
