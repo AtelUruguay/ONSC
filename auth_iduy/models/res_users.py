@@ -38,7 +38,7 @@ class ResUsers(models.Model):
             'name': params.get('name', ''),
             'oauth_uid': params.get('uid', False),
             'oauth_access_token': params.get('access_token'),
-            'vat': params.get('id_uy_document', ''),
+            'vat': params.get('numero_documento', False),
             'oauth_provider_id': provider,
 
         }
