@@ -9,6 +9,7 @@
                 <attribute name="string">Información DNIC</attribute>
             </group>
             <group name="cv_other_info" position="inside">
+                <field name="cv_dnic_full_name" readonly="1"/>
                 <field name="cv_dnic_name_1" readonly="1"/>
                 <field name="cv_dnic_name_2" readonly="1"/>
                 <field name="cv_dnic_lastname_1" readonly="1"/>
