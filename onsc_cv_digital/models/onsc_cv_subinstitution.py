@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 
 
 class ONSCCVSubintitution(models.Model):
@@ -23,6 +24,8 @@ class ONSCCVSubintitution(models.Model):
             self.country_id = self.institution_id.country_id
 
     def _check_validate(self, args2validate, message=""):
+        if self.institution_id.state != 'validated':
+            raise ValidationError(_("La Institución no ha sido validada"))
         args2validate = [
             ('name', '=', self.name),
             ('institution_id', '=', self.institution_id.id),
