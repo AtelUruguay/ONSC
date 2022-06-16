@@ -56,7 +56,7 @@ class ResPartner(models.Model):
         for record in self:
             record.cv_full_name_updated_date = fields.Date.today()
             if record.is_partner_cv:
-                if record.is_cv_uruguay:
+                if record.is_cv_uruguay and self.env.company.is_dnic_integrated:
                     name_values = [record.cv_dnic_name_1,
                                    record.cv_dnic_name_2,
                                    record.cv_dnic_lastname_1,

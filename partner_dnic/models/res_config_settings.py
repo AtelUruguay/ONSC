@@ -6,4 +6,4 @@ from odoo import fields, models
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'
 
-    is_dnic_integrated = fields.Boolean('Integración con DNIC')
+    is_dnic_integrated = fields.Boolean('Integración con DNIC', related="company_id.is_dnic_integrated", readonly=False)
