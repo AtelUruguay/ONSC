@@ -43,6 +43,7 @@
                             <field name="see"/>
                             <field name="hear"/>
                             <field name="walk"/>
+                            <field name="talk"/>
                         </group>
                         <group>
                             <field name="slide"/>
