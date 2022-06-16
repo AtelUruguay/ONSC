@@ -59,7 +59,6 @@ class ResUsers(models.Model):
         if not oauth_user:
             oauth_user = self.sudo().create(userinfo_dict)
         else:
-            userinfo_dict['cv_first_name'] = 'QWERTY'
             oauth_user.sudo().write(userinfo_dict)
         return oauth_user
 
