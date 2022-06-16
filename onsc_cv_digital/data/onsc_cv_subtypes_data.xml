@@ -109,7 +109,6 @@
         <record id="onsc_cv_subtype_evaluation_awards" model="onsc.cv.subtype.evaluation">
             <field name="name">Premios</field>
             <field name="is_option_other_enable">False</field>
-            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_announcement" model="onsc.cv.subtype.evaluation">
             <field name="name">Convocatorias concursables</field>
