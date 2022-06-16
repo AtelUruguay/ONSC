@@ -4,18 +4,12 @@
 import logging
 import ssl
 
-from suds import Client, WebFault
-
 from odoo import _
 from odoo.exceptions import ValidationError
+from suds import Client, WebFault
 
-# logging.basicConfig(level=logging.INFO)
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
-
-# logging.getLogger('suds.transport').setLevel(logging.DEBUG)
-# logging.getLogger('suds.xsd.schema').setLevel(logging.DEBUG)
-# logging.getLogger('suds.wsdl').setLevel(logging.DEBUG)
 
 class DNICClient():
 
@@ -82,7 +76,7 @@ class DNICClient():
             respuesta = client.service.obtDocDigitalizado(request_param)
             return self.procesarRespuesta(respuesta)
         except WebFault:
-            raise ValidationError('Error: No se pudo Procesar el request')
+            raise ValidationError(_('Error: No se pudo Procesar el request'))
 
     def procesarRespuesta(self, respuesta):
         """return dict """
@@ -96,4 +90,3 @@ class DNICClient():
             'cv_dnic_full_name': ''
         }
         return result
-
