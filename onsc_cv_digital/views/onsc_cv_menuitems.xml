@@ -8,17 +8,18 @@
               name="Configuración"
               parent="onsc_cv_root_menu"
               sequence="50"/>
-        <menuitem id="onsc_cv_document_type_action_menu"
+
+        <menuitem id="onsc_cv_work_area_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_document_type_action"
+                  action="onsc_cv_work_area_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="1"/>
 
-        <menuitem id="onsc_cv_status_civil_action_menu"
+        <menuitem id="onsc_cv_educational_areas_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_status_civil_action"
-                  sequence="2"
-                  groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
+                  action="onsc_cv_educational_areas_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="2"/>
 
         <menuitem id="onsc_cv_drivers_license_categories_action_menu"
                   parent="onsc_cv_config_menu"
@@ -26,22 +27,22 @@
                   sequence="3"
                   groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
 
-        <menuitem id="onsc_cv_gender_action_menu"
+        <menuitem id="onsc_cv_certificate_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_gender_action"
-                  groups="group_gestor_catalogos_cv"
+                  action="onsc_cv_certificate_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="4"/>
-
-        <menuitem id="onsc_cv_race_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_race_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="5"/>
 
         <menuitem id="onsc_cv_location_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_location_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="5"/>
+
+        <menuitem id="onsc_cv_knowledge_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_knowledge_action"
+                  groups="group_gestor_catalogos_cv"
                   sequence="6"/>
 
         <menuitem id="menu_country_state_partner"
@@ -50,57 +51,51 @@
                   groups="group_gestor_catalogos_cv"
                   sequence="7"/>
 
+        <menuitem id="onsc_cv_discipline_educational_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_discipline_educational_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="8"/>
+
+         <menuitem id="onsc_cv_status_civil_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_status_civil_action"
+                  sequence="9"
+                  groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
+
+        <menuitem id="onsc_cv_gender_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_gender_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="10"/>
+
+        <menuitem id="onsc_cv_language_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_language_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="11"/>
+
         <menuitem id="onsc_cv_institution_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_institution_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="8"/>
-
-        <menuitem id="onsc_cv_subinstitution_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_subinstitution_action"
-                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="9"/>
-
-        <menuitem id="onsc_cv_study_level_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_study_level_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="10"/>
-
-        <menuitem id="onsc_cv_academic_program_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_academic_program_action"
-                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="11"/>
+                  sequence="12"/>
 
         <menuitem id="onsc_cv_certifying_institution_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_certifying_institution_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="10"/>
-
-        <menuitem id="onsc_cv_certifying_subinstitution_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_certifying_subinstitution_action"
-                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="12"/>
-
-        <menuitem id="onsc_cv_certificate_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_certificate_action"
-                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="13"/>
 
-        <menuitem id="onsc_cv_educational_areas_action_menu"
+        <menuitem id="onsc_cv_divulgation_media_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_educational_areas_action"
+                  action="onsc_cv_divulgation_media_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="14"/>
 
-        <menuitem id="onsc_cv_educational_subarea_action_menu"
+        <menuitem id="onsc_cv_study_level_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_educational_subarea_action"
+                  action="onsc_cv_study_level_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="15"/>
 
@@ -110,116 +105,119 @@
                   groups="group_gestor_catalogos_cv"
                   sequence="16"/>
 
-        <menuitem id="onsc_cv_discipline_educational_action_menu"
+        <menuitem id="onsc_cv_academic_program_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_discipline_educational_action"
-                  groups="group_gestor_catalogos_cv"
+                  action="onsc_cv_academic_program_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="17"/>
 
-        <menuitem id="onsc_cv_knowledge_action_menu"
+        <menuitem id="onsc_cv_race_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_knowledge_action"
+                  action="onsc_cv_race_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="18"/>
-
-        <menuitem id="onsc_cv_key_task_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_key_task_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="19"/>
-
-        <menuitem id="onsc_cv_work_area_action_menu"
-                      parent="onsc_cv_config_menu"
-                      action="onsc_cv_work_area_action"
-                      groups="group_gestor_catalogos_cv"
-                      sequence="20"/>
-
-        <menuitem id="onsc_cv_entry_action_menu"
-                      parent="onsc_cv_config_menu"
-                      action="onsc_cv_entry_action"
-                      groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                      sequence="21"/>
-
-        <menuitem id="onsc_cv_professional_link_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_professional_link_action"
-                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="21"/>
-
-
-        <menuitem id="onsc_cv_subtype_evaluation_action_menu"
-                      parent="onsc_cv_config_menu"
-                      action="onsc_cv_subtype_evaluation_action"
-                      groups="group_gestor_catalogos_cv"
-                      sequence="22"/>
-
-        <menuitem id="onsc_cv_subtype_other_action_menu"
-                      parent="onsc_cv_config_menu"
-                      action="onsc_cv_subtype_other_action"
-                      groups="group_gestor_catalogos_cv"
-                      sequence="23"/>
-
-        <menuitem id="onsc_cv_subtype_production_action_menu"
-                      parent="onsc_cv_config_menu"
-                      action="onsc_cv_subtype_production_action"
-                      groups="group_gestor_catalogos_cv"
-                      sequence="24"/>
-
-        <menuitem id="onsc_cv_subtype_publication_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_subtype_publication_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="24"/>
-
-        <menuitem id="onsc_cv_type_orientation_action_menu"
-                      parent="onsc_cv_config_menu"
-                      action="onsc_cv_type_orientation_action"
-                      groups="group_gestor_catalogos_cv"
-                      sequence="25"/>
-
-        <menuitem id="onsc_cv_type_tutor_action_menu"
-                      parent="onsc_cv_config_menu"
-                      action="onsc_cv_type_tutor_action"
-                      groups="group_gestor_catalogos_cv"
-                      sequence="25"/>
-                      sequence="22"/>
-
-        <menuitem id="onsc_cv_research_types_classes_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_research_types_classes_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="26"/>
-
-        <menuitem id="onsc_cv_language_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_language_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="27"/>
-
-        <menuitem id="onsc_cv_type_support_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_type_support_action"
-                  groups="group_gestor_catalogos_cv"
-                  sequence="28"/>
-
-        <menuitem id="onsc_cv_type_event_action_menu"
-                  parent="onsc_cv_config_menu"
-                  action="onsc_cv_type_event_action"
-                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="29"/>
 
         <menuitem id="onsc_cv_roll_event_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_roll_event_action"
                   groups="group_gestor_catalogos_cv"
+                  sequence="19"/>
+
+        <menuitem id="onsc_cv_entry_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_entry_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="20"/>
+
+        <menuitem id="onsc_cv_educational_subarea_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_educational_subarea_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="21"/>
+
+        <menuitem id="onsc_cv_subinstitution_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_subinstitution_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="22"/>
+
+        <menuitem id="onsc_cv_certifying_subinstitution_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_certifying_subinstitution_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="23"/>
+
+        <menuitem id="onsc_cv_subtype_evaluation_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_subtype_evaluation_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="24"/>
+
+        <menuitem id="onsc_cv_subtype_other_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_subtype_other_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="25"/>
+
+        <menuitem id="onsc_cv_subtype_production_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_subtype_production_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="26"/>
+
+        <menuitem id="onsc_cv_subtype_publication_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_subtype_publication_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="27"/>
+
+        <menuitem id="onsc_cv_key_task_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_key_task_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="28"/>
+
+        <menuitem id="onsc_cv_type_support_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_type_support_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="29"/>
+
+        <menuitem id="onsc_cv_document_type_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_document_type_action"
+                  groups="group_gestor_catalogos_cv"
                   sequence="30"/>
 
-        <menuitem id="onsc_cv_divulgation_media_action_menu"
+        <menuitem id="onsc_cv_type_event_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_divulgation_media_action"
-                  groups="group_gestor_catalogos_cv"
+                  action="onsc_cv_type_event_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="31"/>
-                  sequence="29"/>
+
+        <menuitem id="onsc_cv_type_orientation_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_type_orientation_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="32"/>
+
+        <menuitem id="onsc_cv_type_tutor_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_type_tutor_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="33"/>
+
+        <menuitem id="onsc_cv_research_types_classes_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_research_types_classes_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="34"/>
+
+        <menuitem id="onsc_cv_professional_link_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_professional_link_action"
+                  groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
+                  sequence="35"/>
 
 <!--    Menú Contactos-->
     <menuitem id="onsc_cv_partner_menu"
