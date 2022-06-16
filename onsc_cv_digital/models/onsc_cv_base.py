@@ -299,6 +299,7 @@ class ONSCCVTypeSupport(models.Model):
     slide = fields.Boolean(string="¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?")
     understand = fields.Boolean(string="Entender/ y o aprender?")
     interaction = fields.Boolean(string="¿Interacciones y/o relaciones interpersonales?")
+    talk = fields.Boolean(string="Hablar o comunicarse aun usando lengua de señas")
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',

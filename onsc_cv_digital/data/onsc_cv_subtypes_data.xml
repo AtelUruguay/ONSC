@@ -4,108 +4,142 @@
 <!--        Sub tipos de publicación -->
         <record id="onsc_cv_subtype_publication_scientific_magazine" model="onsc.cv.subtype.publication">
             <field name="name">Artículo publicado en revistas científicas</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_publication_accepted" model="onsc.cv.subtype.publication">
             <field name="name">Artículos aceptados para publicación</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_publication_book" model="onsc.cv.subtype.publication">
             <field name="name">Libros</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_publication_event" model="onsc.cv.subtype.publication">
             <field name="name">Publicación de trabajos presentados en eventos</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_publication_newspaper" model="onsc.cv.subtype.publication">
             <field name="name">Textos en periódicos o revistas (magazines)</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_publication_work_doc" model="onsc.cv.subtype.publication">
             <field name="name">Documentos de trabajo</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_publication_technological" model="onsc.cv.subtype.publication">
             <field name="name">Productos tecnológicos</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_publication_process" model="onsc.cv.subtype.publication">
             <field name="name">Procesos o técnicas</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_publication_work_technical" model="onsc.cv.subtype.publication">
             <field name="name">Trabajos técnicos</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_publication_other" model="onsc.cv.subtype.publication">
             <field name="name">Otro</field>
+            <field name="is_option_other_enable">True</field>
         </record>
 
 <!--        Sub tipos de producción-->
         <record id="onsc_cv_subtype_production_letter" model="onsc.cv.subtype.production">
             <field name="name">Cartas o Mapas</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_production_course" model="onsc.cv.subtype.production">
             <field name="name">Cursos de corta duración dictados</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_production_didactic" model="onsc.cv.subtype.production">
             <field name="name">Desarrollo de material didáctico</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_production_edition" model="onsc.cv.subtype.production">
             <field name="name">Edición o revisión</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_production_model" model="onsc.cv.subtype.production">
             <field name="name">Maquetas</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_production_tv_show" model="onsc.cv.subtype.production">
             <field name="name">Programa de Tv o Radio</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_production_investigation" model="onsc.cv.subtype.production">
             <field name="name">Informes de investigación</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_production_events" model="onsc.cv.subtype.production">
             <field name="name">Organización de eventos</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_production_maintenance" model="onsc.cv.subtype.production">
             <field name="name">Mantenimiento de Obras</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_production_other" model="onsc.cv.subtype.production">
             <field name="name">Otro</field>
+            <field name="is_option_other_enable">True</field>
         </record>
 
 <!--        Sub tipo de evaluación-->
         <record id="onsc_cv_subtype_evaluation_editorial" model="onsc.cv.subtype.evaluation">
             <field name="name">Publicaciones - Comité editorial</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_revision" model="onsc.cv.subtype.evaluation">
             <field name="name">Publicaciones - Revisiones</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_proy_evaluation" model="onsc.cv.subtype.evaluation">
             <field name="name">Proyectos - Comité evaluación de proyectos</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_proy_individual" model="onsc.cv.subtype.evaluation">
             <field name="name">Proyectos - Evaluación independiente de proyectos</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_events" model="onsc.cv.subtype.evaluation">
             <field name="name">Eventos y Congresos</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_awards" model="onsc.cv.subtype.evaluation">
             <field name="name">Premios</field>
+            <field name="is_option_other_enable">False</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_announcement" model="onsc.cv.subtype.evaluation">
             <field name="name">Convocatorias concursables</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_thesis" model="onsc.cv.subtype.evaluation">
             <field name="name">Jurado de tesis</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_jury" model="onsc.cv.subtype.evaluation">
             <field name="name">Jurado/integrante de comisiones evaluadoras de trabajos académicos</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_evaluation_other" model="onsc.cv.subtype.evaluation">
             <field name="name">Otro</field>
+            <field name="is_option_other_enable">True</field>
         </record>
 
 <!--        Sub tipo otros-->
         <record id="onsc_cv_subtype_other_award" model="onsc.cv.subtype.other">
             <field name="name">Premio</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_other_honor" model="onsc.cv.subtype.other">
             <field name="name">Honor o Título</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_subtype_other_other" model="onsc.cv.subtype.other">
             <field name="name">Otro</field>
+            <field name="is_option_other_enable">True</field>
         </record>
     </data>
 </odoo>
