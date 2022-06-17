@@ -4,9 +4,10 @@
 import logging
 import ssl
 
+from suds import Client
+
 from odoo import _
 from odoo.exceptions import ValidationError
-from suds import Client, WebFault
 
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
@@ -51,32 +52,30 @@ class DNICClient():
         if not self.wsdl:
             raise ValidationError(_("Debe configurar el parámetro del sistema con clave: partner_dnic.wsdl"
                                     " para la conexíon al servicio de DNIC"))
-        try:
-            self._create_unverified_https_context()
-            client = Client(self.wsdl, timeout=self.timeout)
-            if not client:
-                raise ValidationError(_("No se pudo establecer la conexión con el servicio DNIC"))
 
-            values = {'NroIdentificacion': NroIdentificacion}
-            if Nrodocumento:
-                values.update({'Nrodocumento': Nrodocumento})
-            if ClaveAcceso1:
-                values.update({'ClaveAcceso1': ClaveAcceso1})
-            if Organismo:
-                values.update({'Organismo': Organismo})
-            if IdSolicitud:
-                values.update({'IdSolicitud': IdSolicitud})
-            if TipoDocumento:
-                values.update({'TipoDocumento': TipoDocumento})
-            if NroSerie:
-                values.update({'NroSerie': NroSerie})
-            if ClaveAcceso2:
-                values.update({'ClaveAcceso2': ClaveAcceso2})
-            request_param = {'paramObtDocDigitalizado': values}
-            respuesta = client.service.obtDocDigitalizado(request_param)
-            return self.procesarRespuesta(respuesta)
-        except WebFault:
-            raise ValidationError(_('Error: No se pudo Procesar el request'))
+        self._create_unverified_https_context()
+        client = Client(self.wsdl, timeout=self.timeout)
+        if not client:
+            raise ValidationError(_("No se pudo establecer la conexión con el servicio DNIC"))
+
+        values = {'NroIdentificacion': NroIdentificacion}
+        if Nrodocumento:
+            values.update({'Nrodocumento': Nrodocumento})
+        if ClaveAcceso1:
+            values.update({'ClaveAcceso1': ClaveAcceso1})
+        if Organismo:
+            values.update({'Organismo': Organismo})
+        if IdSolicitud:
+            values.update({'IdSolicitud': IdSolicitud})
+        if TipoDocumento:
+            values.update({'TipoDocumento': TipoDocumento})
+        if NroSerie:
+            values.update({'NroSerie': NroSerie})
+        if ClaveAcceso2:
+            values.update({'ClaveAcceso2': ClaveAcceso2})
+        request_param = {'paramObtDocDigitalizado': values}
+        respuesta = client.service.obtDocDigitalizado(request_param)
+        return self.procesarRespuesta(respuesta)
 
     def procesarRespuesta(self, respuesta):
         """return dict """

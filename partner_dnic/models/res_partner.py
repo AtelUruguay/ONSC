@@ -3,7 +3,7 @@ import logging
 
 from unidecode import unidecode
 
-from odoo import fields, models, _
+from odoo import fields, models, _, api
 from odoo.exceptions import ValidationError
 from ..soap import dnic_client
 
@@ -122,3 +122,17 @@ class ResPartner(models.Model):
                                     _('Ha ocurrido un error al consultar el servicio de DNIC. %s' % e))
 
         return False
+
+    @api.model
+    def _run_retry_dnic_cron(self):
+        """
+        Cron que identifica los partner de Uruguay que no
+        :return:
+        """
+        if self.env.company.is_dnic_integrated:
+            partner_to_fix = self.env['res.partner'].search([
+                ('is_partner_cv', '=', True),
+                ('cv_dnic_name_1', '=', False),
+            ])
+            partner_to_fix.update_dnic_values()
+            _logger.info("Se procesaron los siguientes Partner de CV: %s" % partner_to_fix.ids)

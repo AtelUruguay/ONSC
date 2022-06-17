@@ -39,7 +39,7 @@ class ResUsers(models.Model):
     def _get_user(self, provider, params):
         oauth_user = super(ResUsers, self.with_context(can_update_contact_cv=True))._get_user(provider, params)
         # LLamada al servicio de DNIC
-        oauth_user.partner_id.with_context(can_update_contact_cv=True).update_dnic_values(jump_error=True)
+        oauth_user.partner_id.update_dnic_values(jump_error=True)
         return oauth_user
 
 
