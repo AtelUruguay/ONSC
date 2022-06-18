@@ -2,6 +2,7 @@
 
 
 import logging
+import re
 import ssl
 
 from suds import Client
@@ -12,10 +13,20 @@ from odoo.exceptions import ValidationError
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
 
+def normalize_str(s):
+    """Elimina espacios adicionales en el string"""
+    if s:
+        return re.sub(' +', ' ', s)
+    return s
+
+
 class DNICClient():
 
-    def __init__(self, env):
-        self.wsdl = env['ir.config_parameter'].sudo().get_param('partner_dnic.wsdl', False)
+    def __init__(self, company):
+        self.wsdl = company.dnic_wsdl
+        self.dnic_organization = company.dnic_organization
+        self.dnic_password = company.dnic_password
+        self.dnic_doc_type = company.dnic_doc_type
         self.timeout = 80
 
     def _create_unverified_https_context(self):
@@ -28,25 +39,10 @@ class DNICClient():
             # Handle target environment that doesn't support HTTPS verification
             ssl._create_default_https_context = _create_unverified_https_context
 
-    def obtDocDigitalizadoService(self, NroIdentificacion,
-                                  Nrodocumento=False,
-                                  ClaveAcceso1=False,
-                                  Organismo=False,
-                                  IdSolicitud=False,
-                                  TipoDocumento=False,
-                                  NroSerie=False,
-                                  ClaveAcceso2=False
-                                  ):
+    def ObtPersonaPorDoc(self, Nrodocumento):
         """
         Servicio de DNIC
-        :param NroIdentificacion:
-        :param Nrodocumento: Opcional
-        :param ClaveAcceso1: Opcional
-        :param Organismo:   Opcional
-        :param IdSolicitud: Opcional
-        :param TipoDocumento: Opcional
-        :param NroSerie: Opcional
-        :param ClaveAcceso2: Opcional
+        :param Nrodocumento: Requerido
         :return:
         """
         if not self.wsdl:
@@ -58,34 +54,33 @@ class DNICClient():
         if not client:
             raise ValidationError(_("No se pudo establecer la conexión con el servicio DNIC"))
 
-        values = {'NroIdentificacion': NroIdentificacion}
-        if Nrodocumento:
-            values.update({'Nrodocumento': Nrodocumento})
-        if ClaveAcceso1:
-            values.update({'ClaveAcceso1': ClaveAcceso1})
-        if Organismo:
-            values.update({'Organismo': Organismo})
-        if IdSolicitud:
-            values.update({'IdSolicitud': IdSolicitud})
-        if TipoDocumento:
-            values.update({'TipoDocumento': TipoDocumento})
-        if NroSerie:
-            values.update({'NroSerie': NroSerie})
-        if ClaveAcceso2:
-            values.update({'ClaveAcceso2': ClaveAcceso2})
-        request_param = {'paramObtDocDigitalizado': values}
-        respuesta = client.service.obtDocDigitalizado(request_param)
+        values = {
+            'Organizacion': self.dnic_organization,
+            'PasswordEntidad': self.dnic_password,
+            'Nrodocumento': Nrodocumento,
+            'TipoDocumento': self.dnic_doc_type,
+        }
+
+        respuesta = client.service.ObtPersonaPorDoc(values)
         return self.procesarRespuesta(respuesta)
 
     def procesarRespuesta(self, respuesta):
         """return dict """
-        result = {
-            'cv_dnic_name_1': '',
-            'cv_dnic_name_2': '',
-            'cv_dnic_lastname_1': '',
-            'cv_dnic_lastname_2': '',
-            'cv_last_name_adoptive_1': '',
-            'cv_last_name_adoptive_2': '',
-            'cv_dnic_full_name': ''
-        }
+        result = {}
+        if hasattr(respuesta, 'Errores'):
+            errors = [x[1][0] for x in respuesta.Errores]
+            raise ValidationError(
+                '/n'.join([str(x.CodMensaje) + '-' + x.DatoExtra + '-' + x.Descripcion for x in errors]))
+        elif hasattr(respuesta, 'ObjPersona'):
+
+            result_aux = {
+                'cv_dnic_name_1': respuesta.ObjPersona.Nombre1,
+                'cv_dnic_name_2': respuesta.ObjPersona.Nombre2,
+                'cv_dnic_lastname_1': respuesta.ObjPersona.Apellido1,
+                'cv_dnic_lastname_2': respuesta.ObjPersona.Apellido2,
+                'cv_last_name_adoptive_1': respuesta.ObjPersona.ApellidoAdoptivo1,
+                'cv_last_name_adoptive_2': respuesta.ObjPersona.ApellidoAdoptivo2,
+                'cv_dnic_full_name': respuesta.ObjPersona.NombreEnCedula
+            }
+            result = {k: normalize_str(v) for k, v in result_aux.items()}
         return result

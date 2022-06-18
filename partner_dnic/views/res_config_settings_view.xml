@@ -7,7 +7,7 @@
         <field name="priority" eval="1000"/>
         <field name="arch" type="xml">
             <div name="integration" position="inside">
-                <div class="col-12 col-lg-6 o_setting_box" id="dnic_integration">
+                <div class="col-12 col-lg-6 o_setting_box" id="dnic_integration_flag">
                     <div class="o_setting_left_pane">
                         <field name="is_dnic_integrated"/>
                     </div>
@@ -15,6 +15,29 @@
                         <label string="Integración con DNIC" for="is_dnic_integrated"/>
                         <div class="text-muted">
                             Servicio de integración con DNIC
+                        </div>
+                        <div attrs="{'invisible': [('is_dnic_integrated', '=', False)]}" id="dnic_integration_wsdl">
+                            <div class="content-group mt16">
+                                <label for="dnic_organization" class="o_light_label"/>
+                                <field name="dnic_organization"/>
+                            </div>
+                            <div class="content-group mt16">
+                                <label for="dnic_password" class="o_light_label"/>
+                                <field name="dnic_password" password="True"/>
+                            </div>
+                            <div class="content-group mt16">
+                                <label for="dnic_doc_type" class="o_light_label"/>
+                                <field name="dnic_doc_type"/>
+                            </div>
+                            <div class="content-group mt16">
+                                <label for="dnic_wsdl" class="o_light_label"/>
+                                <field name="dnic_wsdl" widget="url"/>
+                                <button class="btn btn-primary" name="button_test_dnic" type="object"
+                                        data-loading-text="Contectando con DNIC ...">
+                                    <strong>Probar conexión</strong>
+                                </button>
+                            </div>
+
                         </div>
                     </div>
                 </div>

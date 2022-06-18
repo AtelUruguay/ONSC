@@ -96,30 +96,29 @@ class ResPartner(models.Model):
         if self.env.company.is_dnic_integrated:
             self = self.filtered(lambda x: x.is_cv_uruguay)
             if self:
-                if jump_error:
-                    # Preservamos desde este punto ppor si falla el servicio
-                    with self._cr.savepoint():
-                        try:
-                            client_obj = dnic_client.DNICClient()
-                            for rec in self:
-                                response = client_obj.obtDocDigitalizadoService(rec.cv_nro_doc)
-                                values = self.get_cv_main_values()
-                                values.update({
-                                    'cv_dnic_full_name': response.get('cv_dnic_full_name', ''),
-                                    'cv_dnic_name_1': response.get('cv_dnic_name_1', ''),
-                                    'cv_dnic_name_2': response.get('cv_dnic_name_2', ''),
-                                    'cv_dnic_lastname_1': response.get('cv_dnic_lastname_1', ''),
-                                    'cv_dnic_lastname_2': response.get('cv_dnic_lastname_2', ''),
-                                    'cv_last_name_adoptive_1': response.get('cv_last_name_adoptive_1', ''),
-                                    'cv_last_name_adoptive_2': response.get('cv_last_name_adoptive_2', ''),
-                                })
-                                return rec.with_context(can_update_contact_cv=True).write(values)
-                        except Exception as e:
-                            _logger.error(_('Ha ocurrido un error al tratar de consultar el servicio de DNIC'))
-                            _logger.error(_('Error encontrado: %s' % e))
-                            if not jump_error:
-                                raise ValidationError(
-                                    _('Ha ocurrido un error al consultar el servicio de DNIC. %s' % e))
+                # Preservamos desde este punto ppor si falla el servicio
+                with self._cr.savepoint():
+                    try:
+                        client_obj = dnic_client.DNICClient(self.env.company)
+                        for rec in self:
+                            response = client_obj.ObtPersonaPorDoc(rec.cv_nro_doc)
+                            values = self.get_cv_main_values()
+                            values.update({
+                                'cv_dnic_full_name': response.get('cv_dnic_full_name', ''),
+                                'cv_dnic_name_1': response.get('cv_dnic_name_1', ''),
+                                'cv_dnic_name_2': response.get('cv_dnic_name_2', ''),
+                                'cv_dnic_lastname_1': response.get('cv_dnic_lastname_1', ''),
+                                'cv_dnic_lastname_2': response.get('cv_dnic_lastname_2', ''),
+                                'cv_last_name_adoptive_1': response.get('cv_last_name_adoptive_1', ''),
+                                'cv_last_name_adoptive_2': response.get('cv_last_name_adoptive_2', ''),
+                            })
+                            return rec.with_context(can_update_contact_cv=True).write(values)
+                    except Exception as e:
+                        _logger.error(_('Ha ocurrido un error al tratar de consultar el servicio de DNIC'))
+                        _logger.error(_('Error encontrado: %s' % e))
+                        if not jump_error:
+                            raise ValidationError(
+                                _('Ha ocurrido un error al consultar el servicio de DNIC. %s' % e))
 
         return False
 
@@ -133,6 +132,6 @@ class ResPartner(models.Model):
             partner_to_fix = self.env['res.partner'].search([
                 ('is_partner_cv', '=', True),
                 ('cv_dnic_name_1', '=', False),
-            ])
+            ]).filtered(lambda x: x.is_cv_uruguay)
             partner_to_fix.update_dnic_values()
             _logger.info("Se procesaron los siguientes Partner de CV: %s" % partner_to_fix.ids)
