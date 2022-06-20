@@ -15,4 +15,7 @@ ONSC CV Digital Auth
         'views/res_partner_view.xml',
 
     ],
+    'external_dependencies': {
+        'python': ['unidecode'],
+    }
 }

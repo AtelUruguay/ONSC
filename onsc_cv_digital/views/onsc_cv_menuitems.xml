@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <record id="onsc_cv_country_state_action" model="ir.actions.act_window">
+        <field name="name">Países</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">res.country.state</field>
+        <field name="view_id" ref="base.view_country_state_tree"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear países
+            </p><p>
+            </p>
+        </field>
+    </record>
+
     <menuitem id="onsc_cv_root_menu"
               name="CV digital"
               web_icon="onsc_cv_digital,static/description/icon.jpg"
@@ -105,6 +118,12 @@
                   action="onsc_cv_experience_hierarchical_level_action"
                   groups="group_gestor_catalogos_cv"
                   sequence="16"/>
+
+        <menuitem id="onsc_cv_country_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_country_state_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="17"/>
 
         <menuitem id="onsc_cv_academic_program_action_menu"
                   parent="onsc_cv_config_menu"
@@ -220,10 +239,10 @@
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
                   sequence="35"/>
 
-<!--    Menú Contactos-->
     <menuitem id="onsc_cv_partner_menu"
               name="Contactos"
               action="onsc_cv_action_res_partner"
               parent="onsc_cv_root_menu"
+              groups="group_gestor_catalogos_cv"
               sequence="100"/>
 </odoo>
