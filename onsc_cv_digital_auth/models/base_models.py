@@ -19,7 +19,6 @@ class ResUsers(models.Model):
     @api.model
     def _prepare_userinfo_dict(self, provider, params):
         result = super(ResUsers, self)._prepare_userinfo_dict(provider, params)
-        _iddigital_doc_type = params.get('tipo_documento', False)
         nickname = params.get('nickname', False)
         doc_type = self.env['onsc.cv.document.type'].search(
             [('code', '=', nickname.split('-')[1])], limit=1)

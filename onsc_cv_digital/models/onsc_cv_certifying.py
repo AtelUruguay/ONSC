@@ -10,7 +10,6 @@ class ONSCCVCertifyingInstitution(models.Model):
     _inherit = ['onsc.cv.abstract.config']
 
     name = fields.Char(u'Nombre de la institución certificadora', required=True)
-    institution_id = fields.Many2one('onsc.cv.institution', string=u'Institución', required=True)
     subinstitution_cert_ids = fields.One2many('onsc.cv.certifying.subinstitution',
                                               inverse_name='institution_cert_id',
                                               string='Sub instituciones certificadoras')
