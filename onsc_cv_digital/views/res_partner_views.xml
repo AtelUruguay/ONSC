@@ -103,31 +103,31 @@
                                     <div class="o_address_format">
                                         <field name="country_id" placeholder="País..." class="o_address_country"
                                                options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"
-                                               readonly="0"/>
+                                               readonly="1"/>
                                         <field name="state_id" class="o_address_state" placeholder="Departamento..."
-                                               options="{'no_open': True, 'no_quick_create': True}" readonly="0"/>
+                                               options="{'no_open': True, 'no_quick_create': True}" readonly="1"/>
                                         <field name="cv_location_id" placeholder="Localidad/Ciudad..."
                                                class="o_address_city"
-                                               readonly="0"/>
+                                               readonly="1"/>
                                         <field name="street" placeholder="Calle..." class="o_address_street"
-                                               readonly="0"/>
+                                               readonly="1"/>
 
-                                        <field name="cv_nro_door" placeholder="Número..." readonly="0"
+                                        <field name="cv_nro_door" placeholder="Número..." readonly="1"
                                                class="o_address_zip"/>
                                         <field name="cv_apto" class="o_address_zip" style="margin-left:2%"
                                                placeholder="Apto..."
-                                               readonly="0"/>
+                                               readonly="1"/>
                                         <field name="street2" placeholder="Entre calle..." class="o_address_street"
-                                               readonly="0"/>
+                                               readonly="1"/>
                                         <field name="cv_street3" placeholder="Y calle..." class="o_address_street"
-                                               readonly="0"/>
-                                        <field name="zip" placeholder="ZIP" class="o_address_zip" readonly="0"/>
+                                               readonly="1"/>
+                                        <field name="zip" placeholder="ZIP" class="o_address_zip" readonly="1"/>
                                         <label for="is_cv_bis" class="text-muted" style="margin-left:2%"/>
-                                        <field name="is_cv_bis" readonly="0" class="o_address_zip"/>
+                                        <field name="is_cv_bis" readonly="1" class="o_address_zip"/>
                                         <div>
                                             <field name="cv_amplification" placeholder="Aclaraciones"
                                                    class="o_address_zip"
-                                                   readonly="0"/>
+                                                   readonly="1"/>
                                         </div>
 
                                     </div>
