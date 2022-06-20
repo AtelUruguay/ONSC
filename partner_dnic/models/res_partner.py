@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+import logging
+
 from unidecode import unidecode
 
+from odoo import fields, models, _, api
+from odoo.exceptions import ValidationError
 from ..soap import dnic_client
+
+_logger = logging.getLogger(__name__)
 
 
 def compare_string_without_consider_accents(str1='', str2=''):
@@ -34,32 +39,101 @@ class ResPartner(models.Model):
 
         self.ensure_one()
 
-        name_values = [self.cv_first_name,
-                       self.cv_second_name,
-                       self.cv_last_name_1,
-                       self.cv_last_name_2]
-        cv_full_name = ' '.join([x for x in name_values if x])
+        result = response
+
+        def calc_full_name(cv_first_name, cv_second_name, cv_last_name_1, cv_last_name_2):
+            name_values = [cv_first_name,
+                           cv_second_name,
+                           cv_last_name_1,
+                           cv_last_name_2]
+            return ' '.join([x for x in name_values if x])
+
+        cv_full_name = calc_full_name(
+            self.cv_first_name,
+            self.cv_second_name,
+            self.cv_last_name_1,
+            self.cv_last_name_2)
+
         # Caso 1: Ambos Nombres y Apellidos coinciden con nombre en cédula
         if compare_string_without_consider_accents(cv_full_name, response.get('cv_dnic_full_name')):
-            pass
+            # Caso 1.b: Apellido1 nulo
+            if (not self.cv_last_name_1 and self.cv_last_name_2):
+                result.update({
+                    'cv_last_name_1': self.cv_last_name_2,
+                    'cv_last_name_2': self.cv_last_name_1,
+                })
+        else:
+            cv_full_name = calc_full_name(self.cv_first_name, self.cv_second_name, self.cv_last_name_2,
+                                          self.cv_last_name_1)
+            # Caso 2: Apellidos cambiados de orden
+            if compare_string_without_consider_accents(cv_full_name, response.get('cv_dnic_full_name')):
+                result.update({
+                    'cv_last_name_1': self.cv_last_name_2,
+                    'cv_last_name_2': self.cv_last_name_1,
+                })
+            else:
+                cv_last_name_adoptive_1 = response.get('cv_last_name_adoptive_1', '')
+                cv_last_name_adoptive_2 = response.get('cv_last_name_adoptive_2', '')
+                if cv_last_name_adoptive_1 or cv_last_name_adoptive_2:
+                    cv_full_name = calc_full_name(self.cv_first_name, self.cv_second_name, cv_last_name_adoptive_1,
+                                                  cv_last_name_adoptive_2)
+                    # Caso 3: Apellidos adoptivos en nombre en nombre en cédula
+                    if compare_string_without_consider_accents(cv_full_name, response.get('cv_dnic_full_name')):
+                        result.update({
+                            'cv_last_name_1': cv_last_name_adoptive_1,
+                            'cv_last_name_2': cv_last_name_adoptive_2,
+                        })
+        return result
 
-    def update_dnic_values(self):
+    def update_dnic_values(self, jump_error=False):
+        """
+        Actualiza los valores del partner consultando al servicio de dnic
+        (Si el flag is_dnic_integrated está activo)
+        :param jump_error: Si está en true se realiza un commit antes de consultar el servicio para no perder datos
+        si el mismo da error
+        :return: boolean
+        """
         if self.env.company.is_dnic_integrated:
             self = self.filtered(lambda x: x.is_cv_uruguay)
             if self:
-                client_obj = dnic_client.DNICClient()
-                for rec in self:
-                    response = client_obj.obtDocDigitalizadoService(rec.cv_nro_doc)
-                    values = self.get_cv_main_values()
-                    values.update({
-                        'cv_dnic_full_name': response.get('cv_dnic_full_name', ''),
-                        'cv_dnic_name_1': response.get('cv_dnic_name_1', ''),
-                        'cv_dnic_name_2': response.get('cv_dnic_name_2', ''),
-                        'cv_dnic_lastname_1': response.get('cv_dnic_lastname_1', ''),
-                        'cv_dnic_lastname_2': response.get('cv_dnic_lastname_2', ''),
-                        'cv_last_name_adoptive_1': response.get('cv_last_name_adoptive_1', ''),
-                        'cv_last_name_adoptive_2': response.get('cv_last_name_adoptive_2', ''),
-                    })
-                    return rec.with_context(can_update_contact_cv=True).write(values)
+                # Preservamos desde este punto ppor si falla el servicio
+                with self._cr.savepoint():
+                    try:
+                        client_obj = dnic_client.DNICClient(self.env.company)
+                        for rec in self:
+                            response = client_obj.ObtPersonaPorDoc(rec.cv_nro_doc)
+                            response = self.map_cv_sex(response)
+                            response = self.get_cv_main_values(response)
+                            return rec.with_context(can_update_contact_cv=True).write(response)
+                    except Exception as e:
+                        _logger.error(_('Ha ocurrido un error al tratar de consultar el servicio de DNIC'))
+                        _logger.error(_('Error encontrado: %s' % e))
+                        if not jump_error:
+                            raise ValidationError(
+                                _('Ha ocurrido un error al consultar el servicio de DNIC. %s' % e))
 
         return False
+
+    @api.model
+    def map_cv_sex(self, response):
+        """Actualmente tenemos 2 sexos 1: Masculino 2: Femenino
+        Se utiliza esta función para reusar los códigos definidos para el selection y no fijar valores"""
+        cv_sex = self.fields_get(['cv_sex'])['cv_sex']['selection']
+        cv_sex_map = {cont + 1: cv_sex[cont][0] for cont in range(len(cv_sex))}
+
+        response.update({'cv_sex': cv_sex_map.get(response.get('cv_sex'))})
+        return response
+
+    @api.model
+    def _run_retry_dnic_cron(self):
+        """
+        Cron que identifica los partner de Uruguay que no
+        :return:
+        """
+        if self.env.company.is_dnic_integrated:
+            partner_to_fix = self.env['res.partner'].search([
+                ('is_partner_cv', '=', True),
+                ('cv_dnic_name_1', '=', False),
+            ]).filtered(lambda x: x.is_cv_uruguay)
+            partner_to_fix.update_dnic_values()
+            _logger.info("Se procesaron los siguientes Partner de CV: %s" % partner_to_fix.ids)

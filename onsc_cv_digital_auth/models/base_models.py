@@ -37,6 +37,8 @@ class ResUsers(models.Model):
     @api.model
     def _get_user(self, provider, params):
         oauth_user = super(ResUsers, self.with_context(can_update_contact_cv=True))._get_user(provider, params)
+        # LLamada al servicio de DNIC
+        oauth_user.partner_id.update_dnic_values(jump_error=True)
         return oauth_user
 
 
@@ -68,3 +70,6 @@ class ResPartner(models.Model):
                 record.cv_full_name = ' '.join([x for x in name_values if x])
             else:
                 record.cv_full_name = record.name
+
+    def button_update_dnic_values(self):
+        self.update_dnic_values()
