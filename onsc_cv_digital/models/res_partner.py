@@ -18,10 +18,12 @@ COLUMNS_FROZEN = [
     'cv_last_name_2',
     'cv_birthdate',
     'cv_sex',
-    # 'cv_last_name_adoptive_1',
-    # 'cv_last_name_adoptive_2',
     'cv_expiration_date',
     'is_partner_cv',
+    'cv_location_id',
+    'cv_nro_door',
+    'is_cv_bis',
+    'cv_amplification',
 ]
 
 
@@ -47,6 +49,13 @@ class ResPartner(models.Model):
     is_partner_cv = fields.Boolean(u'¿Es un contacto de CV?')
     is_cv_uruguay = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay')
     cv_full_name = fields.Char('Nombre', compute='_compute_cv_full_name', store=True)
+    cv_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad')
+    cv_nro_door = fields.Char(u'Número')
+    is_cv_bis = fields.Boolean(u'BIS')
+    cv_apto = fields.Char(u'Apto')
+    cv_street3 = fields.Char(u'Y calle')
+    cv_amplification = fields.Text(u"Aclaraciones")
+    cv_address_state = fields.Selection(related='cv_location_id.state', string="Estado condicional")
 
     _sql_constraints = [
         ('country_doc_type_nro_doc_uniq', 'unique(cv_emissor_country_id, cv_document_type_id, cv_nro_doc)',
