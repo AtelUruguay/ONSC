@@ -3,12 +3,11 @@
     <data>
         <record id="onsc_cv_res_partner_pablo" model="res.partner">
             <field name="name">Pablo</field>
-            <field name="cv_emissor_country_id" ref="base.uy"/>
+            <field name="cv_emissor_country_id" ref="base.us"/>
             <field name="cv_document_type_id" ref="onsc_cv_document_type_1"/>
-            <field name="cv_nro_doc">11745679</field>
+            <field name="cv_nro_doc">1234</field>
             <field name="cv_first_name">Pablo</field>
             <field name="cv_second_name"/>
-            <field name="cv_last_name_1">Miranda</field>
             <field name="cv_last_name_1">Miranda</field>
             <field name="cv_last_name_2">Guerrero</field>
             <field name="cv_birthdate" eval="DateTime.now() - relativedelta(years=28)"/>
@@ -21,9 +20,9 @@
 
         <record id="onsc_cv_res_partner_ana" model="res.partner">
             <field name="name">Ana Paula Castilos González</field>
-            <field name="cv_emissor_country_id" ref="base.us"/>
+            <field name="cv_emissor_country_id" ref="base.uy"/>
             <field name="cv_document_type_id" ref="onsc_cv_document_type_1"/>
-            <field name="cv_nro_doc">02</field>
+            <field name="cv_nro_doc">11745679</field>
             <field name="cv_first_name">Ana</field>
             <field name="cv_second_name">Paula</field>
             <field name="cv_birthdate" eval="DateTime.now() - relativedelta(years=21)"/>

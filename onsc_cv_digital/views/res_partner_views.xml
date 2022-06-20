@@ -46,6 +46,7 @@
         <field name="priority" eval="1000"/>
         <field name="arch" type="xml">
             <form string="Contactos" create="0" edit="0" delete="0">
+                <header/>
                 <sheet>
                     <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
                             attrs="{'invisible': [('active', '=', True)]}"/>

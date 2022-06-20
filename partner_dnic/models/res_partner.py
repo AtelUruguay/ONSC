@@ -39,7 +39,7 @@ class ResPartner(models.Model):
 
         self.ensure_one()
 
-        result = {}
+        result = response
 
         def calc_full_name(cv_first_name, cv_second_name, cv_last_name_1, cv_last_name_2):
             name_values = [cv_first_name,
@@ -103,9 +103,8 @@ class ResPartner(models.Model):
                         for rec in self:
                             response = client_obj.ObtPersonaPorDoc(rec.cv_nro_doc)
                             response = self.map_cv_sex(response)
-                            values = self.get_cv_main_values()
-                            values.update(response)
-                            return rec.with_context(can_update_contact_cv=True).write(values)
+                            response = self.get_cv_main_values(response)
+                            return rec.with_context(can_update_contact_cv=True).write(response)
                     except Exception as e:
                         _logger.error(_('Ha ocurrido un error al tratar de consultar el servicio de DNIC'))
                         _logger.error(_('Error encontrado: %s' % e))
@@ -118,7 +117,9 @@ class ResPartner(models.Model):
     @api.model
     def map_cv_sex(self, response):
         cv_sex = self.fields_get(['cv_sex'])['cv_sex']['selection']
-        response.update({'cv_sex': cv_sex})
+        cv_sex_map = {cont + 1: cv_sex[cont][0] for cont in range(len(cv_sex))}
+
+        response.update({'cv_sex': cv_sex_map.get(response.get('cv_sex'))})
         return response
 
     @api.model

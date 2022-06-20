@@ -15,7 +15,7 @@ logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
 def normalize_str(s):
     """Elimina espacios adicionales en el string"""
-    if s:
+    if s and isinstance(s, str):
         return re.sub(' +', ' ', s)
     return s
 
