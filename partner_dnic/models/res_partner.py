@@ -116,6 +116,8 @@ class ResPartner(models.Model):
 
     @api.model
     def map_cv_sex(self, response):
+        """Actualmente tenemos 2 sexos 1: Masculino 2: Femenino
+        Se utiliza esta función para reusar los códigos definidos para el selection y no fijar valores"""
         cv_sex = self.fields_get(['cv_sex'])['cv_sex']['selection']
         cv_sex_map = {cont + 1: cv_sex[cont][0] for cont in range(len(cv_sex))}
 
