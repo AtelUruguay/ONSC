@@ -3,24 +3,31 @@
     <data noupdate="1">
         <record id="onsc_cv_divulgation_media_cdrom" model="onsc.cv.divulgation.media">
             <field name="name">CD-ROM</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_divulgation_floppy_disk" model="onsc.cv.divulgation.media">
             <field name="name">Disquetes</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_divulgation_internet" model="onsc.cv.divulgation.media">
             <field name="name">Internet</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_divulgation_micro_film" model="onsc.cv.divulgation.media">
             <field name="name">Microfilme</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_divulgation_film" model="onsc.cv.divulgation.media">
             <field name="name">Película</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_divulgation_paper" model="onsc.cv.divulgation.media">
             <field name="name">Papel</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_divulgation_other" model="onsc.cv.divulgation.media">
             <field name="name">Otro</field>
+            <field name="is_option_other_enable">True</field>
         </record>
     </data>
 </odoo>

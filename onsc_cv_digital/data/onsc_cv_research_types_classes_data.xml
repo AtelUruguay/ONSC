@@ -3,15 +3,19 @@
     <data noupdate="1">
         <record id="onsc_cv_research_types_classes_devep" model="onsc.cv.research.types.classes">
             <field name="name">Desarrollo</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_research_types_classes_ext" model="onsc.cv.research.types.classes">
             <field name="name">Extensión</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_research_types_classes_inv" model="onsc.cv.research.types.classes">
             <field name="name">Investigación</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_research_types_classes_other" model="onsc.cv.research.types.classes">
             <field name="name">Otra</field>
+            <field name="is_option_other_enable">True</field>
         </record>
     </data>
 </odoo>

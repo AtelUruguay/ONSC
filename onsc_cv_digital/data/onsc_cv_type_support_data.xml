@@ -3,102 +3,277 @@
     <data noupdate="1">
         <record id="onsc_cv_type_support_programs" model="onsc.cv.type.support">
             <field name="name">Programas de software especiales</field>
+            <field name="see">True</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_applications" model="onsc.cv.type.support">
             <field name="name">Aplicaciones específicas</field>
+            <field name="see">True</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_document" model="onsc.cv.type.support">
             <field name="name">Documento en Braille</field>
+            <field name="see">True</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_read_easy" model="onsc.cv.type.support">
             <field name="name">Lectura Fácil</field>
+            <field name="see">True</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_tupla" model="onsc.cv.type.support">
             <field name="name">Tele Tupla</field>
+            <field name="see">True</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_intensifiers" model="onsc.cv.type.support">
             <field name="name">Intensificadores de imagen</field>
+            <field name="see">True</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_settings" model="onsc.cv.type.support">
             <field name="name">Ajustes a la iluminación</field>
+            <field name="see">True</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_companion" model="onsc.cv.type.support">
             <field name="name">Acompañante</field>
+            <field name="see">True</field>
+            <field name="hear">True</field>
+            <field name="walk">True</field>
+            <field name="slide">True</field>
+            <field name="understand">True</field>
+            <field name="interaction">True</field>
+            <field name="talk">true</field>
         </record>
 
         <record id="onsc_cv_type_support_interpreter" model="onsc.cv.type.support">
             <field name="name">Interprete de lenguaje de señas</field>
+            <field name="see">False</field>
+            <field name="hear">True</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_volume" model="onsc.cv.type.support">
             <field name="name">Volumen telefónico</field>
+            <field name="see">False</field>
+            <field name="hear">True</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_phone" model="onsc.cv.type.support">
             <field name="name">Telefóno con luz</field>
+            <field name="see">False</field>
+            <field name="hear">True</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_headphones" model="onsc.cv.type.support">
             <field name="name">Auriculares</field>
+            <field name="see">False</field>
+            <field name="hear">True</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_vincha" model="onsc.cv.type.support">
             <field name="name">Telefóno con Vincha</field>
+            <field name="see">False</field>
+            <field name="hear">True</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_amplification" model="onsc.cv.type.support">
             <field name="name">Amplificación de sonido</field>
+            <field name="see">False</field>
+            <field name="hear">True</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_toilets" model="onsc.cv.type.support">
             <field name="name">Baños accesibles</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">True</field>
+            <field name="slide">True</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_dinning_room" model="onsc.cv.type.support">
             <field name="name">Comedor accesibles</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">True</field>
+            <field name="slide">True</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_supports" model="onsc.cv.type.support">
             <field name="name">Soportes</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">True</field>
+            <field name="slide">True</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_railing" model="onsc.cv.type.support">
             <field name="name">Pasamanos</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">True</field>
+            <field name="slide">True</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_barrals" model="onsc.cv.type.support">
             <field name="name">Barrales de seguridad</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">True</field>
+            <field name="slide">True</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_furniture" model="onsc.cv.type.support">
             <field name="name">Mobiliario adaptado</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">True</field>
+            <field name="slide">True</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_list" model="onsc.cv.type.support">
             <field name="name">Listas de comprobación para facilitar la ejecución de las tareas</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">True</field>
+            <field name="interaction">True</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_manuals" model="onsc.cv.type.support">
             <field name="name">Manuales o guías la realización de las tareas</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">True</field>
+            <field name="interaction">True</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_pictograms" model="onsc.cv.type.support">
             <field name="name">Pictogramas, carteles y notas</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">True</field>
+            <field name="interaction">True</field>
+            <field name="talk">False</field>
         </record>
 
         <record id="onsc_cv_type_support_reminders" model="onsc.cv.type.support">
             <field name="name">Recordatorios</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">True</field>
+            <field name="interaction">True</field>
+            <field name="talk">False</field>
         </record>
 
-         <record id="onsc_cv_type_support_literal" model="onsc.cv.type.support">
+        <record id="onsc_cv_type_support_literal" model="onsc.cv.type.support">
             <field name="name">Lenguaje literal</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">True</field>
+            <field name="talk">False</field>
         </record>
     </data>
 </odoo>

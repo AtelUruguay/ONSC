@@ -4,15 +4,14 @@
         <record id="onsc_cv_type_orientation_main" model="onsc.cv.type.orientation">
             <field name="name">Tutor único o principal</field>
         </record>
-        <record id="onsc_cv_type_orientation_cotutor" model="onsc.cv.type.orientation">
+        <record id="onsc_cv_type_orientation_cotutor_pie" model="onsc.cv.type.orientation">
             <field name="name">Cotutor en pie de igualdad</field>
         </record>
         <record id="onsc_cv_type_orientation_adviser" model="onsc.cv.type.orientation">
             <field name="name">Asesor</field>
         </record>
-        <record id="onsc_cv_type_orientation_counselor" model="onsc.cv.type.orientation">
-            <field name="name">Orientador</field>
+        <record id="onsc_cv_type_orientation_cotutor" model="onsc.cv.type.orientation">
+            <field name="name">Cotutor</field>
         </record>
-
     </data>
 </odoo>

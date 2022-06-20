@@ -3,24 +3,31 @@
     <data noupdate="1">
         <record id="onsc_cv_type_tutor_docent" model="onsc.cv.type.tutor">
             <field name="name">Docente adscripto/Practicantado</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_type_tutor_initiation" model="onsc.cv.type.tutor">
             <field name="name">Iniciación a la Investigación</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_type_tutor_orientation" model="onsc.cv.type.tutor">
             <field name="name">Orientación de posdoctorado</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_type_tutor_doctorate" model="onsc.cv.type.tutor">
             <field name="name">Tesis de doctorado</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_type_tutor_master" model="onsc.cv.type.tutor">
             <field name="name">Tesis de Maestría</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_type_tutor_monograph" model="onsc.cv.type.tutor">
             <field name="name">Tesis/Monografía de grado</field>
+            <field name="is_option_other_enable">False</field>
         </record>
         <record id="onsc_cv_type_tutor_other" model="onsc.cv.type.tutor">
             <field name="name">Otras tutorías</field>
+            <field name="is_option_other_enable">True</field>
         </record>
     </data>
 </odoo>

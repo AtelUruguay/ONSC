@@ -80,7 +80,7 @@ class OAuthController(http.Controller):
             'redirect_uri': provider.redirect_uri,
         }
 
-        authorization = base64.encodestring(
+        authorization = base64.encodebytes(
             ("%s:%s" % (provider.client_id, provider.secret_key)).encode())
         authorization = 'Basic %s' % authorization.decode().replace('\n', '')
 
@@ -146,7 +146,7 @@ class OAuthController(http.Controller):
                 cr.commit()
                 action = state.get('a')
                 menu = state.get('m')
-                redirect = werkzeug.url_unquote_plus(state['r']) if state.get(
+                redirect = werkzeug.urls.url_unquote_plus(state['r']) if state.get(
                     'r') else False
                 url = '/web'
                 if redirect:

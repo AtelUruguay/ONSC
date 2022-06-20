@@ -10,7 +10,7 @@ Allow users to login through Id Uruguay Connect Provider.
 - Keycloak with ClientID and Secret + Implicit Flow
 
 """,
-    'depends': ['auth_oauth'],
+    'depends': ['auth_oauth', 'auth_signup'],
     'data': [
         'data/auth_iduy_data.xml',
         'views/auth_oauth_provider.xml',
