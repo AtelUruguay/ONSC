@@ -5,6 +5,10 @@
         <field name="model">res.partner</field>
         <field name="inherit_id" ref="onsc_cv_digital.view_partner_form_cv"/>
         <field name="arch" type="xml">
+            <header position="inside">
+                <button string="Actualizar datos de DNIC" type="object" name="update_dnic_values"
+                        attrs="{'invisible': [('is_cv_uruguay', '=', False)]}"/>
+            </header>
             <group name="cv_other_info" position="attributes">
                 <attribute name="string">Información DNIC</attribute>
             </group>

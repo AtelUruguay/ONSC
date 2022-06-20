@@ -71,3 +71,6 @@ class ResPartner(models.Model):
                 record.cv_full_name = ' '.join([x for x in name_values if x])
             else:
                 record.cv_full_name = record.name
+
+    def button_update_dnic_values(self):
+        self.update_dnic_values()

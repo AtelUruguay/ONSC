@@ -80,7 +80,10 @@ class DNICClient():
                 'cv_dnic_lastname_2': respuesta.ObjPersona.Apellido2,
                 'cv_last_name_adoptive_1': respuesta.ObjPersona.ApellidoAdoptivo1,
                 'cv_last_name_adoptive_2': respuesta.ObjPersona.ApellidoAdoptivo2,
-                'cv_dnic_full_name': respuesta.ObjPersona.NombreEnCedula
+                'cv_dnic_full_name': respuesta.ObjPersona.NombreEnCedula,
+                'cv_birthdate': respuesta.ObjPersona.FechaNacimiento,
+                'cv_sex': respuesta.ObjPersona.Sexo
+
             }
             result = {k: normalize_str(v) for k, v in result_aux.items()}
         return result
