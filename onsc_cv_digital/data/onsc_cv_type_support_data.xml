@@ -34,14 +34,36 @@
             <field name="talk">False</field>
         </record>
 
-        <record id="onsc_cv_type_support_read_easy" model="onsc.cv.type.support">
-            <field name="name">Lectura Fácil</field>
+        <record id="onsc_cv_type_support_read_easy_1" model="onsc.cv.type.support">
+            <field name="name">Lectura fácil (adaptaciones de texto, tipo, y tamaño de fuente, contrastes, separación de renglones, entre otros)</field>
             <field name="see">True</field>
             <field name="hear">False</field>
             <field name="walk">False</field>
             <field name="slide">False</field>
             <field name="understand">False</field>
             <field name="interaction">False</field>
+            <field name="talk">False</field>
+        </record>
+
+        <record id="onsc_cv_type_support_read_easy_2" model="onsc.cv.type.support">
+            <field name="name">Lectura fácil (textos mas cortos lenguaje sencillo, entre otros)</field>
+            <field name="see">False</field>
+            <field name="hear">True</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">False</field>
+            <field name="talk">False</field>
+        </record>
+
+        <record id="onsc_cv_type_support_read_easy_3" model="onsc.cv.type.support">
+            <field name="name">Lectura fácil (textos mas cortos. lenguaje sencillo, adaptaciones de texto separación de regiones, entre otros)</field>
+            <field name="see">False</field>
+            <field name="hear">False</field>
+            <field name="walk">False</field>
+            <field name="slide">False</field>
+            <field name="understand">False</field>
+            <field name="interaction">True</field>
             <field name="talk">False</field>
         </record>
 
