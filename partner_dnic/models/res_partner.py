@@ -1,25 +1,12 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from unidecode import unidecode
-
 from odoo import fields, models, _, api
 from odoo.exceptions import ValidationError
+
 from ..soap import dnic_client
 
 _logger = logging.getLogger(__name__)
-
-
-def compare_string_without_consider_accents(str1='', str2=''):
-    """
-    Compara dos strings ignorando casos sensitivos y acentos
-    :param str1:
-    :param str2:
-    :return:
-    """
-    upper_str1 = unidecode(str1.upper())
-    upper_str2 = unidecode(str2.upper())
-    return upper_str1 == upper_str2
 
 
 class ResPartner(models.Model):
@@ -35,55 +22,8 @@ class ResPartner(models.Model):
     cv_last_name_adoptive_2 = fields.Char(u'Segundo apellido adoptivo')
 
     def get_cv_main_values(self, response):
-        "Metodo que arma el diccionario los valores correspondientes a actualizar de ID digital "
-
-        self.ensure_one()
-
-        result = response
-
-        def calc_full_name(cv_first_name, cv_second_name, cv_last_name_1, cv_last_name_2):
-            name_values = [cv_first_name,
-                           cv_second_name,
-                           cv_last_name_1,
-                           cv_last_name_2]
-            return ' '.join([x for x in name_values if x])
-
-        cv_full_name = calc_full_name(
-            self.cv_first_name,
-            self.cv_second_name,
-            self.cv_last_name_1,
-            self.cv_last_name_2)
-
-        # Caso 1: Ambos Nombres y Apellidos coinciden con nombre en cédula
-        if compare_string_without_consider_accents(cv_full_name, response.get('cv_dnic_full_name')):
-            # Caso 1.b: Apellido1 nulo
-            if (not self.cv_last_name_1 and self.cv_last_name_2):
-                result.update({
-                    'cv_last_name_1': self.cv_last_name_2,
-                    'cv_last_name_2': self.cv_last_name_1,
-                })
-        else:
-            cv_full_name = calc_full_name(self.cv_first_name, self.cv_second_name, self.cv_last_name_2,
-                                          self.cv_last_name_1)
-            # Caso 2: Apellidos cambiados de orden
-            if compare_string_without_consider_accents(cv_full_name, response.get('cv_dnic_full_name')):
-                result.update({
-                    'cv_last_name_1': self.cv_last_name_2,
-                    'cv_last_name_2': self.cv_last_name_1,
-                })
-            else:
-                cv_last_name_adoptive_1 = response.get('cv_last_name_adoptive_1', '')
-                cv_last_name_adoptive_2 = response.get('cv_last_name_adoptive_2', '')
-                if cv_last_name_adoptive_1 or cv_last_name_adoptive_2:
-                    cv_full_name = calc_full_name(self.cv_first_name, self.cv_second_name, cv_last_name_adoptive_1,
-                                                  cv_last_name_adoptive_2)
-                    # Caso 3: Apellidos adoptivos en nombre en nombre en cédula
-                    if compare_string_without_consider_accents(cv_full_name, response.get('cv_dnic_full_name')):
-                        result.update({
-                            'cv_last_name_1': cv_last_name_adoptive_1,
-                            'cv_last_name_2': cv_last_name_adoptive_2,
-                        })
-        return result
+        "Metodo a extender para adicionar valores al diccionario"
+        return response
 
     def update_dnic_values(self, jump_error=False):
         """
