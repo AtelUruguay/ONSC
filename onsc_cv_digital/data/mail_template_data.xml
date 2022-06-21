@@ -6,7 +6,7 @@
             <field name="name">Plantilla de validación de catálogos</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_abstract_config"/>
             <field name="email_from">"{{ object.company_id.name }}" &lt;{{ (object.company_id.email or user.email) }}&gt;</field>
-            <field name="email_to">"{{ object.create_uid.partner_id.email }}&gt;</field>
+            <field name="email_to">{{ object.create_uid.partner_id.email }}&gt;</field>
             <field name="subject">Notificación de validación del  valor condicional ingresado en su CV Digital</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
@@ -32,7 +32,7 @@
             <field name="name">Plantilla de rechazo de catálogos</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_abstract_config"/>
             <field name="email_from">"{{ object.company_id.name }}" &lt;{{ (object.company_id.email or user.email) }}&gt;</field>
-            <field name="email_to">"{{ object.create_uid.partner_id.email }}&gt;</field>
+            <field name="email_to">{{ object.create_uid.partner_id.email }}&gt;</field>
             <field name="subject">Notificación de rechazo del valor condicional ingresado en su CV Digital</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
