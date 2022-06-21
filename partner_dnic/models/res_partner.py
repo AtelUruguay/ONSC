@@ -20,9 +20,9 @@ class ResPartner(models.Model):
     cv_last_name_adoptive_1 = fields.Char(u'Primer apellido adoptivo')
     cv_last_name_adoptive_2 = fields.Char(u'Segundo apellido adoptivo')
 
-    def get_cv_main_values(self, response):
-        "Metodo a extender para adicionar valores al diccionario"
-        return response
+    # def get_cv_main_values(self, response):
+    #     "Metodo a extender para adicionar valores al diccionario"
+    #     return response
 
     def update_dnic_values(self, jump_error=False):
         """
@@ -42,7 +42,6 @@ class ResPartner(models.Model):
                         for rec in self:
                             response = client_obj.ObtPersonaPorDoc(rec.cv_nro_doc)
                             response = self.map_cv_sex(response)
-                            response = self.get_cv_main_values(response)
                             return rec.with_context(can_update_contact_cv=True).write(response)
                     except Exception as e:
                         _logger.error(_('Ha ocurrido un error al tratar de consultar el servicio de DNIC'))
