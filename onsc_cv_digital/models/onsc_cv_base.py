@@ -297,7 +297,7 @@ class ONSCCVTypeSupport(models.Model):
     hear = fields.Boolean(string="Oír, ¿aún si usa audífono?")
     walk = fields.Boolean(string="¿Caminar o subir escalones?")
     slide = fields.Boolean(string="¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?")
-    understand = fields.Boolean(string="Entender/ y o aprender?")
+    understand = fields.Boolean(string="Entender y/o aprender?")
     interaction = fields.Boolean(string="¿Interacciones y/o relaciones interpersonales?")
     talk = fields.Boolean(string="Hablar o comunicarse aún usando lengua de señas")
 
