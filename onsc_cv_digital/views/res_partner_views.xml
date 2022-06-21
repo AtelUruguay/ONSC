@@ -97,6 +97,7 @@
                             <field name="cv_birthdate" readonly="1"/>
                             <field name="cv_sex" readonly="1"/>
                             <field name="cv_expiration_date" readonly="1"/>
+                            <field name="email" readonly="1"/>
                         </group>
                         <group string="Fechas de cambios">
                             <field name="cv_full_name_updated_date" readonly="1"/>

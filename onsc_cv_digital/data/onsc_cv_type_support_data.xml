@@ -62,7 +62,7 @@
             <field name="hear">False</field>
             <field name="walk">False</field>
             <field name="slide">False</field>
-            <field name="understand">False</field>
+            <field name="understand">True</field>
             <field name="interaction">True</field>
             <field name="talk">False</field>
         </record>
