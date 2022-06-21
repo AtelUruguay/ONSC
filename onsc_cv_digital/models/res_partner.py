@@ -25,6 +25,14 @@ COLUMNS_FROZEN = [
 ]
 
 
+def calc_full_name(cv_first_name, cv_second_name, cv_last_name_1, cv_last_name_2):
+    name_values = [cv_first_name,
+                   cv_second_name,
+                   cv_last_name_1,
+                   cv_last_name_2]
+    return ' '.join([x for x in name_values if x])
+
+
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
@@ -64,11 +72,8 @@ class ResPartner(models.Model):
         for record in self:
             record.cv_full_name_updated_date = fields.Date.today()
             if record.is_partner_cv:
-                name_values = [record.cv_first_name,
-                               record.cv_second_name,
-                               record.cv_last_name_1,
-                               record.cv_last_name_2]
-                record.cv_full_name = ' '.join([x for x in name_values if x])
+                record.cv_full_name = calc_full_name(record.cv_first_name, record.cv_second_name,
+                                                     record.cv_last_name_1, record.cv_last_name_2)
             else:
                 record.cv_full_name = record.name
 
