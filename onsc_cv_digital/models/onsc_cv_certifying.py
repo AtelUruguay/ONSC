@@ -20,8 +20,7 @@ class ONSCCVCertifyingInstitution(models.Model):
         ]
         return super(ONSCCVCertifyingInstitution, self)._check_validate(
             args2validate,
-            _("Ya existe un registro validado para %s, Institución %s" % (
-                self.name, self.institution_id.display_name))
+            _("Ya existe un registro validado para %s" % (self.name))
         )
 
 
