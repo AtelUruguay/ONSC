@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, api, fields
 from unidecode import unidecode
+
+from odoo import models, api
 
 DNIC_FROZEN_COLUMNS = [
     'cv_dnic_name_1',
@@ -66,23 +67,8 @@ class ResPartner(models.Model):
     @api.depends('is_partner_cv', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
                  'cv_dnic_name_1', 'cv_dnic_name_2', 'cv_dnic_lastname_1', 'cv_dnic_lastname_2')
     def _compute_cv_full_name(self):
-        "Sobreescrito para calcular el cv_full_name si "
-        for record in self:
-            record.cv_full_name_updated_date = fields.Date.today()
-            if record.is_partner_cv:
-                if record.is_cv_uruguay and self.env.company.is_dnic_integrated:
-                    name_values = [record.cv_dnic_name_1,
-                                   record.cv_dnic_name_2,
-                                   record.cv_dnic_lastname_1,
-                                   record.cv_dnic_lastname_2]
-                else:
-                    name_values = [record.cv_first_name,
-                                   record.cv_second_name,
-                                   record.cv_last_name_1,
-                                   record.cv_last_name_2]
-                record.cv_full_name = ' '.join([x for x in name_values if x])
-            else:
-                record.cv_full_name = record.name
+        "Sobreescrito para agregar campos en el api depends"
+        super(ResPartner, self)._compute_cv_full_name()
 
     def button_update_dnic_values(self):
         self.update_dnic_values()

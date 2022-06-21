@@ -58,19 +58,10 @@ class ResPartner(models.Model):
         for record in self:
             record.is_cv_uruguay = record.cv_emissor_country_id.code == 'UY'
 
-    @api.depends('is_partner_cv', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
-                 )
+    @api.depends('is_partner_cv', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_cv_full_name(self):
-        for record in self:
-            record.cv_full_name_updated_date = fields.Date.today()
-            if record.is_partner_cv:
-                name_values = [record.cv_first_name,
-                               record.cv_second_name,
-                               record.cv_last_name_1,
-                               record.cv_last_name_2]
-                record.cv_full_name = ' '.join([x for x in name_values if x])
-            else:
-                record.cv_full_name = record.name
+        """Calcula para cada record los campos cv_full_name y cv_full_name_updated_date"""
+        self._calc_full_name()
 
     @api.depends('cv_sex')
     def _compute_cv_sex_updated_date(self):
@@ -81,6 +72,18 @@ class ResPartner(models.Model):
     def _compute_photo_updated_date(self):
         for record in self:
             record.cv_photo_updated_date = fields.Date.today()
+
+    def _calc_full_name(self):
+        for record in self:
+            record.cv_full_name_updated_date = fields.Date.today()
+            if record.is_partner_cv:
+                name_values = [record.cv_first_name,
+                               record.cv_second_name,
+                               record.cv_last_name_1,
+                               record.cv_last_name_2]
+                record.cv_full_name = ' '.join([x for x in name_values if x])
+            else:
+                record.cv_full_name = record.name
 
     def check_can_update(self):
         """ Para actualizar los partner que tienen is_partner_cv en True
