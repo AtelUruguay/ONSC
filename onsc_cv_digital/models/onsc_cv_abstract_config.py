@@ -92,8 +92,9 @@ class ONSCCVAbstractConfig(models.Model):
         validation_email_template_id = self.env.ref('onsc_cv_digital.email_template_validated')
         model_id = self.env['ir.model']._get_id(self._name)
         validation_email_template_id.model_id = model_id
-        self.with_context(force_send=True).message_post_with_template(
-            validation_email_template_id.id, email_layout_xmlid='mail.mail_notification_light')
+        mail = validation_email_template_id.send_mail(self.id, force_send=True,
+                                                         notif_layout='mail.mail_notification_light')
+        return mail
 
     def _send_reject_email(self):
         """
@@ -103,8 +104,9 @@ class ONSCCVAbstractConfig(models.Model):
         reject_email_template_id = self.env.ref('onsc_cv_digital.email_template_rejected')
         model_id = self.env['ir.model']._get_id(self._name)
         reject_email_template_id.model_id = model_id
-        self.with_context(force_send=True).message_post_with_template(
-            reject_email_template_id.id, email_layout_xmlid='mail.mail_notification_light')
+        mail = reject_email_template_id.send_mail(self.id, force_send=True,
+                                                      notif_layout='mail.mail_notification_light')
+        return mail
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
