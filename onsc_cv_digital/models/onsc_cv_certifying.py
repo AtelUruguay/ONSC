@@ -17,7 +17,6 @@ class ONSCCVCertifyingInstitution(models.Model):
     def _check_validate(self, args2validate, message=""):
         args2validate = [
             ('name', '=', self.name),
-            ('institution_id', '=', self.institution_id.id),
         ]
         return super(ONSCCVCertifyingInstitution, self)._check_validate(
             args2validate,
