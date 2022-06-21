@@ -3,7 +3,6 @@ import logging
 
 from odoo import fields, models, _, api
 from odoo.exceptions import ValidationError
-
 from ..soap import dnic_client
 
 _logger = logging.getLogger(__name__)

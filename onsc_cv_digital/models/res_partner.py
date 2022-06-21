@@ -58,9 +58,9 @@ class ResPartner(models.Model):
         for record in self:
             record.is_cv_uruguay = record.cv_emissor_country_id.code == 'UY'
 
-    @api.depends('is_partner_cv', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
-                 )
+    @api.depends('is_partner_cv', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_cv_full_name(self):
+        """Calcula para cada record los campos cv_full_name y cv_full_name_updated_date"""
         for record in self:
             record.cv_full_name_updated_date = fields.Date.today()
             if record.is_partner_cv:
