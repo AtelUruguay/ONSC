@@ -99,13 +99,20 @@ class ResPartner(models.Model):
             cv_last_name_adoptive_2 = response.get('cv_last_name_adoptive_2', '')
         else:
             # Si no se llama desde el boton y se pulsa guardar entonces tomamos los datos ya registrados
-            cv_dnic_name_1 = response.get('cv_dnic_name_1', self.cv_dnic_name_1)
-            cv_dnic_name_2 = response.get('cv_dnic_name_2', self.cv_dnic_name_2)
-            cv_dnic_lastname_1 = response.get('cv_dnic_lastname_1', self.cv_dnic_lastname_1)
-            cv_dnic_lastname_2 = response.get('cv_dnic_lastname_2', self.cv_dnic_lastname_2)
-            cv_dnic_full_name = response.get('cv_dnic_full_name', self.cv_dnic_full_name)
-            cv_last_name_adoptive_1 = response.get('cv_last_name_adoptive_1', self.cv_last_name_adoptive_1)
-            cv_last_name_adoptive_2 = response.get('cv_last_name_adoptive_2', self.cv_last_name_adoptive_2)
+            cv_dnic_name_1 = response.get('cv_dnic_name_1') \
+                if 'cv_dnic_name_1' in response else self.cv_dnic_name_1
+            cv_dnic_name_2 = response.get('cv_dnic_name_2') \
+                if 'cv_dnic_name_2' in response else self.cv_dnic_name_2
+            cv_dnic_lastname_1 = response.get('cv_dnic_lastname_1') \
+                if 'cv_dnic_lastname_1' in response else self.cv_dnic_lastname_1
+            cv_dnic_lastname_2 = response.get('cv_dnic_lastname_2') \
+                if 'cv_dnic_lastname_2' in response else self.cv_dnic_lastname_2
+            cv_dnic_full_name = response.get('cv_dnic_full_name') \
+                if 'cv_dnic_full_name' in response else self.cv_dnic_full_name
+            cv_last_name_adoptive_1 = response.get('cv_last_name_adoptive_1') \
+                if 'cv_last_name_adoptive_1' in response else self.cv_last_name_adoptive_1
+            cv_last_name_adoptive_2 = response.get('cv_last_name_adoptive_2') \
+                if 'cv_last_name_adoptive_2' in response else self.cv_last_name_adoptive_2
 
         cv_full_name = calc_full_name(cv_dnic_name_1, cv_dnic_name_2, cv_dnic_lastname_1, cv_dnic_lastname_2)
 
