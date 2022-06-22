@@ -13,6 +13,13 @@
         </field>
     </record>
 
+    <menuitem id="onsc_cv_digital_menu"
+              name="CV"
+              action="onsc_cv_digital_action"
+              parent="onsc_cv_root_menu"
+              groups="group_gestor_catalogos_cv,group_user_cv"
+              sequence="1"/>
+
     <menuitem id="onsc_cv_root_menu"
               name="CV digital"
               web_icon="onsc_cv_digital,static/description/icon.jpg"

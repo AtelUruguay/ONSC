@@ -12,6 +12,7 @@ ONSC CV Digital
     'depends': ['base', 'mail'],
     'data': [
         'security/onsc_cv_digital_security.xml',
+        'security/onsc_cv_digital_rules.xml',
         'security/ir.model.access.csv',
         'data/mail_template_data.xml',
         'data/onsc_cv_civil_status_data.xml',
@@ -65,6 +66,8 @@ ONSC CV Digital
         'views/onsc_cv_roll_event_views.xml',
         'views/onsc_cv_divulgation_media_views.xml',
         'views/res_partner_views.xml',
+
+        'views/onsc_cv_digital_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
