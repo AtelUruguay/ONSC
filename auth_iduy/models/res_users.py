@@ -50,8 +50,8 @@ class ResUsers(models.Model):
 
     @api.model
     def _get_user(self, provider, params):
-        if params.get('id_uy_uid', False):
-            args = [("oauth_uid", "=", params.get('id_uy_uid'))]
+        if params.get('uid', False):
+            args = [("oauth_uid", "=", params.get('uid'))]
         else:
             args = [("login", "=", params.get('email'))]
         args.append(('oauth_provider_id', '=', provider))
