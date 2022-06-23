@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from odoo.addons.onsc_cv_digital.models.res_partner import CV_SEX
+from odoo.addons.onsc_cv_digital.models.catalogs.res_partner import CV_SEX
 from odoo.exceptions import ValidationError
 
 
