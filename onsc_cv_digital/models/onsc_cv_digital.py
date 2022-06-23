@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api, _
 from odoo.addons.onsc_cv_digital.models.res_partner import CV_SEX
+from odoo.exceptions import ValidationError
 
 
 class ONSCCVDigital(models.Model):
@@ -61,3 +62,43 @@ class ONSCCVDigital(models.Model):
     email = fields.Char(
         string="Email",
         related='partner_id.email', store=True)
+
+    # INFORMACION GENERAL
+    # Genero
+    cv_gender_id = fields.Many2one("onsc.cv.gender", string=u"Género", required=True, )
+    is_cv_gender_option_other_enable = fields.Boolean(
+        u'¿Permitir opción otra/o?',
+        related='cv_gender_id.is_option_other_enable',
+        store=True)
+    cv_gender2 = fields.Char(string=u"Otro género")
+    cv_gender_record = fields.Binary(string="Constancia de identidad de género")
+    is_cv_gender_public = fields.Boolean(string="¿Permite que su género sea público?")
+    is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
+
+    # Raza
+    cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Raza", required=True,
+                                   domain="[('race_type','in',['race','both'])]")
+    is_cv_race_option_other_enable = fields.Boolean(
+        u'¿Permitir opción otra/o?',
+        compute='_compute_cv_race_values', store=True)
+    is_multiple_cv_race_selected = fields.Boolean(
+        u'Múltiples razas seleccionadas',
+        compute='_compute_cv_race_values', store=True)
+    cv_race2 = fields.Char(string=u"Otra raza")
+    cv_first_race_id = fields.Many2one("onsc.cv.race", string="¿Con que raza se reconoce principalmente?",
+                                       domain="[('id','in',cv_race_ids)]")
+    is_cv_race_public = fields.Boolean(string="¿Permite que su raza sea público?")
+
+    @api.constrains('cv_sex_updated_date')
+    def _check_valid_certificate(self):
+        today = fields.Date.from_string(fields.Date.today())
+        for record in self:
+            if fields.Date.from_string(record.cv_sex_updated_date) > today:
+                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
+
+    @api.depends('cv_race_ids')
+    def _compute_cv_race_values(self):
+        for record in self:
+            record.is_cv_race_option_other_enable = len(
+                record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
+            record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1

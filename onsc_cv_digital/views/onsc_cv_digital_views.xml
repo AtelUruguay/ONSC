@@ -66,6 +66,32 @@
                             <field name="cv_expiration_date" required="1"/>
                         </group>
                     </group>
+                    <notebook>
+                        <page string="Información general">
+                            <group>
+                                <group string="Género">
+                                    <field name="cv_gender_id"/>
+                                    <field name="cv_gender2"
+                                           attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
+                                    <field name="cv_gender_record"
+                                           attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
+                                    <field name="is_cv_gender_public"/>
+                                    <field name="is_cv_gender_option_other_enable" invisible="1"/>
+                                    <field name="is_cv_gender_record" invisible="1"/>
+                                </group>
+                                <group string="Raza">
+                                    <field name="cv_race_ids" widget="many2many_tags"/>
+                                    <field name="cv_race2"
+                                           attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
+                                    <field name="cv_first_race_id"
+                                           attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)], 'required': [('is_multiple_cv_race_selected', '=', True)]}"/>
+                                    <field name="is_cv_race_public"/>
+                                    <field name="is_cv_race_option_other_enable" invisible="0"/>
+                                    <field name="is_multiple_cv_race_selected" invisible="0"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" groups="base.group_user"/>
@@ -108,7 +134,7 @@
                                     <li t-if="record.email.raw_value" class="o_text_overflow">
                                         <field name="email"/>
                                     </li>
-                                    <li t-if="record.email.cv_nro_doc" class="o_text_overflow">
+                                    <li t-if="record.cv_nro_doc" class="o_text_overflow">
                                         <field name="cv_nro_doc"/>
                                     </li>
                                 </ul>
