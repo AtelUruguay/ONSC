@@ -1,18 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_cv_country_state_action" model="ir.actions.act_window">
-        <field name="name">Países</field>
-        <field name="type">ir.actions.act_window</field>
-        <field name="res_model">res.country.state</field>
-        <field name="view_id" ref="base.view_country_state_tree"/>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Crear países
-            </p><p>
-            </p>
-        </field>
-    </record>
-
     <menuitem id="onsc_cv_digital_menu"
               name="CV"
               action="onsc_cv_digital_action"
@@ -128,8 +115,9 @@
 
         <menuitem id="onsc_cv_country_action_menu"
                   parent="onsc_cv_config_menu"
-                  action="onsc_cv_country_state_action"
+                  action="base.action_country"
                   groups="group_gestor_catalogos_cv"
+                  name="Países"
                   sequence="17"/>
 
         <menuitem id="onsc_cv_academic_program_action_menu"
