@@ -43,7 +43,7 @@
                             states="to_validate" type="object"
                             groups="onsc_cv_digital.group_validador_catalogos_cv"
                             confirm="Está seguro que desea Rechazarlo"/>
-                    <field name="state" widget="statusbar" clickable="1"/>
+                    <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>

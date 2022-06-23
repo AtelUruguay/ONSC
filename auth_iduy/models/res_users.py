@@ -35,6 +35,7 @@ class ResUsers(models.Model):
     def _prepare_userinfo_dict(self, provider, params):
         result = {
             'login': params.get('email', ''),
+            'email': params.get('email', ''),
             'name': params.get('name', ''),
             'oauth_uid': params.get('uid', False),
             'oauth_access_token': params.get('access_token'),

@@ -1,6 +1,6 @@
 {
     'name': 'Authentication IdUY Connect',
-    'version': '1.0',
+    'version': '15.0.1.0.0.',
     'license': '',
     'author': "Quanam",
     'website': "https://www.quanam.com",

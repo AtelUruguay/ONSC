@@ -15,16 +15,12 @@ class ONSCCVCertifyingInstitution(models.Model):
                                               string='Sub instituciones certificadoras')
 
     def _check_validate(self, args2validate, message=""):
-        if self.institution_id.state != 'validated':
-            raise ValidationError(_("La Institución no ha sido validada"))
         args2validate = [
             ('name', '=', self.name),
-            ('institution_id', '=', self.institution_id.id),
         ]
         return super(ONSCCVCertifyingInstitution, self)._check_validate(
             args2validate,
-            _("Ya existe un registro validado para %s, Institución %s" % (
-                self.name, self.institution_id.display_name))
+            _("Ya existe un registro validado para %s" % (self.name))
         )
 
 

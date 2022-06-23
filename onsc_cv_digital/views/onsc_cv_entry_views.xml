@@ -42,7 +42,7 @@
                     <button name="action_reject" string="Rechazar"
                             states="to_validate" type="object"
                             groups="onsc_cv_digital.group_validador_catalogos_cv"/>
-                    <field name="state" widget="statusbar" clickable="1"/>
+                    <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
