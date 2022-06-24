@@ -89,6 +89,8 @@ class ONSCCVDigital(models.Model):
                                        domain="[('id','in',cv_race_ids)]")
     is_cv_race_public = fields.Boolean(string="¿Permite que su raza sea público?")
 
+    general_info_help = fields.Char(default="facebook.com", store=False)
+
     @api.constrains('cv_sex_updated_date')
     def _check_valid_certificate(self):
         today = fields.Date.from_string(fields.Date.today())
@@ -102,3 +104,6 @@ class ONSCCVDigital(models.Model):
             record.is_cv_race_option_other_enable = len(
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
+
+    def button_general_info_help(self):
+        return True

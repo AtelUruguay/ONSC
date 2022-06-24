@@ -68,6 +68,9 @@
                     </group>
                     <notebook>
                         <page string="Información general">
+                            <div>
+                                <button name="button_general_info_help" class="oe_link" string="Ayuda en línea" icon="fa-question" type="object"/>
+                            </div>
                             <group>
                                 <group string="Género">
                                     <field name="cv_gender_id"/>
