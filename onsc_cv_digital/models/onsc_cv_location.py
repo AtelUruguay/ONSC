@@ -22,7 +22,8 @@ class ONSCCVLocation(models.Model):
 
     @api.onchange('country_id')
     def _onchange_country_id(self):
-        self.state_id = False
+        if self.country_id and self.country_id != self.state_id.country_id:
+            self.state_id = False
 
     @api.model
     def create(self, values):
