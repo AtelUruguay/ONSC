@@ -2,7 +2,7 @@
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-from .res_partner import CV_SEX
+from .catalogs.res_partner import CV_SEX
 
 
 class ONSCCVDigital(models.Model):

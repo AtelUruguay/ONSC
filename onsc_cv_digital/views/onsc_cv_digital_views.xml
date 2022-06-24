@@ -145,7 +145,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="res_partner_kanban_cv">
+    <record model="ir.ui.view" id="kanban_digital_cv">
         <field name="name">onsc.cv.digital.kanban</field>
         <field name="model">onsc.cv.digital</field>
         <field name="priority" eval="1000"/>
