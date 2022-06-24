@@ -97,7 +97,7 @@
                                     type="object"
                                     groups="onsc_cv_digital.group_user_cv"
                                     attrs="{'invisible': [('country_id', '!=', False)]}"/>
-                            <button string="Editar domicilio" name="button_edit_address" id="button_edit_address_2"
+                            <button string="Modificar domicilio" name="button_edit_address" id="button_edit_address_2"
                                     type="object"
                                     groups="onsc_cv_digital.group_user_cv"
                                     attrs="{'invisible': [('country_id', '=', False)]}"/>
