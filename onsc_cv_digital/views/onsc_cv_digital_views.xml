@@ -102,6 +102,9 @@
                                     <field name="is_cv_race_option_other_enable" invisible="0"/>
                                     <field name="is_multiple_cv_race_selected" invisible="0"/>
                                 </group>
+                                <group string="Información patronímica" name="other_info_group">
+                                    <field name="cv_full_name_updated_date"/>
+                                </group>
                             </group>
                         </page>
                         <page name="address" string="Domicilio">
@@ -139,19 +142,21 @@
                                     <field name="country_id" string="País"/>
                                     <field name="cv_address_state_id" string="Departamento"/>
                                     <field name="cv_address_location_id"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
                                     <field name="cv_address_street" string="Calle"/>
+                                    <field name="cv_address_street2" string="Entre calle"/>
+                                    <field name="cv_address_street3" string="Y calle"/>
                                 </group>
                                 <group>
                                     <field name="cv_address_apto"/>
                                     <field name="cv_address_nro_door"/>
                                     <field name="cv_address_is_cv_bis"/>
                                     <field name="cv_address_zip" string="C.P"/>
-                                </group>
-                            </group>
-                            <group>
-                                <group>
-                                    <field name="cv_address_street2" string="Entre calle"/>
-                                    <field name="cv_address_street3" string="Y calle"/>
                                 </group>
                             </group>
                             <group>
