@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, _
-from odoo.exceptions import ValidationError
+from odoo import fields, models
 
-from ..soap import dnic_client
 
 class ResConfigSettings(models.TransientModel):
     _inherit = 'res.config.settings'

@@ -240,4 +240,11 @@
               parent="onsc_cv_root_menu"
               groups="group_gestor_catalogos_cv"
               sequence="100"/>
+
+    <menuitem id="onsc_cv_settings_menu"
+              name="Configuración"
+              action="onsc_cv_digital_config_settings_action"
+              parent="onsc_cv_root_menu"
+              groups="base.group_system"
+              sequence="150"/>
 </odoo>
