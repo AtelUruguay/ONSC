@@ -133,7 +133,7 @@
                                     <tree editable="bottom" >
                                         <field name="validade_date_divers_license" />
                                         <field name="category_drivers_license_id" />
-                                        <field name="digital_document_drivers_license_id"  options="{'accepted_file_extensions': '.pdf'}"  />
+                                        <field name="digital_document_drivers_license"  options="{'accepted_file_extensions': '.pdf'}"  />
                                     </tree>
                                 </field>
                             </group>
