@@ -1,3 +1,6 @@
+/** @odoo-module **/
+
+
 odoo.define("web.web_relational_field_with_create_edit_option", function (require) {
     "use strict";
 
@@ -8,7 +11,7 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
     const { sprintf, toBoolElse } = require("web.utils");
 
     FieldMany2One.include({
-        
+
         _search: async function (searchValue = "") {
             const value = searchValue.trim();
             const domain = this.record.getDomain(this.recordParams);
@@ -16,13 +19,13 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                 this.record.getContext(this.recordParams),
                 this.additionalContext
             );
-    
+
             // Exclude black-listed ids from the domain
             const blackListedIds = this._getSearchBlacklist();
             if (blackListedIds.length) {
                 domain.push(['id', 'not in', blackListedIds]);
             }
-    
+
             const nameSearch = this._rpc({
                 model: this.field.relation,
                 method: "name_search",
@@ -35,7 +38,7 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                 }
             });
             const results = await this.orderer.add(nameSearch);
-    
+
             // Format results to fit the options dropdown
             let values = results.map((result) => {
                 const [id, fullName] = result;
@@ -48,16 +51,16 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                     name: displayName,
                 };
             });
-    
+
             // Add "Search more..." option if results count is higher than the limit
             if (this.limit < values.length) {
                 values = this._manageSearchMore(values, value, domain, context);
             }
-    
+
             // Additional options...
             const canQuickCreate = this.can_create && !this.nodeOptions.no_quick_create;
             const canCreateEdit = this.can_create && !this.nodeOptions.no_create_edit;
-            
+
 
             if (value.length) {
                 // "Quick create" option
@@ -78,7 +81,7 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                         action: () => this._quickCreate(value),
                         classname: 'o_m2o_dropdown_option'
                     });
-                }                         
+                }
                 // "Create and Edit" option
                 if (canCreateEdit) {
                     const valueContext = this._createContext(value);
@@ -99,7 +102,7 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                         classname: 'o_m2o_no_result',
                     });
                 }
-            } else {               
+            } else {
                 if (canQuickCreate || canCreateEdit) {
                     const valueContext = this._createContext(value);
                     values.push({
@@ -111,10 +114,10 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                         },
                         classname: 'o_m2o_dropdown_option',
                     });
-                }       
-                
+                }
+
             }
-    
+
             return values;
         },
 

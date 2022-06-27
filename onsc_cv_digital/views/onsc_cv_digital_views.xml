@@ -93,6 +93,10 @@
                             </group>
                         </page>
                         <page name="address" string="Domicilio">
+                            <div class="float-right">
+                                <field name="cv_address_help"/>
+                            </div>
+
                             <button string="Agregar domicilio" name="button_edit_address" id="button_edit_address_1"
                                     type="object"
                                     groups="onsc_cv_digital.group_user_cv"
@@ -203,4 +207,5 @@
             </p>
         </field>
     </record>
+
 </odoo>
