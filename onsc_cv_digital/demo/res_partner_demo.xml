@@ -9,6 +9,11 @@
             <field name="cv_first_name">Pablo</field>
             <field name="cv_second_name"/>
             <field name="cv_last_name_1">Miranda</field>
+            <field name="cv_nro_door">02</field>
+            <field name="is_cv_bis">1</field>
+            <field name="cv_apto">22</field>
+            <field name="cv_street3">Paysandú</field>
+            <field name="cv_amplification">En la esquina norte</field>
             <field name="cv_last_name_2">Guerrero</field>
             <field name="cv_birthdate" eval="DateTime.now() - relativedelta(years=28)"/>
             <field name="cv_sex">male</field>

@@ -29,6 +29,7 @@ ONSC CV Digital
         'data/onsc_cv_type_event_data.xml',
         'data/onsc_cv_type_support_data.xml',
         'data/onsc_cv_roll_event_data.xml',
+        'wizard/views/onsc_cv_address_wizard_views.xml',
         'wizard/onsc_cv_reject_wizard_views.xml',
         'views/res_config_settings_view.xml',
         'views/catalogs/onsc_cv_document_type_views.xml',
