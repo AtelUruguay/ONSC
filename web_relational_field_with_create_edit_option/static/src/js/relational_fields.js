@@ -1,4 +1,3 @@
-/** @odoo-module **/
 
 
 odoo.define("web.web_relational_field_with_create_edit_option", function (require) {

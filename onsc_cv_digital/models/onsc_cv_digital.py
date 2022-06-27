@@ -102,6 +102,7 @@ class ONSCCVDigital(models.Model):
     cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis')
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification')
     cv_address_state = fields.Selection(related='cv_address_location_id.state')
+    cv_address_reject_reason = fields.Char(related='cv_address_location_id.reject_reason')
     # Help online
     cv_address_help = fields.Html(compute=lambda s: s.get_help('cv_address_help'), store=False, readonly=True)
 
