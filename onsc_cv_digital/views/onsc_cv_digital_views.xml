@@ -127,19 +127,21 @@
                                     <field name="country_id" string="País"/>
                                     <field name="cv_address_state_id" string="Departamento"/>
                                     <field name="cv_address_location_id"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
                                     <field name="cv_address_street" string="Calle"/>
+                                    <field name="cv_address_street2" string="Entre calle"/>
+                                    <field name="cv_address_street3" string="Y calle"/>
                                 </group>
                                 <group>
                                     <field name="cv_address_apto"/>
                                     <field name="cv_address_nro_door"/>
                                     <field name="cv_address_is_cv_bis"/>
                                     <field name="cv_address_zip" string="C.P"/>
-                                </group>
-                            </group>
-                            <group>
-                                <group>
-                                    <field name="cv_address_street2" string="Entre calle"/>
-                                    <field name="cv_address_street3" string="Y calle"/>
                                 </group>
                             </group>
                             <group>
