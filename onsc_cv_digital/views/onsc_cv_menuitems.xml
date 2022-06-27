@@ -9,7 +9,14 @@
               name="CV"
               action="onsc_cv_digital_action"
               parent="onsc_cv_root_menu"
-              groups="group_gestor_catalogos_cv,group_user_cv"
+              groups="group_gestor_catalogos_cv"
+              sequence="1"/>
+
+    <menuitem id="onsc_cv_digital_user_menu"
+              name="CV"
+              action="onsc_cv_digital_user_action"
+              parent="onsc_cv_root_menu"
+              groups="group_user_cv"
               sequence="1"/>
 
     <menuitem id="onsc_cv_config_menu"
@@ -240,4 +247,11 @@
               parent="onsc_cv_root_menu"
               groups="group_gestor_catalogos_cv"
               sequence="100"/>
+
+    <menuitem id="onsc_cv_settings_menu"
+              name="Configuración"
+              action="onsc_cv_digital_config_settings_action"
+              parent="onsc_cv_root_menu"
+              groups="base.group_system"
+              sequence="150"/>
 </odoo>
