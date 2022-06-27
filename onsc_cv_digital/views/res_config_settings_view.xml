@@ -16,7 +16,11 @@
                                     <span class="o_form_label">Ayuda en línea</span>
                                     <div class="text-muted content-group mt16">
                                         <span>Información general </span>
-                                        <field name="general_info_help" class="col-12 col-lg-12"/>
+                                        <field name="cv_help_general_info" class="col-12 col-lg-12"/>
+                                    </div>
+                                    <div class="text-muted content-group mt16">
+                                        <span>Domicilio </span>
+                                        <field name="cv_help_address" class="col-12 col-lg-12"/>
                                     </div>
                                 </div>
                             </div>

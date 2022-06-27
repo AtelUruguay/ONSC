@@ -2,10 +2,13 @@
 
 from lxml import etree
 from odoo import fields, models, api, _
-from odoo.addons.onsc_cv_digital.models.catalogs.res_partner import CV_SEX
-from odoo.addons.onsc_cv_digital.models.utils import get_help_online_action
 from odoo.exceptions import ValidationError
+
 from .catalogs.res_partner import CV_SEX
+
+html2construct = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
+                            href="%(url)s">
+                            <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
 
 
 class ONSCCVDigital(models.Model):
@@ -119,22 +122,25 @@ class ONSCCVDigital(models.Model):
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification')
     cv_address_state = fields.Selection(related='cv_address_location_id.state')
     # Help online
-    cv_address_help = fields.Html(compute=lambda s: s.get_help('cv_address_help'), store=False, readonly=True)
+    cv_help_general_info = fields.Html(
+        compute=lambda s: s._get_help('cv_help_general_info'), store=False, readonly=True)
+    cv_help_address = fields.Html(
+        compute=lambda s: s._get_help('cv_help_address'), store=False, readonly=True)
 
-    def get_help(self, url=''):
-
-        for rec in self:
-            rec.cv_address_help = \
-                """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
-                            href="%(url)s">
-                            <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>""" % {'url': url}
-
-    @api.constrains('cv_sex_updated_date')
-    def _check_valid_certificate(self):
+    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
+    def _check_valid_dates(self):
         today = fields.Date.from_string(fields.Date.today())
         for record in self:
             if fields.Date.from_string(record.cv_sex_updated_date) > today:
                 raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
+            if fields.Date.from_string(record.cv_birthdate) > today:
+                raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
+
+    def _get_help(self, help_field=''):
+        _url = eval('self.env.user.company_id.%s' % (help_field))
+        _html2construct = html2construct % {'url': _url}
+        for rec in self:
+            setattr(rec, help_field, _html2construct)
 
     @api.depends('cv_race_ids')
     def _compute_cv_race_values(self):
@@ -142,6 +148,21 @@ class ONSCCVDigital(models.Model):
             record.is_cv_race_option_other_enable = len(
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
+
+    def _action_open_user_cv(self):
+        vals = {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': self._name,
+            'name': 'Curriculum vitae',
+            'context': self.env.context
+        }
+        if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
+            my_cv = self.search([
+                ('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
+            if my_cv:
+                vals.update({'res_id': my_cv.id})
+        return vals
 
     def button_edit_address(self):
         self.ensure_one()
@@ -159,5 +180,5 @@ class ONSCCVDigital(models.Model):
             'context': ctx,
         }
 
-    def button_go_help(self):
-        return get_help_online_action(_url)
+    def button_active_cv(self):
+        self.write({'active': True})

@@ -36,8 +36,17 @@
                 <header>
                 </header>
                 <sheet>
-                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
-                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': [('active', '=', True)]}">
+                        <p class="mb-0" style="text-align:center">
+                        <strong>
+                            Su Curriculum se encuentra inactivo.
+                            <button type="object" class="oe_link alert-danger" name="toggle_active"
+                                    string="Para reestablecerlo de click aquí"
+                                    style="font-weight:bold;text-decoration:underline"/>
+                        </strong>
+                        </p>
+                    </div>
                     <field name="avatar_128" invisible="1"/>
                     <field name="image_1920" widget='image' class="oe_avatar"
                            options='{"preview_image": "avatar_128"}'/>
@@ -69,11 +78,8 @@
                     </group>
                     <notebook>
                         <page string="Información general">
-                            <div>
-                                <button name="button_go_help" class="oe_link"
-                                        context="{'help':'general_info_help'}"
-                                        string="Ayuda en línea"
-                                        icon="fa-question" type="object"/>
+                            <div class="float-right">
+                                <field name="cv_help_general_info"/>
                             </div>
                             <group>
                                 <group string="Género">
@@ -100,9 +106,8 @@
                         </page>
                         <page name="address" string="Domicilio">
                             <div class="float-right">
-                                <field name="cv_address_help"/>
+                                <field name="cv_help_address"/>
                             </div>
-
                             <button string="Agregar domicilio" name="button_edit_address" id="button_edit_address_1"
                                     type="object"
                                     groups="onsc_cv_digital.group_user_cv"
@@ -204,6 +209,16 @@
                 </templates>
             </kanban>
         </field>
+    </record>
+
+    <record id="onsc_cv_digital_user_action" model="ir.actions.server">
+          <field name="name">Currículum Digital</field>
+          <field name="type">ir.actions.server</field>
+          <field name="state">code</field>
+          <field name="model_id" ref="model_onsc_cv_digital" />
+          <field name="code">
+                action = model._action_open_user_cv()
+          </field>
     </record>
 
     <record id='onsc_cv_digital_action' model='ir.actions.act_window'>
