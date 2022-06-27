@@ -71,40 +71,89 @@
                             <field name="cv_second_name" readonly="1"/>
                             <field name="cv_last_name_1" readonly="1"/>
                             <field name="cv_last_name_2" readonly="1"/>
-
-                            <span class="o_form_label o_td_label" name="address_name">
-                                <field name="type" attrs="{'invisible': [('is_company','=', True)]}" readonly="1"
-                                       class="font-weight-bold"/>
-                                <b attrs="{'invisible': [('is_company', '=', False)]}">Address</b>
-                            </span>
-                            <div class="o_address_format">
-                                <field name="street" placeholder="Street..." class="o_address_street" readonly="1"/>
-                                <field name="street2" placeholder="Street 2..." class="o_address_street" readonly="1"/>
-                                <field name="city" placeholder="City" class="o_address_city" readonly="1"/>
-                                <field name="state_id" class="o_address_state" placeholder="State"
-                                       options="{'no_open': True, 'no_quick_create': True}" readonly="1"/>
-                                <field name="zip" placeholder="ZIP" class="o_address_zip" readonly="1"/>
-                                <field name="country_id" placeholder="Country" class="o_address_country"
-                                       options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}" readonly="1"/>
-                            </div>
-                            <field name="parent_id" invisible="1"/>
-                            <field name="is_company" invisible="1"/>
-
+                            <field name="cv_address_state" invisible="1"/>
                         </group>
                         <group name="cv_other_info">
                         </group>
-                        <group string="Otros Datos">
-                            <field name="cv_birthdate" readonly="1"/>
-                            <field name="cv_sex" readonly="1"/>
-                            <field name="cv_expiration_date" readonly="1"/>
-                            <field name="email" readonly="1"/>
-                        </group>
-                        <group string="Fechas de cambios">
-                            <field name="cv_full_name_updated_date" readonly="1"/>
-                            <field name="cv_sex_updated_date" readonly="1"/>
-                            <field name="cv_photo_updated_date" readonly="1"/>
-                        </group>
                     </group>
+                    <notebook>
+                        <page string="Otros Datos">
+                            <group>
+                                <group>
+                                    <field name="cv_birthdate" readonly="1"/>
+                                    <field name="cv_sex" readonly="1"/>
+                                    <field name="cv_expiration_date" readonly="1"/>
+                                </group>
+                                <group string="Fechas de cambios">
+                                    <field name="cv_full_name_updated_date" readonly="1"/>
+                                    <field name="cv_sex_updated_date" readonly="1"/>
+                                    <field name="cv_photo_updated_date" readonly="1"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Dirección">
+                            <group>
+                                <group>
+
+                                    <span class="o_form_label o_td_label" name="address_name">
+                                        <field name="type"
+                                               readonly="1"
+                                               class="font-weight-bold"/>
+                                    </span>
+                                    <div class="o_address_format">
+                                        <field name="country_id" placeholder="País..." class="o_address_country"
+                                               options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"
+                                               readonly="1"/>
+                                        <field name="state_id" class="o_address_state" placeholder="Departamento..."
+                                               options="{'no_open': True, 'no_quick_create': True}" readonly="1"/>
+                                        <field name="cv_location_id" placeholder="Localidad/Ciudad..."
+                                               class="o_address_city"
+                                               readonly="1"/>
+                                        <field name="street" placeholder="Calle..." class="o_address_street"
+                                               readonly="1"/>
+
+                                        <field name="cv_nro_door" placeholder="Número..." readonly="1"
+                                               class="o_address_zip"/>
+                                        <field name="cv_apto" class="o_address_zip" style="margin-left:2%"
+                                               placeholder="Apto..."
+                                               readonly="1"/>
+                                        <field name="street2" placeholder="Entre calle..." class="o_address_street"
+                                               readonly="1"/>
+                                        <field name="cv_street3" placeholder="Y calle..." class="o_address_street"
+                                               readonly="1"/>
+                                        <field name="zip" placeholder="ZIP" class="o_address_zip" readonly="1"/>
+                                        <label for="is_cv_bis" class="text-muted" style="margin-left:2%"/>
+                                        <field name="is_cv_bis" readonly="1" class="o_address_zip"/>
+                                        <div>
+                                            <field name="cv_amplification" placeholder="Aclaraciones"
+                                                   class="o_address_zip"
+                                                   readonly="1"/>
+                                        </div>
+
+                                    </div>
+                                    <field name="parent_id" invisible="1"/>
+                                    <field name="is_company" invisible="1"/>
+                                </group>
+                                <group>
+                                    <div class="ribbon ribbon-top-right">
+                                        <span name='validated_ribbon'
+                                              attrs="{'invisible': [('cv_address_state', 'not in', ['validated', False])]}"
+                                              class="bg-success">Dirección validada
+                                        </span>
+                                        <span name='un_validated_ribbon'
+                                              attrs="{'invisible': [('cv_address_state', 'in', ['validated']),('cv_address_state', 'not in', [False])]}"
+                                              class="bg-danger">Dirección no validada
+                                        </span>
+                                        <span name='empty_ribbon'
+                                              attrs="{'invisible': [('cv_address_state', 'not in', [False])]}"
+                                              class="bg-warning">Localidad no especificada
+                                        </span>
+                                    </div>
+                                </group>
+                            </group>
+
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids"/>

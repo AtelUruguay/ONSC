@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo.addons.onsc_cv_digital.models.res_partner import calc_full_name
+from odoo.addons.onsc_cv_digital.models.catalogs.res_partner import calc_full_name
 from odoo.addons.partner_dnic.soap.dnic_client import normalize_str
 from unidecode import unidecode
 

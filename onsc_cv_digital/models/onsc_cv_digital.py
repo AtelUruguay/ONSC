@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from odoo.addons.onsc_cv_digital.models.res_partner import CV_SEX
 from odoo.exceptions import ValidationError
+from .catalogs.res_partner import CV_SEX
 
 
 class ONSCCVDigital(models.Model):
@@ -89,6 +89,31 @@ class ONSCCVDigital(models.Model):
                                        domain="[('id','in',cv_race_ids)]")
     is_cv_race_public = fields.Boolean(string="¿Permite que su raza sea público?")
 
+    # DOMICILIO
+    country_id = fields.Many2one(related='partner_id.country_id')
+    cv_address_state_id = fields.Many2one(related='partner_id.state_id')
+    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id')
+    cv_address_street = fields.Char(related='partner_id.street')
+    cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door')
+    cv_address_apto = fields.Char(related='partner_id.cv_apto')
+    cv_address_street2 = fields.Char(related='partner_id.street2')
+    cv_address_street3 = fields.Char(related='partner_id.cv_street3')
+    cv_address_zip = fields.Char(related='partner_id.zip')
+    cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis')
+    cv_address_amplification = fields.Text(related='partner_id.cv_amplification')
+    cv_address_state = fields.Selection(related='cv_address_location_id.state')
+    cv_address_reject_reason = fields.Char(related='cv_address_location_id.reject_reason')
+    # Help online
+    cv_address_help = fields.Html(compute=lambda s: s.get_help('cv_address_help'), store=False, readonly=True)
+
+    def get_help(self, url=''):
+
+        for rec in self:
+            rec.cv_address_help = \
+                """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
+                            href="%(url)s">
+                            <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>""" % {'url': url}
+
     country_of_birth_id = fields.Many2one(comodel_name="res.country", string="País de nacimiento" , required=True)
     uruguayan_citizenship = fields.Selection(string="Ciudadanía Uruguaya", selection=[('legal', 'Legal'), ('natural', 'Natural'), ('extranjero', 'Extranjero')], required=True)
     marital_status_id = fields.Many2one(comodel_name="onsc.cv.status.civil",string="Estado Civil", required=True)
@@ -151,6 +176,23 @@ class ONSCCVDigital(models.Model):
             record.is_cv_race_option_other_enable = len(
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
+
+
+    def button_edit_address(self):
+        self.ensure_one()
+        title = self.country_id and _('Editar domicilio') or _('Agregar domicilio')
+        ctx = self._context.copy()
+        wizard = self.env['onsc.cv.address.wizard'].create({'partner_id': self.partner_id.id})
+        return {
+            'name': title,
+            'view_mode': 'form',
+            'res_model': 'onsc.cv.address.wizard',
+            'target': 'new',
+            'view_id': False,
+            'res_id': wizard.id,
+            'type': 'ir.actions.act_window',
+            'context': ctx,
+        }
 
     def _compute_digital_documents(self):
         for rec in self:
