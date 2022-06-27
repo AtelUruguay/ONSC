@@ -9,14 +9,14 @@
                 <xpath expr="//div[hasclass('settings')]" position="inside">
                     <div class="app_settings_block" data-string="ONSC CV Digital" id="onsc_cv_digital" string="ONSC CV Digital" data-key="onsc_cv_digital">
                         <h2>ONSC CV Digital</h2>
-                        <div class="row mt16 o_settings_container" id="help_online_setting">
+                        <div class="row o_settings_container" id="help_online_setting">
                             <div class="col-12 col-lg-12 o_setting_box">
                                 <div class="o_setting_left_pane"/>
                                 <div class="o_setting_right_pane">
                                     <span class="o_form_label">Ayuda en línea</span>
                                     <div class="text-muted content-group mt16">
                                         <span>Información general </span>
-                                        <field name="general_info_help" class="mt16 oe_inline" />
+                                        <field name="general_info_help" class="col-12 col-lg-12"/>
                                     </div>
                                 </div>
                             </div>
