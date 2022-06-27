@@ -90,6 +90,9 @@
                                     <field name="is_cv_race_option_other_enable" invisible="0"/>
                                     <field name="is_multiple_cv_race_selected" invisible="0"/>
                                 </group>
+                                <group string="Información patronímica" name="other_info_group">
+                                    <field name="cv_full_name_updated_date"/>
+                                </group>
                             </group>
                         </page>
                         <page name="address" string="Domicilio">

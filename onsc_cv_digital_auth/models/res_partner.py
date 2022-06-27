@@ -4,17 +4,7 @@ from odoo.addons.onsc_cv_digital.models.catalogs.res_partner import calc_full_na
 from odoo.addons.partner_dnic.soap.dnic_client import normalize_str
 from unidecode import unidecode
 
-from odoo import models, api
-
-DNIC_FROZEN_COLUMNS = [
-    'cv_dnic_name_1',
-    'cv_dnic_name_2',
-    'cv_dnic_lastname_1',
-    'cv_dnic_lastname_2',
-    'cv_last_name_adoptive_1',
-    'cv_last_name_adoptive_2',
-    'cv_dnic_full_name'
-]
+from odoo import api, fields, models
 
 
 def compare_string_without_consider_accents(str1='', str2=''):
@@ -34,38 +24,26 @@ def compare_string_without_consider_accents(str1='', str2=''):
     return False
 
 
-class ResUsers(models.Model):
-    """INFORMACION Y COMPORTAMIENTO PROPIO DE INTEGRACIONES DNIC E IDUY"""
-    _inherit = 'res.users'
+DNIC_FROZEN_COLUMNS = [
+    'cv_dnic_name_1',
+    'cv_dnic_name_2',
+    'cv_dnic_lastname_1',
+    'cv_dnic_lastname_2',
+    'cv_last_name_adoptive_1',
+    'cv_last_name_adoptive_2',
+    'cv_dnic_full_name'
+]
 
-    @api.model
-    def _prepare_userinfo_dict(self, provider, params):
-        result = super(ResUsers, self)._prepare_userinfo_dict(provider, params)
-        nickname = params.get('nickname', False)
-        doc_type = self.env['onsc.cv.document.type'].search(
-            [('code', '=', nickname.split('-')[1])], limit=1)
-        result.update({
-            'cv_emissor_country_id': result.get('country_id', False),
-            'cv_first_name': params.get('primer_nombre', False),
-            'cv_second_name': params.get('segundo_nombre', False),
-            'cv_last_name_1': params.get('primer_apellido', False),
-            'cv_last_name_2': params.get('segundo_apellido', False),
-            'cv_document_type_id': doc_type.id,
-            'cv_nro_doc': params.get('numero_documento', False),
-            'is_partner_cv': True
-        })
-        return result
-
-    @api.model
-    def _get_user(self, provider, params):
-        oauth_user = super(ResUsers, self.with_context(can_update_contact_cv=True))._get_user(provider, params)
-        # LLamada al servicio de DNIC
-        oauth_user.partner_id.update_dnic_values(jump_error=True)
-        return oauth_user
+SOURCE_INFO_TYPE = [
+    ('id', 'Id digital'),
+    ('dnic', 'DNIC'),
+]
 
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
+
+    cv_source_info_auth_type = fields.Selection(SOURCE_INFO_TYPE, string="Fuente de información")
 
     @api.model
     def _get_frozen_columns(self):
@@ -137,6 +115,11 @@ class ResPartner(models.Model):
                             'cv_last_name_1': cv_last_name_adoptive_1,
                             'cv_last_name_2': cv_last_name_adoptive_2,
                         })
+        if result:
+            # Si result tiene valores entonces la fuente de la info es DNIC
+            result.update({'cv_source_info_auth_type': 'dnic'})
+        else:
+            result.update({'cv_source_info_auth_type': 'id'})
         return result
 
     def write(self, values):

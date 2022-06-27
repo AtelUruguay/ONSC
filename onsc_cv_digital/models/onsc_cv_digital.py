@@ -63,7 +63,7 @@ class ONSCCVDigital(models.Model):
         string="Email",
         related='partner_id.email', store=True)
 
-    # INFORMACION GENERAL
+    # INFORMACION GENERAL---<Page>
     # Genero
     cv_gender_id = fields.Many2one("onsc.cv.gender", string=u"Género", required=True, )
     is_cv_gender_option_other_enable = fields.Boolean(
@@ -74,7 +74,6 @@ class ONSCCVDigital(models.Model):
     cv_gender_record = fields.Binary(string="Constancia de identidad de género")
     is_cv_gender_public = fields.Boolean(string="¿Permite que su género sea público?")
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
-
     # Raza
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Raza", required=True,
                                    domain="[('race_type','in',['race','both'])]")
@@ -88,8 +87,11 @@ class ONSCCVDigital(models.Model):
     cv_first_race_id = fields.Many2one("onsc.cv.race", string="¿Con que raza se reconoce principalmente?",
                                        domain="[('id','in',cv_race_ids)]")
     is_cv_race_public = fields.Boolean(string="¿Permite que su raza sea público?")
+    # Información patronímica
+    cv_full_name_updated_date = fields.Date(related='partner_id.cv_full_name_updated_date',
+                                            string="Fecha de información")
 
-    # DOMICILIO
+    # DOMICILIO----<Page>
     country_id = fields.Many2one(related='partner_id.country_id')
     cv_address_state_id = fields.Many2one(related='partner_id.state_id')
     cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id')
