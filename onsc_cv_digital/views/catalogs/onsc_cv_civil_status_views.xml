@@ -23,7 +23,7 @@
         </field>
     </record>
 
-    <record id="onsc_cv_status_civil_tree" model="ir.ui.view">
+    <record id="onsc_cv_status_civil_form" model="ir.ui.view">
         <field name="name">onsc.cv.status.civil.form</field>
         <field name="model">onsc.cv.status.civil</field>
         <field name="arch" type="xml">
