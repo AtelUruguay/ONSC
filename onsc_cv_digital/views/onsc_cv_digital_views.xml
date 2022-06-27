@@ -36,8 +36,17 @@
                 <header>
                 </header>
                 <sheet>
-                    <widget name="web_ribbon" title="Archived" bg_color="bg-danger"
-                            attrs="{'invisible': [('active', '=', True)]}"/>
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': [('active', '=', True)]}">
+                        <p class="mb-0" style="text-align:center">
+                        <strong>
+                            Su Curriculum se encuentra inactivo.
+                            <button type="object" class="oe_link alert-danger" name="toggle_active"
+                                    string="Para reestablecerlo de click aquí"
+                                    style="font-weight:bold;text-decoration:underline"/>
+                        </strong>
+                        </p>
+                    </div>
                     <field name="avatar_128" invisible="1"/>
                     <field name="image_1920" widget='image' class="oe_avatar"
                            options='{"preview_image": "avatar_128"}'/>
@@ -69,6 +78,9 @@
                     </group>
                     <notebook>
                         <page string="Información general">
+                            <div class="float-right">
+                                <field name="cv_help_general_info"/>
+                            </div>
                             <group>
                                 <group string="Género">
                                     <field name="cv_gender_id"/>
@@ -89,6 +101,9 @@
                                     <field name="is_cv_race_public"/>
                                     <field name="is_cv_race_option_other_enable" invisible="0"/>
                                     <field name="is_multiple_cv_race_selected" invisible="0"/>
+                                </group>
+                                <group string="Información patronímica" name="other_info_group">
+                                    <field name="cv_full_name_updated_date"/>
                                 </group>
                             </group>
                             <group string="Datos personales">
@@ -156,7 +171,7 @@
                         </page>
                         <page name="address" string="Domicilio">
                             <div class="float-right">
-                                <field name="cv_address_help"/>
+                                <field name="cv_help_address"/>
                             </div>
                             <button string="Agregar domicilio" name="button_edit_address" id="button_edit_address_1"
                                     type="object"
@@ -189,19 +204,21 @@
                                     <field name="country_id" string="País"/>
                                     <field name="cv_address_state_id" string="Departamento"/>
                                     <field name="cv_address_location_id"/>
+                                </group>
+                                <group>
+                                </group>
+                            </group>
+                            <group>
+                                <group>
                                     <field name="cv_address_street" string="Calle"/>
+                                    <field name="cv_address_street2" string="Entre calle"/>
+                                    <field name="cv_address_street3" string="Y calle"/>
                                 </group>
                                 <group>
                                     <field name="cv_address_apto"/>
                                     <field name="cv_address_nro_door"/>
                                     <field name="cv_address_is_cv_bis"/>
                                     <field name="cv_address_zip" string="C.P"/>
-                                </group>
-                            </group>
-                            <group>
-                                <group>
-                                    <field name="cv_address_street2" string="Entre calle"/>
-                                    <field name="cv_address_street3" string="Y calle"/>
                                 </group>
                             </group>
                             <group>
@@ -249,10 +266,14 @@
                                         </t>
                                     </li>
                                     <li t-if="record.email.raw_value" class="o_text_overflow">
-                                        <field name="email"/>
+                                        <t>
+                                            <field name="email"/>
+                                        </t>
                                     </li>
                                     <li t-if="record.cv_nro_doc" class="o_text_overflow">
-                                        <field name="cv_nro_doc"/>
+                                        <t>
+                                            <field name="cv_nro_doc"/>
+                                        </t>
                                     </li>
                                 </ul>
                                 <div class="o_row">
@@ -266,11 +287,22 @@
         </field>
     </record>
 
+    <record id="onsc_cv_digital_user_action" model="ir.actions.server">
+          <field name="name">Currículum Digital</field>
+          <field name="type">ir.actions.server</field>
+          <field name="state">code</field>
+          <field name="model_id" ref="model_onsc_cv_digital" />
+          <field name="code">
+                action = model._action_open_user_cv()
+          </field>
+    </record>
+
     <record id='onsc_cv_digital_action' model='ir.actions.act_window'>
         <field name="name">Currículums Digitales</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">onsc.cv.digital</field>
         <field name="view_mode">kanban,form</field>
+        <field name="domain">[('active','in',[False,True])]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Crear un nuevo Currículum digital
