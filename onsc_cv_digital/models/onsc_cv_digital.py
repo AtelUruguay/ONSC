@@ -102,6 +102,19 @@ class ONSCCVDigital(models.Model):
     cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis')
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification')
     cv_address_state = fields.Selection(related='cv_address_location_id.state')
+    # Help online
+    cv_address_help = fields.Html(compute=lambda s: s.get_help('cv_address_help'), store=False, readonly=True)
+
+    def get_help(self, url=''):
+
+        for rec in self:
+            rec.cv_address_help = \
+                """                                   
+                    <a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
+                            href="%(url)s">
+                            <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>                            
+                            Ayuda</a>                        
+                """ % {'url': url}
 
     @api.constrains('cv_sex_updated_date')
     def _check_valid_certificate(self):
