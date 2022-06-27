@@ -109,12 +109,9 @@ class ONSCCVDigital(models.Model):
 
         for rec in self:
             rec.cv_address_help = \
-                """                                   
-                    <a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
+                """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%(url)s">
-                            <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>                            
-                            Ayuda</a>                        
-                """ % {'url': url}
+                            <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>""" % {'url': url}
 
     @api.constrains('cv_sex_updated_date')
     def _check_valid_certificate(self):
