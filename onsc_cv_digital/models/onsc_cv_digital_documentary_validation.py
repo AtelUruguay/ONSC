@@ -13,7 +13,7 @@ class ONSCCVDigitalDocumentaryValidation(models.Model):
                                                   default="pendiente_validacion")
     reject_reason = fields.Char(string="Motivo rechazo validación documental")
     validation_date = fields.Date(string="Fecha validación documental")
-    validation_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental")
+    validation_user_id = fields.Many2one("res.users", string="Usuario validación documental")
 
 
 class IrAttachment(models.Model):
