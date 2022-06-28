@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-
-from .catalogs.res_partner import CV_SEX
 
 html2construct = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%(url)s">
@@ -69,7 +68,6 @@ class ONSCCVDigital(models.Model):
         string=u'Fecha de nacimiento',
         related='partner_id.cv_birthdate', store=True, readonly=False, tracking=True)
     cv_sex = fields.Selection(
-        CV_SEX,
         string=u'Sexo',
         related='partner_id.cv_sex', store=True, readonly=False, tracking=True)
     cv_sex_updated_date = fields.Date(
