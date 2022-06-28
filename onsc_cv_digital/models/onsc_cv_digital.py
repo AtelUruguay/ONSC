@@ -131,15 +131,6 @@ class ONSCCVDigital(models.Model):
         default=lambda s: s._get_help('cv_help_address', True)
     )
 
-    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
-    def _check_valid_dates(self):
-        today = fields.Date.from_string(fields.Date.today())
-        for record in self:
-            if record.cv_sex_updated_date and fields.Date.from_string(record.cv_sex_updated_date) > today:
-                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
-            if record.cv_birthdate and fields.Date.from_string(record.cv_birthdate) > today:
-                raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
-
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         _html2construct = HTML_HELP % (_url or '/')
@@ -154,6 +145,15 @@ class ONSCCVDigital(models.Model):
             record.is_cv_race_option_other_enable = len(
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
+
+    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
+    def _check_valid_dates(self):
+        today = fields.Date.from_string(fields.Date.today())
+        for record in self:
+            if record.cv_sex_updated_date and fields.Date.from_string(record.cv_sex_updated_date) > today:
+                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
+            if record.cv_birthdate and fields.Date.from_string(record.cv_birthdate) > today:
+                raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
 
     def _action_open_user_cv(self):
         vals = {
