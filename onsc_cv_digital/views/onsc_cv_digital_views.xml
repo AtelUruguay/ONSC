@@ -41,7 +41,7 @@
                         <p class="mb-0" style="text-align:center">
                         <strong>
                             Su Curriculum se encuentra inactivo.
-                            <button type="object" class="oe_link alert-danger" name="toggle_active"
+                            <button type="object" class="oe_link alert-danger" role="alert" name="toggle_active"
                                     string="Para reestablecerlo de click aquí"
                                     style="font-weight:bold;text-decoration:underline"/>
                         </strong>

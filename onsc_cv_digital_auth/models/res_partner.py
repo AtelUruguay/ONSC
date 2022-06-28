@@ -35,7 +35,7 @@ DNIC_FROZEN_COLUMNS = [
 ]
 
 SOURCE_INFO_TYPE = [
-    ('id', 'Id digital'),
+    ('id_uy', 'Id digital'),
     ('dnic', 'DNIC'),
 ]
 
@@ -119,7 +119,7 @@ class ResPartner(models.Model):
             # Si result tiene valores entonces la fuente de la info es DNIC
             result.update({'cv_source_info_auth_type': 'dnic'})
         else:
-            result.update({'cv_source_info_auth_type': 'id'})
+            result.update({'cv_source_info_auth_type': 'id_uy'})
         return result
 
     def write(self, values):
