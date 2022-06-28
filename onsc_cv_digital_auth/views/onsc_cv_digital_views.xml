@@ -8,7 +8,12 @@
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_form"/>
             <field name="arch" type="xml">
                 <field name="cv_full_name_updated_date" position="before">
-                    <field name="cv_source_info_auth_type" widget="radio"/>
+                    <!--                    <field name="cv_source_info_auth_type" widget="statusbar"/>-->
+                    <label for="cv_source_info_auth_type"/>
+                    <div class="col-4">
+                        <field name="cv_source_info_auth_type" widget="label_selection"
+                               options="{'classes': {'id_uy': 'success', 'dnic': 'success'}}"/>
+                    </div>
                 </field>
             </field>
         </record>

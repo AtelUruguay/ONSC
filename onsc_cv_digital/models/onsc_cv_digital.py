@@ -8,6 +8,10 @@ from odoo.exceptions import ValidationError
 html2construct = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%(url)s">
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
+HELP_FIELDS = [
+    'cv_help_general_info',
+    'cv_help_address',
+]
 
 
 class ONSCCVDigital(models.Model):
@@ -128,15 +132,6 @@ class ONSCCVDigital(models.Model):
     cv_help_address = fields.Html(
         compute=lambda s: s._get_help('cv_help_address'), store=False, readonly=True)
 
-    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
-    def _check_valid_dates(self):
-        today = fields.Date.from_string(fields.Date.today())
-        for record in self:
-            if fields.Date.from_string(record.cv_sex_updated_date) > today:
-                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
-            if fields.Date.from_string(record.cv_birthdate) > today:
-                raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
-
     def _get_help(self, help_field=''):
         _url = eval('self.env.user.company_id.%s' % (help_field))
         _html2construct = html2construct % {'url': _url}
@@ -149,6 +144,21 @@ class ONSCCVDigital(models.Model):
             record.is_cv_race_option_other_enable = len(
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
+
+    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
+    def _check_valid_dates(self):
+        today = fields.Date.from_string(fields.Date.today())
+        for record in self:
+            if fields.Date.from_string(record.cv_sex_updated_date) > today:
+                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
+            if fields.Date.from_string(record.cv_birthdate) > today:
+                raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
+
+    @api.onchange('partner_id')
+    def _onchange_partner_id(self):
+        # Garantiza actualizar los valores de los campos de ayuda antes de crear el CV
+        for field in HELP_FIELDS:
+            self._get_help(field)
 
     def _action_open_user_cv(self):
         vals = {
