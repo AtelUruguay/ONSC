@@ -119,10 +119,8 @@
                                     <field name="personal_phone" widget="phone"/>
                                     <field name="mobile_phone" widget="phone"/>
                                     <field name="email"  widget="email" />
-
                                 </group>
                                 <group>
-
                                     <field name="is_afro_descendants"/>
                                     <field name="document_afro_descendants" attrs="{'required': [('is_afro_descendants', '=', True)]}"  options="{'accepted_file_extensions': '.pdf'}" />
                                     <field name="is_driver_license"/>
@@ -131,9 +129,10 @@
                             <group string="Licencias de Conducir" attrs="{'invisible': [('is_driver_license', '=', False)]}">
                                 <field name="cv_digital_drivers_license"  nolabel="1" >
                                     <tree editable="bottom" >
-                                        <field name="validade_date_divers_license" />
-                                        <field name="category_drivers_license_id" />
-                                        <field name="digital_document_drivers_license"  options="{'accepted_file_extensions': '.pdf'}"  />
+                                        <field name="validation_date" />
+                                        <field name="category_id" />
+                                        <field name="digital_document"  options="{'accepted_file_extensions': '.pdf'}"  />
+                                        <field name="digital_document_attachment_id" invisible="1" />
                                     </tree>
                                 </field>
                             </group>
@@ -142,12 +141,11 @@
                                     <field name="is_occupational_health_card"/>
                                     <field name="occupational_health_card_date" attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"/>
                                     <field name="digital_document_occupational_health_card"  attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"  options="{'accepted_file_extensions': '.pdf'}" />
-
                                 </group>
                                 <group string="Carnet de Identidad">
                                     <field name="digital_document_document_identity"  options="{'accepted_file_extensions': '.pdf'}" />
-                                    <field name="document_identity_validation_status" readonly="1"  attrs="{'invisible': [('digital_document_document_identity', '!=', 'rechazado')]}"/>
-                                    <field name="reason_rejection_document_identity"  readonly="1"  attrs="{'invisible': [('document_identity_validation_status', '!=', 'rechazado')]}"/>
+                                    <field name="digital_document_document_identity" readonly="1"  attrs="{'invisible': [('digital_document_document_identity', '!=', 'rechazado')]}"/>
+                                    <field name="reject_reason_document_identity"  readonly="1"  attrs="{'invisible': [('digital_document_document_identity', '!=', 'rechazado')]}"/>
                                 </group>
                             </group>
                             <group>
@@ -159,9 +157,8 @@
                                 <group string="Credencial cívica">
                                     <field name="digital_document_civical_credential"  options="{'accepted_file_extensions': '.pdf'}"   attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="digital_document_civical_credential_status" readonly="1"  attrs="{'invisible': [('digital_document_civical_credential_status', '!=', 'rechazado')]}"/>
-                                    <field name="reason_rejection_civical_credential" readonly="1"  attrs="{'invisible': [('digital_document_civical_credential_status', '!=', 'rechazado')]}"/>
+                                    <field name="reject_reason_civical_credential" readonly="1"  attrs="{'invisible': [('digital_document_civical_credential_status', '!=', 'rechazado')]}"/>
                                 </group>
-
                                 <group string="Víctima de delitos violentos">
                                     <field name="is_victim_violent"/>
                                     <field name="digital_document_relationship_victim_violent"  attrs="{'invisible': [('is_victim_violent', '=', False)]}"  options="{'accepted_file_extensions': '.pdf'}" />
@@ -182,7 +179,6 @@
                                     groups="onsc_cv_digital.group_user_cv"
                                     attrs="{'invisible': [('country_id', '=', False)]}"/>
                             <field name="cv_address_state" invisible="1"/>
-
                             <div class="alert alert-info" role="alert"
                                  attrs="{'invisible': [('cv_address_state', '!=', 'to_validate')]}">
                                 <p class="mb-0">

@@ -130,25 +130,25 @@ class ONSCCVDigital(models.Model):
     cv_help_address = fields.Html(
         compute=lambda s: s._get_help('cv_help_address'), store=False, readonly=True)
 
-    country_of_birth_id = fields.Many2one(comodel_name="res.country", string="País de nacimiento", required=True)
+    country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     uruguayan_citizenship = fields.Selection(string="Ciudadanía Uruguaya",
                                              selection=[('legal', 'Legal'), ('natural', 'Natural'),
                                                         ('extranjero', 'Extranjero')], required=True)
-    marital_status_id = fields.Many2one(comodel_name="onsc.cv.status.civil", string="Estado Civil", required=True)
+    marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado Civil", required=True)
     credential_series = fields.Char(string="Serie de la credencial", size=3)
     credential_number = fields.Integer(string="Numero de la credencial")
     cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU")
     professional_resume = fields.Text(string="Resumen profesional")
     user_linkedIn = fields.Char(string="Usuario en LinkedIn")
-    is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)  ")
+    is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
     document_afro_descendants = fields.Binary(
         string='Documento digitalizado "Declaración de Afrodescendencia" / Formulario web de Declaración jurada de Afrodescendencia (Art. 4 Ley N°19.122) ')
     is_driver_license = fields.Boolean(string="Tiene licencia de conducir")
-    cv_digital_drivers_license = fields.One2many(comodel_name="onsc.cv.digital.drivers.license",
+    cv_digital_drivers_license = fields.One2many("onsc.cv.digital.driver.license",
                                                  inverse_name="cv_digital_id", string="Licencias de Conducir")
 
-    personal_phone = fields.Char(string="Teléfono particular")
-    mobile_phone = fields.Char(string="Teléfono celular")
+    personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)
+    mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
     email = fields.Char(string="Email", related='partner_id.email')
 
     is_occupational_health_card = fields.Boolean(string="Carné de Salud Laboral")
@@ -157,25 +157,26 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado del Carné de Salud Laboral")
 
     digital_document_document_identity = fields.Binary(string="Documento digitalizado del Documento de Identidad")
-    digital_document_document_identity_attachment_id = fields.Many2one(comodel_name="ir.attachment",
-                                                                       string="Documento digitalizado del Documento de Identidad Ajunto",
-                                                                       compute="_compute_digital_documents")
+    digital_document_document_identity_attachment_id = fields.Many2one("ir.attachment",
+                                                                       string="Documento digitalizado del Documento de Identidad adjunto",
+                                                                       compute="_compute_digital_documents", store=True)
 
-    document_identity_validation_status = fields.Selection(string="Estado validación documental – doc. Identidad ",
-                                                           related='digital_document_document_identity_attachment_id.document_validation_status')
-    reason_rejection_document_identity = fields.Char(string="Motivo rechazo validación documental – doc. Identidad",
-                                                     related='digital_document_document_identity_attachment_id.reason_rejection')
+    document_identity_validation_status = fields.Selection(string="Estado validación documental – doc. Identidad",
+                                                           related='digital_document_document_identity_attachment_id.validation_status')
+    reject_reason_document_identity = fields.Char(string="Motivo rechazo validación documental – doc. Identidad",
+                                                  related='digital_document_document_identity_attachment_id.reject_reason')
 
-    digital_document_civical_credential = fields.Binary(string="Documento digitalizado Credencial cívica ",
+    digital_document_civical_credential = fields.Binary(string="Documento digitalizado Credencial cívica",
                                                         required=False, )
-    digital_document_civical_credential_attachment_id = fields.Many2one(comodel_name="ir.attachment",
-                                                                        string="Documento digitalizado Credencial cívica Ajunto",
-                                                                        compute="_compute_digital_documents")
+    digital_document_civical_credential_attachment_id = fields.Many2one("ir.attachment",
+                                                                        string="Documento digitalizado Credencial cívica adjunto",
+                                                                        compute="_compute_digital_documents",
+                                                                        store=True)
     digital_document_civical_credential_status = fields.Selection(
-        string="Estado validación documental – Credencial cívica ",
-        related='digital_document_civical_credential_attachment_id.document_validation_status')
-    reason_rejection_civical_credential = fields.Char(string="Motivo rechazo validación documental – Credencial cívica",
-                                                      related='digital_document_civical_credential_attachment_id.reason_rejection')
+        string="Estado validación documental – Credencial cívica",
+        related='digital_document_civical_credential_attachment_id.validation_status')
+    reject_reason_civical_credential = fields.Char(string="Motivo rechazo validación documental – Credencial cívica",
+                                                   related='digital_document_civical_credential_attachment_id.reject_reason')
 
     sports_medical_aptitude_certificate_status = fields.Selection(string="Certificado de aptitud médico-deportiva",
                                                                   selection=[('si', 'Si'), ('no', 'No'), ])
@@ -255,10 +256,11 @@ class ONSCCVDigital(models.Model):
     @api.depends('digital_document_civical_credential_attachment_id',
                  'digital_document_document_identity_attachment_id')
     def _compute_digital_documents(self):
+        attachment_objec = self.env['ir.attachment']
         for rec in self:
-            rec.digital_document_civical_credential_attachment_id = self.env['ir.attachment'].search(
+            rec.digital_document_civical_credential_attachment_id = attachment_objec.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'digital_document_civical_credential')])
-            rec.digital_document_document_identity_attachment_id = self.env['ir.attachment'].search(
+                 ('res_field', '=', 'digital_document_civical_credential')], limit=1)
+            rec.digital_document_document_identity_attachment_id = attachment_objec.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'digital_document_document_identity')])
+                 ('res_field', '=', 'digital_document_document_identity')], limit=1)
