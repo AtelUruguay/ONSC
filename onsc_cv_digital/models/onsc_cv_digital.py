@@ -132,9 +132,9 @@ class ONSCCVDigital(models.Model):
     def _check_valid_dates(self):
         today = fields.Date.from_string(fields.Date.today())
         for record in self:
-            if fields.Date.from_string(record.cv_sex_updated_date) > today:
+            if record.cv_sex_updated_date and fields.Date.from_string(record.cv_sex_updated_date) > today:
                 raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
-            if fields.Date.from_string(record.cv_birthdate) > today:
+            if record.cv_birthdate and fields.Date.from_string(record.cv_birthdate) > today:
                 raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
 
     def _get_help(self, help_field=''):
