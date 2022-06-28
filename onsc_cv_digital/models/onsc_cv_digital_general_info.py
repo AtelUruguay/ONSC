@@ -11,9 +11,8 @@ class ONSCCVDigitalDriverLicense(models.Model):
     validation_date = fields.Date("Fecha de vencimiento", required=True)
     category_id = fields.Many2one("onsc.cv.drivers.license.categories", "Categoría", required=True)
     digital_document = fields.Binary("Documento digitalizado licencia de conducir", required=True)
-    digital_document_attachment_id = fields.Many2one("ir.attachment",
-                                                                    string="Documento digitalizado licencia de conducir adjunto",
-                                                                    compute="_compute_digital_documents",store=True)
+    digital_document_attachment_id = fields.Many2one("ir.attachment", string="Documento digitalizado licencia de conducir adjunto", compute="_compute_digital_documents", store=True)
+
     @api.depends('digital_document')
     def _compute_digital_documents(self):
         attachment_object = self.env['ir.attachment']
