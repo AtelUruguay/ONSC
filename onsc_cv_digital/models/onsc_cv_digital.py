@@ -180,6 +180,3 @@ class ONSCCVDigital(models.Model):
             'type': 'ir.actions.act_window',
             'context': ctx,
         }
-
-    def button_active_cv(self):
-        self.write({'active': True})
