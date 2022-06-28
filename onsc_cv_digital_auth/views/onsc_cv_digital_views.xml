@@ -11,7 +11,8 @@
                     <!--                    <field name="cv_source_info_auth_type" widget="statusbar"/>-->
                     <label for="cv_source_info_auth_type"/>
                     <div class="col-4">
-                        <field name="cv_source_info_auth_type" widget="label_selection"
+                        <field name="cv_source_info_auth_type" align="left" style="font-size: 100%"
+                               widget="label_selection"
                                options="{'classes': {'id_uy': 'success', 'dnic': 'success'}}"/>
                     </div>
                 </field>
