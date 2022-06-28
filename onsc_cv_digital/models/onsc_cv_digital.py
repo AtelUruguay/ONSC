@@ -5,8 +5,8 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
-html2construct = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
-                            href="%(url)s">
+HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
+                            href="%s">
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
 
 
@@ -124,22 +124,18 @@ class ONSCCVDigital(models.Model):
     cv_address_reject_reason = fields.Char(related='cv_address_location_id.reject_reason')
     # Help online
     cv_help_general_info = fields.Html(
-        compute=lambda s: s._get_help('cv_help_general_info'), store=False, readonly=True)
+        compute=lambda s: s._get_help('cv_help_general_info'),
+        default=lambda s: s._get_help('cv_help_general_info', True))
     cv_help_address = fields.Html(
-        compute=lambda s: s._get_help('cv_help_address'), store=False, readonly=True)
+        compute=lambda s: s._get_help('cv_help_address'),
+        default=lambda s: s._get_help('cv_help_address', True)
+    )
 
-    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
-    def _check_valid_dates(self):
-        today = fields.Date.from_string(fields.Date.today())
-        for record in self:
-            if record.cv_sex_updated_date and fields.Date.from_string(record.cv_sex_updated_date) > today:
-                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
-            if record.cv_birthdate and fields.Date.from_string(record.cv_birthdate) > today:
-                raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
-
-    def _get_help(self, help_field=''):
-        _url = eval('self.env.user.company_id.%s' % (help_field))
-        _html2construct = html2construct % {'url': _url}
+    def _get_help(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        _html2construct = HTML_HELP % (_url or '/')
+        if is_default:
+            return eval("_html2construct")
         for rec in self:
             setattr(rec, help_field, _html2construct)
 
@@ -149,6 +145,15 @@ class ONSCCVDigital(models.Model):
             record.is_cv_race_option_other_enable = len(
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
+
+    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
+    def _check_valid_dates(self):
+        today = fields.Date.from_string(fields.Date.today())
+        for record in self:
+            if record.cv_sex_updated_date and fields.Date.from_string(record.cv_sex_updated_date) > today:
+                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
+            if record.cv_birthdate and fields.Date.from_string(record.cv_birthdate) > today:
+                raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
 
     def _action_open_user_cv(self):
         vals = {
