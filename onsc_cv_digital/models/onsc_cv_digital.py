@@ -155,6 +155,28 @@ class ONSCCVDigital(models.Model):
             if record.cv_birthdate and fields.Date.from_string(record.cv_birthdate) > today:
                 raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
 
+    def button_edit_address(self):
+        self.ensure_one()
+        title = self.country_id and _('Editar domicilio') or _('Agregar domicilio')
+        ctx = self._context.copy()
+        wizard = self.env['onsc.cv.address.wizard'].create({'partner_id': self.partner_id.id})
+        return {
+            'name': title,
+            'view_mode': 'form',
+            'res_model': 'onsc.cv.address.wizard',
+            'target': 'new',
+            'view_id': False,
+            'res_id': wizard.id,
+            'type': 'ir.actions.act_window',
+            'context': ctx,
+        }
+
+    def toggle_active(self):
+        result = super().toggle_active()
+        if len(self) == 1:
+            return self.with_context(my_cv = self)._action_open_user_cv()
+        return result
+
     def _action_open_user_cv(self):
         vals = {
             'type': 'ir.actions.act_window',
@@ -164,12 +186,11 @@ class ONSCCVDigital(models.Model):
             'context': self.env.context
         }
         if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
-            my_cv = self.search([
-                ('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
-            if my_cv:
-                if my_cv.active is False:
-                    vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
-                vals.update({'res_id': my_cv.id})
+            my_cv = self._context.get('my_cv', False) or self.search(
+                [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
+            if my_cv.active is False:
+                vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
+            vals.update({'res_id': my_cv.id})
         return vals
 
     def get_readonly_formview_id(self):
@@ -193,19 +214,3 @@ class ONSCCVDigital(models.Model):
                      })
 
         return form_id.id
-
-    def button_edit_address(self):
-        self.ensure_one()
-        title = self.country_id and _('Editar domicilio') or _('Agregar domicilio')
-        ctx = self._context.copy()
-        wizard = self.env['onsc.cv.address.wizard'].create({'partner_id': self.partner_id.id})
-        return {
-            'name': title,
-            'view_mode': 'form',
-            'res_model': 'onsc.cv.address.wizard',
-            'target': 'new',
-            'view_id': False,
-            'res_id': wizard.id,
-            'type': 'ir.actions.act_window',
-            'context': ctx,
-        }
