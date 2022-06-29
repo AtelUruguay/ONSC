@@ -60,6 +60,7 @@
                     </div>
                     <group>
                         <group>
+                            <div/>
                             <field name="cv_emissor_country_id"/>
                             <field name="cv_document_type_id"/>
                             <field name="cv_nro_doc"/>
@@ -67,6 +68,7 @@
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
+                            <div/>
                             <field name="cv_birthdate"
                                    attrs="{'readonly': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
                             <field name="cv_sex"
@@ -83,6 +85,7 @@
                             </div>
                             <group>
                                 <group string="Género">
+                                    <div/>
                                     <field name="cv_gender_id"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
@@ -93,6 +96,7 @@
                                     <field name="is_cv_gender_record" invisible="1"/>
                                 </group>
                                 <group string="Raza">
+                                    <div/>
                                     <field name="cv_race_ids" widget="many2many_tags"/>
                                     <field name="cv_race2"
                                            attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
@@ -103,7 +107,11 @@
                                     <field name="is_multiple_cv_race_selected" invisible="1"/>
                                 </group>
                                 <group string="Información patronímica" name="other_info_group">
+                                    <div/>
                                     <field name="cv_full_name_updated_date"/>
+                                </group>
+                                <group>
+                                    <div/>
                                 </group>
                             </group>
                         </page>

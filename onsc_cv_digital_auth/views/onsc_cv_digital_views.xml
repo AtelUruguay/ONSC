@@ -8,13 +8,10 @@
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_form"/>
             <field name="arch" type="xml">
                 <field name="cv_full_name_updated_date" position="before">
-                    <!--                    <field name="cv_source_info_auth_type" widget="statusbar"/>-->
-                    <label for="cv_source_info_auth_type"/>
-                    <div class="col-4">
-                        <field name="cv_source_info_auth_type" align="left" style="font-size: 100%"
+                        <field name="cv_source_info_auth_type" string="Fuente de información" align="left"
+                               style="font-size: 100%; width: 80px;"
                                widget="label_selection"
-                               options="{'classes': {'id_uy': 'success', 'dnic': 'success'}}"/>
-                    </div>
+                               options="{'classes': {'id_uy': 'danger', 'dnic': 'success'}}"/>
                 </field>
             </field>
         </record>
