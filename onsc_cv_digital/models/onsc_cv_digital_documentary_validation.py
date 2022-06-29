@@ -4,7 +4,7 @@ from odoo import fields, models
 
 
 class ONSCCVDigitalDocumentaryValidation(models.Model):
-    _name = 'onsc.cv.digital.documentary.validation'
+    _name = 'onsc.cv.documentary.validation'
     _description = 'Modelo generico para validar documentos'
 
     validation_status = fields.Selection(string="Estado validación documental",
@@ -19,4 +19,4 @@ class ONSCCVDigitalDocumentaryValidation(models.Model):
 class IrAttachment(models.Model):
     _name = 'ir.attachment'
 
-    _inherit = ['onsc.cv.digital.documentary.validation', 'ir.attachment']
+    _inherit = ['onsc.cv.documentary.validation', 'ir.attachment']

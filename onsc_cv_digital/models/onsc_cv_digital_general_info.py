@@ -4,19 +4,19 @@ from odoo import fields, models, api
 
 
 class ONSCCVDigitalDriverLicense(models.Model):
-    _name = 'onsc.cv.digital.driver.license'
+    _name = 'onsc.cv.driver.license'
     _description = 'Licencia de conducir'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True)
     validation_date = fields.Date("Fecha de vencimiento", required=True)
     category_id = fields.Many2one("onsc.cv.drivers.license.categories", "Categoría", required=True)
-    digital_document = fields.Binary("Documento digitalizado licencia de conducir", required=True)
+    digital_document_file = fields.Binary("Documento digitalizado licencia de conducir", required=True)
     digital_document_attachment_id = fields.Many2one("ir.attachment", string="Documento digitalizado licencia de conducir adjunto", compute="_compute_digital_documents", store=True)
 
-    @api.depends('digital_document')
+    @api.depends('digital_document_file')
     def _compute_digital_documents(self):
-        attachment = self.env['ir.attachment']
+        Attachment = self.env['ir.attachment']
         for rec in self:
-            rec.digital_document_attachment_id = attachment.search(
-                [('res_model', '=', 'onsc.cv.digital.driver.license'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'digital_document')], limit=1)
+            rec.digital_document_attachment_id = Attachment.search(
+                [('res_model', '=', 'onsc.cv.driver.license'), ('res_id', '=', rec.id),
+                 ('res_field', '=', 'digital_document_file')], limit=1)

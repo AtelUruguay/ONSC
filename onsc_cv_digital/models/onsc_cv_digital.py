@@ -131,21 +131,21 @@ class ONSCCVDigital(models.Model):
         compute=lambda s: s._get_help('cv_help_address'), store=False, readonly=True)
 
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
-    uruguayan_citizenship = fields.Selection(string="Ciudadanía Uruguaya",
+    uruguayan_citizenship = fields.Selection(string="Ciudadanía uruguaya",
                                              selection=[('legal', 'Legal'), ('natural', 'Natural'),
                                                         ('extranjero', 'Extranjero')], required=True)
-    marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado Civil", required=True)
-    credential_series = fields.Char(string="Serie de la credencial", size=3)
+    marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", required=True)
+    crendencial_serie = fields.Char(string="Serie de la credencial", size=3)
     credential_number = fields.Integer(string="Numero de la credencial")
     cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU")
     professional_resume = fields.Text(string="Resumen profesional")
     user_linkedIn = fields.Char(string="Usuario en LinkedIn")
     is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
-    document_afro_descendants = fields.Binary(
-        string='Documento digitalizado "Declaración de Afrodescendencia" / Formulario web de Declaración jurada de Afrodescendencia (Art. 4 Ley N°19.122) ')
+    document_afro_descendants_file = fields.Binary(
+        string='Documento digitalizado "Declaración de afrodescendencia" / formulario web de declaración jurada de afrodescendencia (Art. 4 Ley N°19.122) ')
     is_driver_license = fields.Boolean(string="Tiene licencia de conducir")
-    cv_digital_drivers_license = fields.One2many("onsc.cv.digital.driver.license",
-                                                 inverse_name="cv_digital_id", string="Licencias de Conducir")
+    cv_digital_drivers_license_ids = fields.One2many("onsc.cv.driver.license",
+                                                 inverse_name="cv_digital_id", string="Licencias de conducir")
 
     personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
@@ -153,40 +153,40 @@ class ONSCCVDigital(models.Model):
 
     is_occupational_health_card = fields.Boolean(string="Carné de salud laboral")
     occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
-    digital_document_occupational_health_card = fields.Binary(
+    digital_document_occupational_health_card_file = fields.Binary(
         string="Documento digitalizado del Carné de Salud Laboral")
 
-    digital_document_document_identity = fields.Binary(string="Documento digitalizado del Documento de Identidad")
-    digital_document_document_identity_attachment_id = fields.Many2one("ir.attachment",
-                                                                       string="Documento digitalizado del Documento de Identidad adjunto",
+    digital_document_document_identity_file = fields.Binary(string="Documento digitalizado del documento de identidad")
+    document_identity_attachment_id = fields.Many2one("ir.attachment",
+                                                                       string="Documento digitalizado del documento de identidad adjunto",
                                                                        compute="_compute_digital_documents", store=True)
 
     document_identity_validation_status = fields.Selection(string="Estado validación documental – doc. Identidad",
-                                                           related='digital_document_document_identity_attachment_id.validation_status')
-    reject_reason_document_identity = fields.Char(string="Motivo rechazo validación documental – doc. Identidad",
-                                                  related='digital_document_document_identity_attachment_id.reject_reason')
+                                                           related='document_identity_attachment_id.validation_status')
+    document_identity_reject_reason = fields.Char(string="Motivo rechazo validación documental – doc. Identidad",
+                                                  related='document_identity_attachment_id.reject_reason')
 
-    digital_document_civical_credential = fields.Binary(string="Documento digitalizado Credencial cívica",
+    digital_document_civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica",
                                                         required=False, )
-    digital_document_civical_credential_attachment_id = fields.Many2one("ir.attachment",
-                                                                        string="Documento digitalizado Credencial cívica adjunto",
+    civical_credential_attachment_id = fields.Many2one("ir.attachment",
+                                                                        string="Documento digitalizado credencial cívica adjunto",
                                                                         compute="_compute_digital_documents",
                                                                         store=True)
     digital_document_civical_credential_status = fields.Selection(
-        string="Estado validación documental – Credencial cívica",
-        related='digital_document_civical_credential_attachment_id.validation_status')
-    reject_reason_civical_credential = fields.Char(string="Motivo rechazo validación documental – Credencial cívica",
-                                                   related='digital_document_civical_credential_attachment_id.reject_reason')
+        string="Estado validación documental – credencial cívica",
+        related='civical_credential_attachment_id.validation_status')
+    civical_credential_reject_reason = fields.Char(string="Motivo rechazo validación documental – credencial cívica",
+                                                   related='civical_credential_attachment_id.reject_reason')
 
-    sports_medical_aptitude_certificate_status = fields.Selection(string="Certificado de aptitud médico-deportiva",
+    medical_aptitude_certificate_status = fields.Selection(string="Certificado de aptitud médico-deportiva",
                                                                   selection=[('si', 'Si'), ('no', 'No'), ])
-    sports_medical_aptitude_certificate_date = fields.Date(
-        string="Fecha de vencimiento del Certificado de aptitud médico-deportiva")
-    digital_document_sports_medical_aptitude_certificate = fields.Binary(
-        string="Documento digitalizado del Certificado de aptitud médico-deportiva")
+    medical_aptitude_certificate_date = fields.Date(
+        string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
+    digital_document_medical_aptitude_certificate_file = fields.Binary(
+        string="Documento digitalizado del certificado de aptitud médico-deportiva")
 
     is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)", )
-    digital_document_relationship_victim_violent = fields.Binary(
+    digital_document_relationship_victim_violent_file = fields.Binary(
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
@@ -196,9 +196,9 @@ class ONSCCVDigital(models.Model):
         today = fields.Date.from_string(fields.Date.today())
         for record in self:
             if fields.Date.from_string(record.cv_sex_updated_date) > today:
-                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
+                raise ValidationError(_("La fecha de información sexo no puede ser posterior a la fecha actual"))
             if fields.Date.from_string(record.cv_birthdate) > today:
-                raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
+                raise ValidationError(_("La fecha de nacimiento no puede ser posterior a la fecha actual"))
 
     def _get_help(self, help_field=''):
         _url = eval('self.env.user.company_id.%s' % (help_field))
@@ -253,14 +253,14 @@ class ONSCCVDigital(models.Model):
             if not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
 
-    @api.depends('digital_document_civical_credential_attachment_id',
-                 'digital_document_document_identity_attachment_id')
+    @api.depends('digital_document_civical_credential_file',
+                 'digital_document_document_identity_file')
     def _compute_digital_documents(self):
-        attachment = self.env['ir.attachment']
+        Attachment = self.env['ir.attachment']
         for rec in self:
-            rec.digital_document_civical_credential_attachment_id = attachment.search(
+            rec.civical_credential_attachment_id = Attachment.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'digital_document_civical_credential')], limit=1)
-            rec.digital_document_document_identity_attachment_id = attachment.search(
+                 ('res_field', '=', 'digital_document_civical_credential_file')], limit=1)
+            rec.document_identity_attachment_id = Attachment.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'digital_document_document_identity')], limit=1)
+                 ('res_field', '=', 'digital_document_document_identity_file')], limit=1)
