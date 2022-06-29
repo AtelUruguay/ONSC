@@ -174,7 +174,7 @@ class ONSCCVDigital(models.Model):
     def toggle_active(self):
         result = super().toggle_active()
         if len(self) == 1:
-            return self.with_context(my_cv = self)._action_open_user_cv()
+            return self.with_context(my_cv=self)._action_open_user_cv()
         return result
 
     def _action_open_user_cv(self):
