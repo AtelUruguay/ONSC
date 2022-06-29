@@ -162,8 +162,32 @@ class ONSCCVDigital(models.Model):
             my_cv = self.search([
                 ('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
             if my_cv:
+                if my_cv.active is False:
+                    vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
                 vals.update({'res_id': my_cv.id})
         return vals
+
+    def get_readonly_formview_id(self):
+        """
+        Crea una vista form con campos readonly la primera vez y luego es llamada si el CV está inactivo
+        permiso de escribir"""
+        # Hardcode the form view
+        self = self.sudo()
+        form_id = self.env['ir.ui.view'].search([('name', '=', '%s.form.readonly' % self._name)], limit=1)
+        if not form_id:
+            form_parent_id = self.env['ir.ui.view'].search([('model', '=', self._name), ('type', '=', 'form')], limit=1)
+            if form_parent_id:
+                arch = form_parent_id.arch
+                doc = etree.XML(arch)
+                for node_form in doc.xpath("//form"):
+                    node_form.set('edit', '0')
+                form_id = self.env['ir.ui.view'].create(
+                    {'name': '%s.form.readonly' % self._name,
+                     "model": self._name,
+                     'arch': etree.tostring(doc, encoding='unicode')
+                     })
+
+        return form_id.id
 
     def button_edit_address(self):
         self.ensure_one()

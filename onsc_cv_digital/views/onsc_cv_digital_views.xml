@@ -99,8 +99,8 @@
                                     <field name="cv_first_race_id"
                                            attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)], 'required': [('is_multiple_cv_race_selected', '=', True)]}"/>
                                     <field name="is_cv_race_public"/>
-                                    <field name="is_cv_race_option_other_enable" invisible="0"/>
-                                    <field name="is_multiple_cv_race_selected" invisible="0"/>
+                                    <field name="is_cv_race_option_other_enable" invisible="1"/>
+                                    <field name="is_multiple_cv_race_selected" invisible="1"/>
                                 </group>
                                 <group string="Información patronímica" name="other_info_group">
                                     <field name="cv_full_name_updated_date"/>
