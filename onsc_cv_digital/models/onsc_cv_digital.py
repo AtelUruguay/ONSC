@@ -141,10 +141,10 @@ class ONSCCVDigital(models.Model):
     professional_resume = fields.Text(string="Resumen profesional")
     user_linkedIn = fields.Char(string="Usuario en LinkedIn")
     is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
-    document_afro_descendants_file = fields.Binary(
+    afro_descendants_file = fields.Binary(
         string='Documento digitalizado "Declaración de afrodescendencia" / formulario web de declaración jurada de afrodescendencia (Art. 4 Ley N°19.122) ')
     is_driver_license = fields.Boolean(string="Tiene licencia de conducir")
-    cv_digital_drivers_license_ids = fields.One2many("onsc.cv.driver.license",
+    drivers_license_ids = fields.One2many("onsc.cv.driver.license",
                                                      inverse_name="cv_digital_id", string="Licencias de conducir")
 
     personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)
@@ -153,10 +153,10 @@ class ONSCCVDigital(models.Model):
 
     is_occupational_health_card = fields.Boolean(string="Carné de salud laboral")
     occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
-    digital_document_occupational_health_card_file = fields.Binary(
+    occupational_health_card_file = fields.Binary(
         string="Documento digitalizado del Carné de Salud Laboral")
 
-    digital_document_document_identity_file = fields.Binary(string="Documento digitalizado del documento de identidad")
+    document_identity_file = fields.Binary(string="Documento digitalizado del documento de identidad")
     document_identity_attachment_id = fields.Many2one("ir.attachment",
                                                       string="Documento digitalizado del documento de identidad adjunto",
                                                       compute="_compute_digital_documents", store=True)
@@ -166,13 +166,13 @@ class ONSCCVDigital(models.Model):
     document_identity_reject_reason = fields.Char(string="Motivo rechazo validación documental – doc. Identidad",
                                                   related='document_identity_attachment_id.reject_reason')
 
-    digital_document_civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica",
+    civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica",
                                                              required=False, )
     civical_credential_attachment_id = fields.Many2one("ir.attachment",
                                                        string="Documento digitalizado credencial cívica adjunto",
                                                        compute="_compute_digital_documents",
                                                        store=True)
-    digital_document_civical_credential_status = fields.Selection(
+    civical_credential_status = fields.Selection(
         string="Estado validación documental – credencial cívica",
         related='civical_credential_attachment_id.validation_status')
     civical_credential_reject_reason = fields.Char(string="Motivo rechazo validación documental – credencial cívica",
@@ -182,11 +182,11 @@ class ONSCCVDigital(models.Model):
                                                            selection=[('si', 'Si'), ('no', 'No'), ])
     medical_aptitude_certificate_date = fields.Date(
         string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
-    digital_document_medical_aptitude_certificate_file = fields.Binary(
+    medical_aptitude_certificate_file = fields.Binary(
         string="Documento digitalizado del certificado de aptitud médico-deportiva")
 
     is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)", )
-    digital_document_relationship_victim_violent_file = fields.Binary(
+    relationship_victim_violent_file = fields.Binary(
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
@@ -253,14 +253,14 @@ class ONSCCVDigital(models.Model):
             if not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
 
-    @api.depends('digital_document_civical_credential_file',
-                 'digital_document_document_identity_file')
+    @api.depends('civical_credential_file',
+                 'document_identity_file')
     def _compute_digital_documents(self):
         Attachment = self.env['ir.attachment']
         for rec in self:
             rec.civical_credential_attachment_id = Attachment.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'digital_document_civical_credential_file')], limit=1)
+                 ('res_field', '=', 'civical_credential_file')], limit=1)
             rec.document_identity_attachment_id = Attachment.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'digital_document_document_identity_file')], limit=1)
+                 ('res_field', '=', 'document_identity_file')], limit=1)

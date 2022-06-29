@@ -122,17 +122,17 @@
                                 </group>
                                 <group>
                                     <field name="is_afro_descendants"/>
-                                    <field name="document_afro_descendants_file" attrs="{'required': [('is_afro_descendants', '=', True)]}"  options="{'accepted_file_extensions': '.pdf'}" />
+                                    <field name="afro_descendants_file" attrs="{'required': [('is_afro_descendants', '=', True)]}"  options="{'accepted_file_extensions': '.pdf'}" />
                                     <field name="is_driver_license"/>
                                 </group>
                             </group>
                             <group string="Licencias de Conducir" attrs="{'invisible': [('is_driver_license', '=', False)]}">
-                                <field name="cv_digital_drivers_license_ids"  nolabel="1" >
+                                <field name="drivers_license_ids"  nolabel="1" >
                                     <tree editable="bottom" >
                                         <field name="validation_date" />
                                         <field name="category_id" />
-                                        <field name="digital_document_file"  options="{'accepted_file_extensions': '.pdf'}"  />
-                                        <field name="digital_document_attachment_id" invisible="1" />
+                                        <field name="license_file"  options="{'accepted_file_extensions': '.pdf'}"  />
+                                        <field name="license_attachment_id" invisible="1" />
                                     </tree>
                                 </field>
                             </group>
@@ -140,10 +140,10 @@
                                 <group string="Carnet Salud Laboral">
                                     <field name="is_occupational_health_card"/>
                                     <field name="occupational_health_card_date" attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"/>
-                                    <field name="digital_document_occupational_health_card_file"  attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"  options="{'accepted_file_extensions': '.pdf'}" />
+                                    <field name="occupational_health_card_file"  attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"  options="{'accepted_file_extensions': '.pdf'}" />
                                 </group>
                                 <group string="Carnet de Identidad">
-                                    <field name="digital_document_document_identity_file"  options="{'accepted_file_extensions': '.pdf'}" />
+                                    <field name="document_identity_file"  options="{'accepted_file_extensions': '.pdf'}" />
                                     <field name="document_identity_validation_status" readonly="1"  attrs="{'invisible': [('document_identity_validation_status', '!=', 'rechazado')]}"/>
                                     <field name="document_identity_reject_reason"  readonly="1"  attrs="{'invisible': [('document_identity_validation_status', '!=', 'rechazado')]}"/>
                                 </group>
@@ -152,16 +152,16 @@
                                 <group string="Certificado de aptitud médico-deportiva">
                                     <field name="medical_aptitude_certificate_status" />
                                     <field name="medical_aptitude_certificate_date"  attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}"/>
-                                    <field name="digital_document_medical_aptitude_certificate_file"  options="{'accepted_file_extensions': '.pdf'}" attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}" />
+                                    <field name="medical_aptitude_certificate_file"  options="{'accepted_file_extensions': '.pdf'}" attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}" />
                                 </group>
                                 <group string="Credencial cívica">
-                                    <field name="digital_document_civical_credential_file"  options="{'accepted_file_extensions': '.pdf'}"   attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <field name="digital_document_civical_credential_status" readonly="1"  attrs="{'invisible': [('digital_document_civical_credential_status', '!=', 'rechazado')]}"/>
-                                    <field name="civical_credential_reject_reason" readonly="1"  attrs="{'invisible': [('digital_document_civical_credential_status', '!=', 'rechazado')]}"/>
+                                    <field name="civical_credential_file"  options="{'accepted_file_extensions': '.pdf'}"   attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
+                                    <field name="civical_credential_status" readonly="1"  attrs="{'invisible': [('civical_credential_status', '!=', 'rechazado')]}"/>
+                                    <field name="civical_credential_reject_reason" readonly="1"  attrs="{'invisible': [('civical_credential_status', '!=', 'rechazado')]}"/>
                                 </group>
                                 <group string="Víctima de delitos violentos">
                                     <field name="is_victim_violent"/>
-                                    <field name="digital_document_relationship_victim_violent_file"  attrs="{'invisible': [('is_victim_violent', '=', False)]}"  options="{'accepted_file_extensions': '.pdf'}" />
+                                    <field name="relationship_victim_violent_file"  attrs="{'invisible': [('is_victim_violent', '=', False)]}"  options="{'accepted_file_extensions': '.pdf'}" />
                                     <field name="is_public_information_victim_violent"/>
                                 </group>
                             </group>
