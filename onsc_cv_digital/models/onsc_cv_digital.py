@@ -145,7 +145,7 @@ class ONSCCVDigital(models.Model):
         string='Documento digitalizado "Declaración de afrodescendencia" / formulario web de declaración jurada de afrodescendencia (Art. 4 Ley N°19.122) ')
     is_driver_license = fields.Boolean(string="Tiene licencia de conducir")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
-                                                     inverse_name="cv_digital_id", string="Licencias de conducir")
+                                          inverse_name="cv_digital_id", string="Licencias de conducir")
 
     personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
@@ -167,7 +167,7 @@ class ONSCCVDigital(models.Model):
                                                   related='document_identity_attachment_id.reject_reason')
 
     civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica",
-                                                             required=False, )
+                                            required=False, )
     civical_credential_attachment_id = fields.Many2one("ir.attachment",
                                                        string="Documento digitalizado credencial cívica adjunto",
                                                        compute="_compute_digital_documents",
