@@ -31,25 +31,31 @@
                 <sheet>
                     <group>
                         <field name="name"/>
-                        <field name="code"/>
-                        <field name="code_other"/>
-                        <field name="is_org"/>
+                        <field name="code"
+                               groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                        <field name="code_other"
+                               groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                        <field name="is_org"
+                               groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
                         <field name="active" invisible="1"/>
                     </group>
                     <notebook>
-                        <page string="RUPE">
+                        <page string="RUPE"
+                              groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv">
                             <group>
                                 <field name="is_rupe"/>
                                 <field name="code_rupe" attrs="{'required': [('is_rupe', '=', True)]}"/>
                             </group>
                         </page>
-                        <page string="SICE">
+                        <page string="SICE"
+                              groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv">
                             <group>
                                  <field name="is_sice"/>
                                 <field name="code_sice" attrs="{'required': [('is_sice', '=', True)]}"/>
                             </group>
                         </page>
-                        <page string="DGI">
+                        <page string="DGI"
+                              groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv">
                             <group>
                                 <field name="is_dgi"/>
                                 <field name="code_dgi" attrs="{'required': [('is_dgi', '=', True)]}"/>

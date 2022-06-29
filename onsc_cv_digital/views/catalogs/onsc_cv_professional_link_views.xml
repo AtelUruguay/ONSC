@@ -42,7 +42,8 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="code"/>
+                            <field name="code"
+                                   groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
                         </group>
                     </group>
                 </sheet>
