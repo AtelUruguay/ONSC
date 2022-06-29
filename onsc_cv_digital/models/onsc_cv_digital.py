@@ -151,8 +151,8 @@ class ONSCCVDigital(models.Model):
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
     email = fields.Char(string="Email", related='partner_id.email')
 
-    is_occupational_health_card = fields.Boolean(string="Carné de Salud Laboral")
-    occupational_health_card_date = fields.Date(string="Fecha de vencimiento del Carné de Salud Laboral")
+    is_occupational_health_card = fields.Boolean(string="Carné de salud laboral")
+    occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
     digital_document_occupational_health_card = fields.Binary(
         string="Documento digitalizado del Carné de Salud Laboral")
 
@@ -256,11 +256,11 @@ class ONSCCVDigital(models.Model):
     @api.depends('digital_document_civical_credential_attachment_id',
                  'digital_document_document_identity_attachment_id')
     def _compute_digital_documents(self):
-        attachment_objec = self.env['ir.attachment']
+        attachments = self.env['ir.attachment']
         for rec in self:
-            rec.digital_document_civical_credential_attachment_id = attachment_objec.search(
+            rec.digital_document_civical_credential_attachment_id = attachments.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
                  ('res_field', '=', 'digital_document_civical_credential')], limit=1)
-            rec.digital_document_document_identity_attachment_id = attachment_objec.search(
+            rec.digital_document_document_identity_attachment_id = attachments.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
                  ('res_field', '=', 'digital_document_document_identity')], limit=1)
