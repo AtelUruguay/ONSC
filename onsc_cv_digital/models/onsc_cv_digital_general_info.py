@@ -15,8 +15,8 @@ class ONSCCVDigitalDriverLicense(models.Model):
 
     @api.depends('digital_document')
     def _compute_digital_documents(self):
-        attachments = self.env['ir.attachment']
+        attachment = self.env['ir.attachment']
         for rec in self:
-            rec.digital_document_attachment_id = attachments.search(
+            rec.digital_document_attachment_id = attachment.search(
                 [('res_model', '=', 'onsc.cv.digital.driver.license'), ('res_id', '=', rec.id),
                  ('res_field', '=', 'digital_document')], limit=1)

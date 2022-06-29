@@ -256,11 +256,11 @@ class ONSCCVDigital(models.Model):
     @api.depends('digital_document_civical_credential_attachment_id',
                  'digital_document_document_identity_attachment_id')
     def _compute_digital_documents(self):
-        attachments = self.env['ir.attachment']
+        attachment = self.env['ir.attachment']
         for rec in self:
-            rec.digital_document_civical_credential_attachment_id = attachments.search(
+            rec.digital_document_civical_credential_attachment_id = attachment.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
                  ('res_field', '=', 'digital_document_civical_credential')], limit=1)
-            rec.digital_document_document_identity_attachment_id = attachments.search(
+            rec.digital_document_document_identity_attachment_id = attachment.search(
                 [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
                  ('res_field', '=', 'digital_document_document_identity')], limit=1)
