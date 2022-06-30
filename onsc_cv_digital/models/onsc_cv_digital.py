@@ -204,9 +204,6 @@ class ONSCCVDigital(models.Model):
             if fields.Date.from_string(record.cv_birthdate) > today:
                 raise ValidationError(_("La fecha de nacimiento no puede ser posterior a la fecha actual"))
 
-    def _get_help(self, help_field=''):
-        _url = eval('self.env.user.company_id.%s' % (help_field))
-        _html2construct = html2construct % {'url': _url}
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         _html2construct = HTML_HELP % (_url or '/')
