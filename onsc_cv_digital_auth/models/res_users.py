@@ -21,7 +21,8 @@ class ResUsers(models.Model):
             'cv_last_name_2': params.get('segundo_apellido', False),
             'cv_document_type_id': doc_type.id,
             'cv_nro_doc': params.get('numero_documento', False),
-            'is_partner_cv': True
+            'is_partner_cv': True,
+            'cv_source_info_auth_type': 'id_uy'
         })
         return result
 

@@ -67,7 +67,7 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                 if (canQuickCreate && !nameExists) {
                     values.push({
                         label: sprintf(
-                            _t(`Create "<strong>%s</strong>"`),
+                            _t('Agregar nuevo valor "<strong>%s</strong>" al catálogo'),
                             escape(value)
                         ),
                         action: () => this._quickCreate(value),
@@ -76,7 +76,7 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                 }
                 else if (canQuickCreate) {
                     values.push({
-                        label: _t(`Create...`),
+                        label: _t('Agregar nuevo valor al catálogo'),
                         action: () => this._quickCreate(value),
                         classname: 'o_m2o_dropdown_option'
                     });
@@ -85,7 +85,7 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                 if (canCreateEdit) {
                     const valueContext = this._createContext(value);
                     values.push({
-                        label: _t("Create and Edit..."),
+                        label: _t("Agregar nuevo valor al catálogo"),
                         action: () => {
                             // Input value is cleared and the form popup opens
                             this.el.querySelector(':scope input').value = "";
@@ -105,7 +105,7 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                 if (canQuickCreate || canCreateEdit) {
                     const valueContext = this._createContext(value);
                     values.push({
-                        label: _t("Create and Edit..."),
+                        label: _t("Agregar nuevo valor al catálogo"),
                         action: () => {
                             // Input value is cleared and the form popup opens
                             this.el.querySelector(':scope input').value = "";

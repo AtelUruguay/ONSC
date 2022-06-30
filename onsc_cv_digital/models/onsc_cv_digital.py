@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 
 from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 from .catalogs.res_partner import CV_SEX
 
-html2construct = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
-                            href="%(url)s">
+HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
+                            href="%s">
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
 
 
@@ -126,9 +127,12 @@ class ONSCCVDigital(models.Model):
     cv_address_reject_reason = fields.Char(related='cv_address_location_id.reject_reason')
     # Help online
     cv_help_general_info = fields.Html(
-        compute=lambda s: s._get_help('cv_help_general_info'), store=False, readonly=True)
+        compute=lambda s: s._get_help('cv_help_general_info'),
+        default=lambda s: s._get_help('cv_help_general_info', True))
     cv_help_address = fields.Html(
-        compute=lambda s: s._get_help('cv_help_address'), store=False, readonly=True)
+        compute=lambda s: s._get_help('cv_help_address'),
+        default=lambda s: s._get_help('cv_help_address', True)
+    )
 
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     uruguayan_citizenship = fields.Selection(string="Ciudadanía uruguaya",
@@ -203,6 +207,11 @@ class ONSCCVDigital(models.Model):
     def _get_help(self, help_field=''):
         _url = eval('self.env.user.company_id.%s' % (help_field))
         _html2construct = html2construct % {'url': _url}
+    def _get_help(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        _html2construct = HTML_HELP % (_url or '/')
+        if is_default:
+            return eval("_html2construct")
         for rec in self:
             setattr(rec, help_field, _html2construct)
 
@@ -213,20 +222,14 @@ class ONSCCVDigital(models.Model):
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
 
-    def _action_open_user_cv(self):
-        vals = {
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': self._name,
-            'name': 'Curriculum vitae',
-            'context': self.env.context
-        }
-        if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
-            my_cv = self.search([
-                ('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
-            if my_cv:
-                vals.update({'res_id': my_cv.id})
-        return vals
+    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
+    def _check_valid_dates(self):
+        today = fields.Date.from_string(fields.Date.today())
+        for record in self:
+            if record.cv_sex_updated_date and fields.Date.from_string(record.cv_sex_updated_date) > today:
+                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
+            if record.cv_birthdate and fields.Date.from_string(record.cv_birthdate) > today:
+                raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
 
     def button_edit_address(self):
         self.ensure_one()
@@ -244,8 +247,49 @@ class ONSCCVDigital(models.Model):
             'context': ctx,
         }
 
-    def button_active_cv(self):
-        self.write({'active': True})
+    def toggle_active(self):
+        result = super().toggle_active()
+        if len(self) == 1:
+            return self.with_context(my_cv=self)._action_open_user_cv()
+        return result
+
+    def _action_open_user_cv(self):
+        vals = {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': self._name,
+            'name': 'Curriculum vitae',
+            'context': self.env.context
+        }
+        if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
+            my_cv = self._context.get('my_cv', False) or self.search(
+                [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
+            if my_cv.active is False:
+                vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
+            vals.update({'res_id': my_cv.id})
+        return vals
+
+    def get_readonly_formview_id(self):
+        """
+        Crea una vista form con campos readonly la primera vez y luego es llamada si el CV está inactivo
+        permiso de escribir"""
+        # Hardcode the form view
+        self = self.sudo()
+        form_id = self.env['ir.ui.view'].search([('name', '=', '%s.form.readonly' % self._name)], limit=1)
+        if not form_id:
+            form_parent_id = self.env['ir.ui.view'].search([('model', '=', self._name), ('type', '=', 'form')], limit=1)
+            if form_parent_id:
+                arch = form_parent_id.arch
+                doc = etree.XML(arch)
+                for node_form in doc.xpath("//form"):
+                    node_form.set('edit', '0')
+                form_id = self.env['ir.ui.view'].create(
+                    {'name': '%s.form.readonly' % self._name,
+                     "model": self._name,
+                     'arch': etree.tostring(doc, encoding='unicode')
+                     })
+
+        return form_id.id
 
     @api.constrains('personal_phone', 'mobile_phone')
     def _check_valid_phone(self):
