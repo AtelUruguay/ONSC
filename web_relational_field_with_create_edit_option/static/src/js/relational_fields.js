@@ -82,7 +82,7 @@ odoo.define("web.web_relational_field_with_create_edit_option", function (requir
                     });
                 }
                 // "Create and Edit" option
-                if (canCreateEdit) {
+                if (canCreateEdit && !(canQuickCreate && !nameExists)) {
                     const valueContext = this._createContext(value);
                     values.push({
                         label: _t("Agregar nuevo valor al catálogo"),

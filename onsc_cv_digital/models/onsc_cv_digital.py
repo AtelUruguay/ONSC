@@ -125,6 +125,11 @@ class ONSCCVDigital(models.Model):
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification')
     cv_address_state = fields.Selection(related='cv_address_location_id.state')
     cv_address_reject_reason = fields.Char(related='cv_address_location_id.reject_reason')
+
+    # Formación----<Page>
+    basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación Básica')
+    advanced_formation_ids = fields.One2many('onsc.cv.advanced.formation', 'cv_digital_id',
+                                             string=u'Formación avanzada')
     # Help online
     cv_help_general_info = fields.Html(
         compute=lambda s: s._get_help('cv_help_general_info'),
@@ -132,6 +137,10 @@ class ONSCCVDigital(models.Model):
     cv_help_address = fields.Html(
         compute=lambda s: s._get_help('cv_help_address'),
         default=lambda s: s._get_help('cv_help_address', True)
+    )
+    cv_help_formation = fields.Html(
+        compute=lambda s: s._get_help('cv_help_formation'),
+        default=lambda s: s._get_help('cv_help_formation', True)
     )
 
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)

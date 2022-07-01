@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_basic_formation_form" model="ir.ui.view">
+        <field name="name">onsc.cv.basic.formation.form</field>
+        <field name="model">onsc.cv.basic.formation</field>
+        <field name="arch" type="xml">
+            <form string=" Formación básica">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="cv_digital_id" invisible="1"/>
+                            <field name="basic_education_level"/>
+                            <field name="institution_id" domain="[('state','=','validated')]"
+                                   context="{'default_country_id': country_id}"/>
+                            <field name="subinstitution_id"
+                                   domain="[('state','=','validated'),('institution_id', '=', institution_id)]"
+                                   context="{'default_institution_id': institution_id}"/>
+                            <field name="country_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </group>
+                        <group>
+                            <field name="state"/>
+                            <field name="start_date"/>
+                            <field name="end_date"
+                                   attrs="{'invisible': [('state', '!=', 'completed')],'required': [('state', '=', 'completed')]}"/>
+                            <field name="coursed_years"
+                                   attrs="{'invisible': [('state', 'not in', ['in_progress','incomplete'])], 'required': [('state', 'in', ['in_progress','incomplete'])]}"/>
+                            <field name="other_relevant_information"/>
+                            <field name="study_certificate_file" filename="study_certificate_name"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="study_certificate_name" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_cv_advanced_formation_form" model="ir.ui.view">
+        <field name="name">onsc.cv.advanced.formation.form</field>
+        <field name="model">onsc.cv.advanced.formation</field>
+        <field name="arch" type="xml">
+            <form string=" Formación avanzada">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="institution_id" domain="[('state','=','validated')]"
+                                   context="{'default_country_id': country_id}"/>
+                            <field name="subinstitution_id"
+                                   domain="[('state','=','validated'),('institution_id', '=', institution_id)]"
+                                   context="{'default_institution_id': institution_id}"/>
+                            <field name="country_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="country_name" invisible="1"/>
+                            <field name="advanced_study_level_id"/>
+                            <field name="academic_program_id"
+                                   domain="[('study_level_id', '=', advanced_study_level_id), ('country_id', '=', country_id)]"/>
+                            <field name="homologated_title"
+                                   attrs="{'invisible': [('country_name', '!=', 'Uruguay')],'required': [('country_name', '=', 'Uruguay')]}"/>
+                            <field name="homologated_title_date"
+                                   attrs="{'required': [('homologated_title', '=', 'yes')]}"/>
+                            <field name="apostilled_title"
+                                   attrs="{'invisible': [('country_name', '!=', 'Uruguay')],'required': [('country_name', '=', 'Uruguay')]}"/>
+                            <field name="apostilled_date"
+                                   attrs="{'required': [('apostilled_title', '=', 'yes')]}"/>
+                            <field name="state"/>
+                            <field name="start_date"/>
+                            <field name="egress_date"
+                                   attrs="{'invisible': [('state', '!=', 'completed')],'required': [('state', '=', 'completed')]}"/>
+                            <field name="issue_title_date"
+                                   attrs="{'invisible': [('state', '!=', 'completed')],'required': [('state', '=', 'completed')]}"/>
+                            <field name="is_require_thesis"/>
+                            <field name="state_thesis"
+                                   attrs="{'invisible': [('is_require_thesis', '=', False)],'required': [('is_require_thesis', '=', True)], 'readonly': [('state', '=', 'completed')]}"/>
+                            <field name="title_thesis"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                            <field name="description_thesis"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                            <field name="tutor"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                            <field name="knowledge_thesis_ids" options="{'limit':5}" widget="many2many_tags"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                            <field name="other_relevant_information"/>
+                        </group>
+                        <group>
+                            <field name="final_note_thesis"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                            <field name="max_note_thesis"
+                                   attrs="{'invisible': [('final_note_thesis', 'in', [0.00,''])],'required': [('final_note_thesis', 'not in', [0.00,''])]}"/>
+                            <field name="scholarship"/>
+                            <field name="max_scholarship"
+                                   attrs="{'invisible': [('scholarship', 'in', [0.00,''])],'required': [('scholarship', 'not in', [0.00,''])]}"/>
+                            <field name="credits_far"
+                                   attrs="{'invisible': [('state', '=', 'completed')],'required': [('state', '!=', 'completed')]}"/>
+                            <field name="credits_training"
+                                   attrs="{'invisible': [('state', '=', 'completed')],'required': [('state', '!=', 'completed')]}"/>
+                            <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"/>
+                            <field name="egress_certificate_file" filename="egress_certificate_name"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="egress_certificate_name" invisible="1"/>
+                            <field name="revalidated_certificate_file" filename="revalidated_certificate_name"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="revalidated_certificate_name" invisible="1"/>
+                            <field name="homologated_certificate_file" filename="homologated_certificate_name"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="homologated_certificate_name" invisible="1"/>
+                            <field name="apostille_file" filename="apostille_name"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="apostille_name" invisible="1"/>
+                        </group>
+                    </group>
+                    <br/>
+                    <div>
+                        <h4>Áreas relacionadas con esta educación</h4>
+                    </div>
+                    <field name="area_related_education_ids">
+                        <tree string="Formación básica" editable="top">
+                            <field name="educational_areas_id"/>
+                            <field name="educational_subareas_id"
+                                   domain="[('area_id', '=', educational_areas_id)]"
+                                   context="{'default_area_id': educational_areas_id}"/>
+                            <field name="discipline_educational_id"
+                                   domain="[('subarea_id', '=', educational_subareas_id)]"
+                                   context="{'default_area_id': educational_areas_id, 'default_subarea_id': educational_subareas_id}"/>
+                        </tree>
+                    </field>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
