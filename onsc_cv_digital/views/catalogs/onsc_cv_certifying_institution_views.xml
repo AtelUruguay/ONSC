@@ -49,7 +49,8 @@
                     <group>
                         <group>
                             <field name="name"/>
-                            <field name="code"/>
+                            <field name="code"
+                                   groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
                         </group>
                         <group>
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
@@ -58,7 +59,8 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Sub instituciones certificadoras">
+                        <page string="Sub instituciones certificadoras"
+                              groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv">
                             <field name="subinstitution_cert_ids" context="{'from_institution': 1}"/>
                         </page>
                     </notebook>

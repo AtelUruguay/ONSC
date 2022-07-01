@@ -34,9 +34,12 @@
                 <sheet>
                     <group>
                         <field name="name"/>
-                        <field name="code"/>
-                        <field name="race_type"/>
-                        <field name="is_option_other_enable"/>
+                        <field name="code"
+                               groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                        <field name="race_type"
+                               groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                        <field name="is_option_other_enable"
+                               groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
                         <field name="active" invisible="1"/>
                     </group>
                 </sheet>
