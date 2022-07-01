@@ -2,7 +2,7 @@
 <odoo>
     <menuitem id="onsc_cv_root_menu"
               name="CV digital"
-              web_icon="onsc_cv_digital,static/description/icon.jpg"
+              web_icon="onsc_cv_digital,static/description/icon.png"
               sequence="2"/>
 
     <menuitem id="onsc_cv_digital_menu"
