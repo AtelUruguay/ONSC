@@ -229,6 +229,42 @@
                                 <field name="cv_address_amplification"/>
                             </group>
                         </page>
+                        <page string="Formación">
+                            <div class="float-right">
+                                <field name="cv_help_formation"/>
+                            </div>
+                            <div>
+                                <h4>Formación básica</h4>
+                            </div>
+                            <field name="basic_formation_ids">
+                                <tree string="Formación básica">
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="basic_education_level"/>
+                                    <field name="country_id"/>
+                                    <field name="institution_id"/>
+                                    <field name="subinstitution_id"/>
+                                    <field name="state"/>
+                                    <field name="coursed_years"/>
+                                </tree>
+                            </field>
+                            <br/>
+                            <div>
+                                <h4>Formación avanzada</h4>
+                            </div>
+                            <field name="advanced_formation_ids">
+                                <tree string="Formación avanzada">
+                                    <field name="start_date"/>
+                                    <field name="egress_date"/>
+                                    <field name="country_id"/>
+                                    <field name="institution_id"/>
+                                    <field name="subinstitution_id"/>
+                                    <field name="advanced_study_level_id"/>
+                                    <field name="state"/>
+                                    <field name="academic_program_id"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">
