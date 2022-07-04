@@ -7,26 +7,18 @@
             <form string="Formaciones básicas">
                 <sheet>
                     <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('catalogs_validation_state', '!=', 'rejected')]}">
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
                         <p class="mb-0">
                             <strong>
-                                Rechazado
+                                El registro ha sido rechazado. Motivo: <field name="conditional_validation_reject_reason"/>
                             </strong>
                         </p>
                     </div>
                     <div class="alert alert-info" role="alert"
-                         attrs="{'invisible': [('catalogs_validation_state', '!=', 'to_validate')]}">
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
                         <p class="mb-0">
                             <strong>
-                                A Validar
-                            </strong>
-                        </p>
-                    </div>
-                    <div class="alert alert-success" role="alert"
-                         attrs="{'invisible': [('catalogs_validation_state', '!=', 'validated')]}">
-                        <p class="mb-0">
-                            <strong>
-                                Validado
+                                El registro ingresado está en proceso de validación, se notificará el resultado de este a su e-mail
                             </strong>
                         </p>
                     </div>
@@ -53,7 +45,7 @@
                             <field name="study_certificate_file" filename="study_certificate_name"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="study_certificate_name" invisible="1"/>
-                            <field name="catalogs_validation_state" invisible="1"/>
+                            <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
                 </sheet>
@@ -74,7 +66,7 @@
                 <field name="subinstitution_id"/>
                 <field name="state"/>
                 <field name="coursed_years"/>
-                <field name="catalogs_validation_state"/>
+                <field name="conditional_validation_state"/>
             </tree>
         </field>
     </record>
