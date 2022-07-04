@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="onsc_cv_work_experience_form_view" model="ir.ui.view">
+        <field name="name">onsc.cv.work.experience.form</field>
+        <field name="model">onsc.cv.work.experience</field>
+        <field name="arch" type="xml">
+            <form string="Experiencia Laboral">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="position"/>
+                            <field name="country_id"/>
+                            <field name="city_id"/>
+                            <field name="company_type"/>
+                            <field name="code" invisible="1"/>
+                            <field name="company_name"
+                                   attrs="{'invisible': ['|',('code', '=', 'UY'),('company_type','=','public')],'required': ['|',('code', '=', 'UY'),('company_type','=','public')]}"/>
+                            <field name="unit_name"/>
+                            <field name="entry_institution_id"/>
+                            <field name="hierarchical_level_id"/>
+                            <field name="take_decisions"/>
+                            <field name="is_paid_activity"/>
+                        </group>
+                        <group>
+                            <field name="people_charge"/>
+                            <field name="organizational_units_charge"/>
+                            <field name="start_date"/>
+                            <field name="currently_working"/>
+                            <field name="end_date"/>
+                            <field name="hours_worked_monthly"/>
+                            <field name="description_tasks"/>
+                            <field name="receipt_file" options="{'accepted_file_extensions': '.pdf'}"/>
+                        </group>
+                    </group>
+                    <group string="Tareas">
+                        <field name="experience_task_ids" nolabel="1">
+                            <tree string="Tareas" editable="top">
+                                <field name="key_task_id"/>
+                                <field name="work_area_id"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_cv_work_experience_tree_view" model="ir.ui.view">
+        <field name="name">onsc.cv.work.experience.tree</field>
+        <field name="model">onsc.cv.work.experience</field>
+        <field name="arch" type="xml">
+            <tree string="Tareas">
+                <field name="position"/>
+                <field name="unit_name"/>
+                <field name="entry_institution_id"/>
+                <field name="hierarchical_level_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="currently_working"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

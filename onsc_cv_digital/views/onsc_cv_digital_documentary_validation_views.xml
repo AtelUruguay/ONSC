@@ -7,10 +7,10 @@
             <form string="Validacion documental">
                 <sheet>
                     <group>
-                        <field name="document_validation_status" readonly="1"  attrs="{'invisible': [('document_validation_status', '!=', 'rechazado')]}"/>
-                        <field name="reject_reason" readonly="1" attrs="{'invisible': [('document_validation_status', '!=', 'rechazado')]}"/>
-                        <field name="document_validation_date" invisible="1"/>
-                        <field name="user_validation_documentary_id" invisible="1"/>
+                        <field name="validation_status" readonly="1"  attrs="{'invisible': [('validation_status', '!=', 'rechazado')]}"/>
+                        <field name="reject_reason" readonly="1" attrs="{'invisible': [('validation_status', '!=', 'rechazado')]}"/>
+                        <field name="validation_date" invisible="1"/>
+                        <field name="validation_user_id" invisible="1"/>
                     </group>
                 </sheet>
             </form>
