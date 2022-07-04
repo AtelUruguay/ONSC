@@ -2,9 +2,14 @@
 
 from odoo import fields, models, api
 
+from . import onsc_cv_useful_tools as useful_tools
+from .catalogs.onsc_cv_abstract_config import STATES as CATALOG_VALIDATION_STATES
+
 STATES = [('incomplete', 'Incompleto'),
           ('in_progress', 'En curso'),
           ('completed', 'Finalizado')]
+
+CATALOGS2VALIDATE = ['institution_id', 'subinstitution_id']
 
 
 class ONSCCVFormationBasic(models.Model):
@@ -27,6 +32,14 @@ class ONSCCVFormationBasic(models.Model):
     other_relevant_information = fields.Text(string="Otra información relevante")
     study_certificate_file = fields.Binary(string="Certificado de estudio", required=True)
     study_certificate_name = fields.Char(string="Nombre certificado de estudio")
+
+    # CATALOGS VALIDATION STATE
+    catalogs_validation_state = fields.Selection(
+        string="Estado valor condicional",
+        selection=CATALOG_VALIDATION_STATES,
+        compute='_compute_catalogs_validation_state',
+        store=True
+    )
 
     @api.onchange('institution_id')
     def onchange_institution_id(self):
@@ -72,6 +85,11 @@ class ONSCCVFormationBasic(models.Model):
     def onchange_end_date(self):
         if self.end_date and self.end_date <= self.start_date:
             self.end_date = self.start_date
+
+    @api.depends('institution_id.state', 'subinstitution_id.state')
+    def _compute_catalogs_validation_state(self):
+        for record in self:
+            record.catalogs_validation_state = useful_tools._get_validation_status(record, CATALOGS2VALIDATE)
 
 
 class ONSCCVFormationAdvanced(models.Model):
