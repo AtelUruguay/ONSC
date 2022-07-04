@@ -70,7 +70,6 @@ ONSC CV Digital
         'views/catalogs/onsc_cv_divulgation_media_views.xml',
         'views/catalogs/res_partner_views.xml',
 
-        'views/onsc_cv_digital_documentary_validation_views.xml',
         'views/onsc_cv_digital_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
