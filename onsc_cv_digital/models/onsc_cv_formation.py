@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api
+from odoo.exceptions import ValidationError
 
 from . import onsc_cv_useful_tools as useful_tools
 from .catalogs.onsc_cv_abstract_config import STATES as CATALOG_VALIDATION_STATES
