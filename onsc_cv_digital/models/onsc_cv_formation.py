@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 from . import onsc_cv_useful_tools as useful_tools
@@ -49,7 +49,7 @@ class ONSCCVFormationBasic(models.Model):
     @api.constrains('start_date', 'end_date')
     def _constrains_dates_coherency(self):
         if self.start_date > self.end_date:
-            raise ValidationError('La Fecha finalización no puede ser menor que la Fecha de inicio.')
+            raise ValidationError(_('La Fecha finalización no puede ser menor que la Fecha de inicio.'))
 
     @api.onchange('institution_id')
     def onchange_institution_id(self):
@@ -163,7 +163,7 @@ class ONSCCVFormationAdvanced(models.Model):
     @api.constrains('start_date', 'egress_date')
     def _constrains_dates_coherency(self):
         if self.egress_date > self.end_date:
-            raise ValidationError('La Fecha de egreso no puede ser menor que la Fecha de inicio.')
+            raise ValidationError(_('La Fecha de egreso no puede ser menor que la Fecha de inicio.'))
 
     @api.onchange('institution_id')
     def onchange_institution_id(self):
