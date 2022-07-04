@@ -5,7 +5,8 @@ def _get_validation_status(record, conditional_catalog_list):
     :param str record: Odoo recodset sobre el que se desea conocer el Estado de Catálogos condicionales
     :param list conditional_catalog_list: Cada elemento constituye un Catalogo condicional (i.e. ['institution_id', 'subinstitution_id'])
 
-    :rtype: string: Estado de Catálogos condicionales final para el recordset
+    :rtype: dict: Estado de Catálogos condicionales final para el recordset y Motivo de rechazo en caso de existir
+                (i.e. {'state': 'rejected', 'reject_reason': 'Aqui va el motivo del rechazo'})
     """
     if len(record) > 1:
         return False
