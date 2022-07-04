@@ -34,10 +34,14 @@ class ONSCCVFormationBasic(models.Model):
     study_certificate_name = fields.Char(string="Nombre certificado de estudio")
 
     # CATALOGS VALIDATION STATE
-    catalogs_validation_state = fields.Selection(
+    conditional_validation_state = fields.Selection(
         string="Estado valor condicional",
         selection=CATALOG_VALIDATION_STATES,
-        compute='_compute_catalogs_validation_state',
+        compute='_compute_conditional_validation_state',
+        store=True
+    )
+    conditional_validation_reject_reason = fields.Char(
+        compute='_compute_conditional_validation_state',
         store=True
     )
 
@@ -87,9 +91,11 @@ class ONSCCVFormationBasic(models.Model):
             self.end_date = self.start_date
 
     @api.depends('institution_id.state', 'subinstitution_id.state')
-    def _compute_catalogs_validation_state(self):
+    def _compute_conditional_validation_state(self):
         for record in self:
-            record.catalogs_validation_state = useful_tools._get_validation_status(record, CATALOGS2VALIDATE)
+            validation_status = useful_tools._get_validation_status(record, CATALOGS2VALIDATE)
+            record.conditional_validation_state = validation_status.get('state')
+            record.conditional_validation_reject_reason = validation_status.get('reject_reason', '')
 
 
 class ONSCCVFormationAdvanced(models.Model):

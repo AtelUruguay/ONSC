@@ -1,13 +1,19 @@
 # -*- coding: utf-8 -*-
 
-def _get_validation_status(record, validation_catalog_string):
+def _get_validation_status(record, conditional_catalog_list):
+    """
+    :param str record: Odoo recodset sobre el que se desea conocer el Estado de Catálogos condicionales
+    :param list conditional_catalog_list: Cada elemento constituye un Catalogo condicional (i.e. ['institution_id', 'subinstitution_id'])
+
+    :rtype: string: Estado de Catálogos condicionales final para el recordset
+    """
     if len(record) > 1:
         return False
-    _state = 'validated'
-    for catalog in validation_catalog_string:
-        catalog_state = eval('record.%s.state' % (catalog))
+    _state = {'state': 'validated', 'reject_reason': ''}
+    for catalog in conditional_catalog_list:
+        catalog_state = eval('record.%s.state' % catalog)
         if catalog_state == 'rejected':
-            return 'rejected'
-        if catalog_state == 'to_validate' and _state == 'validated':
-            _state = 'to_validate'
+            return {'state': 'rejected', 'reject_reason': eval('record.%s.reject_reason' % catalog)}
+        if catalog_state == 'to_validate' and _state.get('state') == 'validated':
+            _state['state'] = 'to_validate'
     return _state
