@@ -45,6 +45,11 @@ class ONSCCVFormationBasic(models.Model):
         store=True
     )
 
+    @api.constrains('start_date', 'end_date')
+    def _constrains_dates_coherency(self):
+        if self.start_date > self.end_date:
+            raise ValidationError('La Fecha finalización no puede ser menor que la Fecha de inicio.')
+
     @api.onchange('institution_id')
     def onchange_institution_id(self):
         if self.institution_id.country_id:
@@ -82,13 +87,15 @@ class ONSCCVFormationBasic(models.Model):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
-        if self.start_date and self.state == 'completed' and self.end_date <= self.start_date:
-            self.end_date = self.start_date
+        if self.end_date:
+            if self.start_date and self.state == 'completed' and self.end_date <= self.start_date:
+                self.end_date = self.start_date
 
     @api.onchange('end_date')
     def onchange_end_date(self):
-        if self.end_date and self.end_date <= self.start_date:
-            self.end_date = self.start_date
+        if self.start_date:
+            if self.end_date and self.end_date <= self.start_date:
+                self.end_date = self.start_date
 
     @api.depends('institution_id.state', 'subinstitution_id.state')
     def _compute_conditional_validation_state(self):
@@ -152,6 +159,11 @@ class ONSCCVFormationAdvanced(models.Model):
     apostille_file = fields.Binary(string="Apostilla")
     apostille_name = fields.Char(string="Nombre apostilla")
 
+    @api.constrains('start_date', 'egress_date')
+    def _constrains_dates_coherency(self):
+        if self.egress_date > self.end_date:
+            raise ValidationError('La Fecha de egreso no puede ser menor que la Fecha de inicio.')
+
     @api.onchange('institution_id')
     def onchange_institution_id(self):
         if self.institution_id.country_id:
@@ -189,13 +201,15 @@ class ONSCCVFormationAdvanced(models.Model):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
-        if self.start_date and self.state == 'completed' and self.egress_date <= self.start_date:
-            self.egress_date = self.start_date
+        if self.egress_date:
+            if self.start_date and self.state == 'completed' and self.egress_date <= self.start_date:
+                self.egress_date = self.start_date
 
     @api.onchange('egress_date')
     def onchange_end_date(self):
-        if self.egress_date and self.egress_date <= self.start_date:
-            self.egress_date = self.start_date
+        if self.start_date:
+            if self.egress_date and self.egress_date <= self.start_date:
+                self.egress_date = self.start_date
 
     @api.onchange('state', 'is_require_thesis')
     def onchange_state_is_require_thesis(self):
