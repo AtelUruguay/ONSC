@@ -2,8 +2,8 @@
 
 from odoo import fields, models, api
 
-from . import onsc_cv_useful_tools as useful_tools
-from .catalogs.onsc_cv_abstract_config import STATES as CATALOG_VALIDATION_STATES
+from .. import onsc_cv_useful_tools as useful_tools
+from ..catalogs.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 
 STATES = [('incomplete', 'Incompleto'),
           ('in_progress', 'En curso'),
@@ -15,82 +15,28 @@ CATALOGS2VALIDATE = ['institution_id', 'subinstitution_id']
 class ONSCCVFormationBasic(models.Model):
     _name = 'onsc.cv.basic.formation'
     _description = 'Formación básica'
+    _inherit = ['onsc.cv.abstract.formation']
     _order = 'start_date desc'
 
-    cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV digital')
     basic_education_level = fields.Selection(string=u'Nivel de estudios básicos',
                                              selection=[('primary', u'Primaria'),
                                                         ('secondary', u'Secundaria'),
                                                         ('utu', u'UTU')], required=True)
-    institution_id = fields.Many2one("onsc.cv.institution", string=u"Institución", required=True)
-    subinstitution_id = fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución", required=True)
-    country_id = fields.Many2one('res.country', string=u'País de la institución', required=True)
-    state = fields.Selection(string="Estado", selection=STATES, required=True)
-    start_date = fields.Date(string="Fecha de inicio", required=True)
-    end_date = fields.Date(string="Fecha finalización")
     coursed_years = fields.Text(string="Años cursados")
-    other_relevant_information = fields.Text(string="Otra información relevante")
     study_certificate_file = fields.Binary(string="Certificado de estudio", required=True)
     study_certificate_name = fields.Char(string="Nombre certificado de estudio")
 
     # CATALOGS VALIDATION STATE
     conditional_validation_state = fields.Selection(
         string="Estado valor condicional",
-        selection=CATALOG_VALIDATION_STATES,
+        selection=CONDITIONAL_VALIDATION_STATES,
         compute='_compute_conditional_validation_state',
         store=True
     )
-    conditional_validation_reject_reason = fields.Char(
+    conditional_validation_reject_reason = fields.Html(
         compute='_compute_conditional_validation_state',
         store=True
     )
-
-    @api.onchange('institution_id')
-    def onchange_institution_id(self):
-        if self.institution_id.country_id:
-            self.country_id = self.institution_id.country_id.id
-            return {
-                'domain': {
-                    'country_id': [("id", "=", self.institution_id.country_id.id)]
-                }
-            }
-        else:
-            self.country_id = ''
-            return {
-                'domain': {
-                    'country_id': []
-                }
-            }
-        if (self.institution_id and self.institution_id != self.subinstitution_id.institution_id) or \
-                self.institution_id is False:
-            self.subinstitution_id = False
-
-    @api.onchange('country_id')
-    def onchange_country_id(self):
-        if self.country_id.id:
-            return {
-                'domain': {
-                    'institution_id': [("country_id", "=", self.country_id.id), ("state", "=", 'validated')]
-                }
-            }
-        else:
-            return {
-                'domain': {
-                    'institution_id': [("state", "=", 'validated')]
-                }
-            }
-
-    @api.onchange('start_date')
-    def onchange_start_date(self):
-        if self.end_date:
-            if self.start_date and self.state == 'completed' and self.end_date <= self.start_date:
-                self.end_date = self.start_date
-
-    @api.onchange('end_date')
-    def onchange_end_date(self):
-        if self.start_date:
-            if self.end_date and self.end_date <= self.start_date:
-                self.end_date = self.start_date
 
     @api.depends('institution_id.state', 'subinstitution_id.state')
     def _compute_conditional_validation_state(self):
@@ -102,13 +48,9 @@ class ONSCCVFormationBasic(models.Model):
 
 class ONSCCVFormationAdvanced(models.Model):
     _name = 'onsc.cv.advanced.formation'
+    _inherit = ['onsc.cv.abstract.formation']
     _description = 'Formación avanzada'
 
-    cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV digital')
-    institution_id = fields.Many2one("onsc.cv.institution", string=u"Institución", required=True)
-    subinstitution_id = fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución", required=True)
-    country_id = fields.Many2one('res.country', string=u'País de la institución', required=True)
-    country_name = fields.Char(related="country_id.name")
     advanced_study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de estudio avanzado', required=True)
     academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico', required=True)
     homologated_title = fields.Selection(string=u'¿Su título esta revalidado/homologado en Uruguay?',
@@ -118,8 +60,6 @@ class ONSCCVFormationAdvanced(models.Model):
     apostilled_title = fields.Selection(string=u'¿Su título esta apostillado?',
                                         selection=[('yes', u'Si'), ('no', u'No')])
     apostilled_date = fields.Date(string="Fecha de apostillado")
-    state = fields.Selection(string="Estado", selection=STATES, required=True)
-    start_date = fields.Date(string="Fecha de inicio", required=True)
     egress_date = fields.Date(string="Fecha de egreso")
     issue_title_date = fields.Date(string="Fecha de expedición Título")
     is_require_thesis = fields.Boolean(string="¿Su estudio requiere o requirió tesis?")
@@ -154,64 +94,24 @@ class ONSCCVFormationAdvanced(models.Model):
     apostille_file = fields.Binary(string="Apostilla")
     apostille_name = fields.Char(string="Nombre apostilla")
 
+    country_code = fields.Char(related="country_id.code")
+
     # CATALOGS VALIDATION STATE
     conditional_validation_state = fields.Selection(
         string="Estado valor condicional",
-        selection=CATALOG_VALIDATION_STATES,
+        selection=CONDITIONAL_VALIDATION_STATES,
         compute='_compute_conditional_validation_state',
         store=True
     )
-    conditional_validation_reject_reason = fields.Char(
+    conditional_validation_reject_reason = fields.Html(
         compute='_compute_conditional_validation_state',
         store=True
     )
-
-    @api.onchange('institution_id')
-    def onchange_institution_id(self):
-        if self.institution_id.country_id:
-            self.country_id = self.institution_id.country_id.id
-            return {
-                'domain': {
-                    'country_id': [("id", "=", self.institution_id.country_id.id)]
-                }
-            }
-        else:
-            self.country_id = ''
-            return {
-                'domain': {
-                    'country_id': []
-                }
-            }
-        if (self.institution_id and self.institution_id != self.subinstitution_id.institution_id) or \
-                self.institution_id is False:
-            self.subinstitution_id = False
-
-    @api.onchange('country_id')
-    def onchange_country_id(self):
-        if self.country_id.id:
-            return {
-                'domain': {
-                    'institution_id': [("country_id", "=", self.country_id.id), ("state", "=", 'validated')]
-                }
-            }
-        else:
-            return {
-                'domain': {
-                    'institution_id': [("state", "=", 'validated')]
-                }
-            }
-
-    @api.onchange('start_date')
-    def onchange_start_date(self):
-        if self.egress_date:
-            if self.start_date and self.state == 'completed' and self.egress_date <= self.start_date:
-                self.egress_date = self.start_date
 
     @api.onchange('egress_date')
-    def onchange_end_date(self):
-        if self.start_date:
-            if self.egress_date and self.egress_date <= self.start_date:
-                self.egress_date = self.start_date
+    def onchange_egress_date(self):
+        if self.start_date and self.egress_date and self.egress_date <= self.start_date:
+            self.egress_date = self.start_date
 
     @api.onchange('state', 'is_require_thesis')
     def onchange_state_is_require_thesis(self):
