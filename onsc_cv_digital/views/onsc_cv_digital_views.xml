@@ -172,11 +172,7 @@
                             <div class="float-right">
                                 <field name="cv_help_address"/>
                             </div>
-                            <button string="Agregar domicilio" name="button_edit_address" id="button_edit_address_1"
-                                    type="object"
-                                    groups="onsc_cv_digital.group_user_cv"
-                                    attrs="{'invisible': [('country_id', '!=', False)]}"/>
-                            <button string="Modificar domicilio" name="button_edit_address" id="button_edit_address_2"
+                            <button string="Agregar/Modificar domicilio" name="button_edit_address" id="button_edit_address_2"
                                     type="object"
                                     groups="onsc_cv_digital.group_user_cv"
                                     attrs="{'invisible': [('country_id', '=', False)]}"/>
