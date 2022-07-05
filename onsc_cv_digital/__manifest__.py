@@ -32,7 +32,6 @@ ONSC CV Digital
         'wizard/views/onsc_cv_address_wizard_views.xml',
         'wizard/views/onsc_cv_reject_wizard_views.xml',
         'views/res_config_settings_view.xml',
-        'views/onsc_cv_formation_views.xml',
         'views/catalogs/onsc_cv_document_type_views.xml',
         'views/catalogs/onsc_cv_civil_status_views.xml',
         'views/catalogs/onsc_cv_drivers_license_categories_views.xml',
@@ -73,6 +72,7 @@ ONSC CV Digital
         # 'views/onsc_cv_digital_documentary_validation_views.xml',
 
         'views/formation/onsc_cv_course_certificate_views.xml',
+        'views/formation/onsc_cv_formation_views.xml',
 
         'views/onsc_cv_digital_views.xml',
         'views/onsc_cv_menuitems.xml',

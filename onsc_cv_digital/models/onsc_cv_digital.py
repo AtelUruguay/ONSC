@@ -235,6 +235,12 @@ class ONSCCVDigital(models.Model):
             if record.cv_birthdate and fields.Date.from_string(record.cv_birthdate) > today:
                 raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
 
+    @api.constrains('personal_phone', 'mobile_phone')
+    def _check_valid_phone(self):
+        for record in self:
+            if not record.personal_phone and not record.mobile_phone:
+                raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
+
     def button_edit_address(self):
         self.ensure_one()
         title = self.country_id and _('Editar domicilio') or _('Agregar domicilio')
@@ -294,12 +300,6 @@ class ONSCCVDigital(models.Model):
                      })
 
         return form_id.id
-
-    @api.constrains('personal_phone', 'mobile_phone')
-    def _check_valid_phone(self):
-        for record in self:
-            if not record.personal_phone and not record.mobile_phone:
-                raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
 
     @api.depends('civical_credential_file',
                  'document_identity_file')
