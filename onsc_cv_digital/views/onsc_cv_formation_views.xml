@@ -4,8 +4,24 @@
         <field name="name">onsc.cv.basic.formation.form</field>
         <field name="model">onsc.cv.basic.formation</field>
         <field name="arch" type="xml">
-            <form string=" Formación básica">
+            <form string="Formaciones básicas">
                 <sheet>
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                El registro ha sido rechazado. Motivo: <field name="conditional_validation_reject_reason"/>
+                            </strong>
+                        </p>
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
+                        <p class="mb-0">
+                            <strong>
+                                El registro ingresado está en proceso de validación, se notificará el resultado de este a su e-mail
+                            </strong>
+                        </p>
+                    </div>
                     <group>
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
@@ -29,10 +45,29 @@
                             <field name="study_certificate_file" filename="study_certificate_name"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="study_certificate_name" invisible="1"/>
+                            <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
                 </sheet>
             </form>
+        </field>
+    </record>
+    
+    <record id="onsc_cv_basic_formation_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.basic.formation.tree</field>
+        <field name="model">onsc.cv.basic.formation</field>
+        <field name="arch" type="xml">
+            <tree string="Formaciones básicas">
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="basic_education_level"/>
+                <field name="country_id"/>
+                <field name="institution_id"/>
+                <field name="subinstitution_id"/>
+                <field name="state"/>
+                <field name="coursed_years"/>
+                <field name="conditional_validation_state"/>
+            </tree>
         </field>
     </record>
 
