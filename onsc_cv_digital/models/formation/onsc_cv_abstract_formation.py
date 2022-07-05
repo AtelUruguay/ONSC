@@ -73,6 +73,7 @@ class ONSCCVAbstractFormation(models.Model):
             return {
                 'warning': {
                     'title': _("Atención"),
+                    'type': 'notification',
                     'message': _(
                         "Sólo se pueden seleccionar 5 tipos de conocimientos"
                     )

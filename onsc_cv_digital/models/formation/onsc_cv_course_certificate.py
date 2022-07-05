@@ -41,7 +41,7 @@ class ONSCCVCourseCertificate(models.Model):
     line_ids = fields.One2many('onsc.cv.education.area.course', inverse_name='course_id',
                                string="Áreas relacionadas con esta educación")
     digital_doc_file = fields.Binary(
-        'Documento digitalizado "Comprobantes"',
+        'Documento digitalizado "Comprobantes"', required=True,
         help="""Certificado de curso / Constancia de asistencia a curso / Constancia de aprobación""")
     digital_doc_name = fields.Char('Nombre del documento digital')
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired_course_rel',
@@ -113,7 +113,8 @@ class ONSCCVCourseCertificate(models.Model):
         """
         result = {
             'warning': {
-                'title': _("Atención")
+                'title': _("Atención"),
+                'type': 'notification',
             }
         }
         msg = ''
