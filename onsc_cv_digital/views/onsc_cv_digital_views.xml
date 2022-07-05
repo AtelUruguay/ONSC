@@ -259,6 +259,27 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Cursos y certificados">
+                            <div class="float-right">
+                                <field name="cv_help_course_certificate"/>
+                            </div>
+                            <field name="course_certificate_ids">
+                                <tree string="Cursos y certificados">
+                                    <field name="record_type"/>
+                                    <field name="name"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="country_id" optional="hide"/>
+                                    <field name="institution_id" optional="hide"/>
+                                    <field name="state" optional="show"/>
+                                    <field name="approbation_mode" optional="hide"/>
+                                    <field name="induction_type" optional="hide"/>
+                                    <field name="dictation_mode" optional="hide"/>
+                                    <field name="hours_total" optional="hide"/>
+                                    <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

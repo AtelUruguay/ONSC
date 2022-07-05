@@ -130,6 +130,9 @@ class ONSCCVDigital(models.Model):
     basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación Básica')
     advanced_formation_ids = fields.One2many('onsc.cv.advanced.formation', 'cv_digital_id',
                                              string=u'Formación avanzada')
+    # Cursos y certificado----<Page>
+    course_certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
+                                             string="Cursos y certificados")
     # Help online
     cv_help_general_info = fields.Html(
         compute=lambda s: s._get_help('cv_help_general_info'),
@@ -141,6 +144,10 @@ class ONSCCVDigital(models.Model):
     cv_help_formation = fields.Html(
         compute=lambda s: s._get_help('cv_help_formation'),
         default=lambda s: s._get_help('cv_help_formation', True)
+    )
+    cv_help_course_certificate = fields.Html(
+        compute=lambda s: s._get_help('cv_help_course_certificate'),
+        default=lambda s: s._get_help('cv_help_course_certificate', True)
     )
 
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)

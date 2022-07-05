@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_course_certificate_form" model="ir.ui.view">
+        <field name="name">onsc.cv.course.certificate.form</field>
+        <field name="model">onsc.cv.course.certificate</field>
+        <field name="arch" type="xml">
+            <form string=" Cursos y certificados">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="cv_digital_id" invisible="1"/>
+                            <field name="record_type"/>
+                            <field name="course_title"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
+                            <field name="institution_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"
+                                   domain="institution_id_domain" context="{'default_country_id': country_id}"/>
+                            <field name="institution_id_domain" invisible="1"/>
+                            <field name="subinstitution_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"
+                                   domain="[('state','=','validated'),('institution_id', '=', institution_id)]"
+                                   context="{'default_institution_id': institution_id, 'default_country_id': country_id}"/>
+                            <field name="country_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')],'required': [('record_type', '=', 'course')]}"
+                                   domain="country_id_domain"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="country_id_domain" invisible="1"/>
+                            <field name="certificate_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
+                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id}"/>
+                            <field name="institution_cert_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
+                                   domain="institution_cert_id_domain"/>
+                            <field name="institution_cert_id_domain" invisible="1"/>
+                            <field name="subinstitution_cert_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
+                                   context="{'default_institution_cert_id': institution_cert_id}"
+                                   domain="[('institution_cert_id', '=', institution_cert_id)]"/>
+                            <field name="approbation_mode"
+                                   attrs="{'invisible': [('state', '!=', 'completed')], 'required': [('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
+
+                            <field name="evaluation_str" states="completed"
+                                   attrs="{'invisible': ['|',('approbation_mode', '!=', 'by_evaluation')], 'required': [('approbation_mode', '=', 'by_evaluation'),('state', '=', 'completed')]}"/>
+                            <field name="evaluation_number"
+                                   attrs="{'invisible': ['|',('evaluation_str', '=', False), ('is_numeric_evaluation', '=', True)], 'required': [('evaluation_str', '!=', False), ('is_numeric_evaluation', '=', False)]}"/>
+                            <field name="evaluation_max_str"
+                                   attrs="{'invisible': [('evaluation_str', '=', False)], 'required': [('evaluation_str', '!=', False)]}"/>
+                            <field name="evaluation_max_number"
+                                   attrs="{'invisible': ['|',('evaluation_max_str', '=', False),('is_numeric_max_evaluation', '=', True)], 'required': [('evaluation_max_str', '!=', False),('is_numeric_max_evaluation', '=', False)]}"/>
+                            <field name="is_numeric_evaluation" invisible="1"/>
+                            <field name="is_numeric_max_evaluation" invisible="1"/>
+                        </group>
+                        <group>
+                            <!--                            todo esperar a ver si fecha inicio y fin solo se muestran si es curso-->
+                            <field name="state" attrs="{'readonly': [('record_type', '=', 'certificate')]}"/>
+                            <field name="start_date"/>
+                            <field name="end_date"
+                                   attrs="{'invisible': [('state', '!=', 'completed')],'required': [('state', '=', 'completed')]}"/>
+                            <field name="induction_type"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
+                            <field name="dictation_mode"/>
+                            <field name="hours_total" widget="float_time"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
+                            <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"/>
+                            <field name="digital_doc_file" filename="digital_doc_name"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="digital_doc_name" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Áreas relacionadas con esta educación">
+                            <field name="line_ids">
+                                <tree string="Formación básica" editable="top">
+                                    <field name="educational_area_id"/>
+                                    <field name="educational_subarea_id"
+                                           domain="[('area_id', '=', educational_area_id)]"
+                                           context="{'default_area_id': educational_area_id}"/>
+                                    <field name="discipline_educational_id"
+                                           domain="[('subarea_id', '=', educational_subarea_id)]"
+                                           context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Otra información relevante">
+                            <field name="other_relevant_information"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+</odoo>
