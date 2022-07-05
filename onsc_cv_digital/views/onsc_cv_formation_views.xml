@@ -10,7 +10,8 @@
                          attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
                         <p class="mb-0">
                             <strong>
-                                El registro ha sido rechazado. Motivo: <field name="conditional_validation_reject_reason"/>
+                                El registro ha sido rechazado. Motivo:
+                                <field name="conditional_validation_reject_reason"/>
                             </strong>
                         </p>
                     </div>
@@ -18,7 +19,8 @@
                          attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
                         <p class="mb-0">
                             <strong>
-                                El registro ingresado está en proceso de validación, se notificará el resultado de este a su e-mail
+                                El registro ingresado está en proceso de validación, se notificará el resultado de este
+                                a su e-mail
                             </strong>
                         </p>
                     </div>
@@ -52,7 +54,7 @@
             </form>
         </field>
     </record>
-    
+
     <record id="onsc_cv_basic_formation_tree" model="ir.ui.view">
         <field name="name">onsc.cv.basic.formation.tree</field>
         <field name="model">onsc.cv.basic.formation</field>
@@ -71,12 +73,48 @@
         </field>
     </record>
 
+    <record id="onsc_cv_advanced_formation_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.advanced.formation.tree</field>
+        <field name="model">onsc.cv.advanced.formation</field>
+        <field name="arch" type="xml">
+            <tree string="Formación avanzada">
+                <field name="start_date"/>
+                <field name="egress_date"/>
+                <field name="country_id"/>
+                <field name="institution_id"/>
+                <field name="subinstitution_id"/>
+                <field name="advanced_study_level_id"/>
+                <field name="state"/>
+                <field name="academic_program_id"/>
+                <field name="conditional_validation_state"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="onsc_cv_advanced_formation_form" model="ir.ui.view">
         <field name="name">onsc.cv.advanced.formation.form</field>
         <field name="model">onsc.cv.advanced.formation</field>
         <field name="arch" type="xml">
             <form string=" Formación avanzada">
                 <sheet>
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                El registro ha sido rechazado. Motivo:
+                                <field name="conditional_validation_reject_reason"/>
+                            </strong>
+                        </p>
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
+                        <p class="mb-0">
+                            <strong>
+                                El registro ingresado está en proceso de validación, se notificará el resultado de este
+                                a su e-mail
+                            </strong>
+                        </p>
+                    </div>
                     <group>
                         <group>
                             <field name="institution_id" domain="[('state','=','validated')]"
@@ -142,6 +180,7 @@
                             <field name="apostille_file" filename="apostille_name"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="apostille_name" invisible="1"/>
+                            <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
                     <br/>

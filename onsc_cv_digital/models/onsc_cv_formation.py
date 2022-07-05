@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo import fields, models, api
 
 from . import onsc_cv_useful_tools as useful_tools
 from .catalogs.onsc_cv_abstract_config import STATES as CATALOG_VALIDATION_STATES
@@ -45,11 +44,6 @@ class ONSCCVFormationBasic(models.Model):
         compute='_compute_conditional_validation_state',
         store=True
     )
-
-    @api.constrains('start_date', 'end_date')
-    def _constrains_dates_coherency(self):
-        if self.start_date > self.end_date:
-            raise ValidationError(_('La Fecha finalización no puede ser menor que la Fecha de inicio.'))
 
     @api.onchange('institution_id')
     def onchange_institution_id(self):
@@ -160,10 +154,17 @@ class ONSCCVFormationAdvanced(models.Model):
     apostille_file = fields.Binary(string="Apostilla")
     apostille_name = fields.Char(string="Nombre apostilla")
 
-    @api.constrains('start_date', 'egress_date')
-    def _constrains_dates_coherency(self):
-        if self.egress_date > self.end_date:
-            raise ValidationError(_('La Fecha de egreso no puede ser menor que la Fecha de inicio.'))
+    # CATALOGS VALIDATION STATE
+    conditional_validation_state = fields.Selection(
+        string="Estado valor condicional",
+        selection=CATALOG_VALIDATION_STATES,
+        compute='_compute_conditional_validation_state',
+        store=True
+    )
+    conditional_validation_reject_reason = fields.Char(
+        compute='_compute_conditional_validation_state',
+        store=True
+    )
 
     @api.onchange('institution_id')
     def onchange_institution_id(self):
@@ -218,6 +219,13 @@ class ONSCCVFormationAdvanced(models.Model):
             self.state_thesis = 'completed'
         else:
             self.state_thesis = ''
+
+    @api.depends('institution_id.state', 'subinstitution_id.state')
+    def _compute_conditional_validation_state(self):
+        for record in self:
+            validation_status = useful_tools._get_validation_status(record, CATALOGS2VALIDATE)
+            record.conditional_validation_state = validation_status.get('state')
+            record.conditional_validation_reject_reason = validation_status.get('reject_reason', '')
 
 
 class ONSCCVAreaRelatedEducation(models.Model):
