@@ -211,15 +211,6 @@ class ONSCCVDigital(models.Model):
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
 
-    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
-    def _check_valid_dates(self):
-        today = fields.Date.from_string(fields.Date.today())
-        for record in self:
-            if fields.Date.from_string(record.cv_sex_updated_date) > today:
-                raise ValidationError(_("La fecha de información sexo no puede ser posterior a la fecha actual"))
-            if fields.Date.from_string(record.cv_birthdate) > today:
-                raise ValidationError(_("La fecha de nacimiento no puede ser posterior a la fecha actual"))
-
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         _html2construct = HTML_HELP % (_url or '/')

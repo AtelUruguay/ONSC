@@ -30,10 +30,9 @@ class ONSCCVCourseCertificate(models.Model):
     hours_total = fields.Float('Carga horaria total (en horas)')
     approbation_mode = fields.Selection(APPROBATION_MODES, string='Modalidad de aprobación', required=True)
     evaluation_str = fields.Char('Nota obtenida',
-                                 help="""En caso de que el curso sea con resultado categórico, representarlo
-                                   numéricamente. El resultado más bajo comienza en 1. 
-                                   Ejemplo: No pasa, pasa, pasa con excelente. 
-                                   Si el resultado es pasa, la nota obtenida seria 2 de un máximo de 3""")
+                                 help="""En caso de que el curso sea con resultado categórico, representarlo numéricamente.
+         El resultado más bajo comienza en 1. Ejemplo: No pasa, pasa, pasa con excelente.
+          Si el resultado es pasa, la nota obtenida seria 2 de un máximo de 3""")
     is_numeric_evaluation = fields.Boolean(compute='_compute_is_numeric_evaluation')
     evaluation_number = fields.Integer("Representación numérica de nota obtenida")
     evaluation_max_str = fields.Char("Nota máxima posible")
@@ -79,7 +78,7 @@ class ONSCCVCourseCertificate(models.Model):
             self.state = 'completed'
 
     @api.onchange('evaluation_str')
-    def onchange_evaluation_max_str(self):
+    def onchange_evaluation_str(self):
         if self.evaluation_str and self.evaluation_str.isnumeric():
             self.evaluation_number = int(self.evaluation_str)
         else:
@@ -119,9 +118,9 @@ class ONSCCVCourseCertificate(models.Model):
         }
         msg = ''
         if self.evaluation_max_number and self.evaluation_number and \
-                (self.evaluation_number > self.evaluation_max_number):
+                self.evaluation_number > self.evaluation_max_number:
             if changed_field == 'evaluation_number':
-                msg = _('La representación numérica de nota obtenida debe ser menor que ' \
+                msg = _('La representación numérica de nota obtenida debe ser menor que '
                         'la representación numérica de nota máxima posible.')
             else:
                 msg = _('La representación numérica de nota máxima posible debe ser mayor que la '
