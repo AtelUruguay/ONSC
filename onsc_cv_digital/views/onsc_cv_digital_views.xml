@@ -192,11 +192,7 @@
                             <div class="float-right">
                                 <field name="cv_help_address"/>
                             </div>
-                            <button string="Agregar domicilio" name="button_edit_address" id="button_edit_address_1"
-                                    type="object"
-                                    groups="onsc_cv_digital.group_user_cv"
-                                    attrs="{'invisible': [('country_id', '!=', False)]}"/>
-                            <button string="Modificar domicilio" name="button_edit_address" id="button_edit_address_2"
+                            <button string="Agregar/Modificar domicilio" name="button_edit_address" id="button_edit_address_2"
                                     type="object"
                                     groups="onsc_cv_digital.group_user_cv"
                                     attrs="{'invisible': [('country_id', '=', False)]}"/>
@@ -256,6 +252,27 @@
                                 <h4>Formación avanzada</h4>
                             </div>
                             <field name="advanced_formation_ids"/>
+                        </page>
+                        <page string="Cursos y certificados">
+                            <div class="float-right">
+                                <field name="cv_help_course_certificate"/>
+                            </div>
+                            <field name="course_certificate_ids">
+                                <tree string="Cursos y certificados">
+                                    <field name="record_type"/>
+                                    <field name="name"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="country_id" optional="hide"/>
+                                    <field name="institution_id" optional="hide"/>
+                                    <field name="state" optional="show"/>
+                                    <field name="approbation_mode" optional="hide"/>
+                                    <field name="induction_type" optional="hide"/>
+                                    <field name="dictation_mode" optional="hide"/>
+                                    <field name="hours_total" optional="hide"/>
+                                    <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
