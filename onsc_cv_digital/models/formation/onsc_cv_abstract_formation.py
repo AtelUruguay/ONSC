@@ -58,12 +58,12 @@ class ONSCCVAbstractFormation(models.Model):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
-        if self.start_date and self.state == 'completed' and self.end_date <= self.start_date:
+        if self.start_date and self.end_date and self.state == 'completed' and self.end_date <= self.start_date:
             self.end_date = self.start_date
 
     @api.onchange('end_date')
     def onchange_end_date(self):
-        if self.end_date and self.end_date <= self.start_date:
+        if self.end_date and self.start_date and self.end_date <= self.start_date:
             self.end_date = self.start_date
 
     @api.onchange('knowledge_acquired_ids')

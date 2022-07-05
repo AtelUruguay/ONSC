@@ -20,15 +20,14 @@ class ONSCCVCourseCertificate(models.Model):
     course_title = fields.Char('Título del curso')
     certificate_id = fields.Many2one("onsc.cv.certificate", 'Título del certificado')
     name = fields.Char(compute='_compute_name', store=True)
-    institution_cert_id = fields.Many2one('onsc.cv.certifying.institution', string=u'Institución certificadora',
-                                          required=True)
+    institution_cert_id = fields.Many2one('onsc.cv.certifying.institution', string=u'Institución certificadora')
     institution_cert_id_domain = fields.Char(compute='_compute_institution_cert_id_domain')
     subinstitution_cert_id = fields.Many2one('onsc.cv.certifying.subinstitution',
-                                             string=u'Sub institución certificadora', required=True)
+                                             string=u'Sub institución certificadora')
     dictation_mode = fields.Selection(MODES, 'Modalidad de dictado', required=True)
     induction_type = fields.Selection(INDUCTION_TYPES, '¿Es curso de inducción?', default="yes")
     hours_total = fields.Float('Carga horaria total (en horas)')
-    approbation_mode = fields.Selection(APPROBATION_MODES, string='Modalidad de aprobación', required=True)
+    approbation_mode = fields.Selection(APPROBATION_MODES, string='Modalidad de aprobación')
     evaluation_str = fields.Char('Nota obtenida',
                                  help="""En caso de que el curso sea con resultado categórico, representarlo numéricamente.
          El resultado más bajo comienza en 1. Ejemplo: No pasa, pasa, pasa con excelente.
