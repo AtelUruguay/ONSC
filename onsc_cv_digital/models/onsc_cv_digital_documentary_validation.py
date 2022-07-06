@@ -7,11 +7,8 @@ class ONSCCVDigitalDocumentaryValidation(models.Model):
     _name = 'onsc.cv.documentary.validation'
     _description = 'Modelo generico para validar documentos'
 
-    validation_status = fields.Selection(string="Estado validación documental",
-                                         selection=[('pendiente_validacion', 'Pendiente de validación '),
-                                                    ('validado', 'Validado'), ('rechazado', 'Rechazado')],
-                                         default="pendiente_validacion")
-    reject_reason = fields.Char(string="Motivo rechazo validación documental")
+    _inherit = ['onsc.cv.abstract.config']
+
     validation_date = fields.Date(string="Fecha validación documental")
     validation_user_id = fields.Many2one("res.users", string="Usuario validación documental")
 

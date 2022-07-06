@@ -186,7 +186,7 @@ class ONSCCVDigital(models.Model):
                                                       compute="_compute_digital_documents", store=True)
 
     document_identity_validation_status = fields.Selection(string="Estado validación documental – doc. Identidad",
-                                                           related='document_identity_attachment_id.validation_status')
+                                                           related='document_identity_attachment_id.state')
     document_identity_reject_reason = fields.Char(string="Motivo rechazo validación documental – doc. Identidad",
                                                   related='document_identity_attachment_id.reject_reason')
 
@@ -198,7 +198,7 @@ class ONSCCVDigital(models.Model):
                                                        store=True)
     civical_credential_status = fields.Selection(
         string="Estado validación documental – credencial cívica",
-        related='civical_credential_attachment_id.validation_status')
+        related='civical_credential_attachment_id.state')
     civical_credential_reject_reason = fields.Char(string="Motivo rechazo validación documental – credencial cívica",
                                                    related='civical_credential_attachment_id.reject_reason')
 

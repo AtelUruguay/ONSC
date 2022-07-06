@@ -239,11 +239,20 @@
                                 <field name="cv_address_amplification"/>
                             </group>
                         </page>
-                        <page name="work_experience" string="Experiencia Laboral">
+                        <page name="work_experience" string="Experiencias laborales">
                             <div class="float-right">
                                 <field name="cv_help_work_experience"/>
                             </div>
                             <field name="work_experience_id">
+                                <tree>
+                                    <field name="position"/>
+                                    <field name="unit_name"/>
+                                    <field name="entry_institution_id"/>
+                                    <field name="hierarchical_level_id"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                    <field name="currently_working"/>
+                                </tree>
                             </field>
                         </page>
                         <page string="Formación">

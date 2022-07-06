@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
 
 
 class ONSCCVDigitalWorkExperience(models.Model):
@@ -15,9 +14,9 @@ class ONSCCVDigitalWorkExperience(models.Model):
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
     company_type = fields.Selection([('public', 'Pública'), ('private', 'Privada')], string="Tipo de empresa",
                                     required=True)
-    #TO-DO: Revisar este campo, No esta en catalogo
+    # TO-DO: Revisar este campo, No esta en catalogo
     # inciso = fields.Char("Inciso")
-    #TO-DO: Revisar este campo, No esta en catalogo
+    # TO-DO: Revisar este campo, No esta en catalogo
     # executing_unit = fields.Char("Unidad ejecutora")
     company_name = fields.Char("Empresa")
     unit_name = fields.Char("Área/Unidad")
@@ -35,7 +34,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     currently_working = fields.Selection(string="Actualmente trabajando", selection=[('si', 'Si'), ('no', 'No')],
                                          required=True, )
     end_date = fields.Date("Período hasta", required=True)
-    #TO-DO: Revisar este campo, No esta en catalogo
+    # TO-DO: Revisar este campo, No esta en catalogo
     # reason_discharge = fields.Char("Causal de egreso")
     hours_worked_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente", required=True)
     description_tasks = fields.Char(string="Descripción de tareas", required=True)
@@ -43,11 +42,20 @@ class ONSCCVDigitalWorkExperience(models.Model):
                                           string="Tareas", required=False, )
     receipt_file = fields.Binary("Comprobante", required=True)
 
-    @api.constrains('start_date', 'end_date')
+    @api.onchange('start_date', 'end_date')
     def _date_validation(self):
         for rec in self:
             if rec.start_date > rec.end_date:
-                raise ValidationError(_('El período de inicio debe ser anterior a la período de finalización'))
+                return {
+                    'warning': {
+                        'title': _("Atención"),
+                        'type': 'notification',
+                        'message': _(
+                            "El período de inicio debe ser anterior a la período de finalización"
+                        )
+                    },
+
+                }
 
 
 class ONSCCVDigitalWorkExperienceTask(models.Model):
