@@ -15,7 +15,7 @@
                             <field name="company_type"/>
                             <field name="country_code" invisible="1"/>
                             <field name="company_name"
-                                   attrs="{'invisible': ['|',('country_code', '=', 'UY'),('company_type','=','public')],'required': ['|',('country_code', '=', 'UY'),('company_type','=','public')]}"/>
+                                   attrs="{'invisible': ['|',('country_code', '=', 'UY'),('company_type','=','public')],'required': [('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
                             <field name="unit_name"/>
                             <field name="entry_institution_id"/>
                             <field name="hierarchical_level_id"/>
