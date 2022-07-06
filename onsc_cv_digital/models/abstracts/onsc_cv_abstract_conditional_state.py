@@ -8,6 +8,7 @@ from .onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 class ONSCCVAbstractConditionalState(models.AbstractModel):
     _name = 'onsc.cv.abstract.conditional.state'
     _description = 'Modelo abstracto de estado condicional'
+    _catalogs2validate = []
 
     # CATALOGS VALIDATION STATE
     conditional_validation_state = fields.Selection(
@@ -21,15 +22,9 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
         store=True
     )
 
-    @api.depends(lambda self: self.catalogs2validate_depends())
-    def _compute_conditional_validation_state(self, catalogs2validate_list=None):
-        if catalogs2validate_list is None:
-            catalogs2validate_list = []
+    @api.depends(lambda self: self._catalogs2validate)
+    def _compute_conditional_validation_state(self):
         for record in self:
-            validation_status = useful_tools._get_validation_status(record, catalogs2validate_list)
+            validation_status = useful_tools._get_validation_status(record, self._catalogs2validate)
             record.conditional_validation_state = validation_status.get('state')
             record.conditional_validation_reject_reason = validation_status.get('reject_reason', '')
-
-    def catalogs2validate_depends(self):
-        "Sobreescribir para definir las lista de campos m2o a catalogos condicionales"
-        return []
