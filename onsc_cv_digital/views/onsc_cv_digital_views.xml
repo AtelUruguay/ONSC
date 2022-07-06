@@ -111,12 +111,12 @@
                             <group string="Datos personales">
                                 <group>
                                     <field name="country_of_birth_id"/>
-                                    <field name="uruguayan_citizenship"/>
+                                    <field name="uy_citizenship"/>
                                     <field name="marital_status_id"/>
                                     <field name="crendencial_serie"
-                                           attrs="{'invisible': [('uruguayan_citizenship', 'not in', ['legal','natural'])], 'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="credential_number"
-                                           attrs="{'invisible': [('uruguayan_citizenship', 'not in', ['legal','natural'])], 'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="cjppu_affiliate_number"/>
                                     <field name="professional_resume"
                                            placeholder="Resumen del candidato a modo de introducción"/>
@@ -168,7 +168,7 @@
                                 </group>
                                 <group string="Credencial cívica">
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                 </group>
                                 <group string="Víctima de delitos violentos">
                                     <field name="is_victim_violent"/>

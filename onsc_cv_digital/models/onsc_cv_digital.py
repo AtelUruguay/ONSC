@@ -150,7 +150,7 @@ class ONSCCVDigital(models.Model):
     )
 
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
-    uruguayan_citizenship = fields.Selection(string="Ciudadanía uruguaya",
+    uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
                                              selection=[('legal', 'Legal'), ('natural', 'Natural'),
                                                         ('extranjero', 'Extranjero')], required=True)
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", required=True)
@@ -322,4 +322,3 @@ class ONSCCVDigital(models.Model):
         else:
             result = {}
         return result
-
