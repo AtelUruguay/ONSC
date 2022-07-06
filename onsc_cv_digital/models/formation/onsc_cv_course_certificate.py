@@ -9,6 +9,8 @@ MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Hí
 INDUCTION_TYPES = [('yes', 'Sí'), ('no', 'No')]
 APPROBATION_MODES = [('by_assistance', 'Por asistencia'), ('by_evaluation', 'Por evaluación')]
 CATALOGS2VALIDATE = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
+COURSE_FIELDS = ['course_title', 'institution_id', 'subinstitution_id', 'country_id', 'induction_type', 'hours_total']
+CERTIFICATE_FIELDS = ['institution_cert_id', 'subinstitution_cert_id']
 
 
 class ONSCCVCourseCertificate(models.Model):
@@ -83,6 +85,7 @@ class ONSCCVCourseCertificate(models.Model):
         if self.record_type == 'certificate':
             self.approbation_mode = 'by_evaluation'
             self.state = 'completed'
+        self._clear_fields()
 
     @api.onchange('evaluation_str')
     def onchange_evaluation_str(self):
@@ -116,6 +119,17 @@ class ONSCCVCourseCertificate(models.Model):
     @api.onchange('course_title', 'certificate_id', 'record_type')
     def onchange_calc_name(self):
         self.name = self._calc_name_by_record_type()
+
+    # Auxiliary functions
+    def _clear_fields(self):
+        self.ensure_one()
+        fields_list = []
+        if self.record_type == 'course':
+            fields_list = COURSE_FIELDS
+        elif self.record_type == 'certificate':
+            fields_list = CERTIFICATE_FIELDS
+        for field in fields_list:
+            setattr(self, field, False)
 
     def _calc_name_by_record_type(self):
         self.ensure_one()
