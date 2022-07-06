@@ -2,21 +2,13 @@
 
 from odoo import fields, models, api
 
-from .. import onsc_cv_useful_tools as useful_tools
-from ..catalogs.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
-
-STATES = [('incomplete', 'Incompleto'),
-          ('in_progress', 'En curso'),
-          ('completed', 'Finalizado')]
-
-CATALOGS2VALIDATE = ['institution_id', 'subinstitution_id']
-
 
 class ONSCCVFormationBasic(models.Model):
     _name = 'onsc.cv.basic.formation'
     _description = 'Formación básica'
-    _inherit = ['onsc.cv.abstract.formation']
+    _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
     _order = 'start_date desc'
+    _catalogs2validate = ['institution_id', 'subinstitution_id']
 
     basic_education_level = fields.Selection(string=u'Nivel de estudios básicos',
                                              selection=[('primary', u'Primaria'),
@@ -26,30 +18,12 @@ class ONSCCVFormationBasic(models.Model):
     study_certificate_file = fields.Binary(string="Certificado de estudio", required=True)
     study_certificate_name = fields.Char(string="Nombre certificado de estudio")
 
-    # CATALOGS VALIDATION STATE
-    conditional_validation_state = fields.Selection(
-        string="Estado valor condicional",
-        selection=CONDITIONAL_VALIDATION_STATES,
-        compute='_compute_conditional_validation_state',
-        store=True
-    )
-    conditional_validation_reject_reason = fields.Html(
-        compute='_compute_conditional_validation_state',
-        store=True
-    )
-
-    @api.depends('institution_id.state', 'subinstitution_id.state')
-    def _compute_conditional_validation_state(self):
-        for record in self:
-            validation_status = useful_tools._get_validation_status(record, CATALOGS2VALIDATE)
-            record.conditional_validation_state = validation_status.get('state')
-            record.conditional_validation_reject_reason = validation_status.get('reject_reason', '')
-
 
 class ONSCCVFormationAdvanced(models.Model):
     _name = 'onsc.cv.advanced.formation'
-    _inherit = ['onsc.cv.abstract.formation']
+    _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
     _description = 'Formación avanzada'
+    _catalogs2validate = ['institution_id', 'subinstitution_id']
 
     advanced_study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de estudio avanzado', required=True)
     academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico', required=True)
@@ -78,8 +52,8 @@ class ONSCCVFormationAdvanced(models.Model):
     max_scholarship = fields.Float(string="Escolaridad máxima posible")
     credits_far = fields.Float(string="Créditos / Materias aprobadas hasta el momento")
     credits_training = fields.Float(string="Créditos / Materias totales de la formación")
-    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired',
-                                              string=u'Conocimientos adquiridos', required=True,
+    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired_formation_rel',
+                                              store=True, string=u'Conocimientos adquiridos', required=True,
                                               help='Sólo se pueden seleccionar 5 tipos de conocimientos')
     area_related_education_ids = fields.One2many('onsc.cv.area.related.education', 'advanced_formation_id',
                                                  string=u'Áreas relacionadas con esta educación')
@@ -96,18 +70,6 @@ class ONSCCVFormationAdvanced(models.Model):
 
     country_code = fields.Char(related="country_id.code")
 
-    # CATALOGS VALIDATION STATE
-    conditional_validation_state = fields.Selection(
-        string="Estado valor condicional",
-        selection=CONDITIONAL_VALIDATION_STATES,
-        compute='_compute_conditional_validation_state',
-        store=True
-    )
-    conditional_validation_reject_reason = fields.Html(
-        compute='_compute_conditional_validation_state',
-        store=True
-    )
-
     @api.onchange('egress_date')
     def onchange_egress_date(self):
         if self.start_date and self.egress_date and self.egress_date <= self.start_date:
@@ -119,13 +81,6 @@ class ONSCCVFormationAdvanced(models.Model):
             self.state_thesis = 'completed'
         else:
             self.state_thesis = ''
-
-    @api.depends('institution_id.state', 'subinstitution_id.state')
-    def _compute_conditional_validation_state(self):
-        for record in self:
-            validation_status = useful_tools._get_validation_status(record, CATALOGS2VALIDATE)
-            record.conditional_validation_state = validation_status.get('state')
-            record.conditional_validation_reject_reason = validation_status.get('reject_reason', '')
 
 
 class ONSCCVAreaRelatedEducation(models.Model):
