@@ -43,7 +43,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     receipt_file = fields.Binary("Comprobante", required=True)
 
     @api.onchange('start_date', 'end_date')
-    def _date_validation(self):
+    def onchange_date_validation(self):
         for rec in self:
             if rec.start_date > rec.end_date:
                 return {
