@@ -8,3 +8,4 @@ from . import onsc_cv_digital_general_info
 from . import onsc_cv_digital_documentary_validation
 from . import onsc_cv_formation
 from . import onsc_cv_digital_work_experience
+from . import formation
