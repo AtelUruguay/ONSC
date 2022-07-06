@@ -20,9 +20,8 @@ class ONSCCVFormationBasic(models.Model):
     study_certificate_name = fields.Char(string="Nombre certificado de estudio")
 
     # Catalogos de validación
-    @api.depends('institution_id.state', 'subinstitution_id.state')
-    def _compute_conditional_validation_state(self):
-        super(ONSCCVFormationBasic, self)._compute_conditional_validation_state(CATALOGS2VALIDATE)
+    def catalogs2validate_depends(self):
+        return super(ONSCCVFormationBasic, self).catalogs2validate_depends() + CATALOGS2VALIDATE
 
 
 class ONSCCVFormationAdvanced(models.Model):
@@ -76,9 +75,8 @@ class ONSCCVFormationAdvanced(models.Model):
     country_code = fields.Char(related="country_id.code")
 
     # Catalogos de validación
-    @api.depends('institution_id.state', 'subinstitution_id.state')
-    def _compute_conditional_validation_state(self):
-        super(ONSCCVFormationBasic, self)._compute_conditional_validation_state(CATALOGS2VALIDATE)
+    def catalogs2validate_depends(self):
+        return super(ONSCCVFormationAdvanced, self).catalogs2validate_depends() + CATALOGS2VALIDATE
 
     @api.onchange('egress_date')
     def onchange_egress_date(self):

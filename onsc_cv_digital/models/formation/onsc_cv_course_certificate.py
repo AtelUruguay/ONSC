@@ -75,10 +75,8 @@ class ONSCCVCourseCertificate(models.Model):
             )
 
     # Catalogos de validación
-    @api.depends('institution_id.state', 'subinstitution_id.state',
-                 'institution_cert_id.state', 'subinstitution_cert_id.state')
-    def _compute_conditional_validation_state(self):
-        super(ONSCCVCourseCertificate, self)._compute_conditional_validation_state(CATALOGS2VALIDATE)
+    def catalogs2validate_depends(self):
+        return super(ONSCCVCourseCertificate, self).catalogs2validate_depends() + CATALOGS2VALIDATE
 
     @api.onchange('record_type')
     def onchange_record_type(self):
