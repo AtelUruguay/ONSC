@@ -57,8 +57,7 @@
                         </group>
                     </group>
                      <notebook>
-                        <page string="Instituciones/Sub instituciones"
-                              groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv">
+                        <page string="Instituciones/Sub instituciones">
                             <field name="line_ids">
                                 <tree editable="bottom">
                                     <field name="institution_cert_id"/>
