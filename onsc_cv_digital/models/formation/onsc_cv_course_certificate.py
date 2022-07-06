@@ -4,11 +4,9 @@ from odoo import fields, models, api, _
 import json
 
 TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
-
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
 INDUCTION_TYPES = [('yes', 'Sí'), ('no', 'No')]
 APPROBATION_MODES = [('by_assistance', 'Por asistencia'), ('by_evaluation', 'Por evaluación')]
-CATALOGS2VALIDATE = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
 COURSE_FIELDS = ['course_title', 'institution_id', 'subinstitution_id', 'country_id', 'induction_type', 'hours_total']
 CERTIFICATE_FIELDS = ['institution_cert_id', 'subinstitution_cert_id']
 
@@ -18,6 +16,7 @@ class ONSCCVCourseCertificate(models.Model):
     _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
     _description = 'Cursos y certificados'
     _order = 'start_date desc'
+    _catalogs2validate = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
 
     record_type = fields.Selection(TYPES, string='Tipo', required=True, default='course')
     course_title = fields.Char('Título del curso')
@@ -73,10 +72,6 @@ class ONSCCVCourseCertificate(models.Model):
             rec.institution_cert_id_domain = json.dumps(
                 [('id', 'in', valid_institution_cert_id_ids.ids)]
             )
-
-    # Catalogos de validación
-    def catalogs2validate_depends(self):
-        return super(ONSCCVCourseCertificate, self).catalogs2validate_depends() + CATALOGS2VALIDATE
 
     @api.onchange('record_type')
     def onchange_record_type(self):
