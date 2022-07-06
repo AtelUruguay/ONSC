@@ -45,7 +45,8 @@ class ONSCCVDigitalWorkExperience(models.Model):
     @api.onchange('start_date', 'end_date')
     def onchange_date_validation(self):
         for rec in self:
-            if rec.start_date > rec.end_date:
+            if rec.start_date and rec.end_date and rec.start_date > rec.end_date:
+                rec.start_date = False
                 return {
                     'warning': {
                         'title': _("Atención"),
