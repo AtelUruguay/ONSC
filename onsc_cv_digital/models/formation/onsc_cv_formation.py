@@ -2,14 +2,13 @@
 
 from odoo import fields, models, api
 
-CATALOGS2VALIDATE = ['institution_id', 'subinstitution_id']
-
 
 class ONSCCVFormationBasic(models.Model):
     _name = 'onsc.cv.basic.formation'
     _description = 'Formación básica'
     _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
     _order = 'start_date desc'
+    _catalogs2validate = ['institution_id', 'subinstitution_id']
 
     basic_education_level = fields.Selection(string=u'Nivel de estudios básicos',
                                              selection=[('primary', u'Primaria'),
@@ -19,15 +18,12 @@ class ONSCCVFormationBasic(models.Model):
     study_certificate_file = fields.Binary(string="Certificado de estudio", required=True)
     study_certificate_name = fields.Char(string="Nombre certificado de estudio")
 
-    # Catalogos de validación
-    def catalogs2validate_depends(self):
-        return super(ONSCCVFormationBasic, self).catalogs2validate_depends() + CATALOGS2VALIDATE
-
 
 class ONSCCVFormationAdvanced(models.Model):
     _name = 'onsc.cv.advanced.formation'
     _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
     _description = 'Formación avanzada'
+    _catalogs2validate = ['institution_id', 'subinstitution_id']
 
     advanced_study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de estudio avanzado', required=True)
     academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico', required=True)
@@ -73,10 +69,6 @@ class ONSCCVFormationAdvanced(models.Model):
     apostille_name = fields.Char(string="Nombre apostilla")
 
     country_code = fields.Char(related="country_id.code")
-
-    # Catalogos de validación
-    def catalogs2validate_depends(self):
-        return super(ONSCCVFormationAdvanced, self).catalogs2validate_depends() + CATALOGS2VALIDATE
 
     @api.onchange('egress_date')
     def onchange_egress_date(self):
