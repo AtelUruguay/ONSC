@@ -148,7 +148,6 @@
                                         <field name="validation_date"/>
                                         <field name="category_id"/>
                                         <field name="license_file" options="{'accepted_file_extensions': '.pdf'}"/>
-                                        <field name="license_attachment_id" invisible="1"/>
                                     </tree>
                                 </field>
                             </group>
@@ -164,10 +163,6 @@
                                 <group string="Carnet de Identidad">
                                     <field name="document_identity_file"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="document_identity_validation_status" readonly="1"
-                                           attrs="{'invisible': [('document_identity_validation_status', '!=', 'rechazado')]}"/>
-                                    <field name="document_identity_reject_reason" readonly="1"
-                                           attrs="{'invisible': [('document_identity_validation_status', '!=', 'rechazado')]}"/>
                                 </group>
                             </group>
                             <group>

@@ -10,7 +10,7 @@ STATES = [('to_validate', 'Para validar'),
           ('rejected', 'Rechazado')]
 
 
-class ONSCCVAbstractConfig(models.Model):
+class ONSCCVAbstractConfig(models.AbstractModel):
     _name = 'onsc.cv.abstract.config'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Modelo abstracto de catálogos condicionales'
@@ -53,6 +53,7 @@ class ONSCCVAbstractConfig(models.Model):
                 form_id = self.env['ir.ui.view'].create(
                     {'name': '%s.form.readonly' % self._name,
                      "model": self._name,
+                     "priority": 100,
                      'arch': etree.tostring(doc, encoding='unicode')
                      })
 

@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from lxml import etree
-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
@@ -181,27 +180,9 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado del Carné de Salud Laboral")
 
     document_identity_file = fields.Binary(string="Documento digitalizado del documento de identidad")
-    document_identity_attachment_id = fields.Many2one("ir.attachment",
-                                                      string="Documento digitalizado del documento de identidad adjunto",
-                                                      compute="_compute_digital_documents", store=True)
-
-    document_identity_validation_status = fields.Selection(string="Estado validación documental – doc. Identidad",
-                                                           related='document_identity_attachment_id.state')
-    document_identity_reject_reason = fields.Char(string="Motivo rechazo validación documental – doc. Identidad",
-                                                  related='document_identity_attachment_id.reject_reason')
 
     civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica",
                                             required=False, )
-    civical_credential_attachment_id = fields.Many2one("ir.attachment",
-                                                       string="Documento digitalizado credencial cívica adjunto",
-                                                       compute="_compute_digital_documents",
-                                                       store=True)
-    civical_credential_status = fields.Selection(
-        string="Estado validación documental – credencial cívica",
-        related='civical_credential_attachment_id.state')
-    civical_credential_reject_reason = fields.Char(string="Motivo rechazo validación documental – credencial cívica",
-                                                   related='civical_credential_attachment_id.reject_reason')
-
     medical_aptitude_certificate_status = fields.Selection(string="Certificado de aptitud médico-deportiva",
                                                            selection=[('si', 'Si'), ('no', 'No'), ])
     medical_aptitude_certificate_date = fields.Date(
@@ -245,6 +226,20 @@ class ONSCCVDigital(models.Model):
         for record in self:
             if not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
+
+    @api.onchange('cv_sex_updated_date')
+    def onchange_cv_sex_updated_date(self):
+        result = self.check_evaluation('cv_sex_updated_date')
+        if result:
+            self.cv_sex_updated_date = False
+            return result
+
+    @api.onchange('cv_birthdate')
+    def onchange_cv_birthdate(self):
+        result = self.check_evaluation('cv_birthdate')
+        if result:
+            self.cv_birthdate = False
+            return result
 
     def button_edit_address(self):
         self.ensure_one()
@@ -305,6 +300,34 @@ class ONSCCVDigital(models.Model):
                      })
 
         return form_id.id
+
+    def check_evaluation(self, changed_field):
+        """
+        Utilizada para mostrar mensajes de advertencia en onchange de evaluacion
+        :return:
+        """
+        result = {
+            'warning': {
+                'title': _("Atención"),
+                'type': 'notification',
+            }
+        }
+        msg = ''
+        if changed_field == 'cv_sex_updated_date' and self.cv_sex_updated_date:
+            today = fields.Date.from_string(fields.Date.today())
+            if fields.Date.from_string(self.cv_sex_updated_date) > today:
+                msg = _('La Fecha de información sexo no puede ser posterior a la fecha actual')
+        elif changed_field == 'cv_birthdate' and self.cv_birthdate:
+            today = fields.Date.from_string(fields.Date.today())
+            if fields.Date.from_string(self.cv_birthdate) > today:
+                msg = _('La Fecha de nacimiento no puede ser posterior a la fecha actual')
+
+        if msg:
+            result['warning'].update({'message': msg})
+        else:
+            result = {}
+        return result
+
 
     @api.depends('civical_credential_file',
                  'document_identity_file')
