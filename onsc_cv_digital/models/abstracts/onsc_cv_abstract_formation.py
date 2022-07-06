@@ -8,7 +8,7 @@ STATES = [('incomplete', 'Incompleto'),
           ('completed', 'Finalizado')]
 
 
-class ONSCCVAbstractFormation(models.Model):
+class ONSCCVAbstractFormation(models.AbstractModel):
     _name = 'onsc.cv.abstract.formation'
     _description = 'Modelo abstracto de entidades de formación'
 
@@ -82,7 +82,7 @@ class ONSCCVAbstractFormation(models.Model):
             }
 
 
-class ONSCAbstractFormationLine(models.Model):
+class ONSCAbstractFormationLine(models.AbstractModel):
     _name = 'onsc.cv.abstract.formation.line'
     _description = 'Modelo abstracto de líneas de formación'
 

@@ -10,7 +10,7 @@ STATES = [('to_validate', 'Para validar'),
           ('rejected', 'Rechazado')]
 
 
-class ONSCCVAbstractConfig(models.Model):
+class ONSCCVAbstractConfig(models.AbstractModel):
     _name = 'onsc.cv.abstract.config'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Modelo abstracto de catálogos condicionales'

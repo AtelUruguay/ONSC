@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from . import abstracts
 from . import res_company
 from . import res_config_settings
 from . import catalogs
