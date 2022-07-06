@@ -8,18 +8,21 @@ TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
 INDUCTION_TYPES = [('yes', 'Sí'), ('no', 'No')]
 APPROBATION_MODES = [('by_assistance', 'Por asistencia'), ('by_evaluation', 'Por evaluación')]
+CATALOGS2VALIDATE = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
+COURSE_FIELDS = ['course_title', 'institution_id', 'subinstitution_id', 'country_id', 'induction_type', 'hours_total']
+CERTIFICATE_FIELDS = ['institution_cert_id', 'subinstitution_cert_id']
 
 
 class ONSCCVCourseCertificate(models.Model):
     _name = 'onsc.cv.course.certificate'
-    _inherit = ['onsc.cv.abstract.formation']
+    _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
     _description = 'Cursos y certificados'
     _order = 'start_date desc'
 
     record_type = fields.Selection(TYPES, string='Tipo', required=True, default='course')
     course_title = fields.Char('Título del curso')
     certificate_id = fields.Many2one("onsc.cv.certificate", 'Título del certificado')
-    name = fields.Char(compute='_compute_name', store=True)
+    name = fields.Char(compute='_compute_name', store=True, string='Título')
     institution_cert_id = fields.Many2one('onsc.cv.certifying.institution', string=u'Institución certificadora')
     institution_cert_id_domain = fields.Char(compute='_compute_institution_cert_id_domain')
     subinstitution_cert_id = fields.Many2one('onsc.cv.certifying.subinstitution',
@@ -45,12 +48,13 @@ class ONSCCVCourseCertificate(models.Model):
     digital_doc_name = fields.Char('Nombre del documento digital')
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired_course_rel',
                                               string=u'Conocimientos adquiridos', required=True,
+                                              store=True,
                                               help='Sólo se pueden seleccionar 5 tipos de conocimientos')
 
-    @api.depends('course_title', 'certificate_id')
+    @api.depends('course_title', 'certificate_id', 'record_type')
     def _compute_name(self):
         for rec in self:
-            rec.name = rec.course_title or rec.certificate_id.name
+            rec.name = self._calc_name_by_record_type()
 
     @api.depends('evaluation_max_str')
     def _compute_is_numeric_max_evaluation(self):
@@ -70,11 +74,16 @@ class ONSCCVCourseCertificate(models.Model):
                 [('id', 'in', valid_institution_cert_id_ids.ids)]
             )
 
+    # Catalogos de validación
+    def catalogs2validate_depends(self):
+        return super(ONSCCVCourseCertificate, self).catalogs2validate_depends() + CATALOGS2VALIDATE
+
     @api.onchange('record_type')
     def onchange_record_type(self):
         if self.record_type == 'certificate':
             self.approbation_mode = 'by_evaluation'
             self.state = 'completed'
+        self._clear_fields()
 
     @api.onchange('evaluation_str')
     def onchange_evaluation_str(self):
@@ -104,6 +113,29 @@ class ONSCCVCourseCertificate(models.Model):
         if result:
             self.evaluation_max_number = self.evaluation_number
             return result
+
+    @api.onchange('course_title', 'certificate_id', 'record_type')
+    def onchange_calc_name(self):
+        self.name = self._calc_name_by_record_type()
+
+    # Auxiliary functions
+    def _clear_fields(self):
+        self.ensure_one()
+        fields_list = []
+        if self.record_type == 'course':
+            fields_list = COURSE_FIELDS
+        elif self.record_type == 'certificate':
+            fields_list = CERTIFICATE_FIELDS
+        for field in fields_list:
+            setattr(self, field, False)
+
+    def _calc_name_by_record_type(self):
+        self.ensure_one()
+        if self.record_type == 'course':
+            return self.course_title
+        elif self.certificate_id:
+            return self.certificate_id.name
+        return ''
 
     def check_evaluation(self, changed_field):
         """
