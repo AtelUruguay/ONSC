@@ -117,6 +117,14 @@
                                            attrs="{'invisible': [('uruguayan_citizenship', 'not in', ['legal','natural'])], 'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="credential_number"
                                            attrs="{'invisible': [('uruguayan_citizenship', 'not in', ['legal','natural'])], 'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
+
+                                    <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
+                                           attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
+                                    <field name="civical_credential_status" readonly="1"
+                                           attrs="{'invisible': [('civical_credential_status', '!=', 'rechazado')]}"/>
+                                    <field name="civical_credential_reject_reason" readonly="1"
+                                           attrs="{'invisible': [('civical_credential_status', '!=', 'rechazado')]}"/>
+
                                     <field name="cjppu_affiliate_number"/>
                                     <field name="professional_resume"
                                            placeholder="Resumen del candidato a modo de introducción"/>
@@ -171,14 +179,7 @@
                                            options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}"/>
                                 </group>
-                                <group string="Credencial cívica">
-                                    <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <field name="civical_credential_status" readonly="1"
-                                           attrs="{'invisible': [('civical_credential_status', '!=', 'rechazado')]}"/>
-                                    <field name="civical_credential_reject_reason" readonly="1"
-                                           attrs="{'invisible': [('civical_credential_status', '!=', 'rechazado')]}"/>
-                                </group>
+
                                 <group string="Víctima de delitos violentos">
                                     <field name="is_victim_violent"/>
                                     <field name="relationship_victim_violent_file"
@@ -192,7 +193,8 @@
                             <div class="float-right">
                                 <field name="cv_help_address"/>
                             </div>
-                            <button string="Agregar/Modificar domicilio" name="button_edit_address" id="button_edit_address_2"
+                            <button string="Agregar/Modificar domicilio" name="button_edit_address"
+                                    id="button_edit_address_2"
                                     type="object"
                                     groups="onsc_cv_digital.group_user_cv"
                                     attrs="{'invisible': [('country_id', '=', False)]}"/>
