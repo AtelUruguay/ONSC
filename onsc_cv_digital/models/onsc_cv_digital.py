@@ -176,27 +176,9 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado del Carné de Salud Laboral")
 
     document_identity_file = fields.Binary(string="Documento digitalizado del documento de identidad")
-    document_identity_attachment_id = fields.Many2one("ir.attachment",
-                                                      string="Documento digitalizado del documento de identidad adjunto",
-                                                      compute="_compute_digital_documents", store=True)
-
-    document_identity_validation_status = fields.Selection(string="Estado validación documental – doc. Identidad",
-                                                           related='document_identity_attachment_id.validation_status')
-    document_identity_reject_reason = fields.Char(string="Motivo rechazo validación documental – doc. Identidad",
-                                                  related='document_identity_attachment_id.reject_reason')
 
     civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica",
                                             required=False, )
-    civical_credential_attachment_id = fields.Many2one("ir.attachment",
-                                                       string="Documento digitalizado credencial cívica adjunto",
-                                                       compute="_compute_digital_documents",
-                                                       store=True)
-    civical_credential_status = fields.Selection(
-        string="Estado validación documental – credencial cívica",
-        related='civical_credential_attachment_id.validation_status')
-    civical_credential_reject_reason = fields.Char(string="Motivo rechazo validación documental – credencial cívica",
-                                                   related='civical_credential_attachment_id.reject_reason')
-
     medical_aptitude_certificate_status = fields.Selection(string="Certificado de aptitud médico-deportiva",
                                                            selection=[('si', 'Si'), ('no', 'No'), ])
     medical_aptitude_certificate_date = fields.Date(
@@ -224,17 +206,6 @@ class ONSCCVDigital(models.Model):
             record.is_cv_race_option_other_enable = len(
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
-
-    @api.depends('civical_credential_file', 'document_identity_file')
-    def _compute_digital_documents(self):
-        Attachment = self.env['ir.attachment']
-        for rec in self:
-            rec.civical_credential_attachment_id = Attachment.search(
-                [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'civical_credential_file')], limit=1)
-            rec.document_identity_attachment_id = Attachment.search(
-                [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'document_identity_file')], limit=1)
 
     @api.constrains('cv_sex_updated_date', 'cv_birthdate')
     def _check_valid_dates(self):

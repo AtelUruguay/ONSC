@@ -6,5 +6,4 @@ from . import res_config_settings
 from . import catalogs
 from . import onsc_cv_digital
 from . import onsc_cv_digital_general_info
-from . import onsc_cv_digital_documentary_validation
 from . import formation
