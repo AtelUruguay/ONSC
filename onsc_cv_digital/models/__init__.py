@@ -7,3 +7,4 @@ from . import onsc_cv_digital
 from . import onsc_cv_digital_general_info
 from . import onsc_cv_digital_documentary_validation
 from . import formation
+from . import onsc_cv_digital_volunteering

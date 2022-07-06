@@ -149,7 +149,10 @@ class ONSCCVDigital(models.Model):
         compute=lambda s: s._get_help('cv_help_course_certificate'),
         default=lambda s: s._get_help('cv_help_course_certificate', True)
     )
-
+    cv_help_volunteering = fields.Html(
+        compute=lambda s: s._get_help('cv_help_volunteering'),
+        default=lambda s: s._get_help('cv_help_volunteering', True)
+    )
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     uruguayan_citizenship = fields.Selection(string="Ciudadanía uruguaya",
                                              selection=[('legal', 'Legal'), ('natural', 'Natural'),
@@ -210,6 +213,8 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
+
+    volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
 
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
