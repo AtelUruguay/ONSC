@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from lxml import etree
-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
@@ -226,6 +225,17 @@ class ONSCCVDigital(models.Model):
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
 
+    @api.depends('civical_credential_file', 'document_identity_file')
+    def _compute_digital_documents(self):
+        Attachment = self.env['ir.attachment']
+        for rec in self:
+            rec.civical_credential_attachment_id = Attachment.search(
+                [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
+                 ('res_field', '=', 'civical_credential_file')], limit=1)
+            rec.document_identity_attachment_id = Attachment.search(
+                [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
+                 ('res_field', '=', 'document_identity_file')], limit=1)
+
     @api.constrains('cv_sex_updated_date', 'cv_birthdate')
     def _check_valid_dates(self):
         today = fields.Date.from_string(fields.Date.today())
@@ -240,6 +250,20 @@ class ONSCCVDigital(models.Model):
         for record in self:
             if not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
+
+    @api.onchange('cv_sex_updated_date')
+    def onchange_cv_sex_updated_date(self):
+        result = self.check_evaluation('cv_sex_updated_date')
+        if result:
+            self.cv_sex_updated_date = False
+            return result
+
+    @api.onchange('cv_birthdate')
+    def onchange_cv_birthdate(self):
+        result = self.check_evaluation('cv_birthdate')
+        if result:
+            self.cv_birthdate = False
+            return result
 
     def button_edit_address(self):
         self.ensure_one()
@@ -301,14 +325,30 @@ class ONSCCVDigital(models.Model):
 
         return form_id.id
 
-    @api.depends('civical_credential_file',
-                 'document_identity_file')
-    def _compute_digital_documents(self):
-        Attachment = self.env['ir.attachment']
-        for rec in self:
-            rec.civical_credential_attachment_id = Attachment.search(
-                [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'civical_credential_file')], limit=1)
-            rec.document_identity_attachment_id = Attachment.search(
-                [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'document_identity_file')], limit=1)
+    def check_evaluation(self, changed_field):
+        """
+        Utilizada para mostrar mensajes de advertencia en onchange de evaluacion
+        :return:
+        """
+        result = {
+            'warning': {
+                'title': _("Atención"),
+                'type': 'notification',
+            }
+        }
+        msg = ''
+        if changed_field == 'cv_sex_updated_date' and self.cv_sex_updated_date:
+            today = fields.Date.from_string(fields.Date.today())
+            if fields.Date.from_string(self.cv_sex_updated_date) > today:
+                msg = _('La Fecha de información sexo no puede ser posterior a la fecha actual')
+        elif changed_field == 'cv_birthdate' and self.cv_birthdate:
+            today = fields.Date.from_string(fields.Date.today())
+            if fields.Date.from_string(self.cv_birthdate) > today:
+                msg = _('La Fecha de nacimiento no puede ser posterior a la fecha actual')
+
+        if msg:
+            result['warning'].update({'message': msg})
+        else:
+            result = {}
+        return result
+
