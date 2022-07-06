@@ -53,6 +53,7 @@ class ONSCCVAbstractConfig(models.Model):
                 form_id = self.env['ir.ui.view'].create(
                     {'name': '%s.form.readonly' % self._name,
                      "model": self._name,
+                     "priority": 100,
                      'arch': etree.tostring(doc, encoding='unicode')
                      })
 
