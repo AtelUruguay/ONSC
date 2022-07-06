@@ -120,10 +120,7 @@
 
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <field name="civical_credential_status" readonly="1"
-                                           attrs="{'invisible': [('civical_credential_status', '!=', 'rechazado')]}"/>
-                                    <field name="civical_credential_reject_reason" readonly="1"
-                                           attrs="{'invisible': [('civical_credential_status', '!=', 'rechazado')]}"/>
+
 
                                     <field name="cjppu_affiliate_number"/>
                                     <field name="professional_resume"
