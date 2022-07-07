@@ -69,8 +69,8 @@ ONSC CV Digital
         'views/catalogs/res_partner_views.xml',
         'views/onsc_cv_course_certificate_views.xml',
         'views/onsc_cv_formation_views.xml',
-
         'views/onsc_cv_digital_views.xml',
+        'views/onsc_cv_digital_work_experience_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
