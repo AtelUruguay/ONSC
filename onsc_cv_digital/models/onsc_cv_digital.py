@@ -111,17 +111,17 @@ class ONSCCVDigital(models.Model):
                                             string="Fecha de información")
 
     # DOMICILIO----<Page>
-    country_id = fields.Many2one(related='partner_id.country_id')
-    cv_address_state_id = fields.Many2one(related='partner_id.state_id')
-    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id')
-    cv_address_street = fields.Char(related='partner_id.street')
-    cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door')
-    cv_address_apto = fields.Char(related='partner_id.cv_apto')
-    cv_address_street2 = fields.Char(related='partner_id.street2')
-    cv_address_street3 = fields.Char(related='partner_id.cv_street3')
-    cv_address_zip = fields.Char(related='partner_id.zip')
-    cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis')
-    cv_address_amplification = fields.Text(related='partner_id.cv_amplification')
+    country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
+    cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
+    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False)
+    cv_address_street = fields.Char(related='partner_id.street', readonly=False)
+    cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
+    cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
+    cv_address_street2 = fields.Char(related='partner_id.street2', readonly=False)
+    cv_address_street3 = fields.Char(related='partner_id.cv_street3', readonly=False)
+    cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
+    cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
+    cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
     cv_address_state = fields.Selection(related='cv_address_location_id.state')
     cv_address_reject_reason = fields.Char(related='cv_address_location_id.reject_reason')
 
@@ -291,6 +291,7 @@ class ONSCCVDigital(models.Model):
                 form_id = self.env['ir.ui.view'].create(
                     {'name': '%s.form.readonly' % self._name,
                      "model": self._name,
+                     "priority": 100,
                      'arch': etree.tostring(doc, encoding='unicode')
                      })
 

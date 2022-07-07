@@ -183,10 +183,6 @@
                             <div class="float-right">
                                 <field name="cv_help_address"/>
                             </div>
-                            <button string="Agregar/Modificar domicilio" name="button_edit_address" id="button_edit_address_2"
-                                    type="object"
-                                    groups="onsc_cv_digital.group_user_cv"
-                                    attrs="{'invisible': [('country_id', '=', False)]}"/>
                             <field name="cv_address_state" invisible="1"/>
                             <div class="alert alert-info" role="alert"
                                  attrs="{'invisible': [('cv_address_state', '!=', 'to_validate')]}">
@@ -206,9 +202,12 @@
                             </div>
                             <group>
                                 <group>
-                                    <field name="country_id" string="País"/>
-                                    <field name="cv_address_state_id" string="Departamento"/>
-                                    <field name="cv_address_location_id"/>
+                                    <field name="country_id" string="País"
+                                           options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                    <field name="cv_address_state_id" string="Departamento"
+                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                    <field name="cv_address_location_id"
+                                           context="{'default_country_id': country_id, 'default_state_id': cv_address_state_id}"/>
                                 </group>
                                 <group>
                                 </group>
