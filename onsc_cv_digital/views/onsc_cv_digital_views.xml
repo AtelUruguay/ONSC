@@ -183,10 +183,6 @@
                             <div class="float-right">
                                 <field name="cv_help_address"/>
                             </div>
-                            <button string="Agregar/Modificar domicilio" name="button_edit_address" id="button_edit_address_2"
-                                    type="object"
-                                    groups="onsc_cv_digital.group_user_cv"
-                                    attrs="{'invisible': [('country_id', '=', False)]}"/>
                             <field name="cv_address_state" invisible="1"/>
                             <div class="alert alert-info" role="alert"
                                  attrs="{'invisible': [('cv_address_state', '!=', 'to_validate')]}">
@@ -206,9 +202,12 @@
                             </div>
                             <group>
                                 <group>
-                                    <field name="country_id" string="País"/>
-                                    <field name="cv_address_state_id" string="Departamento"/>
-                                    <field name="cv_address_location_id"/>
+                                    <field name="country_id" string="País"
+                                           options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                    <field name="cv_address_state_id" string="Departamento"
+                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                    <field name="cv_address_location_id"
+                                           context="{'default_country_id': country_id, 'default_state_id': cv_address_state_id}"/>
                                 </group>
                                 <group>
                                 </group>
@@ -248,22 +247,18 @@
                             <div class="float-right">
                                 <field name="cv_help_course_certificate"/>
                             </div>
-                            <field name="course_certificate_ids">
-                                <tree string="Cursos y certificados">
-                                    <field name="record_type"/>
-                                    <field name="name"/>
-                                    <field name="start_date"/>
-                                    <field name="end_date"/>
-                                    <field name="country_id" optional="hide"/>
-                                    <field name="institution_id" optional="hide"/>
-                                    <field name="state" optional="show"/>
-                                    <field name="approbation_mode" optional="hide"/>
-                                    <field name="induction_type" optional="hide"/>
-                                    <field name="dictation_mode" optional="hide"/>
-                                    <field name="hours_total" optional="hide"/>
-                                    <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
-                                </tree>
+                            <div>
+                                <h4>Cursos</h4>
+                            </div>
+                            <field name="course_ids"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}">
                             </field>
+                            <br/>
+                            <div>
+                                <h4>Certificados</h4>
+                            </div>
+                            <field name="certificate_ids"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
                     </notebook>
                 </sheet>
