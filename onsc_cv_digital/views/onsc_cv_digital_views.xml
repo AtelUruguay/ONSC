@@ -111,12 +111,14 @@
                             <group string="Datos personales">
                                 <group>
                                     <field name="country_of_birth_id"/>
-                                    <field name="uruguayan_citizenship"/>
+                                    <field name="uy_citizenship"/>
                                     <field name="marital_status_id"/>
                                     <field name="crendencial_serie"
-                                           attrs="{'invisible': [('uruguayan_citizenship', 'not in', ['legal','natural'])], 'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="credential_number"
-                                           attrs="{'invisible': [('uruguayan_citizenship', 'not in', ['legal','natural'])], 'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                    <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
+                                           attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="cjppu_affiliate_number"/>
                                     <field name="professional_resume"
                                            placeholder="Resumen del candidato a modo de introducción"/>
@@ -168,7 +170,7 @@
                                 </group>
                                 <group string="Credencial cívica">
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                 </group>
                                 <group string="Víctima de delitos violentos">
                                     <field name="is_victim_violent"/>
@@ -183,10 +185,6 @@
                             <div class="float-right">
                                 <field name="cv_help_address"/>
                             </div>
-                            <button string="Agregar/Modificar domicilio" name="button_edit_address" id="button_edit_address_2"
-                                    type="object"
-                                    groups="onsc_cv_digital.group_user_cv"
-                                    attrs="{'invisible': [('country_id', '=', False)]}"/>
                             <field name="cv_address_state" invisible="1"/>
                             <div class="alert alert-info" role="alert"
                                  attrs="{'invisible': [('cv_address_state', '!=', 'to_validate')]}">
@@ -206,9 +204,12 @@
                             </div>
                             <group>
                                 <group>
-                                    <field name="country_id" string="País"/>
-                                    <field name="cv_address_state_id" string="Departamento"/>
-                                    <field name="cv_address_location_id"/>
+                                    <field name="country_id" string="País"
+                                           options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
+                                    <field name="cv_address_state_id" string="Departamento"
+                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                    <field name="cv_address_location_id"
+                                           context="{'default_country_id': country_id, 'default_state_id': cv_address_state_id}"/>
                                 </group>
                                 <group>
                                 </group>
@@ -230,6 +231,12 @@
                                 <field name="cv_address_amplification"/>
                             </group>
                         </page>
+                        <page name="work_experience" string="Experiencias laborales">
+                            <div class="float-right">
+                                <field name="cv_help_work_experience"/>
+                            </div>
+                            <field name="work_experience_id"/>
+                        </page>
                         <page string="Formación">
                             <div class="float-right">
                                 <field name="cv_help_formation"/>
@@ -248,22 +255,18 @@
                             <div class="float-right">
                                 <field name="cv_help_course_certificate"/>
                             </div>
-                            <field name="course_certificate_ids">
-                                <tree string="Cursos y certificados">
-                                    <field name="record_type"/>
-                                    <field name="name"/>
-                                    <field name="start_date"/>
-                                    <field name="end_date"/>
-                                    <field name="country_id" optional="hide"/>
-                                    <field name="institution_id" optional="hide"/>
-                                    <field name="state" optional="show"/>
-                                    <field name="approbation_mode" optional="hide"/>
-                                    <field name="induction_type" optional="hide"/>
-                                    <field name="dictation_mode" optional="hide"/>
-                                    <field name="hours_total" optional="hide"/>
-                                    <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
-                                </tree>
+                            <div>
+                                <h4>Cursos</h4>
+                            </div>
+                            <field name="course_ids"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}">
                             </field>
+                            <br/>
+                            <div>
+                                <h4>Certificados</h4>
+                            </div>
+                            <field name="certificate_ids"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
 
                         <page name="volunteering" string="Voluntariados">
@@ -282,11 +285,6 @@
 
                     </notebook>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" groups="base.group_user"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
             </form>
         </field>
     </record>

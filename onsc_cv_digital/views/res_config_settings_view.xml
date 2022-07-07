@@ -22,6 +22,10 @@
                                         <span>Domicilio </span>
                                         <field name="cv_help_address" class="col-12 col-lg-12"/>
                                     </div>
+                                    <div class="text-muted content-group mt16">
+                                        <span>Experiencia laboral </span>
+                                        <field name="cv_help_work_experience" class="col-12 col-lg-12"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

@@ -13,7 +13,6 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
 
 class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Currículum digital'
     _rec_name = 'cv_full_name'
 
@@ -49,35 +48,35 @@ class ONSCCVDigital(models.Model):
     cv_emissor_country_id = fields.Many2one(
         'res.country',
         string=u'País emisor del documento',
-        related='partner_id.cv_emissor_country_id', store=True, tracking=True)
+        related='partner_id.cv_emissor_country_id', store=True)
     cv_document_type_id = fields.Many2one(
         'onsc.cv.document.type',
         string=u'Tipo de documento',
-        related='partner_id.cv_document_type_id', store=True, tracking=True)
+        related='partner_id.cv_document_type_id', store=True)
     cv_nro_doc = fields.Char(
         string=u'Número de documento',
-        related='partner_id.cv_nro_doc', store=True, tracking=True)
+        related='partner_id.cv_nro_doc', store=True)
     image_1920 = fields.Image(
         string="Image",
         max_width=1920, max_height=1920,
-        related='partner_id.image_1920', store=True, readonly=False, tracking=True)
+        related='partner_id.image_1920', store=True, readonly=False)
     avatar_128 = fields.Image(
         string="Avatar 128",
         max_width=128, max_height=128,
         related='partner_id.avatar_128')
     cv_birthdate = fields.Date(
         string=u'Fecha de nacimiento',
-        related='partner_id.cv_birthdate', store=True, readonly=False, tracking=True)
+        related='partner_id.cv_birthdate', store=True, readonly=False)
     cv_sex = fields.Selection(
         CV_SEX,
         string=u'Sexo',
-        related='partner_id.cv_sex', store=True, readonly=False, tracking=True)
+        related='partner_id.cv_sex', store=True, readonly=False)
     cv_sex_updated_date = fields.Date(
         string=u'Fecha de información sexo',
-        related='partner_id.cv_sex_updated_date', store=True, readonly=False, tracking=True)
+        related='partner_id.cv_sex_updated_date', store=True, readonly=False)
     cv_expiration_date = fields.Date(
         string=u'Fecha de vencimiento documento de identidad',
-        related='partner_id.cv_expiration_date', store=True, readonly=False, tracking=True)
+        related='partner_id.cv_expiration_date', store=True, readonly=False)
     email = fields.Char(
         string="Email",
         related='partner_id.email', store=True)
@@ -111,17 +110,17 @@ class ONSCCVDigital(models.Model):
                                             string="Fecha de información")
 
     # DOMICILIO----<Page>
-    country_id = fields.Many2one(related='partner_id.country_id')
-    cv_address_state_id = fields.Many2one(related='partner_id.state_id')
-    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id')
-    cv_address_street = fields.Char(related='partner_id.street')
-    cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door')
-    cv_address_apto = fields.Char(related='partner_id.cv_apto')
-    cv_address_street2 = fields.Char(related='partner_id.street2')
-    cv_address_street3 = fields.Char(related='partner_id.cv_street3')
-    cv_address_zip = fields.Char(related='partner_id.zip')
-    cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis')
-    cv_address_amplification = fields.Text(related='partner_id.cv_amplification')
+    country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
+    cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
+    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False)
+    cv_address_street = fields.Char(related='partner_id.street', readonly=False)
+    cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
+    cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
+    cv_address_street2 = fields.Char(related='partner_id.street2', readonly=False)
+    cv_address_street3 = fields.Char(related='partner_id.cv_street3', readonly=False)
+    cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
+    cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
+    cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
     cv_address_state = fields.Selection(related='cv_address_location_id.state')
     cv_address_reject_reason = fields.Char(related='cv_address_location_id.reject_reason')
 
@@ -132,6 +131,10 @@ class ONSCCVDigital(models.Model):
     # Cursos y certificado----<Page>
     course_certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
                                              string="Cursos y certificados")
+    course_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
+                                 string="Cursos", domain=[('record_type', '=', 'course')])
+    certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
+                                      string="Certificados", domain=[('record_type', '=', 'certificate')])
     # Help online
     cv_help_general_info = fields.Html(
         compute=lambda s: s._get_help('cv_help_general_info'),
@@ -139,6 +142,10 @@ class ONSCCVDigital(models.Model):
     cv_help_address = fields.Html(
         compute=lambda s: s._get_help('cv_help_address'),
         default=lambda s: s._get_help('cv_help_address', True)
+    )
+    cv_help_work_experience = fields.Html(
+        compute=lambda s: s._get_help('cv_help_work_experience'),
+        default=lambda s: s._get_help('cv_help_work_experience', True)
     )
     cv_help_formation = fields.Html(
         compute=lambda s: s._get_help('cv_help_formation'),
@@ -153,9 +160,9 @@ class ONSCCVDigital(models.Model):
         default=lambda s: s._get_help('cv_help_volunteering', True)
     )
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
-    uruguayan_citizenship = fields.Selection(string="Ciudadanía uruguaya",
-                                             selection=[('legal', 'Legal'), ('natural', 'Natural'),
-                                                        ('extranjero', 'Extranjero')], required=True)
+    uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
+                                      selection=[('legal', 'Legal'), ('natural', 'Natural'),
+                                                 ('extranjero', 'Extranjero')], required=True)
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", required=True)
     crendencial_serie = fields.Char(string="Serie de la credencial", size=3)
     credential_number = fields.Integer(string="Numero de la credencial")
@@ -194,6 +201,8 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
+    work_experience_id = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
+                                         string="Experiencia laboral")
 
     volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
 
@@ -274,7 +283,7 @@ class ONSCCVDigital(models.Model):
         if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
             my_cv = self._context.get('my_cv', False) or self.search(
                 [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
-            if my_cv.active is False:
+            if my_cv and my_cv.active is False:
                 vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
             vals.update({'res_id': my_cv.id})
         return vals
@@ -296,6 +305,7 @@ class ONSCCVDigital(models.Model):
                 form_id = self.env['ir.ui.view'].create(
                     {'name': '%s.form.readonly' % self._name,
                      "model": self._name,
+                     "priority": 100,
                      'arch': etree.tostring(doc, encoding='unicode')
                      })
 
@@ -327,4 +337,3 @@ class ONSCCVDigital(models.Model):
         else:
             result = {}
         return result
-
