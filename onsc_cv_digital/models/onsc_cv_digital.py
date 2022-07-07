@@ -48,35 +48,35 @@ class ONSCCVDigital(models.Model):
     cv_emissor_country_id = fields.Many2one(
         'res.country',
         string=u'País emisor del documento',
-        related='partner_id.cv_emissor_country_id', store=True, tracking=True)
+        related='partner_id.cv_emissor_country_id', store=True)
     cv_document_type_id = fields.Many2one(
         'onsc.cv.document.type',
         string=u'Tipo de documento',
-        related='partner_id.cv_document_type_id', store=True, tracking=True)
+        related='partner_id.cv_document_type_id', store=True)
     cv_nro_doc = fields.Char(
         string=u'Número de documento',
-        related='partner_id.cv_nro_doc', store=True, tracking=True)
+        related='partner_id.cv_nro_doc', store=True)
     image_1920 = fields.Image(
         string="Image",
         max_width=1920, max_height=1920,
-        related='partner_id.image_1920', store=True, readonly=False, tracking=True)
+        related='partner_id.image_1920', store=True, readonly=False)
     avatar_128 = fields.Image(
         string="Avatar 128",
         max_width=128, max_height=128,
         related='partner_id.avatar_128')
     cv_birthdate = fields.Date(
         string=u'Fecha de nacimiento',
-        related='partner_id.cv_birthdate', store=True, readonly=False, tracking=True)
+        related='partner_id.cv_birthdate', store=True, readonly=False)
     cv_sex = fields.Selection(
         CV_SEX,
         string=u'Sexo',
-        related='partner_id.cv_sex', store=True, readonly=False, tracking=True)
+        related='partner_id.cv_sex', store=True, readonly=False)
     cv_sex_updated_date = fields.Date(
         string=u'Fecha de información sexo',
-        related='partner_id.cv_sex_updated_date', store=True, readonly=False, tracking=True)
+        related='partner_id.cv_sex_updated_date', store=True, readonly=False)
     cv_expiration_date = fields.Date(
         string=u'Fecha de vencimiento documento de identidad',
-        related='partner_id.cv_expiration_date', store=True, readonly=False, tracking=True)
+        related='partner_id.cv_expiration_date', store=True, readonly=False)
     email = fields.Char(
         string="Email",
         related='partner_id.email', store=True)
@@ -272,7 +272,7 @@ class ONSCCVDigital(models.Model):
         if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
             my_cv = self._context.get('my_cv', False) or self.search(
                 [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
-            if my_cv.active is False:
+            if my_cv and my_cv.active is False:
                 vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
             vals.update({'res_id': my_cv.id})
         return vals

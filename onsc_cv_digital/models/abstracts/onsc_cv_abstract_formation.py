@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
 import json
+
+from odoo import fields, models, api, _
 
 STATES = [('incomplete', 'Incompleto'),
           ('in_progress', 'En curso'),
@@ -12,7 +13,7 @@ class ONSCCVAbstractFormation(models.AbstractModel):
     _name = 'onsc.cv.abstract.formation'
     _description = 'Modelo abstracto de entidades de formación'
 
-    cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV digital', required=True)
+    cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV digital', required=True, ondelete='cascade')
     institution_id = fields.Many2one("onsc.cv.institution", string=u"Institución", required=False)
     institution_id_domain = fields.Char(compute='_compute_institution_id_domain')
     subinstitution_id = fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución", required=False)
