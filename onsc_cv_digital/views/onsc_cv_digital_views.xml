@@ -247,22 +247,18 @@
                             <div class="float-right">
                                 <field name="cv_help_course_certificate"/>
                             </div>
-                            <field name="course_certificate_ids">
-                                <tree string="Cursos y certificados">
-                                    <field name="record_type"/>
-                                    <field name="name"/>
-                                    <field name="start_date"/>
-                                    <field name="end_date"/>
-                                    <field name="country_id" optional="hide"/>
-                                    <field name="institution_id" optional="hide"/>
-                                    <field name="state" optional="show"/>
-                                    <field name="approbation_mode" optional="hide"/>
-                                    <field name="induction_type" optional="hide"/>
-                                    <field name="dictation_mode" optional="hide"/>
-                                    <field name="hours_total" optional="hide"/>
-                                    <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
-                                </tree>
+                            <div>
+                                <h4>Cursos</h4>
+                            </div>
+                            <field name="course_ids"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}">
                             </field>
+                            <br/>
+                            <div>
+                                <h4>Certificados</h4>
+                            </div>
+                            <field name="certificate_ids"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
                     </notebook>
                 </sheet>

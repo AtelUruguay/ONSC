@@ -132,6 +132,10 @@ class ONSCCVDigital(models.Model):
     # Cursos y certificado----<Page>
     course_certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
                                              string="Cursos y certificados")
+    course_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
+                                 string="Cursos", domain=[('record_type', '=', 'course')])
+    certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
+                                      string="Certificados", domain=[('record_type', '=', 'certificate')])
     # Help online
     cv_help_general_info = fields.Html(
         compute=lambda s: s._get_help('cv_help_general_info'),
@@ -151,8 +155,8 @@ class ONSCCVDigital(models.Model):
 
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
-                                             selection=[('legal', 'Legal'), ('natural', 'Natural'),
-                                                        ('extranjero', 'Extranjero')], required=True)
+                                      selection=[('legal', 'Legal'), ('natural', 'Natural'),
+                                                 ('extranjero', 'Extranjero')], required=True)
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", required=True)
     crendencial_serie = fields.Char(string="Serie de la credencial", size=3)
     credential_number = fields.Integer(string="Numero de la credencial")

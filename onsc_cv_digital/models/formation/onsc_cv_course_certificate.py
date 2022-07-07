@@ -9,6 +9,7 @@ INDUCTION_TYPES = [('yes', 'Sí'), ('no', 'No')]
 APPROBATION_MODES = [('by_assistance', 'Por asistencia'), ('by_evaluation', 'Por evaluación')]
 COURSE_FIELDS = ['course_title', 'institution_id', 'subinstitution_id', 'country_id', 'induction_type', 'hours_total']
 CERTIFICATE_FIELDS = ['institution_cert_id', 'subinstitution_cert_id']
+COURSE_TYPES = [('workshop', 'Taller'), ('other', 'Otra capacitación')]
 
 
 class ONSCCVCourseCertificate(models.Model):
@@ -19,6 +20,7 @@ class ONSCCVCourseCertificate(models.Model):
     _catalogs2validate = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
 
     record_type = fields.Selection(TYPES, string='Tipo', required=True, default='course')
+    course_type = fields.Selection(COURSE_TYPES, string='Tipo de curso')
     course_title = fields.Char('Título del curso')
     certificate_id = fields.Many2one("onsc.cv.certificate", 'Título del certificado')
     name = fields.Char(compute='_compute_name', store=True, string='Título')
