@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-
-from odoo import fields, models, api, _
+from odoo import fields, models
 
 
 class ONSCCVDigitalWorkExperience(models.Model):
+
     _name = 'onsc.cv.work.experience'
     _description = 'Experiencia laboral'
     _inherit = 'onsc.cv.abstract.origin.institution'
@@ -30,17 +30,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
                                string="Tareas", required=False, )
 
 
-
 class ONSCCVDigitalOriginInstitutionTask(models.Model):
     _inherit = 'onsc.cv.origin.institution.task'
 
     work_experience_id = fields.Many2one("onsc.cv.work.experience", string="Experiencia laboral", index=True)
-
-
-
-
-
-
-
-
-

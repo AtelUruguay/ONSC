@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api,_
+from odoo import fields, models, api, _
+
 
 class ONSCCVAbstractOriginInstitution(models.AbstractModel):
     _name = 'onsc.cv.abstract.origin.institution'
@@ -21,8 +22,6 @@ class ONSCCVAbstractOriginInstitution(models.AbstractModel):
     start_date = fields.Date("Período desde", required=True)
     end_date = fields.Date("Período hasta", required=True)
 
-
-
     @api.onchange('start_date', 'end_date')
     def onchange_date_validation(self):
         for rec in self:
@@ -39,11 +38,11 @@ class ONSCCVAbstractOriginInstitution(models.AbstractModel):
 
                 }
 
+
 class ONSCCVDigitalOriginInstitutionTask(models.Model):
     _name = 'onsc.cv.origin.institution.task'
     _description = 'Tareas realizadas'
 
-
     key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
     area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
-                                   required=True)
+                              required=True)
