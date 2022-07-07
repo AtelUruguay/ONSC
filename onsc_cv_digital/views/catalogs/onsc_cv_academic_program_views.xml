@@ -62,13 +62,21 @@
                                    groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
                             <field name="country_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   readonly="context.get('is_readonly') and context.get('default_country_id')"
+                                   force_save="1"
                                    context="{'default_country_id': country_id}"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
-                            <field name="institution_id" domain="[('country_id', '=?', country_id)]"/>
-                            <field name="subinstitution_id" domain="[('institution_id', '=', institution_id)]"/>
-                            <field name="study_level_id"/>
+                            <field name="institution_id" domain="[('country_id', '=?', country_id)]"
+                                   readonly="context.get('is_readonly') and context.get('default_institution_id')"
+                                   force_save="1"/>
+                            <field name="subinstitution_id" domain="[('institution_id', '=', institution_id)]"
+                                   readonly="context.get('is_readonly') and context.get('default_subinstitution_id')"
+                                   force_save="1"/>
+                            <field name="study_level_id"
+                                   readonly="context.get('is_readonly') and context.get('default_study_level_id')"
+                                   force_save="1"/>
                         </group>
                     </group>
                 </sheet>

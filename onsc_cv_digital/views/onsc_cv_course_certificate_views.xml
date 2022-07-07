@@ -35,12 +35,12 @@
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="institution_id"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"
-                                   domain="institution_id_domain" context="{'default_country_id': country_id}"/>
+                                   domain="institution_id_domain" context="{'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="institution_id_domain" invisible="1"/>
                             <field name="subinstitution_id"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"
-                                   domain="[('state','=','validated'),('institution_id', '=', institution_id)]"
-                                   context="{'default_institution_id': institution_id, 'default_country_id': country_id}"/>
+                                   domain="[('institution_id', '=', institution_id)]"
+                                   context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="country_id"
                                    attrs="{'invisible': [('record_type', '!=', 'course')],'required': [('record_type', '=', 'course')]}"
                                    domain="country_id_domain"
@@ -48,14 +48,14 @@
                             <field name="country_id_domain" invisible="1"/>
                             <field name="certificate_id"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
-                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id}"/>
+                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id, 'is_readonly': True}"/>
                             <field name="institution_cert_id"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
                                    domain="institution_cert_id_domain"/>
                             <field name="institution_cert_id_domain" invisible="1"/>
                             <field name="subinstitution_cert_id"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
-                                   context="{'default_institution_cert_id': institution_cert_id}"
+                                   context="{'default_institution_cert_id': institution_cert_id, 'is_readonly': True}"
                                    domain="[('institution_cert_id', '=', institution_cert_id)]"/>
                             <field name="approbation_mode"
                                    attrs="{'invisible': [('state', '!=', 'completed')], 'required': [('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
