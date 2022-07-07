@@ -28,11 +28,11 @@
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
                             <field name="basic_education_level"/>
-                            <field name="institution_id" domain="[('state','=','validated')]"
-                                   context="{'default_country_id': country_id}"/>
+                            <field name="institution_id"
+                                   context="{'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="subinstitution_id"
-                                   domain="[('state','=','validated'),('institution_id', '=', institution_id)]"
-                                   context="{'default_institution_id': institution_id}"/>
+                                   domain="[('institution_id', '=', institution_id)]"
+                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="country_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
@@ -99,16 +99,18 @@
                     </div>
                     <group>
                         <group>
-                            <field name="institution_id" domain="[('state','=','validated')]"
-                                   context="{'default_country_id': country_id}"/>
+                            <field name="institution_id"
+                                   context="{'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="subinstitution_id"
-                                   domain="[('state','=','validated'),('institution_id', '=', institution_id)]"
-                                   context="{'default_institution_id': institution_id}"/>
+                                   domain="[('institution_id', '=', institution_id)]"
+                                   context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="country_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
                             <field name="advanced_study_level_id"/>
                             <field name="academic_program_id"
-                                   domain="[('study_level_id', '=', advanced_study_level_id), ('country_id', '=', country_id)]"/>
+                                   domain="[('study_level_id', '=', advanced_study_level_id), ('country_id', '=', country_id)]"
+                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id,
+                                            'default_country_id': country_id, 'default_study_level_id': advanced_study_level_id, 'is_readonly': True}"/>
                             <field name="homologated_title"
                                    attrs="{'invisible': [('country_code', '!=', 'UY')],'required': [('country_code', '=', 'UY')]}"/>
                             <field name="homologated_title_date"
