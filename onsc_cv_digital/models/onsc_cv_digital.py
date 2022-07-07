@@ -268,7 +268,7 @@ class ONSCCVDigital(models.Model):
         if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
             my_cv = self._context.get('my_cv', False) or self.search(
                 [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
-            if my_cv.active is False:
+            if my_cv and my_cv.active is False:
                 vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
             vals.update({'res_id': my_cv.id})
         return vals
