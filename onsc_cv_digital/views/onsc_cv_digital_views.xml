@@ -273,16 +273,8 @@
                             <div class="float-right">
                                 <field name="cv_help_volunteering"/>
                             </div>
-                            <field name="volunteering_ids">
-                                <tree>
-                                    <field name="unit_name"/>
-                                    <field name="start_date"/>
-                                    <field name="currently_volunteering"/>
-                                    <field name="end_date"/>
-                                </tree>
-                            </field>
+                            <field name="volunteering_ids"/>
                         </page>
-
                     </notebook>
                 </sheet>
             </form>
