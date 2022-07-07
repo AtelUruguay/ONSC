@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.course.certificate.form</field>
         <field name="model">onsc.cv.course.certificate</field>
         <field name="arch" type="xml">
-            <form string=" Cursos y certificados">
+            <form string="Cursos y certificados">
                 <sheet>
                     <div class="alert alert-danger" role="alert"
                          attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
