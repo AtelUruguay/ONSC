@@ -328,15 +328,3 @@ class ONSCCVDigital(models.Model):
         else:
             result = {}
         return result
-
-    @api.depends('civical_credential_file',
-                 'document_identity_file')
-    def _compute_digital_documents(self):
-        Attachment = self.env['ir.attachment']
-        for rec in self:
-            rec.civical_credential_attachment_id = Attachment.search(
-                [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'civical_credential_file')], limit=1)
-            rec.document_identity_attachment_id = Attachment.search(
-                [('res_model', '=', 'onsc.cv.digital'), ('res_id', '=', rec.id),
-                 ('res_field', '=', 'document_identity_file')], limit=1)
