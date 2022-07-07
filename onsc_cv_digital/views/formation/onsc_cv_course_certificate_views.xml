@@ -115,7 +115,7 @@
         <field name="name">onsc_cv_course_view_tree</field>
         <field name="model">onsc.cv.course.certificate</field>
         <field name="arch" type="xml">
-            <tree string="Cursos">
+            <tree string="Cursos" decoration-danger="conditional_validation_state == 'rejected'">
                 <field name="name" optional="show"/>
                 <field name="record_type" invisible="1"/>
                 <field name="start_date" optional="show"/>
@@ -131,6 +131,8 @@
                 <field name="hours_total" optional="show"/>
                 <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
                 <field name="state" optional="show"/>
+                <field name="conditional_validation_state" invisible="1"/>
+                <field name="conditional_validation_reject_reason" optional="hide"/>
             </tree>
         </field>
     </record>
@@ -139,7 +141,7 @@
         <field name="name">onsc_cv_certificate_view_tree</field>
         <field name="model">onsc.cv.course.certificate</field>
         <field name="arch" type="xml">
-            <tree string="Certificados">
+            <tree string="Certificados" decoration-danger="conditional_validation_state == 'rejected'">
                 <field name="name" optional="show"/>
                 <field name="record_type" invisible="1"/>
                 <field name="start_date" optional="show"/>
@@ -153,6 +155,8 @@
                 <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
                 <field name="state" optional="hide"/>
                 <field name="approbation_mode" optional="hide"/>
+                <field name="conditional_validation_state" invisible="1"/>
+                <field name="conditional_validation_reject_reason" optional="hide"/>
             </tree>
         </field>
     </record>
