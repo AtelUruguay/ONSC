@@ -9,17 +9,18 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="country_id"/>
+                            <field name="country_id" string="País de la institución "/>
                             <field name="company_type"/>
                             <field name="country_code" invisible="1"/>
-                            <field name="company_name" attrs="{'invisible': ['|',('country_code', '=', 'UY'),('company_type','=','public')],'required': [('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
+                            <field name="company_name"
+                                   attrs="{'invisible': ['|',('country_code', '=', 'UY'),('company_type','=','public')],'required': [('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
                             <field name="unit_name"/>
                         </group>
                         <group>
                             <field name="start_date"/>
                             <field name="currently_volunteering"/>
                             <field name="end_date"/>
-                            <field name="hours_monthly"/>
+                            <field name="hours_monthly" string="Cantidad de horas mensuales"/>
                             <field name="description_tasks"/>
                             <field name="receipt_description"/>
                             <field name="receipt_file" options="{'accepted_file_extensions': '.pdf'}"/>
@@ -29,7 +30,7 @@
                         <field name="volunteering_task_ids" nolabel="1">
                             <tree string="Tareas" editable="top">
                                 <field name="key_task_id"/>
-                                <field name="work_area_id"/>
+                                <field name="area_id"/>
                             </tree>
                         </field>
                     </group>

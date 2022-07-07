@@ -16,9 +16,10 @@ class ONSCCVAbstractOriginInstitution(models.AbstractModel):
     # TO-DO: Revisar este campo, No esta en catalogo
     # executing_unit = fields.Char("Unidad ejecutora")
     company_name = fields.Char("Empresa")
-    hours_worked_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente", required=True)
+    hours_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente", required=True)
     description_tasks = fields.Char(string="Descripción de tareas", required=True)
     receipt_file = fields.Binary("Comprobante", required=True)
+    receipt_description = fields.Char("Descripción del comprobante")
     start_date = fields.Date("Período desde", required=True)
     end_date = fields.Date("Período hasta", required=True)
 
