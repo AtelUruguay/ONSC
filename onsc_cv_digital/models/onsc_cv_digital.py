@@ -13,7 +13,6 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
 
 class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Currículum digital'
     _rec_name = 'cv_full_name'
 
