@@ -117,6 +117,8 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="credential_number"
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                    <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
+                                           attrs="{'required': [('uruguayan_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="cjppu_affiliate_number"/>
                                     <field name="professional_resume"
                                            placeholder="Resumen del candidato a modo de introducción"/>
@@ -228,6 +230,12 @@
                             <group>
                                 <field name="cv_address_amplification"/>
                             </group>
+                        </page>
+                        <page name="work_experience" string="Experiencias laborales">
+                            <div class="float-right">
+                                <field name="cv_help_work_experience"/>
+                            </div>
+                            <field name="work_experience_id"/>
                         </page>
                         <page string="Formación">
                             <div class="float-right">
