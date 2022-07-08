@@ -118,7 +118,8 @@ class ONSCCVAbstractConfig(models.AbstractModel):
         """
         if not self._context.get('is_config') and self.env.uid != SUPERUSER_ID and not self.user_has_groups(
                 'onsc_cv_digital.group_validador_catalogos_cv'):
-            args += ['|', ('state', '=', 'validated'), ('create_uid', '=', self.env.uid)]
+            args += ['|', ('state', '=', 'validated'), '&',
+                     ('create_uid', '=', self.env.uid), ('state', '!=', 'rejected')]
         return super(ONSCCVAbstractConfig, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                          access_rights_uid=access_rights_uid)
 

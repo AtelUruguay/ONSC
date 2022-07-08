@@ -207,9 +207,10 @@
                                     <field name="country_id" string="País"
                                            options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
                                     <field name="cv_address_state_id" string="Departamento"
+                                           context="{'default_country_id': country_id, 'is_readonly': True}"
                                            options="{'no_open': True, 'no_quick_create': True}"/>
                                     <field name="cv_address_location_id"
-                                           context="{'default_country_id': country_id, 'default_state_id': cv_address_state_id}"/>
+                                           context="{'default_country_id': country_id, 'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
                                 </group>
                                 <group>
                                 </group>
@@ -231,13 +232,7 @@
                                 <field name="cv_address_amplification"/>
                             </group>
                         </page>
-                        <page name="work_experience" string="Experiencias laborales">
-                            <div class="float-right">
-                                <field name="cv_help_work_experience"/>
-                            </div>
-                            <field name="work_experience_id"/>
-                        </page>
-                        <page string="Formación">
+                        <page name="formation" string="Formación">
                             <div class="float-right">
                                 <field name="cv_help_formation"/>
                             </div>
@@ -251,7 +246,7 @@
                             </div>
                             <field name="advanced_formation_ids"/>
                         </page>
-                        <page string="Cursos y certificados">
+                        <page name="course_certificate" string="Cursos y certificados">
                             <div class="float-right">
                                 <field name="cv_help_course_certificate"/>
                             </div>
@@ -267,6 +262,12 @@
                             </div>
                             <field name="certificate_ids"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
+                        </page>
+                        <page name="work_experience" string="Experiencias laborales">
+                            <div class="float-right">
+                                <field name="cv_help_work_experience"/>
+                            </div>
+                            <field name="work_experience_id"/>
                         </page>
                     </notebook>
                 </sheet>
