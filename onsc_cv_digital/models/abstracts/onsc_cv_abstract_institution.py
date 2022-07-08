@@ -2,7 +2,7 @@
 
 import json
 
-from odoo import fields, models, api, _
+from odoo import fields, models, api
 
 
 class ONSCCVAbstractInstitution(models.AbstractModel):
