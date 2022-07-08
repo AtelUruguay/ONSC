@@ -136,7 +136,7 @@ class ONSCCVCourseCertificate(models.Model):
 
     def check_evaluation(self, changed_field):
         """
-        Utilizada para mostrar mensajes de advertencia en onchange de evaluacion
+        Utilizada para mostrar mensajes de advertencia en onchange de evaluación
         :return:
         """
         result = {
