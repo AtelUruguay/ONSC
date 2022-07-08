@@ -34,7 +34,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
             self.end_date = self.start_date
 
     @api.onchange('hours_worked_monthly')
-    def onchange(self):
+    def onchange_hours_worked_monthly(self):
         if self.hours_worked_monthly and self.hours_worked_monthly < 45:
             return {
                 'warning': {

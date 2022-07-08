@@ -267,7 +267,13 @@
                             <div class="float-right">
                                 <field name="cv_help_work_experience"/>
                             </div>
-                            <field name="work_experience_id"/>
+                            <field name="work_experience_ids"/>
+                        </page>
+                        <page name="work_teaching" string="Docencia">
+                            <div class="float-right">
+                                <field name="cv_help_work_teaching"/>
+                            </div>
+                            <field name="work_teaching_ids"/>
                         </page>
                     </notebook>
                 </sheet>

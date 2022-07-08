@@ -40,13 +40,13 @@ class ONSCCVAcademicProgramSubject(models.Model):
 
     program_id = fields.Many2one('onsc.cv.academic.program', 'Programa académico', required=True, ondelete='cascade')
     subject = fields.Char('Materia')
-    course_type = fields.Selection(COURSE_TYPES)
+    course_type = fields.Selection(COURSE_TYPES, 'Tipo de curso')
     currently_working_state = fields.Selection(string="¿Actualmente está enseñando la  materia?",
                                                selection=WORKING_STATE, required=True)
     start_date = fields.Date("Período desde dando esta materia", required=True)
     end_date = fields.Date("Período hasta dando esta materia")
     level_teaching_type = fields.Selection(LEVEL_TEACHING_TYPES, 'Nivel enseñado de la materia', required=True)
-    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', string="Conocimientos adquiridos",
+    knowledge_teaching_ids = fields.Many2many('onsc.cv.knowledge', string="Conocimientos enseñados",
                                               relation='knowledge_teaching_program_rel', required=True,
                                               help="Sólo se pueden seleccionar 5")
 
@@ -60,10 +60,10 @@ class ONSCCVAcademicProgramSubject(models.Model):
         if self.end_date and self.start_date and self.end_date <= self.start_date:
             self.end_date = self.start_date
 
-    @api.onchange('knowledge_acquired_ids')
-    def onchange_knowledge_acquired_ids(self):
-        if len(self.knowledge_acquired_ids) > 5:
-            self.knowledge_acquired_ids = self.knowledge_acquired_ids[:5]
+    @api.onchange('knowledge_teaching_ids')
+    def onchange_knowledge_teaching_ids(self):
+        if len(self.knowledge_teaching_ids) > 5:
+            self.knowledge_teaching_ids = self.knowledge_acquired_ids[:5]
             return {
                 'warning': {
                     'title': _("Atención"),

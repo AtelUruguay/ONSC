@@ -27,12 +27,12 @@ class ONSCCVDigitalWorkExperience(models.Model):
 
     # TO-DO: Revisar este campo, No esta en catalogo
     # reason_discharge = fields.Char("Causal de egreso")
-    task_ids = fields.One2many("onsc.cv.abstract.work.task", inverse_name="work_experience_id",
+    task_ids = fields.One2many("onsc.cv.work.experience.task", inverse_name="work_experience_id",
                                string="Tareas", required=False, )
 
 
 class ONSCCVDigitalOriginInstitutionTask(models.Model):
-    _name = 'onsc.cv.abstract.work.task'
+    _name = 'onsc.cv.work.experience.task'
     _description = 'Tareas realizadas'
 
     key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
