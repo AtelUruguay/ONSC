@@ -182,26 +182,34 @@
                             </group>
                         </page>
                         <page name="address" string="Domicilio">
-                            <div class="float-right">
-                                <field name="cv_help_address"/>
+                            <div class="row">
+                                <div class="col-md-8">
+                                    <field name="cv_address_state" invisible="1"/>
+                                    <div class="alert alert-info" role="alert"
+                                         attrs="{'invisible': [('cv_address_state', '!=', 'to_validate')]}">
+                                        <p class="mb-0">
+                                            <strong>El domicilio ingresado está en proceso de validación, se notificará
+                                                el
+                                                resultado de este a su e-mail
+                                            </strong>
+                                        </p>
+                                    </div>
+                                    <div class="alert alert-danger" role="alert"
+                                         attrs="{'invisible': [('cv_address_state', '!=', 'rejected')]}">
+                                        <p class="mb-0">
+                                            <strong>El domicilio ha sido rechazado. Motivo:
+                                                <field name="cv_address_reject_reason"/>
+                                            </strong>
+                                        </p>
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div class="float-right">
+                                        <field name="cv_help_address"/>
+                                    </div>
+                                </div>
                             </div>
-                            <field name="cv_address_state" invisible="1"/>
-                            <div class="alert alert-info" role="alert"
-                                 attrs="{'invisible': [('cv_address_state', '!=', 'to_validate')]}">
-                                <p class="mb-0">
-                                    <strong>El domicilio ingresado está en proceso de validación, se notificará el
-                                        resultado de este a su e-mail
-                                    </strong>
-                                </p>
-                            </div>
-                            <div class="alert alert-danger" role="alert"
-                                 attrs="{'invisible': [('cv_address_state', '!=', 'rejected')]}">
-                                <p class="mb-0">
-                                    <strong>El domicilio ha sido rechazado. Motivo:
-                                        <field name="cv_address_reject_reason"/>
-                                    </strong>
-                                </p>
-                            </div>
+
                             <group>
                                 <group>
                                     <field name="country_id" string="País"
