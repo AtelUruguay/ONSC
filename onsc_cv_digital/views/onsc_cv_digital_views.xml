@@ -183,7 +183,7 @@
                         </page>
                         <page name="address" string="Domicilio">
                             <div class="row">
-                                <div class="col-md-8">
+                                <div class="col">
                                     <field name="cv_address_state" invisible="1"/>
                                     <div class="alert alert-info" role="alert"
                                          attrs="{'invisible': [('cv_address_state', '!=', 'to_validate')]}">
@@ -203,7 +203,8 @@
                                         </p>
                                     </div>
                                 </div>
-                                <div class="col-md">
+                                <div class="col-md-auto"/>
+                                <div class="col col-lg-2">
                                     <div class="float-right">
                                         <field name="cv_help_address"/>
                                     </div>
