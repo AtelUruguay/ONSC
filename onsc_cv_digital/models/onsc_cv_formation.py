@@ -6,7 +6,7 @@ from odoo import fields, models, api
 class ONSCCVFormationBasic(models.Model):
     _name = 'onsc.cv.basic.formation'
     _description = 'Formación básica'
-    _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
+    _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.institution', 'onsc.cv.abstract.conditional.state']
     _order = 'start_date desc'
     _catalogs2validate = ['institution_id', 'subinstitution_id']
 
@@ -21,7 +21,7 @@ class ONSCCVFormationBasic(models.Model):
 
 class ONSCCVFormationAdvanced(models.Model):
     _name = 'onsc.cv.advanced.formation'
-    _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
+    _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.institution', 'onsc.cv.abstract.conditional.state']
     _description = 'Formación avanzada'
     _catalogs2validate = ['institution_id', 'subinstitution_id']
 

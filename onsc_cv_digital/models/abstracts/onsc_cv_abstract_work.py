@@ -3,9 +3,9 @@
 from odoo import fields, models, api, _
 
 
-class ONSCCVAbstractOriginInstitution(models.AbstractModel):
-    _name = 'onsc.cv.abstract.origin.institution'
-    _description = 'Modelo abstracto para los origenes de la institucion'
+class ONSCCVAbstractWork(models.AbstractModel):
+    _name = 'onsc.cv.abstract.work'
+    _description = 'Modelo abstracto para modelos de trabajos'
 
     country_id = fields.Many2one("res.country", string="País", required=True)
     country_code = fields.Char("Código", related="country_id.code", readonly=True)

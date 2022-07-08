@@ -14,7 +14,7 @@ COURSE_TYPES = [('workshop', 'Taller'), ('other', 'Otra capacitación')]
 
 class ONSCCVCourseCertificate(models.Model):
     _name = 'onsc.cv.course.certificate'
-    _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
+    _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.institution', 'onsc.cv.abstract.conditional.state']
     _description = 'Cursos y certificados'
     _order = 'start_date desc'
     _catalogs2validate = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
