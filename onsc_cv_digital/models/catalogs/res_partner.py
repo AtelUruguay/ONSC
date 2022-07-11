@@ -49,8 +49,7 @@ class ResPartner(models.Model):
 
     cv_birthdate = fields.Date(u'Fecha de nacimiento')
     cv_sex = fields.Selection(CV_SEX, u'Sexo')
-    cv_full_name_updated_date = fields.Date(u'Fecha de información nombre completo',
-                                            compute='_compute_cv_full_name', store=True)
+    cv_full_name_updated_date = fields.Date(u'Fecha de información nombre completo')
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo', compute='_compute_cv_sex_updated_date', store=True)
     cv_expiration_date = fields.Date(u'Fecha de vencimiento documento de identidad')
     cv_photo_updated_date = fields.Date(u'Fecha de foto del/de la funcionario/a', compute='_compute_photo_updated_date')
@@ -117,6 +116,7 @@ class ResPartner(models.Model):
         # Actualizar el nombre en el registro con el campo calculado en caso que existan diferencias
         if res.cv_full_name and res.name != res.cv_full_name:
             res.name = res.cv_full_name
+            res.cv_full_name_updated_date = fields.Date.today()
         return res
 
     @api.model
@@ -130,6 +130,7 @@ class ResPartner(models.Model):
         # Actualizar los nombres en los registros con el campo calculado en caso que existan diferencias
         for rec in self.filtered(lambda x: x.name != x.cv_full_name and x.cv_full_name):
             rec.name = rec.cv_full_name
+            res.cv_full_name_updated_date = fields.Date.today()
         return res
 
     def unlink(self):
