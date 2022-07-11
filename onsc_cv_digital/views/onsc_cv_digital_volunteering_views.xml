@@ -9,7 +9,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="country_id" string="País de la institución "/>
+                            <field name="country_id" string="País de la institución"/>
                             <field name="company_type"/>
                             <field name="country_code" invisible="1"/>
                             <field name="company_name"

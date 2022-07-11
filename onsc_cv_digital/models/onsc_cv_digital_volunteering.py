@@ -8,7 +8,7 @@ class ONSCCVDigitalVolunteering(models.Model):
     _description = 'Voluntariado'
     _inherit = 'onsc.cv.abstract.origin.institution'
 
-    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True)
+    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade')
     unit_name = fields.Char("Área/Unidad")
     volunteering_task_ids = fields.One2many("onsc.cv.origin.institution.task", inverse_name="volunteering_id",
                                             string="Tareas", required=False, )

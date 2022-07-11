@@ -8,7 +8,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     _description = 'Experiencia laboral'
     _inherit = 'onsc.cv.abstract.origin.institution'
 
-    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True)
+    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade')
     position = fields.Char("Cargo", required=True)
     city_id = fields.Many2one("onsc.cv.location", string="Ciudad donde desempeñó", required=True)
     unit_name = fields.Char("Área/Unidad")

@@ -235,7 +235,7 @@
                             <div class="float-right">
                                 <field name="cv_help_work_experience"/>
                             </div>
-                            <field name="work_experience_id"/>
+                            <field name="work_experience_ids"/>
                         </page>
                         <page string="Formación">
                             <div class="float-right">
