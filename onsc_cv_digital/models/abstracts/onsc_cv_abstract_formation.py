@@ -14,10 +14,10 @@ class ONSCCVAbstractFormation(models.AbstractModel):
     _description = 'Modelo abstracto de entidades de formación'
 
     cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV digital', required=True, ondelete='cascade')
-    institution_id = fields.Many2one("onsc.cv.institution", string=u"Institución", required=True)
+    institution_id = fields.Many2one("onsc.cv.institution", string=u"Institución", required=False)
     institution_id_domain = fields.Char(compute='_compute_institution_id_domain')
-    subinstitution_id = fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución", required=True)
-    country_id = fields.Many2one('res.country', string=u'País de la institución', required=True)
+    subinstitution_id = fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución", required=False)
+    country_id = fields.Many2one('res.country', string=u'País de la institución', required=False)
     country_id_domain = fields.Char(compute='_compute_country_id_domain')
     state = fields.Selection(string="Estado", selection=STATES, required=True)
     start_date = fields.Date(string="Fecha de inicio", required=True)
