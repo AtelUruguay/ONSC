@@ -25,9 +25,7 @@ class ONSCCVWorkTeaching(models.Model):
     education_area_ids = fields.One2many('onsc.cv.education.area.teaching', inverse_name='teaching_id',
                                          string="Áreas relacionadas con esta educación")
     other_relevant_information = fields.Text(string="Otra información relevante")
-    digital_doc_file = fields.Binary(
-        'Comprobantes', required=True,
-        help="Espacio para subir comprobantes en formato PDF")
+    digital_doc_file = fields.Binary('Comprobantes', required=True)
     digital_doc_name = fields.Char('Nombre del comprobante')
     digital_doc_description = fields.Char('Descripción del comprobante')
 
