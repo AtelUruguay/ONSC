@@ -14,8 +14,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
     # inciso = fields.Char("Inciso")
     # TO-DO: Revisar este campo, No esta en catalogo
     # executing_unit = fields.Char("Unidad ejecutora")
-    hours_worked_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente", required=True,
-                                          help='“En caso de no disponer las horas se debe estimar')
+    hours_worked_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente", required=True)
     currently_working = fields.Selection(string="Actualmente trabajando", selection=WORKING_STATE, required=True)
     position = fields.Char("Cargo", required=True)
     is_paid_activity = fields.Selection(string="¿Actividad remunerada?", selection=PAID_ACTIVITY_TYPES, required=True)

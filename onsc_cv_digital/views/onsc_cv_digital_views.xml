@@ -120,8 +120,7 @@
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="cjppu_affiliate_number"/>
-                                    <field name="professional_resume"
-                                           placeholder="Resumen del candidato a modo de introducción"/>
+                                    <field name="professional_resume"/>
                                     <field name="user_linkedIn"/>
                                     <field name="personal_phone" widget="phone"/>
                                     <field name="mobile_phone" widget="phone"/>
@@ -156,7 +155,7 @@
                                 </group>
                                 <group string="Carnet de Identidad">
                                     <field name="document_identity_file"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                           options="{'accepted_file_extensions':'.pdf'}"/>
                                 </group>
                             </group>
                             <group>
