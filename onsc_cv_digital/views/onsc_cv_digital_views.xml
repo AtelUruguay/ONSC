@@ -101,12 +101,12 @@
                                     <field name="is_cv_race_public"/>
                                     <field name="is_cv_race_option_other_enable" invisible="1"/>
                                     <field name="is_multiple_cv_race_selected" invisible="1"/>
+                                    <field name="is_afro_descendants"/>
+                                    <field name="afro_descendants_file"
+                                           attrs="{'required': [('is_afro_descendants', '=', True)]}"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
                                 </group>
-                                <group string="Información patronímica" name="other_info_group">
-                                    <field name="cv_full_name_updated_date"/>
-                                </group>
-                                <group>
-                                </group>
+
                             </group>
                             <group string="Datos personales">
                                 <group>
@@ -119,20 +119,19 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <field name="cjppu_affiliate_number"/>
-                                    <field name="professional_resume"
-                                           placeholder="Resumen del candidato a modo de introducción"/>
-                                    <field name="user_linkedIn"/>
+                                    <field name="document_identity_file"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+
+                                    <field name="is_driver_license"/>
+                                </group>
+                                <group>
                                     <field name="personal_phone" widget="phone"/>
                                     <field name="mobile_phone" widget="phone"/>
                                     <field name="email" widget="email"/>
-                                </group>
-                                <group>
-                                    <field name="is_afro_descendants"/>
-                                    <field name="afro_descendants_file"
-                                           attrs="{'required': [('is_afro_descendants', '=', True)]}"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="is_driver_license"/>
+                                    <field name="user_linkedIn"/>
+                                    <field name="cjppu_affiliate_number"/>
+                                    <field name="professional_resume"
+                                           placeholder="Resumen del candidato a modo de introducción"/>
                                 </group>
                             </group>
                             <group string="Licencias de Conducir"
@@ -154,12 +153,6 @@
                                            attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                 </group>
-                                <group string="Carnet de Identidad">
-                                    <field name="document_identity_file"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                </group>
-                            </group>
-                            <group>
                                 <group string="Certificado de aptitud médico-deportiva">
                                     <field name="medical_aptitude_certificate_status"/>
                                     <field name="medical_aptitude_certificate_date"
@@ -168,10 +161,8 @@
                                            options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}"/>
                                 </group>
-                                <group string="Credencial cívica">
-                                    <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
-                                </group>
+                            </group>
+                            <group>
                                 <group string="Víctima de delitos violentos">
                                     <field name="is_victim_violent"/>
                                     <field name="relationship_victim_violent_file"
@@ -179,6 +170,9 @@
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="is_public_information_victim_violent"/>
                                 </group>
+                            </group>
+                            <group string="Información patronímica" name="other_info_group">
+                                <field name="cv_full_name_updated_date"/>
                             </group>
                         </page>
                         <page name="address" string="Domicilio">
