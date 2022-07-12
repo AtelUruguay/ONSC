@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital',
-    'version': '15.0.2.0.0.',
+    'version': '15.0.2.0.1',
     'summary': 'ONSC CV Digital',
     'sequence': 10,
     'description': """
@@ -71,6 +71,7 @@ ONSC CV Digital
         'views/onsc_cv_formation_views.xml',
         'views/onsc_cv_digital_views.xml',
         'views/onsc_cv_digital_work_experience_views.xml',
+        'views/onsc_cv_work_teaching_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
