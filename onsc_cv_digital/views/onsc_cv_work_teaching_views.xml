@@ -100,7 +100,7 @@
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
                 <field name="hours_worked_monthly" optional="show"/>
-                <field name="program_name" optional="show"/>
+                <field name="program_name" string="Cátedra/programa" optional="show"/>
                 <field name="currently_working" optional="hide"/>
                 <field name="position" optional="hide"/>
                 <field name="position_type" optional="hide"/>
