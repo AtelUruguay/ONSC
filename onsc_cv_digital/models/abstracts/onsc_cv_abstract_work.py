@@ -25,7 +25,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
-        if self.start_date and self.end_date and self.state == 'completed' and self.end_date <= self.start_date:
+        if self.start_date and self.end_date and self.end_date <= self.start_date:
             self.end_date = self.start_date
 
     @api.onchange('end_date')
