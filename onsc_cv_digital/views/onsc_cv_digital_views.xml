@@ -86,11 +86,13 @@
                                     <field name="cv_gender_id"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
-                                    <field name="cv_gender_record"
+                                    <field name="cv_gender_record_file"
+                                           filename="cv_gender_record_filename"
                                            attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
                                     <field name="is_cv_gender_public"/>
                                     <field name="is_cv_gender_option_other_enable" invisible="1"/>
                                     <field name="is_cv_gender_record" invisible="1"/>
+                                    <field name="cv_gender_record_filename" invisible="1"/>
                                 </group>
                                 <group string="Raza">
                                     <field name="cv_race_ids" widget="many2many_tags"/>
@@ -103,8 +105,10 @@
                                     <field name="is_multiple_cv_race_selected" invisible="1"/>
                                     <field name="is_afro_descendants"/>
                                     <field name="afro_descendants_file"
+                                           filename="afro_descendants_filename"
                                            attrs="{'required': [('is_afro_descendants', '=', True)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="afro_descendants_filename" invisible="1"/>
                                 </group>
                             </group>
                             <group string="Datos personales">
@@ -117,11 +121,14 @@
                                     <field name="credential_number"
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
+                                           filename="civical_credential_filename"
                                            attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="document_identity_file"
+                                           filename="document_identity_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
-
                                     <field name="is_driver_license"/>
+                                    <field name="document_identity_filename" invisible="1"/>
+                                    <field name="civical_credential_filename" invisible="1"/>
                                 </group>
                                 <group>
                                     <field name="personal_phone" widget="phone"/>
@@ -139,7 +146,10 @@
                                     <tree editable="bottom">
                                         <field name="validation_date"/>
                                         <field name="category_id"/>
-                                        <field name="license_file" options="{'accepted_file_extensions': '.pdf'}"/>
+                                        <field name="license_file"
+                                               filename="license_filename"
+                                               options="{'accepted_file_extensions': '.pdf'}"/>
+                                        <field name="license_filename" invisible="1"/>
                                     </tree>
                                 </field>
                             </group>
@@ -149,25 +159,31 @@
                                     <field name="occupational_health_card_date"
                                            attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"/>
                                     <field name="occupational_health_card_file"
+                                           filename="occupational_health_card_filename"
                                            attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="occupational_health_card_filename"/>
                                 </group>
                                 <group string="Certificado de aptitud médico-deportiva">
                                     <field name="medical_aptitude_certificate_status"/>
                                     <field name="medical_aptitude_certificate_date"
                                            attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}"/>
                                     <field name="medical_aptitude_certificate_file"
+                                           filename="medical_aptitude_certificate_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}"/>
+                                    <field name="medical_aptitude_certificate_filename" invisible="1"/>
                                 </group>
                             </group>
                             <group>
                                 <group string="Víctima de delitos violentos">
                                     <field name="is_victim_violent"/>
                                     <field name="relationship_victim_violent_file"
+                                           filename="relationship_victim_violent_filename"
                                            attrs="{'invisible': [('is_victim_violent', '=', False)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="is_public_information_victim_violent"/>
+                                    <field name="relationship_victim_violent_filename" invisible="1"/>
                                 </group>
                             </group>
                             <group string="Información patronímica" name="other_info_group">

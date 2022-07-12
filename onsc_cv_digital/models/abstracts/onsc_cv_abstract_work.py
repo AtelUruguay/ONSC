@@ -25,6 +25,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
     company_name = fields.Char("Empresa")
     description_tasks = fields.Char(string="Descripción de tareas", required=True)
     receipt_file = fields.Binary("Comprobante", required=True)
+    receipt_filename = fields.Char('Nombre del documento digital')
     receipt_description = fields.Char("Descripción del comprobante")
     start_date = fields.Date("Período desde", required=True)
     end_date = fields.Date("Período hasta", required=True)
