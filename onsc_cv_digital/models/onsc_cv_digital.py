@@ -184,7 +184,7 @@ class ONSCCVDigital(models.Model):
     is_occupational_health_card = fields.Boolean(string="Carné de salud laboral")
     occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
     occupational_health_card_file = fields.Binary(
-        string="Documento digitalizado del Carné de Salud Laboral")
+        string="Documento digitalizado del carné de salud laboral")
 
     document_identity_file = fields.Binary(string="Documento digitalizado del documento de identidad")
 
