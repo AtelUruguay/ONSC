@@ -1,0 +1,75 @@
+# -*- coding: utf-8 -*-
+from odoo import fields, models, api, _
+
+POSITION_TYPES = [('effective', 'Efectivo'), ('interim', 'Interino'), ('honorary', 'Honorario')]
+INVESTIGATION_TYPES = [('invest_line', 'Línea de investigación'),
+                       ('invest_project', 'Proyecto de investigación'), ('develop', 'Desarrollo')]
+PARTICIPATION_TYPES = [('coordinator', 'Coordinador o responsable'), ('team_member', 'Integrante del equipo')]
+CATEGORY_TYPES = [('applied', 'Aplicada'), ('fundamental', 'Fundamental'), ('mixed', 'Mixta')]
+SITUATION_TYPES = [('canceled', 'Cancelado'), ('finished', 'Concluido'), ('in_progress', 'En marcha')]
+
+
+class ONSCCVWorkInvestigation(models.Model):
+    _name = 'onsc.cv.work.investigation'
+    _description = 'Investigación'
+    _inherit = ['onsc.cv.abstract.work', 'onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.institution']
+    _catalogs2validate = ['institution_id', 'subinstitution_id']
+
+    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
+    investigation_type = fields.Selection(INVESTIGATION_TYPES, 'Tipo de investigación', required=True)
+    name = fields.Char('Nombre de la investigación', required=True)
+    description = fields.Text('Descripción de la investigación', required=True)
+    participation_type = fields.Selection(PARTICIPATION_TYPES, 'Tipo de participación', required=True)
+    category_type = fields.Selection(CATEGORY_TYPES, 'Categoría')
+    situation_type = fields.Selection(SITUATION_TYPES, 'Situación')
+    research_type_id = fields.Many2one('onsc.cv.research.types.classes', string='Tipo/clase')
+    is_option_other_enable = fields.Boolean(related='research_type_id.is_option_other_enable')
+    other_research_type = fields.Char('Otro tipo/clase')
+
+    # Grilla Integrantes
+    member_ids = fields.One2many('onsc.cv.work.investigation.member', inverse_name='investigation_id',
+                                 string='Integrantes')
+
+    # Grilla Áreas relacionadas con esta educación
+    education_area_ids = fields.One2many('onsc.cv.education.area.investigation', inverse_name='investigation_id',
+                                         string="Áreas relacionadas con esta educación")
+    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', relation='knowledge_acquired_investigation_rel',
+                                              string="Conocimientos adquiridos")
+
+    additional_information = fields.Text(string="Información adicional")
+    other_relevant_information = fields.Text(string="Otra información relevante")
+
+    digital_doc_file = fields.Binary('Comprobantes', required=True)
+    digital_doc_name = fields.Char('Nombre del comprobante')
+
+    @api.onchange('knowledge_acquired_ids')
+    def onchange_knowledge_acquired_ids(self):
+        if len(self.knowledge_acquired_ids) > 5:
+            self.knowledge_acquired_ids = self.knowledge_acquired_ids[:5]
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "Sólo se pueden seleccionar 5 tipos de conocimientos"
+                    )
+                },
+
+            }
+
+
+class ONSCCVWorkInvestigationMember(models.Model):
+    _name = 'onsc.cv.work.investigation.member'
+
+    investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación')
+    member = fields.Char('Integrante', required=True)
+    is_responsible = fields.Boolean('¿Responsable?')
+    citation = fields.Text('Citación')
+
+
+class ONSCCVEducationAreaCourse(models.Model):
+    _name = 'onsc.cv.education.area.investigation'
+    _inherit = ['onsc.cv.abstract.formation.line']
+    _description = 'Áreas relacionadas con esta educación (Investigación)'
+
+    investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación')

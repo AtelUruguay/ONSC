@@ -284,6 +284,12 @@
                             </div>
                             <field name="work_teaching_ids"/>
                         </page>
+                        <page name="work_investigation" string="Investigación">
+                            <div class="float-right">
+                                <field name="cv_help_work_investigation"/>
+                            </div>
+                            <field name="work_investigation_ids"/>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
