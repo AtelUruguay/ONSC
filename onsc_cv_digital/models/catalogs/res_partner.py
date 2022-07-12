@@ -77,7 +77,7 @@ class ResPartner(models.Model):
     @api.depends('is_partner_cv', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_cv_full_name(self):
         """Calcula para cada record los campos cv_full_name y cv_full_name_updated_date"""
-        for record in self:            
+        for record in self:
             if record.is_partner_cv:
                 record.cv_full_name = calc_full_name(record.cv_first_name, record.cv_second_name,
                                                      record.cv_last_name_1, record.cv_last_name_2)
