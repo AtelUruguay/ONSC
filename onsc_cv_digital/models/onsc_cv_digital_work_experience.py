@@ -27,4 +27,4 @@ class ONSCCVDigitalWorkExperience(models.Model):
 class ONSCCVDigitalOriginInstitutionTask(models.Model):
     _inherit = 'onsc.cv.origin.abstract.task'
 
-    work_experience_id = fields.Many2one("onsc.cv.work.experience", string="Experiencia laboral", index=True)
+    work_experience_id = fields.Many2one("onsc.cv.work.experience", string="Experiencia laboral", index=True, ondelete='cascade')

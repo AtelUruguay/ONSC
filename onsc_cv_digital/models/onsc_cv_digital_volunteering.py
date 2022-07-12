@@ -22,4 +22,4 @@ class ONSCCVDigitalVolunteeringTask(models.Model):
     _description = 'Tareas realizadas'
     _inherit = 'onsc.cv.origin.abstract.task'
 
-    volunteering_id = fields.Many2one("onsc.cv.volunteering", string="Voluntariado", index=True)
+    volunteering_id = fields.Many2one("onsc.cv.volunteering", string="Voluntariado", index=True, ondelete='cascade')

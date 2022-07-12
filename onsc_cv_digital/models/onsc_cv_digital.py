@@ -205,6 +205,7 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
+    # Experiencia Laboral ----<Page>
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
                                           string="Experiencia laboral")
     volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
