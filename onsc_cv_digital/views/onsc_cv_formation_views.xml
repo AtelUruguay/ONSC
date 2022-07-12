@@ -46,9 +46,9 @@
                             <field name="coursed_years"
                                    attrs="{'invisible': [('state', 'not in', ['in_progress','incomplete'])], 'required': [('state', 'in', ['in_progress','incomplete'])]}"/>
                             <field name="other_relevant_information"/>
-                            <field name="study_certificate_file" filename="study_certificate_name"
+                            <field name="study_certificate_file" filename="study_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
-                            <field name="study_certificate_name" invisible="1"/>
+                            <field name="study_certificate_filename" invisible="1"/>
                             <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
@@ -156,18 +156,18 @@
                             <field name="credits_training"
                                    attrs="{'invisible': [('state', '=', 'completed')],'required': [('state', '!=', 'completed')]}"/>
                             <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"/>
-                            <field name="egress_certificate_file" filename="egress_certificate_name"
+                            <field name="egress_certificate_file" filename="egress_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
-                            <field name="revalidated_certificate_file" filename="revalidated_certificate_name"
+                            <field name="revalidated_certificate_file" filename="revalidated_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
-                            <field name="homologated_certificate_file" filename="homologated_certificate_name"
+                            <field name="homologated_certificate_file" filename="homologated_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
-                            <field name="apostille_file" filename="apostille_name"
+                            <field name="apostille_file" filename="apostille_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
-                            <field name="egress_certificate_name" invisible="1"/>
-                            <field name="revalidated_certificate_name" invisible="1"/>
-                            <field name="homologated_certificate_name" invisible="1"/>
-                            <field name="apostille_name" invisible="1"/>
+                            <field name="egress_certificate_filename" invisible="1"/>
+                            <field name="revalidated_certificate_filename" invisible="1"/>
+                            <field name="homologated_certificate_filename" invisible="1"/>
+                            <field name="apostille_filename" invisible="1"/>
                             <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
