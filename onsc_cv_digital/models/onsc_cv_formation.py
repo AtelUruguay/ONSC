@@ -35,7 +35,7 @@ class ONSCCVFormationAdvanced(models.Model):
                                         selection=[('yes', u'Si'), ('no', u'No')])
     apostilled_date = fields.Date(string="Fecha de apostillado")
     egress_date = fields.Date(string="Fecha de egreso")
-    issue_title_date = fields.Date(string="Fecha de expedición Título")
+    issue_title_date = fields.Date(string="Fecha de expedición título")
     is_require_thesis = fields.Boolean(string="¿Su estudio requiere o requirió tesis?")
     state_thesis = fields.Selection(string=u'Estado de la tesis',
                                     selection=[('no_starting', u'Sin comenzar'), ('in_progress', u'En curso'),
