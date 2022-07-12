@@ -93,8 +93,8 @@
         <field name="model">onsc.cv.work.teaching</field>
         <field name="arch" type="xml">
             <tree string="Docencias" decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="start_date" optional="show"/>
-                <field name="end_date" optional="show"/>
+                <field name="start_date" string="Período desde en institución" optional="show"/>
+                <field name="end_date" string="Período hasta en institución" optional="show"/>
                 <field name="professional_link_id" optional="show"/>
                 <field name="country_id" optional="show"/>
                 <field name="institution_id" optional="show"/>
