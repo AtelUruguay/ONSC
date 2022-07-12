@@ -17,4 +17,3 @@ class ONSCCVDigital(models.Model):
     def _compute_gender_public_visualization_date(self):
         for record in self:
             record.gender_public_visualization_date = fields.Date.today()
-
