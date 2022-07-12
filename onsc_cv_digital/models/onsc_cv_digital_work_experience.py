@@ -3,10 +3,9 @@ from odoo import fields, models
 
 
 class ONSCCVDigitalWorkExperience(models.Model):
-
     _name = 'onsc.cv.work.experience'
     _description = 'Experiencia laboral'
-    _inherit = 'onsc.cv.abstract.origin.institution'
+    _inherit = 'onsc.cv.abstract.work'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade')
     position = fields.Char("Cargo", required=True)

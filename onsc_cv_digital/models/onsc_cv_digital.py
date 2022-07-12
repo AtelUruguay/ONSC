@@ -147,6 +147,10 @@ class ONSCCVDigital(models.Model):
         compute=lambda s: s._get_help('cv_help_work_experience'),
         default=lambda s: s._get_help('cv_help_work_experience', True)
     )
+    cv_help_work_teaching = fields.Html(
+        compute=lambda s: s._get_help('cv_help_work_teaching'),
+        default=lambda s: s._get_help('cv_help_work_teaching', True)
+    )
     cv_help_formation = fields.Html(
         compute=lambda s: s._get_help('cv_help_formation'),
         default=lambda s: s._get_help('cv_help_formation', True)
@@ -204,6 +208,9 @@ class ONSCCVDigital(models.Model):
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
                                           string="Experiencia laboral")
     volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
+
+    # Docencia ----<Page>
+    work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencia')
 
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
