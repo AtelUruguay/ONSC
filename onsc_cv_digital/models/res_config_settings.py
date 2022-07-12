@@ -12,3 +12,4 @@ class ResConfigSettings(models.TransientModel):
     cv_help_work_teaching = fields.Char(related="company_id.cv_help_work_teaching", readonly=False)
     cv_help_formation = fields.Char(related="company_id.cv_help_formation", readonly=False)
     cv_help_course_certificate = fields.Char(related="company_id.cv_help_course_certificate", readonly=False)
+    cv_help_volunteering = fields.Char(related="company_id.cv_help_volunteering", readonly=False)
