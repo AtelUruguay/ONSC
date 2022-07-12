@@ -11,7 +11,7 @@
                         <group>
                             <field name="position"/>
                             <field name="country_id"  string="Pais donde desempeñó"/>
-                            <field name="city_id"/>
+                            <field name="city_id" context="{'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="company_type"/>
                             <field name="country_code" invisible="1"/>
                             <field name="company_name"
@@ -28,7 +28,7 @@
                             <field name="start_date"/>
                             <field name="currently_working"/>
                             <field name="end_date"/>
-                            <field name="hours_monthly"/>
+                            <field name="hours_worked_monthly"/>
                             <field name="description_tasks"/>
                             <field name="receipt_file" options="{'accepted_file_extensions': '.pdf'}"/>
                         </group>
