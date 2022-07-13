@@ -136,18 +136,17 @@
                                    attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
                             <field name="description_thesis"
                                    attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
-                            <field name="tutor"
-                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
-                            <field name="knowledge_thesis_ids" options="{'limit':5}" widget="many2many_tags"
-                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
-                            <field name="other_relevant_information"/>
-                            <field name="country_code" invisible="1"/>
-                        </group>
-                        <group>
                             <field name="final_note_thesis"
                                    attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
                             <field name="max_note_thesis"
                                    attrs="{'invisible': [('final_note_thesis', 'in', [0.00,''])],'required': [('final_note_thesis', 'not in', [0.00,''])]}"/>
+                        </group>
+                        <group>
+                            <field name="tutor"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                            <field name="knowledge_thesis_ids" options="{'limit':5}" widget="many2many_tags"
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                            <field name="country_code" invisible="1"/>
                             <field name="scholarship"/>
                             <field name="max_scholarship"
                                    attrs="{'invisible': [('scholarship', 'in', [0.00,''])],'required': [('scholarship', 'not in', [0.00,''])]}"/>
@@ -172,20 +171,24 @@
                         </group>
                     </group>
                     <br/>
-                    <div>
-                        <h4>Áreas relacionadas con esta educación</h4>
-                    </div>
-                    <field name="area_related_education_ids">
-                        <tree string="Formación básica" editable="top">
-                            <field name="educational_areas_id"/>
-                            <field name="educational_subareas_id"
-                                   domain="[('area_id', '=', educational_areas_id)]"
-                                   context="{'default_area_id': educational_areas_id}"/>
-                            <field name="discipline_educational_id"
-                                   domain="[('subarea_id', '=', educational_subareas_id)]"
-                                   context="{'default_area_id': educational_areas_id, 'default_subarea_id': educational_subareas_id}"/>
-                        </tree>
-                    </field>
+                    <notebook>
+                        <page string="Áreas relacionadas con esta educación">
+                            <field name="area_related_education_ids">
+                                <tree string="Formación avanzada" editable="top">
+                                    <field name="educational_areas_id"/>
+                                    <field name="educational_subareas_id"
+                                           domain="[('area_id', '=', educational_areas_id)]"
+                                           context="{'default_area_id': educational_areas_id}"/>
+                                    <field name="discipline_educational_id"
+                                           domain="[('subarea_id', '=', educational_subareas_id)]"
+                                           context="{'default_area_id': educational_areas_id, 'default_subarea_id': educational_subareas_id}"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Otra información relevante">
+                            <field name="other_relevant_information"/>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
