@@ -82,6 +82,15 @@ class ONSCCVFormationAdvanced(models.Model):
         else:
             self.state_thesis = ''
 
+    @api.onchange('advanced_study_level_id', 'subinstitution_id')
+    def onchange_academic_program_id_parents(self):
+        condition1 = self.advanced_study_level_id.id is False or \
+                     (self.advanced_study_level_id != self.academic_program_id.study_level_id)
+        condition2 = self.subinstitution_id.id is False or \
+                     (self.subinstitution_id != self.academic_program_id.subinstitution_id)
+        if condition1 or condition2:
+            self.academic_program_id = False
+
 
 class ONSCCVAreaRelatedEducation(models.Model):
     _name = 'onsc.cv.area.related.education'
