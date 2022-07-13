@@ -54,8 +54,7 @@ class ONSCAbstractFormationLine(models.AbstractModel):
 
     @api.onchange('educational_area_id')
     def onchange_educational_area_id(self):
-        if self.educational_area_id.id is False or \
-                     (self.educational_area_id != self.educational_subarea_id.area_id):
+        if self.educational_area_id.id is False or (self.educational_area_id != self.educational_subarea_id.area_id):
             self.educational_subarea_id = False
 
     @api.onchange('educational_subarea_id')
