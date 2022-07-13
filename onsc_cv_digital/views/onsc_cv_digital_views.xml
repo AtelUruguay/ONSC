@@ -231,9 +231,9 @@
                                     <field name="cv_address_street3" string="Y calle"/>
                                 </group>
                                 <group>
-                                    <field name="cv_address_apto"/>
                                     <field name="cv_address_nro_door"/>
                                     <field name="cv_address_is_cv_bis"/>
+                                    <field name="cv_address_apto"/>
                                     <field name="cv_address_zip" string="C.P"/>
                                 </group>
                             </group>
