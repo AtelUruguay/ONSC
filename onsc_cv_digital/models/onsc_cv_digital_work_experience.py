@@ -4,8 +4,9 @@ from odoo import fields, models
 
 class ONSCCVDigitalWorkExperience(models.Model):
     _name = 'onsc.cv.work.experience'
+    _inherit = ['onsc.cv.abstract.work', 'onsc.cv.abstract.conditional.state']
     _description = 'Experiencia laboral'
-    _inherit = 'onsc.cv.abstract.work'
+    _catalogs2validate = ['city_id']
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade')
     city_id = fields.Many2one("onsc.cv.location", string="Ciudad donde desempeñó", required=True)
@@ -20,11 +21,13 @@ class ONSCCVDigitalWorkExperience(models.Model):
     organizational_units_charge = fields.Integer("Cantidad de unidades organizativas a cargo", required=True)
     # TO-DO: Revisar este campo, No esta en catalogo
     # reason_discharge = fields.Char("Causal de egreso")
-    task_ids = fields.One2many("onsc.cv.origin.abstract.task", inverse_name="work_experience_id",
+    task_ids = fields.One2many("onsc.cv.work.experience.task", inverse_name="work_experience_id",
                                string="Tareas", required=False, )
 
 
 class ONSCCVDigitalOriginInstitutionTask(models.Model):
+    _name = 'onsc.cv.work.experience.task'
     _inherit = 'onsc.cv.origin.abstract.task'
+    _description = 'Tareas de experiencia laboral'
 
-    work_experience_id = fields.Many2one("onsc.cv.work.experience", string="Experiencia laboral", index=True, ondelete='cascade')
+    work_experience_id = fields.Many2one("onsc.cv.work.experience", string="Experiencia laboral", ondelete='cascade')

@@ -55,7 +55,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
             }
 
 
-class ONSCCVDigitalOriginInstitutionTask(models.Model):
+class ONSCCVDigitalOriginInstitutionTask(models.AbstractModel):
     _name = 'onsc.cv.origin.abstract.task'
     _description = 'Tareas realizadas'
 
