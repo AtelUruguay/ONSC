@@ -42,7 +42,7 @@ class ONSCCVCourseCertificate(models.Model):
     line_ids = fields.One2many('onsc.cv.education.area.course', inverse_name='course_id',
                                string="Áreas relacionadas con esta educación")
     digital_doc_file = fields.Binary('Certificado/constancia', required=False)
-    digital_doc_name = fields.Char('Nombre del documento digital')
+    digital_doc_filename = fields.Char('Nombre del documento digital')
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired_course_rel',
                                               string=u'Conocimientos adquiridos', required=True,
                                               store=True)

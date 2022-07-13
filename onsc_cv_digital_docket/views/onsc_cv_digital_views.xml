@@ -9,7 +9,8 @@
                 <field name="gender_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
                 <field name="gender_public_visualization_date"
-                       attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
+                       attrs="{'invisible': [('is_docket', '=', False)]}"/>
+                <!--TODO-->
                 <field name="is_docket" invisible="0"/>
             </field>
             <field name="is_cv_race_public" position="after">

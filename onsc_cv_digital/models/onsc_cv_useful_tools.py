@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 def _get_validation_status(record, conditional_catalog_list):
     """
     :param str record: Odoo recodset sobre el que se desea conocer el Estado de Catálogos condicionales

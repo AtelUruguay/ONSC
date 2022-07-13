@@ -54,9 +54,9 @@
                             <field name="program_name"
                                    attrs="{'invisible': [('responsible_type', '!=', 'no')],'required': [('responsible_type', '=', 'no')]}"/>
                             <field name="hours_worked_monthly"/>
-                            <field name="digital_doc_file" filename="digital_doc_name"
+                            <field name="digital_doc_file" filename="digital_doc_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
-                            <field name="digital_doc_name" invisible="1"/>
+                            <field name="digital_doc_filename" invisible="1"/>
                             <field name="digital_doc_description"/>
                         </group>
                     </group>

@@ -4,8 +4,6 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
-from .catalogs.res_partner import CV_SEX
-
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
@@ -68,7 +66,6 @@ class ONSCCVDigital(models.Model):
         string=u'Fecha de nacimiento',
         related='partner_id.cv_birthdate', store=True, readonly=False)
     cv_sex = fields.Selection(
-        CV_SEX,
         string=u'Sexo',
         related='partner_id.cv_sex', store=True, readonly=False)
     cv_sex_updated_date = fields.Date(
@@ -89,7 +86,8 @@ class ONSCCVDigital(models.Model):
         related='cv_gender_id.is_option_other_enable',
         store=True)
     cv_gender2 = fields.Char(string=u"Otro género")
-    cv_gender_record = fields.Binary(string="Constancia de identidad de género")
+    cv_gender_record_file = fields.Binary(string="Constancia de identidad de género")
+    cv_gender_record_filename = fields.Char('Nombre del documento digital')
     is_cv_gender_public = fields.Boolean(string="¿Permite que su género sea público?")
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
     # Raza
@@ -163,7 +161,10 @@ class ONSCCVDigital(models.Model):
         compute=lambda s: s._get_help('cv_help_course_certificate'),
         default=lambda s: s._get_help('cv_help_course_certificate', True)
     )
-
+    cv_help_volunteering = fields.Html(
+        compute=lambda s: s._get_help('cv_help_volunteering'),
+        default=lambda s: s._get_help('cv_help_volunteering', True)
+    )
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
                                       selection=[('legal', 'Legal'), ('natural', 'Natural'),
@@ -177,6 +178,7 @@ class ONSCCVDigital(models.Model):
     is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
     afro_descendants_file = fields.Binary(
         string='Documento digitalizado "Declaración de afrodescendencia" / formulario web de declaración jurada de afrodescendencia (Art. 4 Ley N°19.122) ')
+    afro_descendants_filename = fields.Char('Nombre del documento digital')
     is_driver_license = fields.Boolean(string="Tiene licencia de conducir")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
                                           inverse_name="cv_digital_id", string="Licencias de conducir")
@@ -188,32 +190,39 @@ class ONSCCVDigital(models.Model):
     is_occupational_health_card = fields.Boolean(string="Carné de salud laboral")
     occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
     occupational_health_card_file = fields.Binary(
-        string="Documento digitalizado del Carné de Salud Laboral")
+        string="Documento digitalizado del carné de salud laboral")
+    occupational_health_card_filename = fields.Char('Nombre del documento digital')
 
     document_identity_file = fields.Binary(string="Documento digitalizado del documento de identidad")
+    document_identity_filename = fields.Char('Nombre del documento digital')
 
-    civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica",
-                                            required=False, )
+    civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica")
+    civical_credential_filename = fields.Char('Nombre del documento digital')
     medical_aptitude_certificate_status = fields.Selection(string="Certificado de aptitud médico-deportiva",
                                                            selection=[('si', 'Si'), ('no', 'No'), ])
     medical_aptitude_certificate_date = fields.Date(
         string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
     medical_aptitude_certificate_file = fields.Binary(
         string="Documento digitalizado del certificado de aptitud médico-deportiva")
+    medical_aptitude_certificate_filename = fields.Char('Nombre del documento digital')
 
     is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)", )
     relationship_victim_violent_file = fields.Binary(
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
+    relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
     # Experiencia Laboral ----<Page>
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
                                           string="Experiencia laboral")
+
     # Docencia ----<Page>
     work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencias')
     # Investigación ----<Page>
     work_investigation_ids = fields.One2many('onsc.cv.work.investigation', inverse_name='cv_digital_id',
                                              string='Investigaciones')
+    # Voluntariado ----<Page>
+    volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
 
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)

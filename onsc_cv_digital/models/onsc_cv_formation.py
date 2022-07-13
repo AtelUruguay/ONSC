@@ -16,7 +16,7 @@ class ONSCCVFormationBasic(models.Model):
                                                         ('utu', u'UTU')], required=True)
     coursed_years = fields.Text(string="Años cursados")
     study_certificate_file = fields.Binary(string="Certificado de estudio", required=True)
-    study_certificate_name = fields.Char(string="Nombre certificado de estudio")
+    study_certificate_filename = fields.Char('Nombre del documento digital')
 
 
 class ONSCCVFormationAdvanced(models.Model):
@@ -35,7 +35,7 @@ class ONSCCVFormationAdvanced(models.Model):
                                         selection=[('yes', u'Si'), ('no', u'No')])
     apostilled_date = fields.Date(string="Fecha de apostillado")
     egress_date = fields.Date(string="Fecha de egreso")
-    issue_title_date = fields.Date(string="Fecha de expedición Título")
+    issue_title_date = fields.Date(string="Fecha de expedición título")
     is_require_thesis = fields.Boolean(string="¿Su estudio requiere o requirió tesis?")
     state_thesis = fields.Selection(string=u'Estado de la tesis',
                                     selection=[('no_starting', u'Sin comenzar'), ('in_progress', u'En curso'),
@@ -59,14 +59,14 @@ class ONSCCVFormationAdvanced(models.Model):
                                                  string=u'Áreas relacionadas con esta educación')
     other_relevant_information = fields.Text(string="Otra información relevante")
     egress_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad", required=True)
-    egress_certificate_name = fields.Char(string="Nombre certificado de egreso")
+    egress_certificate_filename = fields.Char('Nombre del documento digital')
     revalidated_certificate_file = fields.Binary(string="Certificado de reválida de título",
                                                  help="Certificado de reválida de título / Resolución de reválida de título / Titulo revalidado")
-    revalidated_certificate_name = fields.Char(string="Nombre certificado de reválida de título")
+    revalidated_certificate_filename = fields.Char('Nombre del documento digital')
     homologated_certificate_file = fields.Binary(string="Certificado de homologación")
-    homologated_certificate_name = fields.Char(string="Nombre certificado de homologación")
+    homologated_certificate_filename = fields.Char('Nombre del documento digital')
     apostille_file = fields.Binary(string="Apostilla")
-    apostille_name = fields.Char(string="Nombre apostilla")
+    apostille_filename = fields.Char('Nombre del documento digital')
 
     country_code = fields.Char(related="country_id.code")
 

@@ -9,5 +9,6 @@ from . import onsc_cv_digital_general_info
 from . import onsc_cv_digital_work_experience
 from . import onsc_cv_formation
 from . import onsc_cv_course_certificate
+from . import onsc_cv_digital_volunteering
 from . import onsc_cv_work_teaching
 from . import onsc_cv_work_investigation
