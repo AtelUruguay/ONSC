@@ -26,9 +26,6 @@
                     </div>
                     <group>
                         <group>
-                            <field name="conditional_validation_state" invisible="1"/>
-                            <field name="cv_digital_id" invisible="1"/>
-                            <field name="record_type" invisible="1"/>
                             <field name="course_type"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="course_title"
@@ -36,30 +33,26 @@
                             <field name="institution_id"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"
                                    domain="institution_id_domain" context="{'default_country_id': country_id, 'is_readonly': True}"/>
-                            <field name="institution_id_domain" invisible="1"/>
                             <field name="subinstitution_id"
-                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="country_id"
                                    attrs="{'invisible': [('record_type', '!=', 'course')],'required': [('record_type', '=', 'course')]}"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="country_id_domain" invisible="1"/>
                             <field name="certificate_id"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
                                    context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id, 'is_readonly': True}"/>
                             <field name="institution_cert_id"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
                                    domain="institution_cert_id_domain"/>
-                            <field name="institution_cert_id_domain" invisible="1"/>
                             <field name="subinstitution_cert_id"
-                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')],'readonly': [('institution_cert_id', '=', False)]}"
                                    context="{'default_institution_cert_id': institution_cert_id, 'is_readonly': True}"
                                    domain="[('institution_cert_id', '=', institution_cert_id)]"/>
                             <field name="approbation_mode" states='completed'
                                    attrs="{'invisible': ['|',('record_type', '!=', 'course')], 'required': [('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
-
                             <field name="evaluation_str" states="completed"
                                    attrs="{'invisible': ['|',('approbation_mode', '!=', 'by_evaluation')], 'required': [('approbation_mode', '=', 'by_evaluation'),('state', '=', 'completed')]}"/>
                             <field name="evaluation_number"
@@ -70,12 +63,18 @@
                                    attrs="{'invisible': ['|',('evaluation_max_str', '=', False),('is_numeric_max_evaluation', '=', True)], 'required': [('evaluation_max_str', '!=', False),('is_numeric_max_evaluation', '=', False)]}"/>
                             <field name="is_numeric_evaluation" invisible="1"/>
                             <field name="is_numeric_max_evaluation" invisible="1"/>
+                            <field name="institution_cert_id_domain" invisible="1"/>
+                            <field name="conditional_validation_state" invisible="1"/>
+                            <field name="cv_digital_id" invisible="1"/>
+                            <field name="record_type" invisible="1"/>
+                            <field name="institution_id_domain" invisible="1"/>
+                            <field name="country_id_domain" invisible="1"/>
                         </group>
                         <group>                            
                             <field name="state" attrs="{'readonly': [('record_type', '=', 'certificate')]}"/>
                             <field name="start_date" attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="certificate_strat_date" attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"/>
-                            <field name="end_date" states="completed" attrs="{'invisible': ['|',('record_type', '!=', 'course')],'required': [('state', '=', 'completed')]}"/>
+                            <field name="end_date" states="completed" attrs="{'invisible': ['|',('record_type', '!=', 'course')],'required': [('record_type', '!=', 'certificate'),('state', '=', 'completed')]}"/>
                             <field name="induction_type"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="dictation_mode" attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>

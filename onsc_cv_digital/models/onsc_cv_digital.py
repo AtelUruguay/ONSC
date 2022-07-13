@@ -268,6 +268,16 @@ class ONSCCVDigital(models.Model):
             self.cv_birthdate = False
             return result
 
+    @api.onchange('country_id')
+    def onchange_country_id(self):
+        if self.cv_address_state_id.country_id.id != self.country_id.id:
+            self.cv_address_state_id = False
+
+    @api.onchange('cv_address_state_id')
+    def onchange_cv_address_state_id(self):
+        self.country_id = self.cv_address_state_id.country_id.id
+        self.cv_address_location_id = False
+
     def button_edit_address(self):
         self.ensure_one()
         title = self.country_id and _('Editar domicilio') or _('Agregar domicilio')

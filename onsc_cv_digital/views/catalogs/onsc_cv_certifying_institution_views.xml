@@ -61,7 +61,13 @@
                     <notebook>
                         <page string="Sub instituciones certificadoras"
                               groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv">
-                            <field name="subinstitution_cert_ids" context="{'from_institution': 1}"/>
+                            <field name="subinstitution_cert_ids" context="{'from_institution': 1}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="company_id" groups="base.group_multi_company"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>

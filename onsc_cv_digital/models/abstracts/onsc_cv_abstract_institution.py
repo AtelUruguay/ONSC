@@ -43,10 +43,10 @@ class ONSCCVAbstractInstitution(models.AbstractModel):
         else:
             self.country_id = False
         if (self.institution_id and self.institution_id != self.subinstitution_id.institution_id) or \
-                self.institution_id is False:
+                self.institution_id.id is False:
             self.subinstitution_id = False
 
     @api.onchange('country_id')
     def onchange_country_id(self):
-        if self.country_id and self.country_id != self.institution_id.country_id:
+        if self.country_id and self.country_id != self.institution_id.country_id or self.country_id.id is False:
             self.institution_id = False
