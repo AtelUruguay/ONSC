@@ -63,6 +63,7 @@
                             <field name="cv_emissor_country_id"/>
                             <field name="cv_document_type_id"/>
                             <field name="cv_nro_doc"/>
+                            <field name="cv_expiration_date" required="1"/>
                             <field name="partner_id" invisible="1"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -73,7 +74,6 @@
                                    attrs="{'readonly': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
                             <field name="cv_sex_updated_date"
                                    attrs="{'invisible': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
-                            <field name="cv_expiration_date" required="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -225,9 +225,12 @@
                                     <field name="country_id" string="País"
                                            options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
                                     <field name="cv_address_state_id" string="Departamento"
+                                           domain="[('country_id', '=?', country_id)]"
                                            context="{'default_country_id': country_id, 'is_readonly': True}"
                                            options="{'no_open': True, 'no_quick_create': True}"/>
                                     <field name="cv_address_location_id"
+                                           domain="[('state_id', '=?', cv_address_state_id)]"
+                                           attrs="{'readonly': [('cv_address_state_id', '=', False)]}"
                                            context="{'default_country_id': country_id, 'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
                                 </group>
                                 <group>

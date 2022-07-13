@@ -108,6 +108,19 @@ class ONSCCVCourseCertificate(models.Model):
             self.evaluation_max_number = self.evaluation_number
             return result
 
+    @api.onchange('certificate_id')
+    def onchange_certificate_id(self):
+        valid_institution_cert_id_ids = self.certificate_id.line_ids.mapped('institution_cert_id').ids
+        if len(valid_institution_cert_id_ids) is False or \
+                self.institution_cert_id.id not in valid_institution_cert_id_ids:
+            self.institution_cert_id = False
+
+    @api.onchange('institution_cert_id')
+    def onchange_institution_cert_id(self):
+        if (self.institution_cert_id and self.institution_cert_id != self.subinstitution_cert_id.institution_cert_id) \
+                or self.institution_cert_id.id is False:
+            self.subinstitution_cert_id = False
+
     @api.onchange('course_title', 'certificate_id', 'record_type')
     def onchange_calc_name(self):
         self.name = self._calc_name_by_record_type()

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import fields, models, api
 
 POSITION_TYPES = [('effective', 'Efectivo'), ('interim', 'Interino'), ('honorary', 'Honorario')]
 RESPONSIBLE_TYPES = [('yes', 'Sí'), ('no', 'No')]
@@ -28,6 +28,10 @@ class ONSCCVWorkTeaching(models.Model):
     digital_doc_file = fields.Binary('Comprobantes', required=True)
     digital_doc_filename = fields.Char('Nombre del documento digital')
     digital_doc_description = fields.Char('Descripción del comprobante')
+
+    @api.onchange('subinstitution_id')
+    def onchange_academic_program_id_parents(self):
+        self.program_ids = [(5,)]
 
 
 class ONSCCVEducationAreaCourse(models.Model):

@@ -37,11 +37,8 @@ class ONSCCVAbstractFormation(models.AbstractModel):
                 'warning': {
                     'title': _("Atención"),
                     'type': 'notification',
-                    'message': _(
-                        "Sólo se pueden seleccionar 5 tipos de conocimientos"
-                    )
+                    'message': _("Sólo se pueden seleccionar 5 tipos de conocimientos")
                 },
-
             }
 
 
@@ -54,3 +51,14 @@ class ONSCAbstractFormationLine(models.AbstractModel):
                                              required=True)
     discipline_educational_id = fields.Many2one('onsc.cv.discipline.educational', string=u'Disciplina de educación',
                                                 required=True)
+
+    @api.onchange('educational_area_id')
+    def onchange_educational_area_id(self):
+        if self.educational_area_id.id is False or (self.educational_area_id != self.educational_subarea_id.area_id):
+            self.educational_subarea_id = False
+
+    @api.onchange('educational_subarea_id')
+    def onchange_educational_subarea_id(self):
+        if self.educational_subarea_id.id is False or \
+                (self.educational_subarea_id != self.discipline_educational_id.subarea_id):
+            self.discipline_educational_id = False
