@@ -4,8 +4,6 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
-from .catalogs.res_partner import CV_SEX
-
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
@@ -68,7 +66,6 @@ class ONSCCVDigital(models.Model):
         string=u'Fecha de nacimiento',
         related='partner_id.cv_birthdate', store=True, readonly=False)
     cv_sex = fields.Selection(
-        CV_SEX,
         string=u'Sexo',
         related='partner_id.cv_sex', store=True, readonly=False)
     cv_sex_updated_date = fields.Date(
@@ -152,6 +149,10 @@ class ONSCCVDigital(models.Model):
         compute=lambda s: s._get_help('cv_help_work_teaching'),
         default=lambda s: s._get_help('cv_help_work_teaching', True)
     )
+    cv_help_work_investigation = fields.Html(
+        compute=lambda s: s._get_help('cv_help_work_investigation'),
+        default=lambda s: s._get_help('cv_help_work_investigation', True)
+    )
     cv_help_formation = fields.Html(
         compute=lambda s: s._get_help('cv_help_formation'),
         default=lambda s: s._get_help('cv_help_formation', True)
@@ -218,10 +219,14 @@ class ONSCCVDigital(models.Model):
     # Experiencia Laboral ----<Page>
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
                                           string="Experiencia laboral")
+
+    # Docencia ----<Page>
+    work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencias')
+    # Investigación ----<Page>
+    work_investigation_ids = fields.One2many('onsc.cv.work.investigation', inverse_name='cv_digital_id',
+                                             string='Investigaciones')
     # Voluntariado ----<Page>
     volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
-    # Docencia ----<Page>
-    work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencia')
     # Idioma ----<Page>
     language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idioma')
 

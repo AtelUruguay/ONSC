@@ -7,6 +7,24 @@
         <field name="arch" type="xml">
             <form string="Experiencias laborales">
                 <sheet>
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                El registro ha sido rechazado por los siguientes motivos:
+                                <field name="conditional_validation_reject_reason"/>
+                            </strong>
+                        </p>
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
+                        <p class="mb-0">
+                            <strong>
+                                El registro ingresado está en proceso de validación, se notificará el resultado de este
+                                a su e-mail
+                            </strong>
+                        </p>
+                    </div>
                     <group>
                         <group>
                             <field name="position"/>
@@ -34,6 +52,7 @@
                                    filename="receipt_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="receipt_filename" invisible="1"/>
+                            <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
                     <group string="Tareas">
@@ -53,7 +72,7 @@
         <field name="name">onsc.cv.work.experience.tree</field>
         <field name="model">onsc.cv.work.experience</field>
         <field name="arch" type="xml">
-            <tree string="Experiencias laborales">
+            <tree string="Experiencias laborales" decoration-danger="conditional_validation_state == 'rejected'">
                     <field name="position"/>
                     <field name="unit_name"/>
                     <field name="entry_institution_id"/>
@@ -61,6 +80,7 @@
                     <field name="start_date"/>
                     <field name="end_date"/>
                     <field name="currently_working"/>
+                    <field name="conditional_validation_state" invisible="1"/>
             </tree>
         </field>
     </record>

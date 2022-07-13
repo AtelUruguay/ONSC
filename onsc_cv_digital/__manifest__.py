@@ -72,6 +72,7 @@ ONSC CV Digital
         'views/onsc_cv_digital_views.xml',
         'views/onsc_cv_digital_work_experience_views.xml',
         'views/onsc_cv_work_teaching_views.xml',
+        'views/onsc_cv_work_investigation_views.xml',
         'views/onsc_cv_menuitems.xml',
         'views/onsc_cv_digital_volunteering_views.xml',
         'views/onsc_cv_language_level_views.xml',
