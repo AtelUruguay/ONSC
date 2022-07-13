@@ -240,9 +240,9 @@
                                     <field name="cv_address_street3" string="Y calle"/>
                                 </group>
                                 <group>
-                                    <field name="cv_address_apto"/>
                                     <field name="cv_address_nro_door"/>
                                     <field name="cv_address_is_cv_bis"/>
+                                    <field name="cv_address_apto"/>
                                     <field name="cv_address_zip" string="C.P"/>
                                 </group>
                             </group>
@@ -298,6 +298,12 @@
                                 <field name="cv_help_work_teaching"/>
                             </div>
                             <field name="work_teaching_ids"/>
+                        </page>
+                        <page name="work_investigation" string="Investigación">
+                            <div class="float-right">
+                                <field name="cv_help_work_investigation"/>
+                            </div>
+                            <field name="work_investigation_ids"/>
                         </page>
                     </notebook>
                 </sheet>
