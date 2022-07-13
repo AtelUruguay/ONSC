@@ -63,9 +63,21 @@ class ONSCCVWorkInvestigationMember(models.Model):
     _description = 'Integrante de la investigación'
 
     investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
-    member = fields.Char('Integrante', required=True)
+    member = fields.Char('Integrante', required=True, default=lambda self: self.get_default_member())
     is_responsible = fields.Boolean('¿Responsable?')
     citation = fields.Text('Citación')
+
+    @api.model
+    def get_default_member(self):
+        """
+        Si en la lista de integrantes no se ha adicionado el nombre del usuario entonces el valor por defecto
+        es el nombre del usuario
+        :return:
+        """
+        member_ids = self._context.get('member_ids')
+        if not list(filter(lambda x: x[2]['member'] == self.env.user.name, member_ids)):
+            return self.env.user.name
+        return False
 
 
 class ONSCCVEducationAreaCourse(models.Model):
