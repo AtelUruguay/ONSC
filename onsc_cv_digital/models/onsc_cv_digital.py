@@ -164,6 +164,10 @@ class ONSCCVDigital(models.Model):
         compute=lambda s: s._get_help('cv_help_volunteering'),
         default=lambda s: s._get_help('cv_help_volunteering', True)
     )
+    cv_help_language_level = fields.Html(
+        compute=lambda s: s._get_help('cv_help_language_level'),
+        default=lambda s: s._get_help('cv_help_language_level', True)
+    )
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
                                       selection=[('legal', 'Legal'), ('natural', 'Natural'),
@@ -214,10 +218,13 @@ class ONSCCVDigital(models.Model):
     # Experiencia Laboral ----<Page>
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
                                           string="Experiencia laboral")
+    # Voluntariado ----<Page>
     volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
-
     # Docencia ----<Page>
     work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencia')
+    # Idioma ----<Page>
+    language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idioma')
+
 
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)

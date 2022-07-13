@@ -17,3 +17,4 @@ class ResCompany(models.Model):
     cv_help_formation = fields.Char('Formación')
     cv_help_course_certificate = fields.Char('Cursos y certificado')
     cv_help_volunteering = fields.Char('Voluntariado')
+    cv_help_language_level = fields.Char('Idiomas')

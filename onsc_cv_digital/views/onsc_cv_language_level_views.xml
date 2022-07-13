@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="onsc_cv_language_level_form" model="ir.ui.view">
+            <field name="name">onsc.cv.language.level.form</field>
+            <field name="model">onsc.cv.language.level</field>
+            <field name="arch" type="xml">
+                <form string="Idioma">
+                    <sheet>
+                        <group>
+                            <field name="language_id" string="Idioma" />
+                            <field name="spoken_level" string="Nivel hablado"/>
+                            <field name="read_level" string="Nivel leído" />
+                            <field name="write_level" string="Nivel escrito" />
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_cv_language_level_tree" model="ir.ui.view">
+            <field name="name">onsc.cv.language.level.tree</field>
+            <field name="model">onsc.cv.language.level</field>
+            <field name="arch" type="xml">
+                <tree string="Idiomas">
+                    <field name="language_id" string="Idioma" />
+                    <field name="spoken_level" string="Nivel hablado"/>
+                    <field name="read_level" string="Nivel leído" />
+                    <field name="write_level" string="Nivel escrito" />
+                </tree>
+            </field>
+        </record>
+
+
+    </data>
+</odoo>
