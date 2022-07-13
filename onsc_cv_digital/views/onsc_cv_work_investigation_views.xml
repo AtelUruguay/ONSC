@@ -72,7 +72,7 @@
                     </group>
                     <notebook>
                         <page string="Integrantes">
-                            <field name="member_ids">
+                            <field name="member_ids" context="{'member_ids': member_ids}">
                                 <tree editable="top">
                                     <field name="member"/>
                                     <field name="is_responsible" width="0.5"/>
