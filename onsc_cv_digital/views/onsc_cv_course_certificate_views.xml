@@ -41,16 +41,15 @@
                                    attrs="{'invisible': [('record_type', '!=', 'course')],'required': [('record_type', '=', 'course')]}"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="certificate_id"
-                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
-                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id, 'is_readonly': True}"/>
                             <field name="institution_cert_id"
-                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
-                                   domain="institution_cert_id_domain"/>
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"/>
                             <field name="subinstitution_cert_id"
                                    attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')],'readonly': [('institution_cert_id', '=', False)]}"
                                    context="{'default_institution_cert_id': institution_cert_id, 'is_readonly': True}"
                                    domain="[('institution_cert_id', '=', institution_cert_id)]"/>
+                            <field name="certificate_id"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"
+                                   context="{'default_institution_cert_id': institution_cert_id, 'default_subinstitution_cert_id': subinstitution_cert_id, 'is_readonly': True}"/>
                             <field name="approbation_mode" states='completed'
                                    attrs="{'invisible': ['|',('record_type', '!=', 'course')], 'required': [('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
                             <field name="evaluation_str" states="completed"
