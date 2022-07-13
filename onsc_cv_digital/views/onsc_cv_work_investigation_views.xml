@@ -44,17 +44,19 @@
                             <field name="currently_working"/>
                             <field name="position"/>
                             <field name="is_paid_activity"/>
-                            <field name="knowledge_acquired_ids" widget="many2many_tags"/>
+                            <field name="knowledge_acquired_ids" string="Conocimientos aplicados en esta investigación"
+                                   widget="many2many_tags"/>
                         </group>
                         <group>
-                            <field name="start_date" string="Período desde en institución"/>
-                            <field name="end_date" string="Período hasta en institución"
+                            <field name="start_date"/>
+                            <field name="end_date"
                                    attrs="{'invisible': [('currently_working', '!=', 'no')],'required': [('currently_working', '=', 'no')]}"/>
                             <field name="investigation_type"/>
                             <field name="name"/>
                             <field name="description"/>
                             <field name="participation_type"/>
-                            <field name="category_type"/>
+                            <field name="category_type"
+                                   attrs="{'invisible': [('investigation_type', '!=', 'invest_line')],'required': [('investigation_type', '=', 'invest_line')]}"/>
                             <field name="situation_type"
                                    attrs="{'invisible': [('investigation_type', '!=', 'invest_project')],'required': [('investigation_type', '=', 'invest_project')]}"/>
                             <field name="research_type_id"
