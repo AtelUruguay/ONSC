@@ -9,10 +9,10 @@ class ONSCCVAbstractInstitution(models.AbstractModel):
     _name = 'onsc.cv.abstract.institution'
     _description = 'Modelo abstracto de entidades de con institución-subinstitución-pais'
 
-    institution_id = fields.Many2one("onsc.cv.institution", string=u"Institución", required=False)
+    institution_id = fields.Many2one("onsc.cv.institution", string=u"Institución")
     institution_id_domain = fields.Char(compute='_compute_institution_id_domain')
-    subinstitution_id = fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución", required=False)
-    country_id = fields.Many2one('res.country', string=u'País de la institución', required=False)
+    subinstitution_id = fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución")
+    country_id = fields.Many2one('res.country', string=u'País de la institución')
     country_id_domain = fields.Char(compute='_compute_country_id_domain')
 
     @api.depends('country_id')

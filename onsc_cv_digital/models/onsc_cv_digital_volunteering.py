@@ -10,7 +10,7 @@ class ONSCCVDigitalVolunteering(models.Model):
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade')
     unit_name = fields.Char("Área/Unidad")
     volunteering_task_ids = fields.One2many("onsc.cv.volunteering.task", inverse_name="volunteering_id",
-                                            string="Tareas", required=False, )
+                                            string="Tareas")
     currently_volunteering = fields.Selection(string="Voluntario actualmente", selection=[('si', 'Si'), ('no', 'No')],
                                               required=True, )
     hours_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente", required=True,
