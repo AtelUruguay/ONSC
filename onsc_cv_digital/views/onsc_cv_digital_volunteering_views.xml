@@ -18,7 +18,7 @@
                         <group>
                             <field name="start_date"/>
                             <field name="currently_volunteering"/>
-                            <field name="end_date"/>
+                            <field name="end_date" required="1"/>
                             <field name="hours_monthly" string="Cantidad de horas mensuales"/>
                             <field name="description_tasks" required="1"/>
                             <field name="receipt_description"/>
