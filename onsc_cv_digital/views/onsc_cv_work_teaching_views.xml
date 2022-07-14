@@ -37,11 +37,11 @@
                             <field name="country_id" required="1"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="currently_working"/>
-                            <field name="position"/>
+                            <field name="currently_working" required="1"/>
+                            <field name="position" required="1"/>
                             <field name="position_type"/>
                             <field name="is_full_time"/>
-                            <field name="is_paid_activity"/>
+                            <field name="is_paid_activity" required="1"/>
                             <field name="cv_digital_id" invisible="1"/>
                             <field name="country_id_domain" invisible="1"/>
                             <field name="institution_id_domain" invisible="1"/>
