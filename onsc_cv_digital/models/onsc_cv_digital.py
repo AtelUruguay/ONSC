@@ -230,7 +230,6 @@ class ONSCCVDigital(models.Model):
     # Idioma ----<Page>
     language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idioma')
 
-
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         _html2construct = HTML_HELP % (_url or '/')
