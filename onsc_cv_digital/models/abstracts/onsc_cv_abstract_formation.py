@@ -12,8 +12,8 @@ class ONSCCVAbstractFormation(models.AbstractModel):
     _description = 'Modelo abstracto de entidades de formación'
 
     cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV digital', required=True, ondelete='cascade')
-    state = fields.Selection(string="Estado", selection=STATES, required=True)
-    start_date = fields.Date(string="Fecha de inicio", required=True)
+    state = fields.Selection(string="Estado", selection=STATES)
+    start_date = fields.Date(string="Fecha de inicio")
     end_date = fields.Date(string="Fecha finalización")
     other_relevant_information = fields.Text(string="Otra información relevante")
     # Campo para redefinir
