@@ -67,7 +67,7 @@
                                    attrs="{'invisible': ['|',('evaluation_max_str', '=', False),('is_numeric_max_evaluation', '=', True)], 'required': [('evaluation_max_str', '!=', False),('is_numeric_max_evaluation', '=', False)]}"/>
                             <field name="is_numeric_evaluation" invisible="1"/>
                             <field name="is_numeric_max_evaluation" invisible="1"/>
-                            <field name="certificate_id_domain" invisible="0"/>
+                            <field name="certificate_id_domain" invisible="1"/>
                             <field name="conditional_validation_state" invisible="1"/>
                             <field name="cv_digital_id" invisible="1"/>
                             <field name="record_type" invisible="1"/>
