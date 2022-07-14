@@ -113,26 +113,17 @@
         <field name="model">onsc.cv.work.investigation</field>
         <field name="arch" type="xml">
             <tree string="Investigaciones" decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="start_date" string="Período desde en institución" optional="show"/>
-                <field name="end_date" string="Período hasta en institución" optional="show"/>
-                <field name="investigation_type" optional="show"/>
-                <field name="name" optional="show"/>
-                <field name="country_id" optional="show"/>
+                <field name="start_date" string="Inicio" optional="show"/>
+                <field name="end_date" string="Fin" optional="show"/>
+                <field name="investigation_type" optional="show" string="Tipo"/>
+                <field name="name" optional="show" string="Nombre"/>
+                <field name="participation_type" optional="hide"/>
+                <field name="position" optional="hide"/>
+                <field name="country_id" optional="hide"/>
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
-                <field name="hours_worked_monthly" optional="hide"/>
-                <field name="currently_working" optional="hide"/>
-                <field name="position" optional="hide"/>
-                <field name="is_paid_activity" optional="hide"/>
-                <field name="category_type" optional="hide"/>
-                <field name="situation_type" optional="hide"/>
-                <field name="research_type_id" optional="hide"/>
-                <field name="other_research_type" optional="hide"/>
+                <field name="hours_worked_monthly" optional="hide" string="Horas mensuales dedicadas"/>
                 <field name="conditional_validation_state" invisible="1"/>
-                <field name="conditional_validation_reject_reason" optional="hide"/>
-                <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
-                <field name="member_ids" widget="many2many_tags" optional="hide"/>
-                <field name="education_area_ids" widget="many2many_tags" optional="hide"/>
             </tree>
         </field>
     </record>
