@@ -9,7 +9,7 @@
                     <group>
                         <group>
                             <field name="country_id" string="País de la institución"/>
-                            <field name="company_type"/>
+                            <field name="company_type" required="1"/>
                             <field name="country_code" invisible="1"/>
                             <field name="company_name"
                                    attrs="{'invisible': ['|',('country_code', '=', 'UY'),('company_type','=','public')],'required': [('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
@@ -20,9 +20,10 @@
                             <field name="currently_volunteering"/>
                             <field name="end_date"/>
                             <field name="hours_monthly" string="Cantidad de horas mensuales"/>
-                            <field name="description_tasks"/>
+                            <field name="description_tasks" required="1"/>
                             <field name="receipt_description"/>
                             <field name="receipt_file"
+                                   required="1"
                                    filename="receipt_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="receipt_filename" invisible="1"/>

@@ -21,14 +21,14 @@ class ONSCCVAbstractWork(models.AbstractModel):
     country_id = fields.Many2one("res.country", string="País", required=True)
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
     company_type = fields.Selection([('public', 'Pública'), ('private', 'Privada')], string="Tipo de empresa",
-                                    required=True)
+                                    required=False)
     company_name = fields.Char("Empresa")
-    description_tasks = fields.Char(string="Descripción de tareas", required=True)
-    receipt_file = fields.Binary("Comprobante", required=True)
+    description_tasks = fields.Char(string="Descripción de tareas", required=False)
+    receipt_file = fields.Binary("Comprobante", required=False)
     receipt_filename = fields.Char('Nombre del documento digital')
     receipt_description = fields.Char("Descripción del comprobante")
     start_date = fields.Date("Período desde", required=True)
-    end_date = fields.Date("Período hasta", required=True)
+    end_date = fields.Date("Período hasta", required=False)
 
     @api.onchange('start_date')
     def onchange_start_date(self):
