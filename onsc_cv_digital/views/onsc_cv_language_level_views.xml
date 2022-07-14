@@ -5,7 +5,7 @@
             <field name="name">onsc.cv.language.level.form</field>
             <field name="model">onsc.cv.language.level</field>
             <field name="arch" type="xml">
-                <form string="Idioma">
+                <form string="Idiomas">
                     <sheet>
                         <group>
                             <field name="language_id" string="Idioma" />
@@ -30,7 +30,5 @@
                 </tree>
             </field>
         </record>
-
-
     </data>
 </odoo>
