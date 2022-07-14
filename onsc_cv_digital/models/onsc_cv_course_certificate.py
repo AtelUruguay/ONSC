@@ -23,13 +23,13 @@ class ONSCCVCourseCertificate(models.Model):
     record_type = fields.Selection(TYPES, string='Tipo', required=True, default='course')
     course_type = fields.Selection(COURSE_TYPES, string='Tipo')
     course_title = fields.Char('Título del curso, taller u otra capacitación')
-    certificate_id = fields.Many2one("onsc.cv.certificate", 'Título de la certificación')
     name = fields.Char(compute='_compute_name', store=True, string='Título')
     institution_cert_id = fields.Many2one('onsc.cv.certifying.institution', string=u'Institución certificadora')
-    institution_cert_id_domain = fields.Char(compute='_compute_institution_cert_id_domain')
     subinstitution_cert_id = fields.Many2one('onsc.cv.certifying.subinstitution',
                                              string=u'Sub institución certificadora')
-    dictation_mode = fields.Selection(MODES, 'Modalidad de dictado', required=True)
+    certificate_id = fields.Many2one("onsc.cv.certificate", 'Título de la certificación')
+    certificate_id_domain = fields.Char(compute='_compute_certificate_id_domain')
+    dictation_mode = fields.Selection(MODES, 'Modalidad de dictado')
     induction_type = fields.Selection(INDUCTION_TYPES, 'Programa de inducción al Organismo', default="yes")
     hours_total = fields.Float('Carga horaria total (en horas)')
     approbation_mode = fields.Selection(APPROBATION_MODES, string='Modalidad de aprobación')
@@ -64,12 +64,12 @@ class ONSCCVCourseCertificate(models.Model):
         for rec in self:
             rec.is_numeric_evaluation = rec.evaluation_str and rec.evaluation_str.isnumeric() or False
 
-    @api.depends('certificate_id')
-    def _compute_institution_cert_id_domain(self):
+    @api.depends('subinstitution_cert_id')
+    def _compute_certificate_id_domain(self):
         for rec in self:
-            valid_institution_cert_id_ids = rec.certificate_id.line_ids.mapped('institution_cert_id')
-            rec.institution_cert_id_domain = json.dumps(
-                [('id', 'in', valid_institution_cert_id_ids.ids)]
+            valid_recordsets = rec.subinstitution_cert_id.certificate_line_ids.mapped('certificate_id')
+            rec.certificate_id_domain = json.dumps(
+                [('id', 'in', valid_recordsets.ids)]
             )
 
     @api.onchange('record_type')
@@ -108,18 +108,18 @@ class ONSCCVCourseCertificate(models.Model):
             self.evaluation_max_number = self.evaluation_number
             return result
 
-    @api.onchange('certificate_id')
-    def onchange_certificate_id(self):
-        valid_institution_cert_id_ids = self.certificate_id.line_ids.mapped('institution_cert_id').ids
-        if len(valid_institution_cert_id_ids) is False or \
-                self.institution_cert_id.id not in valid_institution_cert_id_ids:
-            self.institution_cert_id = False
-
     @api.onchange('institution_cert_id')
     def onchange_institution_cert_id(self):
         if (self.institution_cert_id and self.institution_cert_id != self.subinstitution_cert_id.institution_cert_id) \
                 or self.institution_cert_id.id is False:
             self.subinstitution_cert_id = False
+
+    @api.onchange('subinstitution_cert_id')
+    def onchange_subinstitution_cert_id(self):
+        certificate_subinstitution_cert_ids = self.certificate_id.mapped('line_ids.subinstitution_cert_id').ids
+        if (self.subinstitution_cert_id and self.subinstitution_cert_id not in certificate_subinstitution_cert_ids) \
+                or self.subinstitution_cert_id.id is False:
+            self.certificate_id = False
 
     @api.onchange('course_title', 'certificate_id', 'record_type')
     def onchange_calc_name(self):

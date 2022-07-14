@@ -58,10 +58,12 @@
                     </group>
                      <notebook>
                         <page string="Instituciones/Sub instituciones">
-                            <field name="line_ids">
+                            <field name="line_ids" readonly="context.get('is_readonly')" force_save="1">
                                 <tree editable="bottom">
                                     <field name="institution_cert_id"/>
-                                    <field name="subinstitution_cert_id" context="{'institution_cert_id': institution_cert_id}"/>
+                                    <field name="subinstitution_cert_id"
+                                           attrs="{'readonly': [('institution_cert_id', '=', False)]}"
+                                           context="{'default_institution_cert_id': institution_cert_id, 'is_readonly': True}"/>
                                 </tree>
                             </field>
                         </page>
