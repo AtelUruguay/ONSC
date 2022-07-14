@@ -25,9 +25,7 @@ class ONSCCVWorkTeaching(models.Model):
     education_area_ids = fields.One2many('onsc.cv.education.area.teaching', inverse_name='teaching_id',
                                          string="Áreas relacionadas con esta educación")
     other_relevant_information = fields.Text(string="Otra información relevante")
-    digital_doc_file = fields.Binary('Comprobantes', required=True)
-    digital_doc_filename = fields.Char('Nombre del documento digital')
-    digital_doc_description = fields.Char('Descripción del comprobante')
+    receipt_description = fields.Char('Descripción del comprobante')
 
     @api.onchange('subinstitution_id')
     def onchange_academic_program_id_parents(self):
