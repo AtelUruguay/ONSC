@@ -96,24 +96,22 @@
         <field name="model">onsc.cv.work.teaching</field>
         <field name="arch" type="xml">
             <tree string="Docencias" decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="start_date" string="Período desde en institución" optional="show"/>
-                <field name="end_date" string="Período hasta en institución" optional="show"/>
+                <field name="start_date" string="Inicio" optional="show"/>
+                <field name="end_date" string="Fin" optional="show"/>
                 <field name="professional_link_id" optional="show"/>
+                <field name="position" optional="show"/>
                 <field name="country_id" optional="show"/>
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
                 <field name="hours_worked_monthly" optional="show"/>
                 <field name="program_name" string="Cátedra/programa" optional="show"/>
-                <field name="currently_working" optional="hide"/>
-                <field name="position" optional="hide"/>
-                <field name="position_type" optional="hide"/>
-                <field name="is_full_time" optional="hide"/>
-                <field name="is_paid_activity" optional="hide"/>
-                <field name="responsible_type" optional="hide"/>
+                <field name="position_type" optional="show"/>
+                <field name="is_full_time" optional="show"/>
+                <field name="is_paid_activity" optional="show"/>
+                <field name="responsible_type" optional="show"/>
                 <field name="conditional_validation_state" invisible="1"/>
                 <field name="conditional_validation_reject_reason" optional="hide"/>
                 <field name="program_ids" widget="many2many_tags" optional="hide"/>
-                <field name="education_area_ids" widget="many2many_tags" optional="hide"/>
             </tree>
         </field>
     </record>
