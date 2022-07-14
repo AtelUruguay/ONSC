@@ -5,17 +5,21 @@
         <field name="model">onsc.cv.digital</field>
         <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_form"/>
         <field name="arch" type="xml">
-            <field name="is_cv_gender_public" position="after">
+            <field name="cv_gender_id" position="after">
                 <field name="gender_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
+            </field>
+            <field name="is_cv_gender_public" position="after">
                 <field name="gender_public_visualization_date"
                        attrs="{'invisible': [('is_docket', '=', False)]}"/>
                 <!--TODO-->
                 <field name="is_docket" invisible="0"/>
             </field>
-            <field name="is_cv_race_public" position="after">
+            <field name="afro_descendants_file" position="after">
                 <field name="afro_descendant_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
+            </field>
+            <field name="marital_status_id" position="after">
                 <field name="status_civil_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
             </field>

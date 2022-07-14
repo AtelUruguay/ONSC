@@ -39,9 +39,6 @@ class ONSCCVWorkInvestigation(models.Model):
     additional_information = fields.Text(string="Información adicional")
     other_relevant_information = fields.Text(string="Otra información relevante")
 
-    digital_doc_file = fields.Binary('Comprobantes', required=True)
-    digital_doc_filename = fields.Char('Nombre del comprobante')
-
     @api.onchange('knowledge_acquired_ids')
     def onchange_knowledge_acquired_ids(self):
         if len(self.knowledge_acquired_ids) > 5:

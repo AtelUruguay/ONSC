@@ -37,11 +37,11 @@
                             <field name="country_id" required="1"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="currently_working"/>
-                            <field name="position"/>
+                            <field name="currently_working" required="1"/>
+                            <field name="position" required="1"/>
                             <field name="position_type"/>
                             <field name="is_full_time"/>
-                            <field name="is_paid_activity"/>
+                            <field name="is_paid_activity" required="1"/>
                             <field name="cv_digital_id" invisible="1"/>
                             <field name="country_id_domain" invisible="1"/>
                             <field name="institution_id_domain" invisible="1"/>
@@ -55,10 +55,11 @@
                             <field name="program_name"
                                    attrs="{'invisible': [('responsible_type', '!=', 'no')],'required': [('responsible_type', '=', 'no')]}"/>
                             <field name="hours_worked_monthly"/>
-                            <field name="digital_doc_file" filename="digital_doc_filename"
+                            <field name="receipt_file"
+                                   filename="receipt_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
-                            <field name="digital_doc_description"/>
-                            <field name="digital_doc_filename" invisible="1"/>
+                            <field name="receipt_description"/>
+                            <field name="receipt_filename" invisible="1"/>
                         </group>
                     </group>
                     <notebook>
