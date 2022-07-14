@@ -308,6 +308,12 @@
                             </div>
                             <field name="work_investigation_ids"/>
                         </page>
+                        <page name="language_level" string="Idiomas">
+                            <div class="float-right">
+                                <field name="cv_help_language_level"/>
+                            </div>
+                            <field name="language_level_ids"/>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
