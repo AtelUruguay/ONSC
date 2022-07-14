@@ -72,7 +72,8 @@ class ONSCCVWorkInvestigationMember(models.Model):
         :return:
         """
         member_ids = self._context.get('member_ids')
-        if not list(filter(lambda x: x[2]['member'] == self.env.user.name, member_ids)):
+        if not list(filter(lambda x: (x[0] == 0 and x[2]['member'] or
+                                      x[0] in [1, 4] and self.browse(x[1]).member) == self.env.user.name, member_ids)):
             return self.env.user.name
         return False
 
