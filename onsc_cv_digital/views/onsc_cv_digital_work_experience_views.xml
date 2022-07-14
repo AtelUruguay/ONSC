@@ -77,17 +77,18 @@
                 <field name="start_date" optional="show" string="Inicio"/>
                 <field name="end_date" optional="show" string="Fin"/>
                 <field name="position" optional="show"/>
-                <field name="company_type" optional="show"/>
+                <field name="company_type" optional="hide"/>
                 <field name="company_name" optional="show"/>
                 <field name="unit_name" optional="show"/>
-                <field name="country_id" optional="show" string="País"/>
-                <field name="city_id" optional="show" string="Ciudad"/>
-                <field name="hierarchical_level_id" optional="show"/>
-                <field name="take_decisions" optional="show"/>
-                <field name="people_charge" optional="show" string="Personas a cargo"/>
-                <field name="organizational_units_charge" optional="show" string="Unidades organizativas a cargo"/>
-                <field name="entry_institution_id" optional="show" string="Rubro"/>
-                <field name="hours_worked_monthly" optional="show" string="Horas trabajadas al mes"/>
+                <field name="country_id" optional="hide" string="País"/>
+                <field name="city_id" optional="hide" string="Ciudad"/>
+                <field name="hierarchical_level_id" optional="hide"/>
+                <field name="take_decisions" optional="hide"/>
+                <field name="people_charge" optional="hide" string="Personas a cargo"/>
+                <field name="organizational_units_charge" optional="hide" string="Unidades organizativas a cargo"/>
+                <field name="entry_institution_id" optional="hide" string="Rubro"/>
+                <field name="hours_worked_monthly" optional="hide" string="Horas trabajadas al mes"/>
+                <field name="is_paid_activity" optional="hide"/>
                 <field name="conditional_validation_state" invisible="1"/>
             </tree>
         </field>
