@@ -6,32 +6,27 @@ TYPES = [('publication', 'Publicación '), ('productions', 'Producciones '), ('e
 
 
 class ONSCCVDigitalPPEvaluations(models.Model):
-    _name = 'onsc.cv.publications.productions.evaluations'
+    _name = 'onsc.cv.publication.production.evaluation'
     _description = 'Publicación, Producción y Evaluación'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
     type = fields.Selection(TYPES, string='Tipo', required=True)
     subtype_publication_id = fields.Many2one("onsc.cv.subtype.publication", 'Sub tipo de publicación')
-    other_subtype_publication = fields.Char(string=u"Otro sub tipo de publicación",
-                                            help='Se debe completar en caso de haber seleccionado como sub tipo el valor “Otra”')
+    other_subtype_publication = fields.Char(string=u"Otro sub tipo de publicación")
     is_subtype_publication = fields.Boolean(related="subtype_publication_id.is_option_other_enable")
     subtype_production_id = fields.Many2one("onsc.cv.subtype.production", 'Sub tipo de producción')
-    other_subtype_production = fields.Char(string=u"Otro sub tipo de producción",
-                                           help='Se debe completar en caso de haber seleccionado como sub tipo el valor “Otra”')
+    other_subtype_production = fields.Char(string=u"Otro sub tipo de producción")
     is_subtype_production = fields.Boolean(related="subtype_production_id.is_option_other_enable")
     subtype_evaluation_id = fields.Many2one("onsc.cv.subtype.evaluation", 'Sub tipo de evaluación')
-    other_subtype_evaluation = fields.Char(string=u"Otro sub tipo de evaluación",
-                                           help='Se debe completar en caso de haber seleccionado como sub tipo el valor “Otra”')
+    other_subtype_evaluation = fields.Char(string=u"Otro sub tipo de evaluación")
     is_subtype_evaluation = fields.Boolean(related="subtype_evaluation_id.is_option_other_enable")
     subtype_other_id = fields.Many2one("onsc.cv.subtype.other", 'Sub tipo otro')
-    other_subtype_other = fields.Char(string=u"Otro sub tipo otro",
-                                      help='Se debe completar en caso de haber seleccionado como sub tipo el valor “Otra”')
+    other_subtype_other = fields.Char(string=u"Otro sub tipo otro")
     is_subtype_other = fields.Boolean(related="subtype_other_id.is_option_other_enable")
-    date = fields.Date(string="Fecha", required=True, help='En caso de no disponer la fecha, se requiere de estimarla.')
+    date = fields.Date(string="Fecha", required=True)
     tittle = fields.Char(string=u"Título", required=True)
     description = fields.Char(string=u"Descripción", required=True)
-    location = fields.Char(string=u"Ubicación",
-                           help='Indicar donde se puede encontrar o visualizar la publicación / Producción / Evaluación')
+    location = fields.Char(string=u"Ubicación")
     arbitrated = fields.Selection(string=u'¿Arbitrado?',
                                   selection=[('yes', u'Si'), ('no', u'No')])
     is_arbitrated = fields.Boolean(string='Activo', compute='_compute_is_subtype_publication')
@@ -41,8 +36,7 @@ class ONSCCVDigitalPPEvaluations(models.Model):
     activity_area_ids = fields.One2many('onsc.cv.activity.area', 'publications_productions_evaluations_id',
                                         string=u'Área de Actividad')
     applied_knowledge_ids = fields.Many2many('onsc.cv.knowledge', 'applied_knowledge_id',
-                                             string=u'Conocimientos aplicados',
-                                             help='Sólo se pueden seleccionar 5 tipos de conocimientos')
+                                             string=u'Conocimientos aplicados')
     additional_information = fields.Text(string="Información adicional")
 
     @api.depends('subtype_publication_id')
@@ -71,7 +65,7 @@ class ONSCCVAuthors(models.Model):
     _name = 'onsc.cv.authors'
     _description = 'Autor'
 
-    publications_productions_evaluations_id = fields.Many2one('onsc.cv.publications.productions.evaluations',
+    publications_productions_evaluations_id = fields.Many2one('onsc.cv.publication.production.evaluation',
                                                               string=u'Publicación, Producción y Evaluación')
     author = fields.Char(string=u"Autor")
     citation = fields.Text(string=u"Citación")
@@ -83,6 +77,6 @@ class ONSCCVActivityArea(models.Model):
     _inherit = ['onsc.cv.abstract.formation.line']
     _description = 'Área de Actividad'
 
-    publications_productions_evaluations_id = fields.Many2one('onsc.cv.publications.productions.evaluations',
+    publications_productions_evaluations_id = fields.Many2one('onsc.cv.publication.production.evaluation',
                                                               string=u'Publicación, Producción y Evaluación')
-    specialty = fields.Char(string=u"Especialidad")
+    speciality = fields.Char(string=u"Especialidad")
