@@ -67,7 +67,7 @@ class ONSCCVAuthors(models.Model):
 
     publications_productions_evaluations_id = fields.Many2one('onsc.cv.publication.production.evaluation',
                                                               string=u'Publicación, Producción y Evaluación')
-    author = fields.Char(string=u"Autor")
+    author = fields.Char(string=u"Autor", default=lambda self: self.env.user.partner_id.name)
     citation = fields.Text(string=u"Citación")
     is_primary_author = fields.Boolean(string=u"Autor principal")
 
