@@ -144,7 +144,7 @@
                                    attrs="{'invisible': [('is_driver_license', '=', False)]}">
                                 <field name="drivers_license_ids" nolabel="1">
                                     <tree editable="bottom">
-                                        <field name="validation_date"/>
+                                        <field name="validation_date" width="0.5"/>
                                         <field name="category_id"/>
                                         <field name="license_file"
                                                filename="license_filename"
