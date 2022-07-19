@@ -253,12 +253,6 @@
                                 <field name="cv_address_amplification"/>
                             </group>
                         </page>
-                        <page name="work_experience" string="Experiencias laborales">
-                            <div class="float-right">
-                                <field name="cv_help_work_experience"/>
-                            </div>
-                            <field name="work_experience_ids"/>
-                        </page>
                         <page name="formation" string="Formación">
                             <div class="float-right">
                                 <field name="cv_help_formation"/>
@@ -290,11 +284,11 @@
                             <field name="certificate_ids"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
-                        <page name="volunteering" string="Voluntariados">
+                        <page name="work_experience" string="Experiencias laborales">
                             <div class="float-right">
-                                <field name="cv_help_volunteering"/>
+                                <field name="cv_help_work_experience"/>
                             </div>
-                            <field name="volunteering_ids"/>
+                            <field name="work_experience_ids"/>
                         </page>
                         <page name="work_teaching" string="Docencia">
                             <div class="float-right">
@@ -307,6 +301,12 @@
                                 <field name="cv_help_work_investigation"/>
                             </div>
                             <field name="work_investigation_ids"/>
+                        </page>
+                        <page name="volunteering" string="Voluntariados">
+                            <div class="float-right">
+                                <field name="cv_help_volunteering"/>
+                            </div>
+                            <field name="volunteering_ids"/>
                         </page>
                         <page name="language_level" string="Idiomas">
                             <div class="float-right">
