@@ -66,7 +66,8 @@ class ONSCCVAuthors(models.Model):
     _description = 'Autor'
 
     publications_productions_evaluations_id = fields.Many2one('onsc.cv.publication.production.evaluation',
-                                                              string=u'Publicación, Producción y Evaluación')
+                                                              string=u'Publicación, Producción y Evaluación',
+                                                              ondelete='cascade')
     author = fields.Char(string=u"Autor", default=lambda self: self.get_default_author())
     citation = fields.Text(string=u"Citación")
     is_primary_author = fields.Boolean(string=u"Autor principal")
@@ -91,5 +92,6 @@ class ONSCCVActivityArea(models.Model):
     _description = 'Área de Actividad'
 
     publications_productions_evaluations_id = fields.Many2one('onsc.cv.publication.production.evaluation',
-                                                              string=u'Publicación, Producción y Evaluación')
+                                                              string=u'Publicación, Producción y Evaluación',
+                                                              ondelete='cascade')
     speciality = fields.Char(string=u"Especialidad")
