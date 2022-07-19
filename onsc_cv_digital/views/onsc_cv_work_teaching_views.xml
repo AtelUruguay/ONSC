@@ -103,7 +103,7 @@
                 <field name="country_id" optional="hide"/>
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
-                <field name="hours_worked_monthly" optional="show" string="Horas trabajadas al mes"/>
+                <field name="hours_worked_monthly" optional="show" string="Horas trabajadas al mes" width="1.0"/>
                 <field name="program_name" string="Cátedra/programa" optional="show"/>
                 <field name="position_type" optional="hide"/>
                 <field name="is_full_time" optional="hide"/>
