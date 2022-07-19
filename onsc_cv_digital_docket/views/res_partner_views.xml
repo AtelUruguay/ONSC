@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_partner_form_cv" model="ir.ui.view">
+        <field name="name">onsc.docket.res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="onsc_cv_digital.view_partner_form_cv"/>
+        <field name="arch" type="xml">
+            <field name="country_id" position="before">
+                <field name="address_info_date" readonly="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>
