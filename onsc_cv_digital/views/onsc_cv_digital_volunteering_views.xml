@@ -48,9 +48,9 @@
         <field name="arch" type="xml">
             <tree string="Voluntariados">
                 <field name="unit_name"/>
-                <field name="start_date"/>
+                <field name="start_date" width="0.5"/>
                 <field name="currently_volunteering"/>
-                <field name="end_date"/>
+                <field name="end_date" width="0.5"/>
             </tree>
         </field>
     </record>
