@@ -67,9 +67,22 @@ class ONSCCVAuthors(models.Model):
 
     publications_productions_evaluations_id = fields.Many2one('onsc.cv.publication.production.evaluation',
                                                               string=u'Publicación, Producción y Evaluación')
-    author = fields.Char(string=u"Autor", default=lambda self: self.env.user.partner_id.name)
+    author = fields.Char(string=u"Autor", default=lambda self: self.get_default_author())
     citation = fields.Text(string=u"Citación")
     is_primary_author = fields.Boolean(string=u"Autor principal")
+
+    @api.model
+    def get_default_author(self):
+        """
+        Si en la lista no se ha adicionado el nombre del usuario entonces el valor por defecto
+        es el nombre del usuario
+        :return:
+        """
+        authors_ids = self._context.get('authors_ids')
+        if not list(filter(lambda x: (x[0] == 0 and x[2]['author'] or x[0] in [1, 4] and self.browse(
+                x[1]).author) == self.env.user.name, authors_ids)):
+            return self.env.user.name
+        return False
 
 
 class ONSCCVActivityArea(models.Model):

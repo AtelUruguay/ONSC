@@ -50,8 +50,8 @@
                     <br/>
                     <notebook>
                         <page string="Autores">
-                            <field name="authors_ids">
-                                <tree>
+                            <field name="authors_ids" context="{'authors_ids': authors_ids}">
+                                <tree editable="top">
                                     <field name="author"/>
                                     <field name="citation"/>
                                     <field name="is_primary_author" width="0.5"/>
@@ -60,7 +60,7 @@
                         </page>
                         <page string="Área de Actividad">
                             <field name="activity_area_ids">
-                                <tree>
+                                <tree editable="top">
                                     <field name="educational_area_id"/>
                                     <field name="educational_subarea_id"/>
                                     <field name="discipline_educational_id"/>
