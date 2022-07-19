@@ -314,6 +314,13 @@
                             </div>
                             <field name="language_level_ids"/>
                         </page>
+                        <page name="publications_productions_evaluations"
+                              string="Publicaciones, Producciones y Evaluaciones">
+                            <div class="float-right">
+                                <field name="cv_help_publications_productions_evaluations"/>
+                            </div>
+                            <field name="publications_productions_evaluations_ids"/>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
