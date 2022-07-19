@@ -16,12 +16,12 @@ def _get_validation_status(record, conditional_catalog_list):
     reject_reason_body_message = ""
     for catalog in conditional_catalog_list:
         recordset_field = eval('record.%s' % catalog)
-        catalog_state = recordset_field and recordset_field.state or False
-        if catalog_state == 'rejected':
+        catalog_state_list = list(map(lambda x: x.state, recordset_field))
+        if list(filter(lambda x: x == 'rejected', catalog_state_list)):
             _state['state'] = 'rejected'
             reject_reason_body_message += "<li><b>%s</b>: %s</li>" % (recordset_field._description,
                                                                       recordset_field.reject_reason)
-        elif catalog_state == 'to_validate' and _state.get('state') == 'validated':
+        elif list(filter(lambda x: x == 'to_validate', catalog_state_list)) and _state.get('state') == 'validated':
             _state['state'] = 'to_validate'
     if _state.get('state') == 'rejected':
         _state['reject_reason'] = reject_reason_header_message % reject_reason_body_message
