@@ -34,6 +34,10 @@ class ONSCCVCertifyingSubinstitution(models.Model):
                                           string=u'Institución certificadora',
                                           required=True)
 
+    certificate_line_ids = fields.One2many(comodel_name="onsc.cv.certificate.line",
+                                           inverse_name="subinstitution_cert_id",
+                                           string="Lineas de certificados")
+
     def _check_validate(self, args2validate, message=""):
         if self.institution_cert_id.state != 'validated':
             raise ValidationError(_("La Institución certificadora no ha sido validada"))

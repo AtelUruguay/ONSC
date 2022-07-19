@@ -106,6 +106,73 @@ class ONSCCVDigital(models.Model):
     # Información patronímica
     cv_full_name_updated_date = fields.Date(related='partner_id.cv_full_name_updated_date',
                                             string="Fecha de información")
+
+    # DOMICILIO----<Page>
+    country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
+    cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
+    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False)
+    cv_address_street = fields.Char(related='partner_id.street', readonly=False)
+    cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
+    cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
+    cv_address_street2 = fields.Char(related='partner_id.street2', readonly=False)
+    cv_address_street3 = fields.Char(related='partner_id.cv_street3', readonly=False)
+    cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
+    cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
+    cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
+    cv_address_state = fields.Selection(related='cv_address_location_id.state')
+    cv_address_reject_reason = fields.Char(related='cv_address_location_id.reject_reason')
+
+    # Formación----<Page>
+    basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación Básica')
+    advanced_formation_ids = fields.One2many('onsc.cv.advanced.formation', 'cv_digital_id',
+                                             string=u'Formación avanzada')
+    # Cursos y certificado----<Page>
+    course_certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
+                                             string="Cursos y certificados")
+    course_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
+                                 string="Cursos", domain=[('record_type', '=', 'course')])
+    certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
+                                      string="Certificados", domain=[('record_type', '=', 'certificate')])
+    # Help online
+    cv_help_general_info = fields.Html(
+        compute=lambda s: s._get_help('cv_help_general_info'),
+        default=lambda s: s._get_help('cv_help_general_info', True))
+    cv_help_address = fields.Html(
+        compute=lambda s: s._get_help('cv_help_address'),
+        default=lambda s: s._get_help('cv_help_address', True)
+    )
+    cv_help_work_experience = fields.Html(
+        compute=lambda s: s._get_help('cv_help_work_experience'),
+        default=lambda s: s._get_help('cv_help_work_experience', True)
+    )
+    cv_help_work_teaching = fields.Html(
+        compute=lambda s: s._get_help('cv_help_work_teaching'),
+        default=lambda s: s._get_help('cv_help_work_teaching', True)
+    )
+    cv_help_work_investigation = fields.Html(
+        compute=lambda s: s._get_help('cv_help_work_investigation'),
+        default=lambda s: s._get_help('cv_help_work_investigation', True)
+    )
+    cv_help_formation = fields.Html(
+        compute=lambda s: s._get_help('cv_help_formation'),
+        default=lambda s: s._get_help('cv_help_formation', True)
+    )
+    cv_help_course_certificate = fields.Html(
+        compute=lambda s: s._get_help('cv_help_course_certificate'),
+        default=lambda s: s._get_help('cv_help_course_certificate', True)
+    )
+    cv_help_volunteering = fields.Html(
+        compute=lambda s: s._get_help('cv_help_volunteering'),
+        default=lambda s: s._get_help('cv_help_volunteering', True)
+    )
+    cv_help_language_level = fields.Html(
+        compute=lambda s: s._get_help('cv_help_language_level'),
+        default=lambda s: s._get_help('cv_help_language_level', True)
+    )
+    cv_help_publications_productions_evaluations = fields.Html(
+        compute=lambda s: s._get_help('cv_help_publications_productions_evaluations'),
+        default=lambda s: s._get_help('cv_help_publications_productions_evaluations', True)
+    )
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
                                       selection=[('legal', 'Legal'), ('natural', 'Natural'),
@@ -153,78 +220,23 @@ class ONSCCVDigital(models.Model):
     relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
-    cv_help_general_info = fields.Html(
-        compute=lambda s: s._get_help('cv_help_general_info'),
-        default=lambda s: s._get_help('cv_help_general_info', True))
-
-    # DOMICILIO----<Page>
-    country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
-    cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
-    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False)
-    cv_address_street = fields.Char(related='partner_id.street', readonly=False)
-    cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
-    cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
-    cv_address_street2 = fields.Char(related='partner_id.street2', readonly=False)
-    cv_address_street3 = fields.Char(related='partner_id.cv_street3', readonly=False)
-    cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
-    cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
-    cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
-    cv_address_state = fields.Selection(related='cv_address_location_id.state')
-    cv_address_reject_reason = fields.Char(related='cv_address_location_id.reject_reason')
-    cv_help_address = fields.Html(
-        compute=lambda s: s._get_help('cv_help_address'),
-        default=lambda s: s._get_help('cv_help_address', True)
-    )
-
-    # FORMACION----<Page>
-    basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación Básica')
-    advanced_formation_ids = fields.One2many('onsc.cv.advanced.formation', 'cv_digital_id',
-                                             string=u'Formación avanzada')
-    cv_help_formation = fields.Html(
-        compute=lambda s: s._get_help('cv_help_formation'),
-        default=lambda s: s._get_help('cv_help_formation', True)
-    )
-
-    # CURSOS Y CERTIFICADOS----<Page>
-    course_certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                             string="Cursos y certificados")
-    course_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                 string="Cursos", domain=[('record_type', '=', 'course')])
-    certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                      string="Certificados", domain=[('record_type', '=', 'certificate')])
-    cv_help_course_certificate = fields.Html(
-        compute=lambda s: s._get_help('cv_help_course_certificate'),
-        default=lambda s: s._get_help('cv_help_course_certificate', True)
-    )
-
-    # EXPERIENCIA LABORAL ----<Page>
+    # Experiencia Laboral ----<Page>
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
                                           string="Experiencia laboral")
-    cv_help_work_experience = fields.Html(
-        compute=lambda s: s._get_help('cv_help_work_experience'),
-        default=lambda s: s._get_help('cv_help_work_experience', True)
-    )
-    # DOCENCIA ----<Page>
-    work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencias')
-    cv_help_work_teaching = fields.Html(
-        compute=lambda s: s._get_help('cv_help_work_teaching'),
-        default=lambda s: s._get_help('cv_help_work_teaching', True)
-    )
 
-    # INVESTIGACION ----<Page>
+    # Docencia ----<Page>
+    work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencias')
+    # Investigación ----<Page>
     work_investigation_ids = fields.One2many('onsc.cv.work.investigation', inverse_name='cv_digital_id',
                                              string='Investigaciones')
-    cv_help_work_investigation = fields.Html(
-        compute=lambda s: s._get_help('cv_help_work_investigation'),
-        default=lambda s: s._get_help('cv_help_work_investigation', True)
-    )
-
-    # VOLUNTARIADO ----<Page>
+    # Voluntariado ----<Page>
     volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
-    cv_help_volunteering = fields.Html(
-        compute=lambda s: s._get_help('cv_help_volunteering'),
-        default=lambda s: s._get_help('cv_help_volunteering', True)
-    )
+    # Idioma ----<Page>
+    language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idioma')
+    # Publicaciones, Producciones y Evaluaciones ----<Page>
+    publications_productions_evaluations_ids = fields.One2many("onsc.cv.publication.production.evaluation",
+                                                               inverse_name="cv_digital_id",
+                                                               string="Publicaciones, Producciones y Evaluaciones")
 
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)

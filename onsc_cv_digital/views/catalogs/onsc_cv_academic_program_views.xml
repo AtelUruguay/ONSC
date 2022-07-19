@@ -73,6 +73,7 @@
                                    required="1" force_save="1"/>
                             <field name="subinstitution_id" domain="[('institution_id', '=', institution_id)]"
                                    readonly="context.get('is_readonly') and context.get('default_subinstitution_id')"
+                                   context="{'default_country_id': country_id, 'default_institution_id': institution_id, 'is_readonly': True}"
                                    required="1" force_save="1"/>
                             <field name="study_level_id"
                                    readonly="context.get('is_readonly') and context.get('default_study_level_id')"
