@@ -12,6 +12,10 @@ class ONSCCVDigital(models.Model):
                                                    compute='_compute_gender_public_visualization_date', store=True)
     afro_descendant_date = fields.Date(string="Fecha de información afrodescendencia")
     status_civil_date = fields.Date(string="Fecha de información estado civil")
+    address_info_date = fields.Date(string="Fecha de información domicilio",
+                               related='partner_id.address_info_date',
+                               readonly=False,
+                               store=True)
 
     @api.depends('is_cv_gender_public')
     def _compute_gender_public_visualization_date(self):
