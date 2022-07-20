@@ -219,7 +219,7 @@ class ONSCCVDigital(models.Model):
     lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender/ y o aprender?')
     interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interacciones y/o relaciones interpersonales?')
     type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo')
-    type_support_domain_ids = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
+    type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
                                                compute='_compute_cv_type_support_domain')
     need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
     # Help online
@@ -285,29 +285,30 @@ class ONSCCVDigital(models.Model):
     @api.depends('see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction')
     def _compute_cv_type_support_domain(self):
         type_support_ids = []
-        type_support = self.env['onsc.cv.type.support'].search([])
-        see_true = type_support.filtered(lambda x: x.see)
-        hear_true = type_support.filtered(lambda x: x.hear)
-        walk_true = type_support.filtered(lambda x: x.walk)
-        speak_true = type_support.filtered(lambda x: x.talk)
-        realize_true = type_support.filtered(lambda x: x.slide)
-        lear_true = type_support.filtered(lambda x: x.understand)
-        interaction_true = type_support.filtered(lambda x: x.interaction)
-        if self.see and self.see != '4' and see_true:
-            type_support_ids.extend(see_true.ids)
-        if self.hear and self.hear != '4' and hear_true:
-            type_support_ids.extend(hear_true.ids)
-        if self.walk and self.walk != '4' and walk_true:
-            type_support_ids.extend(walk_true.ids)
-        if self.speak and self.speak != '4' and speak_true:
-            type_support_ids.extend(speak_true.ids)
-        if self.realize and self.realize != '4' and realize_true:
-            type_support_ids.extend(realize_true.ids)
-        if self.lear and self.lear != '4' and lear_true:
-            type_support_ids.extend(lear_true.ids)
-        if self.interaction and self.interaction != '4' and interaction_true:
-            type_support_ids.extend(interaction_true.ids)
-        self.type_support_domain_ids = type_support_ids
+        type_supports = self.env['onsc.cv.type.support'].search([])
+        type_support_see = type_supports.filtered(lambda x: x.see)
+        type_support_hear = type_supports.filtered(lambda x: x.hear)
+        type_support_walk = type_supports.filtered(lambda x: x.walk)
+        type_support_speak = type_supports.filtered(lambda x: x.talk)
+        type_support_realize = type_supports.filtered(lambda x: x.slide)
+        type_support_lear = type_supports.filtered(lambda x: x.understand)
+        type_support_interaction = type_supports.filtered(lambda x: x.interaction)
+        for record in self:
+            if record.see and record.see != '4' and type_support_see:
+                type_support_ids.extend(type_support_see.ids)
+            if record.hear and record.hear != '4' and type_support_hear:
+                type_support_ids.extend(type_support_hear.ids)
+            if record.walk and record.walk != '4' and type_support_walk:
+                type_support_ids.extend(type_support_walk.ids)
+            if record.speak and record.speak != '4' and type_support_speak:
+                type_support_ids.extend(type_support_speak.ids)
+            if record.realize and record.realize != '4' and type_support_realize:
+                type_support_ids.extend(type_support_realize.ids)
+            if record.lear and record.lear != '4' and type_support_lear:
+                type_support_ids.extend(type_support_lear.ids)
+            if record.interaction and record.interaction != '4' and type_support_interaction:
+                type_support_ids.extend(type_support_interaction.ids)
+            record.type_support_ids_domain = type_support_ids
 
     @api.constrains('cv_sex_updated_date', 'cv_birthdate')
     def _check_valid_dates(self):

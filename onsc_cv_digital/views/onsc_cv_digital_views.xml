@@ -353,9 +353,9 @@
                                     <field name="hear" widget="radio"/>
                                     <field name="speak" widget="radio"/>
                                     <field name="lear" widget="radio"/>
-                                    <field name="type_support_domain_ids" invisible="1"/>
+                                    <field name="type_support_ids_domain" invisible="1"/>
                                     <field name="type_support_ids" widget="many2many_tags"
-                                           domain="[('id', 'in', type_support_domain_ids)]"/>
+                                           domain="[('id', 'in', type_support_ids_domain)]"/>
                                 </group>
                             </group>
                             <br/>
