@@ -32,12 +32,31 @@ class ONSCCVAbstractWork(models.AbstractModel):
     @api.onchange('start_date')
     def onchange_start_date(self):
         if self.start_date and self.end_date and self.end_date <= self.start_date:
-            self.end_date = self.start_date
+            self.start_date = False
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "El período desde no puede ser mayor que el período hasta"
+                    )
+                },
+
+            }
 
     @api.onchange('end_date')
     def onchange_end_date(self):
         if self.end_date and self.start_date and self.end_date <= self.start_date:
-            self.end_date = self.start_date
+            self.end_date = False
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "El período hasta no puede ser menor que el período desde"
+                    )
+                },
+            }
 
     @api.onchange('hours_worked_monthly')
     def onchange_hours_worked_monthly(self):
@@ -47,7 +66,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
                     'title': _("Atención"),
                     'type': 'notification',
                     'message': _(
-                        "Advertencia la carga horaria mensual es menor que 45 horas"
+                        "Advertencia: la carga horaria mensual es menor que 45 horas"
                     )
                 },
 

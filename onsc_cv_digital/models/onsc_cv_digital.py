@@ -171,7 +171,7 @@ class ONSCCVDigital(models.Model):
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
 
     # Formación----<Page>
-    basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación Básica')
+    basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica')
     advanced_formation_ids = fields.One2many('onsc.cv.advanced.formation', 'cv_digital_id',
                                              string=u'Formación avanzada')
     # Cursos y certificado----<Page>
@@ -188,15 +188,15 @@ class ONSCCVDigital(models.Model):
     work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencias')
     # Investigación ----<Page>
     work_investigation_ids = fields.One2many('onsc.cv.work.investigation', inverse_name='cv_digital_id',
-                                             string='Investigaciones')
+                                             string='Investigación')
     # Voluntariado ----<Page>
     volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
     # Idioma ----<Page>
-    language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idioma')
+    language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idiomas')
     # Publicaciones, Producciones y Evaluaciones ----<Page>
-    publications_productions_evaluations_ids = fields.One2many("onsc.cv.publication.production.evaluation",
-                                                               inverse_name="cv_digital_id",
-                                                               string="Publicaciones, Producciones y Evaluaciones")
+    publication_production_evaluation_ids = fields.One2many("onsc.cv.publication.production.evaluation",
+                                                            inverse_name="cv_digital_id",
+                                                            string="Publicaciones, producciones y evaluaciones")
     # Tutorías, Orientaciones, Supervisiones ----<Page>
     tutoring_orientation_supervision_ids = fields.One2many('onsc.cv.tutoring.orientation.supervision',
                                                            inverse_name="cv_digital_id",

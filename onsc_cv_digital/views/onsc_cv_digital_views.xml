@@ -284,7 +284,7 @@
                             <field name="certificate_ids"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
-                        <page name="work_experience" string="Experiencias laborales">
+                        <page name="work_experience" string="Experiencia laboral">
                             <div class="float-right">
                                 <field name="cv_help_work_experience"/>
                             </div>
@@ -302,7 +302,7 @@
                             </div>
                             <field name="work_investigation_ids"/>
                         </page>
-                        <page name="volunteering" string="Voluntariados">
+                        <page name="volunteering" string="Voluntariado">
                             <div class="float-right">
                                 <field name="cv_help_volunteering"/>
                             </div>
@@ -315,11 +315,11 @@
                             <field name="language_level_ids"/>
                         </page>
                         <page name="publications_productions_evaluations"
-                              string="Publicaciones, Producciones y Evaluaciones">
+                              string="Publicaciones, producciones y evaluaciones">
                             <div class="float-right">
                                 <field name="cv_help_publications_productions_evaluations"/>
                             </div>
-                            <field name="publications_productions_evaluations_ids"/>
+                            <field name="publication_production_evaluation_ids"/>
                         </page>
                         <page name="tutoring_orientation_supervision" string="Tutorías, Orientaciones, Supervisiones">
                             <div class="float-right">
