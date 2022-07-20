@@ -43,11 +43,11 @@ def _is_valid_url(url):
     return url is not None and regex.search(url)
 
 
-def _get_onchange_warning_response(message, type='notification'):
+def _get_onchange_warning_response(message, notif_type='notification'):
     return {
         'warning': {
             'title': _("Atención"),
-            'type': type,
+            'type': notif_type,
             'message': message
         },
 
