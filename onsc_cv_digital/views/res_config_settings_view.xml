@@ -47,6 +47,11 @@
                                         <field name="cv_help_publications_productions_evaluations"
                                                class="col-12 col-lg-12"/>
                                     </div>
+                                    <div class="text-muted content-group mt16">
+                                        <span>Discapacidad </span>
+                                        <field name="cv_help_disability"
+                                               class="col-12 col-lg-12"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
