@@ -352,12 +352,31 @@ class ONSCCVDigital(models.Model):
     @api.onchange('certificate_date')
     def onchange_certificate_date(self):
         if self.certificate_date and self.to_date and self.to_date <= self.certificate_date:
-            self.to_date = self.certificate_date
+            self.certificate_date = False
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "La fecha de certificado no puede ser mayor que la fecha hasta"
+                    )
+                },
+
+            }
 
     @api.onchange('to_date')
     def onchange_to_date(self):
         if self.to_date and self.certificate_date and self.to_date <= self.certificate_date:
-            self.to_date = self.certificate_date
+            self.to_date = False
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "La fecha hasta no puede ser menor que la fecha de certificado"
+                    )
+                },
+            }
 
     def button_edit_address(self):
         self.ensure_one()
