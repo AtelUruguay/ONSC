@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+from odoo import _
 
 
 def _get_validation_status(record, conditional_catalog_list):
@@ -26,3 +28,27 @@ def _get_validation_status(record, conditional_catalog_list):
     if _state.get('state') == 'rejected':
         _state['reject_reason'] = reject_reason_header_message % reject_reason_body_message
     return _state
+
+
+def _is_valid_url(url):
+    if 'http://' not in url and 'https://' not in url:
+        url = '%s%s' % ('http://', url)
+    regex = re.compile(
+        r'^https?://'  # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'  # domain...
+        r'localhost|'  # localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
+        r'(?::\d+)?'  # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+    return url is not None and regex.search(url)
+
+
+def _get_onchange_warning_response(message, type='notification'):
+    return {
+        'warning': {
+            'title': _("Atención"),
+            'type': type,
+            'message': message
+        },
+
+    }

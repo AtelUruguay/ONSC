@@ -75,7 +75,8 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="other_divulgation_media"
                                    attrs="{'invisible': [('is_divulgation_option_other_enable', '=', False)],'required': [('is_divulgation_option_other_enable', '=', True)]}"/>
-                            <field name="website" attrs="{'invisible': [('is_tutor_docent', '=', False)]}"/>
+                            <field name="website" attrs="{'invisible': [('is_tutor_docent', '=', False)]}"
+                                   widget="url"/>
                             <field name="is_paid_activity"/>
                         </group>
                         <group/>
