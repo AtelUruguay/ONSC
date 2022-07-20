@@ -181,13 +181,13 @@
                         <page string="Áreas relacionadas con esta educación">
                             <field name="area_related_education_ids">
                                 <tree string="Formación avanzada" editable="top">
-                                    <field name="educational_areas_id"/>
-                                    <field name="educational_subareas_id"
-                                           domain="[('area_id', '=', educational_areas_id)]"
-                                           context="{'default_area_id': educational_areas_id}"/>
+                                    <field name="educational_area_id"/>
+                                    <field name="educational_subarea_id"
+                                           domain="[('area_id', '=', educational_area_id)]"
+                                           context="{'default_area_id': educational_area_id}"/>
                                     <field name="discipline_educational_id"
-                                           domain="[('subarea_id', '=', educational_subareas_id)]"
-                                           context="{'default_area_id': educational_areas_id, 'default_subarea_id': educational_subareas_id}"/>
+                                           domain="[('subarea_id', '=', educational_subarea_id)]"
+                                           context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
                                 </tree>
                             </field>
                         </page>
