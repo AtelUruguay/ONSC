@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 
 class ONSCCVFormationBasic(models.Model):
@@ -73,7 +73,16 @@ class ONSCCVFormationAdvanced(models.Model):
     @api.onchange('egress_date')
     def onchange_egress_date(self):
         if self.start_date and self.egress_date and self.egress_date <= self.start_date:
-            self.egress_date = self.start_date
+            self.egress_date = False
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "La fecha de egreso no puede ser menor que la fecha de inicio"
+                    )
+                },
+            }
 
     @api.onchange('state', 'is_require_thesis')
     def onchange_state_is_require_thesis(self):
@@ -93,11 +102,9 @@ class ONSCCVFormationAdvanced(models.Model):
 
 class ONSCCVAreaRelatedEducation(models.Model):
     _name = 'onsc.cv.area.related.education'
+    _inherit = ['onsc.cv.abstract.formation.line']
     _description = 'Área relacionada con esta educación'
 
-    advanced_formation_id = fields.Many2one('onsc.cv.advanced.formation', string=u'Formación avanzada')
-    educational_areas_id = fields.Many2one('onsc.cv.educational.areas', string=u'Área de educación', required=True)
-    educational_subareas_id = fields.Many2one('onsc.cv.educational.subarea', string=u'Sub área de educación',
-                                              required=True)
-    discipline_educational_id = fields.Many2one('onsc.cv.discipline.educational', string=u'Disciplina de educación',
-                                                required=True)
+    advanced_formation_id = fields.Many2one('onsc.cv.advanced.formation',
+                                            string=u'Formación avanzada',
+                                            ondelete='cascade')

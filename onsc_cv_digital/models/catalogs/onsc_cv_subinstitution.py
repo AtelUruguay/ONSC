@@ -15,7 +15,7 @@ class ONSCCVSubintitution(models.Model):
 
     @api.onchange('country_id')
     def onchange_country_id(self):
-        if self.country_id and self.country_id != self.institution_id.country_id:
+        if self.country_id != self.institution_id.country_id or self.country_id.id is False:
             self.institution_id = False
 
     @api.onchange('institution_id')
