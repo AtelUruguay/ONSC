@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_catalog_inciso_search" model="ir.ui.view">
+        <field name="name">onsc.catalog.inciso.search</field>
+        <field name="model">onsc.catalog.inciso</field>
+        <field name="arch" type="xml">
+            <search string="Incisos">
+                <field name="name"/>
+                <field name="identifier"/>
+                <field name="budget_code"/>
+                <field name="short_name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_inciso_form" model="ir.ui.view">
+        <field name="name">onsc.catalog.inciso.form</field>
+        <field name="model">onsc.catalog.inciso</field>
+        <field name="arch" type="xml">
+            <form string="Incisos">
+                <sheet>
+                    <header>
+                    </header>
+                    <field name="logo" widget="image" class="oe_avatar"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group name="main_group">
+                        <group/>
+                        <group/>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Información general" name="page_main">
+                            <group>
+                                <group>
+                                    <field name="identifier"/>
+                                    <field name="budget_code"/>
+                                    <field name="short_name"/>
+                                    <field name="date_begin"/>
+                                    <field name="date_end"/>
+                                    <field name="createupdate_regulation"/>
+                                    <field name="active" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="section_220_221"/>
+                                    <field name="reference_ministry"/>
+                                    <field name="createupdate_regulation"/>
+                                    <field name="is_institutional"/>
+                                    <field name="is_public_company"/>
+                                    <field name="is_into_nacional_budget"/>
+                                    <field name="is_central_administration"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Otra información">
+                            <group>
+                                <group>
+                                    <field name="create_date"/>
+                                    <field name="create_uid"/>
+                                </group>
+                                <group>
+                                    <field name="write_date"/>
+                                    <field name="write_uid"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_inciso_tree" model="ir.ui.view">
+        <field name="name">onsc.catalog.inciso.tree</field>
+        <field name="model">onsc.catalog.inciso</field>
+        <field name="arch" type="xml">
+            <tree string="Incisos">
+                <field name="name"/>
+                <field name="identifier"/>
+                <field name="budget_code"/>
+                <field name="short_name"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id='onsc_catalog_inciso_action' model='ir.actions.act_window'>
+        <field name="name">Incisos</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.catalog.inciso</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('active','in',[False,True])]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo Inciso
+            </p>
+        </field>
+    </record>
+</odoo>

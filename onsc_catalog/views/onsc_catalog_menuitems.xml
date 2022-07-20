@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <menuitem id="onsc_catalog_menu"
+              name="Catálogos"
+              parent="hr.menu_hr_root"
+              sequence="10"/>
+
+    <menuitem id="onsc_cv_digital_user_menu"
+              name="Incisos"
+              action="onsc_catalog_inciso_action"
+              parent="onsc_catalog_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="1"/>
+</odoo>
