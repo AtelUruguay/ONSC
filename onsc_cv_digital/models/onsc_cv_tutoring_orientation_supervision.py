@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from .abstracts.onsc_cv_abstract_work import PAID_ACTIVITY_TYPES
 
 POSTGRADUATE_TYPES = [('academic', 'Académico'), ('professional', 'Profesional')]
@@ -30,7 +30,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     is_divulgation_option_other_enable = fields.Boolean(related='divulgation_media_id.is_option_other_enable')
     other_divulgation_media = fields.Char('Otro medio de divulgación')
     website = fields.Char('Sitio web')
-    is_tutoring_included = fields.Boolean('Tutoría incluida')
+    is_tutoring_finished = fields.Boolean('Tutoría conluida')
     year_title = fields.Selection(YEARS_TITLE, 'Año de obtención del título')
     orientation_type_id = fields.Many2one('onsc.cv.type.orientation', 'Tipo de orientación', required=True)
     co_tutor_name = fields.Char('Nombre del co-tutor')
@@ -52,6 +52,56 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     def _compute_is_tutor_docent(self):
         for rec in self:
             rec.is_tutor_docent = rec.tutor_type_id == self.env.ref('onsc_cv_digital.onsc_cv_type_tutor_docent')
+
+    @api.onchange('year_title')
+    def onchange_year_title(self):
+        if self.start_date and self.year_title and fields.Date.from_string(self.start_date).year > int(self.year_title):
+            self.start_date = False
+        if self.end_date and self.year_title and fields.Date.from_string(self.end_date).year != int(self.year_title):
+            self.end_date = False
+
+    @api.onchange('start_date')
+    def onchange_start_date(self):
+        res = super(ONSCCVTutorialOrientationSupervision, self).onchange_start_date()
+        if res:
+            return res
+        if self.start_date and self.year_title:
+            if fields.Date.from_string(self.start_date).year > int(self.year_title):
+                self.start_date = False
+                return {
+                    'warning': {
+                        'title': _("Atención"),
+                        'type': 'notification',
+                        'message': _(
+                            "El año de la fecha de inicio debe ser menor o igual al año de obtención del título"
+                        )
+                    },
+
+                }
+
+    @api.onchange('end_date')
+    def onchange_end_date(self):
+        res = super(ONSCCVTutorialOrientationSupervision, self).onchange_start_date()
+        if res:
+            return res
+        if self.end_date and self.year_title:
+            if fields.Date.from_string(self.end_date).year != int(self.year_title):
+                self.end_date = False
+                return {
+                    'warning': {
+                        'title': _("Atención"),
+                        'type': 'notification',
+                        'message': _(
+                            "El año de la fecha de finalización debe ser igual al año de obtención del título"
+                        )
+                    },
+
+                }
+
+    @api.onchange('is_tutoring_finished')
+    def onchange_is_tutoring_finished(self):
+        self.year_title = False
+        self.end_date = False
 
 
 class ONSCCVEducationAreaTutorial(models.Model):

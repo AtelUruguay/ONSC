@@ -46,48 +46,55 @@
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="country_id_domain" invisible="1"/>
-
-                            <field name="is_paid_activity"/>
-                            <field name="knowledge_acquired_ids" widget="many2many_tags"/>
-                            <field name="is_tutoring_included"/>
-                            <field name="orientation_type_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                        </group>
-                        <group>
-                            <field name="date"/>
-                            <field name="year_title"/>
-                            <field name="start_date"/>
-                            <field name="end_date"
-                                   attrs="{'invisible': [('is_tutoring_included', '!=', True)],'required': [('is_tutoring_included', '=', True)]}"/>
-                            <field name="dependence"/>
-                            <field name="academic_program_id"/>
-                            <field name="postgraduate_type"/>
-                            <field name="student_name"/>
-                            <field name="co_tutor_name"
-                                   attrs="{'invisible': [('is_orientation_type_pie', '=', False)]}"/>
-                            <field name="language_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="tutor_type_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="other_tutor_type"
                                    attrs="{'invisible': [('is_tutor_option_other_enable', '=', False)],'required': [('is_tutor_option_other_enable', '=', True)]}"/>
+                            <field name="orientation_type_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="co_tutor_name"
+                                   attrs="{'invisible': [('is_orientation_type_pie', '=', False)]}"/>
+                            <field name="knowledge_acquired_ids" widget="many2many_tags"/>
+                        </group>
+                        <group>
+                            <field name="date"/>
+                            <field name="is_tutoring_finished"/>
+                            <field name="year_title"
+                                   attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
+                            <field name="start_date" required="1" string="Periodo desde"/>
+                            <field name="end_date" string="Periodo hasta"
+                                   attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
+                            <field name="dependence"/>
+                            <field name="academic_program_id"/>
+                            <field name="postgraduate_type"/>
+                            <field name="student_name"/>
+                            <field name="language_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="divulgation_media_id"
                                    attrs="{'invisible': [('is_tutor_docent', '=', False)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="other_divulgation_media"
                                    attrs="{'invisible': [('is_divulgation_option_other_enable', '=', False)],'required': [('is_divulgation_option_other_enable', '=', True)]}"/>
                             <field name="website" attrs="{'invisible': [('is_tutor_docent', '=', False)]}"/>
+                            <field name="is_paid_activity"/>
+                        </group>
+                        <group/>
+                        <group>
+                            <div class="o_row o_td_label">
+                                <label for="is_relevant_work" class="oe_inline o_form_label"/>
+                                <field name="is_relevant_work"/>
+                            </div>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Áreas de actividad">
+                        <page string="Área de actividad">
                             <field name="area_ids">
-                                <tree string="Áreas de actividad">
-                                    <field name="educational_area_id"/>
-                                    <field name="educational_subarea_id"
+                                <tree string="Área de actividad">
+                                    <field name="educational_area_id" string="Área de actividad"/>
+                                    <field name="educational_subarea_id" string="Sub área de actividad"
                                            domain="[('area_id', '=', educational_area_id)]"
                                            context="{'default_area_id': educational_area_id}"/>
-                                    <field name="discipline_educational_id"
+                                    <field name="discipline_educational_id" string="Disciplina"
                                            domain="[('subarea_id', '=', educational_subarea_id)]"
                                            context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
                                     <field name="speciality"/>
@@ -95,11 +102,11 @@
                                 <form string="Área de Actividad">
                                     <sheet>
                                         <group>
-                                            <field name="educational_area_id"/>
-                                            <field name="educational_subarea_id"
+                                            <field name="educational_area_id" string="Área de actividad"/>
+                                            <field name="educational_subarea_id" string="Sub área de actividad"
                                                    domain="[('area_id', '=', educational_area_id)]"
                                                    context="{'default_area_id': educational_area_id}"/>
-                                            <field name="discipline_educational_id"
+                                            <field name="discipline_educational_id" string="Disciplina"
                                                    domain="[('subarea_id', '=', educational_subarea_id)]"
                                                    context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
                                             <field name="speciality"
@@ -110,7 +117,7 @@
                                 </form>
                             </field>
                         </page>
-                        <page string="Otra información">
+                        <page string="Información adicional">
                             <field name="other_relevant_information" nolabel="1"/>
                         </page>
                     </notebook>
