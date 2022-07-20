@@ -52,13 +52,32 @@ class ONSCCVAcademicProgramSubject(models.Model):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
-        if self.start_date and self.end_date and self.state == 'completed' and self.end_date <= self.start_date:
-            self.end_date = self.start_date
+        if self.start_date and self.end_date and self.end_date <= self.start_date:
+            self.start_date = False
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "El período desde no puede ser mayor que el período hasta"
+                    )
+                },
+
+            }
 
     @api.onchange('end_date')
     def onchange_end_date(self):
         if self.end_date and self.start_date and self.end_date <= self.start_date:
-            self.end_date = self.start_date
+            self.end_date = False
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "El período hasta no puede ser menor que el período desde"
+                    )
+                },
+            }
 
     @api.onchange('knowledge_teaching_ids')
     def onchange_knowledge_teaching_ids(self):

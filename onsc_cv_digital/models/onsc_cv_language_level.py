@@ -9,7 +9,7 @@ class LenguageLevel(models.Model):
     _description = 'Idiomas'
     _order = 'spoken_level,read_level,write_level'
 
-    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade')
+    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", required=True, index=True, ondelete='cascade')
     language_id = fields.Many2one('onsc.cv.language', 'Idioma', required=True)
     spoken_level = fields.Selection(
         selection=NIVEL,

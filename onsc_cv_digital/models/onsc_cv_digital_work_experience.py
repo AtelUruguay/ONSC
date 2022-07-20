@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class ONSCCVDigitalWorkExperience(models.Model):
@@ -8,7 +8,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     _description = 'Experiencia laboral'
     _catalogs2validate = ['city_id']
 
-    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade')
+    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", required=True, index=True, ondelete='cascade')
     city_id = fields.Many2one("onsc.cv.location", string="Ciudad donde desempeñó", required=True)
     unit_name = fields.Char("Área/Unidad")
     entry_institution_id = fields.Many2one("onsc.cv.entry", string="Rubro de la institución", required=True)
@@ -23,6 +23,15 @@ class ONSCCVDigitalWorkExperience(models.Model):
     # reason_discharge = fields.Char("Causal de egreso")
     task_ids = fields.One2many("onsc.cv.work.experience.task", inverse_name="work_experience_id",
                                string="Tareas")
+
+    @api.onchange('country_id')
+    def onchange_country_id(self):
+        if self.city_id.country_id.id != self.country_id.id:
+            self.city_id = False
+
+    @api.onchange('city_id')
+    def onchange_city_id(self):
+        self.country_id = self.city_id.country_id.id
 
 
 class ONSCCVDigitalOriginInstitutionTask(models.Model):

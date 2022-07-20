@@ -11,7 +11,7 @@ class ONSCCVAbstractFormation(models.AbstractModel):
     _name = 'onsc.cv.abstract.formation'
     _description = 'Modelo abstracto de entidades de formación'
 
-    cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV digital', required=True, ondelete='cascade')
+    cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV', required=True, index=True, ondelete='cascade')
     state = fields.Selection(string="Estado", selection=STATES)
     start_date = fields.Date(string="Fecha de inicio")
     end_date = fields.Date(string="Fecha finalización")
@@ -21,13 +21,32 @@ class ONSCCVAbstractFormation(models.AbstractModel):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
-        if self.start_date and self.end_date and self.state == 'completed' and self.end_date <= self.start_date:
-            self.end_date = self.start_date
+        if self.start_date and self.end_date and self.end_date <= self.start_date:
+            self.start_date = False
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "La fecha de inicio no puede ser mayor que la fecha de finalización"
+                    )
+                },
+
+            }
 
     @api.onchange('end_date')
     def onchange_end_date(self):
         if self.end_date and self.start_date and self.end_date <= self.start_date:
-            self.end_date = self.start_date
+            self.end_date = False
+            return {
+                'warning': {
+                    'title': _("Atención"),
+                    'type': 'notification',
+                    'message': _(
+                        "La fecha de finalización no puede ser menor que la fecha de inicio"
+                    )
+                },
+            }
 
     @api.onchange('knowledge_acquired_ids')
     def onchange_knowledge_acquired_ids(self):

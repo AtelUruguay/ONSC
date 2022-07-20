@@ -51,7 +51,6 @@ class ONSCCVWorkInvestigation(models.Model):
                         "Sólo se pueden seleccionar 5 tipos de conocimientos"
                     )
                 },
-
             }
 
 
