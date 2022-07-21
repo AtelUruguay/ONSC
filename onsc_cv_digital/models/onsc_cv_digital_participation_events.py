@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
+from . import onsc_cv_useful_tools as cv_tools
 
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
 
@@ -40,12 +41,10 @@ class ONSCCVDigitalParticipationEvent(models.Model):
         roll_event_commentator_id = self.env.ref('onsc_cv_digital.onsc_cv_roll_event_commentator').id
         roll_event_panelist_id = self.env.ref('onsc_cv_digital.onsc_cv_roll_event_panelist').id
         roll_event_speaker_quest_id = self.env.ref('onsc_cv_digital.onsc_cv_roll_event_speaker_quest').id
+        roll_event_list = [roll_event_exhibitor_id, roll_event_moderator_id, roll_event_commentator_id,
+                           roll_event_panelist_id, roll_event_speaker_quest_id]
         for record in self:
-            if (record.roll_event_id.id == roll_event_exhibitor_id) or (
-                    record.roll_event_id.id == roll_event_moderator_id) or (
-                    record.roll_event_id.id == roll_event_commentator_id) or (
-                    record.roll_event_id.id == roll_event_panelist_id) or (
-                    record.roll_event_id.id == roll_event_speaker_quest_id):
+            if record.roll_event_id.id in roll_event_list:
                 record.is_roll_event = True
             else:
                 record.is_roll_event = False
@@ -54,39 +53,16 @@ class ONSCCVDigitalParticipationEvent(models.Model):
     def onchange_start_date(self):
         if self.start_date and self.end_date and self.end_date <= self.start_date:
             self.start_date = False
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "La fecha inicio no puede ser mayor que la fecha fin"
-                    )
-                },
-
-            }
+            return cv_tools._get_onchange_warning_response(_("La fecha inicio no puede ser mayor que la fecha fin"))
 
     @api.onchange('end_date')
     def onchange_end_date(self):
         if self.end_date and self.start_date and self.end_date <= self.start_date:
             self.end_date = False
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "La fecha fin no puede ser menor que la fecha inicio"
-                    )
-                },
-            }
+            return cv_tools._get_onchange_warning_response(_("La fecha fin no puede ser menor que la fecha inicio"))
 
     @api.onchange('knowledge_key_insights_ids')
     def onchange_knowledge_key_insights_ids(self):
         if len(self.knowledge_key_insights_ids) > 5:
             self.knowledge_key_insights_ids = self.knowledge_key_insights_ids[:5]
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _("Sólo se pueden seleccionar 5 tipos de conocimientos")
-                },
-            }
+            return cv_tools._get_onchange_warning_response(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))

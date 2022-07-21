@@ -3,6 +3,7 @@
 from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from . import onsc_cv_useful_tools as cv_tools
 
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
@@ -225,6 +226,8 @@ class ONSCCVDigital(models.Model):
     type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo')
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
                                                compute='_compute_cv_type_support_domain')
+    need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
+    is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain')
     # Participación en Eventos ----<Page>
     participation_event_ids = fields.One2many("onsc.cv.participation.event",
                                               inverse_name="cv_digital_id",
@@ -233,7 +236,6 @@ class ONSCCVDigital(models.Model):
     other_relevant_information_ids = fields.One2many("onsc.cv.other.relevant.information",
                                                      inverse_name="cv_digital_id",
                                                      string="Otra información Relevante")
-    need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
     # Help online
     cv_help_general_info = fields.Html(
         compute=lambda s: s._get_help('cv_help_general_info'),
@@ -332,6 +334,10 @@ class ONSCCVDigital(models.Model):
                 type_support_ids.extend(type_support_lear.ids)
             if record.interaction and record.interaction != '4' and type_support_interaction:
                 type_support_ids.extend(type_support_interaction.ids)
+            if type_support_ids:
+                record.is_need_other_support = True
+            else:
+                record.is_need_other_support = False
             record.type_support_ids_domain = type_support_ids
 
     @api.constrains('cv_sex_updated_date', 'cv_birthdate')
@@ -377,30 +383,15 @@ class ONSCCVDigital(models.Model):
     def onchange_certificate_date(self):
         if self.certificate_date and self.to_date and self.to_date <= self.certificate_date:
             self.certificate_date = False
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "La fecha de certificado no puede ser mayor que la fecha hasta"
-                    )
-                },
-
-            }
+            return cv_tools._get_onchange_warning_response(
+                _("La fecha de certificado no puede ser mayor que la fecha hasta"))
 
     @api.onchange('to_date')
     def onchange_to_date(self):
         if self.to_date and self.certificate_date and self.to_date <= self.certificate_date:
             self.to_date = False
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "La fecha hasta no puede ser menor que la fecha de certificado"
-                    )
-                },
-            }
+            return cv_tools._get_onchange_warning_response(
+                _("La fecha hasta no puede ser menor que la fecha de certificado"))
 
     def button_edit_address(self):
         self.ensure_one()

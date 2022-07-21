@@ -362,11 +362,12 @@
                                     <field name="type_support_ids_domain" invisible="1"/>
                                     <field name="type_support_ids" widget="many2many_tags"
                                            domain="[('id', 'in', type_support_ids_domain)]"/>
+                                    <field name="is_need_other_support" invisible="1"/>
                                 </group>
                             </group>
                             <br/>
-                            <div attrs="{'invisible': [('see', 'in', ['4',False]),('walk', 'in', ['4',False]),('realize', 'in', ['4',False]),('interaction', 'in', ['4',False]), ('hear', 'in', ['4',False]), ('speak', 'in', ['4',False]), ('lear', 'in', ['4',False])]}">
-                                <h4>¿Necesita otro apoyo?</h4>
+                            <div attrs="{'invisible': [('is_need_other_support', '!=', True)]}">
+                            <h4>¿Necesita otro apoyo?</h4>
                                 <field name="need_other_support"/>
                             </div>
                         </page>
