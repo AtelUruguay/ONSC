@@ -2,7 +2,8 @@
 
 from odoo import fields, models, api, _
 from .abstracts.onsc_cv_abstract_work import PAID_ACTIVITY_TYPES
-from . import onsc_cv_useful_tools as cv_tools
+from .onsc_cv_useful_tools import is_valid_url
+from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 POSTGRADUATE_TYPES = [('academic', 'Académico'), ('professional', 'Profesional')]
 YEARS_TITLE = [('%s' % x, '%s' % x) for x in range(fields.Date.today().year, 1900, -1)]
@@ -40,7 +41,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     #  Grilla área de actividad
     area_ids = fields.One2many('onsc.cv.education.area.tutoring', 'tutoring_id', 'Área de actividad')
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', relation='knowledge_acquired_tutoring_rel',
-                                              string='Conocimientos aplicados', store=True)
+                                              string='Conocimientos aplicados', store=True, required=True)
     is_orientation_type_pie = fields.Boolean(compute='_compute_is_orientation_type_pie')
 
     @api.depends('orientation_type_id')
@@ -69,7 +70,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         if self.start_date and self.year_title:
             if fields.Date.from_string(self.start_date).year > int(self.year_title):
                 self.start_date = False
-                return cv_tools._get_onchange_warning_response(
+                return cv_warning(
                     _("El año de la fecha de inicio debe ser menor o igual al año de obtención del título"))
 
     @api.onchange('end_date')
@@ -80,7 +81,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         if self.end_date and self.year_title:
             if fields.Date.from_string(self.end_date).year != int(self.year_title):
                 self.end_date = False
-                return cv_tools._get_onchange_warning_response(
+                return cv_warning(
                     _("El año de la fecha de finalización debe ser igual al año de obtención del título"))
 
     @api.onchange('is_tutoring_finished')
@@ -90,9 +91,9 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
 
     @api.onchange('website')
     def onchange_website(self):
-        if self.website and not cv_tools._is_valid_url(self.website):
+        if self.website and not is_valid_url(self.website):
             self.website = False
-            return cv_tools._get_onchange_warning_response(_("EL sitio web no tiene un formato válido."))
+            return cv_warning(_("EL sitio web no tiene un formato válido."))
 
 
 class ONSCCVEducationAreaTutorial(models.Model):

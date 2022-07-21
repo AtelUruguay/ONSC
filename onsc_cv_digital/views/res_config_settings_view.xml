@@ -27,24 +27,37 @@
                                         <field name="cv_help_formation" class="col-12 col-lg-12"/>
                                     </div>
                                     <div class="text-muted content-group mt16">
-                                        <span>Cursos y Certificados </span>
+                                        <span>Cursos y Certificados</span>
                                         <field name="cv_help_course_certificate" class="col-12 col-lg-12"/>
                                     </div>
                                     <div class="text-muted content-group mt16">
-                                        <span>Experiencia laboral </span>
+                                        <span>Experiencia laboral</span>
                                         <field name="cv_help_work_experience" class="col-12 col-lg-12"/>
                                     </div>
                                     <div class="text-muted content-group mt16">
-                                        <span>Voluntariado </span>
+                                        <span>Docencia</span>
+                                        <field name="cv_help_work_teaching" class="col-12 col-lg-12"/>
+                                    </div>
+                                    <div class="text-muted content-group mt16">
+                                        <span>Investigación</span>
+                                        <field name="cv_help_work_investigation" class="col-12 col-lg-12"/>
+                                    </div>
+                                    <div class="text-muted content-group mt16">
+                                        <span>Voluntariado</span>
                                         <field name="cv_help_volunteering" class="col-12 col-lg-12"/>
                                     </div>
                                     <div class="text-muted content-group mt16">
-                                        <span>Idiomas </span>
+                                        <span>Idiomas</span>
                                         <field name="cv_help_language_level" class="col-12 col-lg-12"/>
                                     </div>
                                     <div class="text-muted content-group mt16">
-                                        <span>Publicaciones, Producciones y Evaluaciones </span>
+                                        <span>Publicaciones, Producciones y Evaluaciones</span>
                                         <field name="cv_help_publications_productions_evaluations"
+                                               class="col-12 col-lg-12"/>
+                                    </div>
+                                    <div class="text-muted content-group mt16">
+                                        <span>Tutorías, Orientaciones, Supervisiones</span>
+                                        <field name="cv_help_tutoring_orientation_supervision"
                                                class="col-12 col-lg-12"/>
                                     </div>
                                     <div class="text-muted content-group mt16">

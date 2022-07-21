@@ -3,7 +3,7 @@ import re
 from odoo import _
 
 
-def _get_validation_status(record, conditional_catalog_list):
+def get_validation_status(record, conditional_catalog_list):
     """
     :param str record: Odoo recodset sobre el que se desea conocer el Estado de Catálogos condicionales
     :param list conditional_catalog_list: Cada elemento constituye un Catalogo condicional (i.e. ['institution_id', 'subinstitution_id'])
@@ -30,7 +30,7 @@ def _get_validation_status(record, conditional_catalog_list):
     return _state
 
 
-def _is_valid_url(url):
+def is_valid_url(url):
     if 'http://' not in url and 'https://' not in url:
         url = '%s%s' % ('http://', url)
     regex = re.compile(
@@ -43,7 +43,7 @@ def _is_valid_url(url):
     return url is not None and regex.search(url)
 
 
-def _get_onchange_warning_response(message, notif_type='notification'):
+def get_onchange_warning_response(message, notif_type='notification'):
     return {
         'warning': {
             'title': _("Atención"),
