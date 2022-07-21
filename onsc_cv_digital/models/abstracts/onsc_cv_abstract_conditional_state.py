@@ -26,6 +26,6 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
     @api.depends(lambda self: ['%s.state' % x for x in self._catalogs2validate])
     def _compute_conditional_validation_state(self):
         for record in self:
-            validation_status = useful_tools._get_validation_status(record, self._catalogs2validate)
+            validation_status = useful_tools.get_validation_status(record, self._catalogs2validate)
             record.conditional_validation_state = validation_status.get('state')
             record.conditional_validation_reject_reason = validation_status.get('reject_reason', '')
