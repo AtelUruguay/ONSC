@@ -23,7 +23,7 @@ class ONSCCVDigitalPPEvaluations(models.Model):
     subtype_other_id = fields.Many2one("onsc.cv.subtype.other", 'Sub tipo otro')
     other_subtype_other = fields.Char(string=u"Otro sub tipo otro")
     is_subtype_other = fields.Boolean(related="subtype_other_id.is_option_other_enable")
-    date = fields.Date(string="Fecha", required=True)
+    date = fields.Date(string="Fecha de publicación", required=True)
     tittle = fields.Char(string=u"Título", required=True)
     description = fields.Char(string=u"Descripción", required=True)
     location = fields.Char(string=u"Ubicación")

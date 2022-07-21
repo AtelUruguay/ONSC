@@ -14,10 +14,9 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     _description = 'Tutorías, Orientaciones, Supervisiones'
     _inherit = ['onsc.cv.abstract.institution', 'onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
     _catalogs2validate = ['institution_id', 'subinstitution_id', 'academic_program_id']
-    _order = 'date desc'
+    _order = 'start_date desc'
 
     work_title = fields.Char('Título del trabajo', required=True)
-    date = fields.Date('Fecha', required=True)
     tutor_type_id = fields.Many2one('onsc.cv.type.tutor', string='Tipo/clase', required=True)
     is_tutor_option_other_enable = fields.Boolean(related='tutor_type_id.is_option_other_enable')
     other_tutor_type = fields.Char('Otro tipo/clase')
@@ -33,7 +32,6 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     other_divulgation_media = fields.Char('Otro medio de divulgación')
     website = fields.Char('Sitio web')
     is_tutoring_finished = fields.Boolean('Tutoría conluida')
-    year_title = fields.Selection(YEARS_TITLE, 'Año de obtención del título')
     orientation_type_id = fields.Many2one('onsc.cv.type.orientation', 'Tipo de orientación', required=True)
     co_tutor_name = fields.Char('Nombre del co-tutor')
     is_paid_activity = fields.Selection(string="¿Actividad remunerada?", selection=PAID_ACTIVITY_TYPES)
@@ -55,38 +53,8 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         for rec in self:
             rec.is_tutor_docent = rec.tutor_type_id == self.env.ref('onsc_cv_digital.onsc_cv_type_tutor_docent')
 
-    @api.onchange('year_title')
-    def onchange_year_title(self):
-        if self.start_date and self.year_title and fields.Date.from_string(self.start_date).year > int(self.year_title):
-            self.start_date = False
-        if self.end_date and self.year_title and fields.Date.from_string(self.end_date).year != int(self.year_title):
-            self.end_date = False
-
-    @api.onchange('start_date')
-    def onchange_start_date(self):
-        res = super(ONSCCVTutorialOrientationSupervision, self).onchange_start_date()
-        if res:
-            return res
-        if self.start_date and self.year_title:
-            if fields.Date.from_string(self.start_date).year > int(self.year_title):
-                self.start_date = False
-                return cv_warning(
-                    _("El año de la fecha de inicio debe ser menor o igual al año de obtención del título"))
-
-    @api.onchange('end_date')
-    def onchange_end_date(self):
-        res = super(ONSCCVTutorialOrientationSupervision, self).onchange_start_date()
-        if res:
-            return res
-        if self.end_date and self.year_title:
-            if fields.Date.from_string(self.end_date).year != int(self.year_title):
-                self.end_date = False
-                return cv_warning(
-                    _("El año de la fecha de finalización debe ser igual al año de obtención del título"))
-
     @api.onchange('is_tutoring_finished')
     def onchange_is_tutoring_finished(self):
-        self.year_title = False
         self.end_date = False
 
     @api.onchange('website')

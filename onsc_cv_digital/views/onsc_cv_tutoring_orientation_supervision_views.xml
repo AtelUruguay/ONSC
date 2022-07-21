@@ -57,9 +57,7 @@
                             <field name="knowledge_acquired_ids" widget="many2many_tags"/>
                         </group>
                         <group>
-                            <field name="date"/>
                             <field name="is_tutoring_finished"/>
-                            <field name="year_title"
                                    attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
                             <field name="start_date" required="1" string="Periodo desde"/>
                             <field name="end_date" string="Periodo hasta"
