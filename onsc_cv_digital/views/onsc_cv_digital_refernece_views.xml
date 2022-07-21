@@ -33,11 +33,15 @@
         <field name="name">onsc.cv.reference.tree</field>
         <field name="model">onsc.cv.reference</field>
         <field name="arch" type="xml">
-            <tree string="Referencias">
-                <field name="reference_type"/>
+            <tree string="Referencias" editable="top">
+                <field name="reference_type" width="0.4"/>
                 <field name="name"/>
-                <field name="phone_full"/>
-                <field name="email"/>
+                <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
+                <field name="country_id" string="Prefijo" options="{'no_open': True, 'no_create': True}"
+                       context="{'format_phone_code': True}" width="0.2"/>
+                <field name="phone" attrs="{'required': [('email', '=', False)]}" width="0.4"/>
+                <field name="email" attrs="{'required': [('phone', '=', False)]}"/>
+                <field name="notes"/>
             </tree>
         </field>
     </record>

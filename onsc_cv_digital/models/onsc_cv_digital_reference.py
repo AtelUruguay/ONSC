@@ -14,7 +14,7 @@ class ONSCCVDigitalReference(models.Model):
     reference_type = fields.Selection(REFERENCE_TYPES, 'Tipo de referencia', required=True)
     name = fields.Char('Nombre', required=True)
     country_id = fields.Many2one('res.country', 'Pais', required=True)
-    phone = fields.Integer('Teléfono')
+    phone = fields.Char('Teléfono')
     phone_full = fields.Char(compute='_compute_phone_full')
     email = fields.Char('Mail')
     company_name = fields.Char('Empresa')

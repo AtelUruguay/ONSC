@@ -390,6 +390,12 @@
                                 </tree>
                             </field>
                         </page>
+                        <page name="reference" string="Referencias">
+                            <div class="float-right">
+                                <field name="cv_help_reference"/>
+                            </div>
+                            <field name="reference_ids" context="{'format_phone_code': True}"/>
+                        </page>
                     </notebook>
                 </sheet>
             </form>
