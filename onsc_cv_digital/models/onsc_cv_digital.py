@@ -197,6 +197,10 @@ class ONSCCVDigital(models.Model):
     publication_production_evaluation_ids = fields.One2many("onsc.cv.publication.production.evaluation",
                                                             inverse_name="cv_digital_id",
                                                             string="Publicaciones, producciones y evaluaciones")
+    # Tutorías, Orientaciones, Supervisiones ----<Page>
+    tutoring_orientation_supervision_ids = fields.One2many('onsc.cv.tutoring.orientation.supervision',
+                                                           inverse_name="cv_digital_id",
+                                                           string="Tutorías, Orientaciones, Supervisiones")
 
     # Help online
     cv_help_general_info = fields.Html(
@@ -237,6 +241,10 @@ class ONSCCVDigital(models.Model):
     cv_help_publications_productions_evaluations = fields.Html(
         compute=lambda s: s._get_help('cv_help_publications_productions_evaluations'),
         default=lambda s: s._get_help('cv_help_publications_productions_evaluations', True)
+    )
+    cv_help_tutoring_orientation_supervision = fields.Html(
+        compute=lambda s: s._get_help('cv_help_tutoring_orientation_supervision'),
+        default=lambda s: s._get_help('cv_help_tutoring_orientation_supervision', True)
     )
 
     def _get_help(self, help_field='', is_default=False):

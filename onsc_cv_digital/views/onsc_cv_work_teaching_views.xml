@@ -64,10 +64,11 @@
                     </group>
                     <notebook>
                         <page string="Materias">
-                            <field name="program_ids" widget="one2many"
+                            <field name="subject_ids"
                                    attrs="{'readonly': [('subinstitution_id', '=', False)]}"
-                                   domain="[('institution_id', '=', institution_id), ('subinstitution_id', '=', subinstitution_id), ('country_id', '=',country_id)]"
-                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id, 'default_country_id': country_id, 'is_readonly':True, 'hide_subject': False}"/>
+                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id, 'default_country_id': country_id}">
+                            </field>
+
                         </page>
                         <page string="Áreas relacionadas con esta educación">
                             <field name="education_area_ids">
@@ -103,7 +104,7 @@
                 <field name="country_id" optional="hide"/>
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
-                <field name="hours_worked_monthly" optional="show" string="Horas trabajadas al mes"/>
+                <field name="hours_worked_monthly" optional="show" string="Horas trabajadas al mes" width="1.0"/>
                 <field name="program_name" string="Cátedra/programa" optional="show"/>
                 <field name="position_type" optional="hide"/>
                 <field name="is_full_time" optional="hide"/>
@@ -111,7 +112,79 @@
                 <field name="responsible_type" optional="hide"/>
                 <field name="conditional_validation_state" invisible="1"/>
                 <field name="conditional_validation_reject_reason" invisible="1"/>
-                <field name="program_ids" widget="many2many_tags" invisible="1"/>
+                <field name="subject_ids" widget="many2many_tags" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--Materias-->
+    <record id="onsc_cv_academic_program_subject_view_form" model="ir.ui.view">
+        <field name="name">onsc_cv_academic_program_subject_view_form</field>
+        <field name="model">onsc.cv.academic.program.subject</field>
+        <field name="arch" type="xml">
+            <form string="Materias">
+                <sheet>
+                    <div class="alert alert-danger" role="alert"
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                El registro ha sido rechazado por los siguientes motivos:
+                                <field name="conditional_validation_reject_reason"/>
+                            </strong>
+                        </p>
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
+                        <p class="mb-0">
+                            <strong>
+                                El registro ingresado está en proceso de validación, se notificará el resultado de este
+                                a su e-mail
+                            </strong>
+                        </p>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="conditional_validation_state" invisible="1"/>
+                            <field name="work_teaching_id" invisible="1"/>
+                            <field name="subject"/>
+                            <field name="currently_working_state"/>
+                            <field name="program_ids" widget="many2many_tags"
+                                   domain="[('institution_id', '=', institution_id), ('subinstitution_id', '=', subinstitution_id), ('country_id', '=',country_id)]"
+                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id, 'default_country_id': country_id, 'is_readonly':True}"/>
+                        </group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"
+                                   attrs="{'invisible': [('currently_working_state', '!=', 'no')],
+                                                   'required': [('currently_working_state', '=', 'no')]}"/>
+                            <field name="level_teaching_type"/>
+                            <field name="knowledge_teaching_ids" widget="many2many_tags"/>
+                            <field name="institution_id" invisible="1"/>
+                            <field name="subinstitution_id" invisible="1"/>
+                            <field name="country_id" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_cv_academic_program_subject_view_tree" model="ir.ui.view">
+        <field name="name">onsc_cv_academic_program_subject_view_tree</field>
+        <field name="model">onsc.cv.academic.program.subject</field>
+        <field name="arch" type="xml">
+            <tree string="Materias" decoration-danger="conditional_validation_state == 'rejected'">
+                <field name="subject"/>
+                <field name="course_type"/>
+                <field name="currently_working_state"/>
+                <field name="start_date"/>
+                <field name="end_date"
+                       attrs="{'required': [('currently_working_state', '=', 'no')]}"/>
+                <field name="level_teaching_type"/>
+                <field name="program_ids" widget="many2many_tags"/>
+                <field name="knowledge_teaching_ids" widget="many2many_tags"/>
+                <field name="conditional_validation_state" invisible="1"/>
+                <field name="conditional_validation_reject_reason" invisible="1"/>
             </tree>
         </field>
     </record>
