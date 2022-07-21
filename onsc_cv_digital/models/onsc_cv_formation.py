@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
+from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 
 class ONSCCVFormationBasic(models.Model):
@@ -52,9 +53,6 @@ class ONSCCVFormationAdvanced(models.Model):
     max_scholarship = fields.Float(string="Escolaridad máxima posible")
     credits_far = fields.Float(string="Créditos / Materias aprobadas hasta el momento")
     credits_training = fields.Float(string="Créditos / Materias totales de la formación")
-    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired_formation_rel',
-                                              store=True, string=u'Conocimientos adquiridos', required=True,
-                                              help='Sólo se pueden seleccionar 5 tipos de conocimientos')
     area_related_education_ids = fields.One2many('onsc.cv.area.related.education', 'advanced_formation_id',
                                                  string=u'Áreas relacionadas con esta educación')
     other_relevant_information = fields.Text(string="Otra información relevante")
@@ -74,15 +72,7 @@ class ONSCCVFormationAdvanced(models.Model):
     def onchange_egress_date(self):
         if self.start_date and self.egress_date and self.egress_date <= self.start_date:
             self.egress_date = False
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "La fecha de egreso no puede ser menor que la fecha de inicio"
-                    )
-                },
-            }
+            return cv_warning(_("La fecha de egreso no puede ser menor que la fecha de inicio"))
 
     @api.onchange('state', 'is_require_thesis')
     def onchange_state_is_require_thesis(self):

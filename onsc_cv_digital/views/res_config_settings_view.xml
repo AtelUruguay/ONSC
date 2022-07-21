@@ -61,6 +61,21 @@
                                                class="col-12 col-lg-12"/>
                                     </div>
                                     <div class="text-muted content-group mt16">
+                                        <span>Discapacidad </span>
+                                        <field name="cv_help_disability"
+                                               class="col-12 col-lg-12"/>
+                                    </div>
+                                    <div class="text-muted content-group mt16">
+                                        <span>Participación en eventos</span>
+                                        <field name="cv_help_participation_event"
+                                               class="col-12 col-lg-12"/>
+                                    </div>
+                                    <div class="text-muted content-group mt16">
+                                        <span>Otra información relevante</span>
+                                        <field name="cv_help_other_relevant_information"
+                                               class="col-12 col-lg-12"/>
+                                    </div>
+                                    <div class="text-muted content-group mt16">
                                         <span>Referencias</span>
                                         <field name="cv_help_reference"
                                                class="col-12 col-lg-12"/>

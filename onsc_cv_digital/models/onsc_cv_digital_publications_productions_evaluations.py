@@ -94,4 +94,7 @@ class ONSCCVActivityArea(models.Model):
     publications_productions_evaluations_id = fields.Many2one('onsc.cv.publication.production.evaluation',
                                                               string=u'Publicación, Producción y Evaluación',
                                                               ondelete='cascade')
+    participation_events_id = fields.Many2one('onsc.cv.participation.event',
+                                              string=u'Publicación, Producción y Evaluación',
+                                              ondelete='cascade')
     speciality = fields.Char(string=u"Especialidad")
