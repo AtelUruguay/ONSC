@@ -371,6 +371,18 @@
                             </div>
                             <field name="participation_event_ids"/>
                         </page>
+                        <page name="other_relevant_information"
+                              string="Otra información relevante">
+                            <div class="float-right">
+                                <field name="cv_help_other_relevant_information"/>
+                            </div>
+                            <field name="other_relevant_information_ids">
+                                <tree editable="top">
+                                    <field name="theme"/>
+                                    <field name="description"/>
+                                </tree>
+                            </field>
+                        </page>
                     </notebook>
                 </sheet>
             </form>

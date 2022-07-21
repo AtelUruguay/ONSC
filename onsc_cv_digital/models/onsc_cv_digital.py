@@ -225,6 +225,10 @@ class ONSCCVDigital(models.Model):
     participation_event_ids = fields.One2many("onsc.cv.participation.event",
                                               inverse_name="cv_digital_id",
                                               string="Participación en eventos")
+    # Otra información relevante ----<Page>
+    other_relevant_information_ids = fields.One2many("onsc.cv.other.relevant.information",
+                                                     inverse_name="cv_digital_id",
+                                                     string="Otra información Relevante")
     need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
     # Help online
     cv_help_general_info = fields.Html(
@@ -273,6 +277,10 @@ class ONSCCVDigital(models.Model):
     cv_help_participation_event = fields.Html(
         compute=lambda s: s._get_help('cv_help_participation_event'),
         default=lambda s: s._get_help('cv_help_participation_event', True)
+    )
+    cv_help_other_relevant_information = fields.Html(
+        compute=lambda s: s._get_help('cv_help_other_relevant_information'),
+        default=lambda s: s._get_help('cv_help_other_relevant_information', True)
     )
 
     def _get_help(self, help_field='', is_default=False):
@@ -473,3 +481,12 @@ class ONSCCVDigital(models.Model):
         else:
             result = {}
         return result
+
+
+class ONSCCVOtherRelevantInformation(models.Model):
+    _name = 'onsc.cv.other.relevant.information'
+    _description = 'Otra información relevante'
+
+    cv_digital_id = fields.Many2one("onsc.cv.digital", string=u"CV", index=True, ondelete='cascade', required=True)
+    theme = fields.Char(string=u"Tema")
+    description = fields.Text(string=u"Descripción")

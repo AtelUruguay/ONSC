@@ -57,6 +57,11 @@
                                         <field name="cv_help_participation_event"
                                                class="col-12 col-lg-12"/>
                                     </div>
+                                    <div class="text-muted content-group mt16">
+                                        <span>Otra información relevante</span>
+                                        <field name="cv_help_other_relevant_information"
+                                               class="col-12 col-lg-12"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>
