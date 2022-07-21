@@ -19,3 +19,5 @@ class ResConfigSettings(models.TransientModel):
         related="company_id.cv_help_publications_productions_evaluations", readonly=False)
     cv_help_tutoring_orientation_supervision = fields.Char(
         related="company_id.cv_help_tutoring_orientation_supervision", readonly=False)
+    cv_help_reference = fields.Char(
+        related="company_id.cv_help_reference", readonly=False)
