@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import re
 from odoo import _
+import requests
 
 
 def get_validation_status(record, conditional_catalog_list):
@@ -41,6 +42,16 @@ def is_valid_url(url):
         r'(?::\d+)?'  # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
     return url is not None and regex.search(url)
+
+
+def is_exist_url(url):
+    if 'http://' not in url and 'https://' not in url:
+        url = '%s%s' % ('http://', url)
+    try:
+        response = requests.get(url)
+        return response.status_code == 200
+    except Exception:
+        return False
 
 
 def get_onchange_warning_response(message, notif_type='notification'):
