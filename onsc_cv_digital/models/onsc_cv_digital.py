@@ -4,9 +4,15 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
+from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
+SELECTION_RADIO = [('1', '1) Si, no puede hacerlo'), ('2', '2) Si, mucha dificultad'),
+                   ('3', '3) Si, alguna dificultad '), ('4', '4) No tiene dificultad')]
+SITUATION = u'Está en situación de discapacidad y/o requieres algún apoyo para cumplir con tus actividades laborales?'
+DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
 
 
 class ONSCCVDigital(models.Model):
@@ -201,7 +207,36 @@ class ONSCCVDigital(models.Model):
     tutoring_orientation_supervision_ids = fields.One2many('onsc.cv.tutoring.orientation.supervision',
                                                            inverse_name="cv_digital_id",
                                                            string="Tutorías, Orientaciones, Supervisiones")
-
+    # Discapacidad ----<Page>
+    allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
+                                            string=u'¿Permite que el contenido de esta sección sea público?')
+    situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
+    people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
+    document_certificate_file = fields.Binary(string=u'Documento Digitalizado Constancia de inscripción en el RNPcD')
+    document_certificate_filename = fields.Char('Nombre del documento Digitalizado')
+    certificate_date = fields.Date(string=u'Fecha de certificado', required=True)
+    to_date = fields.Date(string=u'Fecha hasta')
+    see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, ¿aún si usa anteojos o lentes?')
+    hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, ¿aún si usa audífono?')
+    walk = fields.Selection(selection=SELECTION_RADIO, string=u'¿Caminar o subir escalones?')
+    speak = fields.Selection(selection=SELECTION_RADIO, string=u'¿Hablar o comunicarse aun usando lengua de señas?')
+    realize = fields.Selection(selection=SELECTION_RADIO,
+                               string=u'¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?')
+    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender/ y o aprender?')
+    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interacciones y/o relaciones interpersonales?')
+    type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo')
+    type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
+                                               compute='_compute_cv_type_support_domain')
+    need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
+    is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain')
+    # Participación en Eventos ----<Page>
+    participation_event_ids = fields.One2many("onsc.cv.participation.event",
+                                              inverse_name="cv_digital_id",
+                                              string="Participación en eventos")
+    # Otra información relevante ----<Page>
+    other_relevant_information_ids = fields.One2many("onsc.cv.other.relevant.information",
+                                                     inverse_name="cv_digital_id",
+                                                     string="Otra información Relevante")
     # Help online
     cv_help_general_info = fields.Html(
         compute=lambda s: s._get_help('cv_help_general_info'),
@@ -246,6 +281,18 @@ class ONSCCVDigital(models.Model):
         compute=lambda s: s._get_help('cv_help_tutoring_orientation_supervision'),
         default=lambda s: s._get_help('cv_help_tutoring_orientation_supervision', True)
     )
+    cv_help_disability = fields.Html(
+        compute=lambda s: s._get_help('cv_help_disability'),
+        default=lambda s: s._get_help('cv_help_disability', True)
+    )
+    cv_help_participation_event = fields.Html(
+        compute=lambda s: s._get_help('cv_help_participation_event'),
+        default=lambda s: s._get_help('cv_help_participation_event', True)
+    )
+    cv_help_other_relevant_information = fields.Html(
+        compute=lambda s: s._get_help('cv_help_other_relevant_information'),
+        default=lambda s: s._get_help('cv_help_other_relevant_information', True)
+    )
 
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -261,6 +308,38 @@ class ONSCCVDigital(models.Model):
             record.is_cv_race_option_other_enable = len(
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
+
+    @api.depends('see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction')
+    def _compute_cv_type_support_domain(self):
+        type_support_ids = []
+        type_supports = self.env['onsc.cv.type.support'].search([])
+        type_support_see = type_supports.filtered(lambda x: x.see)
+        type_support_hear = type_supports.filtered(lambda x: x.hear)
+        type_support_walk = type_supports.filtered(lambda x: x.walk)
+        type_support_speak = type_supports.filtered(lambda x: x.talk)
+        type_support_realize = type_supports.filtered(lambda x: x.slide)
+        type_support_lear = type_supports.filtered(lambda x: x.understand)
+        type_support_interaction = type_supports.filtered(lambda x: x.interaction)
+        for record in self:
+            if record.see and record.see != '4' and type_support_see:
+                type_support_ids.extend(type_support_see.ids)
+            if record.hear and record.hear != '4' and type_support_hear:
+                type_support_ids.extend(type_support_hear.ids)
+            if record.walk and record.walk != '4' and type_support_walk:
+                type_support_ids.extend(type_support_walk.ids)
+            if record.speak and record.speak != '4' and type_support_speak:
+                type_support_ids.extend(type_support_speak.ids)
+            if record.realize and record.realize != '4' and type_support_realize:
+                type_support_ids.extend(type_support_realize.ids)
+            if record.lear and record.lear != '4' and type_support_lear:
+                type_support_ids.extend(type_support_lear.ids)
+            if record.interaction and record.interaction != '4' and type_support_interaction:
+                type_support_ids.extend(type_support_interaction.ids)
+            if type_support_ids:
+                record.is_need_other_support = True
+            else:
+                record.is_need_other_support = False
+            record.type_support_ids_domain = type_support_ids
 
     @api.constrains('cv_sex_updated_date', 'cv_birthdate')
     def _check_valid_dates(self):
@@ -300,6 +379,18 @@ class ONSCCVDigital(models.Model):
     def onchange_cv_address_state_id(self):
         self.country_id = self.cv_address_state_id.country_id.id
         self.cv_address_location_id = False
+
+    @api.onchange('certificate_date')
+    def onchange_certificate_date(self):
+        if self.certificate_date and self.to_date and self.to_date <= self.certificate_date:
+            self.certificate_date = False
+            return cv_warning(_("La fecha de certificado no puede ser mayor que la fecha hasta"))
+
+    @api.onchange('to_date')
+    def onchange_to_date(self):
+        if self.to_date and self.certificate_date and self.to_date <= self.certificate_date:
+            self.to_date = False
+            return cv_warning(_("La fecha hasta no puede ser menor que la fecha de certificado"))
 
     def button_edit_address(self):
         self.ensure_one()
@@ -388,3 +479,12 @@ class ONSCCVDigital(models.Model):
         else:
             result = {}
         return result
+
+
+class ONSCCVOtherRelevantInformation(models.Model):
+    _name = 'onsc.cv.other.relevant.information'
+    _description = 'Otra información relevante'
+
+    cv_digital_id = fields.Many2one("onsc.cv.digital", string=u"CV", index=True, ondelete='cascade', required=True)
+    theme = fields.Char(string=u"Tema")
+    description = fields.Text(string=u"Descripción")
