@@ -3,7 +3,8 @@
 from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-from . import onsc_cv_useful_tools as cv_tools
+
+from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
@@ -383,15 +384,13 @@ class ONSCCVDigital(models.Model):
     def onchange_certificate_date(self):
         if self.certificate_date and self.to_date and self.to_date <= self.certificate_date:
             self.certificate_date = False
-            return cv_tools._get_onchange_warning_response(
-                _("La fecha de certificado no puede ser mayor que la fecha hasta"))
+            return cv_warning(_("La fecha de certificado no puede ser mayor que la fecha hasta"))
 
     @api.onchange('to_date')
     def onchange_to_date(self):
         if self.to_date and self.certificate_date and self.to_date <= self.certificate_date:
             self.to_date = False
-            return cv_tools._get_onchange_warning_response(
-                _("La fecha hasta no puede ser menor que la fecha de certificado"))
+            return cv_warning(_("La fecha hasta no puede ser menor que la fecha de certificado"))
 
     def button_edit_address(self):
         self.ensure_one()

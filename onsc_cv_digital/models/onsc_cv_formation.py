@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from . import onsc_cv_useful_tools as cv_tools
+from ..onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 
 class ONSCCVFormationBasic(models.Model):
@@ -72,8 +72,7 @@ class ONSCCVFormationAdvanced(models.Model):
     def onchange_egress_date(self):
         if self.start_date and self.egress_date and self.egress_date <= self.start_date:
             self.egress_date = False
-            return cv_tools._get_onchange_warning_response(
-                _("La fecha de egreso no puede ser menor que la fecha de inicio"))
+            return cv_warning(_("La fecha de egreso no puede ser menor que la fecha de inicio"))
 
     @api.onchange('state', 'is_require_thesis')
     def onchange_state_is_require_thesis(self):

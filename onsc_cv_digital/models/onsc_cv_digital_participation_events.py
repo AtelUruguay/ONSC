@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
-from . import onsc_cv_useful_tools as cv_tools
+
+from ..onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
 
@@ -53,16 +54,16 @@ class ONSCCVDigitalParticipationEvent(models.Model):
     def onchange_start_date(self):
         if self.start_date and self.end_date and self.end_date <= self.start_date:
             self.start_date = False
-            return cv_tools._get_onchange_warning_response(_("La fecha inicio no puede ser mayor que la fecha fin"))
+            return cv_warning(_("La fecha inicio no puede ser mayor que la fecha fin"))
 
     @api.onchange('end_date')
     def onchange_end_date(self):
         if self.end_date and self.start_date and self.end_date <= self.start_date:
             self.end_date = False
-            return cv_tools._get_onchange_warning_response(_("La fecha fin no puede ser menor que la fecha inicio"))
+            return cv_warning(_("La fecha fin no puede ser menor que la fecha inicio"))
 
     @api.onchange('knowledge_key_insights_ids')
     def onchange_knowledge_key_insights_ids(self):
         if len(self.knowledge_key_insights_ids) > 5:
             self.knowledge_key_insights_ids = self.knowledge_key_insights_ids[:5]
-            return cv_tools._get_onchange_warning_response(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))
+            return cv_warning(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))
