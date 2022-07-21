@@ -17,6 +17,8 @@ class ResConfigSettings(models.TransientModel):
     cv_help_language_level = fields.Char(related="company_id.cv_help_language_level", readonly=False)
     cv_help_publications_productions_evaluations = fields.Char(
         related="company_id.cv_help_publications_productions_evaluations", readonly=False)
+    cv_help_tutoring_orientation_supervision = fields.Char(
+        related="company_id.cv_help_tutoring_orientation_supervision", readonly=False)
     cv_help_disability = fields.Char(related="company_id.cv_help_disability", readonly=False)
     cv_help_participation_event = fields.Char(related="company_id.cv_help_participation_event", readonly=False)
     cv_help_other_relevant_information = fields.Char(related="company_id.cv_help_other_relevant_information",

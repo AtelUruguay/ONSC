@@ -201,6 +201,10 @@ class ONSCCVDigital(models.Model):
     publication_production_evaluation_ids = fields.One2many("onsc.cv.publication.production.evaluation",
                                                             inverse_name="cv_digital_id",
                                                             string="Publicaciones, producciones y evaluaciones")
+    # Tutorías, Orientaciones, Supervisiones ----<Page>
+    tutoring_orientation_supervision_ids = fields.One2many('onsc.cv.tutoring.orientation.supervision',
+                                                           inverse_name="cv_digital_id",
+                                                           string="Tutorías, Orientaciones, Supervisiones")
     # Discapacidad ----<Page>
     allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
                                             string=u'¿Permite que el contenido de esta sección sea público?')
@@ -269,6 +273,10 @@ class ONSCCVDigital(models.Model):
     cv_help_publications_productions_evaluations = fields.Html(
         compute=lambda s: s._get_help('cv_help_publications_productions_evaluations'),
         default=lambda s: s._get_help('cv_help_publications_productions_evaluations', True)
+    )
+    cv_help_tutoring_orientation_supervision = fields.Html(
+        compute=lambda s: s._get_help('cv_help_tutoring_orientation_supervision'),
+        default=lambda s: s._get_help('cv_help_tutoring_orientation_supervision', True)
     )
     cv_help_disability = fields.Html(
         compute=lambda s: s._get_help('cv_help_disability'),

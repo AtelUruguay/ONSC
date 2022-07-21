@@ -77,7 +77,8 @@
                         <group>                            
                             <field name="state" attrs="{'readonly': [('record_type', '=', 'certificate')]}"/>
                             <field name="start_date" attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
-                            <field name="certificate_strat_date" attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"/>
+                            <field name="certificate_start_date"
+                                   attrs="{'invisible': [('record_type', '!=', 'certificate')], 'required': [('record_type', '=', 'certificate')]}"/>
                             <field name="end_date" states="completed" attrs="{'invisible': ['|',('record_type', '!=', 'course')],'required': [('record_type', '!=', 'certificate'),('state', '=', 'completed')]}"/>
                             <field name="induction_type"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
@@ -144,7 +145,7 @@
         <field name="arch" type="xml">
             <tree string="Certificados" decoration-danger="conditional_validation_state == 'rejected'">
                 <field name="record_type" invisible="1"/>
-                <field name="certificate_strat_date" optional="show" string="Fecha de obtención"/>
+                <field name="certificate_start_date" optional="show" string="Fecha de obtención"/>
                 <field name="certificate_id" optional="show" string="Título"/>
                 <field name="state" optional="show"/>
                 <field name="institution_cert_id" optional="show" string="Institución"/>

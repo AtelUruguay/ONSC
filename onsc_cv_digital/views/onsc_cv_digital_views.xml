@@ -321,6 +321,12 @@
                             </div>
                             <field name="publication_production_evaluation_ids"/>
                         </page>
+                         <page name="tutoring_orientation_supervision" string="Tutorías, Orientaciones, Supervisiones">
+                            <div class="float-right">
+                                <field name="cv_help_tutoring_orientation_supervision"/>
+                            </div>
+                            <field name="tutoring_orientation_supervision_ids"/>
+                        </page>
                         <page string="Discapacidad">
                             <div class="float-right">
                                 <field name="cv_help_disability"/>

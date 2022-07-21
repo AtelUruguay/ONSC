@@ -46,7 +46,7 @@ class ONSCCVCourseCertificate(models.Model):
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired_course_rel',
                                               string=u'Conocimientos adquiridos', required=True,
                                               store=True)
-    certificate_strat_date = fields.Date('Fecha de obtención del certificado / constancia',
+    certificate_start_date = fields.Date('Fecha de obtención del certificado / constancia',
                                          related='start_date', readonly=False)
 
     @api.depends('course_title', 'certificate_id', 'record_type')
