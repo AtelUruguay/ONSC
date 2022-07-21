@@ -364,6 +364,13 @@
                                 <field name="need_other_support"/>
                             </div>
                         </page>
+                        <page name="participation_event"
+                              string="Participación en eventos">
+                            <div class="float-right">
+                                <field name="cv_help_participation_event"/>
+                            </div>
+                            <field name="participation_event_ids"/>
+                        </page>
                     </notebook>
                 </sheet>
             </form>

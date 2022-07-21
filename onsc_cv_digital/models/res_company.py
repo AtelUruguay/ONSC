@@ -21,3 +21,4 @@ class ResCompany(models.Model):
     cv_help_language_level = fields.Char('Idiomas')
     cv_help_publications_productions_evaluations = fields.Char('Publicaciones, Producciones y Evaluaciones')
     cv_help_disability = fields.Char('Discapacidad')
+    cv_help_participation_event = fields.Char('Participación en eventos')

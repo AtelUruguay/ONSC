@@ -221,6 +221,10 @@ class ONSCCVDigital(models.Model):
     type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo')
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
                                                compute='_compute_cv_type_support_domain')
+    # Participación en Eventos ----<Page>
+    participation_event_ids = fields.One2many("onsc.cv.participation.event",
+                                              inverse_name="cv_digital_id",
+                                              string="Participación en eventos")
     need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
     # Help online
     cv_help_general_info = fields.Html(
@@ -265,6 +269,10 @@ class ONSCCVDigital(models.Model):
     cv_help_disability = fields.Html(
         compute=lambda s: s._get_help('cv_help_disability'),
         default=lambda s: s._get_help('cv_help_disability', True)
+    )
+    cv_help_participation_event = fields.Html(
+        compute=lambda s: s._get_help('cv_help_participation_event'),
+        default=lambda s: s._get_help('cv_help_participation_event', True)
     )
 
     def _get_help(self, help_field='', is_default=False):
