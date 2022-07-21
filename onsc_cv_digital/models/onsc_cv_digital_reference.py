@@ -14,7 +14,7 @@ class ONSCCVDigitalReference(models.Model):
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", required=True, index=True, ondelete='cascade')
     reference_type = fields.Selection(REFERENCE_TYPES, 'Tipo de referencia', required=True)
     name = fields.Char('Nombre', required=True)
-    country_id = fields.Many2one('res.country', 'Pais', required=True,
+    country_id = fields.Many2one('res.country', 'Pais',
                                  default=lambda self: self.env['res.country'].search([('code', '=', 'UY')]))
     phone = fields.Char('Teléfono')
     phone_full = fields.Char(compute='_compute_phone_full')

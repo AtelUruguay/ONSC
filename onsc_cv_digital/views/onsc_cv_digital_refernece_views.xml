@@ -38,8 +38,9 @@
                 <field name="name"/>
                 <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
                 <field name="country_id" string="Prefijo" options="{'no_open': True, 'no_create': True}"
-                       context="{'format_phone_code': True}" width="0.2"/>
-                <field name="phone" attrs="{'required': [('email', '=', False)]}" width="0.4" widget="phone"
+                       attrs="{'required':[('phone', '!=', False)]}" context="{'format_phone_code': True}" width="0.2"/>
+                <field name="phone" attrs="{'required': ['|',('email', '=', False),('country_id', '!=', False)]}"
+                       width="0.4" widget="phone"
                        options="{'enable_sms': false}"/>
                 <field name="email" attrs="{'required': [('phone', '=', False)]}"/>
                 <field name="notes"/>
