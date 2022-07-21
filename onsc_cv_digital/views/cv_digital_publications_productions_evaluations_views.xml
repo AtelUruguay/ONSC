@@ -82,7 +82,7 @@
         <field name="model">onsc.cv.publication.production.evaluation</field>
         <field name="arch" type="xml">
             <tree string="Publicaciones, producciones y evaluaciones">
-                <field name="date"/>
+                <field name="date" width="0.5"/>
                 <field name="type"/>
                 <field name="tittle"/>
             </tree>
