@@ -58,7 +58,6 @@
                         </group>
                         <group>
                             <field name="is_tutoring_finished"/>
-                                   attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
                             <field name="start_date" required="1" string="Periodo desde"/>
                             <field name="end_date" string="Periodo hasta"
                                    attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
