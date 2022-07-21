@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _, SUPERUSER_ID
+from odoo import models, fields, api, _
 from odoo.osv import expression
 
 
@@ -26,9 +26,6 @@ class ResCountry(models.Model):
             if operator in expression.NEGATIVE_TERM_OPERATORS:
                 domain = ['&', '!'] + domain[1:]
         return self._search(expression.AND([domain, args]), limit=limit, access_rights_uid=name_get_uid)
-
-    def _read(self, fields):
-        return super(ResCountry, self)._read(fields)
 
 
 class ResCountryState(models.Model):
