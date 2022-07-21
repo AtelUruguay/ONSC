@@ -108,7 +108,6 @@ class ResPartner(models.Model):
     @api.model
     def create(self, values):
         # Si no se envía el nombre en los partner de tipo cv
-        name = values.get('name', False)
         if 'name' not in values and values.get('is_partner_cv', False):
             values.update({'name': 'Temp'})
 
