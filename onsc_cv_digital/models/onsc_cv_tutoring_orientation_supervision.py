@@ -2,7 +2,7 @@
 
 from odoo import fields, models, api, _
 from .abstracts.onsc_cv_abstract_work import PAID_ACTIVITY_TYPES
-from .onsc_cv_useful_tools import is_valid_url
+from .onsc_cv_useful_tools import is_valid_url, is_exist_url
 from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 POSTGRADUATE_TYPES = [('academic', 'Académico'), ('professional', 'Profesional')]
@@ -94,6 +94,9 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         if self.website and not is_valid_url(self.website):
             self.website = False
             return cv_warning(_("EL sitio web no tiene un formato válido."))
+        elif self.website and not is_exist_url(self.website):
+            self.website = False
+            return cv_warning(_("El sitio web no existe"))
 
 
 class ONSCCVEducationAreaTutorial(models.Model):
