@@ -131,7 +131,6 @@
         <field name="arch" type="xml">
             <tree string="Tutorías, Orientaciones, Supervisiones"
                   decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="date" optional="show"/>
                 <field name="work_title" optional="show"/>
                 <field name="start_date" string="Inicio" optional="show"/>
                 <field name="end_date" string="Fin" optional="show"/>
