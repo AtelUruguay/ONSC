@@ -24,3 +24,4 @@ class ResCompany(models.Model):
     cv_help_disability = fields.Char('Discapacidad')
     cv_help_participation_event = fields.Char('Participación en eventos')
     cv_help_other_relevant_information = fields.Char('Otra información relevante')
+    cv_help_reference = fields.Char('Referencias')
