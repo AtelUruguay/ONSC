@@ -367,6 +367,18 @@ class ONSCCVDigital(models.Model):
             if not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
 
+    @api.onchange('personal_phone')
+    def onchange_personal_phone(self):
+        if self.personal_phone and not self.personal_phone.isdigit():
+            self.personal_phone = False
+            return cv_warning(_("El teléfono ingresado no es válido"))
+
+    @api.onchange('mobile_phone')
+    def onchange_mobile_phone(self):
+        if self.mobile_phone and not self.mobile_phone.isdigit():
+            self.mobile_phone = False
+            return cv_warning(_("El celular ingresado no es válido"))
+
     @api.onchange('cv_sex_updated_date')
     def onchange_cv_sex_updated_date(self):
         result = self.check_evaluation('cv_sex_updated_date')

@@ -23,7 +23,8 @@ class ResCountry(models.Model):
             rec.name = '(%s) +%s' % (rec.country_id.code, rec.prefix_code)
 
     def _search_name(self, operator, value):
-        return [('country_id.phone_code', operator, value)]
+        return ['|', '|', ('country_id.phone_code', operator, value), ('country_id', operator, value),
+                ('country_id.code', operator, value)]
 
 
 class ResCountryState(models.Model):
