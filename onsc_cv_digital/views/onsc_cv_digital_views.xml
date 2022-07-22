@@ -131,8 +131,23 @@
                                     <field name="civical_credential_filename" invisible="1"/>
                                 </group>
                                 <group>
-                                    <field name="personal_phone" widget="phone"/>
-                                    <field name="mobile_phone" widget="phone"/>
+                                    <label for="personal_phone" class="oe_edit_only"/>
+                                    <div class="content-group row oe_edit_only" style="margin-left:5px">
+                                        <field name="prefix_phone" options="{'no_open': True, 'no_create': True}"
+                                               context="{'format_phone_code': True}" style='max-width:80px !important;'
+                                               class="oe_inline"/>
+                                        <field name="personal_phone" class="oe_inline"/>
+                                    </div>
+                                    <field name="personal_phone_with_prefix" widget="phone" class="oe_read_only"/>
+
+                                    <label for="mobile_phone" class="oe_edit_only"/>
+                                    <div class="content-group row oe_edit_only" style="margin-left:5px">
+                                        <field name="prefix_mobile_phone" options="{'no_open': True, 'no_create': True}"
+                                               context="{'format_phone_code': True}" style='max-width:80px !important;'
+                                               class="oe_inline"/>
+                                        <field name="mobile_phone" widget="phone" class="oe_inline"/>
+                                    </div>
+                                    <field name="mobile_phone_with_prefix" widget="phone" class="oe_read_only"/>
                                     <field name="email" widget="email"/>
                                     <field name="user_linkedIn"/>
                                     <field name="cjppu_affiliate_number"/>
@@ -394,7 +409,7 @@
                             <div class="float-right">
                                 <field name="cv_help_reference"/>
                             </div>
-                            <field name="reference_ids" context="{'format_phone_code': True}"/>
+                            <field name="reference_ids"/>
                         </page>
                     </notebook>
                 </sheet>
