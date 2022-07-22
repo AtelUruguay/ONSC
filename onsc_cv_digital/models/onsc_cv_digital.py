@@ -240,7 +240,7 @@ class ONSCCVDigital(models.Model):
     # Otra información relevante ----<Page>
     other_relevant_information_ids = fields.One2many("onsc.cv.other.relevant.information",
                                                      inverse_name="cv_digital_id",
-                                                     string="Otra información Relevante")
+                                                     string="Otra información relevante")
     # Referencias ------<Page>
     reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias')
 
