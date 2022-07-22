@@ -24,16 +24,16 @@
                             </strong>
                         </p>
                     </div>
+                    <field name="conditional_validation_state" invisible="1"/>
+                    <field name="cv_digital_id" invisible="1"/>
+                    <field name="is_tutor_option_other_enable" invisible="1"/>
+                    <field name="is_divulgation_option_other_enable" invisible="1"/>
+                    <field name="is_tutor_docent" invisible="1"/>
+                    <field name="is_orientation_type_pie" invisible="1"/>
+                    <field name="country_id_domain" invisible="1"/>
                     <group>
                         <group>
-                            <field name="conditional_validation_state" invisible="1"/>
-                            <field name="cv_digital_id" invisible="1"/>
-                            <field name="is_tutor_option_other_enable" invisible="1"/>
-                            <field name="is_divulgation_option_other_enable" invisible="1"/>
-                            <field name="is_tutor_docent" invisible="1"/>
-                            <field name="is_orientation_type_pie" invisible="1"/>
                             <field name="work_title"/>
-                            <field name="description"/>
                             <field name="institution_id" required="1"
                                    domain="institution_id_domain"
                                    context="{'default_country_id': country_id, 'is_readonly': True}"/>
@@ -45,7 +45,6 @@
                             <field name="country_id" required="1"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="country_id_domain" invisible="1"/>
                             <field name="tutor_type_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="other_tutor_type"
@@ -54,6 +53,9 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="co_tutor_name"
                                    attrs="{'invisible': [('is_orientation_type_pie', '=', False)]}"/>
+                            <field name="postgraduate_type"/>
+                            <field name="student_name"/>
+                            <field name="is_paid_activity"/>
                             <field name="knowledge_acquired_ids" widget="many2many_tags"/>
                         </group>
                         <group>
@@ -61,12 +63,10 @@
                             <field name="start_date" required="1" string="Periodo desde"/>
                             <field name="end_date" string="Periodo hasta"
                                    attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
-                            <field name="dependence"/>
                             <field name="academic_program_id"/>
-                            <field name="postgraduate_type"/>
-                            <field name="student_name"/>
                             <field name="language_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="dependence"/>
                             <field name="divulgation_media_id"
                                    attrs="{'invisible': [('is_tutor_docent', '=', False)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
@@ -74,7 +74,6 @@
                                    attrs="{'invisible': [('is_divulgation_option_other_enable', '=', False)],'required': [('is_divulgation_option_other_enable', '=', True)]}"/>
                             <field name="website" attrs="{'invisible': [('is_tutor_docent', '=', False)]}"
                                    widget="url"/>
-                            <field name="is_paid_activity"/>
                         </group>
                         <group/>
                         <group>
@@ -84,10 +83,16 @@
                             </div>
                         </group>
                     </group>
+                    <br/>
+                    <div>
+                        <h4>Descripción</h4>
+                    </div>
+                    <field name="description"/>
+                    <br/>
                     <notebook>
                         <page string="Área de actividad">
                             <field name="area_ids">
-                                <tree string="Área de actividad">
+                                <tree string="Área de actividad" editable="top">
                                     <field name="educational_area_id" string="Área de actividad"/>
                                     <field name="educational_subarea_id" string="Sub área de actividad"
                                            domain="[('area_id', '=', educational_area_id)]"
@@ -95,7 +100,8 @@
                                     <field name="discipline_educational_id" string="Disciplina"
                                            domain="[('subarea_id', '=', educational_subarea_id)]"
                                            context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
-                                    <field name="speciality"/>
+                                    <field name="speciality"
+                                           attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', False)]}"/>
                                 </tree>
                                 <form string="Área de Actividad">
                                     <sheet>
@@ -108,7 +114,7 @@
                                                    domain="[('subarea_id', '=', educational_subarea_id)]"
                                                    context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
                                             <field name="speciality"
-                                                   attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', '')]}"/>
+                                                   attrs="{'readonly': [('educational_area_id', '=', False)]}"/>
 
                                         </group>
                                     </sheet>

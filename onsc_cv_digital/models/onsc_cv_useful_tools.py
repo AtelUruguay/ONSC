@@ -63,3 +63,8 @@ def get_onchange_warning_response(message, notif_type='notification'):
         },
 
     }
+
+
+def is_valid_email(email):
+    expression = r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
+    return re.match(expression, email) is not None
