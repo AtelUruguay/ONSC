@@ -367,7 +367,7 @@
                             <group string="Tiene dificultad permanente para:"
                                    attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
                                 <group>
-                                    <field name="see" widget="radio" class="col-lg-4 o_light_label"/>
+                                    <field name="see" widget="radio"/>
                                     <br/>
                                     <field name="walk" widget="radio"/>
                                     <br/>

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 TYPES = [('publication', 'Publicación '), ('productions', 'Producciones '), ('evaluation', 'Evaluación'),
          ('other', 'Otro')]
@@ -8,6 +9,7 @@ TYPES = [('publication', 'Publicación '), ('productions', 'Producciones '), ('e
 class ONSCCVDigitalPPEvaluations(models.Model):
     _name = 'onsc.cv.publication.production.evaluation'
     _description = 'Publicación, Producción y Evaluación'
+    _order = 'date desc'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
     type = fields.Selection(TYPES, string='Tipo', required=True)
@@ -59,6 +61,12 @@ class ONSCCVDigitalPPEvaluations(models.Model):
             self.subtype_publication_id = ''
             self.subtype_production_id = ''
             self.subtype_other_id = ''
+
+    @api.onchange('applied_knowledge_ids')
+    def onchange_knowledge_key_insights_ids(self):
+        if len(self.applied_knowledge_ids) > 5:
+            self.applied_knowledge_ids = self.applied_knowledge_ids[:5]
+            return cv_warning(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
 
 class ONSCCVAuthors(models.Model):
