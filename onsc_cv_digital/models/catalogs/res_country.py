@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _, tools
+from odoo import models, fields, tools, _
 
 
 class ResCountry(models.Model):
@@ -16,10 +16,7 @@ class ResCountry(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''
               CREATE OR REPLACE VIEW %s AS (
-              SELECT id,
-                     id as country_id                     
-              FROM res_country
-              )''' % (self._table,))
+              SELECT id, id as country_id FROM res_country)''' % (self._table,))
 
     def _compute_name(self):
         for rec in self:
