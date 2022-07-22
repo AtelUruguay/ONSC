@@ -9,7 +9,6 @@ REFERENCE_TYPES = [('staff', 'Personal'), ('working', 'Laboral')]
 
 class ONSCCVDigitalReference(models.Model):
     _name = 'onsc.cv.reference'
-    _inherit = ['onsc.cv.abstract.prefix.phone']
     _description = 'Referencias'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", required=True, index=True, ondelete='cascade')
@@ -20,11 +19,12 @@ class ONSCCVDigitalReference(models.Model):
     email = fields.Char('Mail')
     company_name = fields.Char('Empresa')
     notes = fields.Text('Comentarios adicionales')
+    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo')
 
-    @api.depends('prefix_phone', 'phone')
+    @api.depends('prefix_phone_id', 'phone')
     def _compute_phone_full(self):
         for rec in self:
-            rec.phone_full = '+%s%s' % (rec.prefix_phone.phone_code, rec.phone)
+            rec.phone_full = '+%s%s' % (rec.prefix_phone_id.prefix_code, rec.phone)
 
     @api.onchange('email')
     def onchange_email(self):

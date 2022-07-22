@@ -133,8 +133,8 @@
                                 <group>
                                     <label for="personal_phone" class="oe_edit_only"/>
                                     <div class="content-group row oe_edit_only" style="margin-left:5px">
-                                        <field name="prefix_phone" options="{'no_open': True, 'no_create': True}"
-                                               context="{'format_phone_code': True}" style='max-width:80px !important;'
+                                        <field name="prefix_phone_id" options="{'no_open': True, 'no_create': True}"
+                                               style='max-width:80px !important;'
                                                class="oe_inline"/>
                                         <field name="personal_phone" class="oe_inline"/>
                                     </div>
@@ -142,8 +142,9 @@
 
                                     <label for="mobile_phone" class="oe_edit_only"/>
                                     <div class="content-group row oe_edit_only" style="margin-left:5px">
-                                        <field name="prefix_mobile_phone" options="{'no_open': True, 'no_create': True}"
-                                               context="{'format_phone_code': True}" style='max-width:80px !important;'
+                                        <field name="prefix_mobile_phone_id"
+                                               options="{'no_open': True, 'no_create': True}"
+                                               style='max-width:80px !important;'
                                                class="oe_inline"/>
                                         <field name="mobile_phone" widget="phone" class="oe_inline"/>
                                     </div>

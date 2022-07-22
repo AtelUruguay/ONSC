@@ -1,31 +1,32 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
-from odoo.osv import expression
+from odoo import models, fields, api, _, tools
 
 
 class ResCountry(models.Model):
-    _inherit = 'res.country'
+    _name = 'res.country.phone'
+    _description = 'Prefijos telefónicos'
+    _auto = False
 
-    def name_get(self):
-        if self._context.get('format_phone_code'):
-            result = []
-            for country in self:
-                name = '(%s) +%s' % (country.code, country.phone_code)
-                result.append((country.id, name))
-            return result
-        return super(ResCountry, self).name_get()
+    country_id = fields.Many2one('res.country', 'País')
+    prefix_code = fields.Integer(related='country_id.phone_code', string='Código')
+    name = fields.Char(compute='_compute_name', search='_search_name', string='Prefijo')
 
-    @api.model
-    def _name_search(self, name, args=None, operator='ilike', limit=100, name_get_uid=None):
-        args = args or []
-        domain = []
-        if name and self._context.get('format_phone_code'):
-            name = str(name)
-            domain = [('phone_code', operator, name.split(' ')[0])]
-            if operator in expression.NEGATIVE_TERM_OPERATORS:
-                domain = ['&', '!'] + domain[1:]
-        return self._search(expression.AND([domain, args]), limit=limit, access_rights_uid=name_get_uid)
+    def init(self):
+        tools.drop_view_if_exists(self.env.cr, self._table)
+        self.env.cr.execute('''
+              CREATE OR REPLACE VIEW %s AS (
+              SELECT id,
+                     id as country_id                     
+              FROM res_country
+              )''' % (self._table,))
+
+    def _compute_name(self):
+        for rec in self:
+            rec.name = '(%s) +%s' % (rec.country_id.code, rec.prefix_code)
+
+    def _search_name(self, operator, value):
+        return [('country_id.phone_code', operator, value)]
 
 
 class ResCountryState(models.Model):

@@ -13,7 +13,7 @@
                         </group>
                         <group>
                             <div string="Teléfono" class="row">
-                                <field name="prefix_phone"/>
+                                <field name="prefix_phone_id"/>
                                 <field name="phone" class="oe_inline"/>
                             </div>
                             <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
@@ -37,9 +37,9 @@
                 <field name="reference_type" width="0.4"/>
                 <field name="name"/>
                 <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
-                <field name="prefix_phone" string="Prefijo" options="{'no_open': True, 'no_create': True}"
-                       attrs="{'required':[('phone', '!=', False)]}" width="0.2" context="{'format_phone_code': True}"/>
-                <field name="phone" attrs="{'required': ['|',('email', '=', False),('prefix_phone', '!=', False)]}"
+                <field name="prefix_phone_id" string="Prefijo" options="{'no_open': True, 'no_create': True}"
+                       attrs="{'required':[('phone', '!=', False)]}" width="0.2"/>
+                <field name="phone" attrs="{'required': ['|',('email', '=', False),('prefix_phone_id', '!=', False)]}"
                        width="0.4" widget="phone"
                        options="{'enable_sms': false}"/>
                 <field name="email" attrs="{'required': [('phone', '=', False)]}"/>

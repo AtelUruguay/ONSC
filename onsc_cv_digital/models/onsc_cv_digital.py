@@ -17,10 +17,8 @@ DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del
 
 class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
-    _inherit = ['onsc.cv.abstract.prefix.phone']
     _description = 'Currículum digital'
     _rec_name = 'cv_full_name'
-    _fields_prefix_phones = ['prefix_phone', 'prefix_mobile_phone']
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
@@ -148,10 +146,10 @@ class ONSCCVDigital(models.Model):
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
                                           inverse_name="cv_digital_id", string="Licencias de conducir")
 
-    prefix_phone = fields.Many2one(related='partner_id.prefix_phone', readonly=False)
+    prefix_phone_id = fields.Many2one(related='partner_id.prefix_phone_id', readonly=False)
     personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)
     personal_phone_with_prefix = fields.Char(string="Teléfono particular", related='partner_id.phone_with_prefix')
-    prefix_mobile_phone = fields.Many2one(related='partner_id.prefix_mobile_phone', readonly=False)
+    prefix_mobile_phone_id = fields.Many2one(related='partner_id.prefix_mobile_phone_id', readonly=False)
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
     mobile_phone_with_prefix = fields.Char(string="Teléfono celular", related='partner_id.mobile_with_prefix')
     email = fields.Char(string="Email", related='partner_id.email')

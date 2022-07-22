@@ -1,16 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-
-    <!--    Res country-->
-    <record id="view_country_tree_inherit" model="ir.ui.view">
-        <field name="name">res.country.tree.cv</field>
-        <field name="model">res.country</field>
-        <field name="inherit_id" ref="base.view_country_tree"/>
+    <record id="res_country_phone_view_search" model="ir.ui.view">
+        <field name="name">res_country_phone_view_search</field>
+        <field name="model">res.country.phone</field>
         <field name="arch" type="xml">
-            <field name="code" position="after">
-                <field name="phone_code"/>
-            </field>
+            <search string="Prefijos">
+                <field name="name"/>
+                <field name="country_id"/>
+            </search>
+        </field>
+    </record>
 
+    <record id="res_country_phone_view_tree" model="ir.ui.view">
+        <field name="name">res_country_phone_view_tree</field>
+        <field name="model">res.country.phone</field>
+        <field name="arch" type="xml">
+            <tree string="Prefijos">
+                <field name="prefix_code"/>
+                <field name="country_id"/>
+            </tree>
         </field>
     </record>
 

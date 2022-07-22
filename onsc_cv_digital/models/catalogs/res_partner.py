@@ -63,9 +63,9 @@ class ResPartner(models.Model):
     cv_street3 = fields.Char(u'Y calle')
     cv_amplification = fields.Text(u"Aclaraciones")
     cv_address_state = fields.Selection(related='cv_location_id.state', string="Estado condicional")
-    prefix_phone = fields.Many2one('res.country', 'Prefijo')
+    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo')
     phone_with_prefix = fields.Char(compute='_compute_phone_with_prefix')
-    prefix_mobile_phone = fields.Many2one('res.country', 'Prefijo del móvil')
+    prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil')
     mobile_with_prefix = fields.Char(compute='_compute_mobile_with_prefix')
 
     _sql_constraints = [
@@ -73,15 +73,15 @@ class ResPartner(models.Model):
          u'La combinación: País emisor del documento, tipo de documento y número de documento debe ser única'),
     ]
 
-    @api.depends('prefix_phone', 'phone')
+    @api.depends('prefix_phone_id', 'phone')
     def _compute_phone_with_prefix(self):
         for rec in self:
-            rec.phone_with_prefix = '+%s%s' % (rec.prefix_phone.phone_code or '', rec.phone or '')
+            rec.phone_with_prefix = '+%s%s' % (rec.prefix_phone_id.prefix_code or '', rec.phone or '')
 
-    @api.depends('prefix_mobile_phone', 'mobile')
+    @api.depends('prefix_mobile_phone_id', 'mobile')
     def _compute_mobile_with_prefix(self):
         for rec in self:
-            rec.mobile_with_prefix = '+%s%s' % (rec.prefix_mobile_phone.phone_code or '', rec.mobile or '')
+            rec.mobile_with_prefix = '+%s%s' % (rec.prefix_mobile_phone_id.prefix_code or '', rec.mobile or '')
 
     @api.depends('cv_emissor_country_id')
     def _compute_is_cv_uruguay(self):
