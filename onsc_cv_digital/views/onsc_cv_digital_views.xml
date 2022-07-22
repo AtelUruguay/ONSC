@@ -163,6 +163,7 @@
                                         <field name="validation_date" width="0.5"/>
                                         <field name="category_id"/>
                                         <field name="license_file"
+                                               widget="binary"
                                                filename="license_filename"
                                                options="{'accepted_file_extensions': '.pdf'}"/>
                                         <field name="license_filename" invisible="1"/>
