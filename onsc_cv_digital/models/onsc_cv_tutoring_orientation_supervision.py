@@ -114,4 +114,4 @@ class ONSCCVEducationAreaTutorial(models.Model):
 
     tutoring_id = fields.Many2one('onsc.cv.tutoring.orientation.supervision', 'Tutoría, Orientación, Supervisión',
                                   ondelete='cascade', required=True)
-    speciality = fields.Char(string=u"Especialidad")
+    speciality = fields.Char(string=u"Especialidad", required=True)

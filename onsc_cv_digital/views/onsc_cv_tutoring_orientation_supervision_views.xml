@@ -95,7 +95,7 @@
                     <notebook>
                         <page string="Área de actividad">
                             <field name="area_ids">
-                                <tree string="Área de actividad">
+                                <tree string="Área de actividad" editable="top">
                                     <field name="educational_area_id" string="Área de actividad"/>
                                     <field name="educational_subarea_id" string="Sub área de actividad"
                                            domain="[('area_id', '=', educational_area_id)]"
@@ -103,7 +103,8 @@
                                     <field name="discipline_educational_id" string="Disciplina"
                                            domain="[('subarea_id', '=', educational_subarea_id)]"
                                            context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
-                                    <field name="speciality"/>
+                                    <field name="speciality"
+                                           attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', False)]}"/>
                                 </tree>
                                 <form string="Área de Actividad">
                                     <sheet>
@@ -116,7 +117,7 @@
                                                    domain="[('subarea_id', '=', educational_subarea_id)]"
                                                    context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
                                             <field name="speciality"
-                                                   attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', '')]}"/>
+                                                   attrs="{'readonly': [('educational_area_id', '=', False)]}"/>
 
                                         </group>
                                     </sheet>
