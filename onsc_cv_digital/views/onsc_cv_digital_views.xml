@@ -367,15 +367,21 @@
                             <group string="Tiene dificultad permanente para:"
                                    attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
                                 <group>
-                                    <field name="see" widget="radio"/>
+                                    <field name="see" widget="radio" class="col-lg-4 o_light_label"/>
+                                    <br/>
                                     <field name="walk" widget="radio"/>
+                                    <br/>
                                     <field name="realize" widget="radio"/>
+                                    <br/>
                                     <field name="interaction" widget="radio"/>
                                 </group>
                                 <group>
                                     <field name="hear" widget="radio"/>
+                                    <br/>
                                     <field name="speak" widget="radio"/>
+                                    <br/>
                                     <field name="lear" widget="radio"/>
+                                    <br/>
                                     <field name="type_support_ids_domain" invisible="1"/>
                                     <field name="type_support_ids" widget="many2many_tags"
                                            domain="[('id', 'in', type_support_ids_domain)]"/>

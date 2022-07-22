@@ -12,7 +12,7 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
 SELECTION_RADIO = [('1', '1) Si, no puede hacerlo'), ('2', '2) Si, mucha dificultad'),
                    ('3', '3) Si, alguna dificultad '), ('4', '4) No tiene dificultad')]
 SITUATION = u'Está en situación de discapacidad y/o requieres algún apoyo para cumplir con tus actividades laborales?'
-DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
+DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del ministerio de desarrollo social?'
 
 
 class ONSCCVDigital(models.Model):
@@ -216,7 +216,7 @@ class ONSCCVDigital(models.Model):
                                             string=u'¿Permite que el contenido de esta sección sea público?')
     situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
     people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
-    document_certificate_file = fields.Binary(string=u'Documento Digitalizado Constancia de inscripción en el RNPcD')
+    document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')
     document_certificate_filename = fields.Char('Nombre del documento Digitalizado')
     certificate_date = fields.Date(string=u'Fecha de certificado', required=True)
     to_date = fields.Date(string=u'Fecha hasta')
