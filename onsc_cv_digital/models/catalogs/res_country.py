@@ -3,7 +3,7 @@
 from odoo import models, fields, tools, _
 
 
-class ResCountry(models.Model):
+class ResCountryPhone(models.Model):
     _name = 'res.country.phone'
     _description = 'Prefijos telefónicos'
     _auto = False
