@@ -36,7 +36,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     year_title = fields.Selection(YEARS_TITLE, 'Año de obtención del título')
     orientation_type_id = fields.Many2one('onsc.cv.type.orientation', 'Tipo de orientación', required=True)
     co_tutor_name = fields.Char('Nombre del co-tutor')
-    is_paid_activity = fields.Selection(string="¿Actividad remunerada?", selection=PAID_ACTIVITY_TYPES)
+    is_paid_activity = fields.Selection(string="¿Actividad remunerada?", selection=PAID_ACTIVITY_TYPES, required=True)
     is_relevant_work = fields.Boolean('¿Es uno de los cinco trabajos más relevantes de su producción?')
     #  Grilla área de actividad
     area_ids = fields.One2many('onsc.cv.education.area.tutoring', 'tutoring_id', 'Área de actividad')
@@ -97,6 +97,14 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         elif self.website and not is_exist_url(self.website):
             self.website = False
             return cv_warning(_("El sitio web no existe"))
+
+    @api.onchange('tutor_type_id')
+    def onchange_tutor_type_id(self):
+        self.other_tutor_type = False
+
+    @api.onchange('divulgation_media_id')
+    def onchange_divulgation_media_id(self):
+        self.other_divulgation_media = False
 
 
 class ONSCCVEducationAreaTutorial(models.Model):
