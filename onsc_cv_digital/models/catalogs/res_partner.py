@@ -49,7 +49,7 @@ class ResPartner(models.Model):
 
     cv_birthdate = fields.Date(u'Fecha de nacimiento')
     cv_sex = fields.Selection(CV_SEX, u'Sexo')
-    cv_full_name_updated_date = fields.Date(u'Fecha de información nombre completo')
+    cv_full_name_updated_date = fields.Date(u'Fecha de información nombre completo', default=fields.Date.context_today)
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo', compute='_compute_cv_sex_updated_date', store=True)
     cv_expiration_date = fields.Date(u'Fecha de vencimiento documento de identidad')
     cv_photo_updated_date = fields.Date(u'Fecha de foto del/de la funcionario/a', compute='_compute_photo_updated_date')
@@ -63,11 +63,25 @@ class ResPartner(models.Model):
     cv_street3 = fields.Char(u'Y calle')
     cv_amplification = fields.Text(u"Aclaraciones")
     cv_address_state = fields.Selection(related='cv_location_id.state', string="Estado condicional")
+    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo')
+    phone_with_prefix = fields.Char(compute='_compute_phone_with_prefix')
+    prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil')
+    mobile_with_prefix = fields.Char(compute='_compute_mobile_with_prefix')
 
     _sql_constraints = [
         ('country_doc_type_nro_doc_uniq', 'unique(cv_emissor_country_id, cv_document_type_id, cv_nro_doc)',
          u'La combinación: País emisor del documento, tipo de documento y número de documento debe ser única'),
     ]
+
+    @api.depends('prefix_phone_id', 'phone')
+    def _compute_phone_with_prefix(self):
+        for rec in self:
+            rec.phone_with_prefix = '+%s%s' % (rec.prefix_phone_id.prefix_code or '', rec.phone or '')
+
+    @api.depends('prefix_mobile_phone_id', 'mobile')
+    def _compute_mobile_with_prefix(self):
+        for rec in self:
+            rec.mobile_with_prefix = '+%s%s' % (rec.prefix_mobile_phone_id.prefix_code or '', rec.mobile or '')
 
     @api.depends('cv_emissor_country_id')
     def _compute_is_cv_uruguay(self):
@@ -112,10 +126,9 @@ class ResPartner(models.Model):
             values.update({'name': 'Temp'})
 
         res = super(ResPartner, self).create(values)
-        # Actualizar el nombre en el registro con el campo calculado en caso que existan diferencias
-        if res.cv_full_name and res.name != res.cv_full_name:
+        # Actualizar los nombres en los registros con el campo calculado en caso que existan diferencias
+        if res.cv_full_name and res.cv_full_name != res.name:
             res.name = res.cv_full_name
-            res.cv_full_name_updated_date = fields.Date.today()
         return res
 
     @api.model

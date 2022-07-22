@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="onsc_cv_reference_form_view" model="ir.ui.view">
+        <field name="name">onsc.cv.reference.form</field>
+        <field name="model">onsc.cv.reference</field>
+        <field name="arch" type="xml">
+            <form string="Referencias">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="reference_type"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <div string="Teléfono" class="row">
+                                <field name="prefix_phone_id"/>
+                                <field name="phone" class="oe_inline"/>
+                            </div>
+                            <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Comentarios adicionales">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_cv_reference_tree_view" model="ir.ui.view">
+        <field name="name">onsc.cv.reference.tree</field>
+        <field name="model">onsc.cv.reference</field>
+        <field name="arch" type="xml">
+            <tree string="Referencias" editable="top">
+                <field name="reference_type" width="0.4"/>
+                <field name="name"/>
+                <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
+                <field name="prefix_phone_id" string="Prefijo" options="{'no_open': True, 'no_create': True}"
+                       attrs="{'required':[('phone', '!=', False)]}" width="0.2"/>
+                <field name="phone" attrs="{'required': ['|',('email', '=', False),('prefix_phone_id', '!=', False)]}"
+                       width="0.4" widget="phone"
+                       options="{'enable_sms': false}"/>
+                <field name="email" attrs="{'required': [('phone', '=', False)]}"/>
+                <field name="notes"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

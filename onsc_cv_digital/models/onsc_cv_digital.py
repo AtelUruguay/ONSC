@@ -146,8 +146,12 @@ class ONSCCVDigital(models.Model):
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
                                           inverse_name="cv_digital_id", string="Licencias de conducir")
 
+    prefix_phone_id = fields.Many2one(related='partner_id.prefix_phone_id', readonly=False)
     personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)
+    personal_phone_with_prefix = fields.Char(string="Teléfono particular", related='partner_id.phone_with_prefix')
+    prefix_mobile_phone_id = fields.Many2one(related='partner_id.prefix_mobile_phone_id', readonly=False)
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
+    mobile_phone_with_prefix = fields.Char(string="Teléfono celular", related='partner_id.mobile_with_prefix')
     email = fields.Char(string="Email", related='partner_id.email')
 
     is_occupational_health_card = fields.Boolean(string="Carné de salud laboral")
@@ -236,7 +240,10 @@ class ONSCCVDigital(models.Model):
     # Otra información relevante ----<Page>
     other_relevant_information_ids = fields.One2many("onsc.cv.other.relevant.information",
                                                      inverse_name="cv_digital_id",
-                                                     string="Otra información relevante")
+                                                     string="Otra información Relevante")
+    # Referencias ------<Page>
+    reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias')
+
     # Help online
     cv_help_general_info = fields.Html(
         compute=lambda s: s._get_help('cv_help_general_info'),
@@ -292,6 +299,10 @@ class ONSCCVDigital(models.Model):
     cv_help_other_relevant_information = fields.Html(
         compute=lambda s: s._get_help('cv_help_other_relevant_information'),
         default=lambda s: s._get_help('cv_help_other_relevant_information', True)
+    )
+    cv_help_reference = fields.Html(
+        compute=lambda s: s._get_help('cv_help_reference'),
+        default=lambda s: s._get_help('cv_help_reference', True)
     )
 
     def _get_help(self, help_field='', is_default=False):
@@ -355,6 +366,18 @@ class ONSCCVDigital(models.Model):
         for record in self:
             if not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
+
+    @api.onchange('personal_phone')
+    def onchange_personal_phone(self):
+        if self.personal_phone and not self.personal_phone.isdigit():
+            self.personal_phone = False
+            return cv_warning(_("El teléfono ingresado no es válido"))
+
+    @api.onchange('mobile_phone')
+    def onchange_mobile_phone(self):
+        if self.mobile_phone and not self.mobile_phone.isdigit():
+            self.mobile_phone = False
+            return cv_warning(_("El celular ingresado no es válido"))
 
     @api.onchange('cv_sex_updated_date')
     def onchange_cv_sex_updated_date(self):
