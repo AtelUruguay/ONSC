@@ -29,6 +29,7 @@
                     <field name="is_tutor_option_other_enable" invisible="1"/>
                     <field name="is_divulgation_option_other_enable" invisible="1"/>
                     <field name="is_tutor_docent" invisible="1"/>
+                    <field name="is_tutor_master" invisible="1"/>
                     <field name="is_orientation_type_pie" invisible="1"/>
                     <field name="country_id_domain" invisible="1"/>
                     <group>
@@ -45,6 +46,11 @@
                             <field name="country_id" required="1"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="academic_program_id"
+                                   attrs="{'readonly': [('subinstitution_id', '=', False)]}"
+                                   domain="[('subinstitution_id', '=', subinstitution_id)]"
+                                   context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id,
+                                            'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="tutor_type_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="other_tutor_type"
@@ -53,38 +59,35 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="co_tutor_name"
                                    attrs="{'invisible': [('is_orientation_type_pie', '=', False)]}"/>
-                            <field name="postgraduate_type"/>
+                            <field name="postgraduate_type"
+                                   attrs="{'invisible': [('is_tutor_master', '=', False)], 'required': [('is_tutor_master', '=', True)]}"/>
                             <field name="student_name"/>
-                            <field name="is_paid_activity"/>
-                            <field name="knowledge_acquired_ids" widget="many2many_tags"/>
-                        </group>
-                        <group>
-                            <field name="date"/>
-                            <field name="is_tutoring_finished"/>
-                            <field name="year_title"
-                                   attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
-                            <field name="start_date" required="1" string="Periodo desde"/>
-                            <field name="end_date" string="Periodo hasta"
-                                   attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
-                            <field name="academic_program_id"/>
                             <field name="language_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="dependence"/>
                             <field name="divulgation_media_id"
-                                   attrs="{'invisible': [('is_tutor_docent', '=', False)]}"
+                                   attrs="{'invisible': [('is_tutor_docent', '=', True)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="other_divulgation_media"
                                    attrs="{'invisible': [('is_divulgation_option_other_enable', '=', False)],'required': [('is_divulgation_option_other_enable', '=', True)]}"/>
-                            <field name="website" attrs="{'invisible': [('is_tutor_docent', '=', False)]}"
+                            <field name="website" attrs="{'invisible': [('is_tutor_docent', '=', True)]}"
                                    widget="url"/>
                         </group>
-                        <group/>
                         <group>
-                            <div class="o_row o_td_label">
-                                <label for="is_relevant_work" class="oe_inline o_form_label"/>
-                                <field name="is_relevant_work"/>
-                            </div>
+                            <field name="is_paid_activity"/>
+                            <field name="date"/>
+                            <field name="is_tutoring_finished"/>
+                            <field name="start_date" required="1" string="Periodo desde"/>
+                            <field name="end_date" string="Periodo hasta"
+                                   attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
+                            <field name="knowledge_acquired_ids" widget="many2many_tags"/>
+                            <field name="is_relevant_work"/>
+                            <field name="receipt_file"
+                                   filename="receipt_filename"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="receipt_filename" invisible="1"/>
                         </group>
+                        <group/>
                     </group>
                     <br/>
                     <div>
