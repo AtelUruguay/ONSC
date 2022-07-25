@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api, _
-
-from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+from odoo import fields, models, api
 
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
 
