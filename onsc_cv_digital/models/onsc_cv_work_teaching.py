@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api, _
-from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+from odoo import fields, models, api
 
 POSITION_TYPES = [('effective', 'Efectivo'), ('interim', 'Interino'), ('honorary', 'Honorario')]
 RESPONSIBLE_TYPES = [('yes', 'Sí'), ('no', 'No')]
@@ -42,43 +41,23 @@ class ONSCCVWorkTeaching(models.Model):
 class ONSCCVAcademicProgramSubject(models.Model):
     _name = 'onsc.cv.academic.program.subject'
     _description = 'Materias'
-    _inherit = 'onsc.cv.abstract.conditional.state'
+    _inherit = ['onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.formation']
     _catalogs2validate = ['program_ids']
 
     work_teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade', required=True)
+    cv_digital_id = fields.Many2one(relted='work_teaching_id.cv_digital_id')
     program_ids = fields.Many2many('onsc.cv.academic.program', relation="academic_program_teaching_rel",
                                    string='Programas académicos', required=True, ondelete='cascade')
     subject = fields.Char('Materia')
     course_type = fields.Selection(COURSE_TYPES, 'Tipo de curso')
     currently_working_state = fields.Selection(string="¿Actualmente está enseñando la  materia?",
                                                selection=WORKING_STATE, required=True)
-    start_date = fields.Date("Período desde dando esta materia", required=True)
-    end_date = fields.Date("Período hasta dando esta materia")
     level_teaching_type = fields.Selection(LEVEL_TEACHING_TYPES, 'Nivel enseñado de la materia', required=True)
-    knowledge_teaching_ids = fields.Many2many('onsc.cv.knowledge', string="Conocimientos enseñados",
-                                              relation='knowledge_teaching_program_rel', required=True,
-                                              help="Sólo se pueden seleccionar 5")
+    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', string="Conocimientos enseñados",
+                                              relation='knowledge_teaching_program_rel', required=True, store=True)
     institution_id = fields.Many2one(related='work_teaching_id.institution_id')
     subinstitution_id = fields.Many2one(related='work_teaching_id.subinstitution_id')
     country_id = fields.Many2one(related='work_teaching_id.country_id')
-
-    @api.onchange('start_date')
-    def onchange_start_date(self):
-        if self.start_date and self.end_date and self.end_date <= self.start_date:
-            self.start_date = False
-            return cv_warning(_("El período desde no puede ser mayor que el período hasta"))
-
-    @api.onchange('end_date')
-    def onchange_end_date(self):
-        if self.end_date and self.start_date and self.end_date <= self.start_date:
-            self.end_date = False
-            return cv_warning(_("El período hasta no puede ser menor que el período desde"))
-
-    @api.onchange('knowledge_teaching_ids')
-    def onchange_knowledge_teaching_ids(self):
-        if len(self.knowledge_teaching_ids) > 5:
-            self.knowledge_teaching_ids = self.knowledge_acquired_ids[:5]
-            return cv_warning(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
 
 class ONSCCVEducationAreaCourse(models.Model):
