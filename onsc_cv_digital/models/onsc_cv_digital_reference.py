@@ -32,6 +32,10 @@ class ONSCCVDigitalReference(models.Model):
             self.email = False
             return cv_warning(_('El mail ingresado no tiene un formato válido'))
 
+    @api.onchange('prefix_phone_id')
+    def onchange_prefix_phone_id(self):
+        self.phone = False
+
     @api.onchange('phone')
     def onchange_phone(self):
         if self.phone and not self.phone.isdigit():
