@@ -25,13 +25,14 @@
                             <field name="is_subtype_evaluation" invisible="1"/>
                             <field name="other_subtype_evaluation"
                                    attrs="{'invisible': [('is_subtype_evaluation', '!=', True)],'required': [('is_subtype_evaluation', '=', True)]}"/>
-                            <field name="is_subtype_other"
+                            <field name="subtype_other_id"
                                    attrs="{'invisible': [('type', '!=', 'other')],'required': [('type', '=', 'other')]}"/>
                             <field name="is_subtype_other" invisible="1"/>
                             <field name="other_subtype_other"
                                    attrs="{'invisible': [('is_subtype_other', '!=', True)],'required': [('is_subtype_other', '=', True)]}"/>
                             <field name="date"/>
                             <field name="tittle"/>
+                            <field name="description"/>
                         </group>
                         <group>
                             <field name="location"/>
@@ -42,11 +43,6 @@
                             <field name="applied_knowledge_ids" options="{'limit':5}" widget="many2many_tags"/>
                         </group>
                     </group>
-                    <br/>
-                    <div>
-                        <h4>Descripción</h4>
-                    </div>
-                    <field name="description"/>
                     <br/>
                     <notebook>
                         <page string="Autores">
