@@ -56,7 +56,7 @@ def is_exist_url(url):
         if 'http://' not in url and 'https://' not in url:
             url = '%s%s' % ('http://', url)
         return requests.get(url).status_code == 200
-    except requests.exceptions.SSLError as e:
+    except requests.exceptions.SSLError:
         return True
     except Exception:
         return False
