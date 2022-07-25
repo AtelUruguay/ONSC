@@ -78,11 +78,11 @@
         <field name="model">onsc.cv.participation.event</field>
         <field name="arch" type="xml">
             <tree string="Participación en eventos" decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="start_date" string="Fecha evento" optional="show" width="0.5"/>
+                <field name="start_date" string="Fecha" optional="show" width="0.5"/>
                 <field name="type_event_id" string="Tipo" optional="show"/>
                 <field name="name_event" string="Nombre" optional="show"/>
                 <field name="roll_event_id" string="Rol" optional="show"/>
-                <field name="country_id" optional="hide"/>
+                <field name="country_id" string="País" optional="hide"/>
                 <field name="city_id" string="Ciudad" optional="show"/>
                 <field name="name_institution" string="Institución organizadora" optional="show"/>
                 <field name="hourly_load" string="Horas en rol" optional="hide" width="0.5"/>
