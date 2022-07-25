@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api, _
 import json
+from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
@@ -48,6 +49,12 @@ class ONSCCVCourseCertificate(models.Model):
                                               store=True)
     certificate_start_date = fields.Date('Fecha de obtención del certificado / constancia',
                                          related='start_date', readonly=False)
+
+    @api.onchange('certificate_start_date')
+    def onchange_certificate_start_date(self):
+        if self.certificate_start_date and self.certificate_start_date > fields.Date.today():
+            self.start_date = False
+            return cv_warning(_(u"La fecha de inicio debe ser menor que la fecha actual"))
 
     @api.depends('course_title', 'certificate_id', 'record_type')
     def _compute_name(self):

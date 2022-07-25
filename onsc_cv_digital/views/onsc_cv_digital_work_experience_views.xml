@@ -33,6 +33,7 @@
                             <field name="city_id"
                                    options="{'no_open': True, 'no_quick_create': True}"
                                    domain="[('country_id', '=?', country_id)]"
+                                   attrs="{'readonly': [('country_id', '=', False)]}"
                                    context="{'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="company_type" required="1"/>
                             <field name="country_code" invisible="1"/>
