@@ -143,9 +143,9 @@
                   decoration-danger="conditional_validation_state == 'rejected'">
                 <field name="start_date" string="Inicio" optional="show"/>
                 <field name="end_date" string="Fin" optional="show"/>
-                <field name="work_title" optional="show"/>
+                <field name="work_title" string="Título" optional="show"/>
                 <field name="tutor_type_id" optional="show"/>
-                <field name="country_id" optional="hide"/>
+                <field name="country_id" string="País" optional="hide"/>
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
                 <field name="dependence" optional="hide"/>
