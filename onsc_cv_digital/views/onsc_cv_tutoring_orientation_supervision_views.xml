@@ -141,16 +141,23 @@
         <field name="arch" type="xml">
             <tree string="Tutorías, Orientaciones, Supervisiones"
                   decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="work_title" optional="show"/>
                 <field name="start_date" string="Inicio" optional="show"/>
                 <field name="end_date" string="Fin" optional="show"/>
-                <field name="tutor_type_id" optional="show" string="Tipo"/>
-                <field name="academic_program_id" optional="show" string="Nombre"/>
-                <field name="postgraduate_type" optional="hide"/>
-                <field name="student_name" optional="hide"/>
+                <field name="work_title" optional="show"/>
+                <field name="tutor_type_id" optional="show"/>
                 <field name="country_id" optional="hide"/>
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
+                <field name="dependence" optional="hide"/>
+                <field name="academic_program_id" optional="show"/>
+                <field name="postgraduate_type" optional="hide"/>
+                <field name="student_name" optional="hide"/>
+                <field name="language_id" optional="hide"/>
+                <field name="divulgation_media_id" optional="hide"/>
+                <field name="website" optional="hide"/>
+                <field name="orientation_type_id" optional="hide"/>
+                <field name="is_paid_activity" optional="hide" width="0.5"/>
+                <field name="is_relevant_work" optional="hide" width="0.5"/>
                 <field name="conditional_validation_state" invisible="1"/>
             </tree>
         </field>
