@@ -12,13 +12,14 @@
                             <field name="company_type" required="1"/>
                             <field name="country_code" invisible="1"/>
                             <field name="company_name"
-                                   attrs="{'invisible': ['|',('country_code', '=', 'UY'),('company_type','=','public')],'required': [('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
+                                   attrs="{'invisible': [('country_code', 'in', ['UY',False]),('company_type','in', ['public',False])],'required': [('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
                             <field name="unit_name"/>
                         </group>
                         <group>
                             <field name="start_date"/>
                             <field name="currently_volunteering"/>
-                            <field name="end_date" required="1"/>
+                            <field name="end_date"
+                                   attrs="{'invisible': [('currently_volunteering', '!=', 'no')],'required': [('currently_volunteering', '=', 'no')]}"/>
                             <field name="hours_monthly" string="Cantidad de horas mensuales"/>
                             <field name="description_tasks" required="1"/>
                             <field name="receipt_description"/>

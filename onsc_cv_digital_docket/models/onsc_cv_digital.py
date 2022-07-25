@@ -16,8 +16,18 @@ class ONSCCVDigital(models.Model):
                                     related='partner_id.address_info_date',
                                     readonly=False,
                                     store=True)
+    disability_date = fields.Date(string="Fecha de información discapacidad")
 
     @api.depends('is_cv_gender_public')
     def _compute_gender_public_visualization_date(self):
         for record in self:
             record.gender_public_visualization_date = fields.Date.today()
+
+    @api.onchange('is_docket')
+    def onchange_is_docket(self):
+        if self.is_docket is False:
+            self.gender_date = False
+            self.afro_descendant_date = False
+            self.status_civil_date = False
+            self.address_info_date = False
+            self.disability_date = False

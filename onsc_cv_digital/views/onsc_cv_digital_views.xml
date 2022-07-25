@@ -360,33 +360,42 @@
                                     <field name="document_certificate_file" filename="document_certificate_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'required': [('people_disabilitie', '=', 'si')]}"/>
-                                    <field name="certificate_date"/>
-                                    <field name="to_date"/>
+                                    <field name="certificate_date"
+                                           attrs="{'required': [('people_disabilitie', '=', 'si')]}"/>
+                                    <field name="to_date" attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}"/>
                                 </group>
                             </group>
                             <group string="Tiene dificultad permanente para:"
                                    attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
                                 <group>
                                     <field name="see" widget="radio"/>
+                                    <br/>
                                     <field name="walk" widget="radio"/>
+                                    <br/>
                                     <field name="realize" widget="radio"/>
+                                    <br/>
                                     <field name="interaction" widget="radio"/>
                                 </group>
                                 <group>
                                     <field name="hear" widget="radio"/>
+                                    <br/>
                                     <field name="speak" widget="radio"/>
+                                    <br/>
                                     <field name="lear" widget="radio"/>
+                                </group>
+                            </group>
+                            <group string="Seleccione los apoyos que desea:">
+                                <group>
                                     <field name="type_support_ids_domain" invisible="1"/>
                                     <field name="type_support_ids" widget="many2many_tags"
                                            domain="[('id', 'in', type_support_ids_domain)]"/>
                                     <field name="is_need_other_support" invisible="1"/>
                                 </group>
+                                <group>
+                                    <field name="need_other_support"
+                                           attrs="{'invisible': [('is_need_other_support', '!=', True)]}"/>
+                                </group>
                             </group>
-                            <br/>
-                            <div attrs="{'invisible': [('is_need_other_support', '!=', True)]}">
-                            <h4>¿Necesita otro apoyo?</h4>
-                                <field name="need_other_support"/>
-                            </div>
                         </page>
                         <page name="participation_event"
                               string="Participación en eventos">

@@ -17,7 +17,6 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     _order = 'start_date desc'
 
     work_title = fields.Char('Título del trabajo', required=True)
-    date = fields.Date('Fecha', required=True)
     tutor_type_id = fields.Many2one('onsc.cv.type.tutor', string='Tipo/clase', required=True)
     is_tutor_option_other_enable = fields.Boolean(related='tutor_type_id.is_option_other_enable')
     other_tutor_type = fields.Char('Otro tipo/clase')
@@ -57,6 +56,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         for rec in self:
             rec.is_tutor_docent = rec.tutor_type_id == self.env.ref('onsc_cv_digital.onsc_cv_type_tutor_docent')
             rec.is_tutor_master = rec.tutor_type_id == self.env.ref('onsc_cv_digital.onsc_cv_type_tutor_master')
+
 
     @api.onchange('is_tutoring_finished')
     def onchange_is_tutoring_finished(self):

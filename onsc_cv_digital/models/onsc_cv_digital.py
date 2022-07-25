@@ -9,10 +9,10 @@ from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
-SELECTION_RADIO = [('1', '1) Si, no puede hacerlo'), ('2', '2) Si, mucha dificultad'),
-                   ('3', '3) Si, alguna dificultad '), ('4', '4) No tiene dificultad')]
+SELECTION_RADIO = [('1', 'Si, no puede hacerlo'), ('2', 'Si, mucha dificultad'),
+                   ('3', 'Si, alguna dificultad '), ('4', 'No tiene dificultad')]
 SITUATION = u'Está en situación de discapacidad y/o requieres algún apoyo para cumplir con tus actividades laborales?'
-DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
+DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del ministerio de desarrollo social?'
 
 
 class ONSCCVDigital(models.Model):
@@ -216,9 +216,9 @@ class ONSCCVDigital(models.Model):
                                             string=u'¿Permite que el contenido de esta sección sea público?')
     situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
     people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
-    document_certificate_file = fields.Binary(string=u'Documento Digitalizado Constancia de inscripción en el RNPcD')
+    document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')
     document_certificate_filename = fields.Char('Nombre del documento Digitalizado')
-    certificate_date = fields.Date(string=u'Fecha de certificado', required=True)
+    certificate_date = fields.Date(string=u'Fecha de certificado')
     to_date = fields.Date(string=u'Fecha hasta')
     see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, ¿aún si usa anteojos o lentes?')
     hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, ¿aún si usa audífono?')
@@ -231,7 +231,7 @@ class ONSCCVDigital(models.Model):
     type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo')
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
                                                compute='_compute_cv_type_support_domain')
-    need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
+    need_other_support = fields.Char(string=u"¿Necesita otro apoyo?")
     is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain')
     # Participación en Eventos ----<Page>
     participation_event_ids = fields.One2many("onsc.cv.participation.event",
@@ -240,7 +240,7 @@ class ONSCCVDigital(models.Model):
     # Otra información relevante ----<Page>
     other_relevant_information_ids = fields.One2many("onsc.cv.other.relevant.information",
                                                      inverse_name="cv_digital_id",
-                                                     string="Otra información Relevante")
+                                                     string="Otra información relevante")
     # Referencias ------<Page>
     reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias')
 
