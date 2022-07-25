@@ -57,7 +57,6 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
             rec.is_tutor_docent = rec.tutor_type_id == self.env.ref('onsc_cv_digital.onsc_cv_type_tutor_docent')
             rec.is_tutor_master = rec.tutor_type_id == self.env.ref('onsc_cv_digital.onsc_cv_type_tutor_master')
 
-
     @api.onchange('is_tutoring_finished')
     def onchange_is_tutoring_finished(self):
         self.end_date = False
