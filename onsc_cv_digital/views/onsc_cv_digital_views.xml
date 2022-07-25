@@ -359,7 +359,7 @@
                                     <field name="document_certificate_filename" invisible="1"/>
                                     <field name="document_certificate_file" filename="document_certificate_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'required': [('people_disabilitie', '=', 'si')]}"/>
+                                           attrs="{'invisible': [('people_disabilitie', '!=', 'si')],'required': [('people_disabilitie', '=', 'si')]}"/>
                                     <field name="certificate_date"
                                            attrs="{'required': [('people_disabilitie', '=', 'si')]}"/>
                                     <field name="to_date" attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}"/>
@@ -384,8 +384,9 @@
                                     <field name="lear" widget="radio"/>
                                 </group>
                             </group>
-                            <group string="Seleccione los apoyos que desea:">
-                                <group>
+                            <group string="Seleccione los apoyos que desea:"
+                                   attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
+                            <group>
                                     <field name="type_support_ids_domain" invisible="1"/>
                                     <field name="type_support_ids" widget="many2many_tags"
                                            domain="[('id', 'in', type_support_ids_domain)]"/>
