@@ -32,12 +32,18 @@ class ONSCCVAbstractWork(models.AbstractModel):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
+        if self.start_date and self.start_date > fields.Date.today():
+            self.start_date = False
+            return cv_warning(_(u"El período desde debe ser menor que la fecha actual"))
         if self.start_date and self.end_date and self.end_date <= self.start_date:
             self.start_date = False
             return cv_warning(_("El período desde no puede ser mayor que el período hasta"))
 
     @api.onchange('end_date')
     def onchange_end_date(self):
+        if self.end_date and self.end_date > fields.Date.today():
+            self.end_date = False
+            return cv_warning(_(u"El período hasta debe ser menor que la fecha actual"))
         if self.end_date and self.start_date and self.end_date <= self.start_date:
             self.end_date = False
             return cv_warning(_("El período hasta no puede ser menor que el período desde"))
