@@ -293,9 +293,10 @@
                             <div>
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
-                            <field name="course_ids"
+                            <field name="course_ids" class="oe_edit_only"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}">
                             </field>
+                            <field name="course_ids" class="oe_read_only" readonly="1"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
