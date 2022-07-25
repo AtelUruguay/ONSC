@@ -41,15 +41,23 @@ def is_valid_url(url):
         r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'  # ...or ip
         r'(?::\d+)?'  # optional port
         r'(?:/?|[/?]\S+)$', re.IGNORECASE)
-    return url is not None and regex.search(url)
+
+    result = url is not None and regex.search(url)
+    if not result:
+        regex = re.compile(
+            r'[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)',
+            re.IGNORECASE)
+        return regex.search(url)
+    return result
 
 
 def is_exist_url(url):
-    if 'http://' not in url and 'https://' not in url:
-        url = '%s%s' % ('http://', url)
     try:
-        response = requests.get(url)
-        return response.status_code == 200
+        if 'http://' not in url and 'https://' not in url:
+            url = '%s%s' % ('http://', url)
+        return requests.get(url).status_code == 200
+    except requests.exceptions.SSLError as e:
+        return True
     except Exception:
         return False
 
