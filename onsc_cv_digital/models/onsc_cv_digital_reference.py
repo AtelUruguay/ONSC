@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError, UserError
+from odoo.exceptions import UserError
 from odoo.addons.phone_validation.tools import phone_validation
 from .onsc_cv_useful_tools import is_valid_email
 from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
