@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
+from odoo.addons.phone_validation.tools import phone_validation
 from .onsc_cv_useful_tools import is_valid_email
 from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
@@ -32,17 +33,15 @@ class ONSCCVDigitalReference(models.Model):
             self.email = False
             return cv_warning(_('El mail ingresado no tiene un formato válido'))
 
-    @api.onchange('prefix_phone_id')
-    def onchange_prefix_phone_id(self):
-        self.phone = False
-
-    @api.onchange('phone')
+    @api.onchange('phone', 'prefix_phone_id')
     def onchange_phone(self):
         if self.phone and not self.phone.isdigit():
+            self.phone = False
             return cv_warning(_("El teléfono ingresado no es válido"))
-
-    @api.constrains('phone')
-    def check_phone(self):
-        for rec in self:
-            if rec.phone and not rec.phone.isdigit():
-                raise ValidationError(_("El teléfono ingresado no es válido"))
+        if self.phone and self.prefix_phone_id:
+            try:
+                phone_validation.phone_parse(self.phone, self.prefix_phone_id.country_id.code)
+            except UserError:
+                self.phone = False
+                return cv_warning(
+                    _("El teléfono ingresado no es válido para %s" % self.prefix_phone_id.country_id.name))
