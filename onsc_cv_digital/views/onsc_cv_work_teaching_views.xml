@@ -141,7 +141,6 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="conditional_validation_state" invisible="1"/>
                             <field name="work_teaching_id" invisible="1"/>
                             <field name="subject"/>
                             <field name="course_type"
