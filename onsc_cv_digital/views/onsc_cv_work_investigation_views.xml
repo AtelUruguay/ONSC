@@ -72,13 +72,7 @@
                             </field>
                         </page>
                         <page string="Comprobantes">
-                            <field name="receipt_ids">
-                                <tree editable="top">
-                                    <field name="receipt_file" filename="receipt_filename" widget="binary"/>
-                                    <field name="receipt_filename" invisible="1"/>
-                                    <field name="receipt_description"/>
-                                </tree>
-                            </field>
+                            <field name="receipt_ids"/>
                         </page>
                         <page string="Otra información">
                             <group string="Información adicional">
@@ -114,12 +108,41 @@
         </field>
     </record>
 
+    <!--    Grilla de integrantes-->
+    <record id="onsc_cv_work_investigation_member_view_tree" model="ir.ui.view">
+        <field name="name">onsc_cv_work_investigation_member_view_tree</field>
+        <field name="model">onsc.cv.work.investigation.member</field>
+        <field name="arch" type="xml">
+            <tree string="Integrantes" editable="top">
+                <field name="member"/>
+                <field name="is_responsible" width="0.5"/>
+                <field name="citation" attrs="{'required': [('member', '!=', False)]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_work_investigation_member_view_form" model="ir.ui.view">
+        <field name="name">onsc_cv_work_investigation_member_view_form</field>
+        <field name="model">onsc.cv.work.investigation.member</field>
+        <field name="arch" type="xml">
+            <form string="Integrante">
+                <sheet>
+                    <group>
+                        <field name="member"/>
+                        <field name="is_responsible" width="0.5"/>
+                        <field name="citation" attrs="{'required': [('member', '!=', False)]}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
     <!--    Grilla de comprobantes-->
     <record id="onsc_cv_work_investigation_receipt_file_view_tree" model="ir.ui.view">
         <field name="name">onsc_cv_work_investigation_receipt_file_view_tree</field>
         <field name="model">onsc.cv.work.investigation.receipt.file</field>
         <field name="arch" type="xml">
-            <tree editable="top">
+            <tree editable="top" string="Comprobantes">
                 <field name="receipt_file" filename="receipt_filename" widget="binary"/>
                 <field name="receipt_filename" invisible="1"/>
                 <field name="receipt_description"/>
