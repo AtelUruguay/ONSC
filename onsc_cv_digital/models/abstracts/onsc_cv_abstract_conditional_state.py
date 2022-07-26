@@ -61,6 +61,7 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
             record.conditional_validation_state = validation_status.get('state')
             record.conditional_validation_reject_reason = validation_status.get('reject_reason', '')
 
+    @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCCVAbstractConditionalState, self).fields_view_get(view_id, view_type, toolbar, submenu)
         if view_type == 'form':
