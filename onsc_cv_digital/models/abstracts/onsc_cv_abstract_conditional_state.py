@@ -69,7 +69,8 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
             for node in doc.xpath('//sheet'):
                 node.insert(0, self.div_info)
                 node.insert(0, self.div_danger)
-                node.insert(0, self.field_conditional_validation_state)
+                if not len(doc.xpath('//field[@name="conditional_validation_state"]')):
+                    node.insert(0, self.field_conditional_validation_state)
             # Replace arch with new definition
             xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
             res['arch'] = xarch
