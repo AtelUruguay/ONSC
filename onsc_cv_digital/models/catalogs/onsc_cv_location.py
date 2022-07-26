@@ -8,6 +8,7 @@ class ONSCCVLocation(models.Model):
     _description = 'Ciudad/Localidad'
     _order = 'state_id, name'
     _inherit = ['onsc.cv.abstract.config']
+    _fields_2check_unicity = ['name', 'state_id', 'state']
 
     name = fields.Char(string='Nombre de localidad', required=True, index=True, tracking=True)
     country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True, tracking=True)
@@ -16,9 +17,9 @@ class ONSCCVLocation(models.Model):
                                domain="[('country_id','=',country_id)]")
     other_code = fields.Integer(string=u'Otro código', tracking=True)
 
-    _sql_constraints = [
-        ('localidad_name_by_state_unique', 'unique(name, state_id)',
-         'Ya existe una localidad con ese nombre en el mismo departamento'), ]
+    # _sql_constraints = [
+    #     ('localidad_name_by_state_unique', 'unique(name, state_id)',
+    #      'Ya existe una localidad con ese nombre en el mismo departamento'), ]
 
     @api.onchange('country_id')
     def _onchange_country_id(self):
@@ -35,13 +36,7 @@ class ONSCCVLocation(models.Model):
             values['name'] = values.get('name', '').upper()
         return super(ONSCCVLocation, self).write(values)
 
-    def _check_validate(self, args2validate, message=""):
-        args2validate = [
-            ('name', '=', self.name),
-            ('state_id', '=', self.state_id.id),
-        ]
-        return super(ONSCCVLocation, self)._check_validate(
-            args2validate,
-            _("Ya existe un registro validado para %s, Departamento %s" % (
-                self.name, self.state_id.display_name))
-        )
+    def _get_conditional_unicity_message(self):
+        _("Ya existe un registro validado para %s, Departamento %s" % (self.name,
+                                                                       self.state_id.display_name))
+

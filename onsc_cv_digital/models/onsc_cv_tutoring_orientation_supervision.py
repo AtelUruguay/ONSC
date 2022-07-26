@@ -13,7 +13,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     _name = 'onsc.cv.tutoring.orientation.supervision'
     _description = 'Tutorías, Orientaciones, Supervisiones'
     _inherit = ['onsc.cv.abstract.institution', 'onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
-    _catalogs2validate = ['institution_id', 'subinstitution_id', 'academic_program_id']
+    _catalogs_2validate = ['institution_id', 'subinstitution_id', 'academic_program_id']
     _order = 'start_date desc'
 
     work_title = fields.Char('Título del trabajo', required=True)

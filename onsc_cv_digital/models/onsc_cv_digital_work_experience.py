@@ -6,7 +6,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     _name = 'onsc.cv.work.experience'
     _inherit = ['onsc.cv.abstract.work', 'onsc.cv.abstract.conditional.state']
     _description = 'Experiencia laboral'
-    _catalogs2validate = ['city_id']
+    _catalogs_2validate = ['city_id']
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", required=True, index=True, ondelete='cascade')
     city_id = fields.Many2one("onsc.cv.location", string="Ciudad donde desempeñó", required=True)

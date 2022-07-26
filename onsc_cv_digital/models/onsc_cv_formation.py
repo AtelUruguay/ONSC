@@ -9,7 +9,7 @@ class ONSCCVFormationBasic(models.Model):
     _description = 'Formación básica'
     _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.institution', 'onsc.cv.abstract.conditional.state']
     _order = 'start_date desc'
-    _catalogs2validate = ['institution_id', 'subinstitution_id']
+    _catalogs_2validate = ['institution_id', 'subinstitution_id']
 
     basic_education_level = fields.Selection(string=u'Nivel de estudios básicos',
                                              selection=[('primary', u'Primaria'),
@@ -24,7 +24,7 @@ class ONSCCVFormationAdvanced(models.Model):
     _name = 'onsc.cv.advanced.formation'
     _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.institution', 'onsc.cv.abstract.conditional.state']
     _description = 'Formación avanzada'
-    _catalogs2validate = ['institution_id', 'subinstitution_id']
+    _catalogs_2validate = ['institution_id', 'subinstitution_id']
 
     advanced_study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de estudio avanzado', required=True)
     academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico', required=True)
