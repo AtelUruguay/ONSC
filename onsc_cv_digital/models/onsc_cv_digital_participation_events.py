@@ -7,6 +7,7 @@ MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Hí
 class ONSCCVDigitalParticipationEvent(models.Model):
     _name = 'onsc.cv.participation.event'
     _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.conditional.state']
+    _catalogs2validate = ['type_event_id', 'city_id']
     _description = 'Participación en evento'
     _order = 'start_date desc'
 
@@ -19,12 +20,12 @@ class ONSCCVDigitalParticipationEvent(models.Model):
     description_event = fields.Text(string=u"Descripción del evento")
     roll_event_id = fields.Many2one('onsc.cv.roll.event', string=u'Rol en evento', required=True, ondelete='cascade')
     is_roll_event = fields.Boolean(compute='_compute_is_roll_event')
-    description_topic = fields.Char(string=u"Descripción de la temática abordada ")
-    hourly_load = fields.Float('Carga horaria (en horas)')
+    description_topic = fields.Char(string=u"Descripción de la temática abordada en el rol")
+    hourly_load = fields.Float('Carga horaria en el rol (en horas)')
     hours_total = fields.Float('Carga horaria total (en horas)', required='True')
     activity_area_ids = fields.One2many('onsc.cv.activity.area', 'participation_events_id', string=u'Área de Actividad')
-    documentation_file = fields.Binary(string="Documentación o comprobantes", required=True)
-    documentation_filename = fields.Char('Nombre documentación o comprobantes')
+    documentation_file = fields.Binary(string="Documentación o comprobante", required=True)
+    documentation_filename = fields.Char('Nombre documentación o comprobante')
 
     @api.depends('roll_event_id')
     def _compute_is_roll_event(self):
