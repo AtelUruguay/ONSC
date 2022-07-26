@@ -301,7 +301,9 @@
                             <div>
                                 <h4>Certificados</h4>
                             </div>
-                            <field name="certificate_ids"
+                            <field name="certificate_ids" class="oe_edit_only"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
+                            <field name="certificate_ids" class="oe_read_only" readonly="1"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">

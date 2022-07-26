@@ -6,24 +6,6 @@
         <field name="arch" type="xml">
             <form string="Participación en eventos">
                 <sheet>
-                    <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ha sido rechazado por los siguientes motivos:
-                                <field name="conditional_validation_reject_reason"/>
-                            </strong>
-                        </p>
-                    </div>
-                    <div class="alert alert-info" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ingresado está en proceso de validación, se notificará el resultado de este
-                                a su e-mail
-                            </strong>
-                        </p>
-                    </div>
                     <group>
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
@@ -49,7 +31,6 @@
                             <field name="documentation_file" filename="study_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="documentation_filename" invisible="1"/>
-                            <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
                     <br/>
