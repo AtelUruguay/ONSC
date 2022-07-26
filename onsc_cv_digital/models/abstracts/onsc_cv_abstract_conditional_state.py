@@ -30,7 +30,7 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
 
     @property
     def div_info(self):
-        return etree.XML("""
+        return etree.XML(_("""
                 <div class="alert alert-info" role="alert"
                          attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
                         <p class="mb-0">
@@ -39,11 +39,11 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
                                 a su e-mail
                             </strong>
                         </p>
-                    </div>""")
+                    </div>"""))
 
     @property
     def div_danger(self):
-        return etree.XML("""
+        return etree.XML(_("""
                 <div class="alert alert-danger" role="alert"
                          attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
                         <p class="mb-0">
@@ -52,7 +52,7 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
                                 <field name="conditional_validation_reject_reason" readonly="1"/>
                             </strong>
                         </p>
-                    </div>""")
+                    </div>"""))
 
     @api.depends(lambda self: ['%s.state' % x for x in self._catalogs2validate])
     def _compute_conditional_validation_state(self):
