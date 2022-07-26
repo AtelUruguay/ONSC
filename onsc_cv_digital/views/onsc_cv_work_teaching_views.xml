@@ -60,13 +60,7 @@
                             </field>
                         </page>
                         <page string="Comprobantes">
-                            <field name="receipt_ids">
-                                <tree editable="top">
-                                    <field name="receipt_file" filename="receipt_filename" widget="binary"/>
-                                    <field name="receipt_filename" invisible="1"/>
-                                    <field name="receipt_description"/>
-                                </tree>
-                            </field>
+                            <field name="receipt_ids"/>
                         </page>
                         <page string="Otra información relevante">
                             <field name="other_relevant_information"/>
@@ -123,7 +117,7 @@
             <form string="Comprobante">
                 <sheet>
                     <group>
-                        <field name="receipt_file"/>
+                        <field name="receipt_file" filename="receipt_filename"/>
                         <field name="receipt_filename" invisible="1"/>
                         <field name="receipt_description"/>
                     </group>
@@ -131,6 +125,44 @@
             </form>
         </field>
     </record>
+
+    <!--    Grilla de Áreas relacionadas con esta educación-->
+    <record id="onsc_cv_education_area_teaching_view_tree" model="ir.ui.view">
+        <field name="name">onsc_cv_education_area_teaching_view_tree</field>
+        <field name="model">onsc.cv.education.area.teaching</field>
+        <field name="arch" type="xml">
+            <tree string="Áreas relacionadas con esta educación" editable="top">
+                <field name="educational_area_id"/>
+                <field name="educational_subarea_id"
+                       domain="[('area_id', '=', educational_area_id)]"
+                       context="{'default_area_id': educational_area_id}"/>
+                <field name="discipline_educational_id"
+                       domain="[('subarea_id', '=', educational_subarea_id)]"
+                       context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_education_area_teaching_view_form" model="ir.ui.view">
+        <field name="name">onsc_cv_education_area_teaching_view_form</field>
+        <field name="model">onsc.cv.education.area.teaching</field>
+        <field name="arch" type="xml">
+            <form string="Área relacionada con esta educación">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id"/>
+                        <field name="educational_subarea_id"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
 
     <!--Materias-->
     <record id="onsc_cv_academic_program_subject_view_form" model="ir.ui.view">
