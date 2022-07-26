@@ -6,24 +6,6 @@
         <field name="arch" type="xml">
             <form string="Participación en eventos">
                 <sheet>
-                    <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ha sido rechazado por los siguientes motivos:
-                                <field name="conditional_validation_reject_reason"/>
-                            </strong>
-                        </p>
-                    </div>
-                    <div class="alert alert-info" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ingresado está en proceso de validación, se notificará el resultado de este
-                                a su e-mail
-                            </strong>
-                        </p>
-                    </div>
                     <group>
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
@@ -49,7 +31,6 @@
                             <field name="documentation_file" filename="study_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="documentation_filename" invisible="1"/>
-                            <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
                     <br/>
@@ -78,11 +59,11 @@
         <field name="model">onsc.cv.participation.event</field>
         <field name="arch" type="xml">
             <tree string="Participación en eventos" decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="start_date" string="Fecha evento" optional="show" width="0.5"/>
+                <field name="start_date" string="Fecha" optional="show" width="0.5"/>
                 <field name="type_event_id" string="Tipo" optional="show"/>
                 <field name="name_event" string="Nombre" optional="show"/>
                 <field name="roll_event_id" string="Rol" optional="show"/>
-                <field name="country_id" optional="hide"/>
+                <field name="country_id" string="País" optional="hide"/>
                 <field name="city_id" string="Ciudad" optional="show"/>
                 <field name="name_institution" string="Institución organizadora" optional="show"/>
                 <field name="hourly_load" string="Horas en rol" optional="hide" width="0.5"/>
