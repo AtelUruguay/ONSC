@@ -35,12 +35,7 @@
                             <field name="responsible_type"/>
                             <field name="program_name"
                                    attrs="{'invisible': [('responsible_type', '!=', 'no')],'required': [('responsible_type', '=', 'no')]}"/>
-                            <field name="hours_worked_monthly"/>
-                            <field name="receipt_file"
-                                   filename="receipt_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}"/>
-                            <field name="receipt_description"/>
-                            <field name="receipt_filename" invisible="1"/>
+                            <field name="hours_worked_monthly" string="Cantidad de horas mensuales en el instituto"/>
                         </group>
                     </group>
                     <notebook>
@@ -64,6 +59,15 @@
                                 </tree>
                             </field>
                         </page>
+                        <page string="Comprobantes">
+                            <field name="receipt_ids">
+                                <tree editable="top">
+                                    <field name="receipt_file" filename="receipt_filename" widget="binary"/>
+                                    <field name="receipt_filename" invisible="1"/>
+                                    <field name="receipt_description"/>
+                                </tree>
+                            </field>
+                        </page>
                         <page string="Otra información relevante">
                             <field name="other_relevant_information"/>
                         </page>
@@ -72,6 +76,7 @@
             </form>
         </field>
     </record>
+
 
     <record id="onsc_cv_work_teaching_view_tree" model="ir.ui.view">
         <field name="name">onsc_cv_work_teaching_view_tree</field>
@@ -95,6 +100,35 @@
                 <field name="conditional_validation_reject_reason" invisible="1"/>
                 <field name="subject_ids" widget="many2many_tags" invisible="1"/>
             </tree>
+        </field>
+    </record>
+
+    <!--    Grilla de comprobantes-->
+    <record id="onsc_cv_work_teaching_receipt_file_view_tree" model="ir.ui.view">
+        <field name="name">onsc_cv_work_teaching_receipt_file_view_tree</field>
+        <field name="model">onsc.cv.work.teaching.receipt.file</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="receipt_file" filename="receipt_filename" widget="binary"/>
+                <field name="receipt_filename" invisible="1"/>
+                <field name="receipt_description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_work_teaching_receipt_file_view_form" model="ir.ui.view">
+        <field name="name">onsc_cv_work_teaching_receipt_file_view_form</field>
+        <field name="model">onsc.cv.work.teaching.receipt.file</field>
+        <field name="arch" type="xml">
+            <form string="Comprobante">
+                <sheet>
+                    <group>
+                        <field name="receipt_file"/>
+                        <field name="receipt_filename" invisible="1"/>
+                        <field name="receipt_description"/>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
 
