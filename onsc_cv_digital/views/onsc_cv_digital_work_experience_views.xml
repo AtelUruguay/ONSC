@@ -43,12 +43,7 @@
                         </group>
                     </group>
                     <group string="Tareas">
-                        <field name="task_ids" nolabel="1">
-                            <tree string="Tareas" editable="top">
-                                <field name="key_task_id"/>
-                                <field name="area_id"/>
-                            </tree>
-                        </field>
+                        <field name="task_ids" nolabel="1"/>
                     </group>
                 </sheet>
             </form>
@@ -79,4 +74,30 @@
             </tree>
         </field>
     </record>
+
+    <!--    Grilla de tareas-->
+    <record id="onsc_cv_work_experience_task_view_tree" model="ir.ui.view">
+        <field name="name">onsc_cv_work_experience_task_view_tree</field>
+        <field name="model">onsc.cv.work.experience.task</field>
+        <field name="arch" type="xml">
+            <tree string="Tareas" editable="top">
+                <field name="key_task_id"/>
+                <field name="area_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_work_experience_task_view_form" model="ir.ui.view">
+        <field name="name">onsc_cv_work_experience_task_view_form</field>
+        <field name="model">onsc.cv.work.experience.task</field>
+        <field name="arch" type="xml">
+            <form string="Tarea">
+                <group>
+                    <field name="key_task_id"/>
+                    <field name="area_id"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
 </odoo>
