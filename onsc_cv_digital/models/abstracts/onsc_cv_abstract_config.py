@@ -29,6 +29,10 @@ class ONSCCVAbstractConfig(models.AbstractModel):
 
     @api.constrains(lambda self: ['%s' % x for x in self._fields_2check_unicity])
     def _check_conditional_unicity(self):
+        """
+        Constrains generico de evaluacion de unicidad de catalogos condicionales
+        :return:
+        """
         if len(self._fields_2check_unicity) == 0:
             return True
         for record in self.filtered(lambda x: x.state == 'validated'):

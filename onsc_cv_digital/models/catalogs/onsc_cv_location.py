@@ -37,6 +37,6 @@ class ONSCCVLocation(models.Model):
         return super(ONSCCVLocation, self).write(values)
 
     def _get_conditional_unicity_message(self):
-        _("Ya existe un registro validado para %s, Departamento %s" % (self.name,
+        _("Ya existe un registro validado para %s, Departamento: %s" % (self.name,
                                                                        self.state_id.display_name))
 

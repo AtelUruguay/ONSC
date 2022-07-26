@@ -30,5 +30,5 @@ class ONSCCVCertifyingSubinstitution(models.Model):
                                            string="Lineas de certificados")
 
     def _get_conditional_unicity_message(self):
-        return _("Ya existe un registro validado para %s, Sub institución %s" % (self.name,
+        return _("Ya existe un registro validado para %s, Sub institución: %s" % (self.name,
                                                                                  self.institution_cert_id.display_name))

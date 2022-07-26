@@ -25,5 +25,5 @@ class ONSCCVSubintitution(models.Model):
             self.country_id = self.institution_id.country_id
 
     def _get_conditional_unicity_message(self):
-        return _("Ya existe un registro validado para %s, Institución %s" % (self.name,
+        return _("Ya existe un registro validado para %s, Institución: %s" % (self.name,
                                                                              self.institution_id.display_name))
