@@ -78,9 +78,13 @@
         <field name="model">onsc.cv.publication.production.evaluation</field>
         <field name="arch" type="xml">
             <tree string="Publicaciones, producciones y evaluaciones">
-                <field name="date" width="0.5"/>
-                <field name="type"/>
-                <field name="tittle"/>
+                <field name="date" width="0.5" optional="show" string="Fecha"/>
+                <field name="type" optional="show"/>
+                <field name="subtype_publication_id" string="Sub tipo" optional="show"/>
+                <field name="tittle" optional="show"/>
+                <field name="location" optional="hide"/>
+                <field name="paid_activity" optional="hide"/>
+                <field name="arbitrated" optional="hide"/>
             </tree>
         </field>
     </record>

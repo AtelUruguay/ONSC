@@ -12,11 +12,16 @@
                             <field name="name"/>
                         </group>
                         <group>
-                            <div string="Teléfono" class="row">
-                                <field name="prefix_phone_id"/>
-                                <field name="phone" class="oe_inline"/>
+                            <label for="phone" class="oe_edit_only"/>
+                            <div class="content-group row oe_edit_only" style="margin-left:5px">
+                                <field name="prefix_phone_id" attrs="{'required':[('email', '=', False)]}"
+                                       style='max-width:85px !important; padding:1px;'
+                                       options="{'no_open': True, 'no_create': True}" class="oe_inline"/>
+                                <field name="phone" class="oe_inline"
+                                       attrs="{'required': ['|',('email', '=', False),('prefix_phone_id', '!=', False)]}"/>
                             </div>
                             <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
+                            <field name="email" attrs="{'required': [('phone', '=', False)]}"/>
                         </group>
                     </group>
                     <notebook>
@@ -33,17 +38,14 @@
         <field name="name">onsc.cv.reference.tree</field>
         <field name="model">onsc.cv.reference</field>
         <field name="arch" type="xml">
-            <tree string="Referencias" editable="top">
-                <field name="reference_type" width="0.4"/>
-                <field name="name"/>
-                <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
+            <tree string="Referencias">
+                <field name="reference_type" string="Tipo" width="0.4" optional="show"/>
+                <field name="name" optional="show"/>
+                <field name="company_name" optional="hide"/>
                 <field name="prefix_phone_id" string="Prefijo" options="{'no_open': True, 'no_create': True}"
-                       attrs="{'required':[('phone', '!=', False)]}" width="0.2"/>
-                <field name="phone" attrs="{'required': ['|',('email', '=', False),('prefix_phone_id', '!=', False)]}"
-                       width="0.4" widget="phone"
-                       options="{'enable_sms': false}"/>
-                <field name="email" attrs="{'required': [('phone', '=', False)]}"/>
-                <field name="notes"/>
+                       width="0.2" optional="hide"/>
+                <field name="phone" width="0.4" options="{'enable_sms': false}" optional="hide"/>
+                <field name="email" optional="hide"/>
             </tree>
         </field>
     </record>

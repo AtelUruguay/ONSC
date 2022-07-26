@@ -6,24 +6,6 @@
         <field name="arch" type="xml">
             <form string="Formaciones básicas">
                 <sheet>
-                    <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ha sido rechazado por los siguientes motivos:
-                                <field name="conditional_validation_reject_reason"/>
-                            </strong>
-                        </p>
-                    </div>
-                    <div class="alert alert-info" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ingresado está en proceso de validación, se notificará el resultado de este
-                                a su e-mail
-                            </strong>
-                        </p>
-                    </div>
                     <group>
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
@@ -52,7 +34,6 @@
                             <field name="study_certificate_file" filename="study_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="study_certificate_filename" invisible="1"/>
-                            <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
                 </sheet>
@@ -65,14 +46,14 @@
         <field name="model">onsc.cv.basic.formation</field>
         <field name="arch" type="xml">
             <tree string="Formaciones básicas" decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="start_date"/>
-                <field name="end_date"/>
-                <field name="basic_education_level"/>
-                <field name="country_id"/>
-                <field name="institution_id"/>
-                <field name="subinstitution_id"/>
-                <field name="state"/>
-                <field name="coursed_years"/>
+                <field name="start_date" string="Inicio" optional="show" width="0.5"/>
+                <field name="end_date" string="Fin" optional="show" width="0.5"/>
+                <field name="basic_education_level" string="Nivel" optional="show"/>
+                <field name="country_id" string="País" optional="hide"/>
+                <field name="institution_id" optional="show"/>
+                <field name="subinstitution_id" optional="show"/>
+                <field name="state" optional="hide"/>
+                <field name="coursed_years" optional="hide"/>
                 <field name="conditional_validation_state" invisible="1"/>
             </tree>
         </field>
@@ -84,24 +65,6 @@
         <field name="arch" type="xml">
             <form string="Formaciones avanzadas">
                 <sheet>
-                    <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ha sido rechazado por los siguientes motivos:
-                                <field name="conditional_validation_reject_reason"/>
-                            </strong>
-                        </p>
-                    </div>
-                    <div class="alert alert-info" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ingresado está en proceso de validación, se notificará el resultado de este
-                                a su e-mail
-                            </strong>
-                        </p>
-                    </div>
                     <group>
                         <group>
                             <field name="institution_id"
@@ -173,7 +136,6 @@
                             <field name="revalidated_certificate_filename" invisible="1"/>
                             <field name="homologated_certificate_filename" invisible="1"/>
                             <field name="apostille_filename" invisible="1"/>
-                            <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
                     <br/>
@@ -205,14 +167,28 @@
         <field name="model">onsc.cv.advanced.formation</field>
         <field name="arch" type="xml">
             <tree string="Formaciones avanzadas">
-                <field name="start_date" width="0.8"/>
-                <field name="egress_date" width="0.8"/>
-                <field name="country_id"/>
-                <field name="institution_id"/>
-                <field name="subinstitution_id"/>
-                <field name="advanced_study_level_id" width="1.3"/>
-                <field name="state"/>
-                <field name="academic_program_id"/>
+                <field name="start_date" string="Inicio" optional="show" width="0.5"/>
+                <field name="end_date" string="Fin" optional="show" width="0.5"/>
+                <field name="advanced_study_level_id" string="Nivel" optional="show"/>
+                <field name="country_id" string="País" optional="hide"/>
+                <field name="institution_id" optional="show"/>
+                <field name="subinstitution_id" optional="show"/>
+                <field name="academic_program_id" optional="show"/>
+                <field name="state" optional="show"/>
+                <field name="scholarship" optional="hide"/>
+                <field name="max_scholarship" optional="hide"/>
+                <field name="credits_far" optional="hide" string="Créditos/materias aprobadas"/>
+                <field name="credits_training" optional="hide" string="Créditos/materias totales"/>
+                <field name="issue_title_date" optional="hide"/>
+                <field name="homologated_title" string="Revalidado/homologado" optional="hide" width="0.5"/>
+                <field name="homologated_title_date" string="Fecha de revalidado/homologado" optional="hide"/>
+                <field name="apostilled_title" string="Apostillado" optional="hide" width="0.5"/>
+                <field name="apostilled_date" optional="hide"/>
+                <field name="is_require_thesis" string="Tesis" optional="hide"/>
+                <field name="state_thesis" optional="hide"/>
+                <field name="title_thesis" optional="hide" width="0.5"/>
+                <field name="final_note_thesis" optional="hide" width="0.5"/>
+                <field name="max_note_thesis" string="Nota máxima de tesis" optional="hide" width="0.5"/>
                 <field name="conditional_validation_state" invisible="1"/>
             </tree>
         </field>

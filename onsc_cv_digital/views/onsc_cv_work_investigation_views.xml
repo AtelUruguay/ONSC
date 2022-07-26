@@ -6,27 +6,8 @@
         <field name="arch" type="xml">
             <form string="Investigaciones">
                 <sheet>
-                    <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ha sido rechazado por los siguientes motivos:
-                                <field name="conditional_validation_reject_reason"/>
-                            </strong>
-                        </p>
-                    </div>
-                    <div class="alert alert-info" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ingresado está en proceso de validación, se notificará el resultado de este
-                                a su e-mail
-                            </strong>
-                        </p>
-                    </div>
                     <group>
                         <group>
-                            <field name="conditional_validation_state" invisible="1"/>
                             <field name="cv_digital_id" invisible="1"/>
                             <field name="is_option_other_enable" invisible="1"/>
                             <field name="institution_id" required="1"

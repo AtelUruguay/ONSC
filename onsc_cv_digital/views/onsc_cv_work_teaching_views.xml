@@ -6,27 +6,8 @@
         <field name="arch" type="xml">
             <form string="Docencia">
                 <sheet>
-                    <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ha sido rechazado por los siguientes motivos:
-                                <field name="conditional_validation_reject_reason"/>
-                            </strong>
-                        </p>
-                    </div>
-                    <div class="alert alert-info" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ingresado está en proceso de validación, se notificará el resultado de este
-                                a su e-mail
-                            </strong>
-                        </p>
-                    </div>
                     <group>
                         <group>
-                            <field name="conditional_validation_state" invisible="1"/>
                             <field name="institution_id" required="1"
                                    domain="institution_id_domain"
                                    context="{'default_country_id': country_id, 'is_readonly': True}"/>
@@ -34,7 +15,7 @@
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
-                            <field name="country_id" required="1"
+                            <field name="country_id" required="1" string="País de la institución"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="currently_working" required="1"/>
@@ -153,12 +134,12 @@
                                    context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id, 'default_country_id': country_id, 'is_readonly':True}"/>
                         </group>
                         <group>
-                            <field name="start_date"/>
-                            <field name="end_date"
+                            <field name="start_date" string="Período desde dando esta materia"/>
+                            <field name="end_date" string="Período hasta dando esta materia"
                                    attrs="{'invisible': [('currently_working_state', '!=', 'no')],
                                                    'required': [('currently_working_state', '=', 'no')]}"/>
                             <field name="level_teaching_type"/>
-                            <field name="knowledge_teaching_ids" widget="many2many_tags"/>
+                            <field name="knowledge_acquired_ids" widget="many2many_tags"/>
                             <field name="institution_id" invisible="1"/>
                             <field name="subinstitution_id" invisible="1"/>
                             <field name="country_id" invisible="1"/>
@@ -174,15 +155,14 @@
         <field name="model">onsc.cv.academic.program.subject</field>
         <field name="arch" type="xml">
             <tree string="Materias" decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="subject"/>
-                <field name="course_type"/>
-                <field name="currently_working_state"/>
-                <field name="start_date"/>
-                <field name="end_date"
-                       attrs="{'required': [('currently_working_state', '=', 'no')]}"/>
-                <field name="level_teaching_type"/>
-                <field name="program_ids" widget="many2many_tags"/>
-                <field name="knowledge_teaching_ids" widget="many2many_tags"/>
+                <field name="start_date" string="Inicio" optional="show"/>
+                <field name="end_date" string="Fin" optional="show"/>
+                <field name="subject" optional="show"/>
+                <field name="course_type" optional="show"/>
+                <field name="currently_working_state" optional="show" width="0.5"/>
+                <field name="level_teaching_type" optional="show"/>
+                <field name="program_ids" widget="many2many_tags" optional="hide"/>
+                <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
                 <field name="conditional_validation_state" invisible="1"/>
                 <field name="conditional_validation_reject_reason" invisible="1"/>
             </tree>

@@ -6,24 +6,6 @@
         <field name="arch" type="xml">
             <form string="Participación en eventos">
                 <sheet>
-                    <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'rejected')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ha sido rechazado por los siguientes motivos:
-                                <field name="conditional_validation_reject_reason"/>
-                            </strong>
-                        </p>
-                    </div>
-                    <div class="alert alert-info" role="alert"
-                         attrs="{'invisible': [('conditional_validation_state', '!=', 'to_validate')]}">
-                        <p class="mb-0">
-                            <strong>
-                                El registro ingresado está en proceso de validación, se notificará el resultado de este
-                                a su e-mail
-                            </strong>
-                        </p>
-                    </div>
                     <group>
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
@@ -31,10 +13,14 @@
                             <field name="type_event_id"/>
                             <field name="mode"/>
                             <field name="country_id"/>
-                            <field name="city_id" attrs="{'invisible': [('mode', '!=', 'face_to_face')]}"/>
+                            <field name="city_id"
+                                   attrs="{'invisible': [('mode', '!=', 'face_to_face')], 'readonly': [('country_id', '=', False)]}"
+                                   options="{'no_open': True, 'no_quick_create': True}"
+                                   domain="[('country_id', '=?', country_id)]"
+                                   context="{'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="name_institution"/>
                             <field name="start_date"/>
-                            <field name="end_date"/>
+                            <field name="end_date" string="Fecha fin"/>
                         </group>
                         <group>
                             <field name="roll_event_id"/>
@@ -45,11 +31,11 @@
                             <field name="hourly_load"
                                    attrs="{'invisible': [('is_roll_event', '!=', True)],'required': [('is_roll_event', '=', True)]}"/>
                             <field name="hours_total"/>
-                            <field name="knowledge_key_insights_ids" options="{'limit':5}" widget="many2many_tags"/>
+                            <field name="knowledge_acquired_ids" string="Conocimientos claves abordados"
+                                   options="{'limit':5}" widget="many2many_tags"/>
                             <field name="documentation_file" filename="study_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="documentation_filename" invisible="1"/>
-                            <field name="conditional_validation_state" invisible="1"/>
                         </group>
                     </group>
                     <br/>
@@ -65,7 +51,7 @@
                             </field>
                         </page>
                         <page string="Información adicional">
-                            <field name="additional_information"/>
+                            <field name="other_relevant_information"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -78,11 +64,16 @@
         <field name="model">onsc.cv.participation.event</field>
         <field name="arch" type="xml">
             <tree string="Participación en eventos" decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="start_date"/>
-                <field name="end_date"/>
-                <field name="name_event"/>
-                <field name="type_event_id"/>
-                <field name="mode"/>
+                <field name="start_date" string="Fecha" optional="show" width="0.5"/>
+                <field name="type_event_id" string="Tipo" optional="show"/>
+                <field name="name_event" string="Nombre" optional="show"/>
+                <field name="roll_event_id" string="Rol" optional="show"/>
+                <field name="country_id" string="País" optional="hide"/>
+                <field name="city_id" string="Ciudad" optional="show"/>
+                <field name="name_institution" string="Institución organizadora" optional="show"/>
+                <field name="hourly_load" string="Horas en rol" optional="hide" width="0.5"/>
+                <field name="hours_total" string="Horas totales del evento" width="0.5" optional="hide"/>
+                <field name="mode" optional="hide"/>
                 <field name="conditional_validation_state" invisible="1"/>
             </tree>
         </field>
