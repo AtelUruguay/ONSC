@@ -14,6 +14,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     _name = 'onsc.cv.abstract.config'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Modelo abstracto de catálogos condicionales'
+    _fields_2check_unicity = ['name', 'state']
 
     active = fields.Boolean(string='Activo', default=True, tracking=True)
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
@@ -25,6 +26,27 @@ class ONSCCVAbstractConfig(models.AbstractModel):
                                  'onsc_cv_digital.group_gestor_catalogos_cv') and 'validated' or 'to_validate')
     reject_reason = fields.Char(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
+
+    @api.constrains(lambda self: ['%s' % x for x in self._fields_2check_unicity])
+    def _check_conditional_unicity(self):
+        """
+        Constrains generico de evaluacion de unicidad de catalogos condicionales
+        :return:
+        """
+        if len(self._fields_2check_unicity) == 0:
+            return True
+        for record in self.filtered(lambda x: x.state == 'validated'):
+            args2validate = [('id', '!=', record.id)]
+            for _field_2check_unicity in self._fields_2check_unicity:
+                field_value = eval('record.%s' % _field_2check_unicity)
+                if hasattr(field_value, 'id'):
+                    field_value = field_value.id
+                args2validate.append((_field_2check_unicity, '=', field_value))
+            if self.search_count(args2validate):
+                raise ValidationError(record._get_conditional_unicity_message())
+
+    def _get_conditional_unicity_message(self):
+        return _("Ya existe un registro validado para %s" % (self.name))
 
     def get_description_model(self):
         return self._description
@@ -80,10 +102,8 @@ class ONSCCVAbstractConfig(models.AbstractModel):
         }
 
     def action_validate(self):
-        for record in self:
-            record._check_validate([])
-        self.sudo()._send_validation_email()
         self.write({'state': 'validated'})
+        self.sudo()._send_validation_email()
 
     def _send_validation_email(self):
         """
@@ -122,19 +142,6 @@ class ONSCCVAbstractConfig(models.AbstractModel):
                      ('create_uid', '=', self.env.uid), ('state', '!=', 'rejected')]
         return super(ONSCCVAbstractConfig, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                          access_rights_uid=access_rights_uid)
-
-    def _check_validate(self, args2validate, message=""):
-        """
-
-        :param args2validate: Lista formato OdooWay para search_count
-        :param message: Mensaje para mostrar al usuario en caso de no pasar la Validación
-        :return: True si debe seguir con la validación, Mensaje de Validación(message) de lo contrario
-        """
-        if len(args2validate) == 0:
-            return True
-        args2validate.extend([('state', '=', 'validated'), ('id', '!=', self.id)])
-        if self.search_count(args2validate):
-            raise ValidationError(message)
 
     def _check_can_write(self):
         """Los usuarios CV solo pueden modificar si el estado no es validado"""

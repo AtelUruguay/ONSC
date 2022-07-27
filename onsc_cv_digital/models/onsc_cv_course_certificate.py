@@ -19,7 +19,7 @@ class ONSCCVCourseCertificate(models.Model):
     _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.institution', 'onsc.cv.abstract.conditional.state']
     _description = 'Cursos y certificados'
     _order = 'start_date desc'
-    _catalogs2validate = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
+    _catalogs_2validate = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
 
     record_type = fields.Selection(TYPES, string='Tipo', required=True, default='course')
     course_type = fields.Selection(COURSE_TYPES, string='Tipo')
