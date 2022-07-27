@@ -28,4 +28,4 @@ class ONSCCVIntitution(models.Model):
 
     def _get_conditional_unicity_message(self):
         return _("Ya existe un registro validado para %s, País: %s" % (self.name,
-                                                                      self.country_id.display_name))
+                                                                       self.country_id.display_name))

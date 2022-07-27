@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
 
 
 class ONSCCVSubintitution(models.Model):
@@ -26,4 +25,4 @@ class ONSCCVSubintitution(models.Model):
 
     def _get_conditional_unicity_message(self):
         return _("Ya existe un registro validado para %s, Institución: %s" % (self.name,
-                                                                             self.institution_id.display_name))
+                                                                              self.institution_id.display_name))

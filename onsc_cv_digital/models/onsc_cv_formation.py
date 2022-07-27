@@ -93,12 +93,18 @@ class ONSCCVFormationAdvanced(models.Model):
         if self.start_date and self.egress_date and self.egress_date <= self.start_date:
             self.egress_date = False
             return cv_warning(_("La fecha de egreso no puede ser menor que la fecha de inicio"))
+        if self.issue_title_date and self.egress_date and self.issue_title_date < self.egress_date:
+            self.egress_date = False
+            return cv_warning(_(u"La fecha de egreso debe ser menor que la fecha de expedición"))
 
     @api.onchange('issue_title_date')
     def onchange_issue_title_date(self):
         if self.issue_title_date and self.issue_title_date > fields.Date.today():
             self.issue_title_date = False
             return cv_warning(_(u"La fecha de expedición debe ser menor que la fecha actual"))
+        if self.issue_title_date and self.egress_date and self.issue_title_date < self.egress_date:
+            self.issue_title_date = False
+            return cv_warning(_(u"La fecha de expedición debe ser mayor o igual que la fecha de egreso"))
 
     @api.onchange('state', 'is_require_thesis')
     def onchange_state_is_require_thesis(self):
