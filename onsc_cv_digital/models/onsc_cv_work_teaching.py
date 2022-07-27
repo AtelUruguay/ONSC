@@ -16,7 +16,7 @@ class ONSCCVWorkTeaching(models.Model):
     _name = 'onsc.cv.work.teaching'
     _description = 'Docencia'
     _inherit = ['onsc.cv.abstract.work', 'onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.institution']
-    _catalogs2validate = ['institution_id', 'subinstitution_id', 'professional_link_id']
+    _catalogs_2validate = ['institution_id', 'subinstitution_id', 'professional_link_id']
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
     professional_link_id = fields.Many2one('onsc.cv.professional.link', 'Vínculo profesional', required=True)
@@ -45,7 +45,7 @@ class ONSCCVAcademicProgramSubject(models.Model):
     _name = 'onsc.cv.academic.program.subject'
     _description = 'Materias'
     _inherit = ['onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.formation']
-    _catalogs2validate = ['program_ids']
+    _catalogs_2validate = ['program_ids']
 
     work_teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade', required=True)
     cv_digital_id = fields.Many2one(related='work_teaching_id.cv_digital_id')

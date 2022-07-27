@@ -14,7 +14,7 @@ class ONSCCVWorkInvestigation(models.Model):
     _name = 'onsc.cv.work.investigation'
     _description = 'Investigación'
     _inherit = ['onsc.cv.abstract.work', 'onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.institution']
-    _catalogs2validate = ['institution_id', 'subinstitution_id']
+    _catalogs_2validate = ['institution_id', 'subinstitution_id']
     _order = 'start_date desc'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)

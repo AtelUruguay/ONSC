@@ -6,3 +6,5 @@ def migrate(cr, version):
     cr.execute("delete from ir_model where model='onsc.cv.abstract.origin.institution'")
     # Delete model onsc.cv.abstract.origin.institution.task because change name to onsc.cv.work.experience.task
     cr.execute("delete from ir_model where model='onsc.cv.origin.abstract.task'")
+    # Delete constrains
+    cr.execute("ALTER TABLE onsc_cv_location DROP CONSTRAINT IF EXISTS localidad_name_by_state_unique")
