@@ -33,7 +33,7 @@
                             <field name="hours_total"/>
                             <field name="knowledge_acquired_ids" string="Conocimientos claves abordados"
                                    options="{'limit':5}" widget="many2many_tags"/>
-                            <field name="documentation_file" filename="study_certificate_filename"
+                            <field name="documentation_file" filename="documentation_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="documentation_filename" invisible="1"/>
                         </group>
@@ -41,14 +41,7 @@
                     <br/>
                     <notebook>
                         <page string="Área de Actividad">
-                            <field name="activity_area_ids">
-                                <tree editable="top">
-                                    <field name="educational_area_id"/>
-                                    <field name="educational_subarea_id"/>
-                                    <field name="discipline_educational_id"/>
-                                    <field name="speciality"/>
-                                </tree>
-                            </field>
+                            <field name="activity_area_ids"/>
                         </page>
                         <page string="Información adicional">
                             <field name="other_relevant_information"/>

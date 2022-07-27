@@ -277,14 +277,12 @@
                             <div>
                                 <h4>Formación básica</h4>
                             </div>
-                            <field name="basic_formation_ids" class="oe_edit_only"/>
-                            <field name="basic_formation_ids" class="oe_read_only" readonly="1"/>
+                            <field name="basic_formation_ids"/>
                             <br/>
                             <div>
                                 <h4>Formación avanzada</h4>
                             </div>
-                            <field name="advanced_formation_ids" class="oe_edit_only"/>
-                            <field name="advanced_formation_ids" class="oe_read_only" readonly="1"/>
+                            <field name="advanced_formation_ids"/>
                         </page>
                         <page name="course_certificate" string="Cursos y certificados">
                             <div class="float-right">
@@ -293,25 +291,20 @@
                             <div>
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
-                            <field name="course_ids" class="oe_edit_only"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}">
-                            </field>
-                            <field name="course_ids" class="oe_read_only" readonly="1"/>
+                            <field name="course_ids"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
                             </div>
-                            <field name="certificate_ids" class="oe_edit_only"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
-                            <field name="certificate_ids" class="oe_read_only" readonly="1"
+                            <field name="certificate_ids"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">
                             <div class="float-right">
                                 <field name="cv_help_work_experience"/>
                             </div>
-                            <field name="work_experience_ids" class="oe_edit_only"/>
-                            <field name="work_experience_ids" class="oe_read_only" readonly="1"/>
+                            <field name="work_experience_ids"/>
                         </page>
                         <page name="work_teaching" string="Docencia">
                             <div class="float-right">
@@ -344,7 +337,7 @@
                             </div>
                             <field name="publication_production_evaluation_ids"/>
                         </page>
-                         <page name="tutoring_orientation_supervision" string="Tutorías, Orientaciones, Supervisiones">
+                        <page name="tutoring_orientation_supervision" string="Tutorías, Orientaciones, Supervisiones">
                             <div class="float-right">
                                 <field name="cv_help_tutoring_orientation_supervision"/>
                             </div>

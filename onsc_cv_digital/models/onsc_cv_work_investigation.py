@@ -85,9 +85,6 @@ class ONSCCVEducationAreaCourse(models.Model):
 class ONSCCVWorkInvestigationReceiptFile(models.Model):
     _name = 'onsc.cv.work.investigation.receipt.file'
     _description = 'Comprobantes de investigación'
+    _inherit = 'onsc.cv.work.abstract.receipt.file'
 
     investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
-    receipt_file = fields.Binary("Comprobante", required=True)
-    receipt_file_2 = fields.Binary(related='receipt_file')
-    receipt_filename = fields.Char('Nombre del documento digital', required=True)
-    receipt_description = fields.Char("Descripción del comprobante", required=True)

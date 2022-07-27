@@ -61,3 +61,12 @@ class ONSCCVDigitalOriginInstitutionTask(models.AbstractModel):
     key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
     area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
                               required=True)
+
+
+class ONSCCVWorkInvestigationReceiptFile(models.AbstractModel):
+    _name = 'onsc.cv.work.abstract.receipt.file'
+    _description = 'Grilla de comprobantes'
+
+    receipt_file = fields.Binary("Comprobante", required=True)
+    receipt_filename = fields.Char('Nombre del documento digital', required=True)
+    receipt_description = fields.Char("Descripción del comprobante", required=True)
