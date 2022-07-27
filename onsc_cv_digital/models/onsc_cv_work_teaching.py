@@ -31,7 +31,10 @@ class ONSCCVWorkTeaching(models.Model):
     education_area_ids = fields.One2many('onsc.cv.education.area.teaching', inverse_name='teaching_id',
                                          string="Áreas relacionadas con esta educación")
     other_relevant_information = fields.Text(string="Otra información relevante")
-    receipt_description = fields.Char('Descripción del comprobante')
+
+    # Grila Comprobantes
+    receipt_ids = fields.One2many('onsc.cv.work.teaching.receipt.file', inverse_name='teaching_id',
+                                  string='Comprobantes')
 
     @api.onchange('subinstitution_id')
     def onchange_academic_program_id_parents(self):
@@ -45,7 +48,7 @@ class ONSCCVAcademicProgramSubject(models.Model):
     _catalogs_2validate = ['program_ids']
 
     work_teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade', required=True)
-    cv_digital_id = fields.Many2one(relted='work_teaching_id.cv_digital_id')
+    cv_digital_id = fields.Many2one(related='work_teaching_id.cv_digital_id')
     program_ids = fields.Many2many('onsc.cv.academic.program', relation="academic_program_teaching_rel",
                                    string='Programas académicos', required=True, ondelete='cascade')
     subject = fields.Char('Materia')
@@ -65,4 +68,12 @@ class ONSCCVEducationAreaCourse(models.Model):
     _inherit = ['onsc.cv.abstract.formation.line']
     _description = 'Áreas relacionadas con esta educación (Docencia)'
 
-    teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia')
+    teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade')
+
+
+class ONSCCVWorkInvestigationReceiptFile(models.Model):
+    _name = 'onsc.cv.work.teaching.receipt.file'
+    _description = 'Comprobantes de docencia'
+    _inherit = 'onsc.cv.work.abstract.receipt.file'
+
+    teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade')

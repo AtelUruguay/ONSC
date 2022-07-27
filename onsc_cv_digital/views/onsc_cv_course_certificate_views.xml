@@ -74,17 +74,7 @@
                     </group>
                     <notebook>
                         <page string="Áreas relacionadas con esta educación">
-                            <field name="line_ids">
-                                <tree string="Formación básica" editable="top">
-                                    <field name="educational_area_id"/>
-                                    <field name="educational_subarea_id"
-                                           domain="[('area_id', '=', educational_area_id)]"
-                                           context="{'default_area_id': educational_area_id}"/>
-                                    <field name="discipline_educational_id"
-                                           domain="[('subarea_id', '=', educational_subarea_id)]"
-                                           context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
-                                </tree>
-                            </field>
+                            <field name="line_ids"/>
                         </page>
                         <page string="Otra información relevante">
                             <field name="other_relevant_information"/>
@@ -92,6 +82,23 @@
                     </notebook>
                 </sheet>
             </form>
+        </field>
+    </record>
+
+    <!--    Areas relacionadas con esta educacion (Cursos y certificados)-->
+    <record id="onsc_cv_education_area_course_view_tree" model="ir.ui.view">
+        <field name="name">onsc_cv_education_area_course_view_tree</field>
+        <field name="model">onsc.cv.education.area.course</field>
+        <field name="arch" type="xml">
+            <tree string="Formación básica" editable="top">
+                <field name="educational_area_id"/>
+                <field name="educational_subarea_id"
+                       domain="[('area_id', '=', educational_area_id)]"
+                       context="{'default_area_id': educational_area_id}"/>
+                <field name="discipline_educational_id"
+                       domain="[('subarea_id', '=', educational_subarea_id)]"
+                       context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+            </tree>
         </field>
     </record>
 

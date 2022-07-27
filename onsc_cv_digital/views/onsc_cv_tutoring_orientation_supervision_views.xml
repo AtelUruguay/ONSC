@@ -77,35 +77,7 @@
                     <br/>
                     <notebook>
                         <page string="Área de actividad">
-                            <field name="area_ids">
-                                <tree string="Área de actividad" editable="top">
-                                    <field name="educational_area_id" string="Área de actividad"/>
-                                    <field name="educational_subarea_id" string="Sub área de actividad"
-                                           domain="[('area_id', '=', educational_area_id)]"
-                                           context="{'default_area_id': educational_area_id}"/>
-                                    <field name="discipline_educational_id" string="Disciplina"
-                                           domain="[('subarea_id', '=', educational_subarea_id)]"
-                                           context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
-                                    <field name="speciality"
-                                           attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', False)]}"/>
-                                </tree>
-                                <form string="Área de Actividad">
-                                    <sheet>
-                                        <group>
-                                            <field name="educational_area_id" string="Área de actividad"/>
-                                            <field name="educational_subarea_id" string="Sub área de actividad"
-                                                   domain="[('area_id', '=', educational_area_id)]"
-                                                   context="{'default_area_id': educational_area_id}"/>
-                                            <field name="discipline_educational_id" string="Disciplina"
-                                                   domain="[('subarea_id', '=', educational_subarea_id)]"
-                                                   context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
-                                            <field name="speciality"
-                                                   attrs="{'readonly': [('educational_area_id', '=', False)]}"/>
-
-                                        </group>
-                                    </sheet>
-                                </form>
-                            </field>
+                            <field name="area_ids"/>
                         </page>
                         <page string="Información adicional">
                             <field name="other_relevant_information" nolabel="1"/>
@@ -144,4 +116,45 @@
         </field>
     </record>
 
+    <!--    Grilla Area de actividad-->
+    <record id="onsc_cv_education_area_tutoring_view_tree" model="ir.ui.view">
+        <field name="name">onsc_cv_education_area_tutoring_view_tree</field>
+        <field name="model">onsc.cv.education.area.tutoring</field>
+        <field name="arch" type="xml">
+            <tree string="Áreas de actividad" editable="top">
+                <field name="educational_area_id" string="Área de actividad"/>
+                <field name="educational_subarea_id" string="Sub área de actividad"
+                       domain="[('area_id', '=', educational_area_id)]"
+                       context="{'default_area_id': educational_area_id}"/>
+                <field name="discipline_educational_id" string="Disciplina"
+                       domain="[('subarea_id', '=', educational_subarea_id)]"
+                       context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                <field name="speciality"
+                       attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', False)]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_education_area_tutoring_view_form" model="ir.ui.view">
+        <field name="name">onsc_cv_education_area_tutoring_view_form</field>
+        <field name="model">onsc.cv.education.area.tutoring</field>
+        <field name="arch" type="xml">
+            <form string="Área de actividad">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id" string="Área de actividad"/>
+                        <field name="educational_subarea_id" string="Sub área de actividad"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id" string="Disciplina"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                        <field name="speciality"
+                               attrs="{'readonly': [('educational_area_id', '=', False)]}"/>
+
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
 </odoo>

@@ -292,8 +292,7 @@
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
                             <field name="course_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}">
-                            </field>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
@@ -338,7 +337,7 @@
                             </div>
                             <field name="publication_production_evaluation_ids"/>
                         </page>
-                         <page name="tutoring_orientation_supervision" string="Tutorías, Orientaciones, Supervisiones">
+                        <page name="tutoring_orientation_supervision" string="Tutorías, Orientaciones, Supervisiones">
                             <div class="float-right">
                                 <field name="cv_help_tutoring_orientation_supervision"/>
                             </div>
