@@ -6,6 +6,7 @@ from odoo import models, fields, api, _
 class ONSCCatalogInciso(models.Model):
     _name = 'onsc.catalog.inciso'
     _inherits = {'res.company': 'company_id'}
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Incisos'
 
     company_id = fields.Many2one('res.company',

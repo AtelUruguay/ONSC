@@ -9,7 +9,7 @@ ONSC - Catálogos
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['hr'],
+    'depends': ['hr', 'mail', 'operating_unit'],
     'data': [
         'security/onsc_catalog_security.xml',
         'security/ir.model.access.csv',
