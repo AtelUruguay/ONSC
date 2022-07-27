@@ -203,7 +203,6 @@ class ONSCCVDigital(models.Model):
     volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
     # Idioma ----<Page>
     language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idiomas')
-    language_level_related_ids = fields.One2many(related='language_level_ids')
     # Publicaciones, Producciones y Evaluaciones ----<Page>
     publication_production_evaluation_ids = fields.One2many("onsc.cv.publication.production.evaluation",
                                                             inverse_name="cv_digital_id",
