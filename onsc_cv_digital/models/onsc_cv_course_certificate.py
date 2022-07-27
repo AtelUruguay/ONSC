@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api, _
 import json
+from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
@@ -18,7 +19,7 @@ class ONSCCVCourseCertificate(models.Model):
     _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.institution', 'onsc.cv.abstract.conditional.state']
     _description = 'Cursos y certificados'
     _order = 'start_date desc'
-    _catalogs2validate = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
+    _catalogs_2validate = ['institution_id', 'subinstitution_id', 'institution_cert_id', 'subinstitution_cert_id']
 
     record_type = fields.Selection(TYPES, string='Tipo', required=True, default='course')
     course_type = fields.Selection(COURSE_TYPES, string='Tipo')
@@ -46,8 +47,14 @@ class ONSCCVCourseCertificate(models.Model):
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired_course_rel',
                                               string=u'Conocimientos adquiridos', required=True,
                                               store=True)
-    certificate_strat_date = fields.Date('Fecha de obtención del certificado / constancia',
+    certificate_start_date = fields.Date('Fecha de obtención del certificado / constancia',
                                          related='start_date', readonly=False)
+
+    @api.onchange('certificate_start_date')
+    def onchange_certificate_start_date(self):
+        if self.certificate_start_date and self.certificate_start_date > fields.Date.today():
+            self.start_date = False
+            return cv_warning(_(u"La fecha de inicio debe ser menor que la fecha actual"))
 
     @api.depends('course_title', 'certificate_id', 'record_type')
     def _compute_name(self):

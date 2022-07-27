@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
+from ..onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 STATES = [('incomplete', 'Incompleto'),
           ('in_progress', 'En curso'),
@@ -21,44 +22,27 @@ class ONSCCVAbstractFormation(models.AbstractModel):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
-        if self.start_date and self.end_date and self.end_date <= self.start_date:
+        if self.start_date and self.start_date > fields.Date.today():
             self.start_date = False
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "La fecha de inicio no puede ser mayor que la fecha de finalización"
-                    )
-                },
-
-            }
+            return cv_warning(_(u"La fecha de inicio debe ser menor que la fecha actual"))
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            self.start_date = False
+            return cv_warning(_(u"La fecha de inicio no puede ser mayor que la fecha de finalización"))
 
     @api.onchange('end_date')
     def onchange_end_date(self):
-        if self.end_date and self.start_date and self.end_date <= self.start_date:
+        if self.end_date and self.end_date > fields.Date.today():
             self.end_date = False
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "La fecha de finalización no puede ser menor que la fecha de inicio"
-                    )
-                },
-            }
+            return cv_warning(_(u"La fecha de finalización debe ser menor que la fecha actual"))
+        if self.end_date and self.start_date and self.end_date < self.start_date:
+            self.end_date = False
+            return cv_warning(_(u"La fecha de finalización no puede ser menor que la fecha de inicio"))
 
     @api.onchange('knowledge_acquired_ids')
     def onchange_knowledge_acquired_ids(self):
         if len(self.knowledge_acquired_ids) > 5:
             self.knowledge_acquired_ids = self.knowledge_acquired_ids[:5]
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _("Sólo se pueden seleccionar 5 tipos de conocimientos")
-                },
-            }
+            return cv_warning(_(u"Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
 
 class ONSCAbstractFormationLine(models.AbstractModel):

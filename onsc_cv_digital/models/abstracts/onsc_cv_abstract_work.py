@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
+from ..onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 WORKING_STATE = [('yes', 'Sí'), ('no', 'No')]
 PAID_ACTIVITY_TYPES = WORKING_STATE
@@ -31,46 +32,26 @@ class ONSCCVAbstractWork(models.AbstractModel):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
-        if self.start_date and self.end_date and self.end_date <= self.start_date:
+        if self.start_date and self.start_date > fields.Date.today():
             self.start_date = False
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "El período desde no puede ser mayor que el período hasta"
-                    )
-                },
-
-            }
+            return cv_warning(_(u"El período desde debe ser menor que la fecha actual"))
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            self.start_date = False
+            return cv_warning(_("El período desde no puede ser mayor que el período hasta"))
 
     @api.onchange('end_date')
     def onchange_end_date(self):
-        if self.end_date and self.start_date and self.end_date <= self.start_date:
+        if self.end_date and self.end_date > fields.Date.today():
             self.end_date = False
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "El período hasta no puede ser menor que el período desde"
-                    )
-                },
-            }
+            return cv_warning(_(u"El período hasta debe ser menor que la fecha actual"))
+        if self.end_date and self.start_date and self.end_date < self.start_date:
+            self.end_date = False
+            return cv_warning(_("El período hasta no puede ser menor que el período desde"))
 
     @api.onchange('hours_worked_monthly')
     def onchange_hours_worked_monthly(self):
         if self.hours_worked_monthly and self.hours_worked_monthly < 45:
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "Advertencia: la carga horaria mensual es menor que 45 horas"
-                    )
-                },
-
-            }
+            return cv_warning(_("Advertencia: la carga horaria mensual es menor que 45 horas"))
 
 
 class ONSCCVDigitalOriginInstitutionTask(models.AbstractModel):

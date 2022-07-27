@@ -131,8 +131,24 @@
                                     <field name="civical_credential_filename" invisible="1"/>
                                 </group>
                                 <group>
-                                    <field name="personal_phone" widget="phone"/>
-                                    <field name="mobile_phone" widget="phone"/>
+                                    <label for="personal_phone" class="oe_edit_only"/>
+                                    <div class="content-group row oe_edit_only" style="margin-left:5px">
+                                        <field name="prefix_phone_id" options="{'no_open': True, 'no_create': True}"
+                                               style='max-width:80px !important;'
+                                               class="oe_inline"/>
+                                        <field name="personal_phone" class="oe_inline"/>
+                                    </div>
+                                    <field name="personal_phone_with_prefix" widget="phone" class="oe_read_only"/>
+
+                                    <label for="mobile_phone" class="oe_edit_only"/>
+                                    <div class="content-group row oe_edit_only" style="margin-left:5px">
+                                        <field name="prefix_mobile_phone_id"
+                                               options="{'no_open': True, 'no_create': True}"
+                                               style='max-width:80px !important;'
+                                               class="oe_inline"/>
+                                        <field name="mobile_phone" widget="phone" class="oe_inline"/>
+                                    </div>
+                                    <field name="mobile_phone_with_prefix" widget="phone" class="oe_read_only"/>
                                     <field name="email" widget="email"/>
                                     <field name="user_linkedIn"/>
                                     <field name="cjppu_affiliate_number"/>
@@ -147,6 +163,7 @@
                                         <field name="validation_date" width="0.5"/>
                                         <field name="category_id"/>
                                         <field name="license_file"
+                                               widget="binary"
                                                filename="license_filename"
                                                options="{'accepted_file_extensions': '.pdf'}"/>
                                         <field name="license_filename" invisible="1"/>
@@ -260,12 +277,14 @@
                             <div>
                                 <h4>Formación básica</h4>
                             </div>
-                            <field name="basic_formation_ids"/>
+                            <field name="basic_formation_ids" class="oe_edit_only"/>
+                            <field name="basic_formation_ids" class="oe_read_only" readonly="1"/>
                             <br/>
                             <div>
                                 <h4>Formación avanzada</h4>
                             </div>
-                            <field name="advanced_formation_ids"/>
+                            <field name="advanced_formation_ids" class="oe_edit_only"/>
+                            <field name="advanced_formation_ids" class="oe_read_only" readonly="1"/>
                         </page>
                         <page name="course_certificate" string="Cursos y certificados">
                             <div class="float-right">
@@ -274,21 +293,25 @@
                             <div>
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
-                            <field name="course_ids"
+                            <field name="course_ids" class="oe_edit_only"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}">
                             </field>
+                            <field name="course_ids" class="oe_read_only" readonly="1"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
                             </div>
-                            <field name="certificate_ids"
+                            <field name="certificate_ids" class="oe_edit_only"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
+                            <field name="certificate_ids" class="oe_read_only" readonly="1"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">
                             <div class="float-right">
                                 <field name="cv_help_work_experience"/>
                             </div>
-                            <field name="work_experience_ids"/>
+                            <field name="work_experience_ids" class="oe_edit_only"/>
+                            <field name="work_experience_ids" class="oe_read_only" readonly="1"/>
                         </page>
                         <page name="work_teaching" string="Docencia">
                             <div class="float-right">
@@ -320,6 +343,91 @@
                                 <field name="cv_help_publications_productions_evaluations"/>
                             </div>
                             <field name="publication_production_evaluation_ids"/>
+                        </page>
+                         <page name="tutoring_orientation_supervision" string="Tutorías, Orientaciones, Supervisiones">
+                            <div class="float-right">
+                                <field name="cv_help_tutoring_orientation_supervision"/>
+                            </div>
+                            <field name="tutoring_orientation_supervision_ids"/>
+                        </page>
+                        <page string="Discapacidad">
+                            <div class="float-right">
+                                <field name="cv_help_disability"/>
+                            </div>
+                            <group>
+                                <group>
+                                    <field name="allow_content_public"/>
+                                    <field name="situation_disability"/>
+                                    <field name="people_disabilitie"
+                                           attrs="{'invisible': [('situation_disability', '!=', 'si')]}"/>
+                                </group>
+                                <group>
+                                    <field name="document_certificate_filename" invisible="1"/>
+                                    <field name="document_certificate_file" filename="document_certificate_filename"
+                                           options="{'accepted_file_extensions': '.pdf'}"
+                                           attrs="{'invisible': [('people_disabilitie', '!=', 'si')],'required': [('people_disabilitie', '=', 'si')]}"/>
+                                    <field name="certificate_date"
+                                           attrs="{'required': [('people_disabilitie', '=', 'si')]}"/>
+                                    <field name="to_date" attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}"/>
+                                </group>
+                            </group>
+                            <group string="Tiene dificultad permanente para:"
+                                   attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
+                                <group>
+                                    <field name="see" widget="radio"/>
+                                    <br/>
+                                    <field name="walk" widget="radio"/>
+                                    <br/>
+                                    <field name="realize" widget="radio"/>
+                                    <br/>
+                                    <field name="interaction" widget="radio"/>
+                                </group>
+                                <group>
+                                    <field name="hear" widget="radio"/>
+                                    <br/>
+                                    <field name="speak" widget="radio"/>
+                                    <br/>
+                                    <field name="lear" widget="radio"/>
+                                </group>
+                            </group>
+                            <group string="Seleccione los apoyos que desea:"
+                                   attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
+                            <group>
+                                    <field name="type_support_ids_domain" invisible="1"/>
+                                    <field name="type_support_ids" widget="many2many_tags"
+                                           domain="[('id', 'in', type_support_ids_domain)]"/>
+                                    <field name="is_need_other_support" invisible="1"/>
+                                </group>
+                                <group>
+                                    <field name="need_other_support"
+                                           attrs="{'invisible': [('is_need_other_support', '!=', True)]}"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page name="participation_event"
+                              string="Participación en eventos">
+                            <div class="float-right">
+                                <field name="cv_help_participation_event"/>
+                            </div>
+                            <field name="participation_event_ids"/>
+                        </page>
+                        <page name="other_relevant_information"
+                              string="Otra información relevante">
+                            <div class="float-right">
+                                <field name="cv_help_other_relevant_information"/>
+                            </div>
+                            <field name="other_relevant_information_ids">
+                                <tree editable="top">
+                                    <field name="theme"/>
+                                    <field name="description"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page name="reference" string="Referencias">
+                            <div class="float-right">
+                                <field name="cv_help_reference"/>
+                            </div>
+                            <field name="reference_ids"/>
                         </page>
                     </notebook>
                 </sheet>

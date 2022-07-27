@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
+from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
 
 POSITION_TYPES = [('effective', 'Efectivo'), ('interim', 'Interino'), ('honorary', 'Honorario')]
 INVESTIGATION_TYPES = [('invest_line', 'Línea de investigación'),
-                       ('invest_project', 'Proyecto de investigación'), ('develop', 'Desarrollo')]
+                       ('invest_project', 'Proyecto de investigación y desarrollo')]
 PARTICIPATION_TYPES = [('coordinator', 'Coordinador o responsable'), ('team_member', 'Integrante del equipo')]
 CATEGORY_TYPES = [('applied', 'Aplicada'), ('fundamental', 'Fundamental'), ('mixed', 'Mixta')]
 SITUATION_TYPES = [('canceled', 'Cancelado'), ('finished', 'Concluido'), ('in_progress', 'En marcha')]
@@ -13,7 +14,8 @@ class ONSCCVWorkInvestigation(models.Model):
     _name = 'onsc.cv.work.investigation'
     _description = 'Investigación'
     _inherit = ['onsc.cv.abstract.work', 'onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.institution']
-    _catalogs2validate = ['institution_id', 'subinstitution_id']
+    _catalogs_2validate = ['institution_id', 'subinstitution_id']
+    _order = 'start_date desc'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
     investigation_type = fields.Selection(INVESTIGATION_TYPES, 'Tipo de investigación', required=True)
@@ -34,24 +36,19 @@ class ONSCCVWorkInvestigation(models.Model):
     education_area_ids = fields.One2many('onsc.cv.education.area.investigation', inverse_name='investigation_id',
                                          string="Áreas relacionadas con esta educación")
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', relation='knowledge_acquired_investigation_rel',
-                                              string="Conocimientos adquiridos")
+                                              string="Conocimientos adquiridos", required=True)
 
     additional_information = fields.Text(string="Información adicional")
     other_relevant_information = fields.Text(string="Otra información relevante")
+    # Grila Comprobantes
+    receipt_ids = fields.One2many('onsc.cv.work.investigation.receipt.file', inverse_name='investigation_id',
+                                  string='Comprobantes')
 
     @api.onchange('knowledge_acquired_ids')
     def onchange_knowledge_acquired_ids(self):
         if len(self.knowledge_acquired_ids) > 5:
             self.knowledge_acquired_ids = self.knowledge_acquired_ids[:5]
-            return {
-                'warning': {
-                    'title': _("Atención"),
-                    'type': 'notification',
-                    'message': _(
-                        "Sólo se pueden seleccionar 5 tipos de conocimientos"
-                    )
-                },
-            }
+            return cv_warning(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
 
 class ONSCCVWorkInvestigationMember(models.Model):
@@ -83,3 +80,14 @@ class ONSCCVEducationAreaCourse(models.Model):
     _description = 'Áreas relacionadas con esta educación (Investigación)'
 
     investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
+
+
+class ONSCCVWorkInvestigationReceiptFile(models.Model):
+    _name = 'onsc.cv.work.investigation.receipt.file'
+    _description = 'Comprobantes de investigación'
+
+    investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
+    receipt_file = fields.Binary("Comprobante", required=True)
+    receipt_file_2 = fields.Binary(related='receipt_file')
+    receipt_filename = fields.Char('Nombre del documento digital', required=True)
+    receipt_description = fields.Char("Descripción del comprobante", required=True)

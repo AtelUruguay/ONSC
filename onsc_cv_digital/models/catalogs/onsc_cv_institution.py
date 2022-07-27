@@ -8,6 +8,7 @@ class ONSCCVIntitution(models.Model):
     _description = 'Institución'
     _rec_name = 'name_country'
     _inherit = ['onsc.cv.abstract.config']
+    _fields_2check_unicity = ['name', 'country_id', 'state']
 
     name = fields.Char("Nombre de la institución", required=True, tracking=True)
     country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True, tracking=True)
@@ -25,13 +26,6 @@ class ONSCCVIntitution(models.Model):
             else:
                 record.name_country = ''
 
-    def _check_validate(self, args2validate, message=""):
-        args2validate = [
-            ('name', '=', self.name),
-            ('country_id', '=', self.country_id.id),
-        ]
-        return super(ONSCCVIntitution, self)._check_validate(
-            args2validate,
-            _("Ya existe un registro validado para %s, País %s" % (
-                self.name, self.country_id.display_name))
-        )
+    def _get_conditional_unicity_message(self):
+        return _("Ya existe un registro validado para %s, País: %s" % (self.name,
+                                                                       self.country_id.display_name))

@@ -7,6 +7,9 @@
             <search string="Vínculos profesionales">
                 <field name="code"/>
                 <field name="name"/>
+                <group expand="1" string="Group By">
+                    <filter name="filter_state" string="Estado"  context="{'group_by':'state'}"/>
+                </group>
             </search>
         </field>
     </record>

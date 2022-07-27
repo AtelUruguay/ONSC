@@ -29,15 +29,6 @@ class ONSCCVCertificate(models.Model):
             if len(record.line_ids) == 0:
                 raise ValidationError(_("Debe cargar al menos una Institución/Sub institución certificadora"))
 
-    def _check_validate(self, args2validate, message=""):
-        args2validate = [
-            ('name', '=', self.name),
-        ]
-        return super(ONSCCVCertificate, self)._check_validate(
-            args2validate,
-            _("Ya existe un registro validado para %s" % (self.name))
-        )
-
 
 class ONSCCVCertificateLine(models.Model):
     _name = 'onsc.cv.certificate.line'

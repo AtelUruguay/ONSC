@@ -9,7 +9,7 @@ ONSC CV Digital
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['base', 'mail', 'web_domain_field'],
+    'depends': ['base', 'mail', 'web_domain_field', 'phone_validation'],
     'data': [
         'security/onsc_cv_digital_security.xml',
         'security/onsc_cv_digital_rules.xml',
@@ -77,6 +77,9 @@ ONSC CV Digital
         'views/onsc_cv_digital_volunteering_views.xml',
         'views/onsc_cv_language_level_views.xml',
         'views/cv_digital_publications_productions_evaluations_views.xml',
+        'views/onsc_cv_tutoring_orientation_supervision_views.xml',
+        'views/onsc_cv_digital_participation_events_views.xml',
+        'views/onsc_cv_digital_refernece_views.xml',
     ],
     'demo': [
         'demo/onsc_cv_demo.xml',
