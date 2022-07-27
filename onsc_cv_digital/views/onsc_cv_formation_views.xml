@@ -141,17 +141,7 @@
                     <br/>
                     <notebook>
                         <page string="Áreas relacionadas con esta educación">
-                            <field name="area_related_education_ids">
-                                <tree string="Formación avanzada" editable="top">
-                                    <field name="educational_area_id"/>
-                                    <field name="educational_subarea_id"
-                                           domain="[('area_id', '=', educational_area_id)]"
-                                           context="{'default_area_id': educational_area_id}"/>
-                                    <field name="discipline_educational_id"
-                                           domain="[('subarea_id', '=', educational_subarea_id)]"
-                                           context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
-                                </tree>
-                            </field>
+                            <field name="area_related_education_ids"/>
                         </page>
                         <page string="Otra información relevante">
                             <field name="other_relevant_information"/>
@@ -191,6 +181,43 @@
                 <field name="max_note_thesis" string="Nota máxima de tesis" optional="hide" width="0.5"/>
                 <field name="conditional_validation_state" invisible="1"/>
             </tree>
+        </field>
+    </record>
+
+    <!--    Grilla de Áreas relacionadas con esta educación-->
+    <record id="onsc_cv_area_related_education_view_tree" model="ir.ui.view">
+        <field name="name">onsc_cv_area_related_education_view_tree</field>
+        <field name="model">onsc.cv.area.related.education</field>
+        <field name="arch" type="xml">
+            <tree string="Áreas relacionadas con esta educación" editable="top">
+                <field name="educational_area_id"/>
+                <field name="educational_subarea_id"
+                       domain="[('area_id', '=', educational_area_id)]"
+                       context="{'default_area_id': educational_area_id}"/>
+                <field name="discipline_educational_id"
+                       domain="[('subarea_id', '=', educational_subarea_id)]"
+                       context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_area_related_education_view_form" model="ir.ui.view">
+        <field name="name">onsc_cv_area_related_education_view_form</field>
+        <field name="model">onsc.cv.area.related.education</field>
+        <field name="arch" type="xml">
+            <form string="Área relacionada con esta educación">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id"/>
+                        <field name="educational_subarea_id"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
 </odoo>
