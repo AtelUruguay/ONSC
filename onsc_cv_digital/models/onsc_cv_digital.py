@@ -182,33 +182,25 @@ class ONSCCVDigital(models.Model):
 
     # Formación----<Page>
     basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica')
-    basic_formation_related_ids = fields.One2many(related='basic_formation_ids')
     advanced_formation_ids = fields.One2many('onsc.cv.advanced.formation', 'cv_digital_id',
                                              string=u'Formación avanzada')
-    advanced_formation_related_ids = fields.One2many(related='advanced_formation_ids')
     # Cursos y certificado----<Page>
     course_certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
                                              string="Cursos y certificados")
     course_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
                                  string="Cursos", domain=[('record_type', '=', 'course')])
-    course_related_ids = fields.One2many(related='course_ids')
     certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
                                       string="Certificados", domain=[('record_type', '=', 'certificate')])
-    certificate_related_ids = fields.One2many(related='certificate_ids')
     # Experiencia Laboral ----<Page>
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
                                           string="Experiencia laboral")
-    work_experience_related_ids = fields.One2many(related='work_experience_ids')
     # Docencia ----<Page>
     work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencia')
-    work_teaching_related_ids = fields.One2many(related='work_teaching_ids')
     # Investigación ----<Page>
     work_investigation_ids = fields.One2many('onsc.cv.work.investigation', inverse_name='cv_digital_id',
                                              string='Investigación')
-    work_investigation_related_ids = fields.One2many(related='work_investigation_ids')
     # Voluntariado ----<Page>
     volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
-    volunteering_related_ids = fields.One2many(related='volunteering_ids')
     # Idioma ----<Page>
     language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idiomas')
     language_level_related_ids = fields.One2many(related='language_level_ids')
@@ -216,12 +208,10 @@ class ONSCCVDigital(models.Model):
     publication_production_evaluation_ids = fields.One2many("onsc.cv.publication.production.evaluation",
                                                             inverse_name="cv_digital_id",
                                                             string="Publicaciones, producciones y evaluaciones")
-    publication_production_evaluation_related_ids = fields.One2many(related='publication_production_evaluation_ids')
     # Tutorías, Orientaciones, Supervisiones ----<Page>
     tutoring_orientation_supervision_ids = fields.One2many('onsc.cv.tutoring.orientation.supervision',
                                                            inverse_name="cv_digital_id",
                                                            string="Tutorías, Orientaciones, Supervisiones")
-    tutoring_orientation_supervision_related_ids = fields.One2many(related='tutoring_orientation_supervision_ids')
     # Discapacidad ----<Page>
     allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
                                             string=u'¿Permite que el contenido de esta sección sea público?')
@@ -248,15 +238,12 @@ class ONSCCVDigital(models.Model):
     participation_event_ids = fields.One2many("onsc.cv.participation.event",
                                               inverse_name="cv_digital_id",
                                               string="Participación en eventos")
-    participation_event_related_ids = fields.One2many(related='participation_event_ids')
     # Otra información relevante ----<Page>
     other_relevant_information_ids = fields.One2many("onsc.cv.other.relevant.information",
                                                      inverse_name="cv_digital_id",
                                                      string="Otra información relevante")
-    other_relevant_information_related_ids = fields.One2many(related='other_relevant_information_ids')
     # Referencias ------<Page>
     reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias')
-    reference_related_ids = fields.One2many(related='reference_ids')
 
     # Help online
     cv_help_general_info = fields.Html(

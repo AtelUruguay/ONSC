@@ -277,14 +277,12 @@
                             <div>
                                 <h4>Formación básica</h4>
                             </div>
-                            <field name="basic_formation_ids" class="oe_edit_only"/>
-                            <field name="basic_formation_related_ids" class="oe_read_only"/>
+                            <field name="basic_formation_ids"/>
                             <br/>
                             <div>
                                 <h4>Formación avanzada</h4>
                             </div>
-                            <field name="advanced_formation_ids" class="oe_edit_only"/>
-                            <field name="advanced_formation_related_ids" class="oe_read_only"/>
+                            <field name="advanced_formation_ids"/>
                         </page>
                         <page name="course_certificate" string="Cursos y certificados">
                             <div class="float-right">
@@ -293,69 +291,57 @@
                             <div>
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
-                            <field name="course_ids" class="oe_edit_only"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}">
-                            </field>
-                            <field name="course_related_ids" class="oe_read_only"
+                            <field name="course_ids"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
                             </div>
-                            <field name="certificate_ids" class="oe_edit_only"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
-                            <field name="certificate_related_ids" class="oe_read_only"
+                            <field name="certificate_ids"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">
                             <div class="float-right">
                                 <field name="cv_help_work_experience"/>
                             </div>
-                            <field name="work_experience_ids" class="oe_edit_only"/>
-                            <field name="work_experience_related_ids" class="oe_read_only"/>
+                            <field name="work_experience_ids"/>
                         </page>
                         <page name="work_teaching" string="Docencia">
                             <div class="float-right">
                                 <field name="cv_help_work_teaching"/>
                             </div>
-                            <field name="work_teaching_ids" class="oe_edit_only"/>
-                            <field name="work_teaching_related_ids" class="oe_read_only" readonly="1"/>
+                            <field name="work_teaching_ids"/>
                         </page>
                         <page name="work_investigation" string="Investigación">
                             <div class="float-right">
                                 <field name="cv_help_work_investigation"/>
                             </div>
-                            <field name="work_investigation_ids" class="oe_edit_only"/>
-                            <field name="work_investigation_related_ids" class="oe_read_only"/>
+                            <field name="work_investigation_ids"/>
                         </page>
                         <page name="volunteering" string="Voluntariado">
                             <div class="float-right">
                                 <field name="cv_help_volunteering"/>
                             </div>
-                            <field name="volunteering_ids" class="oe_edit_only"/>
-                            <field name="volunteering_related_ids" class="oe_read_only"/>
+                            <field name="volunteering_ids"/>
                         </page>
                         <page name="language_level" string="Idiomas">
                             <div class="float-right">
                                 <field name="cv_help_language_level"/>
                             </div>
-                            <field name="language_level_ids" class="oe_edit_only"/>
-                            <field name="language_level_related_ids" class="oe_read_only"/>
+                            <field name="language_level_ids"/>
                         </page>
                         <page name="publications_productions_evaluations"
                               string="Publicaciones, producciones y evaluaciones">
                             <div class="float-right">
                                 <field name="cv_help_publications_productions_evaluations"/>
                             </div>
-                            <field name="publication_production_evaluation_ids" class="oe_edit_only"/>
-                            <field name="publication_production_evaluation_related_ids" class="oe_read_only"/>
+                            <field name="publication_production_evaluation_ids"/>
                         </page>
                         <page name="tutoring_orientation_supervision" string="Tutorías, Orientaciones, Supervisiones">
                             <div class="float-right">
                                 <field name="cv_help_tutoring_orientation_supervision"/>
                             </div>
-                            <field name="tutoring_orientation_supervision_ids" class="oe_edit_only"/>
-                            <field name="tutoring_orientation_supervision_related_ids" class="oe_read_only"/>
+                            <field name="tutoring_orientation_supervision_ids"/>
                         </page>
                         <page string="Discapacidad">
                             <div class="float-right">
@@ -416,8 +402,7 @@
                             <div class="float-right">
                                 <field name="cv_help_participation_event"/>
                             </div>
-                            <field name="participation_event_ids" class="oe_edit_only"/>
-                            <field name="participation_event_related_ids" class="oe_read_only"/>
+                            <field name="participation_event_ids"/>
                         </page>
                         <page name="other_relevant_information"
                               string="Otra información relevante">
@@ -435,8 +420,7 @@
                             <div class="float-right">
                                 <field name="cv_help_reference"/>
                             </div>
-                            <field name="reference_ids" class="oe_edit_only"/>
-                            <field name="reference_related_ids" class="oe_read_only"/>
+                            <field name="reference_ids"/>
                         </page>
                     </notebook>
                 </sheet>
