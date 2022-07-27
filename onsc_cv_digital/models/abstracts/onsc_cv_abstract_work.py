@@ -35,7 +35,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
         if self.start_date and self.start_date > fields.Date.today():
             self.start_date = False
             return cv_warning(_(u"El período desde debe ser menor que la fecha actual"))
-        if self.start_date and self.end_date and self.end_date <= self.start_date:
+        if self.start_date and self.end_date and self.end_date < self.start_date:
             self.start_date = False
             return cv_warning(_("El período desde no puede ser mayor que el período hasta"))
 
@@ -44,7 +44,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
         if self.end_date and self.end_date > fields.Date.today():
             self.end_date = False
             return cv_warning(_(u"El período hasta debe ser menor que la fecha actual"))
-        if self.end_date and self.start_date and self.end_date <= self.start_date:
+        if self.end_date and self.start_date and self.end_date < self.start_date:
             self.end_date = False
             return cv_warning(_("El período hasta no puede ser menor que el período desde"))
 
