@@ -5,6 +5,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+from .onsc_cv_useful_tools import is_valid_phone
 
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
@@ -148,10 +149,8 @@ class ONSCCVDigital(models.Model):
 
     prefix_phone_id = fields.Many2one(related='partner_id.prefix_phone_id', readonly=False)
     personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)
-    personal_phone_with_prefix = fields.Char(string="Teléfono particular", related='partner_id.phone_with_prefix')
     prefix_mobile_phone_id = fields.Many2one(related='partner_id.prefix_mobile_phone_id', readonly=False)
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
-    mobile_phone_with_prefix = fields.Char(string="Teléfono celular", related='partner_id.mobile_with_prefix')
     email = fields.Char(string="Email", related='partner_id.email')
 
     is_occupational_health_card = fields.Boolean(string="Carné de salud laboral")
@@ -367,17 +366,27 @@ class ONSCCVDigital(models.Model):
             if not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
 
-    @api.onchange('personal_phone')
+    @api.onchange('personal_phone', 'prefix_phone_id')
     def onchange_personal_phone(self):
-        if self.personal_phone and not self.personal_phone.isdigit():
-            self.personal_phone = False
-            return cv_warning(_("El teléfono ingresado no es válido"))
+        phone_formatted, format_with_error, invalid_phone = is_valid_phone(
+            self.personal_phone, self.prefix_phone_id.country_id)
+        self.personal_phone = phone_formatted
+        if format_with_error:
+            return cv_warning(_("El teléfono personal ingresado no es válido"))
+        if invalid_phone:
+            return cv_warning(
+                _("El teléfono personal ingresado no es válido para %s" % self.prefix_phone_id.country_id.name))
 
-    @api.onchange('mobile_phone')
+    @api.onchange('mobile_phone', 'prefix_mobile_phone_id')
     def onchange_mobile_phone(self):
-        if self.mobile_phone and not self.mobile_phone.isdigit():
-            self.mobile_phone = False
-            return cv_warning(_("El celular ingresado no es válido"))
+        phone_formatted, format_with_error, invalid_phone = is_valid_phone(
+            self.mobile_phone, self.prefix_mobile_phone_id.country_id)
+        self.mobile_phone = phone_formatted
+        if format_with_error:
+            return cv_warning(_("El teléfono celular ingresado no es válido"))
+        if invalid_phone:
+            return cv_warning(
+                _("El teléfono celular ingresado no es válido para %s" % self.prefix_mobile_phone_id.country_id.name))
 
     @api.onchange('cv_sex_updated_date')
     def onchange_cv_sex_updated_date(self):
