@@ -6,10 +6,16 @@
               parent="hr.menu_hr_root"
               sequence="10"/>
 
-    <menuitem id="onsc_cv_digital_user_menu"
+    <menuitem id="onsc_cv_catalog_inciso_menu"
               name="Incisos"
               action="onsc_catalog_inciso_action"
               parent="onsc_catalog_menu"
               groups="group_catalog_configurador_servicio_civil"
               sequence="1"/>
+    <menuitem id="onsc_cv_catalog_ue_menu"
+              name="Unidades ejecutoras"
+              action="operating_unit.action_operating_unit_tree"
+              parent="onsc_catalog_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="2"/>
 </odoo>

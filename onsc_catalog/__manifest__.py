@@ -14,6 +14,7 @@ ONSC - Catálogos
         'security/onsc_catalog_security.xml',
         'security/ir.model.access.csv',
         'views/onsc_catalog_inciso_views.xml',
+        'views/operating_unit_views.xml',
         'views/onsc_catalog_menuitems.xml'
     ],
     'demo': [],

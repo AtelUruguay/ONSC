@@ -17,13 +17,13 @@
         <field name="name">onsc.catalog.inciso.form</field>
         <field name="model">onsc.catalog.inciso</field>
         <field name="arch" type="xml">
-            <form string="Incisos">
+            <form string="Incisos" duplicate="0">
+                <header>
+                </header>
                 <sheet>
-                    <header>
-                    </header>
                     <field name="logo" widget="image" class="oe_avatar"/>
                     <div class="oe_title">
-                        <label for="name"/>
+                        <label for="name" string="Nombre"/>
                         <h1>
                             <field name="name"/>
                         </h1>
@@ -69,6 +69,11 @@
                         </page>
                     </notebook>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
