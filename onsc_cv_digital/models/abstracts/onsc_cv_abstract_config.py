@@ -36,6 +36,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
         if len(self._fields_2check_unicity) == 0:
             return True
         for record in self.filtered(lambda x: x.state == 'validated'):
+            record._check_parent_validation_state()
             args2validate = [('id', '!=', record.id)]
             for _field_2check_unicity in self._fields_2check_unicity:
                 field_value = eval('record.%s' % _field_2check_unicity)
@@ -47,6 +48,9 @@ class ONSCCVAbstractConfig(models.AbstractModel):
 
     def _get_conditional_unicity_message(self):
         return _("Ya existe un registro validado para %s" % (self.name))
+
+    def _check_parent_validation_state(self):
+        return True
 
     def get_description_model(self):
         return self._description
