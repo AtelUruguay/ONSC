@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+<data noupdate="1">
+    <record model="ir.module.category" id="module_category_onsc_catalog">
+        <field name="name">ONSC Catálogos</field>
+        <field name="sequence">1</field>
+    </record>
+
+    <record id="group_catalog_configurador_servicio_civil" model="res.groups">
+        <field name="name">Configurador Servicio Civil</field>
+        <field name="comment">Configurador Servicio Civil</field>
+        <field name="category_id" ref="module_category_onsc_catalog"/>
+        <field name="implied_ids" eval="[(4, ref('operating_unit.group_manager_operating_unit'))]" />
+    </record>
+</data>
+</odoo>
