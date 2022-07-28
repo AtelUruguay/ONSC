@@ -10,6 +10,7 @@
         <field name="name">Configurador Servicio Civil</field>
         <field name="comment">Configurador Servicio Civil</field>
         <field name="category_id" ref="module_category_onsc_catalog"/>
+        <field name="implied_ids" eval="[(4, ref('operating_unit.group_manager_operating_unit'))]" />
     </record>
 </data>
 </odoo>
