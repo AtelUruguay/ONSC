@@ -2,6 +2,8 @@
 import re
 from odoo import _
 import requests
+from odoo.exceptions import UserError
+from odoo.addons.phone_validation.tools import phone_validation
 
 
 def get_validation_status(record, conditional_catalog_list):
@@ -76,3 +78,40 @@ def get_onchange_warning_response(message, notif_type='notification'):
 def is_valid_email(email):
     expression = r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
     return re.match(expression, email) is not None
+
+
+def get_phone_format(number, country=None, force_format='INTERNATIONAL'):
+    if not country:
+        return number
+    return phone_validation.phone_format(
+        number,
+        country.code if country else None,
+        country.phone_code if country else None,
+        force_format,
+        raise_exception=False
+    )
+
+
+def is_valid_phone(phone, country_id):
+    """
+    Return 3 values
+    0 -> str formatted phone
+    1 -> bool is invalid format
+    2- -> bool is invalid phone for country
+    :param phone: str
+    :param country_id: recordset res.country
+    :return:
+    """
+    phone_formatted, format_with_error, invalid_phone = phone, False, False
+    if phone and not phone.isdigit():
+        format_with_error = True
+    if phone and country_id:
+        try:
+            phone = get_phone_format(phone, country_id)
+            prefix_code = '+%s' % country_id.phone_code
+            phone_formatted = phone[len(prefix_code) + 1:]
+            phone_validation.phone_parse(phone_formatted, country_id.code)
+        except UserError:
+            invalid_phone = True
+            phone_formatted = False
+    return phone_formatted, format_with_error, invalid_phone

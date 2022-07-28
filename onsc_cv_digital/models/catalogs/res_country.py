@@ -20,7 +20,7 @@ class ResCountryPhone(models.Model):
 
     def _compute_name(self):
         for rec in self:
-            rec.name = '(%s) +%s' % (rec.country_id.code, rec.prefix_code)
+            rec.name = '+%s' % rec.prefix_code
 
     def _search_name(self, operator, value):
         return ['|', '|', ('country_id.phone_code', operator, value), ('country_id', operator, value),

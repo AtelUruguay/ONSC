@@ -63,25 +63,17 @@ class ResPartner(models.Model):
     cv_street3 = fields.Char(u'Y calle')
     cv_amplification = fields.Text(u"Aclaraciones")
     cv_address_state = fields.Selection(related='cv_location_id.state', string="Estado condicional")
-    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo')
-    phone_with_prefix = fields.Char(compute='_compute_phone_with_prefix')
-    prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil')
-    mobile_with_prefix = fields.Char(compute='_compute_mobile_with_prefix')
+    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
+                                      default=lambda self: self.env['res.country.phone'].search(
+                                          [('country_id.code', '=', 'UY')]))
+    prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil',
+                                             default=lambda self: self.env['res.country.phone'].search(
+                                                 [('country_id.code', '=', 'UY')]))
 
     _sql_constraints = [
         ('country_doc_type_nro_doc_uniq', 'unique(cv_emissor_country_id, cv_document_type_id, cv_nro_doc)',
          u'La combinación: País emisor del documento, tipo de documento y número de documento debe ser única'),
     ]
-
-    @api.depends('prefix_phone_id', 'phone')
-    def _compute_phone_with_prefix(self):
-        for rec in self:
-            rec.phone_with_prefix = '+%s%s' % (rec.prefix_phone_id.prefix_code or '', rec.phone or '')
-
-    @api.depends('prefix_mobile_phone_id', 'mobile')
-    def _compute_mobile_with_prefix(self):
-        for rec in self:
-            rec.mobile_with_prefix = '+%s%s' % (rec.prefix_mobile_phone_id.prefix_code or '', rec.mobile or '')
 
     @api.depends('cv_emissor_country_id')
     def _compute_is_cv_uruguay(self):
@@ -142,7 +134,7 @@ class ResPartner(models.Model):
         # Actualizar los nombres en los registros con el campo calculado en caso que existan diferencias
         for rec in self.filtered(lambda x: x.name != x.cv_full_name and x.cv_full_name):
             rec.name = rec.cv_full_name
-            res.cv_full_name_updated_date = fields.Date.today()
+            rec.cv_full_name_updated_date = fields.Date.today()
         return res
 
     def unlink(self):
