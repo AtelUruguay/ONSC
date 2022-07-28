@@ -2,6 +2,7 @@
 import re
 from odoo import _
 import requests
+from odoo.addons.phone_validation.tools import phone_validation
 
 
 def get_validation_status(record, conditional_catalog_list):
@@ -76,3 +77,16 @@ def get_onchange_warning_response(message, notif_type='notification'):
 def is_valid_email(email):
     expression = r'^[_a-z0-9-]+(\.[_a-z0-9-]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,4})$'
     return re.match(expression, email) is not None
+
+
+def get_phone_format(self, number, country=None, force_format='INTERNATIONAL'):
+    country = country or self.country_id
+    if not country:
+        return number
+    return phone_validation.phone_format(
+        number,
+        country.code if country else None,
+        country.phone_code if country else None,
+        force_format,
+        raise_exception=False
+    )

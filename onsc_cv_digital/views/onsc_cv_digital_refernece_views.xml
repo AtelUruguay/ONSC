@@ -12,12 +12,12 @@
                             <field name="name"/>
                         </group>
                         <group>
-                            <label for="phone" class="oe_edit_only"/>
-                            <div class="content-group row oe_edit_only" style="margin-left:5px">
+                            <label for="phone"/>
+                            <div class="content-group row" style="margin-left:5px">
                                 <field name="prefix_phone_id" attrs="{'required':[('email', '=', False)]}"
-                                       style='max-width:85px !important; padding:1px;'
+                                       style='max-width:75px !important; padding:1px;'
                                        options="{'no_open': True, 'no_create': True}" class="oe_inline"/>
-                                <field name="phone" class="oe_inline"
+                                <field name="phone" class="oe_inline" style="padding:1px !important;"
                                        attrs="{'required': ['|',('email', '=', False),('prefix_phone_id', '!=', False)]}"/>
                             </div>
                             <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
@@ -44,7 +44,7 @@
                 <field name="company_name" optional="hide"/>
                 <field name="prefix_phone_id" string="Prefijo" options="{'no_open': True, 'no_create': True}"
                        width="0.2" optional="hide"/>
-                <field name="phone" width="0.4" options="{'enable_sms': false}" optional="hide"/>
+                <field name="phone" width="0.4" optional="hide"/>
                 <field name="email" optional="hide"/>
             </tree>
         </field>
