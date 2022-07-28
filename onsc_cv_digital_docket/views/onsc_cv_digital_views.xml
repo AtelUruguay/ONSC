@@ -48,7 +48,7 @@
                         </group>
                     </group>
                     <group string="Otros datos:">
-                        <field name="emergency_service_telephone" class="oe_inline"/>
+                        <field name="blood_type" class="oe_inline"/>
                     </group>
                     <br/>
                     <notebook>

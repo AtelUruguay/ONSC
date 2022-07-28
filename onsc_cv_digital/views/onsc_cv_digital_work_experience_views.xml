@@ -32,7 +32,8 @@
                             <field name="organizational_units_charge"/>
                             <field name="start_date"/>
                             <field name="currently_working" required="1"/>
-                            <field name="end_date" required="1"/>
+                            <field name="end_date"
+                                   attrs="{'invisible': [('currently_working','!=','no')],'required': [('currently_working','=','no')]}"/>
                             <field name="hours_worked_monthly" required="1"/>
                             <field name="description_tasks" required="1"/>
                             <field name="receipt_file"
