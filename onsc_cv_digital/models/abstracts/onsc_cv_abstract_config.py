@@ -145,5 +145,5 @@ class ONSCCVAbstractConfig(models.AbstractModel):
 
     def _check_can_write(self):
         """Los usuarios CV solo pueden modificar si el estado no es validado"""
-        return not (self.filtered(lambda x: x.state == 'validated') and self.user_has_groups(
+        return not (self.filtered(lambda x: x.state in ['validated', 'rejected']) and self.user_has_groups(
             'onsc_cv_digital.group_user_cv'))
