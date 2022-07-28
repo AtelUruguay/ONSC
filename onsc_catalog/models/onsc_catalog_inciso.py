@@ -14,7 +14,7 @@ class ONSCCatalogInciso(models.Model):
                                  auto_join=True,
                                  index=True,
                                  ondelete="cascade")
-    identifier = fields.Integer(string="Identificador", required=True, tracking=True)
+    identifier = fields.Char(string="Identificador", required=True, tracking=True)
     budget_code = fields.Char(u"Código presupuestal (SIIF)", required=True, tracking=True)
     short_name = fields.Char("Sigla", required=True, tracking=True)
     date_begin = fields.Date(string="Inicio de vigencia", required=True, tracking=True)
