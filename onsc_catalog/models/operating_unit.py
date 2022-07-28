@@ -31,4 +31,3 @@ class OperatingUnit(models.Model):
     @api.onchange('company_id')
     def onchange_company_id(self):
         self.partner_id = self.company_id.partner_id
-
