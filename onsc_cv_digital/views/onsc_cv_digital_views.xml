@@ -168,7 +168,7 @@
                                 </field>
                             </group>
                             <group>
-                                <group string="Carnet Salud Laboral">
+                                <group string="Carné de salud laboral">
                                     <field name="is_occupational_health_card"/>
                                     <field name="occupational_health_card_date"
                                            attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"/>
@@ -176,7 +176,7 @@
                                            filename="occupational_health_card_filename"
                                            attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="occupational_health_card_filename"/>
+                                    <field name="occupational_health_card_filename" invisible="1"/>
                                 </group>
                                 <group string="Certificado de aptitud médico-deportiva">
                                     <field name="medical_aptitude_certificate_status"/>
