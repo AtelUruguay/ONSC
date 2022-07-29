@@ -26,6 +26,12 @@ class ONSCCVDigitalReference(models.Model):
     prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
                                       default=lambda self: self.env['res.country.phone'].search(
                                           [('country_id.code', '=', 'UY')]))
+    phone_full = fields.Char(compute='_compute_phone_full', string='Teléfono')
+
+    @api.depends('prefix_phone_id', 'phone')
+    def _compute_phone_full(self):
+        for rec in self:
+            rec.phone_full = '+%s %s' % (rec.prefix_phone_id.prefix_code, rec.phone)
 
     @api.onchange('email')
     def onchange_email(self):
