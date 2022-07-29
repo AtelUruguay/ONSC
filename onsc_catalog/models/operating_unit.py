@@ -11,12 +11,10 @@ class OperatingUnit(models.Model):
     date_end = fields.Date(string="Fin de vigencia")
     createupdate_regulation = fields.Char(u"Normativa de creación/modificación", tracking=True)
     description = fields.Text('Observaciones')
-    company_id = fields.Many2one(
-        "res.company",
-        required=True,
-        readonly=False,
-        default=lambda self: self.env.company,
-    )
+    inciso_id = fields.Many2one("onsc.catalog.inciso", string="Inciso")
+    company_id = fields.Many2one("res.company",
+                                 related='inciso_id.company_id',
+                                 store=True)
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
     write_date = fields.Datetime("Fecha de última modificación", index=True, readonly=True)

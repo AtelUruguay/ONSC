@@ -17,7 +17,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     take_decisions = fields.Selection([('operative', 'Toma decisiones de la operativa'),
                                        ('strategic', 'Toma decisiones a nivel estratégico y de dirección')],
                                       string="Toma decisiones", required=True)
-    people_charge = fields.Integer("Cantidad de personas a cargo", required=True)
+    people_charge_qty = fields.Integer("Cantidad de personas a cargo", required=True)
     organizational_units_charge = fields.Integer("Cantidad de unidades organizativas a cargo", required=True)
     # TO-DO: Revisar este campo, No esta en catalogo
     # reason_discharge = fields.Char("Causal de egreso")
