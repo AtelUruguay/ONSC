@@ -121,6 +121,12 @@ class ONSCCVFormationAdvanced(models.Model):
         if cond1 or cond2:
             self.academic_program_id = False
 
+    @api.onchange('knowledge_thesis_ids')
+    def onchange_knowledge_thesis_ids(self):
+        if len(self.knowledge_thesis_ids) > 5:
+            self.knowledge_thesis_ids = self.knowledge_thesis_ids[:5]
+            return cv_warning(_(u"Sólo se pueden seleccionar 5 tipos de conocimientos"))
+
 
 class ONSCCVAreaRelatedEducation(models.Model):
     _name = 'onsc.cv.area.related.education'
