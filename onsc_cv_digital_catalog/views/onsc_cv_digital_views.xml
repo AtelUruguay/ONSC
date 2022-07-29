@@ -35,6 +35,7 @@
             <field name="name">onsc.cv.work.experience.tree.inherit</field>
             <field name="model">onsc.cv.work.experience</field>
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_work_experience_tree_view"/>
+            <field name="priority">1000</field>
             <field name="arch" type="xml">
 
                 <field name="company_name" position="replace">
@@ -48,6 +49,7 @@
             <field name="name">onsc.cv.work.volunteering.tree.inherit</field>
             <field name="model">onsc.cv.volunteering</field>
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_volunteering_tree_view"/>
+            <field name="priority">1000</field>
             <field name="arch" type="xml">
                 <field name="company_name" position="replace">
                     <field name="company_name_calc" optional="show"/>
