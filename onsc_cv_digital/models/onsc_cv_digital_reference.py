@@ -2,7 +2,6 @@
 from odoo import fields, models, api, _
 from .onsc_cv_useful_tools import is_valid_email
 from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
-from .onsc_cv_useful_tools import is_valid_phone
 
 REFERENCE_TYPES = [('staff', 'Personal'), ('working', 'Laboral')]
 
