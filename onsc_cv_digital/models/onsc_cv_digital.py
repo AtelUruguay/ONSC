@@ -20,6 +20,12 @@ class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
     _description = 'Currículum digital'
     _rec_name = 'cv_full_name'
+    _inherit = 'onsc.cv.abstract.phone.validated'
+
+    @property
+    def prefix_by_phones(self):
+        res = super().prefix_by_phones
+        return res + [('prefix_phone_id', 'personal_phone'), ('prefix_mobile_phone_id', 'mobile_phone')]
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
@@ -365,28 +371,6 @@ class ONSCCVDigital(models.Model):
         for record in self:
             if not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
-
-    @api.onchange('personal_phone', 'prefix_phone_id')
-    def onchange_personal_phone(self):
-        phone_formatted, format_with_error, invalid_phone = is_valid_phone(
-            self.personal_phone, self.prefix_phone_id.country_id)
-        self.personal_phone = phone_formatted
-        if format_with_error:
-            return cv_warning(_("El teléfono personal ingresado no es válido"))
-        if invalid_phone:
-            return cv_warning(
-                _("El teléfono personal ingresado no es válido para %s" % self.prefix_phone_id.country_id.name))
-
-    @api.onchange('mobile_phone', 'prefix_mobile_phone_id')
-    def onchange_mobile_phone(self):
-        phone_formatted, format_with_error, invalid_phone = is_valid_phone(
-            self.mobile_phone, self.prefix_mobile_phone_id.country_id)
-        self.mobile_phone = phone_formatted
-        if format_with_error:
-            return cv_warning(_("El teléfono celular ingresado no es válido"))
-        if invalid_phone:
-            return cv_warning(
-                _("El teléfono celular ingresado no es válido para %s" % self.prefix_mobile_phone_id.country_id.name))
 
     @api.onchange('cv_sex_updated_date')
     def onchange_cv_sex_updated_date(self):

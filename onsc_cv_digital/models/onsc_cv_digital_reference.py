@@ -10,6 +10,12 @@ REFERENCE_TYPES = [('staff', 'Personal'), ('working', 'Laboral')]
 class ONSCCVDigitalReference(models.Model):
     _name = 'onsc.cv.reference'
     _description = 'Referencias'
+    _inherit = 'onsc.cv.abstract.phone.validated'
+
+    @property
+    def prefix_by_phones(self):
+        res = super().prefix_by_phones
+        return res + [('prefix_phone_id', 'phone')]
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", required=True, index=True, ondelete='cascade')
     reference_type = fields.Selection(REFERENCE_TYPES, 'Tipo de referencia', required=True)
@@ -27,13 +33,3 @@ class ONSCCVDigitalReference(models.Model):
         if self.email and not is_valid_email(self.email):
             self.email = False
             return cv_warning(_('El mail ingresado no tiene un formato válido'))
-
-    @api.onchange('phone', 'prefix_phone_id')
-    def onchange_phone(self):
-        phone_formatted, format_with_error, invalid_phone = is_valid_phone(self.phone, self.prefix_phone_id.country_id)
-        self.phone = phone_formatted
-        if format_with_error:
-            return cv_warning(_("El teléfono ingresado no es válido"))
-        if invalid_phone:
-            return cv_warning(
-                _("El teléfono ingresado no es válido para %s" % self.prefix_phone_id.country_id.name))
