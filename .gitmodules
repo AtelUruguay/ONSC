@@ -1,4 +1,0 @@
-[submodule "OCA/operating_unit"]
-	path = OCA/operating_unit
-	url = git@github.com:git@github.com:OCA/operating-unit.git
-	branch = 15.0
