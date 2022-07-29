@@ -11,6 +11,7 @@
                                attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                         <field name="operating_unit_id"
                                attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                    <field name="company_name_calc" invisible="1"/>
                 </field>
             </field>
         </record>
@@ -25,6 +26,7 @@
                            attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="operating_unit_id"
                            attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                    <field name="company_name_calc" invisible="1"/>
                 </field>
             </field>
         </record>
@@ -36,7 +38,7 @@
             <field name="arch" type="xml">
 
                 <field name="company_name" position="replace">
-                    <field name="company_name_clac" optional="show"/>
+                    <field name="company_name_calc" optional="show"/>
                 </field>
 
             </field>
@@ -48,7 +50,7 @@
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_volunteering_tree_view"/>
             <field name="arch" type="xml">
                 <field name="company_name" position="replace">
-                    <field name="company_name_clac" optional="show"/>
+                    <field name="company_name_calc" optional="show"/>
                 </field>
             </field>
         </record>
