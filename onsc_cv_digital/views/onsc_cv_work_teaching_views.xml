@@ -85,11 +85,11 @@
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
                 <field name="hours_worked_monthly" optional="show" string="Horas trabajadas al mes" width="1.0"/>
-                <field name="program_name" string="Cátedra/programa" optional="show"/>
                 <field name="position_type" optional="hide"/>
                 <field name="is_full_time" optional="hide"/>
                 <field name="is_paid_activity" optional="hide"/>
                 <field name="responsible_type" optional="hide"/>
+                <field name="program_name" optional="hide"/>
                 <field name="conditional_validation_state" invisible="1"/>
                 <field name="conditional_validation_reject_reason" invisible="1"/>
                 <field name="subject_ids" widget="many2many_tags" invisible="1"/>
