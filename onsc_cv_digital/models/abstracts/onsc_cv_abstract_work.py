@@ -11,10 +11,6 @@ class ONSCCVAbstractWork(models.AbstractModel):
     _name = 'onsc.cv.abstract.work'
     _description = 'Modelo abstracto para modelos de trabajos'
 
-    # TO-DO: Revisar este campo, No esta en catalogo
-    # inciso = fields.Char("Inciso")
-    # TO-DO: Revisar este campo, No esta en catalogo
-    # executing_unit = fields.Char("Unidad ejecutora")
     hours_worked_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente")
     currently_working = fields.Selection(string="Actualmente trabajando", selection=WORKING_STATE)
     position = fields.Char("Cargo")

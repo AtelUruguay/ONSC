@@ -10,6 +10,10 @@ STATES = [('to_validate', 'Para validar'),
           ('rejected', 'Rechazado')]
 
 
+# Define Constraints of unicity and the logic to validate models
+# _fields_2check_unicity: list of fields to check unicity
+# _get_conditional_unicity_message: return message when unicity control is unsuccessful
+
 class ONSCCVAbstractConfig(models.AbstractModel):
     _name = 'onsc.cv.abstract.config'
     _inherit = ['mail.thread', 'mail.activity.mixin']
@@ -47,9 +51,6 @@ class ONSCCVAbstractConfig(models.AbstractModel):
 
     def _get_conditional_unicity_message(self):
         return _("Ya existe un registro validado para %s" % (self.name))
-
-    def get_description_model(self):
-        return self._description
 
     def get_formview_id(self, access_uid=None):
         """ Sobreescrito para no permitir editar en los modelos relacionados
