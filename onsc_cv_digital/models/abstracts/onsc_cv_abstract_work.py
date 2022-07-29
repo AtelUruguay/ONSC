@@ -21,7 +21,10 @@ class ONSCCVAbstractWork(models.AbstractModel):
     is_paid_activity = fields.Selection(string="¿Actividad remunerada?", selection=PAID_ACTIVITY_TYPES)
     country_id = fields.Many2one("res.country", string="País", required=True)
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
-    company_type = fields.Selection([('public', 'Pública'), ('private', 'Privada')], string="Tipo de empresa")
+    company_type = fields.Selection([('public', 'Pública'),
+                                     ('private', 'Privada'),
+                                     ('both', 'Pública/Privada')],
+                                    string="Tipo de empresa")
     company_name = fields.Char("Empresa")
     description_tasks = fields.Char(string="Descripción de tareas")
     receipt_file = fields.Binary("Comprobante")

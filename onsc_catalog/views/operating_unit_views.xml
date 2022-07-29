@@ -9,7 +9,7 @@
                     <field name="name" string="Nombre"/>
                     <field name="code" string="Identificador"/>
                     <field name="partner_id" invisible="1"/>
-                    <field name="company_id" groups="base.group_multi_company" string="Inciso"/>
+                    <field name="inciso_id" groups="base.group_multi_company" string="Inciso"/>
                     <field name="budget_code"/>
                     <field name="date_begin"/>
                     <field name="date_end"/>
@@ -20,20 +20,22 @@
                     <field name="create_uid"/>
                     <field name="write_uid"/>
                     <field name="active" invisible="1"/>
+                    <field name="company_id" invisible="1"/>
                 </group>
             </form>
         </field>
     </record>
 
-    <record id="onsc_view_operating_unit_search" model="ir.ui.view">
-        <field name="name">onsc.operating.unit.search</field>
+    <record id="onsc_view_operating_unit_tree" model="ir.ui.view">
+        <field name="name">onsc.operating.unit.tree</field>
         <field name="model">operating.unit</field>
         <field name="arch" type="xml">
-            <search string="Search Operating Unit">
-                <field name="name" string="Operating Unit"/>
-                <field name="code" string="Code"/>
+            <tree string="Unidades ejecutoras">
+                <field name="name" string="Nombre"/>
+                <field name="code" string="Código"/>
+                <field name="inciso_id"/>
                 <field name="active" invisible="1"/>
-            </search>
+            </tree>
         </field>
     </record>
 
@@ -43,7 +45,7 @@
         <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_view_operating_unit_search')}),
-            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_view_operating_unit_form')})]"/>
+            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_view_operating_unit_tree')})]"/>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">Crear una nueva Unidad ejecutora</p>
         </field>

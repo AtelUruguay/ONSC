@@ -1,0 +1,3 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_onsc_catalog_inciso_group_user_cv,onsc_catalog_inciso_group_user_cv,onsc_catalog.model_onsc_catalog_inciso,onsc_cv_digital.group_user_cv,1,0,0,0
+access_onsc_catalog_inciso_group_manager_cv,onsc_catalog_inciso_group_manager_cv,onsc_catalog.model_onsc_catalog_inciso,onsc_cv_digital.group_manager_cv,1,0,0,0
