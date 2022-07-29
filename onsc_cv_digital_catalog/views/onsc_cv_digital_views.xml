@@ -21,10 +21,34 @@
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_volunteering_form_view"/>
             <field name="arch" type="xml">
                 <field name="company_type" position="after">
-                        <field name="inciso_id"
-                               attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
-                        <field name="operating_unit_id"
-                               attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                    <field name="inciso_id"
+                           attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                    <field name="operating_unit_id"
+                           attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                </field>
+            </field>
+        </record>
+
+        <record id="onsc_cv_work_experience_tree_view" model="ir.ui.view">
+            <field name="name">onsc.cv.work.experience.tree.inherit</field>
+            <field name="model">onsc.cv.work.experience</field>
+            <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_work_experience_tree_view"/>
+            <field name="arch" type="xml">
+
+                <field name="company_name" position="replace">
+                    <field name="company_name_clac" optional="show"/>
+                </field>
+
+            </field>
+        </record>
+
+        <record id="onsc_cv_volunteering_tree_view" model="ir.ui.view">
+            <field name="name">onsc.cv.work.volunteering.tree.inherit</field>
+            <field name="model">onsc.cv.volunteering</field>
+            <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_volunteering_tree_view"/>
+            <field name="arch" type="xml">
+                <field name="company_name" position="replace">
+                    <field name="company_name_clac" optional="show"/>
                 </field>
             </field>
         </record>
