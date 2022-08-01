@@ -8,6 +8,11 @@
             <field name="image_1920" position="attributes">
                 <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
             </field>
+            <field name="cv_sex_updated_date" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_cv_uruguay', '=', True)],'required': [('is_docket', '=',
+                    True)]}
+                </attribute>
+            </field>
             <field name="cv_gender_id" position="after">
                 <field name="gender_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
