@@ -12,6 +12,7 @@
                             <field name="name"/>
                         </group>
                         <group>
+                            <field name="phone_full" invisible="1"/>
                             <label for="phone"/>
                             <div class="content-group row" style="margin-left:5px">
                                 <field name="prefix_phone_id" attrs="{'required':[('email', '=', False)]}"
@@ -42,9 +43,7 @@
                 <field name="reference_type" string="Tipo" width="0.4" optional="show"/>
                 <field name="name" optional="show"/>
                 <field name="company_name" optional="hide"/>
-                <field name="prefix_phone_id" string="Prefijo" options="{'no_open': True, 'no_create': True}"
-                       width="0.2" optional="hide"/>
-                <field name="phone" width="0.4" optional="hide"/>
+                <field name="phone_full" optional="hide"/>
                 <field name="email" optional="hide"/>
             </tree>
         </field>

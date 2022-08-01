@@ -85,11 +85,11 @@
                 <field name="institution_id" optional="show"/>
                 <field name="subinstitution_id" optional="show"/>
                 <field name="hours_worked_monthly" optional="show" string="Horas trabajadas al mes" width="1.0"/>
-                <field name="program_name" string="Cátedra/programa" optional="show"/>
                 <field name="position_type" optional="hide"/>
                 <field name="is_full_time" optional="hide"/>
                 <field name="is_paid_activity" optional="hide"/>
                 <field name="responsible_type" optional="hide"/>
+                <field name="program_name" optional="hide"/>
                 <field name="conditional_validation_state" invisible="1"/>
                 <field name="conditional_validation_reject_reason" invisible="1"/>
                 <field name="subject_ids" widget="many2many_tags" invisible="1"/>
@@ -103,7 +103,8 @@
         <field name="model">onsc.cv.work.teaching.receipt.file</field>
         <field name="arch" type="xml">
             <tree editable="top">
-                <field name="receipt_file" filename="receipt_filename" widget="binary"/>
+                <field name="receipt_file" filename="receipt_filename" widget="binary"
+                       options="{'accepted_file_extensions': '.pdf'}"/>
                 <field name="receipt_filename" invisible="1"/>
                 <field name="receipt_description"/>
             </tree>
@@ -117,7 +118,8 @@
             <form string="Comprobante">
                 <sheet>
                     <group>
-                        <field name="receipt_file" filename="receipt_filename"/>
+                        <field name="receipt_file" filename="receipt_filename"
+                               options="{'accepted_file_extensions': '.pdf'}"/>
                         <field name="receipt_filename" invisible="1"/>
                         <field name="receipt_description"/>
                     </group>

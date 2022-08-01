@@ -51,6 +51,7 @@
                 <field name="start_date" optional="show" string="Inicio" width="0.5"/>
                 <field name="end_date" optional="show" string="Fin" width="0.5"/>
                 <field name="company_type" optional="show"/>
+                <field name="company_name" optional="show"/>
                 <field name="unit_name" optional="show"/>
                 <field name="country_id" optional="hide"/>
                 <field name="hours_monthly" optional="hide" string="Horas trabajadas al mes" width="0.5"/>

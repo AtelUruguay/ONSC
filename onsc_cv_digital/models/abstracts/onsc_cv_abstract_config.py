@@ -10,6 +10,10 @@ STATES = [('to_validate', 'Para validar'),
           ('rejected', 'Rechazado')]
 
 
+# Define Constraints of unicity and the logic to validate models
+# _fields_2check_unicity: list of fields to check unicity
+# _get_conditional_unicity_message: return message when unicity control is unsuccessful
+
 class ONSCCVAbstractConfig(models.AbstractModel):
     _name = 'onsc.cv.abstract.config'
     _inherit = ['mail.thread', 'mail.activity.mixin']

@@ -6,6 +6,16 @@ from .. import onsc_cv_useful_tools as useful_tools
 from .onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 
 
+# When inherit from this class its mandatory to declare:
+# _catalogs_2validate: list of relational fields of conditional models (class childs of onsc.cv.abstract.config)
+# This model compute conditional_validation_state and conditional_validation_reject_reason fields
+# conditional_validation_state: str ('rejected' : almost one of _catalogs_2validate is rejected,
+#                                     'validated': all _catalogs_2validate are validated
+#                                     'to_validate' other case)
+# conditional_validation_reject_reason: Html: Is an <li> element with all reject reasons from _catalogs_2validate
+# In form view always add html elements declared in div_info and div_danger property
+# also add conditional_validation_state field with invisible="1"
+
 class ONSCCVAbstractConditionalState(models.AbstractModel):
     _name = 'onsc.cv.abstract.conditional.state'
     _description = 'Modelo abstracto de estado condicional'
@@ -63,6 +73,7 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        """Add in form view divs with info status off validation """
         res = super(ONSCCVAbstractConditionalState, self).fields_view_get(view_id, view_type, toolbar, submenu)
         if view_type == 'form':
             doc = etree.XML(res['arch'])
