@@ -92,12 +92,34 @@
                     <notebook>
                         <page string="Información de contacto">
                             <field name="information_contact_ids">
-                                <tree editable="top">
+                                <tree>
                                     <field name="name_contact"/>
                                     <!--                                     <field name="link_people_contact_id"/>-->
+                                    <field name="phone_full"/>
                                     <field name="contact_person_telephone"/>
                                     <field name="remark_contact_person"/>
                                 </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="name_contact"/>
+                                                <label for="contact_person_telephone"/>
+                                                <div class="content-group row" style="margin-left:5px">
+                                                    <field name="prefix_phone_id"
+                                                           options="{'no_open': True, 'no_create': True}"
+                                                           style='max-width:75px !important; padding:1px !important;'
+                                                           class="oe_inline"/>
+                                                    <field name="contact_person_telephone" class="oe_inline"
+                                                           style="padding:1px !important;"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="remark_contact_person"/>
+                                            </group>
+                                        </group>
+                                    </sheet>
+                                </form>
                             </field>
                         </page>
                         <page string="Otra información">

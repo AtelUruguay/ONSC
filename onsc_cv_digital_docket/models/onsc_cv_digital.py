@@ -74,14 +74,20 @@ class ONSCCVInformationContact(models.Model):
     @property
     def prefix_by_phones(self):
         res = super().prefix_by_phones
-        return res + [('prefix_emergency_phone_id', 'contact_person_telephone')]
+        return res + [('prefix_phone_id', 'contact_person_telephone')]
 
     cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV', required=True, index=True, ondelete='cascade')
     name_contact = fields.Char(string=u'Nombre de persona de contacto', required=True)
     # TO-DO: Revisar este campo, No esta en catalogo
     # link_people_contact_id = fields.Many2one("model", u"Vínculo con persona de contacto", required=True)
-    prefix_emergency_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
-                                                default=lambda self: self.env['res.country.phone'].search(
-                                                    [('country_id.code', '=', 'UY')]))
+    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
+                                      default=lambda self: self.env['res.country.phone'].search(
+                                          [('country_id.code', '=', 'UY')]), required=True)
     contact_person_telephone = fields.Char(string=u'Teléfono de persona de contacto', required=True)
-    remark_contact_person = fields.Char(string=u'Observación para la persona de contacto', required=True)
+    phone_full = fields.Char(compute='_compute_phone_full', string='Teléfono')
+    remark_contact_person = fields.Text(string=u'Observación para la persona de contacto', required=True)
+
+    @api.depends('prefix_phone_id', 'contact_person_telephone')
+    def _compute_phone_full(self):
+        for rec in self:
+            rec.phone_full = '+%s %s' % (rec.prefix_phone_id.prefix_code, rec.contact_person_telephone)
