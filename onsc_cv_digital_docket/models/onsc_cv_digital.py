@@ -29,6 +29,8 @@ class ONSCCVDigital(models.Model):
     institutional_email = fields.Char(string=u'Correo electrónico institucional', readonly=True)
     digitized_document_file = fields.Binary(string=digitized_document_full_name, required=True)
     digitized_document_filename = fields.Char('Nombre del documento Digitalizado')
+    address_receipt_file = fields.Binary(related='partner_id.address_receipt_file', readonly=False)
+    address_receipt_file_name = fields.Char(related='partner_id.address_receipt_file_name', readonly=False)
     # TO-DO: Revisar este campo, No esta en catalogo
     # mobile_mergency_service_id = fields.Many2one("model", u"Servicio de emergencia móvil", required=True)
     emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia', required=True)
