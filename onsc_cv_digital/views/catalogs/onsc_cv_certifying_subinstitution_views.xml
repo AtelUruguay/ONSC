@@ -25,6 +25,7 @@
                 <field name="code"/>
                 <field name="institution_cert_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
+                <field name="state"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
