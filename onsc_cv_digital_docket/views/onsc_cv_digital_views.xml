@@ -5,6 +5,9 @@
         <field name="model">onsc.cv.digital</field>
         <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_form"/>
         <field name="arch" type="xml">
+            <field name="image_1920" position="attributes">
+                <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
+            </field>
             <field name="cv_gender_id" position="after">
                 <field name="gender_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
