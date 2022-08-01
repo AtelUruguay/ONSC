@@ -11,7 +11,7 @@ class OperatingUnit(models.Model):
     date_end = fields.Date(string="Fin de vigencia")
     createupdate_regulation = fields.Char(u"Normativa de creación/modificación", tracking=True)
     description = fields.Text('Observaciones')
-    inciso_id = fields.Many2one("onsc.catalog.inciso", string="Inciso")
+    inciso_id = fields.Many2one("onsc.catalog.inciso", string="Inciso", required=True)
     company_id = fields.Many2one("res.company",
                                  related='inciso_id.company_id',
                                  store=True)

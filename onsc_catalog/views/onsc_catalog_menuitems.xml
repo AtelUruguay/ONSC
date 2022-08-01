@@ -1,21 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-
-    <menuitem id="onsc_catalog_menu"
+    <menuitem id="onsc_catalog_root_menu"
               name="Catálogos"
-              parent="hr.menu_hr_root"
-              sequence="10"/>
+              web_icon="onsc_catalog,static/description/icon.png"
+              sequence="3"/>
 
     <menuitem id="onsc_cv_catalog_inciso_menu"
               name="Incisos"
               action="onsc_catalog_inciso_action"
-              parent="onsc_catalog_menu"
+              parent="onsc_catalog_root_menu"
               groups="group_catalog_configurador_servicio_civil"
               sequence="1"/>
     <menuitem id="onsc_cv_catalog_ue_menu"
               name="Unidades ejecutoras"
               action="operating_unit.action_operating_unit_tree"
-              parent="onsc_catalog_menu"
+              parent="onsc_catalog_root_menu"
               groups="group_catalog_configurador_servicio_civil"
               sequence="2"/>
 </odoo>
