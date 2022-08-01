@@ -32,6 +32,7 @@
                 <field name="name_country"/>
                 <field name="enable_mec"/>
                 <field name="company_id" groups="base.group_multi_company"/>
+                <field name="state"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>

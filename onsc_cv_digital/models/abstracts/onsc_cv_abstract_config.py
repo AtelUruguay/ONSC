@@ -28,7 +28,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
                              tracking=True,
                              default=lambda self: self.user_has_groups(
                                  'onsc_cv_digital.group_gestor_catalogos_cv') and 'validated' or 'to_validate')
-    reject_reason = fields.Char(string=u'Motivo de rechazo', tracking=True)
+    reject_reason = fields.Text(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
 
     @api.constrains(lambda self: ['%s' % x for x in self._fields_2check_unicity])
