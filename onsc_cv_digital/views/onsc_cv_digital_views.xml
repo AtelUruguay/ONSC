@@ -357,7 +357,7 @@
                                            options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'invisible': [('people_disabilitie', '!=', 'si')],'required': [('people_disabilitie', '=', 'si')]}"/>
                                     <field name="certificate_date"
-                                           attrs="{'required': [('people_disabilitie', '=', 'si')]}"/>
+                                           attrs="{'invisible': [('people_disabilitie', '!=', 'si')],'required': [('people_disabilitie', '=', 'si')]}"/>
                                     <field name="to_date" attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}"/>
                                 </group>
                             </group>
