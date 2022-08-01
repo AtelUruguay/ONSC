@@ -17,6 +17,7 @@
                             context="{'group_by':'country_id'}"/>
                     <filter name="filter_state_id" string="Departamento" domain="[]"
                             context="{'group_by':'state_id'}"/>
+                    <filter name="filter_state" string="Estado" context="{'group_by':'state'}"/>
                 </group>
             </search>
         </field>
@@ -32,6 +33,7 @@
                 <field name="country_id"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="state_id"/>
+                <field name="state"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
