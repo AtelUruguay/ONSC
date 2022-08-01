@@ -70,9 +70,19 @@
                         </group>
                         <group string="Información de salud:">
                             <!--                            <field name="mobile_mergency_service_id"/>-->
-                            <field name="emergency_service_telephone"/>
+                            <label for="emergency_service_telephone"/>
+                            <div class="content-group row" style="margin-left:5px">
+                                <field name="prefix_emergency_phone_id" options="{'no_open': True, 'no_create': True}"
+                                       attrs="{'required': [('is_docket', '=', True)]}"
+                                       style='max-width:75px !important; padding:1px !important;'
+                                       class="oe_inline"/>
+                                <field name="emergency_service_telephone" class="oe_inline"
+                                       style="padding:1px !important;"
+                                       attrs="{'required': [('is_docket', '=', True)]}"/>
+                            </div>
+
                             <field name="department_id"/>
-<!--                            <field name="health_provider_id"/>-->
+                            <!--                            <field name="health_provider_id"/>-->
                         </group>
                     </group>
                     <group string="Otros datos:">

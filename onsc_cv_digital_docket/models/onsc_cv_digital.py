@@ -14,6 +14,11 @@ digitized_document_full_name = f'{name_doc_one}{name_doc_two}'
 class ONSCCVDigital(models.Model):
     _inherit = 'onsc.cv.digital'
 
+    @property
+    def prefix_by_phones(self):
+        res = super().prefix_by_phones
+        return res + [('prefix_emergency_phone_id', 'emergency_service_telephone')]
+
     is_docket = fields.Boolean(string="Tiene legajo")
     gender_date = fields.Date(string="Fecha de información género")
     gender_public_visualization_date = fields.Date(string="Fecha información visualización pública de género",
@@ -33,7 +38,10 @@ class ONSCCVDigital(models.Model):
     address_receipt_file_name = fields.Char(related='partner_id.address_receipt_file_name', readonly=False)
     # TO-DO: Revisar este campo, No esta en catalogo
     # mobile_mergency_service_id = fields.Many2one("model", u"Servicio de emergencia móvil", required=True)
-    emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia', required=True)
+    prefix_emergency_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
+                                                default=lambda self: self.env['res.country.phone'].search(
+                                                    [('country_id.code', '=', 'UY')]))
+    emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia')
     department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
                                     ondelete='restrict', required=True, tracking=True)
     # TO-DO: Revisar este campo, No esta en catalogo
@@ -57,36 +65,23 @@ class ONSCCVDigital(models.Model):
             self.address_info_date = False
             self.disability_date = False
 
-    @api.onchange('emergency_service_telephone')
-    def onchange_phone(self):
-        if self.emergency_service_telephone and not self.emergency_service_telephone.isdigit():
-            return cv_warning(_("El teléfono del servicio de emergencia ingresado no es válido"))
-
-    @api.constrains('emergency_service_telephone')
-    def check_phone(self):
-        for rec in self:
-            if rec.emergency_service_telephone and not rec.emergency_service_telephone.isdigit():
-                raise ValidationError(_("El teléfono del servicio de emergencia ingresado no es válido"))
-
 
 class ONSCCVInformationContact(models.Model):
     _name = 'onsc.cv.information.contact'
     _description = 'Información de Contacto'
+    _inherit = 'onsc.cv.abstract.phone.validated'
+
+    @property
+    def prefix_by_phones(self):
+        res = super().prefix_by_phones
+        return res + [('prefix_emergency_phone_id', 'contact_person_telephone')]
 
     cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV', required=True, index=True, ondelete='cascade')
     name_contact = fields.Char(string=u'Nombre de persona de contacto', required=True)
     # TO-DO: Revisar este campo, No esta en catalogo
     # link_people_contact_id = fields.Many2one("model", u"Vínculo con persona de contacto", required=True)
+    prefix_emergency_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
+                                                default=lambda self: self.env['res.country.phone'].search(
+                                                    [('country_id.code', '=', 'UY')]))
     contact_person_telephone = fields.Char(string=u'Teléfono de persona de contacto', required=True)
     remark_contact_person = fields.Char(string=u'Observación para la persona de contacto', required=True)
-
-    @api.onchange('contact_person_telephone')
-    def onchange_phone(self):
-        if self.contact_person_telephone and not self.contact_person_telephone.isdigit():
-            return cv_warning(_("El teléfono de persona de contacto no es válido"))
-
-    @api.constrains('contact_person_telephone')
-    def check_phone(self):
-        for rec in self:
-            if rec.contact_person_telephone and not rec.contact_person_telephone.isdigit():
-                raise ValidationError(_("El teléfono de persona de contacto no es válido"))
