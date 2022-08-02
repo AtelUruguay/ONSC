@@ -34,6 +34,7 @@
                 <field name="subinstitution_id"/>
                 <field name="study_level_id"/>
                 <field name="active" invisible="1"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>

@@ -21,6 +21,7 @@
             <tree string="Vínculos profesionales">
                 <field name="name"/>
                 <field name="code"/>
+                <field name="state"/>
             </tree>
         </field>
     </record>

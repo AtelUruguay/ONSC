@@ -11,10 +11,7 @@
                     </p>
                 </div>
                 <group>
-                    <group>
-                        <field name="reject_reason"/>
-                    </group>
-                    <group/>
+                    <field name="reject_reason"/>
                 </group>
                 <footer>
                     <button string="Rechazar" name="action_reject" type="object" class="oe_highlight" data-hotkey="q"/>

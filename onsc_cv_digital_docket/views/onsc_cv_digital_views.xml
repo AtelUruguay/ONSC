@@ -5,6 +5,14 @@
         <field name="model">onsc.cv.digital</field>
         <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_form"/>
         <field name="arch" type="xml">
+            <field name="image_1920" position="attributes">
+                <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
+            </field>
+            <field name="cv_sex_updated_date" position="attributes">
+                <attribute name="attrs">{'invisible': [('is_cv_uruguay', '=', True)],'required': [('is_docket', '=',
+                    True)]}
+                </attribute>
+            </field>
             <field name="cv_gender_id" position="after">
                 <field name="gender_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
@@ -14,6 +22,7 @@
                        attrs="{'invisible': [('is_docket', '=', False)]}"/>
                 <!--TODO-->
                 <field name="is_docket" invisible="0"/>
+                <field name="is_docket_active" invisible="0"/>
             </field>
             <field name="afro_descendants_file" position="after">
                 <field name="afro_descendant_date"
@@ -24,42 +33,100 @@
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
             </field>
             <field name="country_id" position="before">
+                <field name="address_receipt_file" filename="address_receipt_file_name"
+                       attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"
+                       options="{'accepted_file_extensions': '.pdf'}"/>
+                <field name="address_receipt_file_name" invisible="1"/>
                 <field name="address_info_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
+
+            </field>
+            <field name="country_id" position="attributes">
+                <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
+            </field>
+            <field name="cv_address_state_id" position="attributes">
+                <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
+            </field>
+            <field name="cv_address_location_id" position="attributes">
+                <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
+            </field>
+            <field name="cv_address_street" position="attributes">
+                <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
+            </field>
+            <field name="cv_address_nro_door" position="attributes">
+                <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
             </field>
             <field name="to_date" position="after">
                 <field name="disability_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
             </field>
             <xpath expr="//page[@name='reference']" position="after">
-                <page name="datos_legajo" string="Datos del legajo">
+                <page name="datos_legajo" string="Datos del legajo"
+                      attrs="{'invisible': [('is_docket_active', '=', False)]}">
                     <group>
                         <group string="Información personal:">
                             <field name="institutional_email"/>
                             <field name="digitized_document_file" filename="digitized_document_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                                   options="{'accepted_file_extensions': '.pdf'}"
+                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>
                             <field name="digitized_document_filename" invisible="1"/>
                         </group>
                         <group string="Información de salud:">
-<!--                            <field name="mobile_mergency_service_id"/>-->
-                            <field name="emergency_service_telephone"/>
-                            <field name="department_id"/>
-<!--                            <field name="health_provider_id"/>-->
+                            <separator string="Servicio de Salud/Emergencia"/>
+                            <br/>
+                            <!--                            <field name="mobile_mergency_service_id"/>-->
+                            <label for="emergency_service_telephone"/>
+                            <div class="content-group row">
+                                <field name="prefix_emergency_phone_id" options="{'no_open': True, 'no_create': True}"
+                                       attrs="{'required': [('is_docket_active', '=', True)]}"
+                                       style='max-width: 50px !important; padding:1px !important;'
+                                       class="oe_inline"/>
+                                <field name="emergency_service_telephone" class="oe_inline"
+                                       attrs="{'required': [('is_docket_active', '=', True)]}"/>
+                            </div>
+                            <field name="department_id" attrs="{'required': [('is_docket_active', '=', True)]}"
+                                   domain="[('country_id.code','=','UY')]"/>
+
+                            <!--                            <field name="mobile_mergency_service_id"/>-->
+
+                            <!--                            <field name="health_provider_id"/>-->
+                            <separator string="Otros datos"/>
+                            <field name="blood_type"
+                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>
                         </group>
-                    </group>
-                    <group string="Otros datos:">
-                        <field name="blood_type" class="oe_inline"/>
                     </group>
                     <br/>
                     <notebook>
                         <page string="Información de contacto">
                             <field name="information_contact_ids">
-                                <tree editable="top">
+                                <tree>
                                     <field name="name_contact"/>
                                     <!--                                     <field name="link_people_contact_id"/>-->
+                                    <field name="phone_full"/>
                                     <field name="contact_person_telephone"/>
                                     <field name="remark_contact_person"/>
                                 </tree>
+                                <form>
+                                    <sheet>
+                                        <group>
+                                            <group>
+                                                <field name="name_contact"/>
+                                                <label for="contact_person_telephone"/>
+                                                <div class="content-group row" style="margin-left:5px">
+                                                    <field name="prefix_phone_id"
+                                                           options="{'no_open': True, 'no_create': True}"
+                                                           style='max-width:75px !important; padding:1px !important;'
+                                                           class="oe_inline"/>
+                                                    <field name="contact_person_telephone" class="oe_inline"
+                                                           style="padding:1px !important;"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="remark_contact_person"/>
+                                            </group>
+                                        </group>
+                                    </sheet>
+                                </form>
                             </field>
                         </page>
                         <page string="Otra información">

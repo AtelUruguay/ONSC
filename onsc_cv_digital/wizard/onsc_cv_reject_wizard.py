@@ -7,7 +7,7 @@ class ONSCCVRejectWizard(models.TransientModel):
     _name = 'onsc.cv.reject.wizard'
     _description = 'Rechazo de validación'
 
-    reject_reason = fields.Char(string=u'Motivo de rechazo', required=True)
+    reject_reason = fields.Text(string=u'Motivo de rechazo', required=True)
     model_name = fields.Char(string='Modelo relacionado')
     res_id = fields.Integer("Id del registro relacionado")
 

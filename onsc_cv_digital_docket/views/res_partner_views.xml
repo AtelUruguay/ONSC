@@ -6,7 +6,10 @@
         <field name="inherit_id" ref="onsc_cv_digital.view_partner_form_cv"/>
         <field name="arch" type="xml">
             <field name="country_id" position="before">
+                <field name="address_receipt_file" filename="address_receipt_file_name" readonly="1"
+                       options="{'accepted_file_extensions': '.pdf'}"/>
                 <field name="address_info_date" readonly="1"/>
+                <field name="address_receipt_file_name" invisible="1"/>
             </field>
         </field>
     </record>
