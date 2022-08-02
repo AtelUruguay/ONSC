@@ -79,6 +79,7 @@
                             <field name="study_level_id"
                                    readonly="context.get('is_readonly') and context.get('default_study_level_id')"
                                    force_save="1"/>
+                            <field name="reject_reason" states="rejected"/>
                         </group>
                     </group>
                 </sheet>
