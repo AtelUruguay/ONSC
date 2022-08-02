@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+
 from odoo import fields, models, api
 
 BLOOD_TYPE = [('unknown', 'Desconocido'), ('O+', 'O+'), ('A+', 'A+'), ('B+', 'B+'), ('AB+', 'AB+'), ('O-', 'O-'),
@@ -18,6 +19,7 @@ class ONSCCVDigital(models.Model):
         return res + [('prefix_emergency_phone_id', 'emergency_service_telephone')]
 
     is_docket = fields.Boolean(string="Tiene legajo")
+    is_docket_active = fields.Boolean(string="Tiene legajo activo")
     gender_date = fields.Date(string="Fecha de información género")
     gender_public_visualization_date = fields.Date(string="Fecha información visualización pública de género",
                                                    compute='_compute_gender_public_visualization_date', store=True)
@@ -30,21 +32,23 @@ class ONSCCVDigital(models.Model):
     disability_date = fields.Date(string="Fecha de información discapacidad")
     # Datos del Legajo ----<Page>
     institutional_email = fields.Char(string=u'Correo electrónico institucional', readonly=True)
-    digitized_document_file = fields.Binary(string=digitized_document_full_name, required=True)
+    digitized_document_file = fields.Binary(string=digitized_document_full_name)
     digitized_document_filename = fields.Char('Nombre del documento Digitalizado')
     address_receipt_file = fields.Binary(related='partner_id.address_receipt_file', readonly=False)
     address_receipt_file_name = fields.Char(related='partner_id.address_receipt_file_name', readonly=False)
     # TO-DO: Revisar este campo, No esta en catalogo
+    # mobile_mergency_service_id = fields.Many2one("model", u"Servicio de emergencia móvil")
+
     # mobile_mergency_service_id = fields.Many2one("model", u"Servicio de emergencia móvil", required=True)
     prefix_emergency_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
                                                 default=lambda self: self.env['res.country.phone'].search(
                                                     [('country_id.code', '=', 'UY')]))
     emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia')
     department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
-                                    ondelete='restrict', required=True, tracking=True)
+                                    ondelete='restrict', tracking=True)
     # TO-DO: Revisar este campo, No esta en catalogo
-    # health_provider_id = fields.Many2one("model", u"Prestador de Salud", required=True)
-    blood_type = fields.Selection(BLOOD_TYPE, string=u'Tipo de sangre', required=True)
+    # health_provider_id = fields.Many2one("model", u"Prestador de Salud")
+    blood_type = fields.Selection(BLOOD_TYPE, string=u'Tipo de sangre')
     information_contact_ids = fields.One2many('onsc.cv.information.contact', 'cv_digital_id',
                                               string=u'Información de Contacto')
     other_information_official = fields.Text(string="Otra información del funcionario/a")

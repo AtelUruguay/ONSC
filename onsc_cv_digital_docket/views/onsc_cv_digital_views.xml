@@ -22,6 +22,7 @@
                        attrs="{'invisible': [('is_docket', '=', False)]}"/>
                 <!--TODO-->
                 <field name="is_docket" invisible="0"/>
+                <field name="is_docket_active" invisible="0"/>
             </field>
             <field name="afro_descendants_file" position="after">
                 <field name="afro_descendant_date"
@@ -60,33 +61,39 @@
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
             </field>
             <xpath expr="//page[@name='reference']" position="after">
-                <page name="datos_legajo" string="Datos del legajo" attrs="{'invisible': [('is_docket', '=', False)]}">
+                <page name="datos_legajo" string="Datos del legajo"
+                      attrs="{'invisible': [('is_docket_active', '=', False)]}">
                     <group>
                         <group string="Información personal:">
                             <field name="institutional_email"/>
                             <field name="digitized_document_file" filename="digitized_document_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                                   options="{'accepted_file_extensions': '.pdf'}"
+                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>
                             <field name="digitized_document_filename" invisible="1"/>
                         </group>
                         <group string="Información de salud:">
+                            <separator string="Servicio de Salud/Emergencia"/>
+                            <br/>
                             <!--                            <field name="mobile_mergency_service_id"/>-->
                             <label for="emergency_service_telephone"/>
-                            <div class="content-group row" style="margin-left:5px">
+                            <div class="content-group row">
                                 <field name="prefix_emergency_phone_id" options="{'no_open': True, 'no_create': True}"
-                                       attrs="{'required': [('is_docket', '=', True)]}"
-                                       style='max-width:75px !important; padding:1px !important;'
+                                       attrs="{'required': [('is_docket_active', '=', True)]}"
+                                       style='max-width: 50px !important; padding:1px !important;'
                                        class="oe_inline"/>
                                 <field name="emergency_service_telephone" class="oe_inline"
-                                       style="padding:1px !important;"
-                                       attrs="{'required': [('is_docket', '=', True)]}"/>
+                                       attrs="{'required': [('is_docket_active', '=', True)]}"/>
                             </div>
+                            <field name="department_id" attrs="{'required': [('is_docket_active', '=', True)]}"
+                                   domain="[('country_id.code','=','UY')]"/>
 
-                            <field name="department_id"/>
+                            <!--                            <field name="mobile_mergency_service_id"/>-->
+
                             <!--                            <field name="health_provider_id"/>-->
+                            <separator string="Otros datos"/>
+                            <field name="blood_type"
+                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>
                         </group>
-                    </group>
-                    <group string="Otros datos:">
-                        <field name="blood_type" class="oe_inline"/>
                     </group>
                     <br/>
                     <notebook>

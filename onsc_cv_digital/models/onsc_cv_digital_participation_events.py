@@ -22,7 +22,7 @@ class ONSCCVDigitalParticipationEvent(models.Model):
     is_roll_event = fields.Boolean(compute='_compute_is_roll_event')
     description_topic = fields.Char(string=u"Descripción de la temática abordada en el rol")
     hourly_load = fields.Float('Carga horaria en el rol (en horas)')
-    hours_total = fields.Float('Carga horaria total del evento (en horas', required='True')
+    hours_total = fields.Float('Carga horaria total del evento (en horas)', required='True')
     activity_area_ids = fields.One2many('onsc.cv.activity.area', 'participation_events_id', string=u'Área de Actividad')
     documentation_file = fields.Binary(string="Documentación o comprobante")
     documentation_filename = fields.Char('Nombre documentación o comprobante')

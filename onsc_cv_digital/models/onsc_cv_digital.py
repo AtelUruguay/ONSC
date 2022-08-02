@@ -67,7 +67,7 @@ class ONSCCVDigital(models.Model):
         string=u'Número de documento',
         related='partner_id.cv_nro_doc', store=True)
     image_1920 = fields.Image(
-        string="Foto",
+        string="Image",
         max_width=1920, max_height=1920,
         related='partner_id.image_1920', store=True, readonly=False)
     avatar_128 = fields.Image(
