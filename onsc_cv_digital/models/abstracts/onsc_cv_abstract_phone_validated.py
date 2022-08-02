@@ -25,7 +25,7 @@ class ONSCCVAbstractPhoneValidated(models.AbstractModel):
         """
         return []
 
-    def onchange_phone(self, prefix_phone_id, phone):
+    def onchange_validate_phone(self, prefix_phone_id, phone):
         prefix_phone_id = getattr(self, prefix_phone_id)
         phone_value = getattr(self, phone)
         phone_formatted, format_with_error, invalid_phone = is_valid_phone(phone_value, prefix_phone_id.country_id)
@@ -42,7 +42,7 @@ class ONSCCVAbstractPhoneValidated(models.AbstractModel):
         """Add onchange method by each element on prefix_by_phones"""
 
         def make_method(prefix_phone_id, phone_str):
-            return lambda self: self.onchange_phone(prefix_phone_id, phone_str)
+            return lambda self: self.onchange_validate_phone(prefix_phone_id, phone_str)
 
         for prefix, phone in self.prefix_by_phones:
             method = make_method(prefix, phone)
