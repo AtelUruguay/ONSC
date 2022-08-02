@@ -92,7 +92,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     # CRUD methods
     def write(self, values):
         if self.filtered(lambda x: not x._check_can_write()):
-            raise ValidationError(_("No puede modificar un registro en estado validado."))
+            raise ValidationError(_("No puede modificar un registro en estado validado o rechazado."))
         return super(ONSCCVAbstractConfig, self).write(values)
 
     def action_reject(self):
@@ -152,6 +152,5 @@ class ONSCCVAbstractConfig(models.AbstractModel):
                                                          access_rights_uid=access_rights_uid)
 
     def _check_can_write(self):
-        """Los usuarios CV solo pueden modificar si el estado no es validado"""
-        return not (self.filtered(lambda x: x.state in ['validated', 'rejected']) and self.user_has_groups(
-            'onsc_cv_digital.group_user_cv'))
+        """Solo pueden modificar si el estado no es validado o recahazado"""
+        return not self.filtered(lambda x: x.state in ['validated', 'rejected'])
