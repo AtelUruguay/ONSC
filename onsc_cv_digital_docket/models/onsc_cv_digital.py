@@ -18,6 +18,12 @@ class ONSCCVDigital(models.Model):
         res = super().prefix_by_phones
         return res + [('prefix_emergency_phone_id', 'emergency_service_telephone')]
 
+    @api.model
+    def domain_prefix_emergency_phone_id(self):
+        country_id = self.env['res.country'].search([('code', '=', 'UY')])
+
+        return [('country_id', 'in', country_id.ids)]
+
     is_docket = fields.Boolean(string="Tiene legajo")
     is_docket_active = fields.Boolean(string="Tiene legajo activo")
     gender_date = fields.Date(string="Fecha de información género")
@@ -41,6 +47,7 @@ class ONSCCVDigital(models.Model):
 
     # mobile_mergency_service_id = fields.Many2one("model", u"Servicio de emergencia móvil", required=True)
     prefix_emergency_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
+                                                domain=domain_prefix_emergency_phone_id,
                                                 default=lambda self: self.env['res.country.phone'].search(
                                                     [('country_id.code', '=', 'UY')]))
     emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia')
