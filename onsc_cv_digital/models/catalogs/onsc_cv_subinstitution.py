@@ -27,7 +27,7 @@ class ONSCCVSubintitution(models.Model):
     def _check_validation_status(self):
         parent_states = self.mapped('institution_id.state')
         if 'to_validate' in parent_states or 'rejected' in parent_states:
-            raise ValidationError(_("No se puede una Sub institución si la Institución no está validada"))
+            raise ValidationError(_("No se puede validar una Sub institución si la Institución no está validada"))
         return super(ONSCCVSubintitution, self)._check_validation_status()
 
     def _get_conditional_unicity_message(self):
