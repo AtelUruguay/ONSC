@@ -34,7 +34,7 @@
             </field>
             <field name="country_id" position="before">
                 <field name="address_receipt_file" filename="address_receipt_file_name"
-                       attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"
+                       attrs="{'invisible': [('is_docket_active', '=', False)], 'required': [('is_docket_active', '=', True)]}"
                        options="{'accepted_file_extensions': '.pdf'}"/>
                 <field name="address_receipt_file_name" invisible="1"/>
                 <field name="address_info_date"
