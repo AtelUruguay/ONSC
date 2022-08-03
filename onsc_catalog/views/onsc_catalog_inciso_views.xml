@@ -52,6 +52,7 @@
                                     <field name="is_public_company"/>
                                     <field name="is_into_nacional_budget"/>
                                     <field name="is_central_administration"/>
+                                    <field name="description"/>
                                 </group>
                             </group>
                         </page>

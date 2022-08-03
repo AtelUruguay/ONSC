@@ -8,6 +8,7 @@
                 <group name="main_group">
                     <field name="name" string="Nombre"/>
                     <field name="code" string="Identificador"/>
+                    <field name="short_name"/>
                     <field name="partner_id" invisible="1"/>
                     <field name="inciso_id" groups="base.group_multi_company" string="Inciso"/>
                     <field name="budget_code"/>

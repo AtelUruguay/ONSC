@@ -9,6 +9,7 @@ class OperatingUnit(models.Model):
     _history_model = 'operating.unit.history'
 
     name = fields.Char(required=True, history=True)
+    short_name = fields.Char(string="Sigla", required=True, history=True)
     code = fields.Char(required=True, history=True)
     active = fields.Boolean(default=True, history=True)
     partner_id = fields.Many2one("res.partner", "Partner", required=True, history=True)
