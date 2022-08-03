@@ -56,6 +56,7 @@
                                    groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
                             <field name="institution_cert_id" invisible="context.get('from_institution', False)"
                                    readonly="context.get('is_readonly') and context.get('default_institution_cert_id')"
+                                   domain="[('state','!=','rejected')]"
                                    force_save="1"/>
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company" invisible="1"/>
                             <field name="active" invisible="1"/>

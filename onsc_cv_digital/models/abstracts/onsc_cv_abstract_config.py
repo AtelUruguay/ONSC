@@ -90,10 +90,20 @@ class ONSCCVAbstractConfig(models.AbstractModel):
         return form_id.id
 
     # CRUD methods
+    @api.model
+    def create(self, values):
+        result = super(ONSCCVAbstractConfig, self).create(values)
+        if values.get('state') == 'validated':
+            result._check_validation_status()
+        return result
+
     def write(self, values):
         if self.filtered(lambda x: not x._check_can_write()):
             raise ValidationError(_("No puede modificar un registro en estado validado o rechazado."))
-        return super(ONSCCVAbstractConfig, self).write(values)
+        result = super(ONSCCVAbstractConfig, self).write(values)
+        if values.get('state') == 'validated':
+            self._check_validation_status()
+        return result
 
     def action_reject(self):
         ctx = self._context.copy()
@@ -110,6 +120,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
         }
 
     def action_validate(self):
+        self._check_validation_status()
         self.write({'state': 'validated'})
         self.sudo()._send_validation_email()
 
@@ -154,3 +165,6 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     def _check_can_write(self):
         """Solo pueden modificar si el estado no es validado o recahazado"""
         return not self.filtered(lambda x: x.state in ['validated', 'rejected'])
+
+    def _check_validation_status(self):
+        return True
