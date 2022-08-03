@@ -16,7 +16,7 @@ class ONSCCVAcademicProgram(models.Model):
     def _check_validation_status(self):
         parent_states = self.mapped('subinstitution_id.state')
         if 'to_validate' in parent_states or 'rejected' in parent_states:
-            raise ValidationError(_("No se puede un Programa académico si "
+            raise ValidationError(_("No se puede validar un Programa académico si "
                                     "la Sub institución y la Institución no está validada"))
         return super(ONSCCVAcademicProgram, self)._check_validation_status()
 

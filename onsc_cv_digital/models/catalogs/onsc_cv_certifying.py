@@ -33,7 +33,7 @@ class ONSCCVCertifyingSubinstitution(models.Model):
     def _check_validation_status(self):
         parent_states = self.mapped('institution_cert_id.state')
         if 'to_validate' in parent_states or 'rejected' in parent_states:
-            raise ValidationError(_("No se puede una Sub institución certificadora si "
+            raise ValidationError(_("No se puede validar una Sub institución certificadora si "
                                     "la Institución certificadora no está validada"))
         return super(ONSCCVCertifyingSubinstitution, self)._check_validation_status()
 
