@@ -86,7 +86,7 @@ class ONSCCVInformationContact(models.Model):
                                       default=lambda self: self.env['res.country.phone'].search(
                                           [('country_id.code', '=', 'UY')]), required=True)
     contact_person_telephone = fields.Char(string=u'Teléfono de persona de contacto', required=True)
-    phone_full = fields.Char(compute='_compute_phone_full', string='Teléfono')
+    phone_full = fields.Char(compute='_compute_phone_full', string=u'Teléfono de persona de contacto')
     remark_contact_person = fields.Text(string=u'Observación para la persona de contacto', required=True)
 
     @api.depends('prefix_phone_id', 'contact_person_telephone')
