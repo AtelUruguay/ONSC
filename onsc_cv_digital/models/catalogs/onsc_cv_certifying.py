@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class ONSCCVCertifyingInstitution(models.Model):
@@ -28,6 +29,13 @@ class ONSCCVCertifyingSubinstitution(models.Model):
     certificate_line_ids = fields.One2many(comodel_name="onsc.cv.certificate.line",
                                            inverse_name="subinstitution_cert_id",
                                            string="Lineas de certificados")
+
+    def _check_validation_status(self):
+        parent_states = self.mapped('institution_cert_id.state')
+        if 'to_validate' in parent_states or 'rejected' in parent_states:
+            raise ValidationError(_("No se puede validar una Sub institución certificadora si "
+                                    "la Institución certificadora no está validada"))
+        return super(ONSCCVCertifyingSubinstitution, self)._check_validation_status()
 
     def _get_conditional_unicity_message(self):
         return _("Ya existe un registro validado para %s, "
