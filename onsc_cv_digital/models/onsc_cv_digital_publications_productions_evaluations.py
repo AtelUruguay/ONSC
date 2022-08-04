@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
-from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 TYPES = [('publication', 'Publicación '), ('productions', 'Producciones '), ('evaluation', 'Evaluación'),
          ('other', 'Otro')]
