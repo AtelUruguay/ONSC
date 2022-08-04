@@ -38,6 +38,7 @@ class OperatingUnit(models.Model):
     def onchange_company_id(self):
         self.partner_id = self.company_id.partner_id
 
+
 class OperatingUnitHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'operating.unit.history'
