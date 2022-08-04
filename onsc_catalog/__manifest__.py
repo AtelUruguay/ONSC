@@ -12,6 +12,7 @@ ONSC - Catálogos
     'depends': ['hr', 'mail', 'operating_unit','model_history'],
     'data': [
         'security/onsc_catalog_security.xml',
+        'security/onsc_catalog_rules.xml',
         'security/ir.model.access.csv',
         'views/catalogs/onsc_catalog_base_views.xml',
         'views/onsc_catalog_inciso_views.xml',
