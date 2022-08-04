@@ -2,7 +2,7 @@
 
 from odoo import fields, models, api, _
 import json
-from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]

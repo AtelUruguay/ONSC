@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 
 
 class OperatingUnit(models.Model):
@@ -15,8 +16,8 @@ class OperatingUnit(models.Model):
     partner_id = fields.Many2one("res.partner", "Partner", required=True, history=True)
 
     budget_code = fields.Char(u'Código presupuestal (SIIF)', required=True, history=True)
-    date_begin = fields.Date(string='Inicio de vigencia', required=True, history=True)
-    date_end = fields.Date(string='Fin de vigencia', history=True)
+    start_date = fields.Date(string='Inicio de vigencia', required=True, history=True)
+    end_date = fields.Date(string='Fin de vigencia', history=True)
     createupdate_regulation = fields.Char(u'Normativa de creación/modificación', tracking=True, history=True)
     description = fields.Text('Observaciones', history=True)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True, history=True)
@@ -37,6 +38,20 @@ class OperatingUnit(models.Model):
     @api.onchange('company_id')
     def onchange_company_id(self):
         self.partner_id = self.company_id.partner_id
+
+    @api.onchange('start_date')
+    def onchange_start_date(self):
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            self.start_date = False
+            return catalog_warning(_(u"La fecha de inicio de vigencia no puede ser mayor "
+                                     u"que la fecha de fin de vigencia"))
+
+    @api.onchange('end_date')
+    def onchange_end_date(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date:
+            self.end_date = False
+            return catalog_warning(_(u"La fecha de fin de vigencia no puede ser menor "
+                                     u"que la fecha de inicio de vigencia"))
 
 
 class OperatingUnitHistory(models.Model):

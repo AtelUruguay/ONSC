@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 
 
 class Department(models.Model):
     _name = "hr.department"
     _inherit = ['hr.department', 'model.history']
+    _history_model = 'hr.department.history'
 
     code = fields.Integer('Identificador')
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True)
@@ -13,7 +15,11 @@ class Department(models.Model):
                                  related='inciso_id.company_id',
                                  store=True, history=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
-    short_name = fields.Char(string="Nombre corto")
+    parent_id = fields.Many2one('hr.department', string='Parent Department', index=True,
+                                domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+                                history=True)
+    name = fields.Char('Department Name', required=True, history=True)
+    short_name = fields.Char(string="Nombre corto", history=True)
     function_nature = fields.Selection(string=u"Naturaleza de la función",
                                        selection=[
                                            ('adviser', 'Asesora'),
@@ -30,12 +36,12 @@ class Department(models.Model):
     mission = fields.Char(string="Misión", history=True)
     reponsability_ids = fields.One2many("hr.department.responsability",
                                         inverse_name="department_id",
-                                        string="Lista de responsabilidades")
-    key_functional_habilities = fields.Char(string="Competencias funcionales claves")
+                                        string="Lista de responsabilidades", history=True)
+    key_functional_habilities = fields.Char(string="Competencias funcionales claves", history=True)
     process_contributor = fields.Char(string="Procesos a los que contribuye", history=True)
     regulatory = fields.Char(string="Marco normativo", history=True)
-    date_begin = fields.Date(string='Inicio de vigencia', history=True)
-    date_end = fields.Date(string='Fin de vigencia', history=True)
+    start_date = fields.Date(string='Inicio de vigencia', history=True)
+    end_date = fields.Date(string='Fin de vigencia', history=True)
     category = fields.Selection(string=u"Categoría", selection=[
         ('planning', 'PLANIFICACION ESTRATEGICA'),
         ('financial_management', 'GESTION FINANCIERA'),
@@ -59,6 +65,20 @@ class Department(models.Model):
                 record.function_nature_form = 'form1'
             else:
                 record.function_nature_form = 'form2'
+
+    @api.onchange('start_date')
+    def onchange_start_date(self):
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            self.start_date = False
+            return catalog_warning(_(u"La fecha de inicio de vigencia no puede ser mayor "
+                                     u"que la fecha de fin de vigencia"))
+
+    @api.onchange('end_date')
+    def onchange_end_date(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date:
+            self.end_date = False
+            return catalog_warning(_(u"La fecha de fin de vigencia no puede ser menor "
+                                     u"que la fecha de inicio de vigencia"))
 
     @api.onchange('inciso_id')
     def onchange_inciso_id(self):
@@ -107,3 +127,9 @@ class DepartmentResponsability(models.Model):
     process = fields.Char(string="Proceso", required=True)
     product = fields.Char(string="Producto", required=True)
     target = fields.Char(string="Destinatarios", required=True)
+
+
+class DepartmentHistory(models.Model):
+    _inherit = ['model.history.data']
+    _name = 'hr.department.history'
+    _parent_model = 'hr.department'

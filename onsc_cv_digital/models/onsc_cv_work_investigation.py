@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
-from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 POSITION_TYPES = [('effective', 'Efectivo'), ('interim', 'Interino'), ('honorary', 'Honorario')]
 INVESTIGATION_TYPES = [('invest_line', 'Línea de investigación'),
