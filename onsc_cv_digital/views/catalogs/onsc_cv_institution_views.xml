@@ -69,7 +69,7 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    readonly="context.get('is_readonly') and context.get('default_country_id')"
                                    force_save="1"/>
-                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"/>
+                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company" invisible="1"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
