@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_catalog_hierarchical_level_search" model="ir.ui.view">
+        <field name="name">onsc.catalog.hierarchical.level.search</field>
+        <field name="model">onsc.catalog.hierarchical.level</field>
+        <field name="arch" type="xml">
+            <search string="Niveles jerárquicos">
+                <field name="name"/>
+                <field name="code"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_hierarchical_level_tree" model="ir.ui.view">
+        <field name="name">onsc.catalog.hierarchical.level.tree</field>
+        <field name="model">onsc.catalog.hierarchical.level</field>
+        <field name="arch" type="xml">
+            <tree string="Niveles jerárquicos">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="order"/>
+                <field name="is_central_admin"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_hierarchical_level_form" model="ir.ui.view">
+        <field name="name">onsc.catalog.hierarchical.level.form</field>
+        <field name="model">onsc.catalog.hierarchical.level</field>
+        <field name="arch" type="xml">
+            <form string="Niveles jerárquicos">
+                <header/>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="order"/>
+                        </group>
+                        <group>
+                            <field name="is_central_admin"/>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_catalog_hierarchical_level_action' model='ir.actions.act_window'>
+        <field name="name">Niveles jerárquicos</field>
+        <field name="res_model">onsc.catalog.hierarchical.level</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo nivel jerárquico
+            </p>
+        </field>
+    </record>
+</odoo>

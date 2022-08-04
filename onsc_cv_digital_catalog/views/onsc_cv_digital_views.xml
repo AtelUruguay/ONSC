@@ -10,6 +10,7 @@
                         <field name="inciso_id"
                                attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                         <field name="operating_unit_id"
+                               domain="[('inciso_id', '=', inciso_id)]"
                                attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="company_name_calc" invisible="1"/>
                 </field>
@@ -25,6 +26,7 @@
                     <field name="inciso_id"
                            attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="operating_unit_id"
+                           domain="[('inciso_id', '=', inciso_id)]"
                            attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="company_name_calc" invisible="1"/>
                 </field>
@@ -37,11 +39,9 @@
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_work_experience_tree_view"/>
             <field name="priority">1000</field>
             <field name="arch" type="xml">
-
                 <field name="company_name" position="replace">
                     <field name="company_name_calc" optional="show"/>
                 </field>
-
             </field>
         </record>
 

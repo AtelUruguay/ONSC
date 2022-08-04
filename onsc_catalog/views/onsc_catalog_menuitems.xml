@@ -23,4 +23,14 @@
               parent="onsc_catalog_root_menu"
               groups="group_catalog_configurador_servicio_civil,group_catalog_aprobador_cgn"
               sequence="3"/>
+    <menuitem id="onsc_catalog_config_menu"
+              name="Catálogos"
+              parent="onsc_catalog_root_menu"
+              sequence="50"/>
+        <menuitem id="onsc_cv_catalog_hierarchical_level_menu"
+              name="Niveles jerárquicos"
+              action="onsc_catalog_hierarchical_level_action"
+              parent="onsc_catalog_config_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="3"/>
 </odoo>

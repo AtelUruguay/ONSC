@@ -13,6 +13,7 @@ ONSC - Catálogos
     'data': [
         'security/onsc_catalog_security.xml',
         'security/ir.model.access.csv',
+        'views/catalogs/onsc_catalog_base_views.xml',
         'views/onsc_catalog_inciso_views.xml',
         'views/operating_unit_views.xml',
         'views/hr_department_views.xml',

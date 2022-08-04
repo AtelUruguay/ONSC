@@ -16,14 +16,17 @@ class ONSCCVDigitalWorkExperience(models.Model):
 
     inciso_id = fields.Many2one("onsc.catalog.inciso", string="Inciso")
     operating_unit_id = fields.Many2one("operating.unit",
-                                        string="Unidad ejecutora",
-                                        domain=[('inciso_id', '=', inciso_id)])
+                                        string="Unidad ejecutora")
     company_name_calc = fields.Char('Empresa', compute='_compute_company_name_calc')
 
     @api.depends('inciso_id', 'operating_unit_id', 'company_name')
     def _compute_company_name_calc(self):
         for rec in self:
             rec.company_name_calc = calc_company_name(rec)
+
+    @api.onchange('inciso_id')
+    def onchange_inciso_id(self):
+        self.operating_unit_id = False
 
 
 class ONSCCVDigitalVolunteering(models.Model):
@@ -31,11 +34,14 @@ class ONSCCVDigitalVolunteering(models.Model):
 
     inciso_id = fields.Many2one("onsc.catalog.inciso", string="Inciso")
     operating_unit_id = fields.Many2one("operating.unit",
-                                        string="Unidad ejecutora",
-                                        domain=[('inciso_id', '=', inciso_id)])
+                                        string="Unidad ejecutora")
     company_name_calc = fields.Char('Empresa', compute='_compute_company_name_calc')
 
     @api.depends('inciso_id', 'operating_unit_id', 'company_name')
     def _compute_company_name_calc(self):
         for rec in self:
             rec.company_name_calc = calc_company_name(rec)
+
+    @api.onchange('inciso_id')
+    def onchange_inciso_id(self):
+        self.operating_unit_id = False
