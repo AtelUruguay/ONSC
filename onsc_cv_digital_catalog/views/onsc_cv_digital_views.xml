@@ -6,11 +6,17 @@
             <field name="model">onsc.cv.work.experience</field>
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_work_experience_form_view"/>
             <field name="arch" type="xml">
-                <field name="company_type" position="after">
-                        <field name="inciso_id"
-                               attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
-                        <field name="operating_unit_id"
-                               attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                <field name="end_date" position="after">
+                    <field name="inciso_id_domain" invisible="1"/>
+                    <field name="operating_unit_id_domain" invisible="1"/>
+                    <field name="inciso_id"
+                           domain="inciso_id_domain"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':false}"
+                           attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                    <field name="operating_unit_id"
+                           domain="operating_unit_id_domain"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':false}"
+                           attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="company_name_calc" invisible="1"/>
                 </field>
             </field>
@@ -21,10 +27,16 @@
             <field name="model">onsc.cv.volunteering</field>
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_volunteering_form_view"/>
             <field name="arch" type="xml">
-                <field name="company_type" position="after">
+                <field name="end_date" position="after">
+                    <field name="inciso_id_domain" invisible="1"/>
+                    <field name="operating_unit_id_domain" invisible="1"/>
                     <field name="inciso_id"
+                           domain="inciso_id_domain"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':false}"
                            attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="operating_unit_id"
+                           domain="operating_unit_id_domain"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':false}"
                            attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="company_name_calc" invisible="1"/>
                 </field>
