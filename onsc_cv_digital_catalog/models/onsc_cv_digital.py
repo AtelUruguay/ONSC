@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import models
 
 
 class ONSCCVDigitalWorkExperience(models.Model):

@@ -3,7 +3,6 @@
 import json
 from odoo import fields, models, api, _
 from odoo.addons.onsc_cv_digital.models.onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
-from odoo.osv import expression
 
 
 def calc_company_name(record):

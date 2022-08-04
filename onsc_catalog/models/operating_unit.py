@@ -72,14 +72,14 @@ class OperatingUnitReport(models.Model):
     date_end = fields.Date(string="Fin de vigencia")
     company_id = fields.Integer('Id de compañía')
     inciso_id = fields.Integer('Inciso')
-    inciso_report_id = fields.Many2one('onsc.catalog.inciso.report', 'Inciso', compute='compute_inciso_report_id',
+    inciso_report_id = fields.Many2one('onsc.catalog.inciso.report', 'Inciso', compute='_compute_inciso_report_id',
                                        search='_search_inciso_report_id')
 
     def _search_inciso_report_id(self, operator, value):
         return [('inciso_id', operator, value)]
 
     @api.depends('inciso_id')
-    def compute_inciso_report_id(self):
+    def _compute_inciso_report_id(self):
         for rec in self:
             rec.inciso_report_id = self.env['onsc.catalog.inciso.report'].browse(rec.inciso_id)
 
