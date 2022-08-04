@@ -1,23 +1,32 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, tools
+from odoo import api, fields, models, tools, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 
 
 class OperatingUnit(models.Model):
-    _inherit = "operating.unit"
+    _inherit = ['operating.unit', 'model.history']
+    _name = 'operating.unit'
+    _history_model = 'operating.unit.history'
 
-    budget_code = fields.Char(u"Código presupuestal (SIIF)", required=True)
-    date_begin = fields.Date(string="Inicio de vigencia", required=True)
-    date_end = fields.Date(string="Fin de vigencia")
-    createupdate_regulation = fields.Char(u"Normativa de creación/modificación", tracking=True)
-    description = fields.Text('Observaciones')
-    inciso_id = fields.Many2one("onsc.catalog.inciso", string="Inciso", required=True)
-    company_id = fields.Many2one("res.company",
+    name = fields.Char(required=True, history=True)
+    short_name = fields.Char(string="Sigla", required=True, history=True)
+    code = fields.Char(required=True, history=True)
+    active = fields.Boolean(default=True, history=True)
+    partner_id = fields.Many2one("res.partner", "Partner", required=True, history=True)
+
+    budget_code = fields.Char(u'Código presupuestal (SIIF)', required=True, history=True)
+    start_date = fields.Date(string='Inicio de vigencia', required=True, history=True)
+    end_date = fields.Date(string='Fin de vigencia', history=True)
+    createupdate_regulation = fields.Char(u'Normativa de creación/modificación', tracking=True, history=True)
+    description = fields.Text('Observaciones', history=True)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True, history=True)
+    company_id = fields.Many2one('res.company',
                                  related='inciso_id.company_id',
-                                 store=True)
+                                 store=True, history=True)
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
-    write_date = fields.Datetime("Fecha de última modificación", index=True, readonly=True)
+    write_date = fields.Datetime('Fecha de última modificación', index=True, readonly=True)
     create_uid = fields.Many2one('res.users', 'Creado por', index=True, readonly=True)
     write_uid = fields.Many2one('res.users', string='Actualizado por', index=True, readonly=True)
 
@@ -29,6 +38,26 @@ class OperatingUnit(models.Model):
     @api.onchange('company_id')
     def onchange_company_id(self):
         self.partner_id = self.company_id.partner_id
+
+    @api.onchange('start_date')
+    def onchange_start_date(self):
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            self.start_date = False
+            return catalog_warning(_(u"La fecha de inicio de vigencia no puede ser mayor "
+                                     u"que la fecha de fin de vigencia"))
+
+    @api.onchange('end_date')
+    def onchange_end_date(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date:
+            self.end_date = False
+            return catalog_warning(_(u"La fecha de fin de vigencia no puede ser menor "
+                                     u"que la fecha de inicio de vigencia"))
+
+
+class OperatingUnitHistory(models.Model):
+    _inherit = ['model.history.data']
+    _name = 'operating.unit.history'
+    _parent_model = 'operating.unit'
 
 
 class OperatingUnitReport(models.Model):

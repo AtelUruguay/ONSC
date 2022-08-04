@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, _
-from ..onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from ..onsc_cv_useful_tools import is_valid_phone
 
 

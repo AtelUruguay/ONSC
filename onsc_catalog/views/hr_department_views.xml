@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="onsc_catalog_department_form" model="ir.ui.view">
+            <field name="name">onsc.catalog.hr.department.form</field>
+            <field name="model">hr.department</field>
+            <field name="arch" type="xml">
+                <form string="Unidades organizativas">
+                    <header>
+                        <button name="action_aprobar_cgn" string="Aprobar CGN"
+                                class="oe_highlight" type="object"
+                                groups="onsc_catalog.group_catalog_aprobador_cgn"
+                                attrs="{'invisible': [('is_approve_cgn', '=', True)]}"
+                        />
+                    </header>
+                    <sheet>
+                        <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <group>
+                            <group>
+                                <field name="code" required="True"/>
+                                <field name="name" string="Nombre UO"/>
+                                <field name="inciso_id" required="1" options="{'no_create': True}"/>
+                                <field name="operating_unit_id"
+                                       required="1"
+                                       domain="[('inciso_id', '=', inciso_id)]"
+                                       options="{'no_create': True}"/>
+                                <field name="function_nature" required="1"/>
+                                <field name="hierarchical_level_id" required="1" options="{'no_create': True}"/>
+                                <field name="start_date" required="1"/>
+                                <field name="end_date"/>
+                                <field name="short_name"
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                <field name="parent_id"
+                                       domain="[('operating_unit_id', '=', operating_unit_id)]"
+                                       string="UO de la que depende"
+                                       options="{'no_create': True}"/>
+                                <field name="category"
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+
+                                <field name="company_id" invisible="1" force_save="1"/>
+                                <field name="active" invisible="1"/>
+                                <field name="function_nature_form" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="mission"
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                <field name="key_functional_habilities"/>
+                                <field name="process_contributor"
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                <field name="regulatory"/>
+                                <field name="is_approve_onsc" readonly="1" force_save="1"/>
+                                <field name="approve_onsc_date" readonly="1" force_save="1"/>
+                                <field name="is_approve_cgn" readonly="1" force_save="1"/>
+                                <field name="approve_cgn_date" readonly="1" force_save="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Lista de responsabilidades" attrs="{'invisible': [('function_nature_form', '=', 'form2')]}">
+                                <field name="reponsability_ids">
+                                    <tree editable="bottom">
+                                        <field name="process"/>
+                                        <field name="product"/>
+                                        <field name="target"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Otra información">
+                                <group>
+                                    <group>
+                                        <field name="create_date"/>
+                                        <field name="create_uid"/>
+                                    </group>
+                                    <group>
+                                        <field name="write_date"/>
+                                        <field name="write_uid"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Observaciones">
+                                <field name="note" nolabel="1"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_department_tree" model="ir.ui.view">
+            <field name="name">onsc.catalog.hr.department.tree</field>
+            <field name="model">hr.department</field>
+            <field name="arch" type="xml">
+                <tree string="Unidades organizativas">
+                    <field name="code"/>
+                    <field name="name" string="Nombre UO"/>
+                    <field name="inciso_id"/>
+                    <field name="operating_unit_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_department_search" model="ir.ui.view">
+            <field name="name">onsc.catalog.hr.department.search</field>
+            <field name="model">hr.department</field>
+            <field name="arch" type="xml">
+                <search string="Unidades organizativas">
+                    <field name="name" string="Department"/>
+                    <field name="code"/>
+                    <field name="parent_id" />
+                    <separator/>
+                    <filter string="Archivados para aprobar CGN" name="inactive_cgn" domain="[('active','=',False),('is_approve_cgn','=',False)]"/>
+                    <filter string="Archivados" name="inactive" domain="[('active','=',False)]"/>
+                    <searchpanel>
+                        <field name="inciso_id" icon="fa-building" enable_counters="1"/>
+                        <field name="operating_unit_id" icon="fa-users" enable_counters="1"/>
+                    </searchpanel>
+                </search>
+             </field>
+        </record>
+        
+        <record id="onsc_catalog_catalog_department_action" model="ir.actions.act_window">
+            <field name="name">Unidades organizativas</field>
+            <field name="res_model">hr.department</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'default_active': False}</field>
+            <field name="search_view_id" ref="onsc_catalog_department_search"/>
+            <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_catalog_department_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_catalog_department_form')})]"/>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear una nueva unidad organizativa
+                </p><p>
+                </p>
+            </field>
+        </record>
+    </data>
+</odoo>

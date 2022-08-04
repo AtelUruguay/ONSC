@@ -3,7 +3,7 @@
 from odoo import fields, models, api, _
 from .abstracts.onsc_cv_abstract_work import PAID_ACTIVITY_TYPES
 from .onsc_cv_useful_tools import is_valid_url, is_exist_url
-from .onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 POSTGRADUATE_TYPES = [('academic', 'Académico'), ('professional', 'Profesional')]
 YEARS_TITLE = [('%s' % x, '%s' % x) for x in range(fields.Date.today().year, 1900, -1)]
