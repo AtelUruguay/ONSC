@@ -15,8 +15,10 @@ class ONSCCatalogInciso(models.Model):
                                  auto_join=True,
                                  index=True,
                                  ondelete="cascade")
-    name = fields.Char(related='company_id.name', string='Nombre', required=True, store=True, readonly=False,
-                       tracking=True, history=True)
+    company_name = fields.Char(related='company_id.name',
+                               string='Nombre',
+                               store=True,
+                               history=True)
     identifier = fields.Char(string="Identificador", required=True, tracking=True, history=True)
     budget_code = fields.Char(u"Código presupuestal (SIIF)", required=True, tracking=True, history=True)
     short_name = fields.Char("Sigla", required=True, tracking=True, history=True)
