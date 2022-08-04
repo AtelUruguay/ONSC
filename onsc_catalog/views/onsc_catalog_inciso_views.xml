@@ -47,7 +47,6 @@
                                 <group>
                                     <field name="section_220_221"/>
                                     <field name="reference_ministry"/>
-                                    <field name="createupdate_regulation"/>
                                     <field name="is_institutional"/>
                                     <field name="is_public_company"/>
                                     <field name="is_into_nacional_budget"/>
