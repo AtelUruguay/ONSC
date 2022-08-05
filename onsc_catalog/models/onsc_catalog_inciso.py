@@ -18,7 +18,7 @@ class ONSCCatalogInciso(models.Model):
         if self.user_has_groups('onsc_catalog.group_catalog_configurador_servicio_civil'):
             args += [('company_id', 'in', self._context.get('allowed_company_ids'))]
         return super(ONSCCatalogInciso, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-                                                         access_rights_uid=access_rights_uid)
+                                                      access_rights_uid=access_rights_uid)
 
     company_id = fields.Many2one('res.company',
                                  required=True,
@@ -94,22 +94,28 @@ class ONSCCatalogIncisoView(models.Model):
     _description = 'Vista sql de incisos'
     _auto = False
 
-    identifier = fields.Char('Identificador')
+    identifier = fields.Char('Identificador', compute='_compute_fields_with_history', compute_sudo=True)
     company_id = fields.Integer('Id de compañía')
-    name = fields.Char('Nombre', compute='_compute_name', compute_sudo=True)
-    budget_code = fields.Char('Código presupuestal (SIIF)')
-    short_name = fields.Char('Sigla')
+    name = fields.Char('Nombre', compute='_compute_fields_with_history', compute_sudo=True)
+    budget_code = fields.Char('Código presupuestal (SIIF)', compute='_compute_fields_with_history', compute_sudo=True)
+    short_name = fields.Char('Sigla', compute='_compute_fields_with_history', compute_sudo=True)
     start_date = fields.Date(string="Inicio de vigencia")
     end_date = fields.Date(string="Fin de vigencia")
 
     @api.depends('company_id')
-    def _compute_name(self):
+    def _compute_fields_with_history(self):
         for rec in self:
-            rec.name = self.env['res.company'].browse(rec.company_id).name
+            Inciso = self.env['onsc.catalog.inciso'].browse(rec.id).read(
+                ['identifier', 'company_name', 'company_id', 'budget_code', 'short_name'])
+            read_values = Inciso and Inciso[0] or {}
+
+            rec.identifier = read_values.get('identifier')
+            rec.name = read_values.get('company_name')
+            rec.budget_code = read_values.get('budget_code')
+            rec.short_name = read_values.get('short_name')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''
               CREATE OR REPLACE VIEW %s AS (
-              SELECT id, identifier, company_id, budget_code, short_name, start_date, end_date
-                FROM onsc_catalog_inciso)''' % (self._table,))
+              SELECT id, start_date, end_date, company_id FROM onsc_catalog_inciso)''' % (self._table,))
