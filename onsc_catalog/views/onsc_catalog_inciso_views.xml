@@ -25,7 +25,8 @@
                     <div class="oe_title">
                         <label for="name" string="Nombre"/>
                         <h1>
-                            <field name="name"/>
+                            <field name="name" attrs="{'invisible': [('create_date', '!=', False)]}"/>
+                            <field name="company_name" attrs="{'invisible': [('create_date', '=', False)]}"/>
                         </h1>
                     </div>
                     <group name="main_group">
