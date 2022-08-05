@@ -18,7 +18,7 @@ class ONSCCatalogInciso(models.Model):
         if self.user_has_groups('onsc_catalog.group_catalog_configurador_servicio_civil'):
             args += [('company_id', 'in', self._context.get('allowed_company_ids'))]
         return super(ONSCCatalogInciso, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-                                                         access_rights_uid=access_rights_uid)
+                                                      access_rights_uid=access_rights_uid)
 
     company_id = fields.Many2one('res.company',
                                  required=True,

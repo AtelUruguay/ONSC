@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
-from odoo import fields, models, api, _
-from odoo.addons.onsc_cv_digital.models.onsc_cv_useful_tools import get_onchange_warning_response as cv_warning
+from odoo import fields, models, api
 
 
 def calc_company_name(record):
@@ -59,23 +58,10 @@ class ONSCCVOperatingUnitAbstract(models.AbstractModel):
 
     @api.onchange('start_date')
     def onchange_start_date_check_inciso(self):
-        if self.inciso_id and self.start_date and self.inciso_id.start_date \
-                and self.inciso_id.start_date > self.start_date:
-            self.inciso_id = False
-            return cv_warning(_("La fecha de vigencia inicio del inciso debe ser menor o igual que el período desde"))
-        if self.inciso_id and self.start_date and self.operating_unit_id.start_date \
-                and self.operating_unit_id.start_date > self.start_date:
-            self.operating_unit_id = False
-            return cv_warning(
-                _("La fecha de vigencia inicio de la unidad operativa debe ser mayor o igual que el período desde"))
+        self.inciso_id = False
+        self.operating_unit_id = False
 
     @api.onchange('end_date')
     def onchange_end_date_check_inciso(self):
-        if self.inciso_id and self.end_date and self.inciso_id.end_date and self.inciso_id.end_date < self.end_date:
-            self.inciso_id = False
-            return cv_warning(_("La fecha de vigencia de fin del inciso debe ser menor o igual el período hasta"))
-        if self.inciso_id and self.end_date and self.operating_unit_id.end_date \
-                and self.operating_unit_id.end_date < self.end_date:
-            self.operating_unit_id = False
-            return cv_warning(
-                _("La fecha de vigencia de fin de la unidad operativa debe ser mayor o igual el período hasta"))
+        self.inciso_id = False
+        self.operating_unit_id = False
