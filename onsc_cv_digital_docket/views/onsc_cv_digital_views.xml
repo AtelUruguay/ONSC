@@ -85,50 +85,44 @@
                             </div>
                             <field name="department_id" attrs="{'required': [('is_docket_active', '=', True)]}"
                                    domain="[('country_id.code','=','UY')]"/>
-
-                            <!--                            <field name="mobile_mergency_service_id"/>-->
-
-                            <!--                            <field name="health_provider_id"/>-->
                             <separator string="Otros datos" style="font-size: 12px"></separator>
                             <field name="blood_type"
                                    attrs="{'required': [('is_docket_active', '=', True)]}"/>
                         </group>
-                    </group>
-                    <br/>
-                    <group string="Información de contacto">
-                        <field name="information_contact_ids" nolabel="1">
-                            <tree>
-                                <field name="name_contact"/>
-                                <!--                                     <field name="link_people_contact_id"/>-->
-                                <field name="phone_full"/>
-                                <field name="contact_person_telephone" invisible="1"/>
-                                <field name="remark_contact_person"/>
-                            </tree>
-                            <form>
-                                <sheet>
-                                    <group>
+                        <group string="Información de contacto">
+                            <field name="information_contact_ids" nolabel="1">
+                                <tree>
+                                    <field name="name_contact"/>
+                                    <field name="phone_full"/>
+                                    <field name="contact_person_telephone" invisible="1"/>
+                                    <field name="remark_contact_person"/>
+                                </tree>
+                                <form>
+                                    <sheet>
                                         <group>
-                                            <field name="name_contact"/>
-                                            <label for="contact_person_telephone"/>
-                                            <div class="content-group row" style="margin-left:5px">
-                                                <field name="prefix_phone_id"
-                                                       options="{'no_open': True, 'no_create': True}"
-                                                       style='max-width:75px !important; padding:1px !important;'
-                                                       class="oe_inline"/>
-                                                <field name="contact_person_telephone" class="oe_inline"
-                                                       style="padding:1px !important;"/>
-                                            </div>
+                                            <group>
+                                                <field name="name_contact"/>
+                                                <label for="contact_person_telephone"/>
+                                                <div class="content-group row" style="margin-left:5px">
+                                                    <field name="prefix_phone_id"
+                                                           options="{'no_open': True, 'no_create': True}"
+                                                           style='max-width:75px !important; padding:1px !important;'
+                                                           class="oe_inline"/>
+                                                    <field name="contact_person_telephone" class="oe_inline"
+                                                           style="padding:1px !important;"/>
+                                                </div>
+                                            </group>
+                                            <group>
+                                                <field name="remark_contact_person"/>
+                                            </group>
                                         </group>
-                                        <group>
-                                            <field name="remark_contact_person"/>
-                                        </group>
-                                    </group>
-                                </sheet>
-                            </form>
-                        </field>
-                    </group>
-                    <group string="Otra información">
-                        <field name="other_information_official" nolabel="1"/>
+                                    </sheet>
+                                </form>
+                            </field>
+                        </group>
+                        <group string="Otra información">
+                            <field name="other_information_official" nolabel="1"/>
+                        </group>
                     </group>
                 </page>
             </xpath>
