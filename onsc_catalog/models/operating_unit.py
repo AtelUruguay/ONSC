@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import api, fields, models, _
+from odoo import api, fields, models, tools, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 
 
@@ -58,3 +58,34 @@ class OperatingUnitHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'operating.unit.history'
     _parent_model = 'operating.unit'
+
+
+class OperatingUnitReport(models.Model):
+    _name = 'operating.unit.report'
+    _description = 'Vista sql de unidad operativa'
+    _auto = False
+
+    name = fields.Char('Nombre')
+    code = fields.Char('Código')
+    budget_code = fields.Char(u"Código presupuestal (SIIF)")
+    date_begin = fields.Date(string="Inicio de vigencia")
+    date_end = fields.Date(string="Fin de vigencia")
+    company_id = fields.Integer('Id de compañía')
+    inciso_id = fields.Integer('Inciso')
+    inciso_report_id = fields.Many2one('onsc.catalog.inciso.report', 'Inciso', compute='_compute_inciso_report_id',
+                                       search='_search_inciso_report_id')
+
+    def _search_inciso_report_id(self, operator, value):
+        return [('inciso_id', operator, value)]
+
+    @api.depends('inciso_id')
+    def _compute_inciso_report_id(self):
+        for rec in self:
+            rec.inciso_report_id = self.env['onsc.catalog.inciso.report'].browse(rec.inciso_id)
+
+    def init(self):
+        tools.drop_view_if_exists(self.env.cr, self._table)
+        self.env.cr.execute('''
+              CREATE OR REPLACE VIEW %s AS (
+              SELECT id, code, name, budget_code, date_begin, date_end, company_id, inciso_id
+                FROM operating_unit)''' % (self._table,))

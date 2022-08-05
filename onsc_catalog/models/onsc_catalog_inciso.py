@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
+from odoo import models, fields, tools, api, _
 
 
 class ONSCCatalogInciso(models.Model):
@@ -65,3 +65,29 @@ class ONSCCatalogIncisoHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'onsc.catalog.inciso.history'
     _parent_model = 'onsc.catalog.inciso'
+
+
+class ONSCCatalogIncisoView(models.Model):
+    _name = 'onsc.catalog.inciso.report'
+    _description = 'Vista sql de incisos'
+    _auto = False
+
+    identifier = fields.Char('Identificador')
+    company_id = fields.Integer('Id de compañía')
+    name = fields.Char('Nombre', compute='_compute_name', compute_sudo=True)
+    budget_code = fields.Char('Código presupuestal (SIIF)')
+    short_name = fields.Char('Sigla')
+    date_begin = fields.Date(string="Inicio de vigencia")
+    date_end = fields.Date(string="Fin de vigencia")
+
+    @api.depends('company_id')
+    def _compute_name(self):
+        for rec in self:
+            rec.name = self.env['res.company'].browse(rec.company_id).name
+
+    def init(self):
+        tools.drop_view_if_exists(self.env.cr, self._table)
+        self.env.cr.execute('''
+              CREATE OR REPLACE VIEW %s AS (
+              SELECT id, identifier, company_id, budget_code, short_name, date_begin, date_end
+                FROM onsc_catalog_inciso)''' % (self._table,))
