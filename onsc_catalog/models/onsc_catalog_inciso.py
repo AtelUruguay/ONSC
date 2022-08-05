@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 from odoo import models, fields, tools, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 
 
 class ONSCCatalogInciso(models.Model):

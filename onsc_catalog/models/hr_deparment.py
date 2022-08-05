@@ -94,15 +94,14 @@ class Department(models.Model):
             elif record.function_nature == 'adviser':
                 domain.extend([
                     ('hierarchical_level_order', '=', 1),
-                    ('hierarchical_level_id.is_central_administration', '=', True),])
+                    ('hierarchical_level_id.is_central_administration', '=', True), ])
             else:
                 domain.extend([
                     ('hierarchical_level_order', '=', 1),
                     ('function_nature', '=', 'operative'),
-                    ('hierarchical_level_id.is_central_administration', '=', True),])
+                    ('hierarchical_level_id.is_central_administration', '=', True), ])
             uo_ids = UO.search(domain).ids
             record.parent_id_domain = json.dumps([('id', 'in', uo_ids)])
-
 
     @api.onchange('start_date')
     def onchange_start_date(self):
