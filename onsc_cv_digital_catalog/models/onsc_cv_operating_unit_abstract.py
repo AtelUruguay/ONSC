@@ -15,7 +15,7 @@ def calc_company_name(record):
 
 class ONSCCVOperatingUnitAbstract(models.AbstractModel):
     _name = 'onsc.cv.operating.unit.abstract'
-    _description = 'Clase abstracta de unidad operativo e inciso'
+    _description = 'Clase abstracta de unidad ejecutora e inciso'
 
     inciso_id = fields.Many2one("onsc.catalog.inciso.report", string="Inciso")
     inciso_id_domain = fields.Char(compute='_compute_inciso_id_domain')

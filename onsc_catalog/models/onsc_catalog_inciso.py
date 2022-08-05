@@ -93,22 +93,26 @@ class ONSCCatalogIncisoView(models.Model):
     _description = 'Vista sql de incisos'
     _auto = False
 
-    identifier = fields.Char('Identificador')
-    company_id = fields.Integer('Id de compañía')
-    name = fields.Char('Nombre', compute='_compute_name', compute_sudo=True)
-    budget_code = fields.Char('Código presupuestal (SIIF)')
-    short_name = fields.Char('Sigla')
+    identifier = fields.Char('Identificador', compute='_compute_fields_with_history', compute_sudo=True)
+    company_id = fields.Integer('Id de compañía', compute='_compute_fields_with_history', compute_sudo=True)
+    name = fields.Char('Nombre', compute='_compute_fields_with_history', compute_sudo=True)
+    budget_code = fields.Char('Código presupuestal (SIIF)', compute='_compute_fields_with_history', compute_sudo=True)
+    short_name = fields.Char('Sigla', compute='_compute_fields_with_history', compute_sudo=True)
     start_date = fields.Date(string="Inicio de vigencia")
     end_date = fields.Date(string="Fin de vigencia")
 
     @api.depends('company_id')
-    def _compute_name(self):
+    def _compute_fields_with_history(self):
         for rec in self:
-            rec.name = self.env['res.company'].browse(rec.company_id).name
+            Inciso = self.env['onsc.catalog.inciso'].search([('id', '=', rec.id)])
+            rec.identifier = Inciso.identifier
+            rec.name = Inciso.company_name
+            rec.company_id = Inciso.company_id.id
+            rec.budget_code = Inciso.budget_code
+            rec.short_name = Inciso.short_name
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''
               CREATE OR REPLACE VIEW %s AS (
-              SELECT id, identifier, company_id, budget_code, short_name, start_date, end_date
-                FROM onsc_catalog_inciso)''' % (self._table,))
+              SELECT id, start_date, end_date FROM onsc_catalog_inciso)''' % (self._table,))
