@@ -65,15 +65,29 @@ class OperatingUnitReport(models.Model):
     _description = 'Vista sql de unidad operativa'
     _auto = False
 
-    name = fields.Char('Nombre')
-    code = fields.Char('Código')
-    budget_code = fields.Char(u"Código presupuestal (SIIF)")
+    name = fields.Char('Nombre', compute='_compute_fields_with_history', compute_sudo=True)
+    short_name = fields.Char('Sigla', compute='_compute_fields_with_history', compute_sudo=True)
+    code = fields.Char('Código', compute='_compute_fields_with_history', compute_sudo=True)
+    budget_code = fields.Char(u"Código presupuestal (SIIF)", compute='_compute_fields_with_history', compute_sudo=True)
     start_date = fields.Date(string="Inicio de vigencia")
     end_date = fields.Date(string="Fin de vigencia")
     company_id = fields.Integer('Id de compañía')
-    inciso_id = fields.Integer('Inciso')
+    inciso_id = fields.Integer('Inciso', compute='_compute_fields_with_history', compute_sudo=True)
     inciso_report_id = fields.Many2one('onsc.catalog.inciso.report', 'Inciso', compute='_compute_inciso_report_id',
                                        search='_search_inciso_report_id')
+
+    @api.depends('company_id')
+    def _compute_fields_with_history(self):
+        for rec in self:
+            OU = self.env['operating.unit'].browse(rec.id).read(['name', 'short_name', 'code',
+                                                                 'budget_code', 'inciso_id'])
+            read_values = OU and OU[0] or {}
+
+            rec.name = read_values.get('name')
+            rec.short_name = read_values.get('short_name')
+            rec.code = read_values.get('code')
+            rec.budget_code = read_values.get('budget_code')
+            rec.inciso_id = read_values.get('inciso_id') and read_values.get('inciso_id')[0] or 0
 
     def _search_inciso_report_id(self, operator, value):
         return [('inciso_id', operator, value)]
@@ -87,5 +101,4 @@ class OperatingUnitReport(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''
               CREATE OR REPLACE VIEW %s AS (
-              SELECT id, code, name, budget_code, start_date, end_date, company_id, inciso_id
-                FROM operating_unit)''' % (self._table,))
+              SELECT id, start_date, end_date, company_id FROM operating_unit)''' % (self._table,))
