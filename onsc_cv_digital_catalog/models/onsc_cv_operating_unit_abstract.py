@@ -34,9 +34,9 @@ class ONSCCVOperatingUnitAbstract(models.AbstractModel):
         for rec in self:
             domain = []
             if rec.start_date:
-                domain += ['|', ('date_begin', '=', False), ('date_begin', '<=', fields.Date.to_string(rec.start_date))]
+                domain += ['|', ('start_date', '=', False), ('start_date', '<=', fields.Date.to_string(rec.start_date))]
             if rec.end_date:
-                domain += ['|', ('date_end', '>=', fields.Date.to_string(rec.end_date)), ('date_end', '=', False)]
+                domain += ['|', ('end_date', '>=', fields.Date.to_string(rec.end_date)), ('end_date', '=', False)]
             self.inciso_id_domain = json.dumps(domain)
 
     @api.depends('start_date', 'end_date', 'inciso_id')
@@ -46,10 +46,10 @@ class ONSCCVOperatingUnitAbstract(models.AbstractModel):
             if rec.inciso_id:
                 domain += [('inciso_id', '=', rec.inciso_id.id)]
             if rec.start_date:
-                domain += (['|', ('date_begin', '=', False),
-                            ('date_begin', '<=', fields.Date.to_string(rec.start_date))])
+                domain += (['|', ('start_date', '=', False),
+                            ('start_date', '<=', fields.Date.to_string(rec.start_date))])
             if rec.end_date:
-                domain += ['|', ('date_end', '>=', fields.Date.to_string(rec.end_date)), ('date_end', '=', False)]
+                domain += ['|', ('end_date', '>=', fields.Date.to_string(rec.end_date)), ('end_date', '=', False)]
             self.operating_unit_id_domain = json.dumps(domain)
 
     @api.onchange('inciso_id')
@@ -59,23 +59,23 @@ class ONSCCVOperatingUnitAbstract(models.AbstractModel):
 
     @api.onchange('start_date')
     def onchange_start_date_check_inciso(self):
-        if self.inciso_id and self.start_date and self.inciso_id.date_begin \
-                and self.inciso_id.date_begin > self.start_date:
+        if self.inciso_id and self.start_date and self.inciso_id.start_date \
+                and self.inciso_id.start_date > self.start_date:
             self.inciso_id = False
             return cv_warning(_("La fecha de vigencia inicio del inciso debe ser menor o igual que el período desde"))
-        if self.inciso_id and self.start_date and self.operating_unit_id.date_begin \
-                and self.operating_unit_id.date_begin > self.start_date:
+        if self.inciso_id and self.start_date and self.operating_unit_id.start_date \
+                and self.operating_unit_id.start_date > self.start_date:
             self.operating_unit_id = False
             return cv_warning(
                 _("La fecha de vigencia inicio de la unidad operativa debe ser mayor o igual que el período desde"))
 
     @api.onchange('end_date')
     def onchange_end_date_check_inciso(self):
-        if self.inciso_id and self.end_date and self.inciso_id.date_end and self.inciso_id.date_end < self.end_date:
+        if self.inciso_id and self.end_date and self.inciso_id.end_date and self.inciso_id.end_date < self.end_date:
             self.inciso_id = False
             return cv_warning(_("La fecha de vigencia de fin del inciso debe ser menor o igual el período hasta"))
-        if self.inciso_id and self.end_date and self.operating_unit_id.date_end \
-                and self.operating_unit_id.date_end < self.end_date:
+        if self.inciso_id and self.end_date and self.operating_unit_id.end_date \
+                and self.operating_unit_id.end_date < self.end_date:
             self.operating_unit_id = False
             return cv_warning(
                 _("La fecha de vigencia de fin de la unidad operativa debe ser mayor o igual el período hasta"))
