@@ -19,6 +19,7 @@
                             <group>
                                 <field name="code" required="True"/>
                                 <field name="name" string="Nombre UO"/>
+                                <field name="eff_date" string="Fecha efectiva"/>
                                 <field name="inciso_id" required="1" options="{'no_create': True}"/>
                                 <field name="operating_unit_id"
                                        required="1"
@@ -29,7 +30,6 @@
                                        domain="hierarchical_level_id_domain"
                                        attrs="{'invisible': [('function_nature_form', '=', 'form2')],'required': [('function_nature_form', '=', 'form1')]}"
                                        options="{'no_create': True}"/>
-                                <field name="eff_date" string="Fecha efectiva"/>
                                 <field name="start_date" required="1"/>
                                 <field name="end_date"/>
                                 <field name="short_name"

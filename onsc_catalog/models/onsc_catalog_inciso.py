@@ -29,6 +29,7 @@ class ONSCCatalogInciso(models.Model):
                                string='Nombre',
                                readonly=False,
                                store=True,
+                               tracking=True,
                                history=True)
     identifier = fields.Char(string="Identificador", required=True, tracking=True, history=True)
     budget_code = fields.Char(u"Código presupuestal (SIIF)", required=True, tracking=True, history=True)

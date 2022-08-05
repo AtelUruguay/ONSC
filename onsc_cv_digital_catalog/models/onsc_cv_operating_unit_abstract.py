@@ -5,9 +5,10 @@ from odoo import fields, models, api
 
 
 def calc_company_name(record):
-    if record.inciso_id and record.operating_unit_id and record.company_name:
-        return '%s-%s-%s' % (
-            record.inciso_id.short_name, record.operating_unit_id.budget_code, record.company_name)
+    if record.inciso_id and record.operating_unit_id and not record.company_name:
+        return '%s-%s' % (record.inciso_id.display_name, record.operating_unit_id.display_name)
+    elif record.inciso_id and record.operating_unit_id and record.company_name:
+        return '%s-%s-%s' % (record.inciso_id.display_name, record.operating_unit_id.display_name, record.company_name)
     else:
         return record.company_name
 
