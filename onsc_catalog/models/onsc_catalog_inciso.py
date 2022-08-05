@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 from odoo import models, fields, tools, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 
 
 class ONSCCatalogInciso(models.Model):
@@ -33,7 +33,10 @@ class ONSCCatalogInciso(models.Model):
     is_into_nacional_budget = fields.Boolean(u"¿Integra el presupuesto nacional?", tracking=True, history=True)
     section_220_221 = fields.Char(u"Artículo 220 o 221", tracking=True, history=True)
     reference_ministry = fields.Char("Ministerio de referencia", tracking=True, history=True)
-    is_central_administration = fields.Boolean(u"¿Es administración central?", tracking=True, history=True)
+    is_central_administration = fields.Boolean(u"¿Es administración central?",
+                                               tracking=True,
+                                               history=True,
+                                               default=True)
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
     write_date = fields.Datetime("Fecha de última modificación", index=True, readonly=True)
@@ -60,6 +63,14 @@ class ONSCCatalogInciso(models.Model):
             return catalog_warning(_(u"La fecha de fin de vigencia no puede ser menor "
                                      u"que la fecha de inicio de vigencia"))
 
+    @api.model
+    def create(self, values):
+        result = super(ONSCCatalogInciso, self).create(values)
+        self.env.user.sudo().write({
+            'company_ids': [(4, result.company_id.id)]
+        })
+        return result
+
 
 class ONSCCatalogIncisoHistory(models.Model):
     _inherit = ['model.history.data']
@@ -77,8 +88,8 @@ class ONSCCatalogIncisoView(models.Model):
     name = fields.Char('Nombre', compute='_compute_name', compute_sudo=True)
     budget_code = fields.Char('Código presupuestal (SIIF)')
     short_name = fields.Char('Sigla')
-    date_begin = fields.Date(string="Inicio de vigencia")
-    date_end = fields.Date(string="Fin de vigencia")
+    start_date = fields.Date(string="Inicio de vigencia")
+    end_date = fields.Date(string="Fin de vigencia")
 
     @api.depends('company_id')
     def _compute_name(self):
@@ -89,5 +100,5 @@ class ONSCCatalogIncisoView(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''
               CREATE OR REPLACE VIEW %s AS (
-              SELECT id, identifier, company_id, budget_code, short_name, date_begin, date_end
+              SELECT id, identifier, company_id, budget_code, short_name, start_date, end_date
                 FROM onsc_catalog_inciso)''' % (self._table,))

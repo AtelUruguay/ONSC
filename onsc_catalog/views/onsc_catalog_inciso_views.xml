@@ -39,6 +39,7 @@
                                     <field name="identifier"/>
                                     <field name="budget_code"/>
                                     <field name="short_name"/>
+                                    <field name="eff_date" string="Fecha efectiva"/>
                                     <field name="start_date"/>
                                     <field name="end_date"/>
                                     <field name="createupdate_regulation"/>
@@ -47,7 +48,6 @@
                                 <group>
                                     <field name="section_220_221"/>
                                     <field name="reference_ministry"/>
-                                    <field name="createupdate_regulation"/>
                                     <field name="is_institutional"/>
                                     <field name="is_public_company"/>
                                     <field name="is_into_nacional_budget"/>
