@@ -33,7 +33,10 @@ class ONSCCatalogInciso(models.Model):
     is_into_nacional_budget = fields.Boolean(u"¿Integra el presupuesto nacional?", tracking=True, history=True)
     section_220_221 = fields.Char(u"Artículo 220 o 221", tracking=True, history=True)
     reference_ministry = fields.Char("Ministerio de referencia", tracking=True, history=True)
-    is_central_administration = fields.Boolean(u"¿Es administración central?", tracking=True, history=True)
+    is_central_administration = fields.Boolean(u"¿Es administración central?",
+                                               tracking=True,
+                                               history=True,
+                                               default=True)
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
     write_date = fields.Datetime("Fecha de última modificación", index=True, readonly=True)
@@ -59,6 +62,14 @@ class ONSCCatalogInciso(models.Model):
             self.end_date = False
             return catalog_warning(_(u"La fecha de fin de vigencia no puede ser menor "
                                      u"que la fecha de inicio de vigencia"))
+
+    @api.model
+    def create(self, values):
+        result = super(ONSCCatalogInciso, self).create(values)
+        self.env.user.sudo().write({
+            'company_ids': [(4, result.company_id.id)]
+        })
+        return result
 
 
 class ONSCCatalogIncisoHistory(models.Model):

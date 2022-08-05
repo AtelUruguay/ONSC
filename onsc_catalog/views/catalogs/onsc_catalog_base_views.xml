@@ -19,7 +19,7 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="order"/>
-                <field name="is_central_admin"/>
+                <field name="is_central_administration"/>
             </tree>
         </field>
     </record>
@@ -38,7 +38,7 @@
                             <field name="order"/>
                         </group>
                         <group>
-                            <field name="is_central_admin"/>
+                            <field name="is_central_administration"/>
                             <field name="description"/>
                         </group>
                     </group>

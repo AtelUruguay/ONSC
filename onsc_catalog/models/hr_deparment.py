@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 from odoo import api, fields, models, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 
@@ -18,6 +20,7 @@ class Department(models.Model):
     parent_id = fields.Many2one('hr.department', string='Parent Department', index=True,
                                 domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
                                 history=True)
+    parent_id_domain = fields.Char(compute='_compute_parent_id_domain')
     name = fields.Char('Department Name', required=True, history=True)
     short_name = fields.Char(string="Nombre corto", history=True)
     function_nature = fields.Selection(string=u"Naturaleza de la función",
@@ -29,6 +32,8 @@ class Department(models.Model):
                                            ('program', 'Programa'),
                                        ], history=True)
     hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico", history=True)
+    hierarchical_level_order = fields.Integer(string="Orden", related='hierarchical_level_id.order', store=True)
+    hierarchical_level_id_domain = fields.Char(compute='_compute_hierarchical_level_id_domain')
     function_nature_form = fields.Selection(selection=[
         ('form1', 'Formulario 1'),
         ('form2', 'Formulario 2'),
@@ -66,6 +71,39 @@ class Department(models.Model):
             else:
                 record.function_nature_form = 'form2'
 
+    @api.depends('inciso_id', 'function_nature')
+    def _compute_hierarchical_level_id_domain(self):
+        HierarchicalLevel = self.env['onsc.catalog.hierarchical.level']
+        for record in self:
+            domain = [('is_central_administration', '=', record.inciso_id.is_central_administration)]
+            if record.function_nature == 'adviser':
+                domain.append(('order', 'in', [1, 2]))
+            elif record.function_nature in ['program', 'commission_project', 'comite']:
+                domain.append(('order', 'in', [1]))
+            record.hierarchical_level_id_domain = json.dumps([('id', 'in', HierarchicalLevel.search(domain).ids)])
+
+    @api.depends('function_nature', 'hierarchical_level_id', 'operating_unit_id', 'hierarchical_level_order')
+    def _compute_parent_id_domain(self):
+        UO = self.env['hr.department']
+        for record in self:
+            domain = [('id', 'not in', self.ids), ('operating_unit_id', '=', record.operating_unit_id.id)]
+            if record.function_nature == 'operative':
+                domain.extend([
+                    ('hierarchical_level_order', '<', record.hierarchical_level_order),
+                    ('hierarchical_level_order', '>', 0)])
+            elif record.function_nature == 'adviser':
+                domain.extend([
+                    ('hierarchical_level_order', '=', 1),
+                    ('hierarchical_level_id.is_central_administration', '=', True),])
+            else:
+                domain.extend([
+                    ('hierarchical_level_order', '=', 1),
+                    ('function_nature', '=', 'operative'),
+                    ('hierarchical_level_id.is_central_administration', '=', True),])
+            uo_ids = UO.search(domain).ids
+            record.parent_id_domain = json.dumps([('id', 'in', uo_ids)])
+
+
     @api.onchange('start_date')
     def onchange_start_date(self):
         if self.start_date and self.end_date and self.end_date < self.start_date:
@@ -83,11 +121,17 @@ class Department(models.Model):
     @api.onchange('inciso_id')
     def onchange_inciso_id(self):
         self.operating_unit_id = False
+        if self.inciso_id.id is False or self.inciso_id.is_central_administration != self.hierarchical_level_id.is_central_administration:
+            self.hierarchical_level_id = False
 
     @api.onchange('operating_unit_id')
     def onchange_operating_unit_id(self):
         if self.operating_unit_id.id is False or self.parent_id.operating_unit_id != self.operating_unit_id:
             self.parent_id = False
+
+    @api.onchange('function_nature')
+    def onchange_function_nature(self):
+        self.hierarchical_level_id = False
 
     @api.onchange('is_approve_onsc')
     def onchange_is_approve_onsc(self):
