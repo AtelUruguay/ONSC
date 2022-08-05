@@ -11,6 +11,15 @@ class ONSCCatalogInciso(models.Model):
     _description = 'Incisos'
     _history_model = 'onsc.catalog.inciso.history'
 
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        """
+        """
+        if self.user_has_groups('onsc_catalog.group_catalog_configurador_servicio_civil'):
+            args += [('company_id', 'in', self._context.get('allowed_company_ids'))]
+        return super(ONSCCatalogInciso, self)._search(args, offset=offset, limit=limit, order=order, count=count,
+                                                         access_rights_uid=access_rights_uid)
+
     company_id = fields.Many2one('res.company',
                                  required=True,
                                  auto_join=True,
@@ -18,6 +27,7 @@ class ONSCCatalogInciso(models.Model):
                                  ondelete="cascade")
     company_name = fields.Char(related='company_id.name',
                                string='Nombre',
+                               readonly=False,
                                store=True,
                                history=True)
     identifier = fields.Char(string="Identificador", required=True, tracking=True, history=True)
