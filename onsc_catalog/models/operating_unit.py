@@ -68,8 +68,8 @@ class OperatingUnitReport(models.Model):
     name = fields.Char('Nombre')
     code = fields.Char('Código')
     budget_code = fields.Char(u"Código presupuestal (SIIF)")
-    date_begin = fields.Date(string="Inicio de vigencia")
-    date_end = fields.Date(string="Fin de vigencia")
+    start_date = fields.Date(string="Inicio de vigencia")
+    end_date = fields.Date(string="Fin de vigencia")
     company_id = fields.Integer('Id de compañía')
     inciso_id = fields.Integer('Inciso')
     inciso_report_id = fields.Many2one('onsc.catalog.inciso.report', 'Inciso', compute='_compute_inciso_report_id',
@@ -87,5 +87,5 @@ class OperatingUnitReport(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''
               CREATE OR REPLACE VIEW %s AS (
-              SELECT id, code, name, budget_code, date_begin, date_end, company_id, inciso_id
+              SELECT id, code, name, budget_code, start_date, end_date, company_id, inciso_id
                 FROM operating_unit)''' % (self._table,))

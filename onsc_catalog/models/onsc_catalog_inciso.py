@@ -88,8 +88,8 @@ class ONSCCatalogIncisoView(models.Model):
     name = fields.Char('Nombre', compute='_compute_name', compute_sudo=True)
     budget_code = fields.Char('Código presupuestal (SIIF)')
     short_name = fields.Char('Sigla')
-    date_begin = fields.Date(string="Inicio de vigencia")
-    date_end = fields.Date(string="Fin de vigencia")
+    start_date = fields.Date(string="Inicio de vigencia")
+    end_date = fields.Date(string="Fin de vigencia")
 
     @api.depends('company_id')
     def _compute_name(self):
@@ -100,5 +100,5 @@ class ONSCCatalogIncisoView(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''
               CREATE OR REPLACE VIEW %s AS (
-              SELECT id, identifier, company_id, budget_code, short_name, date_begin, date_end
+              SELECT id, identifier, company_id, budget_code, short_name, start_date, end_date
                 FROM onsc_catalog_inciso)''' % (self._table,))
