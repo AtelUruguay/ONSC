@@ -65,16 +65,17 @@ class OperatingUnitReport(models.Model):
     _description = 'Vista sql de unidad operativa'
     _auto = False
 
-    name = fields.Char('Nombre', compute='_compute_fields_with_history', compute_sudo=True)
-    short_name = fields.Char('Sigla', compute='_compute_fields_with_history', compute_sudo=True)
-    code = fields.Char('Código', compute='_compute_fields_with_history', compute_sudo=True)
-    budget_code = fields.Char(u"Código presupuestal (SIIF)", compute='_compute_fields_with_history', compute_sudo=True)
+    name = fields.Char('Nombre', compute='_compute_fields_with_history', compute_sudo=True, search='_search_name_ou')
+    short_name = fields.Char('Sigla', compute='_compute_fields_with_history', compute_sudo=True,
+                             search='_search_short_name')
+    code = fields.Char('Código', compute='_compute_fields_with_history', compute_sudo=True, search='_search_code')
+    budget_code = fields.Char(u"Código presupuestal (SIIF)", compute='_compute_fields_with_history', compute_sudo=True,
+                              search='_search_budget_code')
     start_date = fields.Date(string="Inicio de vigencia")
     end_date = fields.Date(string="Fin de vigencia")
     company_id = fields.Integer('Id de compañía')
-    inciso_id = fields.Integer('Inciso', compute='_compute_fields_with_history', compute_sudo=True)
-    inciso_report_id = fields.Many2one('onsc.catalog.inciso.report', 'Inciso', compute='_compute_inciso_report_id',
-                                       search='_search_inciso_report_id')
+    inciso_id = fields.Integer('Inciso', compute='_compute_fields_with_history', search='_search_inciso_id',
+                               compute_sudo=True)
 
     @api.depends('company_id')
     def _compute_fields_with_history(self):
@@ -87,15 +88,29 @@ class OperatingUnitReport(models.Model):
             rec.short_name = read_values.get('short_name')
             rec.code = read_values.get('code')
             rec.budget_code = read_values.get('budget_code')
-            rec.inciso_id = read_values.get('inciso_id') and read_values.get('inciso_id')[0] or 0
+            inciso_id = read_values.get('inciso_id')
+            inciso_id = isinstance(inciso_id, tuple) and inciso_id[0]
+            rec.inciso_id = inciso_id
 
-    def _search_inciso_report_id(self, operator, value):
-        return [('inciso_id', operator, value)]
+    def _search_inciso_id(self, operator, value):
+        OU = self.env['operating.unit'].sudo().search([('inciso_id', operator, value)])
+        return [('id', 'in', OU.ids)]
 
-    @api.depends('inciso_id')
-    def _compute_inciso_report_id(self):
-        for rec in self:
-            rec.inciso_report_id = self.env['onsc.catalog.inciso.report'].browse(rec.inciso_id)
+    def _search_name_ou(self, operator, value):
+        OU = self.env['operating.unit'].sudo().search([('name', operator, value)])
+        return [('id', 'in', OU.ids)]
+
+    def _search_short_name(self, operator, value):
+        OU = self.env['operating.unit'].sudo().search([('short_name', operator, value)])
+        return [('id', 'in', OU.ids)]
+
+    def _search_code(self, operator, value):
+        OU = self.env['operating.unit'].sudo().search([('code', operator, value)])
+        return [('id', 'in', OU.ids)]
+
+    def _search_budget_code(self, operator, value):
+        OU = self.env['operating.unit'].sudo().search([('budget_code', operator, value)])
+        return [('id', 'in', OU.ids)]
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
