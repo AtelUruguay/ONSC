@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import json
+
 from odoo import fields, models, api
 
 
@@ -42,19 +43,21 @@ class ONSCCVOperatingUnitAbstract(models.AbstractModel):
     @api.depends('start_date', 'end_date', 'inciso_id')
     def _compute_operating_unit_id_domain(self):
         for rec in self:
-            domain = []
-            if rec.inciso_id:
-                domain += [('inciso_id', '=', rec.inciso_id.id)]
-            if rec.start_date:
-                domain += (['|', ('start_date', '=', False),
-                            ('start_date', '<=', fields.Date.to_string(rec.start_date))])
-            if rec.end_date:
-                domain += ['|', ('end_date', '>=', fields.Date.to_string(rec.end_date)), ('end_date', '=', False)]
-            self.operating_unit_id_domain = json.dumps(domain)
+            if rec.inciso_id.id is False:
+                self.operating_unit_id_domain = json.dumps([('id', 'in', [])])
+            else:
+                domain = [('inciso_id', '=', rec.inciso_id.id)]
+                if rec.start_date:
+                    domain = ['&'] + domain + [('start_date', '<=', fields.Date.to_string(rec.start_date))]
+                if rec.end_date:
+                    domain = ['&'] + domain + ['|', ('end_date', '>=', fields.Date.to_string(rec.end_date)),
+                                               ('end_date', '=', False)]
+                self.operating_unit_id_domain = json.dumps(domain)
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
-        if self.inciso_id and self.operating_unit_id and self.operating_unit_id.inciso_report_id != self.inciso_id:
+        if self.inciso_id.id is False or (
+                self.inciso_id and self.operating_unit_id and self.operating_unit_id.inciso_report_id != self.inciso_id):
             self.operating_unit_id = False
 
     @api.onchange('start_date')

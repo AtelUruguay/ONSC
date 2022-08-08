@@ -4,6 +4,7 @@ import json
 
 from odoo import api, fields, models, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
+from odoo.exceptions import ValidationError
 
 
 class Department(models.Model):
@@ -11,18 +12,21 @@ class Department(models.Model):
     _inherit = ['hr.department', 'model.history']
     _history_model = 'hr.department.history'
 
-    code = fields.Integer('Identificador')
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True)
+    code = fields.Char('Identificador',
+                       default=lambda self: self.env['ir.sequence'].next_by_code('onsc.catalog.inciso.identifier'),
+                       copy=False)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', tracking=True, history=True)
     company_id = fields.Many2one('res.company',
                                  related='inciso_id.company_id',
                                  store=True, history=True)
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", tracking=True, history=True)
     parent_id = fields.Many2one('hr.department', string='Parent Department', index=True,
                                 domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
+                                tracking=True,
                                 history=True)
     parent_id_domain = fields.Char(compute='_compute_parent_id_domain')
-    name = fields.Char('Department Name', required=True, history=True)
-    short_name = fields.Char(string="Nombre corto", history=True)
+    name = fields.Char('Department Name', required=True, tracking=True, history=True)
+    short_name = fields.Char(string="Nombre corto", tracking=True, history=True)
     function_nature = fields.Selection(string=u"Naturaleza de la función",
                                        selection=[
                                            ('adviser', 'Asesora'),
@@ -30,33 +34,34 @@ class Department(models.Model):
                                            ('comite', 'Comité'),
                                            ('commission_project', 'Comisión/Proyecto'),
                                            ('program', 'Programa'),
-                                       ], history=True)
-    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico", history=True)
+                                       ], tracking=True, history=True)
+    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico", tracking=True,
+                                            history=True)
     hierarchical_level_order = fields.Integer(string="Orden", related='hierarchical_level_id.order', store=True)
     hierarchical_level_id_domain = fields.Char(compute='_compute_hierarchical_level_id_domain')
     function_nature_form = fields.Selection(selection=[
         ('form1', 'Formulario 1'),
         ('form2', 'Formulario 2'),
     ], compute='_compute_function_nature_form', store=True)
-    mission = fields.Char(string="Misión", history=True)
+    mission = fields.Char(string="Misión", history=True, tracking=True)
     reponsability_ids = fields.One2many("hr.department.responsability",
                                         inverse_name="department_id",
                                         string="Lista de responsabilidades", history=True)
-    key_functional_habilities = fields.Char(string="Competencias funcionales claves", history=True)
-    process_contributor = fields.Char(string="Procesos a los que contribuye", history=True)
-    regulatory = fields.Char(string="Marco normativo", history=True)
-    start_date = fields.Date(string='Inicio de vigencia', history=True)
-    end_date = fields.Date(string='Fin de vigencia', history=True)
+    key_functional_habilities = fields.Char(string="Competencias funcionales claves", tracking=True, history=True)
+    process_contributor = fields.Char(string="Procesos a los que contribuye", tracking=True, history=True)
+    regulatory = fields.Char(string="Marco normativo", tracking=True, history=True)
+    start_date = fields.Date(string='Inicio de vigencia', tracking=True, history=True)
+    end_date = fields.Date(string='Fin de vigencia', tracking=True, history=True)
     category = fields.Selection(string=u"Categoría", selection=[
         ('planning', 'PLANIFICACION ESTRATEGICA'),
         ('financial_management', 'GESTION FINANCIERA'),
         ('technology', u'TECNOLOGIA y REDISEÑO DE PROCESOS'),
         ('human_management', 'GESTION HUMANA'),
-    ], history=True)
-    is_approve_onsc = fields.Boolean(string="Aprobado ONSC")
-    approve_onsc_date = fields.Date(string=u"Fecha aprobación ONSC")
-    is_approve_cgn = fields.Boolean(string="Aprobado CGN")
-    approve_cgn_date = fields.Date(string=u"Fecha aprobación CGN")
+    ], tracking=True, history=True)
+    is_approve_onsc = fields.Boolean(string="Aprobado ONSC", copy=False, tracking=True)
+    approve_onsc_date = fields.Date(string=u"Fecha aprobación ONSC", copy=False, )
+    is_approve_cgn = fields.Boolean(string="Aprobado CGN", copy=False, tracking=True, )
+    approve_cgn_date = fields.Date(string=u"Fecha aprobación CGN", copy=False)
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
     write_date = fields.Datetime('Fecha de última modificación', index=True, readonly=True)
@@ -155,11 +160,49 @@ class Department(models.Model):
             self.process_contributor = False
             self.reponsability_ids = [(5,)]
 
+    def write(self, vals):
+        self._check_user_can_write()
+        return super(Department, self).write(vals)
+
+    def toggle_active(self):
+        self._check_toggle_active()
+        return super(Department, self.with_context(no_check_write=True)).toggle_active()
+
+    def _check_user_can_write(self):
+        if self.env.context.get('no_check_write', False) is False and self.user_has_groups(
+                "onsc_catalog.group_catalog_aprobador_cgn") and self.user_has_groups(
+            "onsc_catalog.group_catalog_configurador_servicio_civil") is False:
+            raise ValidationError(_("No puede editar información de la Unidad organizativa. "
+                                    "La única operación permitida es Aprobar CGN"))
+        if self.env.context.get('no_check_write', False) is False and self.user_has_groups(
+                "onsc_catalog.group_catalog_configurador_servicio_civil"):
+            for record in self:
+                condition1 = (record.is_approve_cgn is True and record.is_approve_onsc is False)
+                condition2 = (record.is_approve_cgn is False and record.is_approve_onsc is True)
+                if condition1 or condition2:
+                    raise ValidationError(_("Solo puede editar si la aprobación CGN y ONSC "
+                                            "están ambas marcadas o desmarcadas"))
+
+    def _check_toggle_active(self):
+        if False in self.mapped('is_approve_cgn'):
+            raise ValidationError(_("No puede archivar o desarchivar una Unidad organizativa si no está Aprobada CGN!"))
+        for record in self.filtered(lambda x: x.active is True):
+            if self.search_count([('id', '!=', record.id), ('id', 'child_of', record.id), ('active', '=', True)]):
+                raise ValidationError(_(u"No puede desactivar una Unidad organizativa si tiene dependencias activas!"))
+        return True
+
     def action_aprobar_cgn(self):
-        self.write({'is_approve_cgn': True, 'approve_cgn_date': fields.Date.today(), 'active': True})
+        return self.suspend_security().with_context(no_check_write=True).write({
+            'is_approve_cgn': True,
+            'approve_cgn_date': fields.Date.today(),
+            'active': True
+        })
 
     def action_aprobar_onsc(self):
-        self.write({'is_approve_onsc': True, 'approve_onsc_date': fields.Date.today()})
+        return self.with_context(no_check_write=True).write({
+            'is_approve_onsc': True,
+            'approve_onsc_date': fields.Date.today()
+        })
 
 
 class DepartmentResponsability(models.Model):
