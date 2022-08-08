@@ -169,9 +169,9 @@ class Department(models.Model):
         return super(Department, self.with_context(no_check_write=True)).toggle_active()
 
     def _check_user_can_write(self):
-        if self.env.context.get('no_check_write', False) is False and self.user_has_groups(
-                "onsc_catalog.group_catalog_aprobador_cgn") and self.user_has_groups(
-            "onsc_catalog.group_catalog_configurador_servicio_civil") is False:
+        is_cgn = self.user_has_groups("onsc_catalog.group_catalog_aprobador_cgn")
+        is_not_configurador = self.user_has_groups("onsc_catalog.group_catalog_configurador_servicio_civil") is False
+        if self.env.context.get('no_check_write', False) is False and is_cgn and is_not_configurador:
             raise ValidationError(_("No puede editar información de la Unidad organizativa. "
                                     "La única operación permitida es Aprobar CGN"))
         if self.env.context.get('no_check_write', False) is False and self.user_has_groups(
