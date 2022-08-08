@@ -96,11 +96,18 @@ class ONSCCatalogIncisoView(models.Model):
 
     identifier = fields.Char('Identificador', compute='_compute_fields_with_history', compute_sudo=True)
     company_id = fields.Integer('Id de compañía')
-    name = fields.Char('Nombre', compute='_compute_fields_with_history', compute_sudo=True)
+    name = fields.Char('Nombre', compute='_compute_fields_with_history', compute_sudo=True,
+                       search='_search_name_inciso')
     budget_code = fields.Char('Código presupuestal (SIIF)', compute='_compute_fields_with_history', compute_sudo=True)
     short_name = fields.Char('Sigla', compute='_compute_fields_with_history', compute_sudo=True)
     start_date = fields.Date(string="Inicio de vigencia")
     end_date = fields.Date(string="Fin de vigencia")
+
+    def _search_name_inciso(self, operator, value):
+        if operator == 'ilike':
+            value = '%' + value + '%'
+        Inciso = self.env['onsc.catalog.inciso'].sudo().search([('company_name', operator, value)])
+        return [('id', 'in', Inciso.ids)]
 
     @api.depends('company_id')
     def _compute_fields_with_history(self):

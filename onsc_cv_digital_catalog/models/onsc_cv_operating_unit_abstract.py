@@ -56,9 +56,7 @@ class ONSCCVOperatingUnitAbstract(models.AbstractModel):
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
-        if self.inciso_id.id is False or (
-                self.inciso_id and self.operating_unit_id and self.operating_unit_id.inciso_report_id != self.inciso_id):
-            self.operating_unit_id = False
+        self.operating_unit_id = False
 
     @api.onchange('start_date')
     def onchange_start_date_check_inciso(self):
