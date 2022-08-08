@@ -17,7 +17,7 @@
         <field name="name">Aprobador CGN</field>
         <field name="comment">Aprobador CGN</field>
         <field name="category_id" ref="module_category_onsc_catalog"/>
-        <field name="implied_ids" eval="[(4, ref('hr.group_hr_manager')),(4, ref('onsc_catalog.group_catalog_configurador_servicio_civil'))]"/>
+        <field name="implied_ids" eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view')),(4, ref('model_history.group_edit_rec_date')),(4, ref('model_history.group_history_retrieve_from')),(4, ref('model_history.group_history_modify'))]"/>
     </record>
 </data>
 </odoo>

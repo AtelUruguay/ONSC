@@ -9,11 +9,13 @@ ONSC - Catálogos
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['hr', 'mail', 'operating_unit', 'model_history', 'onsc_base'],
+    'depends': ['hr', 'mail', 'operating_unit', 'model_history', 'suspend_security', 'onsc_base'],
     'data': [
         'security/onsc_catalog_security.xml',
-        'security/onsc_catalog_rules.xml',
         'security/ir.model.access.csv',
+
+        'data/onsc_catalog_data.xml',
+
         'views/catalogs/onsc_catalog_base_views.xml',
         'views/onsc_catalog_inciso_views.xml',
         'views/operating_unit_views.xml',
