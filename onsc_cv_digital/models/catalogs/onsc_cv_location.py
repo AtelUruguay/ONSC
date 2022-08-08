@@ -17,10 +17,6 @@ class ONSCCVLocation(models.Model):
                                domain="[('country_id','=',country_id)]")
     other_code = fields.Integer(string=u'Otro código', tracking=True)
 
-    # _sql_constraints = [
-    #     ('localidad_name_by_state_unique', 'unique(name, state_id)',
-    #      'Ya existe una localidad con ese nombre en el mismo departamento'), ]
-
     @api.onchange('country_id')
     def _onchange_country_id(self):
         if (self.country_id and self.country_id != self.state_id.country_id) or self.country_id.id is False:
@@ -37,5 +33,4 @@ class ONSCCVLocation(models.Model):
         return super(ONSCCVLocation, self).write(values)
 
     def _get_conditional_unicity_message(self):
-        _("Ya existe un registro validado para %s, Departamento: %s" % (self.name,
-                                                                        self.state_id.display_name))
+        return _("Ya existe un registro validado para %s, Departamento: %s" % (self.name, self.state_id.display_name))

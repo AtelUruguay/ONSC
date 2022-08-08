@@ -241,7 +241,7 @@
                                     <field name="cv_address_state_id" string="Departamento"
                                            domain="[('country_id', '=?', country_id)]"
                                            context="{'default_country_id': country_id, 'is_readonly': True}"
-                                           options="{'no_open': True, 'no_quick_create': True}"/>
+                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="cv_address_location_id"
                                            domain="[('state_id', '=?', cv_address_state_id)]"
                                            attrs="{'readonly': [('cv_address_state_id', '=', False)]}"

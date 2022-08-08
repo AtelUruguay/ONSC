@@ -13,7 +13,7 @@
                             <field name="country_id" string="Pais donde desempeñó"
                                    options="{'no_open': True, 'no_quick_create': True}"/>
                             <field name="city_id"
-                                   options="{'no_open': True, 'no_quick_create': True}"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                    domain="[('country_id', '=?', country_id)]"
                                    attrs="{'readonly': [('country_id', '=', False)]}"
                                    context="{'default_country_id': country_id, 'is_readonly': True}"/>
