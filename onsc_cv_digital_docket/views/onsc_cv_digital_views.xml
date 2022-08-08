@@ -84,6 +84,7 @@
                                        attrs="{'required': [('is_docket_active', '=', True)]}"/>
                             </div>
                             <field name="department_id" attrs="{'required': [('is_docket_active', '=', True)]}"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                    domain="[('country_id.code','=','UY')]"/>
                             <separator string="Otros datos" style="font-size: 12px"></separator>
                             <field name="blood_type"
