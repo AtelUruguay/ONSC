@@ -9,7 +9,7 @@ ONSC - Base
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['base'],
+    'depends': ['base', 'web_responsive'],
     'data': [
     ],
     'demo': [],
