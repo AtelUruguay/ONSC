@@ -136,6 +136,12 @@ class Department(models.Model):
     @api.onchange('function_nature')
     def onchange_function_nature(self):
         self.hierarchical_level_id = False
+        self.parent_id = False
+
+    @api.onchange('hierarchical_level_id')
+    def onchange_hierarchical_level_id(self):
+        self.parent_id = False
+
 
     @api.onchange('is_approve_onsc')
     def onchange_is_approve_onsc(self):
