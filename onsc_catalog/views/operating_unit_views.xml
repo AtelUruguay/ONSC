@@ -47,7 +47,7 @@
         <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_view_operating_unit_tree')}),
-            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_view_operating_unit_tree')})]"/>
+            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_view_operating_unit_form')})]"/>
         <field name="help" type="html">
             <p class="oe_view_nocontent_create">Crear una nueva Unidad ejecutora</p>
         </field>
