@@ -142,7 +142,6 @@ class Department(models.Model):
     def onchange_hierarchical_level_id(self):
         self.parent_id = False
 
-
     @api.onchange('is_approve_onsc')
     def onchange_is_approve_onsc(self):
         if self.is_approve_onsc:
