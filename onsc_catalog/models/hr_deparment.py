@@ -185,7 +185,7 @@ class Department(models.Model):
                 condition1 = (record.is_approve_cgn is True and record.is_approve_onsc is False)
                 condition2 = (record.is_approve_cgn is False and record.is_approve_onsc is True)
                 if condition1 or condition2:
-                    raise ValidationError(_("Solo puede editar si la aprobación CGN y ONSC "
+                    raise ValidationError(_("Solo puede editar si la aprobación ONSC y CGN"
                                             "están ambas marcadas o desmarcadas"))
 
     def _check_toggle_active(self):
