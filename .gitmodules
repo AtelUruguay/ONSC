@@ -1,12 +1,12 @@
 [submodule "OCA/operating_unit"]
-	path = OCA/operating_unit
+	path = SUBMODULOS/OCA/operating_unit
 	url = https://github.com/OCA/operating-unit.git
 	branch = 15.0
 [submodule "OCA/web"]
-	path = OCA/web
+	path = SUBMODULOS/OCA/web
 	url = https://github.com/OCA/web.git
 	branch = 15.0
 [submodule "Quanam/utils"]
-	path = Quanam/utils
+	path = SUBMODULOS/Quanam/utils
 	url = https://gitlab.quanam.com/ONSC/utils.git
 	branch = 15.0
