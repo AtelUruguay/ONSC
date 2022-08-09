@@ -9,7 +9,8 @@ ONSC CV Digital
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['base', 'mail', 'web_domain_field', 'phone_validation', 'onsc_base'],
+    'depends': ['base', 'mail', 'web_domain_field', 'phone_validation', 'onsc_base',
+                'web_relational_field_with_create_edit_option'],
     'data': [
         'security/onsc_cv_digital_security.xml',
         'security/onsc_cv_digital_rules.xml',
