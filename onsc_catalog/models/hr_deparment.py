@@ -15,11 +15,15 @@ class Department(models.Model):
     code = fields.Char('Identificador',
                        default=lambda self: self.env['ir.sequence'].next_by_code('onsc.catalog.inciso.identifier'),
                        copy=False)
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', tracking=True, history=True)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso',
+                                ondelete='restrict',
+                                tracking=True, history=True)
     company_id = fields.Many2one('res.company',
                                  related='inciso_id.company_id',
                                  store=True, history=True)
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", tracking=True, history=True)
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
+                                        ondelete='restrict',
+                                        tracking=True, history=True)
     parent_id = fields.Many2one('hr.department', string='Parent Department', index=True,
                                 domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
                                 tracking=True,
@@ -35,7 +39,9 @@ class Department(models.Model):
                                            ('commission_project', 'Comisión/Proyecto'),
                                            ('program', 'Programa'),
                                        ], tracking=True, history=True)
-    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico", tracking=True,
+    hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico",
+                                            tracking=True,
+                                            ondelete='restrict',
                                             history=True)
     hierarchical_level_order = fields.Integer(string="Orden", related='hierarchical_level_id.order', store=True)
     hierarchical_level_id_domain = fields.Char(compute='_compute_hierarchical_level_id_domain')
@@ -208,10 +214,14 @@ class Department(models.Model):
                 [self.env.ref('onsc_catalog.onsc_catalog_department_form').id, 'form'],
             ]
         }
+        _context = dict(self._context, default_active=False)
         if self.env.user.has_group('onsc_catalog.group_catalog_aprobador_cgn'):
-            vals['context'] = dict(self._context, search_default_filter_inactive_cgn=1)
+            vals['context'] = dict(_context, search_default_filter_inactive_cgn=1,
+                                   create=False,
+                                   delete=False,
+                                   edit=False)
         else:
-            vals['context'] = dict(self._context)
+            vals['context'] = _context
         return vals
 
     def action_aprobar_cgn(self):

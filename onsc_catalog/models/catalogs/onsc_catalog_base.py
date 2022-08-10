@@ -17,7 +17,7 @@ class ONSCCVStatusCivil(models.Model):
     @api.constrains("order")
     def _check_order(self):
         if any(record.order == 0 for record in self):
-            raise ValidationError(_(u"El orden debe ser mayor 0"))
+            raise ValidationError(_(u"El orden debe ser mayor a 0"))
 
     _sql_constraints = [
         ('is_central_name_uniq',
@@ -25,6 +25,6 @@ class ONSCCVStatusCivil(models.Model):
          u'El nombre del nivel jerárquico debe ser único'),
         ('is_central_code_uniq', 'unique(is_central_administration,code)',
          u'El código del nivel jerárquico debe ser único'),
-        ('is_central_order_uniq', 'unique(is_central_administration,code)',
+        ('is_central_order_uniq', 'unique(is_central_administration,order)',
          u'El orden del nivel jerárquico debe ser único'),
     ]
