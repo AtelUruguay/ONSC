@@ -124,7 +124,7 @@
                     <field name="code"/>
                     <field name="parent_id" />
                     <separator/>
-                    <filter string="Archivados para aprobar CGN" name="inactive_cgn" domain="[('active','=',False),('is_approve_cgn','=',False)]"/>
+                    <filter string="Archivados para aprobar CGN" name="filter_inactive_cgn" domain="[('active','=',False),('is_approve_cgn','=',False)]"/>
                     <filter string="Archivados" name="filter_inactive" domain="[('active','=',False)]"/>
                     <filter string="No Archivados" name="filter_active" domain="[('active','=',True)]"/>
                     <searchpanel>
@@ -135,20 +135,14 @@
                 </search>
              </field>
         </record>
-        
-        <record id="onsc_catalog_catalog_department_action" model="ir.actions.act_window">
+
+        <record id="onsc_catalog_department_server_action" model="ir.actions.server">
             <field name="name">Unidades organizativas</field>
-            <field name="res_model">hr.department</field>
-            <field name="view_mode">tree,form</field>
-            <field name="search_view_id" ref="onsc_catalog_department_search"/>
-            <field name="view_ids" eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_catalog_department_tree')}),
-            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_catalog_department_form')})]"/>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Crear una nueva unidad organizativa
-                </p><p>
-                </p>
+            <field name="type">ir.actions.server</field>
+            <field name="state">code</field>
+            <field name="model_id" ref="model_hr_department"/>
+            <field name="code">
+                action = model._action_open_view()
             </field>
         </record>
     </data>

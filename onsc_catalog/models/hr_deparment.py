@@ -185,7 +185,7 @@ class Department(models.Model):
                 condition1 = (record.is_approve_cgn is True and record.is_approve_onsc is False)
                 condition2 = (record.is_approve_cgn is False and record.is_approve_onsc is True)
                 if condition1 or condition2:
-                    raise ValidationError(_("Solo puede editar si la aprobación ONSC y CGN"
+                    raise ValidationError(_("Solo puede editar si la aprobación ONSC y CGN "
                                             "están ambas marcadas o desmarcadas"))
 
     def _check_toggle_active(self):
@@ -195,6 +195,24 @@ class Department(models.Model):
             if self.search_count([('id', '!=', record.id), ('id', 'child_of', record.id), ('active', '=', True)]):
                 raise ValidationError(_(u"No puede desactivar una Unidad organizativa si tiene dependencias activas!"))
         return True
+
+    def _action_open_view(self):
+        vals = {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'res_model': self._name,
+            'name': 'Unidades organizativas',
+            'search_view_id': [self.env.ref('onsc_catalog.onsc_catalog_department_search').id, 'search'],
+            'views': [
+                [self.env.ref('onsc_catalog.onsc_catalog_department_tree').id, 'tree'],
+                [self.env.ref('onsc_catalog.onsc_catalog_department_form').id, 'form'],
+            ]
+        }
+        if self.env.user.has_group('onsc_catalog.group_catalog_aprobador_cgn'):
+            vals['context'] = dict(self._context, search_default_filter_inactive_cgn=1)
+        else:
+            vals['context'] = dict(self._context)
+        return vals
 
     def action_aprobar_cgn(self):
         return self.suspend_security().with_context(no_check_write=True).write({
