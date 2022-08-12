@@ -33,4 +33,16 @@
               parent="onsc_catalog_config_menu"
               groups="group_catalog_configurador_servicio_civil"
               sequence="3"/>
+        <menuitem id="onsc_cv_catalog_occupational_family_menu"
+              name="Familias ocupacionales"
+              action="onsc_catalog_occupational_family_action"
+              parent="onsc_catalog_config_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="4"/>
+        <menuitem id="onsc_cv_catalog_management_process_menu"
+              name="Procesos de gestión"
+              action="onsc_catalog_management_process_action"
+              parent="onsc_catalog_config_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="5"/>
 </odoo>

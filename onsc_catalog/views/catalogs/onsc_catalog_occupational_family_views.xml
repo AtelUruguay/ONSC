@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_catalog_occupational_family_search" model="ir.ui.view">
+        <field name="name">onsc.catalog.occupational.family.search</field>
+        <field name="model">onsc.catalog.occupational.family</field>
+        <field name="arch" type="xml">
+            <search string="Familias ocupacionales">
+                <field name="name" string="Nombre de la familia ocupacional"/>
+                <field name="identifier"/>
+                <field name="short_name"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_occupational_family_form" model="ir.ui.view">
+        <field name="name">onsc.catalog.occupational.family.form</field>
+        <field name="model">onsc.catalog.occupational.family</field>
+        <field name="arch" type="xml">
+            <form string="Familias ocupacionales">
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nombre de la familia ocupacional"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group name="main_group">
+                        <group>
+                            <field name="eff_date" string="Fecha efectiva"/>
+                            <field name="identifier" readonly="1"/>
+                            <field name="code"/>
+                            <field name="short_name"/>
+                        </group>
+                        <group>
+                            <field name="start_date" required="True"/>
+                            <field name="end_date"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Observaciones">
+                            <field name="description" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_occupational_family_tree" model="ir.ui.view">
+        <field name="name">onsc.catalog.occupational.family.tree</field>
+        <field name="model">onsc.catalog.occupational.family</field>
+        <field name="arch" type="xml">
+            <tree string="Familias ocupacionales">
+                <field name="name" string="Nombre de la familia ocupacional"/>
+                <field name="identifier"/>
+                <field name="code"/>
+                <field name="short_name"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id='onsc_catalog_occupational_family_action' model='ir.actions.act_window'>
+        <field name="name">Familias ocupacionales</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.catalog.occupational.family</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva familia ocupacional
+            </p>
+        </field>
+    </record>
+</odoo>
