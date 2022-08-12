@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_catalog_management_process_search" model="ir.ui.view">
+        <field name="name">onsc.catalog.management.process.search</field>
+        <field name="model">onsc.catalog.management.process</field>
+        <field name="arch" type="xml">
+            <search string="Procesos de gestión">
+                <field name="name" string="Nombre del proceso de gestión"/>
+                <field name="identifier"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_management_process_form" model="ir.ui.view">
+        <field name="name">onsc.catalog.management.process.form</field>
+        <field name="model">onsc.catalog.management.process</field>
+        <field name="arch" type="xml">
+            <form string="Procesos de gestión">
+                <header>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name" string="Nombre del proceso de gestión"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group name="main_group">
+                        <group>
+                            <field name="eff_date" string="Fecha efectiva"/>
+                            <field name="identifier" readonly="1"/>
+                            <field name="code"/>
+                        </group>
+                        <group>
+                            <field name="start_date" required="True"/>
+                            <field name="end_date"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook colspan="4">
+                        <page string="Observaciones">
+                            <field name="description" nolabel="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_management_process_tree" model="ir.ui.view">
+        <field name="name">onsc.catalog.management.process.tree</field>
+        <field name="model">onsc.catalog.management.process</field>
+        <field name="arch" type="xml">
+            <tree string="Procesos de gestión">
+                <field name="name" string="Nombre del proceso de gestión"/>
+                <field name="identifier"/>
+                <field name="code"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id='onsc_catalog_management_process_action' model='ir.actions.act_window'>
+        <field name="name">Procesos de gestión</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.catalog.management.process</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo proceso de gestión
+            </p>
+        </field>
+    </record>
+</odoo>

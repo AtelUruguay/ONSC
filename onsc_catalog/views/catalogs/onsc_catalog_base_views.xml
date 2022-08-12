@@ -5,7 +5,7 @@
         <field name="model">onsc.catalog.hierarchical.level</field>
         <field name="arch" type="xml">
             <search string="Niveles jerárquicos">
-                <field name="name"/>
+                <field name="name" string=""/>
                 <field name="code"/>
             </search>
         </field>
