@@ -33,4 +33,3 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
         :rtype: True or raise ValidationError
         """
         return True
-
