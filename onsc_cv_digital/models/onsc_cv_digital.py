@@ -16,6 +16,10 @@ SITUATION = u'Está en situación de discapacidad y/o requieres algún apoyo par
 DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del ministerio de desarrollo social?'
 
 
+def diff_month(d1, d2):
+    return (d1.year - d2.year) * 12 + d1.month - d2.month
+
+
 class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
     _description = 'Currículum digital'
@@ -90,6 +94,8 @@ class ONSCCVDigital(models.Model):
     email = fields.Char(
         string="Email",
         related='partner_id.email', store=True)
+    last_modification_date = fields.Date(string=u'Fecha última modificación', store=True,
+                                         compute='_compute_last_modification_date', readonly=True)
 
     # INFORMACION GENERAL---<Page>
     # Genero
@@ -366,6 +372,14 @@ class ONSCCVDigital(models.Model):
                 record.is_need_other_support = False
             record.type_support_ids_domain = type_support_ids
 
+    @api.depends(lambda model: ('create_date', 'write_date') if model._log_access else ())
+    def _compute_last_modification_date(self):
+        if self._log_access:
+            for record in self:
+                record.last_modification_date = record.write_date or record.create_date or fields.Date.today()
+        else:
+            self.last_modification_date = fields.Date.today()
+
     @api.constrains('cv_sex_updated_date', 'cv_birthdate')
     def _check_valid_dates(self):
         today = fields.Date.from_string(fields.Date.today())
@@ -513,6 +527,58 @@ class ONSCCVDigital(models.Model):
         else:
             result = {}
         return result
+
+    @api.model
+    def _run_send_inactivity_cv_cron(self):
+        """
+        Cron que envia la notificación al usuario por período de inactividad en el CV
+        :return:
+        """
+        parameter_inactivity = self.env['ir.config_parameter'].sudo().get_param('parameter_inactivity_cv_value')
+        onsc_cv_digistals = self.env['onsc.cv.digital'].search([])
+        today = fields.Date.today()
+        try:
+            if int(eval(str(parameter_inactivity))):
+                pass
+        except:
+            raise ValidationError(_("El valor del parámetro de incatividad del CV tiene que ser un número entero"))
+        for onsc_cv_digistal in onsc_cv_digistals:
+            if onsc_cv_digistal.last_modification_date and today != onsc_cv_digistal.last_modification_date:
+                rest_value = today - onsc_cv_digistal.last_modification_date
+                date_value = int(rest_value.days) % int(parameter_inactivity)
+                if not date_value:
+                    months = diff_month(today, onsc_cv_digistal.last_modification_date)
+                    email_template_id = self.env.ref('onsc_cv_digital.email_template_inactivity_cv')
+                    model_id = self.env['ir.model']._get_id(self._name)
+                    email_template_id.model_id = model_id
+                    body = """
+                                    <html>
+                                        <body>
+                                           <div style="margin: 0px; padding: 0px;">
+                                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                                Estimado Usuario,
+                                                <br/>
+                                                Han pasado %s meses desde su ultima modificación a su CV digital . Recuerde mantenerlo
+                                                actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado Uruguayo.
+                                                <br/>
+                                                Si es funcionario publico de la Administración Central, recuerde que mantener su CV digital al
+                                                día es la única forma de actualizar la información personal y la formación de su legajo laboral.
+                                                <br/>
+                                                Puede chequear su CV digital a través del siguiente link a la plataforma GHE.uy
+                                                <br/>
+                                                Cualquier consulta puede dirigirse a mesa.servicios@onsc.gub.uy.
+                                            </p>
+                                        </div>
+                                        </body>
+                                    </html>
+                                """ % months
+                    email_values = {
+                        'email_from': self.env.user.email_formatted,
+                        'email_to': self.partner_id.email,
+                        'body_html': body,
+                    }
+                    return email_template_id.send_mail(self.id, force_send=True, email_values=email_values,
+                                                       notif_layout='mail.mail_notification_light')
 
     def _check_todisable(self):
         _documentary_validation_state = self._get_documentary_validation_state()
