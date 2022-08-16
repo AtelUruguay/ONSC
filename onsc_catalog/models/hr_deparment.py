@@ -9,7 +9,7 @@ from odoo.exceptions import ValidationError
 
 class Department(models.Model):
     _name = "hr.department"
-    _inherit = ['hr.department', 'model.history']
+    _inherit = ['hr.department', 'model.history', 'onsc.catalog.abstract.approval']
     _history_model = 'hr.department.history'
 
     code = fields.Char('Identificador',
@@ -64,10 +64,6 @@ class Department(models.Model):
         ('technology', u'TECNOLOGIA y REDISEÑO DE PROCESOS'),
         ('human_management', 'GESTION HUMANA'),
     ], tracking=True, history=True)
-    is_approve_onsc = fields.Boolean(string="Aprobado ONSC", copy=False, tracking=True)
-    approve_onsc_date = fields.Date(string=u"Fecha aprobación ONSC", copy=False, )
-    is_approve_cgn = fields.Boolean(string="Aprobado CGN", copy=False, tracking=True, )
-    approve_cgn_date = fields.Date(string=u"Fecha aprobación CGN", copy=False)
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
     write_date = fields.Datetime('Fecha de última modificación', index=True, readonly=True)
@@ -148,20 +144,6 @@ class Department(models.Model):
     def onchange_hierarchical_level_id(self):
         self.parent_id = False
 
-    @api.onchange('is_approve_onsc')
-    def onchange_is_approve_onsc(self):
-        if self.is_approve_onsc:
-            self.approve_onsc_date = fields.Date.today()
-        else:
-            self.approve_onsc_date = False
-
-    @api.onchange('is_approve_cgn')
-    def onchange_is_approve_cgn(self):
-        if self.is_approve_cgn:
-            self.approve_cgn_date = fields.Date.today()
-        else:
-            self.approve_cgn_date = False
-
     @api.onchange('function_nature_form')
     def onchange_function_nature_form(self):
         if self.function_nature_form == 'form2':
@@ -171,36 +153,15 @@ class Department(models.Model):
             self.process_contributor = False
             self.reponsability_ids = [(5,)]
 
-    def write(self, vals):
-        self._check_user_can_write()
-        return super(Department, self).write(vals)
-
     def toggle_active(self):
         self._check_toggle_active()
         return super(Department, self.with_context(no_check_write=True)).toggle_active()
 
-    def _check_user_can_write(self):
-        is_cgn = self.user_has_groups("onsc_catalog.group_catalog_aprobador_cgn")
-        is_not_configurador = self.user_has_groups("onsc_catalog.group_catalog_configurador_servicio_civil") is False
-        if self.env.context.get('no_check_write', False) is False and is_cgn and is_not_configurador:
-            raise ValidationError(_("No puede editar información de la Unidad organizativa. "
-                                    "La única operación permitida es Aprobar CGN"))
-        if self.env.context.get('no_check_write', False) is False and self.user_has_groups(
-                "onsc_catalog.group_catalog_configurador_servicio_civil"):
-            for record in self:
-                condition1 = (record.is_approve_cgn is True and record.is_approve_onsc is False)
-                condition2 = (record.is_approve_cgn is False and record.is_approve_onsc is True)
-                if condition1 or condition2:
-                    raise ValidationError(_("Solo puede editar si la aprobación ONSC y CGN "
-                                            "están ambas marcadas o desmarcadas"))
-
     def _check_toggle_active(self):
-        if False in self.mapped('is_approve_cgn'):
-            raise ValidationError(_("No puede archivar o desarchivar una Unidad organizativa si no está Aprobada CGN!"))
         for record in self.filtered(lambda x: x.active is True):
             if self.search_count([('id', '!=', record.id), ('id', 'child_of', record.id), ('active', '=', True)]):
                 raise ValidationError(_(u"No puede desactivar una Unidad organizativa si tiene dependencias activas!"))
-        return True
+        return super(Department, self)._check_toggle_active()
 
     def _action_open_view(self):
         vals = {
@@ -223,19 +184,6 @@ class Department(models.Model):
         else:
             vals['context'] = _context
         return vals
-
-    def action_aprobar_cgn(self):
-        return self.suspend_security().with_context(no_check_write=True).write({
-            'is_approve_cgn': True,
-            'approve_cgn_date': fields.Date.today(),
-            'active': True
-        })
-
-    def action_aprobar_onsc(self):
-        return self.with_context(no_check_write=True).write({
-            'is_approve_onsc': True,
-            'approve_onsc_date': fields.Date.today()
-        })
 
 
 class DepartmentResponsability(models.Model):
