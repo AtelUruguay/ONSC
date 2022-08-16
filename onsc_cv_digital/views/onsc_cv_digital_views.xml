@@ -507,9 +507,4 @@
             </p>
         </field>
     </record>
-
-    <record id="parameter_inactivity_cv" model="ir.config_parameter">
-        <field name="key">parameter_inactivity_cv_value</field>
-        <field name="value">0</field>
-    </record>
 </odoo>
