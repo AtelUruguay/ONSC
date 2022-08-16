@@ -535,50 +535,51 @@ class ONSCCVDigital(models.Model):
         :return:
         """
         parameter_inactivity = self.env['ir.config_parameter'].sudo().get_param('parameter_inactivity_cv_value')
-        onsc_cv_digistals = self.env['onsc.cv.digital'].search([])
-        today = fields.Date.today()
         try:
             if int(eval(str(parameter_inactivity))):
                 pass
         except:
             raise ValidationError(_("El valor del parámetro de incatividad del CV tiene que ser un número entero"))
-        for onsc_cv_digistal in onsc_cv_digistals:
-            if onsc_cv_digistal.last_modification_date and today != onsc_cv_digistal.last_modification_date:
-                rest_value = today - onsc_cv_digistal.last_modification_date
-                date_value = int(rest_value.days) % int(parameter_inactivity)
-                if not date_value:
-                    months = diff_month(today, onsc_cv_digistal.last_modification_date)
-                    email_template_id = self.env.ref('onsc_cv_digital.email_template_inactivity_cv')
-                    model_id = self.env['ir.model']._get_id(self._name)
-                    email_template_id.model_id = model_id
-                    body = """
-                                    <html>
-                                        <body>
-                                           <div style="margin: 0px; padding: 0px;">
-                                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                                                Estimado Usuario,
-                                                <br/>
-                                                Han pasado %s meses desde su ultima modificación a su CV digital . Recuerde mantenerlo
-                                                actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado Uruguayo.
-                                                <br/>
-                                                Si es funcionario publico de la Administración Central, recuerde que mantener su CV digital al
-                                                día es la única forma de actualizar la información personal y la formación de su legajo laboral.
-                                                <br/>
-                                                Puede chequear su CV digital a través del siguiente link a la plataforma GHE.uy
-                                                <br/>
-                                                Cualquier consulta puede dirigirse a mesa.servicios@onsc.gub.uy.
-                                            </p>
-                                        </div>
-                                        </body>
-                                    </html>
-                                """ % months
-                    email_values = {
-                        'email_from': self.env.user.email_formatted,
-                        'email_to': self.partner_id.email,
-                        'body_html': body,
-                    }
-                    return email_template_id.send_mail(self.id, force_send=True, email_values=email_values,
-                                                       notif_layout='mail.mail_notification_light')
+
+        email_template_id = self.env.ref('onsc_cv_digital.email_template_inactivity_cv')
+        model_id = self.env['ir.model']._get_id(self._name)
+        email_template_id.model_id = model_id
+        today = fields.Date.today()
+        onsc_cv_digitals = self.env['onsc.cv.digital'].search(
+            [('last_modification_date', '!=', False), 
+             ('last_modification_date', '!=', today)])
+        for onsc_cv_digital in onsc_cv_digitals:
+            rest_value = today - onsc_cv_digital.last_modification_date
+            date_value = int(rest_value.days) % int(parameter_inactivity)
+            if not date_value:
+                months = diff_month(today, onsc_cv_digital.last_modification_date)
+                body = _("""
+                    <html>
+                        <body>
+                           <div style="margin: 0px; padding: 0px;">
+                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                Estimado Usuario,
+                                <br/>
+                                Han pasado %s meses desde su ultima modificación a su CV digital . Recuerde mantenerlo
+                                actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado Uruguayo.
+                                <br/>
+                                Si es funcionario publico de la Administración Central, recuerde que mantener su CV digital al
+                                día es la única forma de actualizar la información personal y la formación de su legajo laboral.
+                                <br/>
+                                Puede chequear su CV digital a través del siguiente link a la plataforma GHE.uy
+                                <br/>
+                                Cualquier consulta puede dirigirse a mesa.servicios@onsc.gub.uy.
+                            </p>
+                        </div>
+                        </body>
+                    </html>""") % months
+                email_values = {
+                    'email_from': self.env.user.email_formatted,
+                    'email_to': onsc_cv_digital.partner_id.email,
+                    'body_html': body,
+                }
+                email_template_id.send_mail(onsc_cv_digital.id, force_send=True, email_values=email_values,
+                                            notif_layout='mail.mail_notification_light')
 
     def _check_todisable(self):
         _documentary_validation_state = self._get_documentary_validation_state()
