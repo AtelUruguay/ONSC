@@ -17,6 +17,7 @@ ONSC CV Digital
         'security/onsc_cv_digital_rules.xml',
         'security/ir.model.access.csv',
         'data/mail_template_data.xml',
+        'data/ir_cron_data.xml',
         'data/onsc_cv_civil_status_data.xml',
         'data/onsc_cv_drivers_license_categories_data.xml',
         'data/onsc_cv_gender_data.xml',
