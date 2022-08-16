@@ -51,4 +51,16 @@
               parent="onsc_catalog_config_menu"
               groups="group_catalog_configurador_servicio_civil"
               sequence="5"/>
+        <menuitem id="onsc_catalog_type_organization_menu"
+              name="Tipos de organismos"
+              action="onsc_catalog_type_organization_action"
+              parent="onsc_catalog_config_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="6"/>
+        <menuitem id="onsc_catalog_topic_addressed_menu"
+              name="Temáticas abordadas"
+              action="onsc_catalog_topic_addressed_action"
+              parent="onsc_catalog_config_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="7"/>
 </odoo>

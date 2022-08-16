@@ -60,3 +60,15 @@ class ONSCCatalogManagementProcessHistory(models.Model):
     _description = u'Proceso de gestión: Historial'
     _inherit = ['model.history.data']
     _parent_model = 'onsc.catalog.management.process'
+
+
+class ONSCCatalogTypeOrganization(models.Model):
+    _name = 'onsc.catalog.type.organization'
+    _description = u'Tipo de organismo'
+    _inherit = ['onsc.cv.catalog.abstract']
+
+
+class ONSCCatalogTopicAddressed(models.Model):
+    _name = 'onsc.catalog.topic.addressed'
+    _description = u'Temática abordada'
+    _inherit = ['onsc.cv.catalog.abstract']

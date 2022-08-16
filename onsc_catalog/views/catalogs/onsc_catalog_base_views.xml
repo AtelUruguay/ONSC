@@ -57,4 +57,108 @@
             </p>
         </field>
     </record>
+
+<!--    Catálogo tipo de organismo-->
+    <record id="onsc_catalog_type_organization_search" model="ir.ui.view">
+        <field name="name">onsc.catalog.type.organization.search</field>
+        <field name="model">onsc.catalog.type.organization</field>
+        <field name="arch" type="xml">
+            <search string="Tipos de organismos">
+                <field name="name"/>
+                <field name="code"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_type_organization_tree" model="ir.ui.view">
+        <field name="name">onsc.catalog.type.organization.tree</field>
+        <field name="model">onsc.catalog.type.organization</field>
+        <field name="arch" type="xml">
+            <tree string="Tipos de organismos" editable="top">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_type_organization_form" model="ir.ui.view">
+        <field name="name">onsc.catalog.type.organization.form</field>
+        <field name="model">onsc.catalog.type.organization</field>
+        <field name="arch" type="xml">
+            <form string="Tipos de organismos">
+                <header/>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_catalog_type_organization_action' model='ir.actions.act_window'>
+        <field name="name">Tipos de organismos</field>
+        <field name="res_model">onsc.catalog.type.organization</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo tipo de organismo
+            </p>
+        </field>
+    </record>
+
+    <!--    Catálogo tipo de organismo-->
+    <record id="onsc_catalog_topic_addressed_search" model="ir.ui.view">
+        <field name="name">onsc.catalog.topic.addressed.search</field>
+        <field name="model">onsc.catalog.topic.addressed</field>
+        <field name="arch" type="xml">
+            <search string="Temáticas abordadas">
+                <field name="name"/>
+                <field name="code"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_topic_addressed_tree" model="ir.ui.view">
+        <field name="name">onsc.catalog.topic.addressed.tree</field>
+        <field name="model">onsc.catalog.topic.addressed</field>
+        <field name="arch" type="xml">
+            <tree string="Temáticas abordadas" editable="top">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_catalog_topic_addressed_form" model="ir.ui.view">
+        <field name="name">onsc.catalog.topic.addressed.form</field>
+        <field name="model">onsc.catalog.topic.addressed</field>
+        <field name="arch" type="xml">
+            <form string="Temáticas abordadas">
+                <header/>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="code"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_catalog_topic_addressed_action' model='ir.actions.act_window'>
+        <field name="name">Temáticas abordadas</field>
+        <field name="res_model">onsc.catalog.topic.addressed</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva temática abordada
+            </p>
+        </field>
+    </record>
 </odoo>
