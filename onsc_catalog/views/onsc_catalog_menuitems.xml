@@ -23,6 +23,12 @@
               parent="onsc_catalog_root_menu"
               groups="group_catalog_configurador_servicio_civil,group_catalog_aprobador_cgn"
               sequence="3"/>
+    <menuitem id="onsc_cv_catalog_occupation_menu"
+              name="Ocupaciones"
+              action="onsc_catalog_occupation_server_action"
+              parent="onsc_catalog_root_menu"
+              groups="group_catalog_configurador_servicio_civil,group_catalog_aprobador_cgn"
+              sequence="4"/>
     <menuitem id="onsc_catalog_config_menu"
               name="Catálogos"
               parent="onsc_catalog_root_menu"

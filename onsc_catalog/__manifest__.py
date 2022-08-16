@@ -20,6 +20,7 @@ ONSC - Catálogos
         'views/onsc_catalog_inciso_views.xml',
         'views/operating_unit_views.xml',
         'views/hr_department_views.xml',
+        'views/onsc_catalog_occupation_views.xml',
 
         'views/catalogs/onsc_catalog_occupational_family_views.xml',
         'views/catalogs/onsc_catalog_management_process_views.xml',

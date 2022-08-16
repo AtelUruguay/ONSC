@@ -4,3 +4,4 @@ from . import catalogs
 from . import onsc_catalog_inciso
 from . import operating_unit
 from . import hr_deparment
+from . import onsc_catalog_occupation
