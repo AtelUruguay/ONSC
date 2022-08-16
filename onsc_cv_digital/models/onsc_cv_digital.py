@@ -5,6 +5,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+from abstracts.onsc_cv_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
@@ -118,6 +119,9 @@ class ONSCCVDigital(models.Model):
     # Información patronímica
     cv_full_name_updated_date = fields.Date(related='partner_id.cv_full_name_updated_date',
                                             string="Fecha de información")
+    cv_gral_info_documentary_validation_state = fields.Selection(string="Estado de validación documental",
+                                                    selection=DOCUMENTARY_VALIDATION_STATES,
+                                                    default='to_validate')
 
     # DOMICILIO----<Page>
     country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
@@ -183,6 +187,9 @@ class ONSCCVDigital(models.Model):
     relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
+    cv_address_documentary_validation_state = fields.Selection(string="Estado de validación documental",
+                                                              selection=DOCUMENTARY_VALIDATION_STATES,
+                                                              default='to_validate')
 
     # Formación----<Page>
     basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica')
@@ -237,6 +244,9 @@ class ONSCCVDigital(models.Model):
                                                compute='_compute_cv_type_support_domain')
     need_other_support = fields.Char(string=u"¿Necesita otro apoyo?")
     is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain')
+    cv_disabilitie_documentary_validation_state = fields.Selection(string="Estado de validación documental",
+                                                              selection=DOCUMENTARY_VALIDATION_STATES,
+                                                              default='to_validate')
     # Participación en Eventos ----<Page>
     participation_event_ids = fields.One2many("onsc.cv.participation.event",
                                               inverse_name="cv_digital_id",

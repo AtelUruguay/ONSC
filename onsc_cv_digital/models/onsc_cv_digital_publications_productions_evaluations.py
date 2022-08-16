@@ -8,6 +8,7 @@ TYPES = [('publication', 'Publicación '), ('productions', 'Producciones '), ('e
 
 class ONSCCVDigitalPPEvaluations(models.Model):
     _name = 'onsc.cv.publication.production.evaluation'
+    _inherit = ['onsc.cv.abstract.documentary.validation']
     _description = 'Publicación, Producción y Evaluación'
     _order = 'date desc'
 

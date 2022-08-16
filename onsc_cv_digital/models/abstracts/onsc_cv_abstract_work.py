@@ -9,6 +9,7 @@ PAID_ACTIVITY_TYPES = WORKING_STATE
 
 class ONSCCVAbstractWork(models.AbstractModel):
     _name = 'onsc.cv.abstract.work'
+    _inherit = ['onsc.cv.abstract.documentary.validation']
     _description = 'Modelo abstracto para modelos de trabajos'
 
     hours_worked_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente")

@@ -250,8 +250,20 @@
 
     <menuitem id="onsc_cv_settings_menu"
               name="Configuración"
-              action="onsc_cv_digital_config_settings_action"
               parent="onsc_cv_root_menu"
-              groups="base.group_system"
               sequence="150"/>
+
+        <menuitem id="onsc_cv_config_settings_menu"
+                  name="Configuración"
+                  action="onsc_cv_digital_config_settings_action"
+                  parent="onsc_cv_settings_menu"
+                  groups="onsc_cv_digital.group_manager_cv"
+                  sequence="1"/>
+
+        <menuitem id="onsc_cv_documentary_validation_config_menu"
+                  name="Configuración de validaciones"
+                  action="onsc_cv_documentary_validation_config_action"
+                  parent="onsc_cv_settings_menu"
+                  groups="onsc_cv_digital.group_manager_cv"
+                  sequence="2"/>
 </odoo>
