@@ -2,10 +2,10 @@
 
 from lxml import etree
 from odoo import fields, models, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from odoo.exceptions import ValidationError
 
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
-from abstracts.onsc_cv_documentary_validation import DOCUMENTARY_VALIDATION_STATES
+from .abstracts.onsc_cv_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
@@ -120,8 +120,8 @@ class ONSCCVDigital(models.Model):
     cv_full_name_updated_date = fields.Date(related='partner_id.cv_full_name_updated_date',
                                             string="Fecha de información")
     cv_gral_info_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                    selection=DOCUMENTARY_VALIDATION_STATES,
-                                                    default='to_validate')
+                                                                 selection=DOCUMENTARY_VALIDATION_STATES,
+                                                                 default='to_validate')
 
     # DOMICILIO----<Page>
     country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
@@ -188,8 +188,8 @@ class ONSCCVDigital(models.Model):
     is_public_information_victim_violent = fields.Boolean(
         string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
     cv_address_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                              selection=DOCUMENTARY_VALIDATION_STATES,
-                                                              default='to_validate')
+                                                               selection=DOCUMENTARY_VALIDATION_STATES,
+                                                               default='to_validate')
 
     # Formación----<Page>
     basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica')
@@ -245,8 +245,8 @@ class ONSCCVDigital(models.Model):
     need_other_support = fields.Char(string=u"¿Necesita otro apoyo?")
     is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain')
     cv_disabilitie_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                              selection=DOCUMENTARY_VALIDATION_STATES,
-                                                              default='to_validate')
+                                                                   selection=DOCUMENTARY_VALIDATION_STATES,
+                                                                   default='to_validate')
     # Participación en Eventos ----<Page>
     participation_event_ids = fields.One2many("onsc.cv.participation.event",
                                               inverse_name="cv_digital_id",
@@ -463,7 +463,10 @@ class ONSCCVDigital(models.Model):
         self = self.sudo()
         form_id = self.env['ir.ui.view'].search([('name', '=', '%s.form.readonly' % self._name)], limit=1)
         if not form_id:
-            form_parent_id = self.env['ir.ui.view'].search([('model', '=', self._name), ('type', '=', 'form')], limit=1)
+            form_parent_id = self.env['ir.ui.view'].search([
+                ('model', '=', self._name),
+                ('type', '=', 'form')],
+                order='id ASC', limit=1)
             if form_parent_id:
                 arch = form_parent_id.arch
                 doc = etree.XML(arch)
@@ -471,6 +474,7 @@ class ONSCCVDigital(models.Model):
                     node_form.set('edit', '0')
                 form_id = self.env['ir.ui.view'].create(
                     {'name': '%s.form.readonly' % self._name,
+                     'type': 'form',
                      "model": self._name,
                      "priority": 100,
                      'arch': etree.tostring(doc, encoding='unicode')
