@@ -33,3 +33,12 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
         :rtype: True or raise ValidationError
         """
         return True
+
+
+class ONSCCVCatalogAbstract(models.AbstractModel):
+    _name = 'onsc.cv.catalog.abstract'
+    _description = 'Clase abstracta de catálogo '
+
+    code = fields.Char(string=u"Código")
+    name = fields.Char(string=u"Nombre")
+    description = fields.Text(string=u"Descripción")
