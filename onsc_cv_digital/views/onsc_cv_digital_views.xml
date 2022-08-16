@@ -40,6 +40,7 @@
                         <button class="oe_stat_button" name="toggle_active"
                                 confirm="¿Está seguro de que desea inactivar su CV?"
                                 string="Inactivar"
+                                groups="onsc_cv_digital.group_user_cv"
                                 attrs="{'invisible': [('active', '=', False)]}"
                                 type="object" icon="fa-archive"/>
                     </div>

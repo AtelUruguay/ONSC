@@ -417,6 +417,10 @@ class ONSCCVDigital(models.Model):
             self.to_date = False
             return cv_warning(_("La fecha hasta no puede ser menor que la fecha de certificado"))
 
+    def unlink(self):
+        if self._check_todisable():
+            return super(ONSCCVDigital, self).unlink()
+
     def button_edit_address(self):
         self.ensure_one()
         title = self.country_id and _('Editar domicilio') or _('Agregar domicilio')
@@ -434,6 +438,7 @@ class ONSCCVDigital(models.Model):
         }
 
     def toggle_active(self):
+        self._check_todisable()
         result = super().toggle_active()
         if len(self) == 1:
             return self.with_context(my_cv=self)._action_open_user_cv()
@@ -508,6 +513,21 @@ class ONSCCVDigital(models.Model):
         else:
             result = {}
         return result
+
+    def _check_todisable(self):
+        _documentary_validation_state = self._get_documentary_validation_state()
+        if _documentary_validation_state == 'validated' and self._is_rve_link():
+            raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y "
+                                    u"tiene vínculo con RVE"))
+        return True
+
+    def _get_documentary_validation_state(self):
+        # TODO este metodo debe retornar el estado final de la validacion documental de todo el CV
+        return 'to_validate'
+
+    def _is_rve_link(self):
+        # TODO incorporar código de Abelardo para check con RVE
+        return False
 
 
 class ONSCCVOtherRelevantInformation(models.Model):
