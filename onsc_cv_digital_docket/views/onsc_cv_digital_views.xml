@@ -5,6 +5,9 @@
         <field name="model">onsc.cv.digital</field>
         <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_form"/>
         <field name="arch" type="xml">
+            <button name="toggle_active" position="attributes">
+                <attribute name="attrs">{'invisible': ['|',('active', '=', False),('is_docket_active','=',True)]}</attribute>
+            </button>
             <field name="image_1920" position="attributes">
                 <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
             </field>

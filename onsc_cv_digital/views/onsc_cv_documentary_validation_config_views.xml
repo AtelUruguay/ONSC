@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_documentary_validation_config_search" model="ir.ui.view">
+        <field name="name">onsc.cv.documentary.validation.config.search</field>
+        <field name="model">onsc.cv.documentary.validation.config</field>
+        <field name="arch" type="xml">
+            <search string="Configuraciones de validación documental">
+                <field name="model_id"/>
+                <field name="field_ids"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_cv_documentary_validation_config_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.documentary.validation.config.tree</field>
+        <field name="model">onsc.cv.documentary.validation.config</field>
+        <field name="arch" type="xml">
+            <tree string="Configuraciones de validación documental">
+                <field name="model_id"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_ir_model_fields_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.ir.model.fields.tree</field>
+        <field name="model">ir.model.fields</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="field_description"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_documentary_validation_config_form" model="ir.ui.view">
+        <field name="name">onsc.cv.documentary.validation.config.form</field>
+        <field name="model">onsc.cv.documentary.validation.config</field>
+        <field name="arch" type="xml">
+            <form string="Configuraciones de validación documental">
+                <header>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="eff_date" string="Fecha efectiva"/>
+                            <field name="model_id"
+                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                        </group>
+                    </group>
+                     <notebook>
+                        <page string="Documentos a excluir">
+                            <field name="field_ids"
+                                   widget="many2many"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_ir_model_fields_tree'}"
+                                   domain="[('model_id', '=', model_id)]"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}">
+                                <form>
+                                    <field name="field_description"/>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_documentary_validation_config_action' model='ir.actions.act_window'>
+        <field name="name">Configuraciones de validación documental</field>
+        <field name="res_model">onsc.cv.documentary.validation.config</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva configuración de validación documental
+            </p>
+        </field>
+    </record>
+</odoo>

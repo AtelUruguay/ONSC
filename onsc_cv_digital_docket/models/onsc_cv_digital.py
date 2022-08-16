@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 
 BLOOD_TYPE = [('unknown', 'Desconocido'), ('O+', 'O+'), ('A+', 'A+'), ('B+', 'B+'), ('AB+', 'AB+'), ('O-', 'O-'),
               ('A-', 'A-'), ('B-', 'B-'), ('AB-', 'AB-')]
@@ -73,6 +74,13 @@ class ONSCCVDigital(models.Model):
             self.status_civil_date = False
             self.address_info_date = False
             self.disability_date = False
+
+    def _check_todisable(self):
+        _documentary_validation_state = self._get_documentary_validation_state()
+        if _documentary_validation_state == 'validated' and self.is_docket:
+            raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y "
+                                    u"tiene legajo"))
+        return super(ONSCCVDigital, self)._check_todisable()
 
 
 class ONSCCVInformationContact(models.Model):
