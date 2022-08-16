@@ -14,6 +14,3 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
     def _check_todisable_dynamic_fields(self):
         return super(ONSCCVAbstractFileValidation, self)._check_todisable_dynamic_fields() or self.cv_digital_id.is_docket
 
-    def _check_todisable_raise_error(self):
-        raise ValidationError(_(u"El registro está en estado de validación documental: 'Validado' y "
-                                u"el CV tiene vínculo con RVE o legajo"))

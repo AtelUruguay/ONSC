@@ -588,7 +588,9 @@ class ONSCCVDigital(models.Model):
         for record in self:
             _documentary_validation_state = record._get_documentary_validation_state()
             if _documentary_validation_state == 'validated' and record._check_todisable_dynamic_fields():
-                record._check_todisable_raise_error()
+                raise ValidationError(
+                    _(u"No es posible eliminar el CV porque está en estado de validación documental: 'Validado' y "
+                      u"tiene o tuvo vínculo con el estado"))
         return True
 
     def _check_todisable_dynamic_fields(self):

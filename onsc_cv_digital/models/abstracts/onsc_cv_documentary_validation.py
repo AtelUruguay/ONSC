@@ -26,11 +26,11 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             return True
         for record in self:
             if record.documentary_validation_state == 'validated' and record._check_todisable_dynamic_fields():
-                record._check_todisable_raise_error()
+                raise ValidationError(
+                    _(u"No es posible eliminar el registro porque está en estado de validación documental: 'Validado' "
+                      u"y tiene o tuvo vínculo con el estado"))
         return True
 
     def _check_todisable_dynamic_fields(self):
         return self.cv_digital_id._is_rve_link()
 
-    def _check_todisable_raise_error(self):
-        raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y tiene vínculo con RVE"))

@@ -44,14 +44,16 @@
                         <group>
                             <field name="eff_date" string="Fecha efectiva"/>
                             <field name="model_id"
+                                   domain="model_id_domain"
                                 options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="model_id_domain"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
                         </group>
                     </group>
                      <notebook>
-                        <page string="Documentos a excluir">
+                        <page string="Campos a excluir">
                             <field name="field_ids"
                                    widget="many2many"
                                    context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_ir_model_fields_tree'}"
