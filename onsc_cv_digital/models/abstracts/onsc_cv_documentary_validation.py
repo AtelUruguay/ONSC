@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, _
+from odoo.exceptions import ValidationError
 
 DOCUMENTARY_VALIDATION_STATES = [('to_validate', 'Para validar'),
                                  ('validated', 'Validado'),
@@ -15,3 +16,21 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                                                     selection=DOCUMENTARY_VALIDATION_STATES,
                                                     default='to_validate',
                                                     tracking=True)
+
+    def unlink(self):
+        if self._check_todisable():
+            return super(ONSCCVAbstractFileValidation, self).unlink()
+
+    def _check_todisable(self):
+        if not self._fields.get('cv_digital_id', False):
+            return True
+        for record in self:
+            if record.documentary_validation_state == 'validated' and record._check_todisable_dynamic_fields():
+                record._check_todisable_raise_error()
+        return True
+
+    def _check_todisable_dynamic_fields(self):
+        return self.cv_digital_id._is_rve_link()
+
+    def _check_todisable_raise_error(self):
+        raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y tiene vínculo con RVE"))

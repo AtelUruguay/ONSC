@@ -75,12 +75,12 @@ class ONSCCVDigital(models.Model):
             self.address_info_date = False
             self.disability_date = False
 
-    def _check_todisable(self):
-        _documentary_validation_state = self._get_documentary_validation_state()
-        if _documentary_validation_state == 'validated' and self.is_docket:
-            raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y "
-                                    u"tiene legajo"))
-        return super(ONSCCVDigital, self)._check_todisable()
+    def _check_todisable_dynamic_fields(self):
+        return super(ONSCCVDigital, self)._check_todisable_dynamic_fields() or self.is_docket
+
+    def _check_todisable_raise_error(self):
+        raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y "
+                                u"tiene vínculo con RVE o legajo"))
 
 
 class ONSCCVInformationContact(models.Model):

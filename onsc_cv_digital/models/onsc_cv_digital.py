@@ -585,11 +585,17 @@ class ONSCCVDigital(models.Model):
                                             notif_layout='mail.mail_notification_light')
 
     def _check_todisable(self):
-        _documentary_validation_state = self._get_documentary_validation_state()
-        if _documentary_validation_state == 'validated' and self._is_rve_link():
-            raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y "
-                                    u"tiene vínculo con RVE"))
+        for record in self:
+            _documentary_validation_state = record._get_documentary_validation_state()
+            if _documentary_validation_state == 'validated' and record._check_todisable_dynamic_fields():
+                record._check_todisable_raise_error()
         return True
+
+    def _check_todisable_dynamic_fields(self):
+        return self._is_rve_link()
+
+    def _check_todisable_raise_error(self):
+        raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y tiene vínculo con RVE"))
 
     def _get_documentary_validation_state(self):
         # TODO este metodo debe retornar el estado final de la validacion documental de todo el CV
