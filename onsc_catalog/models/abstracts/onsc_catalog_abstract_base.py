@@ -37,7 +37,7 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
 
 class ONSCCVCatalogAbstract(models.AbstractModel):
     _name = 'onsc.cv.catalog.abstract'
-    _description = 'Clase abstracta de catálogo '
+    _description = 'Clase abstracta de catálogo'
 
     code = fields.Char(string=u"Código")
     name = fields.Char(string=u"Nombre")
