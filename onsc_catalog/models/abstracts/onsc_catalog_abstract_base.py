@@ -16,12 +16,12 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
                              copy=False,
                              tracking=True,
                              history=True)
-    code = fields.Char(string="Código", copy=False, tracking=True, history=True)
+    code = fields.Char(string="Código", required=True, copy=False, tracking=True, history=True)
     name = fields.Char(string="Nombre", required=True, tracking=True, history=True)
     start_date = fields.Date(string='Inicio de vigencia', tracking=True, history=True)
     end_date = fields.Date(string='Fin de vigencia', tracking=True, history=True)
     active = fields.Boolean(default=True, tracking=True, history=True)
-    description = fields.Text(string='Descripción', copy=False)
+    description = fields.Text(string='Descripción', copy=False, history=True)
 
     def toggle_active(self):
         self._check_toggle_active()

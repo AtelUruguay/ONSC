@@ -37,7 +37,7 @@ class ONSCCatalogOccupationalFamily(models.Model):
     _inherit = ['onsc.catalog.abstract.base', 'model.history', 'mail.thread', 'mail.activity.mixin']
     _history_model = 'onsc.catalog.occupational.family.history'
 
-    short_name = fields.Char(string="Sigla", tracking=True, history=True)
+    short_name = fields.Char(string="Sigla", required=True, tracking=True, history=True)
 
 
 class ONSCCatalogOccupationalFamilyHistory(models.Model):
