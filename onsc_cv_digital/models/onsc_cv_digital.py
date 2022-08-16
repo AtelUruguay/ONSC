@@ -549,7 +549,7 @@ class ONSCCVDigital(models.Model):
         email_template_id.model_id = model_id
         today = fields.Date.today()
         onsc_cv_digitals = self.env['onsc.cv.digital'].search(
-            [('last_modification_date', '!=', False), 
+            [('last_modification_date', '!=', False),
              ('last_modification_date', '!=', today)])
         for onsc_cv_digital in onsc_cv_digitals:
             rest_value = today - onsc_cv_digital.last_modification_date
