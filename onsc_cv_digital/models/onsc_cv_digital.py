@@ -35,13 +35,16 @@ class ONSCCVDigital(models.Model):
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCCVDigital, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                          submenu=submenu)
-        if self.env.user.has_group('onsc_cv_digital.group_user_cv') and self.search_count(
-                [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])]):
-            doc = etree.XML(res['arch'])
-            if view_type in ['form', 'tree', 'kanban']:
+        doc = etree.XML(res['arch'])
+        if view_type in ['form', 'tree', 'kanban']:
+            if self.env.user.has_group('onsc_cv_digital.group_user_cv') and self.search_count(
+                    [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])]):
                 for node_form in doc.xpath("//%s" % (view_type)):
                     node_form.set('create', '0')
-            res['arch'] = etree.tostring(doc)
+            if self.env.user.has_group('onsc_cv_digital.group_manager_cv'):
+                for node_form in doc.xpath("//%s" % (view_type)):
+                    node_form.set('edit', '0')
+        res['arch'] = etree.tostring(doc)
         return res
 
     def _default_partner_id(self):
