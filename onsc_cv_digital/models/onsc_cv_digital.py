@@ -577,7 +577,7 @@ class ONSCCVDigital(models.Model):
                         </body>
                     </html>""") % months
                 email_values = {
-                    'email_from': self.env.user.email_formatted,
+                    'email_from': self.env.user.company_id.email_formatted or self.env.user.email_formatted,
                     'email_to': onsc_cv_digital.partner_id.email,
                     'body_html': body,
                 }
