@@ -556,33 +556,12 @@ class ONSCCVDigital(models.Model):
             date_value = int(rest_value.days) % int(parameter_inactivity)
             if not date_value:
                 months = diff_month(today, onsc_cv_digital.last_modification_date)
-                body = _("""
-                    <html>
-                        <body>
-                           <div style="margin: 0px; padding: 0px;">
-                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                                Estimado Usuario,
-                                <br/>
-                                Han pasado %s meses desde su ultima modificación a su CV digital . Recuerde mantenerlo
-                                actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado Uruguayo.
-                                <br/>
-                                Si es funcionario publico de la Administración Central, recuerde que mantener su CV digital al
-                                día es la única forma de actualizar la información personal y la formación de su legajo laboral.
-                                <br/>
-                                Puede chequear su CV digital a través del siguiente link a la plataforma GHE.uy
-                                <br/>
-                                Cualquier consulta puede dirigirse a mesa.servicios@onsc.gub.uy.
-                            </p>
-                        </div>
-                        </body>
-                    </html>""") % months
-                email_values = {
-                    'email_from': self.env.user.company_id.email_formatted or self.env.user.email_formatted,
-                    'email_to': onsc_cv_digital.partner_id.email,
-                    'body_html': body,
-                }
-                email_template_id.send_mail(onsc_cv_digital.id, force_send=True, email_values=email_values,
-                                            notif_layout='mail.mail_notification_light')
+                view_context = dict(self._context)
+                view_context.update({
+                    'months': months,
+                })
+                email_template_id.with_context(view_context).send_mail(onsc_cv_digital.id, force_send=True,
+                                                                       notif_layout='mail.mail_notification_light')
 
     def _check_todisable(self):
         for record in self:
