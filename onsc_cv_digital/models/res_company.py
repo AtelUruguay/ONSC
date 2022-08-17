@@ -28,4 +28,3 @@ class ResCompany(models.Model):
 
     is_rve_integrated = fields.Boolean(u'Integración con RVE')
     rve_wsdl = fields.Char('URL del WSDL')
-
