@@ -75,7 +75,7 @@
                                 Estimado Usuario,
                                 <br/>
                                 Han pasado
-                                <t t-out="ctx['months']"/>
+                                <t t-out="ctx.get('months')" contenteditable="false" data-oe-t-inline="true"></t>
                                 meses desde su ultima modificación a su CV digital . Recuerde mantenerlo
                                 actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado
                                 Uruguayo.
