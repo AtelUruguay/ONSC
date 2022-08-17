@@ -8,7 +8,6 @@ class ONSCCVDigitalWorkExperience(models.Model):
     _description = 'Experiencia laboral'
     _catalogs_2validate = ['city_id']
 
-    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", required=True, index=True, ondelete='cascade')
     city_id = fields.Many2one("onsc.cv.location", string="Ciudad donde desempeñó", required=True)
     unit_name = fields.Char("Área/Unidad")
     entry_institution_id = fields.Many2one("onsc.cv.entry", string="Rubro de la institución", required=True)

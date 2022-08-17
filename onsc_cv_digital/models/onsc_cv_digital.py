@@ -591,6 +591,10 @@ class ONSCCVDigital(models.Model):
                 raise ValidationError(
                     _(u"No es posible eliminar el CV porque está en estado de validación documental: 'Validado' y "
                       u"tiene o tuvo vínculo con el estado"))
+        documentary_validation_configs = self.env['onsc.cv.documentary.validation.config'].search([])
+        models_name = documentary_validation_configs.mapped('model_id.model')
+        for model_name in models_name:
+            self.env[model_name].search([('cv_digital_id', 'in', self.ids)])._check_todisable()
         return True
 
     def _check_todisable_dynamic_fields(self):
