@@ -34,4 +34,3 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     def _check_todisable_dynamic_fields(self):
         return self.cv_digital_id._is_rve_link()
-
