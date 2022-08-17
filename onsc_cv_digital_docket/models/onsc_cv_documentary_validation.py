@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, _
-from odoo.exceptions import ValidationError
+from odoo import models
 
 DOCUMENTARY_VALIDATION_STATES = [('to_validate', 'Para validar'),
                                  ('validated', 'Validado'),
@@ -13,4 +12,3 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     def _check_todisable_dynamic_fields(self):
         return super(ONSCCVAbstractFileValidation, self)._check_todisable_dynamic_fields() or self.cv_digital_id.is_docket
-

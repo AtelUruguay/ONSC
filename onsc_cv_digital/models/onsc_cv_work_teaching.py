@@ -18,7 +18,6 @@ class ONSCCVWorkTeaching(models.Model):
     _inherit = ['onsc.cv.abstract.work', 'onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.institution']
     _catalogs_2validate = ['institution_id', 'subinstitution_id', 'professional_link_id']
 
-    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
     professional_link_id = fields.Many2one('onsc.cv.professional.link', 'Vínculo profesional', required=True)
     position_type = fields.Selection(POSITION_TYPES, 'Tipo de cargo')
     is_full_time = fields.Boolean('¿Dedicación total?')
