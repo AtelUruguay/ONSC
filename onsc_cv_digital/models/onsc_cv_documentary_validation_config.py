@@ -19,7 +19,7 @@ class ONSCCVFileValidationConfig(models.Model):
                                domain="[('model', 'ilike', '%onsc.cv%')]")
     model_id_domain = fields.Char(compute='_compute_model_id_domain')
 
-    field_ids = fields.Many2many("ir.model.fields", string="Documentos a excluir", history=True, )
+    field_ids = fields.Many2many("ir.model.fields", string="Campos a excluir", history=True, )
 
     @api.onchange('model_id')
     def onchange_model_id(self):

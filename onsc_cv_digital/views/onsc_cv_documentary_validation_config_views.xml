@@ -26,9 +26,18 @@
         <field name="name">onsc.cv.ir.model.fields.tree</field>
         <field name="model">ir.model.fields</field>
         <field name="arch" type="xml">
-            <tree editable="top">
+            <tree edit="0">
                 <field name="field_description"/>
             </tree>
+        </field>
+    </record>
+    <record id="onsc_cv_ir_model_fields_form" model="ir.ui.view">
+        <field name="name">onsc.cv.ir.model.fields.form</field>
+        <field name="model">ir.model.fields</field>
+        <field name="arch" type="xml">
+            <form edit="0">
+                <field name="field_description" readonly="True"/>
+            </form>
         </field>
     </record>
 
@@ -46,7 +55,7 @@
                             <field name="model_id"
                                    domain="model_id_domain"
                                 options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="model_id_domain"/>
+                            <field name="model_id_domain" invisible="1"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
@@ -55,10 +64,9 @@
                      <notebook>
                         <page string="Campos a excluir">
                             <field name="field_ids"
-                                   widget="many2many"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_ir_model_fields_tree'}"
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_ir_model_fields_tree', 'form_view_ref': 'onsc_cv_digital.onsc_cv_ir_model_fields_form'}"
                                    domain="[('model_id', '=', model_id)]"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}">
+                                   options="{'no_create_edit':1, 'no_quick_create':1, 'no_open':1}">
                                 <form>
                                     <field name="field_description"/>
                                 </form>
