@@ -17,7 +17,6 @@ class ONSCCVWorkInvestigation(models.Model):
     _catalogs_2validate = ['institution_id', 'subinstitution_id']
     _order = 'start_date desc'
 
-    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
     investigation_type = fields.Selection(INVESTIGATION_TYPES, 'Tipo de investigación', required=True)
     name = fields.Char('Nombre de la investigación', required=True)
     description = fields.Text('Descripción de la investigación', required=True)

@@ -12,6 +12,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
     _inherit = ['onsc.cv.abstract.documentary.validation']
     _description = 'Modelo abstracto para modelos de trabajos'
 
+    cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
     hours_worked_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente")
     currently_working = fields.Selection(string="Actualmente trabajando", selection=WORKING_STATE)
     position = fields.Char("Cargo")
