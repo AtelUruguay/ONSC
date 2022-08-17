@@ -542,7 +542,7 @@ class ONSCCVDigital(models.Model):
         try:
             if int(eval(str(parameter_inactivity))):
                 pass
-        except:
+        except Exception:
             raise ValidationError(_("El valor del parámetro de incatividad del CV tiene que ser un número entero"))
 
         email_template_id = self.env.ref('onsc_cv_digital.email_template_inactivity_cv')
