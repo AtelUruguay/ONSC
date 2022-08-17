@@ -3,13 +3,13 @@
 import logging
 
 from lxml import etree
+from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+from odoo.exceptions import ValidationError
 from zeep import Client
 from zeep.exceptions import Fault
 from zeep.wsdl.utils import etree_to_string
 
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
 from .abstracts.onsc_cv_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
 _logger = logging.getLogger(__name__)
@@ -616,27 +616,26 @@ class ONSCCVDigital(models.Model):
         return 'to_validate'
 
     def _is_rve_link(self):
-        # TODO check con RVE
-        for record in self:
-            response = self._response_connect(record)
+        if not self.env.user.company_id.is_rve_integrated:
+            return False
+        response = self._response_connect(self)
         if isinstance(response, str):
-            raise ValidationError(_(u"Error en la petición: " + response))
+            raise ValidationError(_(u"Error en la integración con RVE: " + response))
+        tiene_vinculo_laboral_actual = response.find('.//tiene_vinculo_laboral_actual')
+        tuvo_vinculo_laboral = response.find('.//tuvo_vinculo_laboral')
+        if tiene_vinculo_laboral_actual is not None and tiene_vinculo_laboral_actual.text.upper() == 'S':
+            return True
+        elif tuvo_vinculo_laboral is not None and tuvo_vinculo_laboral.text.upper() == 'S':
+            return True
         else:
-            tiene_vinculo_laboral_actual = response.find('.//tiene_vinculo_laboral_actual')
-            tuvo_vinculo_laboral = response.find('.//tuvo_vinculo_laboral')
-            if tiene_vinculo_laboral_actual is not None and tiene_vinculo_laboral_actual.text.upper() == 'S':
-                return True
-            elif tuvo_vinculo_laboral is not None and tuvo_vinculo_laboral.text.upper() == 'S':
-                return True
-            else:
-                return False
+            return False
 
     def _response_connect(self, obj):
         # TODO check con RVE
-        wsdl = 'https://rve.onsc.gub.uy/RVETEST/servlet/com.si.rve.awsrvevinculoporpersona?wsdl'
+        wsdl = self.env.user.company_id.rve_wsdl
         client = Client(wsdl)
-        paisCod = obj.cv_emissor_country_id
-        tipoDoc = obj.cv_document_type_id
+        paisCod = obj.cv_emissor_country_id.code
+        tipoDoc = obj.cv_document_type_id.code
         numDoc = obj.cv_nro_doc
         try:
             response = client.service['rve_vinculo_por_persona'](PaisCod=paisCod, TipoDoc=tipoDoc, NumDoc=numDoc)
