@@ -47,7 +47,6 @@ class ONSCCVAcademicProgramSubject(models.Model):
     _catalogs_2validate = ['program_ids']
 
     work_teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade', required=True)
-    cv_digital_id = fields.Many2one(related='work_teaching_id.cv_digital_id')
     program_ids = fields.Many2many('onsc.cv.academic.program', relation="academic_program_teaching_rel",
                                    string='Programas académicos', required=True, ondelete='cascade')
     subject = fields.Char('Materia')
