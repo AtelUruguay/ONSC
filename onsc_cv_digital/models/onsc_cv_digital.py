@@ -455,7 +455,8 @@ class ONSCCVDigital(models.Model):
         }
 
     def toggle_active(self):
-        self._check_todisable()
+        if len(self) and self[0].active is True:
+            self._check_todisable()
         result = super().toggle_active()
         if len(self) == 1:
             return self.with_context(my_cv=self)._action_open_user_cv()
@@ -589,8 +590,8 @@ class ONSCCVDigital(models.Model):
             _documentary_validation_state = record._get_documentary_validation_state()
             if _documentary_validation_state == 'validated' and record._check_todisable_dynamic_fields():
                 raise ValidationError(
-                    _(u"No es posible eliminar el CV porque está en estado de validación documental: 'Validado' y "
-                      u"tiene o tuvo vínculo con el estado"))
+                    _(u"No es posible eliminar/inactivar el CV porque está en estado de validación documental: "
+                      u"'Validado' y tiene o tuvo vínculo con el estado"))
         documentary_validation_configs = self.env['onsc.cv.documentary.validation.config'].search([])
         models_name = documentary_validation_configs.mapped('model_id.model')
         for model_name in models_name:

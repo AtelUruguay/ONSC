@@ -22,7 +22,8 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             return super(ONSCCVAbstractFileValidation, self).unlink()
 
     def _check_todisable(self):
-        if not self._fields.get('cv_digital_id', False):
+        if not self._fields.get('cv_digital_id', False) or self.env[
+            'onsc.cv.documentary.validation.config'].search_count([('model_id.model', '=', self._name)]) is False:
             return True
         for record in self:
             if record.documentary_validation_state == 'validated' and record._check_todisable_dynamic_fields():
