@@ -23,10 +23,13 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
     active = fields.Boolean(default=True, tracking=True, history=True)
     description = fields.Text(string='Descripción', copy=False, history=True)
 
-    _sql_constraints = [
-        ("code_uniq", "unique (code)", "El código ya está siendo usando"),
-        ("name_uniq", "unique (name)", "El nombre ya está siendo usando",),
-    ]
+    @api.constrains("code", 'name')
+    def _check_unicity(self):
+        for record in self:
+            if self.search_count([('name', '=', record.name), ('id', '!=', record.id)]):
+                raise ValidationError(_(u"El nombre debe ser único"))
+            if self.search_count([('code', '=', record.code), ('id', '!=', record.id)]):
+                raise ValidationError(_(u"El código debe ser único"))
 
     def toggle_active(self):
         self._check_toggle_active()
@@ -69,3 +72,11 @@ class ONSCCVCatalogAbstract(models.AbstractModel):
     code = fields.Char(string=u"Código", required=True)
     name = fields.Char(string=u"Nombre", required=True)
     description = fields.Text(string=u"Descripción")
+
+    @api.constrains("code", 'name')
+    def _check_unicity(self):
+        for record in self:
+            if self.search_count([('name', '=', record.name), ('id', '!=', record.id)]):
+                raise ValidationError(_(u"El nombre debe ser único"))
+            if self.search_count([('code', '=', record.code), ('id', '!=', record.id)]):
+                raise ValidationError(_(u"El código debe ser único"))

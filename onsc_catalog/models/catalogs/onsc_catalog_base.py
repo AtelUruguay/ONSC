@@ -40,7 +40,7 @@ class ONSCCatalogOccupationalFamily(models.Model):
     short_name = fields.Char(string="Sigla", required=True, tracking=True, history=True)
 
     _sql_constraints = [
-        ("short_name_uniq", "unique (short_name)", "La sigla ya se está usando"),
+        ("short_name_uniq", "unique (short_name)", "La sigla debe ser única"),
     ]
 
 
