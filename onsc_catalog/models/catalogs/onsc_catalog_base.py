@@ -13,6 +13,7 @@ class ONSCCatalogHierarchicalLevel(models.Model):
     description = fields.Text(string='Descripción')
     order = fields.Integer(string="Orden", required=True)
     is_central_administration = fields.Boolean(string="¿Es administración central?", default=True)
+    active = fields.Boolean(default=True, tracking=True, history=True)
 
     @api.constrains("order")
     def _check_order(self):

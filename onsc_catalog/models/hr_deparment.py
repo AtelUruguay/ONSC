@@ -20,14 +20,14 @@ class Department(models.Model):
                                 tracking=True, history=True)
     company_id = fields.Many2one('res.company',
                                  related='inciso_id.company_id',
-                                 store=True, history=True)
+                                 store=True, history=True, ondelete='restrict')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
                                         ondelete='restrict',
                                         tracking=True, history=True)
     parent_id = fields.Many2one('hr.department', string='Parent Department', index=True,
                                 domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]",
                                 tracking=True,
-                                history=True)
+                                history=True, ondelete='restrict')
     parent_id_domain = fields.Char(compute='_compute_parent_id_domain')
     name = fields.Char('Department Name', required=True, tracking=True, history=True)
     short_name = fields.Char(string="Nombre corto", tracking=True, history=True)
@@ -190,7 +190,7 @@ class DepartmentResponsability(models.Model):
     _name = "hr.department.responsability"
     _description = u"Lista de responsabilidades"
 
-    department_id = fields.Many2one("hr.department", string="deparment_id")
+    department_id = fields.Many2one("hr.department", string="deparment_id", ondelete='restrict')
     process = fields.Char(string="Proceso", required=True)
     product = fields.Char(string="Producto", required=True)
     target = fields.Char(string="Destinatarios", required=True)
