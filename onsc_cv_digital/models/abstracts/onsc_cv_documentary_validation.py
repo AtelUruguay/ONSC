@@ -17,6 +17,11 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                                                     default='to_validate',
                                                     tracking=True)
 
+    def write(self, vals):
+        if not vals.get('documentary_validation_state', False):
+            vals['documentary_validation_state'] = 'to_validate'
+        return super(ONSCCVAbstractFileValidation, self).write(vals)
+
     def unlink(self):
         if self._check_todisable():
             return super(ONSCCVAbstractFileValidation, self).unlink()
