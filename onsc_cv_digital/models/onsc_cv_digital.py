@@ -8,7 +8,6 @@ from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_respons
 from odoo.exceptions import ValidationError
 from zeep import Client
 from zeep.exceptions import Fault
-from zeep.wsdl.utils import etree_to_string
 
 from .abstracts.onsc_cv_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
@@ -633,7 +632,6 @@ class ONSCCVDigital(models.Model):
         except Exception:
             raise ValidationError(_(u"Ha ocurrido un error en la validación con RVE. "
                                     u"Por favor contacte al administrador"))
-
 
     def _response_connect(self, obj):
         # TODO check con RVE
