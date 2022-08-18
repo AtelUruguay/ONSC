@@ -124,7 +124,7 @@
                     <field name="code"/>
                     <field name="parent_id" />
                     <separator/>
-                    <filter string="Para aprobar CGN" name="filter_inactive_cgn" domain="[('active','=',False),('is_approve_cgn','=',False)]"/>
+                    <filter string="Para aprobar CGN" name="filter_inactive_cgn" domain="[('active','=',False),('is_approve_cgn','=',False),('is_approve_onsc','=',True)]"/>
                     <filter string="Archivados" name="filter_inactive" domain="[('active','=',False)]"/>
                     <filter string="No Archivados" name="filter_active" domain="[('active','=',True)]"/>
                     <searchpanel>

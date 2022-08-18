@@ -11,8 +11,10 @@ class ONSCCatalogOccupation(models.Model):
                 'onsc.catalog.abstract.approval']
     _history_model = 'onsc.catalog.occupation.history'
 
-    occupational_family_id = fields.Many2one("onsc.catalog.occupational.family", string="Familia", required=True, ondelete='restrict')
-    management_process_id = fields.Many2one("onsc.catalog.management.process", string="Proceso", required=True, ondelete='restrict')
+    occupational_family_id = fields.Many2one("onsc.catalog.occupational.family", string="Familia",
+                                             required=True, history=True, ondelete='restrict')
+    management_process_id = fields.Many2one("onsc.catalog.management.process", string="Proceso",
+                                            required=True, history=True, ondelete='restrict')
     purpose = fields.Char(string=u"Propósito")
     activities = fields.Char(string=u"Actividades")
 
@@ -21,8 +23,8 @@ class ONSCCatalogOccupation(models.Model):
     create_uid = fields.Many2one('res.users', 'Creado por', index=True, readonly=True)
     write_uid = fields.Many2one('res.users', string='Actualizado por', index=True, readonly=True)
 
-    @api.constrains('start_date', 'occupational_family_id', 'management_process_id', 'occupational_family_id.end_date',
-                    'management_process_id.end_date')
+    @api.constrains('start_date', 'end_date', 'occupational_family_id.end_date', 'management_process_id.end_date',
+                    'occupational_family_id.start_date', 'management_process_id.start_date')
     def _check_validity(self):
         _message = _("La vigencia de la ocupación debe estar contenida dentro de la vigencia del proceso y la familia")
         for record in self:
