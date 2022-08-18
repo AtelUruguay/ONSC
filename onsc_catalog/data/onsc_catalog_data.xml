@@ -32,7 +32,7 @@
         </record>
 
         <record id="sequence_onsc_catalog_occupation_identifier" model="ir.sequence">
-            <field name="name">Proceso de gestión: Ocupación</field>
+            <field name="name">Ocupación: Identificador</field>
             <field name="code">onsc.catalog.occupation.identifier</field>
             <field name="prefix"></field>
             <field name="padding">5</field>

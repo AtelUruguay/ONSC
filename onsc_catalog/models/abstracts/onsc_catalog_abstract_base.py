@@ -13,7 +13,6 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
         return self.env['ir.sequence'].next_by_code('%s.identifier' % self._name)
 
     identifier = fields.Char('Identificador',
-                             default=lambda x: x._get_default_identifier(),
                              copy=False,
                              tracking=True,
                              history=True)
@@ -23,6 +22,11 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
     end_date = fields.Date(string='Fin de vigencia', tracking=True, history=True)
     active = fields.Boolean(default=True, tracking=True, history=True)
     description = fields.Text(string='Descripción', copy=False, history=True)
+
+    _sql_constraints = [
+        ("code_uniq", "unique (code)", "El código ya está siendo usando"),
+        ("name_uniq", "unique (name)", "El nombre ya está siendo usando",),
+    ]
 
     def toggle_active(self):
         self._check_toggle_active()
@@ -36,6 +40,11 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
         return True
 
     # TO-DO: Mejorar este metodo.Hasta ahora funciona con los M2O.
+    @api.model
+    def create(self, values):
+        values['identifier'] = self._get_default_identifier()
+        return super(ONSCCatalogAbstractBase, self).create(values)
+
     def write(self, values):
         """
         Este metodo se utiliza para cuando se queriera desactivar un registro, revise si se esta usando ese dato en otro
