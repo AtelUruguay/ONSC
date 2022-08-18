@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 
 
 class ONSCCatalogAbstractBase(models.AbstractModel):
@@ -33,6 +34,25 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
         :rtype: True or raise ValidationError
         """
         return True
+
+    # TO-DO: Mejorar este metodo.Hasta ahora funciona con los M2O.
+    def write(self, values):
+        """
+        Este metodo se utiliza para cuando se queriera desactivar un registro, revise si se esta usando ese dato en otro
+        lugar. Si se esta usando no se puede desactivar.
+        :return:
+        """
+        if 'active' in values and 'check_active' in values:
+            if not values['active']:
+                modelo_name = self._name
+                Fields = self.env['ir.model.fields'].search([('relation', '=', modelo_name)])
+                for field in Fields:
+                    Models = self.env[field.model_id.model].search([(field.name, '=', self.id)])
+                    if Models:
+                        raise ValidationError(_(u"No se puede desactivar el registro porque esta siendo usado"))
+        if 'check_active' in values:
+            values.pop('check_active', None)
+        return super(ONSCCatalogAbstractBase, self).write(values)
 
 
 class ONSCCVCatalogAbstract(models.AbstractModel):
