@@ -56,13 +56,43 @@
             <field name="auto_delete" eval="True"/>
         </record>
 
-        <!--        Enviar notificación al usuario por período de inactividad en el CV-->
+        <!-- Enviar notificación al usuario por período de inactividad en el CV-->
         <record id="email_template_inactivity_cv" model="mail.template">
             <field name="name">Plantilla de notificación al usuario por período de inactividad en el CV</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital"/>
+            <field name="email_from">"{{ user.company_id.email_formatted }}" &lt;{{ (user.email_formatted or user.email)
+                }}&gt;
+            </field>
+            <field name="email_to">{{ object.partner_id.email }}&gt;</field>
             <field name="subject">Notificación por inactividad en el CV digital del Estado Uruguayo</field>
             <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <html>
+                    <body>
+                        <div style="margin: 0px; padding: 0px;">
+                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                Estimado Usuario,
+                                <br/>
+                                Han pasado
+                                <t t-out="ctx.get('months')" contenteditable="false" data-oe-t-inline="true"></t>
+                                meses desde su ultima modificación a su CV digital . Recuerde mantenerlo
+                                actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado
+                                Uruguayo.
+                                <br/>
+                                Si es funcionario publico de la Administración Central, recuerde que mantener su CV
+                                digital al
+                                día es la única forma de actualizar la información personal y la formación de su legajo
+                                laboral.
+                                <br/>
+                                Puede chequear su CV digital a través del siguiente link a la plataforma GHE.uy
+                                <br/>
+                                Cualquier consulta puede dirigirse a mesa.servicios@onsc.gub.uy.
+                            </p>
+                        </div>
+                    </body>
+                </html>
+            </field>
         </record>
     </data>
 </odoo>
