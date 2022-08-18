@@ -37,6 +37,11 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="button_unlink"
+                                confirm="¿Está seguro de que desea eliminar su CV?"
+                                string="Eliminar"
+                                groups="onsc_cv_digital.group_user_cv"
+                                type="object" icon="fa-trash"/>
                         <button class="oe_stat_button" name="toggle_active"
                                 confirm="¿Está seguro de que desea inactivar su CV?"
                                 string="Inactivar"
