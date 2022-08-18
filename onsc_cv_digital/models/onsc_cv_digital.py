@@ -621,14 +621,19 @@ class ONSCCVDigital(models.Model):
         response = self._response_connect(self)
         if isinstance(response, str):
             raise ValidationError(_(u"Error en la integración con RVE: " + response))
-        tiene_vinculo_laboral_actual = response.find('.//tiene_vinculo_laboral_actual')
-        tuvo_vinculo_laboral = response.find('.//tuvo_vinculo_laboral')
-        if tiene_vinculo_laboral_actual is not None and tiene_vinculo_laboral_actual.text.upper() == 'S':
-            return True
-        elif tuvo_vinculo_laboral is not None and tuvo_vinculo_laboral.text.upper() == 'S':
-            return True
-        else:
-            return False
+        try:
+            cv_with_rve_link_active = response.Tiene_vinculo_laboral_actual
+            cv_with_rve_link_inactive = response.Tuvo_vinculo_laboral
+            if cv_with_rve_link_active is not None and cv_with_rve_link_active.upper() == 'S':
+                return True
+            elif cv_with_rve_link_inactive is not None and cv_with_rve_link_inactive.upper() == 'S':
+                return True
+            else:
+                return False
+        except Exception:
+            raise ValidationError(_(u"Ha ocurrido un error en la validación con RVE. "
+                                    u"Por favor contacte al administrador"))
+
 
     def _response_connect(self, obj):
         # TODO check con RVE
@@ -638,8 +643,8 @@ class ONSCCVDigital(models.Model):
         tipoDoc = obj.cv_document_type_id.code
         numDoc = obj.cv_nro_doc
         try:
-            response = client.service['rve_vinculo_por_persona'](PaisCod=paisCod, TipoDoc=tipoDoc, NumDoc=numDoc)
-            _logger.info("XML respuesta :" + etree_to_string(response).decode())
+            response = client.service.Execute(Paiscod=paisCod, Tipodoc=tipoDoc, Numdoc=numDoc)
+            # _logger.info("XML respuesta :" + etree_to_string(response).decode())
             return response
         except Fault as fault:
             formatted_response = fault
