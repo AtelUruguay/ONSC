@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from lxml import etree
 from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from odoo.exceptions import ValidationError
+from zeep import Client
+from zeep.exceptions import Fault
 
 from .abstracts.onsc_cv_documentary_validation import DOCUMENTARY_VALIDATION_STATES
+
+_logger = logging.getLogger(__name__)
 
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
@@ -588,8 +594,40 @@ class ONSCCVDigital(models.Model):
         return 'to_validate'
 
     def _is_rve_link(self):
-        # TODO incorporar código de Abelardo para check con RVE
-        return False
+        if not self.env.user.company_id.is_rve_integrated:
+            return False
+        response = self._response_connect(self)
+        if isinstance(response, str):
+            raise ValidationError(_(u"Error en la integración con RVE: " + response))
+        try:
+            cv_with_rve_link_active = response.Tiene_vinculo_laboral_actual
+            cv_with_rve_link_inactive = response.Tuvo_vinculo_laboral
+            if cv_with_rve_link_active is not None and cv_with_rve_link_active.upper() == 'S':
+                return True
+            elif cv_with_rve_link_inactive is not None and cv_with_rve_link_inactive.upper() == 'S':
+                return True
+            else:
+                return False
+        except Exception:
+            raise ValidationError(_(u"Ha ocurrido un error en la validación con RVE. "
+                                    u"Por favor contacte al administrador"))
+
+    def _response_connect(self, obj):
+        # TODO check con RVE
+        wsdl = self.env.user.company_id.rve_wsdl
+        client = Client(wsdl)
+        paisCod = obj.cv_emissor_country_id.code
+        tipoDoc = obj.cv_document_type_id.code
+        numDoc = obj.cv_nro_doc
+        try:
+            response = client.service.Execute(Paiscod=paisCod, Tipodoc=tipoDoc, Numdoc=numDoc)
+            # _logger.info("XML respuesta :" + etree_to_string(response).decode())
+            return response
+        except Fault as fault:
+            formatted_response = fault
+        except IOError:
+            formatted_response = "Servidor no encontrado."
+        return formatted_response
 
 
 class ONSCCVOtherRelevantInformation(models.Model):

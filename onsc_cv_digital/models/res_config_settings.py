@@ -25,3 +25,6 @@ class ResConfigSettings(models.TransientModel):
                                                      readonly=False)
     cv_help_reference = fields.Char(
         related="company_id.cv_help_reference", readonly=False)
+
+    is_rve_integrated = fields.Boolean(related="company_id.is_rve_integrated", readonly=False)
+    rve_wsdl = fields.Char(related="company_id.rve_wsdl", readonly=False)

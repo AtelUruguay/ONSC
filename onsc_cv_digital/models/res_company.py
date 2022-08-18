@@ -25,3 +25,6 @@ class ResCompany(models.Model):
     cv_help_participation_event = fields.Char('Participación en eventos')
     cv_help_other_relevant_information = fields.Char('Otra información relevante')
     cv_help_reference = fields.Char('Referencias')
+
+    is_rve_integrated = fields.Boolean(u'Integración con RVE')
+    rve_wsdl = fields.Char('URL del WSDL')

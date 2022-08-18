@@ -85,6 +85,26 @@
                         </div>
                     </div>
                 </xpath>
+                <div name="integration" position="inside">
+                    <div class="col-12 col-lg-6 o_setting_box" id="rve_integration_flag">
+                        <div class="o_setting_left_pane">
+                            <field name="is_rve_integrated"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label string="Integración con RVE" for="is_rve_integrated"/>
+                            <div class="text-muted">
+                                Servicio de integración con DNIC
+                            </div>
+                            <div attrs="{'invisible': [('is_rve_integrated', '=', False)]}" id="rve_integration_wsdl">
+                                <div class="content-group mt16">
+                                    <label for="rve_wsdl" class="o_light_label"/>
+                                    <field name="rve_wsdl" widget="url"
+                                           attrs="{'required': [('is_rve_integrated', '=', True)]}"/>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </field>
     </record>
 
