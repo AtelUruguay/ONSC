@@ -74,6 +74,7 @@ class ONSCCVCatalogAbstract(models.AbstractModel):
     code = fields.Char(string=u"Código", required=True)
     name = fields.Char(string=u"Nombre", required=True)
     description = fields.Text(string=u"Descripción")
+    active = fields.Boolean(default=True, tracking=True, history=True)
 
     @api.constrains("code", 'name')
     def _check_unicity(self):
