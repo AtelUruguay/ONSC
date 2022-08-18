@@ -47,6 +47,8 @@
                                     <field name="start_date"/>
                                     <field name="end_date"/>
                                     <field name="createupdate_regulation"/>
+                                    <field name="type_organization_id"/>
+                                    <field name="topic_addressed_id"/>
                                     <field name="active" invisible="1"/>
                                 </group>
                                 <group>
@@ -57,8 +59,6 @@
                                     <field name="is_into_nacional_budget"/>
                                     <field name="is_central_administration"/>
                                     <field name="description"/>
-                                    <field name="type_organization_id"/>
-                                    <field name="topic_addressed_id"/>
                                 </group>
                             </group>
                         </page>
