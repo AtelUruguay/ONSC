@@ -90,6 +90,9 @@ ONSC CV Digital
         'demo/onsc_cv_demo.xml',
         'demo/res_partner_demo.xml',
     ],
+    'external_dependencies': {
+        'python': ['zeep'],
+    },
     'installable': True,
     'application': True,
     'auto_install': False,

@@ -1,11 +1,17 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from lxml import etree
 from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from odoo.exceptions import ValidationError
+from zeep import Client
+from zeep.exceptions import Fault
 
 from .abstracts.onsc_cv_documentary_validation import DOCUMENTARY_VALIDATION_STATES
+
+_logger = logging.getLogger(__name__)
 
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
@@ -542,7 +548,7 @@ class ONSCCVDigital(models.Model):
         try:
             if int(eval(str(parameter_inactivity))):
                 pass
-        except:
+        except Exception:
             raise ValidationError(_("El valor del parámetro de incatividad del CV tiene que ser un número entero"))
 
         email_template_id = self.env.ref('onsc_cv_digital.email_template_inactivity_cv')
@@ -557,33 +563,12 @@ class ONSCCVDigital(models.Model):
             date_value = int(rest_value.days) % int(parameter_inactivity)
             if not date_value:
                 months = diff_month(today, onsc_cv_digital.last_modification_date)
-                body = _("""
-                    <html>
-                        <body>
-                           <div style="margin: 0px; padding: 0px;">
-                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                                Estimado Usuario,
-                                <br/>
-                                Han pasado %s meses desde su ultima modificación a su CV digital . Recuerde mantenerlo
-                                actualizado para una postulación rápida a concursos de ingreso o ascenso en el Estado Uruguayo.
-                                <br/>
-                                Si es funcionario publico de la Administración Central, recuerde que mantener su CV digital al
-                                día es la única forma de actualizar la información personal y la formación de su legajo laboral.
-                                <br/>
-                                Puede chequear su CV digital a través del siguiente link a la plataforma GHE.uy
-                                <br/>
-                                Cualquier consulta puede dirigirse a mesa.servicios@onsc.gub.uy.
-                            </p>
-                        </div>
-                        </body>
-                    </html>""") % months
-                email_values = {
-                    'email_from': self.env.user.company_id.email_formatted or self.env.user.email_formatted,
-                    'email_to': onsc_cv_digital.partner_id.email,
-                    'body_html': body,
-                }
-                email_template_id.send_mail(onsc_cv_digital.id, force_send=True, email_values=email_values,
-                                            notif_layout='mail.mail_notification_light')
+                view_context = dict(self._context)
+                view_context.update({
+                    'months': months,
+                })
+                email_template_id.with_context(view_context).send_mail(onsc_cv_digital.id, force_send=True,
+                                                                       notif_layout='mail.mail_notification_light')
 
     def _check_todisable(self):
         for record in self:
@@ -609,8 +594,40 @@ class ONSCCVDigital(models.Model):
         return 'to_validate'
 
     def _is_rve_link(self):
-        # TODO incorporar código de Abelardo para check con RVE
-        return False
+        if not self.env.user.company_id.is_rve_integrated:
+            return False
+        response = self._response_connect(self)
+        if isinstance(response, str):
+            raise ValidationError(_(u"Error en la integración con RVE: " + response))
+        try:
+            cv_with_rve_link_active = response.Tiene_vinculo_laboral_actual
+            cv_with_rve_link_inactive = response.Tuvo_vinculo_laboral
+            if cv_with_rve_link_active is not None and cv_with_rve_link_active.upper() == 'S':
+                return True
+            elif cv_with_rve_link_inactive is not None and cv_with_rve_link_inactive.upper() == 'S':
+                return True
+            else:
+                return False
+        except Exception:
+            raise ValidationError(_(u"Ha ocurrido un error en la validación con RVE. "
+                                    u"Por favor contacte al administrador"))
+
+    def _response_connect(self, obj):
+        # TODO check con RVE
+        wsdl = self.env.user.company_id.rve_wsdl
+        client = Client(wsdl)
+        paisCod = obj.cv_emissor_country_id.code
+        tipoDoc = obj.cv_document_type_id.code
+        numDoc = obj.cv_nro_doc
+        try:
+            response = client.service.Execute(Paiscod=paisCod, Tipodoc=tipoDoc, Numdoc=numDoc)
+            # _logger.info("XML respuesta :" + etree_to_string(response).decode())
+            return response
+        except Fault as fault:
+            formatted_response = fault
+        except IOError:
+            formatted_response = "Servidor no encontrado."
+        return formatted_response
 
 
 class ONSCCVOtherRelevantInformation(models.Model):
