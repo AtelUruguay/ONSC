@@ -440,9 +440,12 @@ class ONSCCVDigital(models.Model):
             self.to_date = False
             return cv_warning(_("La fecha hasta no puede ser menor que la fecha de certificado"))
 
-    def unlink(self):
-        if self._check_todisable():
-            return super(ONSCCVDigital, self).unlink()
+    def button_unlink(self):
+        for record in self:
+            if record._is_rve_link():
+                raise ValidationError(_("No es posible eliminar su CV porque "
+                                        "tiene o tuvo algún vínculo laboral con el Estado"))
+        return self.unlink()
 
     def button_edit_address(self):
         self.ensure_one()
