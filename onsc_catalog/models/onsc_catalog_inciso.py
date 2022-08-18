@@ -56,7 +56,7 @@ class ONSCCatalogInciso(models.Model):
 
     _sql_constraints = [
         ('identifier_uniq', 'unique(identifier)', u'El identificador debe ser único'),
-        ('budget_code_uniq', 'unique(budget_code)', u'El código presupuestal (SIIF) ser único'),
+        ('budget_code_uniq', 'unique(budget_code)', u'El código presupuestal (SIIF) debe ser único'),
         ('short_name_uniq', 'unique(short_name)', u'La sigla debe ser única'),
     ]
 

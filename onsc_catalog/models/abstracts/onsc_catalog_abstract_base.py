@@ -13,7 +13,6 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
         return self.env['ir.sequence'].next_by_code('%s.identifier' % self._name)
 
     identifier = fields.Char('Identificador',
-                             default=lambda x: x._get_default_identifier(),
                              copy=False,
                              tracking=True,
                              history=True)
@@ -23,6 +22,14 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
     end_date = fields.Date(string='Fin de vigencia', tracking=True, history=True)
     active = fields.Boolean(default=True, tracking=True, history=True)
     description = fields.Text(string='Descripción', copy=False, history=True)
+
+    @api.constrains("code", 'name')
+    def _check_unicity(self):
+        for record in self:
+            if self.search_count([('name', '=', record.name), ('id', '!=', record.id)]):
+                raise ValidationError(_(u"El nombre debe ser único"))
+            if self.search_count([('code', '=', record.code), ('id', '!=', record.id)]):
+                raise ValidationError(_(u"El código debe ser único"))
 
     def toggle_active(self):
         self._check_toggle_active()
@@ -36,6 +43,11 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
         return True
 
     # TO-DO: Mejorar este metodo.Hasta ahora funciona con los M2O.
+    @api.model
+    def create(self, values):
+        values['identifier'] = self._get_default_identifier()
+        return super(ONSCCatalogAbstractBase, self).create(values)
+
     def write(self, values):
         """
         Este metodo se utiliza para cuando se queriera desactivar un registro, revise si se esta usando ese dato en otro
@@ -60,3 +72,11 @@ class ONSCCVCatalogAbstract(models.AbstractModel):
     code = fields.Char(string=u"Código", required=True)
     name = fields.Char(string=u"Nombre", required=True)
     description = fields.Text(string=u"Descripción")
+
+    @api.constrains("code", 'name')
+    def _check_unicity(self):
+        for record in self:
+            if self.search_count([('name', '=', record.name), ('id', '!=', record.id)]):
+                raise ValidationError(_(u"El nombre debe ser único"))
+            if self.search_count([('code', '=', record.code), ('id', '!=', record.id)]):
+                raise ValidationError(_(u"El código debe ser único"))
