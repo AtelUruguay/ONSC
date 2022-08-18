@@ -54,15 +54,17 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
         lugar. Si se esta usando no se puede desactivar.
         :return:
         """
+        self._check_can_disable(values)
+        return super(ONSCCatalogAbstractBase, self).write(values)
+
+    def _check_can_disable(self, values):
         if 'active' in values and not values.get('active') and not self.env.context.get('no_check_active', False):
             modelo_name = self._name
             fields = self.env['ir.model.fields'].search([('relation', '=', modelo_name)])
             for field in fields:
-                Models = self.env[field.model_id.model].search([(field.name, '=', self.id)])
+                Models = self.env[field.model_id.model].search([(field.name, 'in', self.ids)])
                 if Models:
                     raise ValidationError(_(u"No se puede desactivar el registro porque esta siendo usado"))
-
-        return super(ONSCCatalogAbstractBase, self).write(values)
 
 
 class ONSCCVCatalogAbstract(models.AbstractModel):
@@ -72,6 +74,7 @@ class ONSCCVCatalogAbstract(models.AbstractModel):
     code = fields.Char(string=u"Código", required=True, history=True)
     name = fields.Char(string=u"Nombre", required=True, history=True)
     description = fields.Text(string=u"Descripción", history=True)
+    active = fields.Boolean(default=True, tracking=True, history=True)
 
     @api.constrains("code", 'name')
     def _check_unicity(self):

@@ -57,6 +57,8 @@
                                     <field name="is_into_nacional_budget"/>
                                     <field name="is_central_administration"/>
                                     <field name="description"/>
+                                    <field name="type_organization_id"/>
+                                    <field name="topic_addressed_id"/>
                                 </group>
                             </group>
                         </page>
