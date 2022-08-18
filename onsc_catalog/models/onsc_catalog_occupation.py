@@ -11,8 +11,8 @@ class ONSCCatalogOccupation(models.Model):
                 'onsc.catalog.abstract.approval']
     _history_model = 'onsc.catalog.occupation.history'
 
-    occupational_family_id = fields.Many2one("onsc.catalog.occupational.family", string="Familia", required=True)
-    management_process_id = fields.Many2one("onsc.catalog.management.process", string="Proceso", required=True)
+    occupational_family_id = fields.Many2one("onsc.catalog.occupational.family", string="Familia", required=True, ondelete='restrict')
+    management_process_id = fields.Many2one("onsc.catalog.management.process", string="Proceso", required=True, ondelete='restrict')
     purpose = fields.Char(string=u"Propósito")
     activities = fields.Char(string=u"Actividades")
 

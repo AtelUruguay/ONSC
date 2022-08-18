@@ -23,7 +23,7 @@ class OperatingUnit(models.Model):
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True, history=True)
     company_id = fields.Many2one('res.company',
                                  related='inciso_id.company_id',
-                                 store=True, history=True)
+                                 store=True, history=True, ondelete='restrict')
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
     write_date = fields.Datetime('Fecha de última modificación', index=True, readonly=True)
