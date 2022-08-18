@@ -39,10 +39,6 @@ class ONSCCatalogOccupationalFamily(models.Model):
 
     short_name = fields.Char(string="Sigla", required=True, tracking=True, history=True)
 
-    def write(self, values):
-        values['check_active'] = True
-        return super(ONSCCatalogOccupationalFamily, self).write(values)
-
 
 class ONSCCatalogOccupationalFamilyHistory(models.Model):
     _name = 'onsc.catalog.occupational.family.history'
@@ -57,10 +53,6 @@ class ONSCCatalogManagementProcess(models.Model):
     _description = u'Proceso de gestión'
     _inherit = ['onsc.catalog.abstract.base', 'model.history', 'mail.thread', 'mail.activity.mixin']
     _history_model = 'onsc.catalog.management.process.history'
-
-    def write(self, values):
-        values['check_active'] = True
-        return super(ONSCCatalogManagementProcess, self).write(values)
 
 
 class ONSCCatalogManagementProcessHistory(models.Model):

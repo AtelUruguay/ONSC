@@ -42,16 +42,14 @@ class ONSCCatalogAbstractBase(models.AbstractModel):
         lugar. Si se esta usando no se puede desactivar.
         :return:
         """
-        if 'active' in values and 'check_active' in values:
-            if not values['active']:
-                modelo_name = self._name
-                Fields = self.env['ir.model.fields'].search([('relation', '=', modelo_name)])
-                for field in Fields:
-                    Models = self.env[field.model_id.model].search([(field.name, '=', self.id)])
-                    if Models:
-                        raise ValidationError(_(u"No se puede desactivar el registro porque esta siendo usado"))
-        if 'check_active' in values:
-            values.pop('check_active', None)
+        if 'active' in values and not values.get('active') and not self.env.context.get('no_check_active', False):
+            modelo_name = self._name
+            Fields = self.env['ir.model.fields'].search([('relation', '=', modelo_name)])
+            for field in Fields:
+                Models = self.env[field.model_id.model].search([(field.name, '=', self.id)])
+                if Models:
+                    raise ValidationError(_(u"No se puede desactivar el registro porque esta siendo usado"))
+
         return super(ONSCCatalogAbstractBase, self).write(values)
 
 

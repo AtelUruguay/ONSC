@@ -57,10 +57,6 @@ class ONSCCatalogOccupation(models.Model):
             vals['context'] = _context
         return vals
 
-    def write(self, values):
-        values['check_active'] = True
-        return super(ONSCCatalogOccupation, self).write(values)
-
 
 class ONSCCatalogOccupationHistory(models.Model):
     _inherit = ['model.history.data']
