@@ -69,9 +69,9 @@ class ONSCCVCatalogAbstract(models.AbstractModel):
     _name = 'onsc.cv.catalog.abstract'
     _description = 'Clase abstracta de catálogo'
 
-    code = fields.Char(string=u"Código", required=True)
-    name = fields.Char(string=u"Nombre", required=True)
-    description = fields.Text(string=u"Descripción")
+    code = fields.Char(string=u"Código", required=True, history=True)
+    name = fields.Char(string=u"Nombre", required=True, history=True)
+    description = fields.Text(string=u"Descripción", history=True)
 
     @api.constrains("code", 'name')
     def _check_unicity(self):
