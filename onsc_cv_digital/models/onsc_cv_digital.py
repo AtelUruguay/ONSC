@@ -441,11 +441,15 @@ class ONSCCVDigital(models.Model):
             return cv_warning(_("La fecha hasta no puede ser menor que la fecha de certificado"))
 
     def button_unlink(self):
+        self.unlink()
+        return self._action_open_user_cv()
+
+    def unlink(self):
         for record in self:
             if record._is_rve_link():
                 raise ValidationError(_("No es posible eliminar su CV porque "
                                         "tiene o tuvo algún vínculo laboral con el Estado"))
-        return self.unlink()
+        return super(ONSCCVDigital, self).unlink()
 
     def button_edit_address(self):
         self.ensure_one()
@@ -575,22 +579,13 @@ class ONSCCVDigital(models.Model):
 
     def _check_todisable(self):
         for record in self:
-            _documentary_validation_state = record._get_documentary_validation_state()
-            if _documentary_validation_state == 'validated' and record._check_todisable_dynamic_fields():
-                raise ValidationError(
-                    _(u"No es posible eliminar/inactivar el CV porque está en estado de validación documental: "
-                      u"'Validado' y tiene o tuvo vínculo con el estado"))
-        documentary_validation_configs = self.env['onsc.cv.documentary.validation.config'].search([])
-        models_name = documentary_validation_configs.mapped('model_id.model')
-        for model_name in models_name:
-            self.env[model_name].search([('cv_digital_id', 'in', self.ids)])._check_todisable()
+            if record._check_todisable_dynamic_fields():
+                raise ValidationError(_("No es posible inactivar su CV porque tiene o tuvo "
+                                        "algún vínculo laboral con el Estado"))
         return True
 
     def _check_todisable_dynamic_fields(self):
         return self._is_rve_link()
-
-    def _check_todisable_raise_error(self):
-        raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y tiene vínculo con RVE"))
 
     def _get_documentary_validation_state(self):
         # TODO este metodo debe retornar el estado final de la validacion documental de todo el CV
@@ -619,8 +614,8 @@ class ONSCCVDigital(models.Model):
         # TODO check con RVE
         wsdl = self.env.user.company_id.rve_wsdl
         client = Client(wsdl)
-        paisCod = obj.cv_emissor_country_id.code
-        tipoDoc = obj.cv_document_type_id.code
+        paisCod = obj.cv_emissor_country_id.code_rve
+        tipoDoc = obj.cv_document_type_id.code_other
         numDoc = obj.cv_nro_doc
         try:
             response = client.service.Execute(Paiscod=paisCod, Tipodoc=tipoDoc, Numdoc=numDoc)

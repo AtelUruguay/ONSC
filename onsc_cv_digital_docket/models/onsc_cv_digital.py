@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo import fields, models, api
 
 BLOOD_TYPE = [('unknown', 'Desconocido'), ('O+', 'O+'), ('A+', 'A+'), ('B+', 'B+'), ('AB+', 'AB+'), ('O-', 'O-'),
               ('A-', 'A-'), ('B-', 'B-'), ('AB-', 'AB-')]
@@ -77,10 +76,6 @@ class ONSCCVDigital(models.Model):
 
     def _check_todisable_dynamic_fields(self):
         return super(ONSCCVDigital, self)._check_todisable_dynamic_fields() or self.is_docket
-
-    def _check_todisable_raise_error(self):
-        raise ValidationError(_(u"El CV está en estado de validación documental: 'Validado' y "
-                                u"tiene vínculo con RVE o legajo"))
 
 
 class ONSCCVInformationContact(models.Model):

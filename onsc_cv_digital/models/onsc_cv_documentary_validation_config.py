@@ -16,6 +16,7 @@ class ONSCCVFileValidationConfig(models.Model):
             ('model_id.model', 'ilike', '%onsc.cv%'),
             ('model_id.model', 'not ilike', '%onsc.cv.abstract%'),
             ('model_id.model', '!=', 'onsc.cv.information.contact'),
+            ('model_id.model', '!=', 'onsc.cv.academic.program.subject'),
             ('name', '=', 'cv_digital_id')])
         return json.dumps([('id', 'in', fields.mapped('model_id').ids)])
 
@@ -28,6 +29,10 @@ class ONSCCVFileValidationConfig(models.Model):
     model_id_domain = fields.Char(compute='_compute_model_id_domain', default=_default_model_id_domain)
 
     field_ids = fields.Many2many("ir.model.fields", string="Campos a excluir", history=True, )
+
+    _sql_constraints = [
+        ("model_id_uniq", "unique (model_id)", "El modelo debe ser único",)
+    ]
 
     @api.onchange('model_id')
     def onchange_model_id(self):

@@ -21,7 +21,7 @@
         <field name="name">onsc.cv.digital.tree</field>
         <field name="model">onsc.cv.digital</field>
         <field name="arch" type="xml">
-            <tree string="Currículums digitales">
+            <tree string="Currículums digitales" delete="0">
                 <field name="partner_id"/>
                 <field name="active" invisible="1"/>
             </tree>
@@ -32,13 +32,13 @@
         <field name="name">onsc.cv.digital.form</field>
         <field name="model">onsc.cv.digital</field>
         <field name="arch" type="xml">
-            <form string="Currículums digitales">
+            <form string="Currículums digitales" delete="0">
                 <header>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" name="button_unlink"
-                                confirm="¿Está seguro de que desea eliminar su CV?"
+                                confirm="¿Está seguro que desea eliminar su CV? Si selecciona Aceptar el mismo se eliminará permanentemente perdiéndose todos los datos ingresados"
                                 string="Eliminar"
                                 groups="onsc_cv_digital.group_user_cv"
                                 type="object" icon="fa-trash"/>

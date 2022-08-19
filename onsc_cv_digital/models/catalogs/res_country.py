@@ -3,6 +3,12 @@
 from odoo import models, fields, tools, _
 
 
+class ResCountry(models.Model):
+    _inherit = 'res.country'
+
+    code_rve = fields.Char(string="Código RVE")
+
+
 class ResCountryPhone(models.Model):
     _name = 'res.country.phone'
     _description = 'Prefijos telefónicos'
