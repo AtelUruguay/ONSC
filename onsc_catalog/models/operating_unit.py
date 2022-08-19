@@ -35,6 +35,12 @@ class OperatingUnit(models.Model):
         ('short_name_uniq', 'unique(short_name)', u'La sigla debe ser única'),
     ]
 
+    def name_get(self):
+        res = []
+        for ou in self:
+            res.append((ou.id, ou.name))
+        return res
+
     @api.onchange('company_id')
     def onchange_company_id(self):
         self.partner_id = self.company_id.partner_id
