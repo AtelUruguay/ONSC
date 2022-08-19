@@ -93,7 +93,7 @@
                         <div class="o_setting_right_pane">
                             <label string="Integración con RVE" for="is_rve_integrated"/>
                             <div class="text-muted">
-                                Servicio de integración con DNIC
+                                Servicio de integración con RVE
                             </div>
                             <div attrs="{'invisible': [('is_rve_integrated', '=', False)]}" id="rve_integration_wsdl">
                                 <div class="content-group mt16">

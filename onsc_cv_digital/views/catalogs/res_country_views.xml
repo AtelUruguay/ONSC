@@ -62,4 +62,15 @@
         </field>
     </record>
 
+    <record id="view_country_form_inherit_onsc_cv" model="ir.ui.view">
+        <field name="name">res.country.onsc.cv.form</field>
+        <field name="model">res.country</field>
+        <field name="inherit_id" ref="base.view_country_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='code']" position="after">
+                <field name="code_rve"/>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
