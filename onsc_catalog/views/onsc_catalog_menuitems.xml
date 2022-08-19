@@ -63,4 +63,29 @@
               parent="onsc_catalog_config_menu"
               groups="group_catalog_configurador_servicio_civil"
               sequence="7"/>
+
+        <menuitem id="onsc_catalog_onsc_catalog_descriptor1_menu"
+              name="Descriptor 1"
+              action="onsc_catalog_descriptor1"
+              parent="onsc_catalog_config_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="8"/>
+        <menuitem id="onsc_catalog_onsc_catalog_descriptor2_menu"
+              name="Descriptor 2"
+              action="onsc_catalog_descriptor2"
+              parent="onsc_catalog_config_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="9"/>
+        <menuitem id="onsc_catalog_onsc_catalog_descriptor3_menu"
+              name="Descriptor 3"
+              action="onsc_catalog_descriptor3"
+              parent="onsc_catalog_config_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="10"/>
+        <menuitem id="onsc_catalog_onsc_catalog_descriptor4_menu"
+              name="Descriptor 4"
+              action="onsc_catalog_descriptor4"
+              parent="onsc_catalog_config_menu"
+              groups="group_catalog_configurador_servicio_civil"
+              sequence="11"/>
 </odoo>
