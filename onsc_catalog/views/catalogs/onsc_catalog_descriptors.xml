@@ -8,7 +8,7 @@
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Crear una nueva Descriptor 1
+                    Crear un nuevo Descriptor 1
                 </p>
             </field>
         </record>
@@ -54,7 +54,7 @@
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Crear una nueva Descriptor 2
+                    Crear un nuevo Descriptor 2
                 </p>
             </field>
         </record>
@@ -98,7 +98,7 @@
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Crear una nueva Descriptor 3
+                    Crear un nuevo Descriptor 3
                 </p>
             </field>
         </record>
@@ -139,7 +139,7 @@
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Crear una nueva Descriptor 4
+                    Crear un nuevo Descriptor 4
                 </p>
             </field>
         </record>
