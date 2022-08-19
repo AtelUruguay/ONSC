@@ -111,6 +111,7 @@
                     <field name="name" string="Nombre UO"/>
                     <field name="inciso_id"/>
                     <field name="operating_unit_id"/>
+                    <field name="active" invisible="1"/>
                 </tree>
             </field>
         </record>

@@ -9,6 +9,7 @@
                 <field name="identifier"/>
                 <field name="budget_code"/>
                 <field name="short_name"/>
+                <field name="active" invisible="1"/>
             </search>
         </field>
     </record>

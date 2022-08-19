@@ -20,6 +20,7 @@
                 <field name="code"/>
                 <field name="order"/>
                 <field name="is_central_administration"/>
+                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -79,6 +80,7 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="description"/>
+                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -132,6 +134,7 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="description"/>
+                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
