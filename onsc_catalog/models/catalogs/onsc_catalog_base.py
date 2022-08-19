@@ -84,20 +84,23 @@ class ONSCCatalogDescriptor1(models.Model):
     _description = u'Descriptor 1'
     _inherit = ['onsc.cv.catalog.abstract']
 
-    occupational_family_id = fields.Many2one("onsc.catalog.occupational.family", string="Mapeo Familia Ocupacional",ondelete='restrict')
+    occupational_family_id = fields.Many2one("onsc.catalog.occupational.family", string="Mapeo Familia Ocupacional",
+                                             ondelete='restrict')
+
 
 class ONSCCatalogDescriptor2(models.Model):
     _name = 'onsc.catalog.descriptor2'
     _description = u'Descriptor 2'
     _inherit = ['onsc.cv.catalog.abstract']
 
+
 class ONSCCatalogDescriptor3(models.Model):
     _name = 'onsc.catalog.descriptor3'
     _description = u'Descriptor 3'
     _inherit = ['onsc.cv.catalog.abstract']
 
+
 class ONSCCatalogDescriptor4(models.Model):
     _name = 'onsc.catalog.descriptor4'
     _description = u'Descriptor 4'
     _inherit = ['onsc.cv.catalog.abstract']
-
