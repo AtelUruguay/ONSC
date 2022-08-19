@@ -24,6 +24,7 @@ ONSC - Catálogos
 
         'views/catalogs/onsc_catalog_occupational_family_views.xml',
         'views/catalogs/onsc_catalog_management_process_views.xml',
+        'views/catalogs/onsc_catalog_descriptors.xml',
         'views/onsc_catalog_menuitems.xml'
     ],
     'demo': [],

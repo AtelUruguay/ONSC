@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="onsc_catalog_descriptor1" model="ir.actions.act_window">
+            <field name="name">Descriptor1</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">onsc.catalog.descriptor1</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear un nuevo Descriptor 1
+                </p>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_descriptor1_form" model="ir.ui.view">
+            <field name="name">onsc.catalog.descriptor1.form</field>
+            <field name="model">onsc.catalog.descriptor1</field>
+            <field name="arch" type="xml">
+                <form string="Descriptor 1">
+                    <header/>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="description"/>
+                            <field name="occupational_family_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_descriptor1_tree" model="ir.ui.view">
+            <field name="name">onsc.catalog.descriptor1.tree</field>
+            <field name="model">onsc.catalog.descriptor1</field>
+            <field name="arch" type="xml">
+                <tree string="Descriptor 1">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="description"/>
+                    <field name="occupational_family_id"/>
+                </tree>
+            </field>
+        </record>
+
+
+
+        <record id="onsc_catalog_descriptor2" model="ir.actions.act_window">
+            <field name="name">Descriptor 2</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">onsc.catalog.descriptor2</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear un nuevo Descriptor 2
+                </p>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_descriptor2_form" model="ir.ui.view">
+            <field name="name">onsc.catalog.descriptor2.form</field>
+            <field name="model">onsc.catalog.descriptor2</field>
+            <field name="arch" type="xml">
+                <form string="Descriptor 2">
+                    <header/>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="description"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_descriptor2_tree" model="ir.ui.view">
+            <field name="name">onsc.catalog.descriptor2.tree</field>
+            <field name="model">onsc.catalog.descriptor2</field>
+            <field name="arch" type="xml">
+                <tree string="Descriptor 2">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+
+
+
+        <record id="onsc_catalog_descriptor3" model="ir.actions.act_window">
+            <field name="name">Descriptor3</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">onsc.catalog.descriptor3</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear un nuevo Descriptor 3
+                </p>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_descriptor3_form" model="ir.ui.view">
+            <field name="name">onsc.catalog.descriptor3.form</field>
+            <field name="model">onsc.catalog.descriptor3</field>
+            <field name="arch" type="xml">
+                <form string="Descriptor 3">
+                    <header/>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="description"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_descriptor3_tree" model="ir.ui.view">
+            <field name="name">onsc.catalog.descriptor3.tree</field>
+            <field name="model">onsc.catalog.descriptor3</field>
+            <field name="arch" type="xml">
+                <tree string="Descriptor 3">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+        <record id="onsc_catalog_descriptor4" model="ir.actions.act_window">
+            <field name="name">Descriptor4</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">onsc.catalog.descriptor4</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear un nuevo Descriptor 4
+                </p>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_descriptor4_form" model="ir.ui.view">
+            <field name="name">onsc.catalog.descriptor4.form</field>
+            <field name="model">onsc.catalog.descriptor4</field>
+            <field name="arch" type="xml">
+                <form string="Descriptor 4">
+                    <header/>
+                    <sheet>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="description"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_descriptor4_tree" model="ir.ui.view">
+            <field name="name">onsc.catalog.descriptor4.tree</field>
+            <field name="model">onsc.catalog.descriptor4</field>
+            <field name="arch" type="xml">
+                <tree string="Descriptor 4">
+                    <field name="name"/>
+                    <field name="code"/>
+                    <field name="description"/>
+                </tree>
+            </field>
+        </record>
+    </data>
+</odoo>
