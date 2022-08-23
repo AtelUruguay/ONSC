@@ -19,6 +19,13 @@
               groups="group_user_cv"
               sequence="1"/>
 
+    <menuitem id="onsc_cv_digital_call_menu"
+              name="Consulta de CV"
+              action="onsc_cv_digital_call_action"
+              parent="onsc_cv_root_menu"
+              groups="group_validador_documental_cv"
+              sequence="2"/>
+
     <menuitem id="onsc_cv_config_menu"
               name="Catálogos"
               parent="onsc_cv_root_menu"
