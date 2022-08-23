@@ -9,7 +9,7 @@ from odoo.exceptions import ValidationError
 from zeep import Client
 from zeep.exceptions import Fault
 
-from .abstracts.onsc_cv_documentary_validation import DOCUMENTARY_VALIDATION_STATES
+from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
 _logger = logging.getLogger(__name__)
 
@@ -61,6 +61,10 @@ class ONSCCVDigital(models.Model):
         string="Contacto",
         required=True, index=True,
         default=_default_partner_id)
+    type = fields.Selection(string=u"Tipo", selection=[('cv', 'CV'), ('call', 'Llamado')],
+                            required=True,
+                            index=True,
+                            default='cv')
     active = fields.Boolean(
         string="Activo", default=True)
     is_partner_cv = fields.Boolean(u'¿Es un contacto de CV?')
