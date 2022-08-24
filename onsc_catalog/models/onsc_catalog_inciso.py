@@ -48,8 +48,8 @@ class ONSCCatalogInciso(models.Model):
                                                tracking=True,
                                                history=True,
                                                default=True)
-    type_organization_id = fields.Many2one("onsc.catalog.type.organization", string="Tipo de organismo", history=True)
-    topic_addressed_id = fields.Many2one("onsc.catalog.topic.addressed", string=u"Temática abordada", history=True)
+    type_organization_id = fields.Many2one("onsc.catalog.type.organization", string=u"Clasificación por tipo de organismo", history=True)
+    topic_addressed_id = fields.Many2one("onsc.catalog.topic.addressed", string=u"Clasificación por temática abordada", history=True)
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
     write_date = fields.Datetime("Fecha de última modificación", index=True, readonly=True)
