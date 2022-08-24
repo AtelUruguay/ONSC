@@ -13,7 +13,8 @@ class OperatingUnit(models.Model):
     short_name = fields.Char(string="Sigla", required=True, history=True)
     code = fields.Char(required=True, history=True)
     active = fields.Boolean(default=True, history=True)
-    partner_id = fields.Many2one("res.partner", "Partner", related='company_id.partner_id', store=True, readonly=True,history=True)
+    partner_id = fields.Many2one("res.partner", "Partner", related='company_id.partner_id', store=True, readonly=True,
+                                 history=True)
 
     budget_code = fields.Char(u'Código presupuestal (SIIF)', required=True, history=True)
     start_date = fields.Date(string='Inicio de vigencia', required=True, history=True)
@@ -40,7 +41,6 @@ class OperatingUnit(models.Model):
         for ou in self:
             res.append((ou.id, ou.name))
         return res
-
 
     @api.onchange('start_date')
     def onchange_start_date(self):

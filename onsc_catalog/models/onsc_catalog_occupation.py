@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 
 
 class ONSCCatalogOccupation(models.Model):
@@ -27,14 +28,11 @@ class ONSCCatalogOccupation(models.Model):
                     'occupational_family_id.start_date', 'management_process_id.start_date')
     def _check_validity(self):
         _message = _("La vigencia de la ocupación debe estar contenida dentro de la vigencia del proceso y la familia")
-        _message2 = _("La fecha fin de vigencia de la ocupación no debe ser menor a la fecha inicio de vigencia")
         for record in self:
             sdate = record.start_date
             edate = record.end_date
             family_edate = record.occupational_family_id.end_date
             process_edate = record.management_process_id.end_date
-            if edate < sdate:
-                raise ValidationError(_message2)
             if sdate < record.occupational_family_id.start_date or (
                     family_edate and sdate > family_edate) or sdate < record.management_process_id.start_date or (
                     process_edate and sdate > process_edate):
@@ -63,6 +61,20 @@ class ONSCCatalogOccupation(models.Model):
         else:
             vals['context'] = _context
         return vals
+
+    @api.onchange('start_date')
+    def onchange_start_date(self):
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            self.start_date = False
+            return catalog_warning(_(u"La fecha de inicio de vigencia no puede ser mayor "
+                                     u"que la fecha de fin de vigencia"))
+
+    @api.onchange('end_date')
+    def onchange_end_date(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date:
+            self.end_date = False
+            return catalog_warning(_(u"La fecha de fin de vigencia no puede ser menor "
+                                     u"que la fecha de inicio de vigencia"))
 
 
 class ONSCCatalogOccupationHistory(models.Model):
