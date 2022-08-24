@@ -27,12 +27,17 @@ class ONSCCatalogOccupation(models.Model):
                     'occupational_family_id.start_date', 'management_process_id.start_date')
     def _check_validity(self):
         _message = _("La vigencia de la ocupación debe estar contenida dentro de la vigencia del proceso y la familia")
+        _message2 = _("La fecha fin de vigencia de la ocupación no debe ser menor a la fecha inicio de vigencia")
         for record in self:
             sdate = record.start_date
             edate = record.end_date
             family_edate = record.occupational_family_id.end_date
             process_edate = record.management_process_id.end_date
-            if sdate < record.occupational_family_id.start_date or sdate < record.management_process_id.start_date:
+            if edate < sdate:
+                raise ValidationError(_message2)
+            if sdate < record.occupational_family_id.start_date or (
+                    family_edate and sdate > family_edate) or sdate < record.management_process_id.start_date or (
+                    process_edate and sdate > process_edate):
                 raise ValidationError(_message)
             if edate and ((family_edate and edate > family_edate) or (process_edate and edate > process_edate)):
                 raise ValidationError(_message)
