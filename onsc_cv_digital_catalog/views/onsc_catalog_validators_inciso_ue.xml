@@ -24,7 +24,7 @@
                             <field name="inciso_id"/>
                             <field name="operating_unit_id"/>
                             <field name="user_id"/>
-                            <field name="security"  invisible="1"/>
+                            <field name="security" invisible="1"/>
                             <field name="active" invisible="1"/>
                         </group>
                     </sheet>
@@ -40,7 +40,7 @@
                     <field name="inciso_id"/>
                     <field name="operating_unit_id"/>
                     <field name="user_id"/>
-                    <field name="security"  invisible="1"/>
+                    <field name="security" invisible="1"/>
                     <field name="active" invisible="1"/>
                 </tree>
             </field>
