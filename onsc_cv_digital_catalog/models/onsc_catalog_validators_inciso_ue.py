@@ -25,5 +25,7 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     @api.constrains('inciso_id', 'operating_unit_id', 'user_id')
     def _check_valid(self):
         for record in self:
-            if not record.personal_phone and not record.mobile_phone:
+            if record.inciso_id and record.operating_unit_id and record.user_id and self.search_count(
+                    [('inciso_id', '=', record.inciso_id.id), ('operating_unit_id', '=', record.operating_unit_id.id),
+                     ('user_id', '=', record.user_id.id), ('id', '!=', record.id)]):
                 raise ValidationError(_("Ya existe un usuario configurado para ese Inciso y UE"))
