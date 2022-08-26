@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_cv_digital_search" model="ir.ui.view">
-        <field name="name">onsc.cv.digital.search</field>
-        <field name="model">onsc.cv.digital</field>
+    <record id="onsc_cv_digital_call_search" model="ir.ui.view">
+        <field name="name">onsc.cv.digital.call.search</field>
+        <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-            <search string="Currículums digitales">
+            <search string="Llamados">
                 <field name="partner_id"/>
+                <field name="call_number"/>
+                <field name="postulation_date"/>
+                <field name="postulation_number"/>
                 <separator/>
                 <filter string="Uruguay" name="filter_uruguay_country" icon="terp-personal"
                         domain="[('cv_emissor_country_id.code','=','UY')]"/>
@@ -17,48 +20,31 @@
         </field>
     </record>
 
-    <record id="onsc_cv_digital_tree" model="ir.ui.view">
-        <field name="name">onsc.cv.digital.tree</field>
-        <field name="model">onsc.cv.digital</field>
+    <record id="onsc_cv_digital_call_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.digital.call.tree</field>
+        <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-            <tree string="Currículums digitales" delete="0">
+<!--            <tree string="Llamados" delete="0" edit="0" create="0" duplicate="0">-->
+            <tree string="Llamados">
                 <field name="partner_id"/>
+                <field name="call_number"/>
+                <field name="postulation_date"/>
+                <field name="postulation_number"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
 
-    <record id="onsc_cv_digital_form" model="ir.ui.view">
-        <field name="name">onsc.cv.digital.form</field>
-        <field name="model">onsc.cv.digital</field>
+    <record id="onsc_cv_digital_call_form" model="ir.ui.view">
+        <field name="name">onsc.cv.digital.call.form</field>
+        <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-            <form string="Currículums digitales" delete="0">
+<!--            <form string="Llamados" delete="0" edit="0" create="0" duplicate="0">-->
+            <form string="Llamados">
                 <header>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button class="oe_stat_button" name="button_unlink"
-                                confirm="¿Está seguro que desea eliminar su CV? Si selecciona Aceptar el mismo se eliminará permanentemente perdiéndose todos los datos ingresados"
-                                string="Eliminar"
-                                groups="onsc_cv_digital.group_user_cv"
-                                type="object" icon="fa-trash"/>
-                        <button class="oe_stat_button" name="toggle_active"
-                                confirm="¿Está seguro de que desea inactivar su CV?"
-                                string="Inactivar"
-                                groups="onsc_cv_digital.group_user_cv"
-                                attrs="{'invisible': [('active', '=', False)]}"
-                                type="object" icon="fa-archive"/>
-                    </div>
-                    <div class="alert alert-danger" role="alert"
-                         attrs="{'invisible': [('active', '=', True)]}">
-                        <p class="mb-0" style="text-align:center">
-                            <strong>
-                                Su Curriculum se encuentra inactivo.
-                                <button type="object" class="oe_link alert-danger" role="alert" name="toggle_active"
-                                        string="Para reestablecerlo de click aquí"
-                                        style="font-weight:bold;text-decoration:underline"/>
-                            </strong>
-                        </p>
                     </div>
                     <field name="avatar_128" invisible="1"/>
                     <field name="image_1920" widget='image' class="oe_avatar"
@@ -70,6 +56,12 @@
                         <h1>
                             <field name="cv_full_name" readonly="1"/>
                         </h1>
+                        <label for="call_number" string="Llamado"/>
+                        <h2><field name="call_number"/></h2>
+                        <label for="postulation_date" string="Fecha de postulación"/>
+                        <h2><field name="postulation_date"/></h2>
+                        <label for="postulation_number" string="Número de postulación"/>
+                        <h2><field name="postulation_number"/></h2>
                     </div>
                     <group>
                         <group>
@@ -92,9 +84,6 @@
                     </group>
                     <notebook>
                         <page string="Información general">
-                            <div class="float-right">
-                                <field name="cv_help_general_info"/>
-                            </div>
                             <group>
                                 <group string="Género">
                                     <field name="cv_gender_id"/>
@@ -241,11 +230,6 @@
                                     </div>
                                 </div>
                                 <div class="col-md-auto"/>
-                                <div class="col col-lg-2">
-                                    <div class="float-right">
-                                        <field name="cv_help_address"/>
-                                    </div>
-                                </div>
                             </div>
 
                             <group>
@@ -282,9 +266,6 @@
                             </group>
                         </page>
                         <page name="formation" string="Formación">
-                            <div class="float-right">
-                                <field name="cv_help_formation"/>
-                            </div>
                             <div>
                                 <h4>Formación básica</h4>
                             </div>
@@ -296,68 +277,41 @@
                             <field name="advanced_formation_ids"/>
                         </page>
                         <page name="course_certificate" string="Cursos y certificados">
-                            <div class="float-right">
-                                <field name="cv_help_course_certificate"/>
-                            </div>
                             <div>
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
                             <field name="course_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital_call.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
                             </div>
                             <field name="certificate_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital_call.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">
-                            <div class="float-right">
-                                <field name="cv_help_work_experience"/>
-                            </div>
                             <field name="work_experience_ids"/>
                         </page>
                         <page name="work_teaching" string="Docencia">
-                            <div class="float-right">
-                                <field name="cv_help_work_teaching"/>
-                            </div>
                             <field name="work_teaching_ids"/>
                         </page>
                         <page name="work_investigation" string="Investigación">
-                            <div class="float-right">
-                                <field name="cv_help_work_investigation"/>
-                            </div>
                             <field name="work_investigation_ids"/>
                         </page>
                         <page name="volunteering" string="Voluntariado">
-                            <div class="float-right">
-                                <field name="cv_help_volunteering"/>
-                            </div>
                             <field name="volunteering_ids"/>
                         </page>
                         <page name="language_level" string="Idiomas">
-                            <div class="float-right">
-                                <field name="cv_help_language_level"/>
-                            </div>
                             <field name="language_level_ids"/>
                         </page>
                         <page name="publications_productions_evaluations"
                               string="Publicaciones, producciones y evaluaciones">
-                            <div class="float-right">
-                                <field name="cv_help_publications_productions_evaluations"/>
-                            </div>
                             <field name="publication_production_evaluation_ids"/>
                         </page>
                         <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
-                            <div class="float-right">
-                                <field name="cv_help_tutoring_orientation_supervision"/>
-                            </div>
                             <field name="tutoring_orientation_supervision_ids"/>
                         </page>
                         <page string="Discapacidad">
-                            <div class="float-right">
-                                <field name="cv_help_disability"/>
-                            </div>
                             <group>
                                 <group>
                                     <field name="allow_content_public"/>
@@ -410,16 +364,10 @@
                         </page>
                         <page name="participation_event"
                               string="Participación en eventos">
-                            <div class="float-right">
-                                <field name="cv_help_participation_event"/>
-                            </div>
                             <field name="participation_event_ids"/>
                         </page>
                         <page name="other_relevant_information"
                               string="Otra información relevante">
-                            <div class="float-right">
-                                <field name="cv_help_other_relevant_information"/>
-                            </div>
                             <field name="other_relevant_information_ids">
                                 <tree editable="top">
                                     <field name="theme"/>
@@ -428,9 +376,6 @@
                             </field>
                         </page>
                         <page name="reference" string="Referencias">
-                            <div class="float-right">
-                                <field name="cv_help_reference"/>
-                            </div>
                             <field name="reference_ids"/>
                         </page>
                     </notebook>
@@ -439,76 +384,15 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="kanban_digital_cv">
-        <field name="name">onsc.cv.digital.kanban</field>
-        <field name="model">onsc.cv.digital</field>
-        <field name="priority" eval="1000"/>
-        <field name="arch" type="xml">
-            <kanban class="o_res_partner_kanban">
-                <field name="id"/>
-                <field name="cv_full_name"/>
-                <field name="email"/>
-                <field name="cv_nro_doc"/>
-                <field name="cv_emissor_country_id"/>
-                <field name="avatar_128"/>
-                <templates>
-                    <t t-name="kanban-box">
-                        <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
-                            <div class="o_kanban_image_fill_left o_kanban_image_full"
-                                 t-attf-style="background-image: url(#{kanban_image('onsc.cv.digital', 'avatar_128', record.id.raw_value)})"
-                                 role="img"/>
-                            <div class="oe_kanban_details d-flex flex-column">
-                                <strong class="o_kanban_record_title oe_partner_heading">
-                                    <field name="cv_full_name"/>
-                                </strong>
-                                <div class="o_kanban_tags_section oe_kanban_partner_categories"/>
-                                <ul>
-                                    <li t-if="record.cv_emissor_country_id.raw_value">
-                                        <t>
-                                            <field name="cv_emissor_country_id"/>
-                                        </t>
-                                    </li>
-                                    <li t-if="record.email.raw_value" class="o_text_overflow">
-                                        <t>
-                                            <field name="email"/>
-                                        </t>
-                                    </li>
-                                    <li t-if="record.cv_nro_doc" class="o_text_overflow">
-                                        <t>
-                                            <field name="cv_nro_doc"/>
-                                        </t>
-                                    </li>
-                                </ul>
-                                <div class="o_row">
-                                    <span class="oe_kanban_partner_links"/>
-                                </div>
-                            </div>
-                        </div>
-                    </t>
-                </templates>
-            </kanban>
-        </field>
-    </record>
-
-    <record id="onsc_cv_digital_user_action" model="ir.actions.server">
-        <field name="name">Currículum Digital</field>
-        <field name="type">ir.actions.server</field>
-        <field name="state">code</field>
-        <field name="model_id" ref="model_onsc_cv_digital"/>
-        <field name="code">
-            action = model._action_open_user_cv()
-        </field>
-    </record>
-
-    <record id='onsc_cv_digital_action' model='ir.actions.act_window'>
-        <field name="name">Currículums Digitales</field>
+    <record id='onsc_cv_digital_call_action' model='ir.actions.act_window'>
+        <field name="name">Llamados</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">onsc.cv.digital</field>
-        <field name="view_mode">kanban,form</field>
-        <field name="domain">[('type','=','cv'),('active','in',[False,True])]</field>
+        <field name="res_model">onsc.cv.digital.call</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'is_cv_call': True}</field>
+        <field name="domain">[('type','=','call'),('active','in',[False,True])]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear un nuevo Currículum digital
             </p>
         </field>
     </record>
