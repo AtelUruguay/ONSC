@@ -15,8 +15,8 @@ ONSC CV Digital - Catálogo
         'security/onsc_cv_digital_catalog_security.xml',
         'security/ir.model.access.csv',
         'views/onsc_cv_digital_views.xml',
-        'views/onsc_catalog_validators_inciso_ue.xml'
-
+        'views/onsc_catalog_validators_inciso_ue.xml',
+        'views/onsc_catalog_menuitems.xml',
     ],
     'external_dependencies': {}
 }

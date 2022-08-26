@@ -14,5 +14,5 @@
         <field name="name">Administrador de llamado</field>
         <field name="comment">Administrador de llamado</field>
         <field name="category_id" ref="onsc_catalog.module_category_onsc_catalog"/>
-        </record>
+    </record>
 </odoo>
