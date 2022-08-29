@@ -5,3 +5,4 @@ spyne==2.13.2a0
 Flask==0.12.2
 -e git+https://gitlab.quanam.com/quanam/sec-wall.git#egg=sec-wall
 Flask-Spyne==0.3.1
+basicauth==0.4.1

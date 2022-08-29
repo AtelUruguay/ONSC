@@ -15,6 +15,8 @@ from spyne import Unicode, Array, DateTime
 from spyne import rpc
 from spyne.model.fault import Fault
 
+from .validar_usuario_y_db import validar_usuario_y_db
+
 _logger = logging.getLogger(__name__)
 
 NAMESPACE_BASE = "http://quanam.com/encuestas/abc/"
@@ -43,6 +45,7 @@ class ErrorHandler(BaseComplexType):
     }
     _type_info_alt = []
 
+
 class WsCVPostulacionResponse(BaseComplexType):
     _type_info = {
         'result': Unicode(min_occurs=1),
@@ -50,19 +53,22 @@ class WsCVPostulacionResponse(BaseComplexType):
     }
     _type_info_alt = []
 
+
 class WsCVPostulacion(ServiceBase):
     __service_url_path__ = 'postulacion'
     __target_namespace__ = NAMESPACE_BASE_V1
-    __wsse_conf__ = {
-        'username': 'myusername',
-        'password': 'mypassword'  # never store passwords directly in sources!
-    }
+    # __wsse_conf__ = {
+    #     'username': 'myusername',
+    #     'password': 'mypassword'  # never store passwords directly in sources!
+    # }
 
     uid = 0
+
     @rpc(Unicode, Unicode, Unicode, DateTime, Unicode, Unicode, Unicode, _returns=WsCVPostulacionResponse)
     def postulacion(
             self, codPais, tipoDoc, nroDoc, fechaPostulacion, nroPostulacion, nroLlamado, accion
     ):
+        (uid, pwd, dbname) = validar_usuario_y_db().val_usuario_y_db(self.transport)
         dbname = list(Registry.registries.d)[0]
         uid = SUPERUSER_ID
         try:
