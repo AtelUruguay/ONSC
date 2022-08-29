@@ -60,12 +60,10 @@
         <record id="email_template_inactivity_cv" model="mail.template">
             <field name="name">Plantilla de notificación al usuario por período de inactividad en el CV</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital"/>
-            <field name="email_from">"{{ user.company_id.email_formatted }}" &lt;{{ (user.email_formatted or user.email)
-                }}&gt;
-            </field>
+            <field name="email_from">"{{ object.partner_id.company_id.name }}" &lt;{{ (object.partner_id.company_id.email or user.email) }}&gt;</field>
             <field name="email_to">{{ object.partner_id.email }}&gt;</field>
             <field name="subject">Notificación por inactividad en el CV digital del Estado Uruguayo</field>
-            <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
             <field name="body_html" type="html">
                 <html>

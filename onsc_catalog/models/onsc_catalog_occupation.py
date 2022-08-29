@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
 
 
 class ONSCCatalogOccupation(models.Model):
@@ -32,7 +33,9 @@ class ONSCCatalogOccupation(models.Model):
             edate = record.end_date
             family_edate = record.occupational_family_id.end_date
             process_edate = record.management_process_id.end_date
-            if sdate < record.occupational_family_id.start_date or sdate < record.management_process_id.start_date:
+            if sdate < record.occupational_family_id.start_date or (
+                    family_edate and sdate > family_edate) or sdate < record.management_process_id.start_date or (
+                    process_edate and sdate > process_edate):
                 raise ValidationError(_message)
             if edate and ((family_edate and edate > family_edate) or (process_edate and edate > process_edate)):
                 raise ValidationError(_message)
@@ -58,6 +61,20 @@ class ONSCCatalogOccupation(models.Model):
         else:
             vals['context'] = _context
         return vals
+
+    @api.onchange('start_date')
+    def onchange_start_date(self):
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            self.start_date = False
+            return catalog_warning(_(u"La fecha de inicio de vigencia no puede ser mayor "
+                                     u"que la fecha de fin de vigencia"))
+
+    @api.onchange('end_date')
+    def onchange_end_date(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date:
+            self.end_date = False
+            return catalog_warning(_(u"La fecha de fin de vigencia no puede ser menor "
+                                     u"que la fecha de inicio de vigencia"))
 
 
 class ONSCCatalogOccupationHistory(models.Model):
