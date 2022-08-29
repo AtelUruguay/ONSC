@@ -87,8 +87,7 @@ class ONSCCatalogInciso(models.Model):
         return result
 
     def unlink(self):
-        for inciso in self:
-            inciso.company_id.unlink()
+        self.mapped('company_id').unlink()
         return super(ONSCCatalogInciso, self).unlink()
 
 
