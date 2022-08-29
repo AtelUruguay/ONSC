@@ -2,7 +2,7 @@
 <odoo>
     <data>
         <record id="onsc_catalog_validators_inciso_ue_action" model="ir.actions.act_window">
-            <field name="name">Validadors de Inciso y UE</field>
+            <field name="name">Validador de Inciso y UE</field>
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">onsc.catalog.validators.inciso.ue</field>
             <field name="view_mode">tree,form</field>
