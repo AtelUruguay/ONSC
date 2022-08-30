@@ -74,6 +74,7 @@
                     <field name="end_date"/>
                     <separator/>
                     <filter string="Para aprobar CGN" name="filter_inactive_cgn" domain="[('active','=',False),('is_approve_cgn','=',False),('is_approve_onsc','=',True)]"/>
+                    <filter string="Para aprobar ONSC" name="filter_inactive_onsc" domain="[('active','=',False),('is_approve_onsc','=',False)]"/>
                     <filter string="Archivados" name="filter_inactive" domain="[('active','=',False)]"/>
                     <filter string="No Archivados" name="filter_active" domain="[('active','=',True)]"/>
                 </search>
