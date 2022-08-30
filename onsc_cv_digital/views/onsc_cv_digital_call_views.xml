@@ -24,8 +24,7 @@
         <field name="name">onsc.cv.digital.call.tree</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-<!--            <tree string="Llamados" delete="0" edit="0" create="0" duplicate="0">-->
-            <tree string="Llamados">
+            <tree string="Llamados" delete="0" edit="0" create="0" duplicate="0">
                 <field name="partner_id"/>
                 <field name="call_number"/>
                 <field name="postulation_date"/>
@@ -39,8 +38,7 @@
         <field name="name">onsc.cv.digital.call.form</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-<!--            <form string="Llamados" delete="0" edit="0" create="0" duplicate="0">-->
-            <form string="Llamados">
+            <form string="Llamados" delete="0" edit="0" create="0" duplicate="0">
                 <header>
                 </header>
                 <sheet>

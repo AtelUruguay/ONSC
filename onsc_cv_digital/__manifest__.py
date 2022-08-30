@@ -11,7 +11,7 @@ ONSC CV Digital
     'category': 'ONSC',
     'depends': ['base', 'mail', 'web_domain_field', 'phone_validation', 'onsc_base',
                 'web_relational_field_with_create_edit_option', 'auto_save_form_view', 'disable_form_quick_edit',
-                'model_history'],
+                'model_history', 'ws_int_base'],
     'data': [
         'security/onsc_cv_digital_security.xml',
         'security/onsc_cv_digital_rules.xml',
@@ -93,7 +93,7 @@ ONSC CV Digital
         'demo/res_partner_demo.xml',
     ],
     'external_dependencies': {
-        'python': ['zeep'],
+        'python': ['zeep', 'basicauth', 'spyne'],
     },
     'installable': True,
     'application': True,

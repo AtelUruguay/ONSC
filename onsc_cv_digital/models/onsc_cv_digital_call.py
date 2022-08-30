@@ -5,6 +5,8 @@ import logging
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
+from ..soap import soap_error_codes
+
 _logger = logging.getLogger(__name__)
 
 
@@ -44,8 +46,8 @@ class ONSCCVDigitalCall(models.Model):
 
     def init(self):
         self._cr.execute("""
-            CREATE INDEX IF NOT EXISTS onsc_cv_digital_call_call_number_postulation_date_postulation_number
-                                    ON onsc_cv_digital_call (call_number, postulation_date,postulation_number)
+            CREATE INDEX IF NOT EXISTS onsc_cv_digital_call_postulation_number
+                                    ON onsc_cv_digital_call (call_number,postulation_number)
         """)
 
     @api.model
@@ -53,3 +55,45 @@ class ONSCCVDigitalCall(models.Model):
         values['type'] = 'call'
         result = super(ONSCCVDigitalCall, self).create(values)
         return result
+
+    @api.model
+    def _create_postulation(self,
+                            country_code,
+                            doc_type_code,
+                            doc_number,
+                            postulation_date,
+                            postulation_number,
+                            call_number,
+                            accion,
+                            ):
+        country_id = self.env['res.country'].search([('code', '=', country_code)], limit=1)
+        if not country_id:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_151)
+        doc_type_id = self.env['onsc.cv.document.type'].search([('code', '=', doc_type_code)], limit=1)
+        if not doc_type_id:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_152)
+        if not isinstance(accion, str) or accion not in ['P', 'R', 'C']:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_154)
+        cv_digital_id = self.env['onsc.cv.digital'].search([
+            ('cv_emissor_country_id', '=', country_id.id),
+            ('cv_document_type_id', '=', doc_type_id.id),
+            ('cv_nro_doc', '=', doc_number),
+        ], limit=1)
+        if not cv_digital_id:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_153)
+
+        if accion == 'P':
+            return self._create_call(cv_digital_id, call_number, postulation_date, postulation_number)
+        return True
+
+    def _create_call(self, cv_digital_id, call_number, postulation_date, postulation_number):
+        new_cv_digital = cv_digital_id.copy({
+            'type': 'call'
+        })
+        cv_call = self.env['onsc.cv.digital.call'].create({
+            'cv_digital_id': new_cv_digital.id,
+            'call_number': call_number,
+            'postulation_date': postulation_date,
+            'postulation_number': postulation_number,
+        })
+        return cv_call

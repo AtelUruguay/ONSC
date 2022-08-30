@@ -9,6 +9,7 @@ class ONSCCVDigitalVolunteering(models.Model):
 
     unit_name = fields.Char("Área/Unidad")
     volunteering_task_ids = fields.One2many("onsc.cv.volunteering.task", inverse_name="volunteering_id",
+                                            copy=True,
                                             string="Tareas")
     currently_volunteering = fields.Selection(string="Voluntario actualmente", selection=[('si', 'Si'), ('no', 'No')],
                                               required=True, )
