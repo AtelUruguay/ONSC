@@ -4,9 +4,4 @@
         <field name="key">parameter_inactivity_cv_value</field>
         <field name="value">0</field>
     </record>
-
-    <record id="cv_digital_url" model="ir.config_parameter" >
-        <field name="key">cv_digital_url</field>
-        <field name="value">http://localhost:8069</field>
-    </record>
 </odoo>
