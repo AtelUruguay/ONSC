@@ -6,6 +6,7 @@ NIVEL = [('d', 'Básico'), ('c', 'Intermedio'), ('b', 'Avanzado'), ('a', 'Nativo
 
 class LenguageLevel(models.Model):
     _name = 'onsc.cv.language.level'
+    _inherit = 'onsc.cv.abstract.common'
     _description = 'Idiomas'
     _order = 'spoken_level,read_level,write_level'
 

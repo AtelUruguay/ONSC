@@ -1,9 +1,7 @@
 import logging
-import sys
 
 import openerp.tools
 from basicauth import decode
-from spyne.model.fault import Fault
 
 from . import soap_error_codes
 
@@ -17,38 +15,18 @@ class validar_usuario_y_db():
         print("Authorization: ", authorization)
         print("dbname: ", dbname)
 
-        if authorization is not None:
-            username, pwd = decode(authorization)
-        else:
-            raise Fault(soap_error_codes.INVALID_USER_PASS_ERROR_CODE, soap_error_codes.INVALID_USER_PASS_DESC,
-                        soap_error_codes.INVALID_USER_PASS_TYPE, soap_error_codes.INVALID_USER_PASS_LONGDESC)
-
-        if dbname is None:
-            raise Fault(soap_error_codes.DBNAME_HEADER_MISSING_ERROR_CODE, soap_error_codes.DBNAME_HEADER_MISSING_DESC,
-                        soap_error_codes.DBNAME_HEADER_MISSING_TYPE,
-                        soap_error_codes.DBNAME_HEADER_MISSING_LONGDESC)
-
-        # Get the uid
         try:
-
+            if authorization is None:
+                return soap_error_codes._raise_fault(soap_error_codes.AUTH_50)
+            username, pwd = decode(authorization)
+        except Exception as e:
+            return soap_error_codes._raise_fault(soap_error_codes.AUTH_52)
+        if dbname is None:
+            return soap_error_codes._raise_fault(soap_error_codes.AUTH_53)
+        try:
             res_users = openerp.registry(dbname)['res.users']
             uid = res_users.authenticate(dbname, username, pwd, {})
-
-            # sock_common = xmlrpclib.ServerProxy('http://localhost:8069/xmlrpc/common')
-            # uid = sock_common.login(dbname, username, pwd)
-            print
-            "UID obtenido: ", uid
-        except:
+        except Exception as e:
             logging.exception('')
-            exc_type, exc_value, exc_traceback = sys.exc_info()
-            if exc_value.faultCode.find("does not exist") != -1:
-                raise Fault(soap_error_codes.DBNAME_HEADER_INVALID_ERROR_CODE,
-                            soap_error_codes.DBNAME_HEADER_INVALID_DESC,
-                            soap_error_codes.DBNAME_HEADER_INVALID_TYPE,
-                            soap_error_codes.DBNAME_HEADER_INVALID_LONGDESC)
-            else:
-                raise Fault(soap_error_codes.INTERNAL_XMLRPC_ERROR_CODE, soap_error_codes.INTERNAL_XMLRPC_DESC,
-                            soap_error_codes.INTERNAL_XMLRPC_TYPE,
-                            soap_error_codes.INTERNAL_XMLRPC_LONGDESC)
-
+            return soap_error_codes._raise_fault(soap_error_codes.AUTH_51)
         return (uid, pwd, dbname)

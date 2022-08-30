@@ -18,6 +18,7 @@ from .onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 
 class ONSCCVAbstractConditionalState(models.AbstractModel):
     _name = 'onsc.cv.abstract.conditional.state'
+    _inherit = ['onsc.cv.abstract.common']
     _description = 'Modelo abstracto de estado condicional'
     _catalogs_2validate = []
 

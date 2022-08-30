@@ -9,7 +9,7 @@ PAID_ACTIVITY_TYPES = WORKING_STATE
 
 class ONSCCVAbstractWork(models.AbstractModel):
     _name = 'onsc.cv.abstract.work'
-    _inherit = ['onsc.cv.abstract.documentary.validation']
+    _inherit = ['onsc.cv.abstract.documentary.validation', 'onsc.cv.abstract.common']
     _description = 'Modelo abstracto para modelos de trabajos'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)

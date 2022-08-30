@@ -4,17 +4,16 @@
 import logging
 
 import odoo
-from odoo import _
 from odoo import api, SUPERUSER_ID
-from odoo.addons.ws_int_base.utils.service_registration \
-    import register_service
-from odoo.exceptions import UserError as InternalError
+from odoo.addons.ws_int_base.utils.service_registration import register_service
 from odoo.modules.registry import Registry
-from spyne import ServiceBase, ComplexModelBase
-from spyne import Unicode, Array, DateTime
+from spyne import ServiceBase, ComplexModelBase, ComplexModel
+from spyne import Unicode, DateTime
 from spyne import rpc
+from spyne.model.complex import Array
 from spyne.model.fault import Fault
 
+from . import soap_error_codes
 from .validar_usuario_y_db import validar_usuario_y_db
 
 _logger = logging.getLogger(__name__)
@@ -27,63 +26,92 @@ class BaseComplexType(ComplexModelBase):
     __namespace__ = NAMESPACE_BASE_V1
 
 
-class UsuarioNoAutorizado(Fault):
-    __namespace__ = NAMESPACE_BASE_V1
-    __type_name__ = 'UsuarioNoAutorizado'
-
-    def __init__(self):
-        super(UsuarioNoAutorizado, self). \
-            __init__(faultcode='Server.005',
-                     detail=_(
-                         "Usuario no autorizado para la operacion."))
-
-
-class ErrorHandler(BaseComplexType):
-    _type_info = {
-        'codigo': Unicode(min_occurs=1),
-        'descripcion': Unicode(min_occurs=1),
-    }
+class ErrorHandler(ComplexModel):
+    __type_name__ = 'error_handler'
+    _type_info = [
+        ('type', Unicode(min_occurs=1)),
+        ('code', Unicode(min_occurs=1)),
+        ('error', Unicode(min_occurs=1)),
+        ('description', Unicode(min_occurs=1)),
+    ]
     _type_info_alt = []
 
 
 class WsCVPostulacionResponse(BaseComplexType):
+    __type_name__ = 'service_response'
     _type_info = {
         'result': Unicode(min_occurs=1),
-        'menssages': Array(ErrorHandler, min_occurs=0, type_name='ArrayOfErrorHandler')
+        'errors': Array(ErrorHandler, min_occurs=0, type_name='ArrayOfErrorHandler')
     }
     _type_info_alt = []
+
+
+class WsCVPostulacionRequest(ComplexModel):
+    __type_name__ = 'service_request'
+    __namespace__ = NAMESPACE_BASE_V1
+
+    _type_info = [
+        ('codPais', Unicode(min_occurs=1)),
+        ('tipoDoc', Unicode(min_occurs=1)),
+        ('nroDoc', Unicode(min_occurs=1)),
+        ('fechaPostulacion', DateTime(min_occurs=1)),
+        ('nroPostulacion', Unicode(min_occurs=1)),
+        ('nroLlamado', Unicode(min_occurs=1)),
+        ('accion', Unicode(min_occurs=1)),
+    ]
 
 
 class WsCVPostulacion(ServiceBase):
     __service_url_path__ = 'postulacion'
     __target_namespace__ = NAMESPACE_BASE_V1
-    # __wsse_conf__ = {
-    #     'username': 'myusername',
-    #     'password': 'mypassword'  # never store passwords directly in sources!
-    # }
 
-    uid = 0
-
-    @rpc(Unicode, Unicode, Unicode, DateTime, Unicode, Unicode, Unicode, _returns=WsCVPostulacionResponse)
-    def postulacion(
-            self, codPais, tipoDoc, nroDoc, fechaPostulacion, nroPostulacion, nroLlamado, accion
-    ):
-        (uid, pwd, dbname) = validar_usuario_y_db().val_usuario_y_db(self.transport)
-        dbname = list(Registry.registries.d)[0]
-        uid = SUPERUSER_ID
+    @rpc(WsCVPostulacionRequest.customize(nullable=False, min_occurs=1),
+         _body_style='bare',
+         _returns=WsCVPostulacionResponse)
+    def postulacion(self, request):
         try:
+            (uid, pwd, dbname) = validar_usuario_y_db().val_usuario_y_db(self.transport)
+            dbname = list(Registry.registries.d)[0]
+            uid = SUPERUSER_ID
             registry = odoo.registry(dbname)
             cr = registry.cursor()
             env = api.Environment(cr, uid, {})
-            return WsCVPostulacionResponse(
-                result='ok',
-            )
+        except Fault as e:
+            error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
+            response = WsCVPostulacionResponse(result='error', errors=[])
+            response.errors.append(error_item)
+            return response
+        except Exception as e:
+            error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
+            response = WsCVPostulacionResponse(result='error', errors=[])
+            response.errors.append(error_item)
+            return response
+        try:
+            env['onsc.cv.digital.call']._create_postulation(
+                request.codPais,
+                request.tipoDoc,
+                request.nroDoc,
+                request.fechaPostulacion,
+                request.nroPostulacion,
+                request.nroLlamado,
+                request.accion)
+            return WsCVPostulacionResponse(result='ok', errors=[])
         except Fault as e:
             cr.rollback()
-            raise InternalError(e)
+            error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
+            response = WsCVPostulacionResponse(result='error', errors=[])
+            response.errors.append(error_item)
+            return response
         except Exception as e:
             cr.rollback()
-            raise InternalError(e)
+            logic_150_extended = soap_error_codes.LOGIC_150
+            if hasattr(e, 'name') and isinstance(e.name, str):
+                logic_150_extended['long_desc'] = e.name
+            e = soap_error_codes._raise_fault(logic_150_extended)
+            error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
+            response = WsCVPostulacionResponse(result='error', errors=[])
+            response.errors.append(error_item)
+            return response
         finally:
             cr.commit()
             cr.close()

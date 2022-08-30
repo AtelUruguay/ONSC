@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models, api, _
-from .onsc_cv_useful_tools import is_valid_email
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+
+from .onsc_cv_useful_tools import is_valid_email
 
 REFERENCE_TYPES = [('staff', 'Personal'), ('working', 'Laboral')]
 
@@ -9,7 +10,7 @@ REFERENCE_TYPES = [('staff', 'Personal'), ('working', 'Laboral')]
 class ONSCCVDigitalReference(models.Model):
     _name = 'onsc.cv.reference'
     _description = 'Referencias'
-    _inherit = 'onsc.cv.abstract.phone.validated'
+    _inherit = ['onsc.cv.abstract.phone.validated', 'onsc.cv.abstract.common']
 
     @property
     def prefix_by_phones(self):

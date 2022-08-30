@@ -211,36 +211,41 @@ class ONSCCVDigital(models.Model):
                                                                default='to_validate')
 
     # Formación----<Page>
-    basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica')
+    basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica',
+                                          copy=True)
     advanced_formation_ids = fields.One2many('onsc.cv.advanced.formation', 'cv_digital_id',
-                                             string=u'Formación avanzada')
+                                             string=u'Formación avanzada', copy=True)
     # Cursos y certificado----<Page>
     course_certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                             string="Cursos y certificados")
+                                             string="Cursos y certificados", copy=True)
     course_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                 string="Cursos", domain=[('record_type', '=', 'course')])
+                                 string="Cursos", domain=[('record_type', '=', 'course')], copy=True)
     certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                      string="Certificados", domain=[('record_type', '=', 'certificate')])
+                                      string="Certificados", domain=[('record_type', '=', 'certificate')], copy=True)
     # Experiencia Laboral ----<Page>
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
-                                          string="Experiencia laboral")
+                                          string="Experiencia laboral", copy=True)
     # Docencia ----<Page>
-    work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencia')
+    work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencia',
+                                        copy=True)
     # Investigación ----<Page>
     work_investigation_ids = fields.One2many('onsc.cv.work.investigation', inverse_name='cv_digital_id',
-                                             string='Investigación')
+                                             string='Investigación', copy=True)
     # Voluntariado ----<Page>
-    volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
+    volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado",
+                                       copy=True)
     # Idioma ----<Page>
-    language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idiomas')
+    language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idiomas',
+                                         copy=True)
     # Publicaciones, Producciones y Evaluaciones ----<Page>
     publication_production_evaluation_ids = fields.One2many("onsc.cv.publication.production.evaluation",
                                                             inverse_name="cv_digital_id",
-                                                            string="Publicaciones, producciones y evaluaciones")
+                                                            string="Publicaciones, producciones y evaluaciones",
+                                                            copy=True)
     # Tutorías, Orientaciones, Supervisiones ----<Page>
     tutoring_orientation_supervision_ids = fields.One2many('onsc.cv.tutoring.orientation.supervision',
                                                            inverse_name="cv_digital_id",
-                                                           string="Tutorías, Orientaciones, Supervisiones")
+                                                           string="Tutorías, Orientaciones, Supervisiones", copy=True)
     # Discapacidad ----<Page>
     allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
                                             string=u'¿Permite que el contenido de esta sección sea público?')
@@ -258,9 +263,9 @@ class ONSCCVDigital(models.Model):
                                string=u'¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?')
     lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender/ y o aprender?')
     interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interacciones y/o relaciones interpersonales?')
-    type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo')
+    type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo', copy=True)
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
-                                               compute='_compute_cv_type_support_domain')
+                                               compute='_compute_cv_type_support_domain', copy=True)
     need_other_support = fields.Char(string=u"¿Necesita otro apoyo?")
     is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain')
     cv_disabilitie_documentary_validation_state = fields.Selection(string="Estado de validación documental",
@@ -269,13 +274,13 @@ class ONSCCVDigital(models.Model):
     # Participación en Eventos ----<Page>
     participation_event_ids = fields.One2many("onsc.cv.participation.event",
                                               inverse_name="cv_digital_id",
-                                              string="Participación en eventos")
+                                              string="Participación en eventos", copy=True)
     # Otra información relevante ----<Page>
     other_relevant_information_ids = fields.One2many("onsc.cv.other.relevant.information",
                                                      inverse_name="cv_digital_id",
-                                                     string="Otra información relevante")
+                                                     string="Otra información relevante", copy=True)
     # Referencias ------<Page>
-    reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias')
+    reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias', copy=True)
 
     # Help online
     cv_help_general_info = fields.Html(
