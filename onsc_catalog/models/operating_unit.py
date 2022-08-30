@@ -35,8 +35,8 @@ class OperatingUnit(models.Model):
     write_uid = fields.Many2one('res.users', string='Actualizado por', index=True, readonly=True)
 
     _sql_constraints = [
-        ('budget_code_uniq', 'unique(budget_code)', u'El código presupuestal (SIIF) ser único'),
-        ('short_name_uniq', 'unique(short_name)', u'La sigla debe ser única'),
+        ('budget_code_uniq', 'unique (budget_code, inciso_id)', u'La combinación de inciso y el código presupuestal (SIIF) ser único'),
+        ('short_name_uniq', 'unique(short_name,inciso_id)', u'La combinación de inciso y sigla debe ser única'),
     ]
 
     def name_get(self):
