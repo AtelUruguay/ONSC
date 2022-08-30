@@ -72,3 +72,10 @@ LOGIC_154 = {
     'desc': u'Parámetro acción no es válido. Los valores permitidos son: P,R,C',
     'long_desc': u'',
 }
+
+LOGIC_155 = {
+    'type': 'LOGICA',
+    'code': '155',
+    'desc': u'No se identificó un llamado válido para los parámetros enviados',
+    'long_desc': u'',
+}

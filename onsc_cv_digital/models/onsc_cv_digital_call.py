@@ -18,9 +18,16 @@ class ONSCCVDigitalCall(models.Model):
 
     cv_digital_id = fields.Many2one(
         "onsc.cv.digital",
-        string="CV",
+        string="CV interno",
         auto_join=True,
-        required=True, index=True)
+        required=True,
+        index=True)
+
+    cv_digital_origin_id = fields.Many2one(
+        "onsc.cv.digital",
+        string="CV",
+        required=True,
+        index=True)
 
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
     postulation_date = fields.Datetime(string=u"Fecha de postulación", required=True, index=True)
@@ -79,6 +86,7 @@ class ONSCCVDigitalCall(models.Model):
             ('cv_emissor_country_id', '=', country_id.id),
             ('cv_document_type_id', '=', doc_type_id.id),
             ('cv_nro_doc', '=', doc_number),
+            ('type', '=', 'cv')
         ], limit=1)
         if not cv_digital_id:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_153)
@@ -86,21 +94,8 @@ class ONSCCVDigitalCall(models.Model):
         if accion == 'P':
             return self._postulate(cv_digital_id, call_number, postulation_date, postulation_number)
         if accion == 'R':
-
-            return self._create_call(cv_digital_id, call_number, postulation_date, postulation_number)
+            return self._repostulate(cv_digital_id, call_number, postulation_date, postulation_number)
         return True
-
-    def _create_call(self, cv_digital_id, call_number, postulation_date, postulation_number):
-        new_cv_digital = cv_digital_id.copy({
-            'type': 'call'
-        })
-        cv_call = self.env['onsc.cv.digital.call'].create({
-            'cv_digital_id': new_cv_digital.id,
-            'call_number': call_number,
-            'postulation_date': postulation_date,
-            'postulation_number': postulation_number,
-        })
-        return cv_call
 
     def _postulate(self, cv_digital_id, call_number, postulation_date, postulation_number):
         new_cv_digital = cv_digital_id.copy({
@@ -108,6 +103,7 @@ class ONSCCVDigitalCall(models.Model):
         })
         cv_call = self.env['onsc.cv.digital.call'].create({
             'cv_digital_id': new_cv_digital.id,
+            'cv_digital_origin_id': cv_digital_id.id,
             'call_number': call_number,
             'postulation_date': postulation_date,
             'postulation_number': postulation_number,
@@ -115,13 +111,20 @@ class ONSCCVDigitalCall(models.Model):
         return cv_call
 
     def _repostulate(self, cv_digital_id, call_number, postulation_date, postulation_number):
-        new_cv_digital = cv_digital_id.copy({
-            'type': 'call'
-        })
-        cv_call = self.env['onsc.cv.digital.call'].create({
-            'cv_digital_id': new_cv_digital.id,
-            'call_number': call_number,
-            'postulation_date': postulation_date,
-            'postulation_number': postulation_number,
-        })
-        return cv_call
+        cv_calls = self.search([
+            ('cv_digital_origin_id', '=', cv_digital_id.id),
+            ('call_number', '=', call_number),
+        ])
+        if not cv_calls:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
+        cv_calls.write({'active': False})
+        return self._postulate(cv_digital_id, call_number, postulation_date, postulation_number)
+
+    def _cancel_postulation(self, cv_digital_id, call_number, postulation_date, postulation_number):
+        cv_calls = self.search([
+            ('cv_digital_origin_id', '=', cv_digital_id.id),
+            ('call_number', '=', call_number),
+        ])
+        if not cv_calls:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
+        cv_calls.write({'active': False})
