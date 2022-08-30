@@ -48,8 +48,10 @@ class ONSCCatalogInciso(models.Model):
                                                tracking=True,
                                                history=True,
                                                default=True)
-    type_organization_id = fields.Many2one("onsc.catalog.type.organization", string=u"Clasificación por tipo de organismo", history=True)
-    topic_addressed_id = fields.Many2one("onsc.catalog.topic.addressed", string=u"Clasificación por temática abordada", history=True)
+    type_organization_id = fields.Many2one("onsc.catalog.type.organization",
+                                           string=u"Clasificación por tipo de organismo", history=True)
+    topic_addressed_id = fields.Many2one("onsc.catalog.topic.addressed", string=u"Clasificación por temática abordada",
+                                         history=True)
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
     write_date = fields.Datetime("Fecha de última modificación", index=True, readonly=True)
@@ -83,6 +85,10 @@ class ONSCCatalogInciso(models.Model):
             'company_ids': [(4, result.company_id.id)]
         })
         return result
+
+    def unlink(self):
+        self.mapped('company_id').unlink()
+        return super(ONSCCatalogInciso, self).unlink()
 
 
 class ONSCCatalogIncisoHistory(models.Model):

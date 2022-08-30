@@ -11,7 +11,7 @@
                     <field name="code" string="Identificador"/>
                     <field name="short_name"/>
                     <field name="partner_id" invisible="1"/>
-                    <field name="inciso_id" groups="base.group_multi_company" string="Inciso"/>
+                    <field name="inciso_id" groups="base.group_multi_company" string="Inciso" options="{'no_create': True}"/>
                     <field name="budget_code"/>
                     <field name="start_date"/>
                     <field name="end_date"/>
