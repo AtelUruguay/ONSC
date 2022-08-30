@@ -93,7 +93,7 @@ ONSC CV Digital
         'demo/res_partner_demo.xml',
     ],
     'external_dependencies': {
-        'python': ['zeep', 'basicauth'],
+        'python': ['zeep', 'basicauth', 'spyne'],
     },
     'installable': True,
     'application': True,
