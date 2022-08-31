@@ -68,7 +68,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             for field in field_ids:
                 node = doc.xpath("//field[@name='" + field.name + "']")
                 for n in node:
-                    n.attrib['decoration-danger'] = "1"
+                    n.set('doc-validation',  'label-text-danger')
             res['arch'] = etree.tostring(doc, encoding='unicode')
         return res
 

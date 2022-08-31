@@ -95,6 +95,11 @@ ONSC CV Digital
     'external_dependencies': {
         'python': ['zeep', 'basicauth', 'spyne'],
     },
+    'assets': {
+        'web.assets_backend': [
+            'onsc_cv_digital/static/src/js/form_renderer.js',
+        ]
+    },
     'installable': True,
     'application': True,
     'auto_install': False,
