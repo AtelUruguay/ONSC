@@ -127,4 +127,4 @@ class ONSCCVDigitalCall(models.Model):
         ])
         if not cv_calls:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
-        cv_calls.write({'active': False})
+        cv_calls.write({'active': False, 'is_cancel': True})
