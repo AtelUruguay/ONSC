@@ -4,4 +4,8 @@
         <field name="key">parameter_inactivity_cv_value</field>
         <field name="value">0</field>
     </record>
+    <record id="parameter_ws_postulation_user" model="ir.config_parameter">
+        <field name="key">parameter_ws_postulation_user</field>
+        <field name="value"></field>
+    </record>
 </odoo>

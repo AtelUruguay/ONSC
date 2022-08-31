@@ -70,12 +70,16 @@ class WsCVPostulacion(ServiceBase):
          _returns=WsCVPostulacionResponse)
     def postulacion(self, request):
         try:
-            (uid, pwd, dbname) = validar_usuario_y_db().val_usuario_y_db(self.transport)
+            (integration_uid, pwd, dbname) = validar_usuario_y_db().val_usuario_y_db(self.transport)
             dbname = list(Registry.registries.d)[0]
             uid = SUPERUSER_ID
             registry = odoo.registry(dbname)
             cr = registry.cursor()
             env = api.Environment(cr, uid, {})
+            parameter = env['ir.config_parameter'].sudo().get_param('parameter_ws_postulation_user')
+            if env['res.users'].sudo().browse(integration_uid).login != parameter:
+                soap_error_codes._raise_fault(soap_error_codes.AUTH_51)
+
         except Fault as e:
             error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
             response = WsCVPostulacionResponse(result='error', errors=[])
