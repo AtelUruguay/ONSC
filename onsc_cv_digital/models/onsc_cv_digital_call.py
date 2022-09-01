@@ -44,9 +44,11 @@ class ONSCCVDigitalCall(models.Model):
     @api.constrains("cv_digital_id", "cv_digital_id.active", "call_number")
     def _check_cv_call_unicity(self):
         for record in self.filtered(lambda x: x.active):
-            if self.search_count([('cv_digital_id.active', '=', True),
-                                  ('call_number', '=', record.call_number),
-                                  ('id', '!=', record.id)]):
+            if self.search_count([
+                ('cv_digital_id.active', '=', True),
+                ('cv_digital_id', '=', record.cv_digital_id.id),
+                ('call_number', '=', record.call_number),
+                ('id', '!=', record.id)]):
                 raise ValidationError(
                     _(u"El llamado ya se encuentra activo en el sistema")
                 )
