@@ -50,7 +50,7 @@ class ONSCCVDigitalCall(models.Model):
                 ('call_number', '=', record.call_number),
                 ('id', '!=', record.id)]):
                 raise ValidationError(
-                    _(u"El llamado ya se encuentra activo en el sistema")
+                    _(u"El CV ya se encuentra activo en un llamado")
                 )
 
     def init(self):
