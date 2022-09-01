@@ -67,7 +67,15 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
 
     @api.depends(lambda self: ['%s.state' % x for x in self._catalogs_2validate])
     def _compute_conditional_validation_state(self):
-        for record in self:
+        if hasattr(self, 'cv_digital_id'):
+            cv_digital_call_not_send_ids = self.env['onsc.cv.digital.call'].search([
+                ('cv_digital_id', 'in', self.mapped('cv_digital_id.id')),
+                ('is_json_sent', '=', False)]).mapped('cv_digital_id.id')
+            self_filtered = self.filtered(
+                lambda x: x.cv_digital_id.type == 'cv' or x.cv_digital_id.id in cv_digital_call_not_send_ids)
+        else:
+            self_filtered = self
+        for record in self_filtered:
             validation_status = useful_tools.get_validation_status(record, self._catalogs_2validate)
             record.conditional_validation_state = validation_status.get('state')
             record.conditional_validation_reject_reason = validation_status.get('reject_reason', '')

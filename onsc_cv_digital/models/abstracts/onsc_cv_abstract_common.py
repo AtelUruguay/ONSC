@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class ONSCCVAbstractCommon(models.AbstractModel):
@@ -10,6 +10,7 @@ class ONSCCVAbstractCommon(models.AbstractModel):
     # CAMPOS PARA ALMACENAR EL ORIGEN EN LAS ENTIDADES DEL LLAMADO
     original_instance_identifier = fields.Integer(string="Id del documento origen en el CV")
 
+    @api.returns(None, lambda value: value[0])
     def copy_data(self, default=None):
         res = super(ONSCCVAbstractCommon, self).copy_data(default=default)
         if hasattr(self, 'original_instance_identifier') and len(self) == 1:

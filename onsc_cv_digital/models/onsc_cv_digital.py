@@ -219,9 +219,9 @@ class ONSCCVDigital(models.Model):
     course_certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
                                              string="Cursos y certificados", copy=True)
     course_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                 string="Cursos", domain=[('record_type', '=', 'course')], copy=True)
+                                 string="Cursos", domain=[('record_type', '=', 'course')], copy=False)
     certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                      string="Certificados", domain=[('record_type', '=', 'certificate')], copy=True)
+                                      string="Certificados", domain=[('record_type', '=', 'certificate')], copy=False)
     # Experiencia Laboral ----<Page>
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
                                           string="Experiencia laboral", copy=True)

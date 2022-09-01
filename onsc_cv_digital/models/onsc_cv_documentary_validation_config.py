@@ -43,15 +43,6 @@ class ONSCCVFileValidationConfig(models.Model):
         for rec in self:
             rec.model_id_domain = model_id_domain
 
-    # TODO hoy muestra todos los campos,  ver posibilidad de restringir
-    # @api.depends('model_id')
-    # def _compute_field_ids_domain(self):
-    #     for rec in self:
-    #         fields = rec.sudo().model_id.field_id.filtered(lambda x: 'onsc_cv_digital' in x.modules)
-    #         rec.field_ids_domain = json.dumps([
-    #             ('id', 'in', fields.ids)
-    #         ])
-
 
 class ONSCCVFileValidationConfigHistory(models.Model):
     _inherit = ['model.history.data']

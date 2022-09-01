@@ -32,7 +32,7 @@ class ONSCCVDigitalCall(models.Model):
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
     postulation_date = fields.Datetime(string=u"Fecha de postulación", required=True, index=True)
     postulation_number = fields.Integer(string=u"Número de postulación", required=True, index=True)
-    is_json_sent = fields.Boolean(string="Copia enviada")
+    is_json_sent = fields.Boolean(string="Copia enviada", default=False)
     is_cancel = fields.Boolean(string="Cancelado")
     is_zip = fields.Boolean(string="ZIP generado")
     is_trans = fields.Boolean(string=u"Personas Trans (Art.12 Ley N° 19.684)")
