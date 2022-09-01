@@ -319,6 +319,7 @@
                             attrs="{'invisible': [('allow_content_public', '=', False),('is_disabilitie', '=', False)]}">
                             <group>
                                 <group>
+                                    <field name="is_disabilitie" invisible="1"/>
                                     <field name="allow_content_public"/>
                                     <field name="situation_disability"/>
                                     <field name="people_disabilitie"
