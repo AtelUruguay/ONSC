@@ -59,7 +59,7 @@ class ONSCCVCourseCertificate(models.Model):
     @api.depends('course_title', 'certificate_id', 'record_type')
     def _compute_name(self):
         for rec in self:
-            rec.name = self._calc_name_by_record_type()
+            rec.name = rec._calc_name_by_record_type()
 
     @api.depends('evaluation_max_str')
     def _compute_is_numeric_max_evaluation(self):
