@@ -53,7 +53,7 @@ class ONSCCVFormationAdvanced(models.Model):
     credits_far = fields.Float(string="Créditos / Materias aprobadas hasta el momento")
     credits_training = fields.Float(string="Créditos / Materias totales de la formación")
     area_related_education_ids = fields.One2many('onsc.cv.area.related.education', 'advanced_formation_id',
-                                                 string=u'Áreas relacionadas con esta educación')
+                                                 string=u'Áreas relacionadas con esta educación', copy=True)
     other_relevant_information = fields.Text(string="Otra información relevante")
     egress_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad", required=True)
     egress_certificate_filename = fields.Char('Nombre del documento digital')

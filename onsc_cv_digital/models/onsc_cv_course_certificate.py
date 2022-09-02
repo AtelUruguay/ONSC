@@ -41,6 +41,7 @@ class ONSCCVCourseCertificate(models.Model):
     evaluation_max_number = fields.Integer("Representación numérica de nota máxima posible")
     is_numeric_max_evaluation = fields.Boolean(compute='_compute_is_numeric_max_evaluation')
     line_ids = fields.One2many('onsc.cv.education.area.course', inverse_name='course_id',
+                               copy=True,
                                string="Áreas relacionadas con esta educación")
     digital_doc_file = fields.Binary('Certificado/constancia')
     digital_doc_filename = fields.Char('Nombre del documento digital')

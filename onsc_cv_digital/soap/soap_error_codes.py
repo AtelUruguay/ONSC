@@ -70,7 +70,7 @@ LOGIC_152 = {
 LOGIC_153 = {
     'type': 'LOGICA',
     'code': '153',
-    'desc': u'No se ha identicado un CV válido',
+    'desc': u'No se ha identificado un CV activo en el sistema',
     'long_desc': u'',
 }
 
