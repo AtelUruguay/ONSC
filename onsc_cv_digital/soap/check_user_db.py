@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: incoherent-interpreter-exec-perm
 
 import logging
 
