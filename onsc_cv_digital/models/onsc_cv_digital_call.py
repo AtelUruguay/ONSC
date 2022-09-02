@@ -45,8 +45,8 @@ class ONSCCVDigitalCall(models.Model):
     def _check_cv_call_unicity(self):
         for record in self.filtered(lambda x: x.active):
             if self.search_count([
-                ('cv_digital_id.active', '=', True),
-                ('cv_digital_id', '=', record.cv_digital_id.id),
+                ('active', '=', True),
+                ('cv_digital_origin_id', '=', record.cv_digital_origin_id.id),
                 ('call_number', '=', record.call_number),
                 ('id', '!=', record.id)]):
                 raise ValidationError(
@@ -75,6 +75,8 @@ class ONSCCVDigitalCall(models.Model):
                             call_number,
                             accion,
                             ):
+        if len(country_code) != 2:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_151_1)
         country_id = self.env['res.country'].search([('code', '=', country_code)], limit=1)
         if not country_id:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_151)
@@ -95,8 +97,10 @@ class ONSCCVDigitalCall(models.Model):
 
         if accion == 'P':
             return self._postulate(cv_digital_id, call_number, postulation_date, postulation_number)
-        if accion == 'R':
+        elif accion == 'R':
             return self._repostulate(cv_digital_id, call_number, postulation_date, postulation_number)
+        elif accion == 'C':
+            return self._cancel_postulation(cv_digital_id, call_number)
         return True
 
     def _postulate(self, cv_digital_id, call_number, postulation_date, postulation_number):
@@ -122,7 +126,7 @@ class ONSCCVDigitalCall(models.Model):
         cv_calls.write({'active': False})
         return self._postulate(cv_digital_id, call_number, postulation_date, postulation_number)
 
-    def _cancel_postulation(self, cv_digital_id, call_number, postulation_date, postulation_number):
+    def _cancel_postulation(self, cv_digital_id, call_number):
         cv_calls = self.search([
             ('cv_digital_origin_id', '=', cv_digital_id.id),
             ('call_number', '=', call_number),

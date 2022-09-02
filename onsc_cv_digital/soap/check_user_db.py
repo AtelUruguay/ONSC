@@ -1,3 +1,4 @@
+# pylint: incoherent-interpreter-exec-perm
 # -*- coding: utf-8 -*-
 
 import logging
@@ -10,8 +11,8 @@ from . import soap_error_codes
 _logger = logging.getLogger(__name__)
 
 
-class validar_usuario_y_db():
-    def val_usuario_y_db(self, transport):
+class CheckUserDBName():
+    def check_user_dbname(self, transport):
         wsgi_env = transport.req_env
 
         authorization = wsgi_env.get('HTTP_AUTHORIZATION', None)

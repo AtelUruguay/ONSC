@@ -14,7 +14,7 @@ from spyne.model.complex import Array
 from spyne.model.fault import Fault
 
 from . import soap_error_codes
-from .validar_usuario_y_db import validar_usuario_y_db
+from .check_user_db import CheckUserDBName
 
 _logger = logging.getLogger(__name__)
 
@@ -69,8 +69,10 @@ class WsCVPostulacion(ServiceBase):
          _body_style='bare',
          _returns=WsCVPostulacionResponse)
     def postulacion(self, request):
+        # pylint: disable=invalid-commit
         try:
-            (integration_uid, pwd, dbname) = validar_usuario_y_db().val_usuario_y_db(self.transport)
+            cr = False
+            (integration_uid, pwd, dbname) = CheckUserDBName().check_user_dbname(self.transport)
             dbname = list(Registry.registries.d)[0]
             uid = SUPERUSER_ID
             registry = odoo.registry(dbname)
@@ -81,15 +83,22 @@ class WsCVPostulacion(ServiceBase):
                 soap_error_codes._raise_fault(soap_error_codes.AUTH_51)
 
         except Fault as e:
+            if cr:
+                cr.rollback()
+                cr.close()
             error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
             response = WsCVPostulacionResponse(result='error', errors=[])
             response.errors.append(error_item)
             return response
         except Exception as e:
+            if cr:
+                cr.rollback()
+                cr.close()
             error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
             response = WsCVPostulacionResponse(result='error', errors=[])
             response.errors.append(error_item)
             return response
+
         try:
             env['onsc.cv.digital.call']._create_postulation(
                 request.codPais,
@@ -99,6 +108,7 @@ class WsCVPostulacion(ServiceBase):
                 request.nroPostulacion,
                 request.nroLlamado,
                 request.accion)
+            cr.commit()
             return WsCVPostulacionResponse(result='ok', errors=[])
         except Fault as e:
             cr.rollback()
@@ -117,7 +127,6 @@ class WsCVPostulacion(ServiceBase):
             response.errors.append(error_item)
             return response
         finally:
-            cr.commit()
             cr.close()
 
 
