@@ -69,6 +69,7 @@ class WsCVPostulacion(ServiceBase):
          _body_style='bare',
          _returns=WsCVPostulacionResponse)
     def postulacion(self, request):
+        # pylint: disable=invalid-commit
         try:
             cr = False
             (integration_uid, pwd, dbname) = CheckUserDBName().check_user_dbname(self.transport)
