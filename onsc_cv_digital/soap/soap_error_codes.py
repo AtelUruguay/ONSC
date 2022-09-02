@@ -33,7 +33,7 @@ AUTH_52 = {
 AUTH_53 = {
     'type': 'AUTH',
     'code': '53',
-    'desc': u'DBNAME inválido o inexistente',
+    'desc': u'DBNAME inexistente',
     'long_desc': u'Contacte con el administrador',
 }
 
@@ -50,6 +50,13 @@ LOGIC_151 = {
     'code': '151',
     'desc': u'Código del País no identificado',
     'long_desc': u'',
+}
+
+LOGIC_151_1 = {
+    'type': 'LOGICA',
+    'code': '151',
+    'desc': u'Código del País no identificado',
+    'long_desc': u'Fórmato inválido, la longitud adecuada es 2',
 }
 
 LOGIC_152 = {
