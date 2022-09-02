@@ -173,7 +173,7 @@ class ONSCCVDigital(models.Model):
     afro_descendants_filename = fields.Char('Nombre del documento digital')
     is_driver_license = fields.Boolean(string="Tiene licencia de conducir")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
-                                          inverse_name="cv_digital_id", string="Licencias de conducir")
+                                          inverse_name="cv_digital_id", string="Licencias de conducir", copy=True)
 
     prefix_phone_id = fields.Many2one(related='partner_id.prefix_phone_id', readonly=False)
     personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)

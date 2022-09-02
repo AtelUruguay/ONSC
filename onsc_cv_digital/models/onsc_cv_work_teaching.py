@@ -25,15 +25,15 @@ class ONSCCVWorkTeaching(models.Model):
                                         required=True)
     program_name = fields.Char('Nombre de la cátedra o programa académico')
     # Grilla Materias
-    subject_ids = fields.One2many('onsc.cv.academic.program.subject', 'work_teaching_id', string='Materias')
+    subject_ids = fields.One2many('onsc.cv.academic.program.subject', 'work_teaching_id', string='Materias', copy=True)
     # Grilla Áreas relacionadas con esta educación
     education_area_ids = fields.One2many('onsc.cv.education.area.teaching', inverse_name='teaching_id',
-                                         string="Áreas relacionadas con esta educación")
+                                         string="Áreas relacionadas con esta educación", copy=True)
     other_relevant_information = fields.Text(string="Otra información relevante")
 
     # Grila Comprobantes
     receipt_ids = fields.One2many('onsc.cv.work.teaching.receipt.file', inverse_name='teaching_id',
-                                  string='Comprobantes')
+                                  string='Comprobantes', copy=True)
 
     @api.onchange('subinstitution_id')
     def onchange_academic_program_id_parents(self):
@@ -46,16 +46,18 @@ class ONSCCVAcademicProgramSubject(models.Model):
     _inherit = ['onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.formation']
     _catalogs_2validate = ['program_ids']
 
+    cv_digital_id = fields.Many2one("onsc.cv.digital", required=False)
     work_teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade', required=True)
     program_ids = fields.Many2many('onsc.cv.academic.program', relation="academic_program_teaching_rel",
-                                   string='Programas académicos', required=True, ondelete='cascade')
+                                   string='Programas académicos', required=True, copy=True, ondelete='cascade')
     subject = fields.Char('Materia')
     course_type = fields.Selection(COURSE_TYPES, 'Tipo de curso')
     currently_working_state = fields.Selection(string="¿Actualmente está enseñando la  materia?",
                                                selection=WORKING_STATE, required=True)
     level_teaching_type = fields.Selection(LEVEL_TEACHING_TYPES, 'Nivel enseñado de la materia', required=True)
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', string="Conocimientos enseñados",
-                                              relation='knowledge_teaching_program_rel', required=True, store=True)
+                                              relation='knowledge_teaching_program_rel', required=True, copy=True,
+                                              store=True)
     institution_id = fields.Many2one(related='work_teaching_id.institution_id')
     subinstitution_id = fields.Many2one(related='work_teaching_id.subinstitution_id')
     country_id = fields.Many2one(related='work_teaching_id.country_id')

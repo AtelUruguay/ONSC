@@ -26,12 +26,12 @@ class ONSCCVDigitalCall(models.Model):
     cv_digital_origin_id = fields.Many2one(
         "onsc.cv.digital",
         string="CV",
-        required=True,
+        ondelete='set null',
         index=True)
 
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
     postulation_date = fields.Datetime(string=u"Fecha de postulación", required=True, index=True)
-    postulation_number = fields.Integer(string=u"Número de postulación", required=True, index=True)
+    postulation_number = fields.Char(string=u"Número de postulación", required=True, index=True)
     is_json_sent = fields.Boolean(string="Copia enviada", default=False)
     is_cancel = fields.Boolean(string="Cancelado")
     is_zip = fields.Boolean(string="ZIP generado")
@@ -41,7 +41,7 @@ class ONSCCVDigitalCall(models.Model):
     is_victim = fields.Boolean(string=u"Personas víctimas de delitos violentos (Art. 105 Ley N° 19.889)")
     preselected = fields.Selection(string="Preseleccionado", selection=[('yes', 'Si'), ('no', 'No')])
 
-    @api.constrains("cv_digital_id", "cv_digital_id.active", "call_number")
+    @api.constrains("cv_digital_id", "cv_digital_id.active", "call_number", "cv_digital_origin_id")
     def _check_cv_call_unicity(self):
         for record in self.filtered(lambda x: x.active):
             if self.search_count([
