@@ -9,7 +9,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="position" required="1"/>
+                            <field name="position" required="1" string="Cargo desempeñado"/>
                             <field name="country_id" string="Pais donde desempeñó"
                                    options="{'no_open': True, 'no_quick_create': True}"/>
                             <field name="city_id"
@@ -17,11 +17,11 @@
                                    domain="[('country_id', '=?', country_id)]"
                                    attrs="{'readonly': [('country_id', '=', False)]}"
                                    context="{'default_country_id': country_id, 'is_readonly': True}"/>
-                            <field name="company_type" required="1"/>
                             <field name="start_date"/>
                             <field name="currently_working" required="1"/>
                             <field name="end_date"
                                    attrs="{'invisible': [('currently_working','!=','no')],'required': [('currently_working','=','no')]}"/>
+                            <field name="company_type" required="1"/>
                             <field name="country_code" invisible="1"/>
                             <field name="company_name"
                                    attrs="{'invisible': [('country_code', 'in', ['UY',False]),('company_type','in',['public',False])],'required': ['|',('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
@@ -35,7 +35,6 @@
                             <field name="people_charge_qty"/>
                             <field name="organizational_units_charge"/>
                             <field name="hours_worked_monthly" required="1"/>
-                            <field name="description_tasks" required="1"/>
                             <field name="receipt_file"
                                    required="1"
                                    filename="receipt_filename"
@@ -45,6 +44,9 @@
                     </group>
                     <group string="Tareas">
                         <field name="task_ids" nolabel="1"/>
+                    </group>
+                    <group string="Resumen profesional">
+                        <field name="description_tasks" required="1" nolabel="1"/>
                     </group>
                 </sheet>
             </form>
@@ -58,7 +60,7 @@
             <tree string="Experiencias laborales" decoration-danger="conditional_validation_state == 'rejected'">
                 <field name="start_date" optional="show" string="Inicio"/>
                 <field name="end_date" optional="show" string="Fin"/>
-                <field name="position" optional="show"/>
+                <field name="position" optional="show" string="Cargo desempeñado"/>
                 <field name="company_type" optional="hide"/>
                 <field name="company_name" optional="show"/>
                 <field name="unit_name" optional="show"/>

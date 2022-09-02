@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 
 class ONSCCVDigitalWorkExperience(models.Model):
@@ -31,6 +32,12 @@ class ONSCCVDigitalWorkExperience(models.Model):
     @api.onchange('city_id')
     def onchange_city_id(self):
         self.country_id = self.city_id.country_id.id
+
+    @api.onchange('task_ids')
+    def onchange_task_ids(self):
+        if len(self.task_ids) > 5:
+            self.task_ids = self.task_ids[:5]
+            return cv_warning(_(u"Sólo se pueden seleccionar 5 tareas"))
 
 
 class ONSCCVDigitalOriginInstitutionTask(models.Model):
