@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# pylint: skip-file
 from spyne.model.fault import Fault
 
 
@@ -33,7 +34,7 @@ AUTH_52 = {
 AUTH_53 = {
     'type': 'AUTH',
     'code': '53',
-    'desc': u'DBNAME inválido o inexistente',
+    'desc': u'DBNAME inexistente',
     'long_desc': u'Contacte con el administrador',
 }
 
@@ -52,6 +53,13 @@ LOGIC_151 = {
     'long_desc': u'',
 }
 
+LOGIC_151_1 = {
+    'type': 'LOGICA',
+    'code': '151',
+    'desc': u'Código del País no identificado',
+    'long_desc': u'Fórmato inválido, la longitud adecuada es 2',
+}
+
 LOGIC_152 = {
     'type': 'LOGICA',
     'code': '152',
@@ -62,7 +70,7 @@ LOGIC_152 = {
 LOGIC_153 = {
     'type': 'LOGICA',
     'code': '153',
-    'desc': u'No se ha identicado un CV válido',
+    'desc': u'No se ha identificado un CV activo en el sistema',
     'long_desc': u'',
 }
 
