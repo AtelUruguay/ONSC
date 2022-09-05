@@ -24,7 +24,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
                                      ('both', 'Pública/Privada')],
                                     string="Tipo de empresa")
     company_name = fields.Char("Empresa")
-    description_tasks = fields.Char(string="Descripción de tareas")
+    description_tasks = fields.Text(string="Descripción de tareas")
     receipt_file = fields.Binary("Comprobante")
     receipt_filename = fields.Char('Nombre del documento digital')
     receipt_description = fields.Char("Descripción del comprobante")
