@@ -14,9 +14,29 @@ STATES = [('to_validate', 'Para validar'),
 # _fields_2check_unicity: list of fields to check unicity
 # _get_conditional_unicity_message: return message when unicity control is unsuccessful
 
+class ONSCCVAbstractNameUpper(models.AbstractModel):
+    _name = 'onsc.cv.abstract.name.upper'
+
+    # Field name must be inherited by all new models. Its here for clear code
+    name = fields.Char()
+    name_upper = fields.Char(compute='_compute_name_upper', store=True)
+
+    @api.constrains('name_upper')
+    def _check_name_upper(self):
+        _name_string = self._fields.get('name', ) and self._fields.get('name', ).string or 'Nombre'
+        for rec in self:
+            if self.search_count([('name_upper', '=', rec.name_upper), ('id', '!=', rec.id)]):
+                raise ValidationError(_("El %s debe ser único") % _name_string)
+
+    @api.depends('name')
+    def _compute_name_upper(self):
+        for rec in self:
+            rec.name_upper = rec.name.upper()
+
+
 class ONSCCVAbstractConfig(models.AbstractModel):
     _name = 'onsc.cv.abstract.config'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'onsc.cv.abstract.name.upper']
     _description = 'Modelo abstracto de catálogos condicionales'
     _fields_2check_unicity = ['name', 'state']
 
