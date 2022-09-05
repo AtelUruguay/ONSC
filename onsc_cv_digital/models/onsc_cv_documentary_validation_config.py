@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
 import json
+
+from odoo import fields, models, api
 
 
 class ONSCCVFileValidationConfig(models.Model):
@@ -21,11 +22,12 @@ class ONSCCVFileValidationConfig(models.Model):
         return json.dumps([('id', 'in', fields.mapped('model_id').ids)])
 
     active = fields.Boolean(string="Activo", default=True)
-    model_id = fields.Many2one(comodel_name="ir.model", string="Modelo",
+    model_id = fields.Many2one("ir.model", string="Modelo",
                                ondelete='cascade',
                                history=True,
                                required=True,
                                domain="[('model', 'ilike', '%onsc.cv%')]")
+    field_id = fields.Many2one("ir.model.fields", string="Enlace en el CV")
     model_id_domain = fields.Char(compute='_compute_model_id_domain', default=_default_model_id_domain)
 
     field_ids = fields.Many2many("ir.model.fields", string="Campos a excluir", history=True, )
@@ -36,6 +38,10 @@ class ONSCCVFileValidationConfig(models.Model):
 
     @api.onchange('model_id')
     def onchange_model_id(self):
+        self.field_id = self.env['ir.model.fields'].search([
+            ('ttype', 'in', ['one2many', 'many2many']),
+            ('relation', '=', self.model_id.model),
+            ('model_id.model', '=', 'onsc.cv.digital')], limit=1)
         self.field_ids = [(5,)]
 
     def _compute_model_id_domain(self):
