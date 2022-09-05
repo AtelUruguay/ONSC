@@ -6,3 +6,4 @@ Flask==0.12.2
 -e git+https://gitlab.quanam.com/quanam/sec-wall.git#egg=sec-wall
 Flask-Spyne==0.3.1
 basicauth==0.4.1
+phonenumbers==8.12.54
