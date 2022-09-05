@@ -74,6 +74,10 @@
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
+                            <field name="cv_gral_info_documentary_validation_state" align="left"
+                               style="font-size: 100%; width: 110px;"
+                               widget="label_selection"
+                               options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/>
                             <field name="cv_birthdate"
                                    attrs="{'readonly': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
                             <field name="cv_sex"
