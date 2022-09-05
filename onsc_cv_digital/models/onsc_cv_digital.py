@@ -507,7 +507,8 @@ class ONSCCVDigital(models.Model):
         }
         if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
             my_cv = self._context.get('my_cv', False) or self.search(
-                [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
+                [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True]),
+                 ('type', '=', 'cv')], limit=1)
             if my_cv and my_cv.active is False:
                 vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
             vals.update({'res_id': my_cv.id})
@@ -586,6 +587,7 @@ class ONSCCVDigital(models.Model):
         today = fields.Date.today()
         onsc_cv_digitals = self.env['onsc.cv.digital'].search(
             [('last_modification_date', '!=', False),
+             ('type', '=', 'cv'),
              ('last_modification_date', '!=', today)])
         for onsc_cv_digital in onsc_cv_digitals:
             rest_value = today - onsc_cv_digital.last_modification_date
