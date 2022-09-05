@@ -120,7 +120,7 @@ class ONSCCVDigital(models.Model):
     cv_gender2 = fields.Char(string=u"Otro género")
     cv_gender_record_file = fields.Binary(string="Constancia de identidad de género")
     cv_gender_record_filename = fields.Char('Nombre del documento digital')
-    is_cv_gender_public = fields.Boolean(string="¿Permite que su género sea público?")
+    is_cv_gender_public = fields.Boolean(string="¿Permite que su género se visualice en su CV?")
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
     # Raza
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Raza", required=True,
@@ -134,7 +134,7 @@ class ONSCCVDigital(models.Model):
     cv_race2 = fields.Char(string=u"Otra raza")
     cv_first_race_id = fields.Many2one("onsc.cv.race", string="¿Con que raza se reconoce principalmente?",
                                        domain="[('id','in',cv_race_ids)]")
-    is_cv_race_public = fields.Boolean(string="¿Permite que su raza sea público?")
+    is_cv_race_public = fields.Boolean(string="¿Permite que su raza se visualice en su CV?")
     # Información patronímica
     cv_full_name_updated_date = fields.Date(related='partner_id.cv_full_name_updated_date',
                                             string="Fecha de información")
@@ -166,9 +166,9 @@ class ONSCCVDigital(models.Model):
     user_linkedIn = fields.Char(string="Usuario en LinkedIn")
     is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
     afro_descendants_file = fields.Binary(
-        string='Documento digitalizado "Declaración de afrodescendencia" / formulario web de declaración jurada de afrodescendencia (Art. 4 Ley N°19.122) ')
+        string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)')
     afro_descendants_filename = fields.Char('Nombre del documento digital')
-    is_driver_license = fields.Boolean(string="Tiene licencia de conducir")
+    is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir vigente?")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
                                           inverse_name="cv_digital_id", string="Licencias de conducir", copy=True)
 
@@ -178,7 +178,7 @@ class ONSCCVDigital(models.Model):
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
     email = fields.Char(string="Email", related='partner_id.email')
 
-    is_occupational_health_card = fields.Boolean(string="Carné de salud laboral")
+    is_occupational_health_card = fields.Boolean(string="¿Tiene carné de salud laboral vigente?")
     occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
     occupational_health_card_file = fields.Binary(
         string="Documento digitalizado del carné de salud laboral")
@@ -189,8 +189,9 @@ class ONSCCVDigital(models.Model):
 
     civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica")
     civical_credential_filename = fields.Char('Nombre del documento digital')
-    medical_aptitude_certificate_status = fields.Selection(string="Certificado de aptitud médico-deportiva",
-                                                           selection=[('si', 'Si'), ('no', 'No'), ])
+    medical_aptitude_certificate_status = fields.Selection(
+        string="¿Tiene certificado de aptitud médico-deportiva vigente?",
+        selection=[('si', 'Si'), ('no', 'No'), ])
     medical_aptitude_certificate_date = fields.Date(
         string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
     medical_aptitude_certificate_file = fields.Binary(
@@ -202,7 +203,7 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
     relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
     is_public_information_victim_violent = fields.Boolean(
-        string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
+        string="¿Permite que su información de persona víctima de delitos violentos se visualice en su CV?", )
 
     # Formación----<Page>
     basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica',
@@ -242,7 +243,7 @@ class ONSCCVDigital(models.Model):
                                                            string="Tutorías, Orientaciones, Supervisiones", copy=True)
     # Discapacidad ----<Page>
     allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
-                                            string=u'¿Permite que el contenido de esta sección sea público?')
+                                            string=u'¿Permite el contenido de esta sección se visualice en su CV?')
     situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
     people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
     document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')
@@ -497,6 +498,18 @@ class ONSCCVDigital(models.Model):
         if self.to_date and self.certificate_date and self.to_date <= self.certificate_date:
             self.to_date = False
             return cv_warning(_("La fecha hasta no puede ser menor que la fecha de certificado"))
+
+    @api.onchange('crendencial_serie')
+    def onchange_crendencial_serie(self):
+        if self.crendencial_serie and not self.crendencial_serie.isalpha():
+            self.crendencial_serie = ''
+            return cv_warning(_("La serie de la credencial no puede contener números"))
+
+    @api.onchange('credential_number')
+    def onchange_credential_number(self):
+        if self.credential_number and self.credential_number > 1000000:
+            self.credential_number = False
+            return cv_warning(_("La número de la credencial no puede exeder de 6 cifras"))
 
     def button_unlink(self):
         self.unlink()
