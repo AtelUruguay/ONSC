@@ -55,15 +55,6 @@ class ONSCCVAbstractWork(models.AbstractModel):
             return cv_warning(_("Advertencia: la carga horaria mensual es menor que 45 horas"))
 
 
-class ONSCCVDigitalOriginInstitutionTask(models.AbstractModel):
-    _name = 'onsc.cv.origin.abstract.task'
-    _description = 'Tareas realizadas'
-
-    key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
-    area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
-                              required=True)
-
-
 class ONSCCVWorkInvestigationReceiptFile(models.AbstractModel):
     _name = 'onsc.cv.work.abstract.receipt.file'
     _description = 'Grilla de comprobantes'

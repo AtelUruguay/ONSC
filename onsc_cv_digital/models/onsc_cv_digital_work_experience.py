@@ -42,7 +42,9 @@ class ONSCCVDigitalWorkExperience(models.Model):
 
 class ONSCCVDigitalOriginInstitutionTask(models.Model):
     _name = 'onsc.cv.work.experience.task'
-    _inherit = 'onsc.cv.origin.abstract.task'
     _description = 'Tareas de experiencia laboral'
 
     work_experience_id = fields.Many2one("onsc.cv.work.experience", string="Experiencia laboral", ondelete='cascade')
+    key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
+    area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
+                              required=True)
