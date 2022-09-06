@@ -108,6 +108,7 @@ SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE
                                         record.cv_digital_id.id,
                                         record.cv_digital_id.id,
                                         record.cv_digital_id.id,
+                                        record.cv_digital_id.id,
                                         record.cv_digital_id.id))
             result = self.env.cr.dictfetchone()
             if not result or result['sum'] > 0 or record.cv_address_state == 'to_validate':
