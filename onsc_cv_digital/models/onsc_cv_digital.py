@@ -142,7 +142,7 @@ class ONSCCVDigital(models.Model):
     # DOMICILIO----<Page>
     country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
     cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
-    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False)
+    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False, store=True)
     cv_address_street = fields.Char(related='partner_id.street', readonly=False)
     cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
     cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
@@ -151,7 +151,7 @@ class ONSCCVDigital(models.Model):
     cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
     cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
-    cv_address_state = fields.Selection(related='cv_address_location_id.state')
+    cv_address_state = fields.Selection(related='cv_address_location_id.state', store=True)
     cv_address_reject_reason = fields.Text(related='cv_address_location_id.reject_reason')
 
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
@@ -283,18 +283,22 @@ class ONSCCVDigital(models.Model):
         store=True
     )
 
-    civical_credential_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                                       selection=DOCUMENTARY_VALIDATION_STATES,
-                                                                       default='to_validate')
-    cv_address_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                               selection=DOCUMENTARY_VALIDATION_STATES,
-                                                               default='to_validate')
-    cv_disabilitie_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                                   selection=DOCUMENTARY_VALIDATION_STATES,
-                                                                   default='to_validate')
-    cv_nro_doc_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                               selection=DOCUMENTARY_VALIDATION_STATES,
-                                                               default='to_validate')
+    civical_credential_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    cv_address_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    cv_disabilitie_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    cv_nro_doc_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
 
     # Help online
     cv_help_general_info = fields.Html(

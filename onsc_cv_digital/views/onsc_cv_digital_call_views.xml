@@ -78,6 +78,7 @@
                                style="font-size: 100%; width: 110px;"
                                widget="label_selection"
                                options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/>
+                            <field name="call_conditional_state"/>
                             <field name="cv_birthdate"
                                    attrs="{'readonly': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
                             <field name="cv_sex"
