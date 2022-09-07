@@ -371,14 +371,14 @@ class ONSCCVDigital(models.Model):
 
     @property
     def field_documentary_validation_models(self):
-        # configs = self.env['onsc.cv.documentary.validation.config'].search([])
-        # validation_models = ['cv_address_documentary_validation_state',
-        #                      'civical_credential_documentary_validation_state',
-        #                      'cv_nro_doc_documentary_validation_state',
-        #                      'cv_disabilitie_documentary_validation_state']
-        # for config in configs.filtered(lambda x: x.field_id):
-        #     validation_models.append('%s.documentary_validation_state' % config.field_id.name)
-        return []
+        configs = self.env['onsc.cv.documentary.validation.config'].search([])
+        validation_models = ['cv_address_documentary_validation_state',
+                             'civical_credential_documentary_validation_state',
+                             'cv_nro_doc_documentary_validation_state',
+                             'cv_disabilitie_documentary_validation_state']
+        for config in configs.filtered(lambda x: x.field_id):
+            validation_models.append('%s.documentary_validation_state' % config.field_id.name)
+        return validation_models
         # return [
         #     'work_experience_ids.documentary_validation_state',
         #     'basic_formation_ids.documentary_validation_state',
