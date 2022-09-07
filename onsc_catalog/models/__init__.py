@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from . import res_users
 from . import abstracts
 from . import catalogs
 from . import onsc_catalog_inciso

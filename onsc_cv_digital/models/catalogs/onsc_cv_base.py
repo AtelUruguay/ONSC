@@ -135,6 +135,7 @@ class ONSCCVExperienceHierarchicalLevel(models.Model):
 
 class ONSCCVSEducationalAreas(models.Model):
     _name = 'onsc.cv.educational.subarea'
+    _inherit = 'onsc.cv.abstract.name.upper'
     _description = 'Sub área educativa'
 
     code = fields.Char(u'Código')
@@ -150,6 +151,7 @@ class ONSCCVSEducationalAreas(models.Model):
 
 class ONSCCVDisciplineEducational(models.Model):
     _name = 'onsc.cv.discipline.educational'
+    _inherit = 'onsc.cv.abstract.name.upper'
     _description = 'Disciplina educativa'
 
     code = fields.Char(u'Código')
@@ -171,6 +173,7 @@ class ONSCCVDisciplineEducational(models.Model):
 
 class ONSCCVKnowledge(models.Model):
     _name = 'onsc.cv.knowledge'
+    _inherit = 'onsc.cv.abstract.name.upper'
     _description = 'Conocimiento'
 
     code = fields.Char(string=u"Código")
@@ -185,6 +188,7 @@ class ONSCCVKnowledge(models.Model):
 
 class ONSCCVKeyTask(models.Model):
     _name = 'onsc.cv.key.task'
+    _inherit = 'onsc.cv.abstract.name.upper'
     _description = 'Tarea clave'
     _order = 'name'
 
