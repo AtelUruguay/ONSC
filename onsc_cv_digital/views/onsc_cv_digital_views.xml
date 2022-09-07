@@ -183,7 +183,7 @@
                                     <field name="is_afro_descendants"/>
                                     <field name="afro_descendants_file"
                                            filename="afro_descendants_filename"
-                                           attrs="{'required': [('is_afro_descendants', '=', True)]}"
+                                           attrs="{'invisible': [('is_afro_descendants', '!=', True)], 'required': [('is_afro_descendants', '=', True)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="afro_descendants_filename" invisible="1"/>
                                 </group>
