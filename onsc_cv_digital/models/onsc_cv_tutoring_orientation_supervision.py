@@ -66,7 +66,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     def onchange_website(self):
         if self.website and not is_valid_url(self.website):
             self.website = False
-            return cv_warning(_("EL sitio web no tiene un formato válido."))
+            return cv_warning(_("El sitio web no tiene un formato válido."))
         elif self.website and not is_exist_url(self.website):
             self.website = False
             return cv_warning(_("El sitio web no existe"))
