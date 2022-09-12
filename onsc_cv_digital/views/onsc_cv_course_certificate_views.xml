@@ -107,7 +107,6 @@
         <field name="model">onsc.cv.course.certificate</field>
         <field name="arch" type="xml">
             <tree string="Cursos" decoration-danger="conditional_validation_state == 'rejected'">
-                <field name="id"/>
                 <field name="record_type" invisible="1"/>
                 <field name="start_date" optional="show" string="Inicio"/>
                 <field name="end_date" optional="show" string="Fin"/>
