@@ -90,39 +90,6 @@
                     </group>
                     <notebook>
                         <page string="Información general">
-                            <group>
-                                <group string="Género"
-                                    attrs="{'invisible': [('is_cv_gender_public', '=', False),('is_trans', '=', False)]}">
-                                    <field name="cv_gender_id"/>
-                                    <field name="cv_gender2"
-                                           attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
-                                    <field name="cv_gender_record_file"
-                                           filename="cv_gender_record_filename"
-                                           attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
-                                    <field name="is_cv_gender_public"/>
-                                    <field name="is_cv_gender_option_other_enable" invisible="1"/>
-                                    <field name="is_cv_gender_record" invisible="1"/>
-                                    <field name="cv_gender_record_filename" invisible="1"/>
-                                    <field name="is_trans" invisible="1"/>
-                                </group>
-                                <group string="Raza"
-                                    attrs="{'invisible': [('is_cv_race_public', '=', False),('is_afro_descendants', '=', False)]}">
-                                    <field name="cv_race_ids" widget="many2many_tags"/>
-                                    <field name="cv_race2"
-                                           attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
-                                    <field name="cv_first_race_id"
-                                           attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)], 'required': [('is_multiple_cv_race_selected', '=', True)]}"/>
-                                    <field name="is_cv_race_public"/>
-                                    <field name="is_cv_race_option_other_enable" invisible="1"/>
-                                    <field name="is_multiple_cv_race_selected" invisible="1"/>
-                                    <field name="is_afro_descendants"/>
-                                    <field name="afro_descendants_file"
-                                           filename="afro_descendants_filename"
-                                           attrs="{'required': [('is_afro_descendants', '=', True)]}"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="afro_descendants_filename" invisible="1"/>
-                                </group>
-                            </group>
                             <group string="Datos personales">
                                 <group>
                                     <field name="country_of_birth_id"/>
@@ -178,6 +145,39 @@
                                         <field name="license_filename" invisible="1"/>
                                     </tree>
                                 </field>
+                            </group>
+                            <group>
+                                <group string="Género"
+                                    attrs="{'invisible': [('is_cv_gender_public', '=', False),('is_trans', '=', False)]}">
+                                    <field name="cv_gender_id"/>
+                                    <field name="cv_gender2"
+                                           attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
+                                    <field name="cv_gender_record_file"
+                                           filename="cv_gender_record_filename"
+                                           attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
+                                    <field name="is_cv_gender_public"/>
+                                    <field name="is_cv_gender_option_other_enable" invisible="1"/>
+                                    <field name="is_cv_gender_record" invisible="1"/>
+                                    <field name="cv_gender_record_filename" invisible="1"/>
+                                    <field name="is_trans" invisible="1"/>
+                                </group>
+                                <group string="Raza"
+                                    attrs="{'invisible': [('is_cv_race_public', '=', False),('is_afro_descendants', '=', False)]}">
+                                    <field name="cv_race_ids" widget="many2many_tags"/>
+                                    <field name="cv_race2"
+                                           attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
+                                    <field name="cv_first_race_id"
+                                           attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)], 'required': [('is_multiple_cv_race_selected', '=', True)]}"/>
+                                    <field name="is_cv_race_public"/>
+                                    <field name="is_cv_race_option_other_enable" invisible="1"/>
+                                    <field name="is_multiple_cv_race_selected" invisible="1"/>
+                                    <field name="is_afro_descendants"/>
+                                    <field name="afro_descendants_file"
+                                           filename="afro_descendants_filename"
+                                           attrs="{'required': [('is_afro_descendants', '=', True)]}"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="afro_descendants_filename" invisible="1"/>
+                                </group>
                             </group>
                             <group>
                                 <group string="Carné de salud laboral">

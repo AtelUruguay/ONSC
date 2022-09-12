@@ -50,11 +50,10 @@ class ONSCCVDigitalCall(models.Model):
     @api.constrains("cv_digital_id", "cv_digital_id.active", "call_number", "cv_digital_origin_id")
     def _check_cv_call_unicity(self):
         for record in self.filtered(lambda x: x.active):
-            if self.search_count([
-                ('active', '=', True),
-                ('cv_digital_origin_id', '=', record.cv_digital_origin_id.id),
-                ('call_number', '=', record.call_number),
-                ('id', '!=', record.id)]):
+            if self.search_count([('active', '=', True),
+                                  ('cv_digital_origin_id', '=', record.cv_digital_origin_id.id),
+                                  ('call_number', '=', record.call_number),
+                                  ('id', '!=', record.id)]):
                 raise ValidationError(
                     _(u"El CV ya se encuentra activo para este llamado")
                 )
@@ -78,6 +77,7 @@ class ONSCCVDigitalCall(models.Model):
         'participation_event_ids.conditional_validation_state',
     )
     def _compute_call_conditional_state(self):
+        # pylint: disable=sql-injection
         _sql = '''
 SELECT SUM(count) FROM
 (
