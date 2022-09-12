@@ -19,7 +19,7 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
 SELECTION_RADIO = [('1', 'Si, no puede hacerlo'), ('2', 'Si, mucha dificultad'),
                    ('3', 'Si, alguna dificultad '), ('4', 'No tiene dificultad')]
 SITUATION = u'Está en situación de discapacidad y/o requieres algún apoyo para cumplir con tus actividades laborales?'
-DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del ministerio de desarrollo social?'
+DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
 
 
 def diff_month(d1, d2):

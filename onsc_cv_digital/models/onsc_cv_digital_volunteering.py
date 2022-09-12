@@ -19,7 +19,9 @@ class ONSCCVDigitalVolunteering(models.Model):
 
 class ONSCCVDigitalVolunteeringTask(models.Model):
     _name = 'onsc.cv.volunteering.task'
-    _inherit = 'onsc.cv.origin.abstract.task'
     _description = 'Tareas de voluntariado'
 
-    volunteering_id = fields.Many2one("onsc.cv.volunteering", string="Voluntariado", ondelete='cascade')
+    volunteering_id = fields.Many2one("onsc.cv.volunteering", string="Voluntariado")
+    key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
+    area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
+                              required=True)
