@@ -24,7 +24,6 @@
                             <field name="description_tasks" required="1"/>
                             <field name="receipt_description"/>
                             <field name="receipt_file"
-                                   required="1"
                                    filename="receipt_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="receipt_filename" invisible="1"/>

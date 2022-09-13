@@ -58,7 +58,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Áreas relacionadas con esta educación">
+                        <page string="Áreas de actividad">
                             <field name="education_area_ids">
                                 <tree string="Formación básica" editable="top">
                                     <field name="educational_area_id"/>
