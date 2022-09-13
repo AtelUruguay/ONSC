@@ -77,9 +77,11 @@
                             <field name="cv_document_type_id"/>
                             <field name="cv_nro_doc"/>
                             <field name="cv_expiration_date" required="1"/>
+                            <field name="is_cv_uruguay_ci" invisible="1"/>
                             <field name="document_identity_file"
                                    filename="document_identity_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                                   options="{'accepted_file_extensions': '.pdf'}"
+                                   attrs="{'required': [('is_cv_uruguay_ci','=',True)]}"/>
                             <field name="partner_id" invisible="1"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -400,7 +402,7 @@
                             </group>
                             <group string="Seleccione los apoyos que desea:"
                                    attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
-                            <group>
+                                <group>
                                     <field name="type_support_ids_domain" invisible="1"/>
                                     <field name="type_support_ids" widget="many2many_tags"
                                            domain="[('id', 'in', type_support_ids_domain)]"/>

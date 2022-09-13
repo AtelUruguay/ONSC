@@ -166,7 +166,7 @@ class ONSCCVDigital(models.Model):
     user_linkedIn = fields.Char(string="Usuario en LinkedIn")
     is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
     afro_descendants_file = fields.Binary(
-        string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)')
+        string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)"')
     afro_descendants_filename = fields.Char('Nombre del documento digital')
     is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir vigente?")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
@@ -279,6 +279,8 @@ class ONSCCVDigital(models.Model):
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
+
+    is_cv_uruguay_ci = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay_ci')
 
     # Help online
     cv_help_general_info = fields.Html(
@@ -395,6 +397,11 @@ class ONSCCVDigital(models.Model):
                 record.last_modification_date = record.write_date or record.create_date or fields.Date.today()
         else:
             self.last_modification_date = fields.Date.today()
+
+    @api.depends('cv_emissor_country_id', 'cv_document_type_id')
+    def _compute_is_cv_uruguay_ci(self):
+        for record in self:
+            record.is_cv_uruguay_ci = record.cv_emissor_country_id.code == 'UY' and record.cv_document_type_id.code == 'ci'
 
     @api.constrains('cv_sex_updated_date', 'cv_birthdate')
     def _check_valid_dates(self):
