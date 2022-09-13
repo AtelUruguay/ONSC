@@ -275,27 +275,7 @@ class ONSCCVDigital(models.Model):
     # Referencias ------<Page>
     reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias', copy=True)
 
-    # Campos fijos en CV de Validación Documental
-    cv_gral_info_documentary_validation_state = fields.Selection(
-        selection=DOCUMENTARY_VALIDATION_STATES,
-        string="Estado de validación documental",
-        compute='_compute_cv_gral_info_documentary_validation_state',
-        store=True
-    )
-
     civical_credential_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
-        selection=DOCUMENTARY_VALIDATION_STATES,
-        default='to_validate')
-    cv_address_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
-        selection=DOCUMENTARY_VALIDATION_STATES,
-        default='to_validate')
-    cv_disabilitie_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
-        selection=DOCUMENTARY_VALIDATION_STATES,
-        default='to_validate')
-    cv_nro_doc_documentary_validation_state = fields.Selection(
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
@@ -368,42 +348,6 @@ class ONSCCVDigital(models.Model):
             return eval("_html2construct")
         for rec in self:
             setattr(rec, help_field, _html2construct)
-
-    @property
-    def field_documentary_validation_models(self):
-        configs = self.env['onsc.cv.documentary.validation.config'].search([])
-        validation_models = ['cv_address_documentary_validation_state',
-                             'civical_credential_documentary_validation_state',
-                             'cv_nro_doc_documentary_validation_state',
-                             'cv_disabilitie_documentary_validation_state']
-        for config in configs.filtered(lambda x: x.field_id):
-            validation_models.append('%s.documentary_validation_state' % config.field_id.name)
-        return validation_models
-        # return [
-        #     'work_experience_ids.documentary_validation_state',
-        #     'basic_formation_ids.documentary_validation_state',
-        #     'advanced_formation_ids.documentary_validation_state',
-        #     'course_certificate_ids.documentary_validation_state',
-        #     'volunteering_ids.documentary_validation_state',
-        #     'work_teaching_ids.documentary_validation_state',
-        #     'work_investigation_ids.documentary_validation_state',
-        #     'publication_production_evaluation_ids.documentary_validation_state',
-        #     'tutoring_orientation_supervision_ids.documentary_validation_state',
-        #     'participation_event_ids.documentary_validation_state',
-        #     'cv_address_documentary_validation_state',
-        #     'cv_disabilitie_documentary_validation_state',
-        # ]
-
-    @api.depends(lambda self: [x for x in self.field_documentary_validation_models])
-    def _compute_cv_gral_info_documentary_validation_state(self):
-        field_documentary_validation_models = self.field_documentary_validation_models
-        for record in self:
-            _documentary_validation_state = 'validated'
-            for documentary_validation_model in field_documentary_validation_models:
-                if 'to_validate' in eval("record.mapped('%s')" % documentary_validation_model):
-                    _documentary_validation_state = 'to_validate'
-                    break
-            record.cv_gral_info_documentary_validation_state = _documentary_validation_state
 
     @api.depends('cv_race_ids')
     def _compute_cv_race_values(self):
