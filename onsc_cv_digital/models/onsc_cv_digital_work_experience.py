@@ -36,7 +36,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     @api.onchange('task_ids')
     def onchange_task_ids(self):
         if len(self.task_ids) > 5:
-            self.task_ids = self.task_ids[:5]
+            self.task_ids = self.task_ids[-5:]
             return cv_warning(_(u"Sólo se pueden seleccionar 5 tareas"))
 
 
