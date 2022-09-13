@@ -39,6 +39,12 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'onsc.cv.abstract.name.upper']
     _description = 'Modelo abstracto de catálogos condicionales'
     _fields_2check_unicity = ['name', 'state']
+    
+    def _default_state(self):
+        if self.user_has_groups('onsc_cv_digital.group_gestor_catalogos_cv') and self._context.get('is_config'):
+            return 'validated'
+        else:
+            return 'to_validate'
 
     active = fields.Boolean(string='Activo', default=True, tracking=True)
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
@@ -46,8 +52,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     state = fields.Selection(string="Estado",
                              selection=STATES,
                              tracking=True,
-                             default=lambda self: self.user_has_groups(
-                                 'onsc_cv_digital.group_gestor_catalogos_cv') and 'validated' or 'to_validate')
+                             default=_default_state)
     reject_reason = fields.Text(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
 

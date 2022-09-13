@@ -98,44 +98,59 @@ class ONSCCVDigitalCall(models.Model):
         'participation_event_ids.conditional_validation_state',
     )
     def _compute_call_conditional_state(self):
+        # FIXME codigo sql es mas optimo pero no cubre todas las casuisticas(creacion todavia no esta en base de datos), se pasa a python
         # pylint: disable=sql-injection
-        _sql = '''
-SELECT SUM(count) FROM
-(
-SELECT COUNT(conditional_validation_state) FROM onsc_cv_course_certificate WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-UNION ALL
-SELECT COUNT(conditional_validation_state) FROM onsc_cv_participation_event WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-UNION ALL
-SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_experience WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-UNION ALL
-SELECT COUNT(conditional_validation_state) FROM onsc_cv_basic_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-UNION ALL
-SELECT COUNT(conditional_validation_state) FROM onsc_cv_advanced_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-UNION ALL
-SELECT COUNT(conditional_validation_state) FROM onsc_cv_tutoring_orientation_supervision WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-UNION ALL
-SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_experience WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-UNION ALL
-SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_teaching WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-UNION ALL
-SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-) AS conditional_state
-        '''
-        for record in self.filtered(lambda x: x.is_json_sent is False):
-            self.env.cr.execute(_sql % (record.cv_digital_id.id,
-                                        record.cv_digital_id.id,
-                                        record.cv_digital_id.id,
-                                        record.cv_digital_id.id,
-                                        record.cv_digital_id.id,
-                                        record.cv_digital_id.id,
-                                        record.cv_digital_id.id,
-                                        record.cv_digital_id.id,
-                                        record.cv_digital_id.id))
-            result = self.env.cr.dictfetchone()
-            if not result or result['sum'] > 0 or record.cv_address_state == 'to_validate':
+#         _sql = '''
+# SELECT SUM(count) FROM
+# (
+# SELECT COUNT(conditional_validation_state) FROM onsc_cv_course_certificate WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+# UNION ALL
+# SELECT COUNT(conditional_validation_state) FROM onsc_cv_participation_event WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+# UNION ALL
+# SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_experience WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+# UNION ALL
+# SELECT COUNT(conditional_validation_state) FROM onsc_cv_basic_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+# UNION ALL
+# SELECT COUNT(conditional_validation_state) FROM onsc_cv_advanced_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+# UNION ALL
+# SELECT COUNT(conditional_validation_state) FROM onsc_cv_tutoring_orientation_supervision WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+# UNION ALL
+# SELECT COUNT(conditional_validation_state) FROM onsc_cv_publication_production_evaluation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+# UNION ALL
+# SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_teaching WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+# UNION ALL
+# SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+# ) AS conditional_state
+#         '''
+        for record in self.filtered(lambda x: x.is_json_sent is False and x.active):
+            conditional_validation_state = record.course_certificate_ids.mapped('conditional_validation_state')
+            conditional_validation_state.extend(record.participation_event_ids.mapped('conditional_validation_state'))
+            conditional_validation_state.extend(record.work_experience_ids.mapped('conditional_validation_state'))
+            conditional_validation_state.extend(record.basic_formation_ids.mapped('conditional_validation_state'))
+            conditional_validation_state.extend(record.advanced_formation_ids.mapped('conditional_validation_state'))
+            conditional_validation_state.extend(record.work_teaching_ids.mapped('conditional_validation_state'))
+            conditional_validation_state.extend(record.work_investigation_ids.mapped('conditional_validation_state'))
+            conditional_validation_state.extend(record.participation_event_ids.mapped('conditional_validation_state'))
+            conditional_validation_state.append(record.cv_address_state)
+            if 'to_validate' in conditional_validation_state:
                 record.call_conditional_state = 'to_validate'
             else:
                 record.call_conditional_state = 'validated'
+
+            # self.env.cr.execute(_sql % (record.cv_digital_id.id,
+            #                             record.cv_digital_id.id,
+            #                             record.cv_digital_id.id,
+            #                             record.cv_digital_id.id,
+            #                             record.cv_digital_id.id,
+            #                             record.cv_digital_id.id,
+            #                             record.cv_digital_id.id,
+            #                             record.cv_digital_id.id,
+            #                             record.cv_digital_id.id))
+            # result = self.env.cr.dictfetchone()
+            # if not result or result['sum'] > 0 or record.cv_address_state == 'to_validate':
+            #     record.call_conditional_state = 'to_validate'
+            # else:
+            #     record.call_conditional_state = 'validated'
 
     @property
     def field_documentary_validation_models(self):
@@ -176,8 +191,7 @@ SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE
     @api.model
     def create(self, values):
         values['type'] = 'call'
-        result = super(ONSCCVDigitalCall, self).create(values)
-        return result
+        return super(ONSCCVDigitalCall, self).create(values)
 
     @api.model
     def _create_postulation(self,
@@ -248,3 +262,4 @@ SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE
         if not cv_calls:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
         cv_calls.write({'active': False, 'is_cancel': True})
+        return cv_calls
