@@ -1,5 +1,5 @@
-# pylint: incoherent-interpreter-exec-perm
 # -*- coding: utf-8 -*-
+# pylint: disable=incoherent-interpreter-exec-perm
 
 import logging
 

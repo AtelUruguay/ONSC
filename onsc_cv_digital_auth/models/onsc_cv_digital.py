@@ -9,3 +9,6 @@ class ONSCCVDigital(models.Model):
     # INFORMACION GENERAL---<Page>
     # Información Patronímica
     cv_source_info_auth_type = fields.Selection(related='partner_id.cv_source_info_auth_type')
+
+    def button_actualizar_dnic(self):
+        self.partner_id.update_dnic_values()

@@ -6,6 +6,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 from .abstracts.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
+from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 from ..soap import soap_error_codes
 
 _logger = logging.getLogger(__name__)
@@ -47,14 +48,33 @@ class ONSCCVDigitalCall(models.Model):
         selection=CONDITIONAL_VALIDATION_STATES,
         compute='_compute_call_conditional_state', store=True)
 
+    gral_info_documentary_validation_state = fields.Selection(
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        string="Estado de validación documental",
+        compute='_compute_gral_info_documentary_validation_state',
+        store=True
+    )
+
+    address_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    disabilitie_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    nro_doc_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+
     @api.constrains("cv_digital_id", "cv_digital_id.active", "call_number", "cv_digital_origin_id")
     def _check_cv_call_unicity(self):
         for record in self.filtered(lambda x: x.active):
-            if self.search_count([
-                ('active', '=', True),
-                ('cv_digital_origin_id', '=', record.cv_digital_origin_id.id),
-                ('call_number', '=', record.call_number),
-                ('id', '!=', record.id)]):
+            if self.search_count([('active', '=', True),
+                                  ('cv_digital_origin_id', '=', record.cv_digital_origin_id.id),
+                                  ('call_number', '=', record.call_number),
+                                  ('id', '!=', record.id)]):
                 raise ValidationError(
                     _(u"El CV ya se encuentra activo para este llamado")
                 )
@@ -78,6 +98,7 @@ class ONSCCVDigitalCall(models.Model):
         'participation_event_ids.conditional_validation_state',
     )
     def _compute_call_conditional_state(self):
+        # pylint: disable=sql-injection
         _sql = '''
 SELECT SUM(count) FROM
 (
@@ -115,6 +136,42 @@ SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE
                 record.call_conditional_state = 'to_validate'
             else:
                 record.call_conditional_state = 'validated'
+
+    @property
+    def field_documentary_validation_models(self):
+        configs = self.env['onsc.cv.documentary.validation.config'].search([])
+        validation_models = ['address_documentary_validation_state',
+                             'civical_credential_documentary_validation_state',
+                             'nro_doc_documentary_validation_state',
+                             'disabilitie_documentary_validation_state']
+        for config in configs.filtered(lambda x: x.field_id):
+            validation_models.append('%s.documentary_validation_state' % config.field_id.name)
+        return validation_models
+        # return [
+        #     'work_experience_ids.documentary_validation_state',
+        #     'basic_formation_ids.documentary_validation_state',
+        #     'advanced_formation_ids.documentary_validation_state',
+        #     'course_certificate_ids.documentary_validation_state',
+        #     'volunteering_ids.documentary_validation_state',
+        #     'work_teaching_ids.documentary_validation_state',
+        #     'work_investigation_ids.documentary_validation_state',
+        #     'publication_production_evaluation_ids.documentary_validation_state',
+        #     'tutoring_orientation_supervision_ids.documentary_validation_state',
+        #     'participation_event_ids.documentary_validation_state',
+        #     'address_documentary_validation_state',
+        #     'disabilitie_documentary_validation_state',
+        # ]
+
+    @api.depends(lambda self: [x for x in self.field_documentary_validation_models])
+    def _compute_gral_info_documentary_validation_state(self):
+        field_documentary_validation_models = self.field_documentary_validation_models
+        for record in self.filtered(lambda x: x.is_zip is False):
+            _documentary_validation_state = 'validated'
+            for documentary_validation_model in field_documentary_validation_models:
+                if 'to_validate' in eval("record.mapped('%s')" % documentary_validation_model):
+                    _documentary_validation_state = 'to_validate'
+                    break
+            record.gral_info_documentary_validation_state = _documentary_validation_state
 
     @api.model
     def create(self, values):
