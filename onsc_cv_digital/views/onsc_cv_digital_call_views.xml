@@ -108,9 +108,6 @@
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            filename="civical_credential_filename"
                                            attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <field name="document_identity_file"
-                                           filename="document_identity_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="document_identity_filename" invisible="1"/>
                                     <field name="civical_credential_filename" invisible="1"/>
                                 </group>
@@ -140,7 +137,7 @@
                             </group>
                             <group string="Licencias de Conducir"
                                    attrs="{'invisible': [('is_driver_license', '=', False)]}">
-                                <field name="drivers_license_ids" nolabel="1">
+                                <field name="drivers_license_ids" nolabel="1" context="{'is_cv_call': True}">
                                     <tree editable="bottom">
                                         <field name="validation_date" width="0.5"/>
                                         <field name="category_id"/>
@@ -282,47 +279,47 @@
                             <div>
                                 <h4>Formación básica</h4>
                             </div>
-                            <field name="basic_formation_ids"/>
+                            <field name="basic_formation_ids" context="{'is_cv_call': True}"/>
                             <br/>
                             <div>
                                 <h4>Formación avanzada</h4>
                             </div>
-                            <field name="advanced_formation_ids"/>
+                            <field name="advanced_formation_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="course_certificate" string="Cursos y certificados">
                             <div>
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
                             <field name="course_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course', 'is_cv_call': True}"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
                             </div>
                             <field name="certificate_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'is_cv_call': True}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">
-                            <field name="work_experience_ids"/>
+                            <field name="work_experience_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="work_teaching" string="Docencia">
-                            <field name="work_teaching_ids"/>
+                            <field name="work_teaching_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="work_investigation" string="Investigación">
-                            <field name="work_investigation_ids"/>
+                            <field name="work_investigation_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="volunteering" string="Voluntariado">
-                            <field name="volunteering_ids"/>
+                            <field name="volunteering_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="language_level" string="Idiomas">
                             <field name="language_level_ids"/>
                         </page>
                         <page name="publications_productions_evaluations"
                               string="Publicaciones, producciones y evaluaciones">
-                            <field name="publication_production_evaluation_ids"/>
+                            <field name="publication_production_evaluation_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
-                            <field name="tutoring_orientation_supervision_ids"/>
+                            <field name="tutoring_orientation_supervision_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page string="Discapacidad"
                             attrs="{'invisible': [('allow_content_public', '=', False),('is_disabilitie', '=', False)]}">
@@ -379,7 +376,7 @@
                         </page>
                         <page name="participation_event"
                               string="Participación en eventos">
-                            <field name="participation_event_ids"/>
+                            <field name="participation_event_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="other_relevant_information"
                               string="Otra información relevante">
