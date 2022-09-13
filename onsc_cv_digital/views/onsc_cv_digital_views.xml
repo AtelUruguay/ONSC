@@ -113,9 +113,6 @@
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            filename="civical_credential_filename"
                                            attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <field name="document_identity_file"
-                                           filename="document_identity_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="document_identity_filename" invisible="1"/>
                                     <field name="civical_credential_filename" invisible="1"/>
                                 </group>
