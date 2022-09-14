@@ -185,7 +185,7 @@
                                    context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id, 'default_country_id': country_id, 'is_readonly':True}"/>
                         </group>
                         <group>
-                            <field name="start_date" string="Período desde dando esta materia"/>
+                            <field name="start_date" string="Período desde dando esta materia" required="1" />
                             <field name="end_date" string="Período hasta dando esta materia"
                                    attrs="{'invisible': [('currently_working_state', '!=', 'no')],
                                                    'required': [('currently_working_state', '=', 'no')]}"/>
