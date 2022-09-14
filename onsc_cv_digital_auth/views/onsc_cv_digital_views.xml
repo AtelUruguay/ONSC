@@ -8,10 +8,7 @@
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_form"/>
             <field name="arch" type="xml">
                 <field name="cv_full_name_updated_date" position="before">
-                        <field name="cv_source_info_auth_type" string="Fuente de información" align="left"
-                               style="font-size: 100%; width: 80px;"
-                               widget="label_selection"
-                               options="{'classes': {'id_uy': 'danger', 'dnic': 'success'}}"/>
+                        <field name="cv_source_info_auth_type" string="Fuente de información"/>
                 </field>
                 <button name="button_unlink" position="before">
                     <button class="oe_stat_button" name="button_actualizar_dnic"
@@ -28,10 +25,7 @@
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_call_form"/>
             <field name="arch" type="xml">
                 <field name="cv_full_name_updated_date" position="before">
-                        <field name="cv_source_info_auth_type" string="Fuente de información" align="left"
-                               style="font-size: 100%; width: 80px;"
-                               widget="label_selection"
-                               options="{'classes': {'id_uy': 'danger', 'dnic': 'success'}}"/>
+                        <field name="cv_source_info_auth_type" string="Fuente de información"/>
                 </field>
             </field>
         </record>
