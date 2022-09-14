@@ -160,7 +160,7 @@
         <field name="name">onsc.cv.advanced.formation.tree</field>
         <field name="model">onsc.cv.advanced.formation</field>
         <field name="arch" type="xml">
-            <tree string="Formaciones avanzadas">
+            <tree string="Formaciones avanzadas" decoration-danger="conditional_validation_state == 'rejected'">
                 <field name="start_date" string="Inicio" optional="show" width="0.5"/>
                 <field name="end_date" string="Fin" optional="show" width="0.5"/>
                 <field name="advanced_study_level_id" string="Nivel" optional="show"/>

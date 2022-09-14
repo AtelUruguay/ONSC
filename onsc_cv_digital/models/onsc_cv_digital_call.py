@@ -32,7 +32,7 @@ class ONSCCVDigitalCall(models.Model):
         index=True)
 
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
-    postulation_date = fields.Datetime(string=u"Fecha de postulación", required=True, index=True)
+    postulation_date = fields.Datetime(string=u"Fecha de actualización", required=True, index=True)
     postulation_number = fields.Char(string=u"Número de postulación", required=True, index=True)
     is_json_sent = fields.Boolean(string="Copia enviada", default=False)
     is_cancel = fields.Boolean(string="Cancelado")
@@ -100,28 +100,28 @@ class ONSCCVDigitalCall(models.Model):
     def _compute_call_conditional_state(self):
         # FIXME codigo sql es mas optimo pero no cubre todas las casuisticas(creacion todavia no esta en base de datos), se pasa a python
         # pylint: disable=sql-injection
-#         _sql = '''
-# SELECT SUM(count) FROM
-# (
-# SELECT COUNT(conditional_validation_state) FROM onsc_cv_course_certificate WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-# UNION ALL
-# SELECT COUNT(conditional_validation_state) FROM onsc_cv_participation_event WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-# UNION ALL
-# SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_experience WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-# UNION ALL
-# SELECT COUNT(conditional_validation_state) FROM onsc_cv_basic_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-# UNION ALL
-# SELECT COUNT(conditional_validation_state) FROM onsc_cv_advanced_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-# UNION ALL
-# SELECT COUNT(conditional_validation_state) FROM onsc_cv_tutoring_orientation_supervision WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-# UNION ALL
-# SELECT COUNT(conditional_validation_state) FROM onsc_cv_publication_production_evaluation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-# UNION ALL
-# SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_teaching WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-# UNION ALL
-# SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-# ) AS conditional_state
-#         '''
+        #         _sql = '''
+        # SELECT SUM(count) FROM
+        # (
+        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_course_certificate WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+        # UNION ALL
+        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_participation_event WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+        # UNION ALL
+        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_experience WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+        # UNION ALL
+        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_basic_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+        # UNION ALL
+        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_advanced_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+        # UNION ALL
+        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_tutoring_orientation_supervision WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+        # UNION ALL
+        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_publication_production_evaluation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+        # UNION ALL
+        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_teaching WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+        # UNION ALL
+        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
+        # ) AS conditional_state
+        #         '''
         for record in self.filtered(lambda x: x.is_json_sent is False and x.active):
             conditional_validation_state = record.course_certificate_ids.mapped('conditional_validation_state')
             conditional_validation_state.extend(record.participation_event_ids.mapped('conditional_validation_state'))
@@ -228,7 +228,7 @@ class ONSCCVDigitalCall(models.Model):
         elif accion == 'R':
             return self._repostulate(cv_digital_id, call_number, postulation_date, postulation_number)
         elif accion == 'C':
-            return self._cancel_postulation(cv_digital_id, call_number)
+            return self._cancel_postulation(cv_digital_id, call_number, postulation_date)
         return True
 
     def _postulate(self, cv_digital_id, call_number, postulation_date, postulation_number):
@@ -251,15 +251,15 @@ class ONSCCVDigitalCall(models.Model):
         ])
         if not cv_calls:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
-        cv_calls.write({'active': False})
+        cv_calls.write({'active': False, 'postulation_date': postulation_date})
         return self._postulate(cv_digital_id, call_number, postulation_date, postulation_number)
 
-    def _cancel_postulation(self, cv_digital_id, call_number):
+    def _cancel_postulation(self, cv_digital_id, call_number, postulation_date):
         cv_calls = self.search([
             ('cv_digital_origin_id', '=', cv_digital_id.id),
             ('call_number', '=', call_number),
         ])
         if not cv_calls:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
-        cv_calls.write({'active': False, 'is_cancel': True})
+        cv_calls.write({'active': False, 'is_cancel': True, 'postulation_date': postulation_date})
         return cv_calls

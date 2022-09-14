@@ -50,6 +50,12 @@
                     <field name="avatar_128" invisible="1"/>
                     <field name="image_1920" widget='image' class="oe_avatar"
                            options='{"preview_image": "avatar_128"}'/>
+                    <div class="oe_avatar" style="padding-right:20px">
+                        <label for="gral_info_documentary_validation_state" string="Estado de validación documental"/>
+                        <h4><field name="gral_info_documentary_validation_state" align="left" style="font-size: 100%; width: 110px;" widget="label_selection" options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
+                        <label for="call_conditional_state" string="Estado de validación condicional"/>
+                        <h4><field name="call_conditional_state" align="left" style="font-size: 100%; width: 110px;" widget="label_selection" options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
+                    </div>
                     <field name="active" invisible="1"/>
                     <field name="is_cv_uruguay" invisible="1"/>
                     <field name="is_partner_cv" invisible="1"/>
@@ -77,11 +83,6 @@
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
-                            <field name="gral_info_documentary_validation_state" align="left"
-                               style="font-size: 100%; width: 110px;"
-                               widget="label_selection"
-                               options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/>
-                            <field name="call_conditional_state"/>
                             <field name="cv_birthdate"
                                    attrs="{'readonly': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
                             <field name="cv_sex"
