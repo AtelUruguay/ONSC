@@ -466,12 +466,6 @@ class ONSCCVDigital(models.Model):
             self.credential_number = ''.join(filter(str.isdigit, self.credential_number))
             return cv_warning(_("El número de la credencial no puede contener letras"))
 
-    @api.constrains('credential_number')
-    def _check_valid_credential_number(self):
-        for record in self:
-            if record.credential_number and len(record.credential_number) < 6:
-                raise ValidationError(_("El número de la credencial no puede ser tener menos de 6 cifras"))
-
     def button_unlink(self):
         self.unlink()
         return self._action_open_user_cv()
