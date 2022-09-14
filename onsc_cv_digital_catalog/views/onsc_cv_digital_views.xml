@@ -36,12 +36,12 @@
                            domain="inciso_id_domain"
                            context="{'as_of_date': start_date}"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                           attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                           attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', '!=', 'public')], 'required': [('country_code', '=', 'UY'),('company_type', '=', 'public')]}"/>
                     <field name="operating_unit_id"
                            domain="operating_unit_id_domain"
                            context="{'as_of_date': start_date}"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                           attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                           attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', '!=', 'public')], 'required': [('country_code', '=', 'UY'),('company_type', '=', 'public')]}"/>
                     <field name="company_name_calc" invisible="1"/>
                 </field>
             </field>
