@@ -18,6 +18,7 @@ class ONSCCVFileValidationConfig(models.Model):
             ('model_id.model', 'not ilike', '%onsc.cv.abstract%'),
             ('model_id.model', '!=', 'onsc.cv.information.contact'),
             ('model_id.model', '!=', 'onsc.cv.academic.program.subject'),
+            ('model_id.model', '!=', 'onsc.cv.digital.call'),
             ('name', '=', 'cv_digital_id')])
         return json.dumps([('id', 'in', fields.mapped('model_id').ids)])
 
@@ -25,8 +26,7 @@ class ONSCCVFileValidationConfig(models.Model):
     model_id = fields.Many2one("ir.model", string="Modelo",
                                ondelete='cascade',
                                history=True,
-                               required=True,
-                               domain="[('model', 'ilike', '%onsc.cv%')]")
+                               required=True)
     field_id = fields.Many2one("ir.model.fields", string="Enlace en el CV")
     model_id_domain = fields.Char(compute='_compute_model_id_domain', default=_default_model_id_domain)
 

@@ -42,7 +42,7 @@ AUTH_53 = {
 LOGIC_150 = {
     'type': 'LOGICA',
     'code': '150',
-    'desc': u'Error desconocido',
+    'desc': u'Error',
     'long_desc': u'Contacte con el administrador',
 }
 
@@ -84,6 +84,6 @@ LOGIC_154 = {
 LOGIC_155 = {
     'type': 'LOGICA',
     'code': '155',
-    'desc': u'No se identificó un llamado válido para los parámetros enviados',
+    'desc': u'No se ha identificado un CV activo para este llamado',
     'long_desc': u'',
 }

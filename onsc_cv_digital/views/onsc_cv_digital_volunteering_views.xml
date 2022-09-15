@@ -16,7 +16,7 @@
                                    attrs="{'invisible': [('currently_volunteering', '!=', 'no')],'required': [('currently_volunteering', '=', 'no')]}"/>
                             <field name="country_code" invisible="1"/>
                             <field name="company_name"
-                                   attrs="{'invisible': [('country_code', 'in', ['UY',False]),('company_type','in', ['public',False])],'required': ['|',('country_code', '!=', 'UY'),('company_type','in', ['both','private'])]}"/>
+                                   attrs="{'invisible': [('country_code', 'in', ['UY',False]),('company_type','in',['public','both',False])],'required': ['|',('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
                             <field name="unit_name"/>
                         </group>
                         <group>
