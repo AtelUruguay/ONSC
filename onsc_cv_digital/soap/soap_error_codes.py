@@ -42,7 +42,7 @@ AUTH_53 = {
 LOGIC_150 = {
     'type': 'LOGICA',
     'code': '150',
-    'desc': u'Error desconocido',
+    'desc': u'Error',
     'long_desc': u'Contacte con el administrador',
 }
 

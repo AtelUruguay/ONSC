@@ -121,8 +121,10 @@ class WsCVPostulacion(ServiceBase):
             logic_150_extended = soap_error_codes.LOGIC_150
             if hasattr(e, 'name') and isinstance(e.name, str):
                 logic_150_extended['long_desc'] = e.name
-            e = soap_error_codes._raise_fault(logic_150_extended)
-            error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
+            error_item = ErrorHandler(code=logic_150_extended.get('code'),
+                                      type=logic_150_extended.get('type'),
+                                      error=logic_150_extended.get('desc'),
+                                      description=logic_150_extended.get('long_desc'))
             response = WsCVPostulacionResponse(result='error', errors=[])
             response.errors.append(error_item)
             return response

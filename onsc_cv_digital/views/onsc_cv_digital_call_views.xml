@@ -65,7 +65,7 @@
                         </h1>
                         <label for="call_number" string="Llamado"/>
                         <h2><field name="call_number"/></h2>
-                        <label for="postulation_date" string="Fecha de postulación"/>
+                        <label for="postulation_date" string="Fecha de actualización"/>
                         <h2><field name="postulation_date"/></h2>
                         <label for="postulation_number" string="Número de postulación"/>
                         <h2><field name="postulation_number"/></h2>
