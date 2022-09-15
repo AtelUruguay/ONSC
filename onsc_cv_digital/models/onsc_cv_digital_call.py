@@ -152,8 +152,12 @@ class ONSCCVDigitalCall(models.Model):
             # else:
             #     record.call_conditional_state = 'validated'
 
-    @property
-    def field_documentary_validation_models(self):
+    def _get_documentary_validation_models(self):
+        if not bool(self._context):
+            return ['address_documentary_validation_state',
+                    'civical_credential_documentary_validation_state',
+                    'nro_doc_documentary_validation_state',
+                    'disabilitie_documentary_validation_state']
         configs = self.env['onsc.cv.documentary.validation.config'].search([])
         validation_models = ['address_documentary_validation_state',
                              'civical_credential_documentary_validation_state',
@@ -162,24 +166,35 @@ class ONSCCVDigitalCall(models.Model):
         for config in configs.filtered(lambda x: x.field_id):
             validation_models.append('%s.documentary_validation_state' % config.field_id.name)
         return validation_models
-        # return [
-        #     'work_experience_ids.documentary_validation_state',
-        #     'basic_formation_ids.documentary_validation_state',
-        #     'advanced_formation_ids.documentary_validation_state',
-        #     'course_certificate_ids.documentary_validation_state',
-        #     'volunteering_ids.documentary_validation_state',
-        #     'work_teaching_ids.documentary_validation_state',
-        #     'work_investigation_ids.documentary_validation_state',
-        #     'publication_production_evaluation_ids.documentary_validation_state',
-        #     'tutoring_orientation_supervision_ids.documentary_validation_state',
-        #     'participation_event_ids.documentary_validation_state',
-        #     'address_documentary_validation_state',
-        #     'disabilitie_documentary_validation_state',
-        # ]
 
-    @api.depends(lambda self: [x for x in self.field_documentary_validation_models])
+    # @property
+    # def field_documentary_validation_models(self):
+    #     configs = self.env['onsc.cv.documentary.validation.config'].search([])
+    #     validation_models = ['address_documentary_validation_state',
+    #                          'civical_credential_documentary_validation_state',
+    #                          'nro_doc_documentary_validation_state',
+    #                          'disabilitie_documentary_validation_state']
+    #     for config in configs.filtered(lambda x: x.field_id):
+    #         validation_models.append('%s.documentary_validation_state' % config.field_id.name)
+    #     return validation_models
+    #     return [
+    #         'work_experience_ids.documentary_validation_state',
+    #         'basic_formation_ids.documentary_validation_state',
+    #         'advanced_formation_ids.documentary_validation_state',
+    #         'course_certificate_ids.documentary_validation_state',
+    #         'volunteering_ids.documentary_validation_state',
+    #         'work_teaching_ids.documentary_validation_state',
+    #         'work_investigation_ids.documentary_validation_state',
+    #         'publication_production_evaluation_ids.documentary_validation_state',
+    #         'tutoring_orientation_supervision_ids.documentary_validation_state',
+    #         'participation_event_ids.documentary_validation_state',
+    #         'address_documentary_validation_state',
+    #         'disabilitie_documentary_validation_state',
+    #     ]
+
+    @api.depends(lambda self: self._get_documentary_validation_models())
     def _compute_gral_info_documentary_validation_state(self):
-        field_documentary_validation_models = self.field_documentary_validation_models
+        field_documentary_validation_models = self._get_documentary_validation_models()
         for record in self.filtered(lambda x: x.is_zip is False):
             _documentary_validation_state = 'validated'
             for documentary_validation_model in field_documentary_validation_models:
