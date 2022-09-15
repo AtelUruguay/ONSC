@@ -160,13 +160,13 @@ class ONSCCVDigital(models.Model):
                                                  ('extranjero', 'Extranjero')], required=True)
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", required=True)
     crendencial_serie = fields.Char(string="Serie de la credencial", size=3)
-    credential_number = fields.Integer(string="Numero de la credencial")
+    credential_number = fields.Char(string="Numero de la credencial", size=6)
     cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU")
     professional_resume = fields.Text(string="Resumen profesional")
     user_linkedIn = fields.Char(string="Usuario en LinkedIn")
     is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
     afro_descendants_file = fields.Binary(
-        string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)')
+        string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)"')
     afro_descendants_filename = fields.Char('Nombre del documento digital')
     is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir vigente?")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
@@ -279,6 +279,8 @@ class ONSCCVDigital(models.Model):
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
+
+    is_cv_uruguay_ci = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay_ci')
 
     # Help online
     cv_help_general_info = fields.Html(
@@ -396,6 +398,11 @@ class ONSCCVDigital(models.Model):
         else:
             self.last_modification_date = fields.Date.today()
 
+    @api.depends('cv_emissor_country_id', 'cv_document_type_id')
+    def _compute_is_cv_uruguay_ci(self):
+        for record in self:
+            record.is_cv_uruguay_ci = record.cv_emissor_country_id.code == 'UY' and record.cv_document_type_id.code == 'ci'
+
     @api.constrains('cv_sex_updated_date', 'cv_birthdate')
     def _check_valid_dates(self):
         today = fields.Date.from_string(fields.Date.today())
@@ -455,9 +462,9 @@ class ONSCCVDigital(models.Model):
 
     @api.onchange('credential_number')
     def onchange_credential_number(self):
-        if self.credential_number and self.credential_number > 1000000:
-            self.credential_number = False
-            return cv_warning(_("La número de la credencial no puede exeder de 6 cifras"))
+        if self.credential_number and not self.credential_number.isdigit():
+            self.credential_number = ''.join(filter(str.isdigit, self.credential_number))
+            return cv_warning(_("El número de la credencial no puede contener letras"))
 
     def button_unlink(self):
         self.unlink()
