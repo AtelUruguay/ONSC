@@ -23,7 +23,7 @@
               name="Consulta de CV"
               action="onsc_cv_digital_call_action"
               parent="onsc_cv_root_menu"
-              groups="group_validador_documental_cv"
+              groups="group_validador_documental_cv,group_manager_cv"
               sequence="2"/>
 
     <menuitem id="onsc_cv_config_menu"
