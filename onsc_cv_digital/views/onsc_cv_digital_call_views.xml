@@ -69,6 +69,14 @@
                         <h2><field name="postulation_date"/></h2>
                         <label for="postulation_number" string="Número de postulación"/>
                         <h2><field name="postulation_number"/></h2>
+                        <field name="is_json_sent"/>
+                        <field name="is_cancel"/>
+                        <field name="is_zip"/>
+                        <field name="preselected"/>
+                        <field name="is_trans"/>
+                        <field name="is_afro"/>
+                        <field name="is_disabilitie"/>
+                        <field name="is_victim"/>
                     </div>
                     <group>
                         <group>

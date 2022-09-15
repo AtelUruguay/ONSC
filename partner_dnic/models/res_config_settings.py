@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from odoo import fields, models, _
 from odoo.exceptions import ValidationError
 
 from ..soap import dnic_client
+
+_logger = logging.getLogger(__name__)
 
 CI_TEST = '11745679'
 
@@ -47,4 +51,5 @@ class ResConfigSettings(models.TransientModel):
                 }
 
         except Exception as ex:
-            raise ValidationError(_("Ha ocurrido un error al conectarse a DNIC: %s" % ex))
+            _logger.debug("DNIC ERROR: %s" % ex)
+            raise ValidationError(_("Ha ocurrido un error al conectarse a DNIC"))

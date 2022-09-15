@@ -31,7 +31,8 @@ class ONSCCVDigitalWorkExperience(models.Model):
 
     @api.onchange('city_id')
     def onchange_city_id(self):
-        self.country_id = self.city_id.country_id.id
+        if self.city_id:
+            self.country_id = self.city_id.country_id.id
 
     @api.onchange('task_ids')
     def onchange_task_ids(self):
