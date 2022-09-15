@@ -168,7 +168,7 @@ class ONSCCVDigital(models.Model):
     afro_descendants_file = fields.Binary(
         string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)"')
     afro_descendants_filename = fields.Char('Nombre del documento digital')
-    is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir vigente?")
+    is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir?")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
                                           inverse_name="cv_digital_id", string="Licencias de conducir", copy=True)
 
@@ -178,7 +178,7 @@ class ONSCCVDigital(models.Model):
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
     email = fields.Char(string="Email", related='partner_id.email')
 
-    is_occupational_health_card = fields.Boolean(string="¿Tiene carné de salud laboral vigente?")
+    is_occupational_health_card = fields.Boolean(string="¿Tiene carné de salud laboral?")
     occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
     occupational_health_card_file = fields.Binary(
         string="Documento digitalizado del carné de salud laboral")
@@ -190,7 +190,7 @@ class ONSCCVDigital(models.Model):
     civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica")
     civical_credential_filename = fields.Char('Nombre del documento digital')
     medical_aptitude_certificate_status = fields.Selection(
-        string="¿Tiene certificado de aptitud médico-deportiva vigente?",
+        string="¿Tiene certificado de aptitud médico-deportiva?",
         selection=[('si', 'Si'), ('no', 'No'), ])
     medical_aptitude_certificate_date = fields.Date(
         string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
