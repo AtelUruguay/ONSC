@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.digital.call.search</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-            <search string="Llamados">
+            <search string="Copias de CV">
                 <field name="partner_id"/>
                 <field name="call_number"/>
                 <field name="postulation_date"/>
@@ -27,7 +27,7 @@
         <field name="name">onsc.cv.digital.call.tree</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-            <tree string="Llamados" delete="0" edit="0" create="0" duplicate="0">
+            <tree string="Copias de CV" delete="0" edit="0" create="0" duplicate="0">
                 <field name="partner_id" string="Nombre"/>
                 <field name="call_number"/>
                 <field name="postulation_number"/>
@@ -41,7 +41,7 @@
         <field name="name">onsc.cv.digital.call.form</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-            <form string="Llamados" delete="0" edit="0" create="0" duplicate="0">
+            <form string="Copias de CV" delete="0" edit="0" create="0" duplicate="0">
                 <header>
                 </header>
                 <sheet>
@@ -69,14 +69,18 @@
                         <h2><field name="postulation_date"/></h2>
                         <label for="postulation_number" string="Número de postulación"/>
                         <h2><field name="postulation_number"/></h2>
-                        <field name="is_json_sent"/>
-                        <field name="is_cancel"/>
-                        <field name="is_zip"/>
-                        <field name="preselected"/>
-                        <field name="is_trans"/>
-                        <field name="is_afro"/>
-                        <field name="is_disabilitie"/>
-                        <field name="is_victim"/>
+                        <div>
+                          <label for="is_json_sent"/><field name="is_json_sent"/>
+                          <label for="is_cancel"/><field name="is_cancel"/>
+                          <label for="is_zip"/><field name="is_zip"/>
+                          <label for="preselected"/><field name="preselected"/>
+                        </div>
+                        <div style="padding-bottom:40px">
+                          <label for="is_trans"/><field name="is_trans"/>
+                          <label for="is_afro"/><field name="is_afro"/>
+                          <label for="is_disabilitie"/><field name="is_disabilitie"/>
+                          <label for="is_victim"/><field name="is_victim"/>
+                        </div>
                     </div>
                     <group>
                         <group>
@@ -171,7 +175,6 @@
                                     <field name="is_cv_gender_option_other_enable" invisible="1"/>
                                     <field name="is_cv_gender_record" invisible="1"/>
                                     <field name="cv_gender_record_filename" invisible="1"/>
-                                    <field name="is_trans" invisible="1"/>
                                 </group>
                                 <group string="Raza"
                                     attrs="{'invisible': [('is_cv_race_public', '=', False),('is_afro_descendants', '=', False)]}">
@@ -334,7 +337,6 @@
                             attrs="{'invisible': [('allow_content_public', '=', False),('is_disabilitie', '=', False)]}">
                             <group>
                                 <group>
-                                    <field name="is_disabilitie" invisible="1"/>
                                     <field name="allow_content_public"/>
                                     <field name="situation_disability"/>
                                     <field name="people_disabilitie"
@@ -406,7 +408,7 @@
     </record>
 
     <record id='onsc_cv_digital_call_action' model='ir.actions.act_window'>
-        <field name="name">Llamados</field>
+        <field name="name">Copias de CV</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">onsc.cv.digital.call</field>
         <field name="view_mode">tree,form</field>

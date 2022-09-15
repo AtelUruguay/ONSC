@@ -20,7 +20,7 @@
               sequence="1"/>
 
     <menuitem id="onsc_cv_digital_call_menu"
-              name="Consulta de CV"
+              name="Copias de CV"
               action="onsc_cv_digital_call_action"
               parent="onsc_cv_root_menu"
               groups="group_validador_documental_cv,group_manager_cv"
