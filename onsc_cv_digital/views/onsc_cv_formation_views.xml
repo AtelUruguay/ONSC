@@ -24,8 +24,8 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                         <group>
-                            <field name="state"/>
-                            <field name="start_date"/>
+                            <field name="state" required="1"/>
+                            <field name="start_date" required="1"/>
                             <field name="end_date"
                                    attrs="{'invisible': [('state', '!=', 'completed')],'required': [('state', '=', 'completed')]}"/>
                             <field name="coursed_years"
