@@ -14,11 +14,37 @@ STATES = [('to_validate', 'Para validar'),
 # _fields_2check_unicity: list of fields to check unicity
 # _get_conditional_unicity_message: return message when unicity control is unsuccessful
 
+class ONSCCVAbstractNameUpper(models.AbstractModel):
+    _name = 'onsc.cv.abstract.name.upper'
+
+    # Field name must be inherited by all new models. Its here for clear code
+    name = fields.Char()
+    name_upper = fields.Char(compute='_compute_name_upper', store=True)
+
+    @api.constrains('name_upper')
+    def _check_name_upper(self):
+        _name_string = self._fields.get('name', ) and self._fields.get('name', ).string or 'Nombre'
+        for rec in self:
+            if self.search_count([('name_upper', '=', rec.name_upper), ('id', '!=', rec.id)]):
+                raise ValidationError(_("El %s debe ser único") % _name_string)
+
+    @api.depends('name')
+    def _compute_name_upper(self):
+        for rec in self:
+            rec.name_upper = rec.name.upper()
+
+
 class ONSCCVAbstractConfig(models.AbstractModel):
     _name = 'onsc.cv.abstract.config'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'onsc.cv.abstract.name.upper']
     _description = 'Modelo abstracto de catálogos condicionales'
     _fields_2check_unicity = ['name', 'state']
+    
+    def _default_state(self):
+        if self.user_has_groups('onsc_cv_digital.group_gestor_catalogos_cv') and self._context.get('is_config'):
+            return 'validated'
+        else:
+            return 'to_validate'
 
     active = fields.Boolean(string='Activo', default=True, tracking=True)
     company_id = fields.Many2one('res.company', required=True, default=lambda self: self.env.company)
@@ -26,8 +52,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     state = fields.Selection(string="Estado",
                              selection=STATES,
                              tracking=True,
-                             default=lambda self: self.user_has_groups(
-                                 'onsc_cv_digital.group_gestor_catalogos_cv') and 'validated' or 'to_validate')
+                             default=_default_state)
     reject_reason = fields.Text(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
 

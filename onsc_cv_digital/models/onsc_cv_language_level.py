@@ -6,6 +6,7 @@ NIVEL = [('d', 'Básico'), ('c', 'Intermedio'), ('b', 'Avanzado'), ('a', 'Nativo
 
 class LenguageLevel(models.Model):
     _name = 'onsc.cv.language.level'
+    _inherit = 'onsc.cv.abstract.common'
     _description = 'Idiomas'
     _order = 'spoken_level,read_level,write_level'
 
@@ -13,10 +14,10 @@ class LenguageLevel(models.Model):
     language_id = fields.Many2one('onsc.cv.language', 'Idioma', required=True)
     spoken_level = fields.Selection(
         selection=NIVEL,
-        required=True, string="Nivel hablado", default='basic')
+        required=True, string="Nivel hablado")
     read_level = fields.Selection(
         selection=NIVEL,
-        required=True, string="Nivel leído", default='basic')
+        required=True, string="Nivel leído")
     write_level = fields.Selection(
         selection=NIVEL,
-        required=True, string="Nivel escrito", default='basic')
+        required=True, string="Nivel escrito")

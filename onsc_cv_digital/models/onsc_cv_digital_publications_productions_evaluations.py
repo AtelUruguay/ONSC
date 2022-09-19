@@ -8,7 +8,7 @@ TYPES = [('publication', 'Publicación '), ('productions', 'Producciones '), ('e
 
 class ONSCCVDigitalPPEvaluations(models.Model):
     _name = 'onsc.cv.publication.production.evaluation'
-    _inherit = ['onsc.cv.abstract.documentary.validation']
+    _inherit = ['onsc.cv.abstract.documentary.validation', 'onsc.cv.abstract.common']
     _description = 'Publicación, Producción y Evaluación'
     _order = 'date desc'
 
@@ -35,11 +35,12 @@ class ONSCCVDigitalPPEvaluations(models.Model):
     is_arbitrated = fields.Boolean(string='Activo', compute='_compute_is_subtype_publication')
     paid_activity = fields.Selection(string=u'¿Actividad remunerada?', required=True,
                                      selection=[('yes', u'Si'), ('no', u'No')])
-    authors_ids = fields.One2many('onsc.cv.authors', 'publications_productions_evaluations_id', string=u'Autores')
+    authors_ids = fields.One2many('onsc.cv.authors', 'publications_productions_evaluations_id', string=u'Autores',
+                                  copy=True)
     activity_area_ids = fields.One2many('onsc.cv.activity.area', 'publications_productions_evaluations_id',
-                                        string=u'Área de Actividad')
+                                        string=u'Área de Actividad', copy=True)
     applied_knowledge_ids = fields.Many2many('onsc.cv.knowledge', 'applied_knowledge_id',
-                                             string=u'Conocimientos aplicados')
+                                             string=u'Conocimientos aplicados', copy=True)
     additional_information = fields.Text(string="Información adicional")
 
     @api.depends('subtype_publication_id')

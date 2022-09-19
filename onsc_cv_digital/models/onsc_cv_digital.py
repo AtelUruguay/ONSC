@@ -19,7 +19,7 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
 SELECTION_RADIO = [('1', 'Si, no puede hacerlo'), ('2', 'Si, mucha dificultad'),
                    ('3', 'Si, alguna dificultad '), ('4', 'No tiene dificultad')]
 SITUATION = u'Está en situación de discapacidad y/o requieres algún apoyo para cumplir con tus actividades laborales?'
-DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del ministerio de desarrollo social?'
+DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
 
 
 def diff_month(d1, d2):
@@ -120,7 +120,7 @@ class ONSCCVDigital(models.Model):
     cv_gender2 = fields.Char(string=u"Otro género")
     cv_gender_record_file = fields.Binary(string="Constancia de identidad de género")
     cv_gender_record_filename = fields.Char('Nombre del documento digital')
-    is_cv_gender_public = fields.Boolean(string="¿Permite que su género sea público?")
+    is_cv_gender_public = fields.Boolean(string="¿Permite que su género se visualice en su CV?")
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
     # Raza
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Raza", required=True,
@@ -134,18 +134,15 @@ class ONSCCVDigital(models.Model):
     cv_race2 = fields.Char(string=u"Otra raza")
     cv_first_race_id = fields.Many2one("onsc.cv.race", string="¿Con que raza se reconoce principalmente?",
                                        domain="[('id','in',cv_race_ids)]")
-    is_cv_race_public = fields.Boolean(string="¿Permite que su raza sea público?")
+    is_cv_race_public = fields.Boolean(string="¿Permite que su raza se visualice en su CV?")
     # Información patronímica
     cv_full_name_updated_date = fields.Date(related='partner_id.cv_full_name_updated_date',
                                             string="Fecha de información")
-    cv_gral_info_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                                 selection=DOCUMENTARY_VALIDATION_STATES,
-                                                                 default='to_validate')
 
     # DOMICILIO----<Page>
     country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
     cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
-    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False)
+    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False, store=True)
     cv_address_street = fields.Char(related='partner_id.street', readonly=False)
     cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
     cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
@@ -154,7 +151,7 @@ class ONSCCVDigital(models.Model):
     cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
     cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
-    cv_address_state = fields.Selection(related='cv_address_location_id.state')
+    cv_address_state = fields.Selection(related='cv_address_location_id.state', store=True)
     cv_address_reject_reason = fields.Text(related='cv_address_location_id.reject_reason')
 
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
@@ -163,17 +160,17 @@ class ONSCCVDigital(models.Model):
                                                  ('extranjero', 'Extranjero')], required=True)
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", required=True)
     crendencial_serie = fields.Char(string="Serie de la credencial", size=3)
-    credential_number = fields.Integer(string="Numero de la credencial")
+    credential_number = fields.Char(string="Numero de la credencial", size=6)
     cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU")
     professional_resume = fields.Text(string="Resumen profesional")
     user_linkedIn = fields.Char(string="Usuario en LinkedIn")
     is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
     afro_descendants_file = fields.Binary(
-        string='Documento digitalizado "Declaración de afrodescendencia" / formulario web de declaración jurada de afrodescendencia (Art. 4 Ley N°19.122) ')
+        string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)"')
     afro_descendants_filename = fields.Char('Nombre del documento digital')
-    is_driver_license = fields.Boolean(string="Tiene licencia de conducir")
+    is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir?")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
-                                          inverse_name="cv_digital_id", string="Licencias de conducir")
+                                          inverse_name="cv_digital_id", string="Licencias de conducir", copy=True)
 
     prefix_phone_id = fields.Many2one(related='partner_id.prefix_phone_id', readonly=False)
     personal_phone = fields.Char(string="Teléfono particular", related='partner_id.phone', readonly=False)
@@ -181,7 +178,7 @@ class ONSCCVDigital(models.Model):
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
     email = fields.Char(string="Email", related='partner_id.email')
 
-    is_occupational_health_card = fields.Boolean(string="Carné de salud laboral")
+    is_occupational_health_card = fields.Boolean(string="¿Tiene carné de salud laboral?")
     occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
     occupational_health_card_file = fields.Binary(
         string="Documento digitalizado del carné de salud laboral")
@@ -192,8 +189,9 @@ class ONSCCVDigital(models.Model):
 
     civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica")
     civical_credential_filename = fields.Char('Nombre del documento digital')
-    medical_aptitude_certificate_status = fields.Selection(string="Certificado de aptitud médico-deportiva",
-                                                           selection=[('si', 'Si'), ('no', 'No'), ])
+    medical_aptitude_certificate_status = fields.Selection(
+        string="¿Tiene certificado de aptitud médico-deportiva?",
+        selection=[('si', 'Si'), ('no', 'No'), ])
     medical_aptitude_certificate_date = fields.Date(
         string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
     medical_aptitude_certificate_file = fields.Binary(
@@ -205,45 +203,47 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
     relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
     is_public_information_victim_violent = fields.Boolean(
-        string="¿Permite que su información de persona víctima de delitos violentos sea público?", )
-    cv_address_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                               selection=DOCUMENTARY_VALIDATION_STATES,
-                                                               default='to_validate')
+        string="¿Permite que su información de persona víctima de delitos violentos se visualice en su CV?", )
 
     # Formación----<Page>
-    basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica')
+    basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica',
+                                          copy=True)
     advanced_formation_ids = fields.One2many('onsc.cv.advanced.formation', 'cv_digital_id',
-                                             string=u'Formación avanzada')
+                                             string=u'Formación avanzada', copy=True)
     # Cursos y certificado----<Page>
     course_certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                             string="Cursos y certificados")
+                                             string="Cursos y certificados", copy=True)
     course_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                 string="Cursos", domain=[('record_type', '=', 'course')])
+                                 string="Cursos", domain=[('record_type', '=', 'course')], copy=False)
     certificate_ids = fields.One2many('onsc.cv.course.certificate', inverse_name='cv_digital_id',
-                                      string="Certificados", domain=[('record_type', '=', 'certificate')])
+                                      string="Certificados", domain=[('record_type', '=', 'certificate')], copy=False)
     # Experiencia Laboral ----<Page>
     work_experience_ids = fields.One2many("onsc.cv.work.experience", inverse_name="cv_digital_id",
-                                          string="Experiencia laboral")
+                                          string="Experiencia laboral", copy=True)
     # Docencia ----<Page>
-    work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencia')
+    work_teaching_ids = fields.One2many('onsc.cv.work.teaching', inverse_name='cv_digital_id', string='Docencia',
+                                        copy=True)
     # Investigación ----<Page>
     work_investigation_ids = fields.One2many('onsc.cv.work.investigation', inverse_name='cv_digital_id',
-                                             string='Investigación')
+                                             string='Investigación', copy=True)
     # Voluntariado ----<Page>
-    volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado")
+    volunteering_ids = fields.One2many("onsc.cv.volunteering", inverse_name="cv_digital_id", string="Voluntariado",
+                                       copy=True)
     # Idioma ----<Page>
-    language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idiomas')
+    language_level_ids = fields.One2many('onsc.cv.language.level', inverse_name='cv_digital_id', string='Idiomas',
+                                         copy=True)
     # Publicaciones, Producciones y Evaluaciones ----<Page>
     publication_production_evaluation_ids = fields.One2many("onsc.cv.publication.production.evaluation",
                                                             inverse_name="cv_digital_id",
-                                                            string="Publicaciones, producciones y evaluaciones")
+                                                            string="Publicaciones, producciones y evaluaciones",
+                                                            copy=True)
     # Tutorías, Orientaciones, Supervisiones ----<Page>
     tutoring_orientation_supervision_ids = fields.One2many('onsc.cv.tutoring.orientation.supervision',
                                                            inverse_name="cv_digital_id",
-                                                           string="Tutorías, Orientaciones, Supervisiones")
+                                                           string="Tutorías, Orientaciones, Supervisiones", copy=True)
     # Discapacidad ----<Page>
     allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
-                                            string=u'¿Permite que el contenido de esta sección sea público?')
+                                            string=u'¿Permite el contenido de esta sección se visualice en su CV?')
     situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
     people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
     document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')
@@ -258,24 +258,29 @@ class ONSCCVDigital(models.Model):
                                string=u'¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?')
     lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender/ y o aprender?')
     interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interacciones y/o relaciones interpersonales?')
-    type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo')
+    type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo', copy=True)
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
-                                               compute='_compute_cv_type_support_domain')
+                                               compute='_compute_cv_type_support_domain', copy=True)
     need_other_support = fields.Char(string=u"¿Necesita otro apoyo?")
     is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain')
-    cv_disabilitie_documentary_validation_state = fields.Selection(string="Estado de validación documental",
-                                                                   selection=DOCUMENTARY_VALIDATION_STATES,
-                                                                   default='to_validate')
+
     # Participación en Eventos ----<Page>
     participation_event_ids = fields.One2many("onsc.cv.participation.event",
                                               inverse_name="cv_digital_id",
-                                              string="Participación en eventos")
+                                              string="Participación en eventos", copy=True)
     # Otra información relevante ----<Page>
     other_relevant_information_ids = fields.One2many("onsc.cv.other.relevant.information",
                                                      inverse_name="cv_digital_id",
-                                                     string="Otra información relevante")
+                                                     string="Otra información relevante", copy=True)
     # Referencias ------<Page>
-    reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias')
+    reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias', copy=True)
+
+    civical_credential_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+
+    is_cv_uruguay_ci = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay_ci')
 
     # Help online
     cv_help_general_info = fields.Html(
@@ -393,6 +398,11 @@ class ONSCCVDigital(models.Model):
         else:
             self.last_modification_date = fields.Date.today()
 
+    @api.depends('cv_emissor_country_id', 'cv_document_type_id')
+    def _compute_is_cv_uruguay_ci(self):
+        for record in self:
+            record.is_cv_uruguay_ci = record.cv_emissor_country_id.code == 'UY' and record.cv_document_type_id.code == 'ci'
+
     @api.constrains('cv_sex_updated_date', 'cv_birthdate')
     def _check_valid_dates(self):
         today = fields.Date.from_string(fields.Date.today())
@@ -444,6 +454,18 @@ class ONSCCVDigital(models.Model):
             self.to_date = False
             return cv_warning(_("La fecha hasta no puede ser menor que la fecha de certificado"))
 
+    @api.onchange('crendencial_serie')
+    def onchange_crendencial_serie(self):
+        if self.crendencial_serie and not self.crendencial_serie.isalpha():
+            self.crendencial_serie = ''
+            return cv_warning(_("La serie de la credencial no puede contener números"))
+
+    @api.onchange('credential_number')
+    def onchange_credential_number(self):
+        if self.credential_number and not self.credential_number.isdigit():
+            self.credential_number = ''.join(filter(str.isdigit, self.credential_number))
+            return cv_warning(_("El número de la credencial no puede contener letras"))
+
     def button_unlink(self):
         self.unlink()
         return self._action_open_user_cv()
@@ -489,7 +511,8 @@ class ONSCCVDigital(models.Model):
         }
         if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
             my_cv = self._context.get('my_cv', False) or self.search(
-                [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])], limit=1)
+                [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True]),
+                 ('type', '=', 'cv')], limit=1)
             if my_cv and my_cv.active is False:
                 vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
             vals.update({'res_id': my_cv.id})
@@ -568,6 +591,7 @@ class ONSCCVDigital(models.Model):
         today = fields.Date.today()
         onsc_cv_digitals = self.env['onsc.cv.digital'].search(
             [('last_modification_date', '!=', False),
+             ('type', '=', 'cv'),
              ('last_modification_date', '!=', today)])
         for onsc_cv_digital in onsc_cv_digitals:
             rest_value = today - onsc_cv_digital.last_modification_date

@@ -29,19 +29,19 @@ class ONSCCVWorkInvestigation(models.Model):
 
     # Grilla Integrantes
     member_ids = fields.One2many('onsc.cv.work.investigation.member', inverse_name='investigation_id',
-                                 string='Integrantes')
+                                 string='Integrantes', copy=True)
 
     # Grilla Áreas relacionadas con esta educación
     education_area_ids = fields.One2many('onsc.cv.education.area.investigation', inverse_name='investigation_id',
-                                         string="Áreas relacionadas con esta educación")
+                                         string="Áreas relacionadas con esta educación", copy=True)
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', relation='knowledge_acquired_investigation_rel',
-                                              string="Conocimientos adquiridos", required=True)
+                                              string="Conocimientos adquiridos", required=True, copy=True)
 
     additional_information = fields.Text(string="Información adicional")
     other_relevant_information = fields.Text(string="Otra información relevante")
     # Grila Comprobantes
     receipt_ids = fields.One2many('onsc.cv.work.investigation.receipt.file', inverse_name='investigation_id',
-                                  string='Comprobantes')
+                                  string='Comprobantes', copy=True)
 
     @api.onchange('knowledge_acquired_ids')
     def onchange_knowledge_acquired_ids(self):

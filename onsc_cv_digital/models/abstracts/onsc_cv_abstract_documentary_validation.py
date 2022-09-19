@@ -61,6 +61,15 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         #     xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
         #     res['arch'] = xarch
         #     res['fields'] = xfields
+        if view_type == 'form' and self._context.get('is_cv_call', False):
+            doc = etree.XML(res['arch'])
+            field_ids = self.env["onsc.cv.documentary.validation.config"].search(
+                [('model_id.model', '=', self._name)]).mapped('field_ids')
+            for field in field_ids:
+                node = doc.xpath("//field[@name='" + field.name + "']")
+                for n in node:
+                    n.set('doc-validation',  'label-text-danger')
+            res['arch'] = etree.tostring(doc, encoding='unicode')
         return res
 
     def write(self, vals):

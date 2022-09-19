@@ -9,7 +9,7 @@ PAID_ACTIVITY_TYPES = WORKING_STATE
 
 class ONSCCVAbstractWork(models.AbstractModel):
     _name = 'onsc.cv.abstract.work'
-    _inherit = ['onsc.cv.abstract.documentary.validation']
+    _inherit = ['onsc.cv.abstract.documentary.validation', 'onsc.cv.abstract.common']
     _description = 'Modelo abstracto para modelos de trabajos'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
@@ -24,7 +24,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
                                      ('both', 'Pública/Privada')],
                                     string="Tipo de empresa")
     company_name = fields.Char("Empresa")
-    description_tasks = fields.Char(string="Descripción de tareas")
+    description_tasks = fields.Text(string="Descripción de tareas")
     receipt_file = fields.Binary("Comprobante")
     receipt_filename = fields.Char('Nombre del documento digital')
     receipt_description = fields.Char("Descripción del comprobante")
@@ -53,15 +53,6 @@ class ONSCCVAbstractWork(models.AbstractModel):
     def onchange_hours_worked_monthly(self):
         if self.hours_worked_monthly and self.hours_worked_monthly < 45:
             return cv_warning(_("Advertencia: la carga horaria mensual es menor que 45 horas"))
-
-
-class ONSCCVDigitalOriginInstitutionTask(models.AbstractModel):
-    _name = 'onsc.cv.origin.abstract.task'
-    _description = 'Tareas realizadas'
-
-    key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
-    area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
-                              required=True)
 
 
 class ONSCCVWorkInvestigationReceiptFile(models.AbstractModel):

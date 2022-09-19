@@ -696,7 +696,7 @@ msgstr ""
 #. module: operating_unit
 #: model:ir.model.constraint,message:operating_unit.constraint_operating_unit_code_company_uniq
 msgid "The code of the operating unit must be unique per company!"
-msgstr "¡El código de la unidad ejecutora debe ser único por inciso!"
+msgstr "¡El identificador de la unidad ejecutora debe ser único por inciso!"
 
 #. module: operating_unit
 #: model:ir.model.constraint,message:operating_unit.constraint_operating_unit_name_company_uniq

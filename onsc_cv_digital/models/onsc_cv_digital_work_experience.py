@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 
 class ONSCCVDigitalWorkExperience(models.Model):
@@ -21,7 +22,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     # TO-DO: Revisar este campo, No esta en catalogo
     # reason_discharge = fields.Char("Causal de egreso")
     task_ids = fields.One2many("onsc.cv.work.experience.task", inverse_name="work_experience_id",
-                               string="Tareas")
+                               string="Tareas", copy=True)
 
     @api.onchange('country_id')
     def onchange_country_id(self):
@@ -30,12 +31,21 @@ class ONSCCVDigitalWorkExperience(models.Model):
 
     @api.onchange('city_id')
     def onchange_city_id(self):
-        self.country_id = self.city_id.country_id.id
+        if self.city_id:
+            self.country_id = self.city_id.country_id.id
+
+    @api.onchange('task_ids')
+    def onchange_task_ids(self):
+        if len(self.task_ids) > 5:
+            self.task_ids = self.task_ids[-5:]
+            return cv_warning(_(u"Sólo se pueden seleccionar 5 tareas"))
 
 
 class ONSCCVDigitalOriginInstitutionTask(models.Model):
     _name = 'onsc.cv.work.experience.task'
-    _inherit = 'onsc.cv.origin.abstract.task'
     _description = 'Tareas de experiencia laboral'
 
     work_experience_id = fields.Many2one("onsc.cv.work.experience", string="Experiencia laboral", ondelete='cascade')
+    key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
+    area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
+                              required=True)

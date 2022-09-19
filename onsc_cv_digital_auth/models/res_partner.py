@@ -34,6 +34,13 @@ DNIC_FROZEN_COLUMNS = [
     'cv_dnic_full_name'
 ]
 
+IDUY_FROZEN_COLUMNS = [
+    'cv_first_name',
+    'cv_second_name',
+    'cv_last_name_1',
+    'cv_last_name_2',
+]
+
 SOURCE_INFO_TYPE = [
     ('id_uy', 'Id digital'),
     ('dnic', 'DNIC'),
@@ -127,7 +134,8 @@ class ResPartner(models.Model):
             values = {k: normalize_str(v) for k, v in values.items()}
         res = super(ResPartner, self).write(values)
         # Cuando se modifican campos de DNIC se actualizan los campos de ID digital al guardar el formulario
-        if list(set(DNIC_FROZEN_COLUMNS).intersection(set(values.keys()))):
+        if list(set(DNIC_FROZEN_COLUMNS).intersection(set(values.keys()))) or list(
+                set(IDUY_FROZEN_COLUMNS).intersection(set(values.keys()))):
             new_values = self.get_cv_main_values()
             return super(ResPartner, self).write(new_values)
         return res

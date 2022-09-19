@@ -2,19 +2,32 @@
 <odoo>
     <data>
 
-        <record id="onsc_cv_digital_form_inherit" model="ir.ui.view">
-            <field name="name">onsc.cv.digital.form.inherit</field>
+        <record id="onsc_cv_digital_form" model="ir.ui.view">
+            <field name="name">onsc.cv.digital.auth.form</field>
             <field name="model">onsc.cv.digital</field>
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_form"/>
             <field name="arch" type="xml">
                 <field name="cv_full_name_updated_date" position="before">
-                        <field name="cv_source_info_auth_type" string="Fuente de información" align="left"
-                               style="font-size: 100%; width: 80px;"
-                               widget="label_selection"
-                               options="{'classes': {'id_uy': 'danger', 'dnic': 'success'}}"/>
+                        <field name="cv_source_info_auth_type" string="Fuente de información"/>
                 </field>
+                <button name="button_unlink" position="before">
+                    <button class="oe_stat_button" name="button_actualizar_dnic"
+                                string="Actualizar datos con DNIC"
+                                groups="onsc_cv_digital.group_user_cv"
+                                type="object" icon="fa-link"/>
+                </button>
             </field>
         </record>
 
+        <record id="onsc_cv_digital_call_form" model="ir.ui.view">
+            <field name="name">onsc.cv.digital.call.auth.form</field>
+            <field name="model">onsc.cv.digital.call</field>
+            <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_call_form"/>
+            <field name="arch" type="xml">
+                <field name="cv_full_name_updated_date" position="before">
+                        <field name="cv_source_info_auth_type" string="Fuente de información"/>
+                </field>
+            </field>
+        </record>
     </data>
 </odoo>

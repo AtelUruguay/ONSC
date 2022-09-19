@@ -10,7 +10,7 @@ STATES = [('incomplete', 'Incompleto'),
 
 class ONSCCVAbstractFormation(models.AbstractModel):
     _name = 'onsc.cv.abstract.formation'
-    _inherit = ['onsc.cv.abstract.documentary.validation']
+    _inherit = ['onsc.cv.abstract.documentary.validation', 'onsc.cv.abstract.common']
     _description = 'Modelo abstracto de entidades de formación'
 
     cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV', required=True, index=True, ondelete='cascade')

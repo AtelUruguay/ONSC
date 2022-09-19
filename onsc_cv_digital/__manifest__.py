@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital',
-    'version': '15.0.3.0.0',
+    'version': '15.0.5.0.0',
     'summary': 'ONSC CV Digital',
     'sequence': 10,
     'description': """
@@ -11,7 +11,7 @@ ONSC CV Digital
     'category': 'ONSC',
     'depends': ['base', 'mail', 'web_domain_field', 'phone_validation', 'onsc_base',
                 'web_relational_field_with_create_edit_option', 'auto_save_form_view', 'disable_form_quick_edit',
-                'model_history'],
+                'model_history', 'ws_int_base'],
     'data': [
         'security/onsc_cv_digital_security.xml',
         'security/onsc_cv_digital_rules.xml',
@@ -85,6 +85,7 @@ ONSC CV Digital
         'views/onsc_cv_digital_participation_events_views.xml',
         'views/onsc_cv_digital_refernece_views.xml',
         'views/onsc_cv_digital_call_views.xml',
+        'views/onsc_cv_digital_drive_licence.xml',
 
         'views/onsc_cv_menuitems.xml',
     ],
@@ -93,7 +94,12 @@ ONSC CV Digital
         'demo/res_partner_demo.xml',
     ],
     'external_dependencies': {
-        'python': ['zeep'],
+        'python': ['zeep', 'basicauth', 'spyne'],
+    },
+    'assets': {
+        'web.assets_backend': [
+            'onsc_cv_digital/static/src/js/form_renderer.js',
+        ]
     },
     'installable': True,
     'application': True,

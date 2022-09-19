@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+
 from .abstracts.onsc_cv_abstract_work import PAID_ACTIVITY_TYPES
 from .onsc_cv_useful_tools import is_valid_url, is_exist_url
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 POSTGRADUATE_TYPES = [('academic', 'Académico'), ('professional', 'Profesional')]
 YEARS_TITLE = [('%s' % x, '%s' % x) for x in range(fields.Date.today().year, 1900, -1)]
@@ -38,9 +39,9 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     is_paid_activity = fields.Selection(string="¿Actividad remunerada?", selection=PAID_ACTIVITY_TYPES, required=True)
     is_relevant_work = fields.Boolean('¿Es uno de los cinco trabajos más relevantes de su producción?')
     #  Grilla área de actividad
-    area_ids = fields.One2many('onsc.cv.education.area.tutoring', 'tutoring_id', 'Área de actividad')
+    area_ids = fields.One2many('onsc.cv.education.area.tutoring', 'tutoring_id', 'Área de actividad', copy=True)
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', relation='knowledge_acquired_tutoring_rel',
-                                              string='Conocimientos aplicados', store=True, required=True)
+                                              string='Conocimientos aplicados', store=True, required=True, copy=True)
     is_orientation_type_pie = fields.Boolean(compute='_compute_is_orientation_type_pie')
     receipt_file = fields.Binary("Comprobante")
     receipt_filename = fields.Char('Nombre del documento digital')
@@ -65,7 +66,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     def onchange_website(self):
         if self.website and not is_valid_url(self.website):
             self.website = False
-            return cv_warning(_("EL sitio web no tiene un formato válido."))
+            return cv_warning(_("El sitio web no tiene un formato válido."))
         elif self.website and not is_exist_url(self.website):
             self.website = False
             return cv_warning(_("El sitio web no existe"))

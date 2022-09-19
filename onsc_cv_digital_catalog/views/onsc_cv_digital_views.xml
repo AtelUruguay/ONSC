@@ -6,9 +6,7 @@
             <field name="model">onsc.cv.work.experience</field>
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_work_experience_form_view"/>
             <field name="arch" type="xml">
-                <field name="end_date" position="after">
-                    <field name="inciso_id_domain" invisible="1"/>
-                    <field name="operating_unit_id_domain" invisible="1"/>
+                <field name="company_type" position="after">
                     <field name="inciso_id"
                            context="{'as_of_date': start_date}"
                            domain="inciso_id_domain"
@@ -20,6 +18,8 @@
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                            attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="company_name_calc" invisible="1"/>
+                    <field name="inciso_id_domain" invisible="1"/>
+                    <field name="operating_unit_id_domain" invisible="1"/>
                 </field>
             </field>
         </record>
@@ -30,19 +30,19 @@
             <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_volunteering_form_view"/>
             <field name="arch" type="xml">
                 <field name="end_date" position="after">
-                    <field name="inciso_id_domain" invisible="1"/>
-                    <field name="operating_unit_id_domain" invisible="1"/>
                     <field name="inciso_id"
-                           domain="inciso_id_domain"
                            context="{'as_of_date': start_date}"
+                           domain="inciso_id_domain"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                            attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="operating_unit_id"
-                           domain="operating_unit_id_domain"
                            context="{'as_of_date': start_date}"
+                           domain="operating_unit_id_domain"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                            attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
                     <field name="company_name_calc" invisible="1"/>
+                    <field name="inciso_id_domain" invisible="1"/>
+                    <field name="operating_unit_id_domain" invisible="1"/>
                 </field>
             </field>
         </record>

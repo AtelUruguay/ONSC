@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.digital.call.search</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-            <search string="Llamados">
+            <search string="Copias de CV">
                 <field name="partner_id"/>
                 <field name="call_number"/>
                 <field name="postulation_date"/>
@@ -12,9 +12,12 @@
                 <separator/>
                 <filter string="Uruguay" name="filter_uruguay_country" icon="terp-personal"
                         domain="[('cv_emissor_country_id.code','=','UY')]"/>
+                <filter string="Inactivos" name="filter_inactive" icon="terp-personal"
+                        domain="[('active','=',False)]"/>
                 <separator/>
                 <group expand="1" string="Group By">
-                    <filter name="filter_country_id" string="País" context="{'group_by':'cv_emissor_country_id'}"/>
+                    <filter name="group_by_country_id" string="País" context="{'group_by':'cv_emissor_country_id'}"/>
+                    <filter name="group_by_call_number" string="Número de llamado" context="{'group_by':'call_number'}"/>
                 </group>
             </search>
         </field>
@@ -24,12 +27,11 @@
         <field name="name">onsc.cv.digital.call.tree</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-<!--            <tree string="Llamados" delete="0" edit="0" create="0" duplicate="0">-->
-            <tree string="Llamados">
-                <field name="partner_id"/>
+            <tree string="Copias de CV" delete="0" edit="0" create="0" duplicate="0">
+                <field name="partner_id" string="Nombre"/>
                 <field name="call_number"/>
-                <field name="postulation_date"/>
                 <field name="postulation_number"/>
+                <field name="postulation_date" string="Fecha de actualización"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -39,8 +41,7 @@
         <field name="name">onsc.cv.digital.call.form</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-<!--            <form string="Llamados" delete="0" edit="0" create="0" duplicate="0">-->
-            <form string="Llamados">
+            <form string="Copias de CV" delete="0" edit="0" create="0" duplicate="0">
                 <header>
                 </header>
                 <sheet>
@@ -49,6 +50,12 @@
                     <field name="avatar_128" invisible="1"/>
                     <field name="image_1920" widget='image' class="oe_avatar"
                            options='{"preview_image": "avatar_128"}'/>
+                    <div class="oe_avatar" style="padding-right:20px">
+                        <label for="gral_info_documentary_validation_state" string="Estado de validación documental"/>
+                        <h4><field name="gral_info_documentary_validation_state" align="left" style="font-size: 100%; width: 110px;" widget="label_selection" options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
+                        <label for="call_conditional_state" string="Estado de validación condicional"/>
+                        <h4><field name="call_conditional_state" align="left" style="font-size: 100%; width: 110px;" widget="label_selection" options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
+                    </div>
                     <field name="active" invisible="1"/>
                     <field name="is_cv_uruguay" invisible="1"/>
                     <field name="is_partner_cv" invisible="1"/>
@@ -58,10 +65,22 @@
                         </h1>
                         <label for="call_number" string="Llamado"/>
                         <h2><field name="call_number"/></h2>
-                        <label for="postulation_date" string="Fecha de postulación"/>
+                        <label for="postulation_date" string="Fecha de actualización"/>
                         <h2><field name="postulation_date"/></h2>
                         <label for="postulation_number" string="Número de postulación"/>
                         <h2><field name="postulation_number"/></h2>
+                        <div>
+                          <label for="is_json_sent"/><field name="is_json_sent"/>
+                          <label for="is_cancel"/><field name="is_cancel"/>
+                          <label for="is_zip"/><field name="is_zip"/>
+                          <label for="preselected"/><field name="preselected"/>
+                        </div>
+                        <div style="padding-bottom:40px">
+                          <label for="is_trans"/><field name="is_trans"/>
+                          <label for="is_afro"/><field name="is_afro"/>
+                          <label for="is_disabilitie"/><field name="is_disabilitie"/>
+                          <label for="is_victim"/><field name="is_victim"/>
+                        </div>
                     </div>
                     <group>
                         <group>
@@ -69,6 +88,9 @@
                             <field name="cv_document_type_id"/>
                             <field name="cv_nro_doc"/>
                             <field name="cv_expiration_date" required="1"/>
+                            <field name="document_identity_file"
+                                           filename="document_identity_filename"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="partner_id" invisible="1"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -81,44 +103,17 @@
                                    attrs="{'invisible': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
                             <field name="last_modification_date"/>
                         </group>
+                        <group string="Información patronímica" name="other_info_group">
+                            <field name="cv_full_name_updated_date"/>
+                        </group>
                     </group>
                     <notebook>
                         <page string="Información general">
-                            <group>
-                                <group string="Género">
-                                    <field name="cv_gender_id"/>
-                                    <field name="cv_gender2"
-                                           attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
-                                    <field name="cv_gender_record_file"
-                                           filename="cv_gender_record_filename"
-                                           attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
-                                    <field name="is_cv_gender_public"/>
-                                    <field name="is_cv_gender_option_other_enable" invisible="1"/>
-                                    <field name="is_cv_gender_record" invisible="1"/>
-                                    <field name="cv_gender_record_filename" invisible="1"/>
-                                </group>
-                                <group string="Raza">
-                                    <field name="cv_race_ids" widget="many2many_tags"/>
-                                    <field name="cv_race2"
-                                           attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
-                                    <field name="cv_first_race_id"
-                                           attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)], 'required': [('is_multiple_cv_race_selected', '=', True)]}"/>
-                                    <field name="is_cv_race_public"/>
-                                    <field name="is_cv_race_option_other_enable" invisible="1"/>
-                                    <field name="is_multiple_cv_race_selected" invisible="1"/>
-                                    <field name="is_afro_descendants"/>
-                                    <field name="afro_descendants_file"
-                                           filename="afro_descendants_filename"
-                                           attrs="{'required': [('is_afro_descendants', '=', True)]}"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="afro_descendants_filename" invisible="1"/>
-                                </group>
-                            </group>
                             <group string="Datos personales">
                                 <group>
                                     <field name="country_of_birth_id"/>
-                                    <field name="uy_citizenship"/>
                                     <field name="marital_status_id"/>
+                                    <field name="uy_citizenship"/>
                                     <field name="crendencial_serie"
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="credential_number"
@@ -126,10 +121,6 @@
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            filename="civical_credential_filename"
                                            attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <field name="document_identity_file"
-                                           filename="document_identity_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="is_driver_license"/>
                                     <field name="document_identity_filename" invisible="1"/>
                                     <field name="civical_credential_filename" invisible="1"/>
                                 </group>
@@ -154,11 +145,12 @@
                                     <field name="cjppu_affiliate_number"/>
                                     <field name="professional_resume"
                                            placeholder="Resumen del candidato a modo de introducción"/>
+                                    <field name="is_driver_license"/>
                                 </group>
                             </group>
                             <group string="Licencias de Conducir"
                                    attrs="{'invisible': [('is_driver_license', '=', False)]}">
-                                <field name="drivers_license_ids" nolabel="1">
+                                <field name="drivers_license_ids" nolabel="1" context="{'is_cv_call': True}">
                                     <tree editable="bottom">
                                         <field name="validation_date" width="0.5"/>
                                         <field name="category_id"/>
@@ -169,6 +161,38 @@
                                         <field name="license_filename" invisible="1"/>
                                     </tree>
                                 </field>
+                            </group>
+                            <group>
+                                <group string="Género"
+                                    attrs="{'invisible': [('is_cv_gender_public', '=', False),('is_trans', '=', False)]}">
+                                    <field name="cv_gender_id"/>
+                                    <field name="cv_gender2"
+                                           attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
+                                    <field name="cv_gender_record_file"
+                                           filename="cv_gender_record_filename"
+                                           attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
+                                    <field name="is_cv_gender_public"/>
+                                    <field name="is_cv_gender_option_other_enable" invisible="1"/>
+                                    <field name="is_cv_gender_record" invisible="1"/>
+                                    <field name="cv_gender_record_filename" invisible="1"/>
+                                </group>
+                                <group string="Raza"
+                                    attrs="{'invisible': [('is_cv_race_public', '=', False),('is_afro_descendants', '=', False)]}">
+                                    <field name="cv_race_ids" widget="many2many_tags"/>
+                                    <field name="cv_race2"
+                                           attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
+                                    <field name="cv_first_race_id"
+                                           attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)], 'required': [('is_multiple_cv_race_selected', '=', True)]}"/>
+                                    <field name="is_cv_race_public"/>
+                                    <field name="is_cv_race_option_other_enable" invisible="1"/>
+                                    <field name="is_multiple_cv_race_selected" invisible="1"/>
+                                    <field name="is_afro_descendants"/>
+                                    <field name="afro_descendants_file"
+                                           filename="afro_descendants_filename"
+                                           attrs="{'required': [('is_afro_descendants', '=', True)]}"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="afro_descendants_filename" invisible="1"/>
+                                </group>
                             </group>
                             <group>
                                 <group string="Carné de salud laboral">
@@ -193,7 +217,8 @@
                                 </group>
                             </group>
                             <group>
-                                <group string="Víctima de delitos violentos">
+                                <group string="Víctima de delitos violentos"
+                                    attrs="{'invisible': [('is_public_information_victim_violent', '=', False),('is_victim_violent', '=', False)]}">
                                     <field name="is_victim_violent"/>
                                     <field name="relationship_victim_violent_file"
                                            filename="relationship_victim_violent_filename"
@@ -202,9 +227,6 @@
                                     <field name="is_public_information_victim_violent"/>
                                     <field name="relationship_victim_violent_filename" invisible="1"/>
                                 </group>
-                            </group>
-                            <group string="Información patronímica" name="other_info_group">
-                                <field name="cv_full_name_updated_date"/>
                             </group>
                         </page>
                         <page name="address" string="Domicilio">
@@ -269,49 +291,50 @@
                             <div>
                                 <h4>Formación básica</h4>
                             </div>
-                            <field name="basic_formation_ids"/>
+                            <field name="basic_formation_ids" context="{'is_cv_call': True}"/>
                             <br/>
                             <div>
                                 <h4>Formación avanzada</h4>
                             </div>
-                            <field name="advanced_formation_ids"/>
+                            <field name="advanced_formation_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="course_certificate" string="Cursos y certificados">
                             <div>
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
                             <field name="course_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital_call.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course', 'is_cv_call': True}"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
                             </div>
                             <field name="certificate_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital_call.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'is_cv_call': True}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">
-                            <field name="work_experience_ids"/>
+                            <field name="work_experience_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="work_teaching" string="Docencia">
-                            <field name="work_teaching_ids"/>
+                            <field name="work_teaching_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="work_investigation" string="Investigación">
-                            <field name="work_investigation_ids"/>
+                            <field name="work_investigation_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="volunteering" string="Voluntariado">
-                            <field name="volunteering_ids"/>
+                            <field name="volunteering_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="language_level" string="Idiomas">
                             <field name="language_level_ids"/>
                         </page>
                         <page name="publications_productions_evaluations"
                               string="Publicaciones, producciones y evaluaciones">
-                            <field name="publication_production_evaluation_ids"/>
+                            <field name="publication_production_evaluation_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
-                            <field name="tutoring_orientation_supervision_ids"/>
+                            <field name="tutoring_orientation_supervision_ids" context="{'is_cv_call': True}"/>
                         </page>
-                        <page string="Discapacidad">
+                        <page string="Discapacidad"
+                            attrs="{'invisible': [('allow_content_public', '=', False),('is_disabilitie', '=', False)]}">
                             <group>
                                 <group>
                                     <field name="allow_content_public"/>
@@ -364,7 +387,7 @@
                         </page>
                         <page name="participation_event"
                               string="Participación en eventos">
-                            <field name="participation_event_ids"/>
+                            <field name="participation_event_ids" context="{'is_cv_call': True}"/>
                         </page>
                         <page name="other_relevant_information"
                               string="Otra información relevante">
@@ -385,12 +408,12 @@
     </record>
 
     <record id='onsc_cv_digital_call_action' model='ir.actions.act_window'>
-        <field name="name">Llamados</field>
+        <field name="name">Copias de CV</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">onsc.cv.digital.call</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{'is_cv_call': True}</field>
-        <field name="domain">[('type','=','call'),('active','in',[False,True])]</field>
+        <field name="context">{'is_cv_call': True,'search_default_group_by_call_number': True}</field>
+        <field name="domain">[('type','=','call')]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
             </p>
