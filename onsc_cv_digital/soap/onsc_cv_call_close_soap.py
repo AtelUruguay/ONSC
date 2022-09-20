@@ -8,7 +8,7 @@ from odoo import api, SUPERUSER_ID
 from odoo.addons.ws_int_base.utils.service_registration import register_service
 from odoo.modules.registry import Registry
 from spyne import ServiceBase, ComplexModel
-from spyne import Unicode, DateTime, Boolean
+from spyne import Unicode, Boolean
 from spyne import rpc
 from spyne.model.fault import Fault
 
@@ -20,6 +20,7 @@ _logger = logging.getLogger(__name__)
 
 NAMESPACE_BASE = "http://quanam.com/encuestas/abc/"
 NAMESPACE_BASE_V1 = NAMESPACE_BASE
+
 
 class WsCVCierreLlamadoRequest(ComplexModel):
     __type_name__ = 'service_request'
@@ -34,6 +35,7 @@ class WsCVCierreLlamadoRequest(ComplexModel):
         ('discapacidad', Boolean(min_occurs=1)),
         ('victimaDelitos', Boolean(min_occurs=1)),
     ]
+
 
 class WsCVCierreLlamado(ServiceBase):
     __service_url_path__ = 'cierreLLamado'
