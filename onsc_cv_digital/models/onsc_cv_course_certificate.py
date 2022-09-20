@@ -32,7 +32,7 @@ class ONSCCVCourseCertificate(models.Model):
     certificate_id_domain = fields.Char(compute='_compute_certificate_id_domain')
     dictation_mode = fields.Selection(MODES, 'Modalidad de dictado')
     induction_type = fields.Selection(INDUCTION_TYPES, 'Programa de inducción al Organismo', default="yes")
-    hours_total = fields.Float('Carga horaria total (en horas)')
+    hours_total = fields.Integer('Carga horaria total (en horas)')
     approbation_mode = fields.Selection(APPROBATION_MODES, string='Modalidad de aprobación')
     evaluation_str = fields.Char('Nota obtenida')
     is_numeric_evaluation = fields.Boolean(compute='_compute_is_numeric_evaluation')

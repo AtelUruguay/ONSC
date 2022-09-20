@@ -24,8 +24,8 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                         <group>
-                            <field name="state"/>
-                            <field name="start_date"/>
+                            <field name="state" required="1"/>
+                            <field name="start_date" required="1"/>
                             <field name="end_date"
                                    attrs="{'invisible': [('state', '!=', 'completed')],'required': [('state', '=', 'completed')]}"/>
                             <field name="coursed_years"
@@ -85,15 +85,15 @@
                                    context="{'default_institution_id': institution_id, 'default_subinstitution_id': subinstitution_id,
                                             'default_country_id': country_id, 'default_study_level_id': advanced_study_level_id, 'is_readonly': True}"/>
                             <field name="homologated_title"
-                                   attrs="{'invisible': [('country_code', '!=', 'UY')],'required': [('country_code', '=', 'UY')]}"/>
+                                   attrs="{'invisible': [('country_code', '=', 'UY')],'required': [('country_code', '!=', 'UY')]}"/>
                             <field name="homologated_title_date"
-                                   attrs="{'required': [('homologated_title', '=', 'yes')]}"/>
+                                   attrs="{'required': [('homologated_title', '=', 'yes')],'invisible': [('homologated_title', '!=', 'yes')]}"/>
                             <field name="apostilled_title"
-                                   attrs="{'invisible': [('country_code', '!=', 'UY')],'required': [('country_code', '=', 'UY')]}"/>
+                                   attrs="{'invisible': [('country_code', '=', 'UY')],'required': [('country_code', '!=', 'UY')]}"/>
                             <field name="apostilled_date"
-                                   attrs="{'required': [('apostilled_title', '=', 'yes')]}"/>
-                            <field name="state"/>
-                            <field name="start_date"/>
+                                   attrs="{'required': [('apostilled_title', '=', 'yes')],'invisible': [('apostilled_title', '!=', 'yes')]}"/>
+                            <field name="state" required="1"/>
+                            <field name="start_date" required="1"/>
                             <field name="egress_date"
                                    attrs="{'invisible': [('state', '!=', 'completed')],'required': [('state', '=', 'completed')]}"/>
                             <field name="issue_title_date"
@@ -124,7 +124,7 @@
                             <field name="credits_training"
                                    attrs="{'invisible': [('state', '=', 'completed')],'required': [('state', '!=', 'completed')]}"/>
                             <field name="knowledge_acquired_ids" string="Conocimientos adquiridos" options="{'limit':5}"
-                                   widget="many2many_tags"/>
+                                   widget="many2many_tags" required="1"/>
                             <field name="egress_certificate_file" filename="egress_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="revalidated_certificate_file" filename="revalidated_certificate_filename"
