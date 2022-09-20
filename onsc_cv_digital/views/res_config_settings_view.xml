@@ -10,7 +10,20 @@
                     <div class="app_settings_block" data-string="ONSC CV Digital" id="onsc_cv_digital" string="ONSC CV Digital" data-key="onsc_cv_digital">
                         <h2>ONSC CV Digital</h2>
                         <div class="row o_settings_container" id="help_online_setting">
-                            <div class="col-12 col-lg-12 o_setting_box">
+                            <div class="col-12 col-lg-12 o_setting_box" id="cv_json_url_settings">
+                                <div class="o_setting_left_pane"/>
+                                <div class="o_setting_right_pane">
+                                    <label for="call_server_json_url" string="JSON Url"/>
+                                    <span class="fa fa-lg fa-server"/>
+                                    <div class="text-muted">
+                                        URL donde el sistema guardará el JSON del llamado
+                                    </div>
+                                    <div class="text-muted content-group mt16">
+                                        <field name="call_server_json_url" required="1" class="col-12 col-lg-12"/>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-12 col-lg-12 o_setting_box" id="cv_help_settings">
                                 <div class="o_setting_left_pane"/>
                                 <div class="o_setting_right_pane">
                                     <span class="o_form_label">Ayuda en línea</span>

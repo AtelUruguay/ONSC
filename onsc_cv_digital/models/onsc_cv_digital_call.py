@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import json
 import logging
+from os.path import join
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -34,6 +36,7 @@ class ONSCCVDigitalCall(models.Model):
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
     postulation_date = fields.Datetime(string=u"Fecha de actualización", required=True, index=True)
     postulation_number = fields.Char(string=u"Número de postulación", required=True, index=True)
+    is_close = fields.Boolean(string="Cerrado", default=False)
     is_json_sent = fields.Boolean(string="Copia enviada", default=False)
     is_cancel = fields.Boolean(string="Cancelado")
     is_zip = fields.Boolean(string="ZIP generado")
@@ -208,6 +211,7 @@ class ONSCCVDigitalCall(models.Model):
         values['type'] = 'call'
         return super(ONSCCVDigitalCall, self).create(values)
 
+    # WS Postulacion
     @api.model
     def _create_postulation(self,
                             country_code,
@@ -278,3 +282,58 @@ class ONSCCVDigitalCall(models.Model):
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
         cv_calls.write({'active': False, 'is_cancel': True, 'postulation_date': postulation_date})
         return cv_calls
+
+    # WS Cierre de llamado
+    @api.model
+    def _call_close(self,
+                    call_number,
+                    inciso_code,
+                    operating_number_code,
+                    is_trans,
+                    is_afro,
+                    is_disabilitie,
+                    is_victim,
+                    ):
+        calls = self.search([('call_number', '=', call_number)])
+        if len(calls) == 0:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
+        if calls[0].is_close:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_157)
+        if calls[0].is_json_sent:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_158)
+        calls.write(
+            self._get_call_close_vals(inciso_code, operating_number_code, is_trans, is_afro, is_disabilitie, is_victim))
+        calls._generate_json(call_number)
+        return True
+
+    def _get_call_close_vals(self,
+                             inciso_code,
+                             operating_number_code,
+                             is_trans,
+                             is_afro,
+                             is_disabilitie,
+                             is_victim):
+        return {
+            'is_trans': is_trans,
+            'is_afro': is_afro,
+            'is_disabilitie': is_disabilitie,
+            'is_victim': is_victim,
+            'is_close': True
+        }
+
+    def _generate_json(self, call_number):
+        call_server_json_url = self.env.user.company_id.call_server_json_url
+        if call_server_json_url is False:
+            return False
+        # if self.filtered(lambda x: x.call_conditional_state != 'validated'):
+        #     return False
+        filename = '%s_%s.json' % (call_number, str(fields.Datetime.now()))
+        json_file = open(join(call_server_json_url, filename), 'w')
+        for record in self:
+            json.dump(record._get_json_dict(), json_file)
+
+    def _get_json_dict(self):
+        # JSONifier
+        return {
+            'name': self.partner_id.display_name
+        }

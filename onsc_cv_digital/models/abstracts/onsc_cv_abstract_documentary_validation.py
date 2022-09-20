@@ -50,17 +50,6 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         """Add in form view divs with info status off documentary validation """
         res = super(ONSCCVAbstractFileValidation, self).fields_view_get(view_id, view_type, toolbar, submenu)
-        # TODO 3.1.01 Validacion documental del llamado
-        # if view_type == 'form' and self._context.get('is_cv_call', False):
-        #     doc = etree.XML(res['arch'])
-        #     for node in doc.xpath('//sheet'):
-        #         node.insert(0, self.widget_documentary_button)
-        #         if not len(doc.xpath('//field[@name="documentary_validation_state"]')):
-        #             node.insert(0, self.field_documentary_validation_state)
-        #     # Replace arch with new definition
-        #     xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
-        #     res['arch'] = xarch
-        #     res['fields'] = xfields
         if view_type == 'form' and self._context.get('is_cv_call', False):
             doc = etree.XML(res['arch'])
             field_ids = self.env["onsc.cv.documentary.validation.config"].search(
@@ -70,6 +59,13 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 for n in node:
                     n.set('doc-validation',  'label-text-danger')
             res['arch'] = etree.tostring(doc, encoding='unicode')
+            # for node in doc.xpath('//sheet'):
+            #     node.insert(0, self.widget_documentary_button)
+            #     if not len(doc.xpath('//field[@name="documentary_validation_state"]')):
+            #         node.insert(0, self.field_documentary_validation_state)
+            # xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
+            # res['arch'] = xarch
+            # res['fields'] = xfields
         return res
 
     def write(self, vals):

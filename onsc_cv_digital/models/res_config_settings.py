@@ -28,3 +28,5 @@ class ResConfigSettings(models.TransientModel):
 
     is_rve_integrated = fields.Boolean(related="company_id.is_rve_integrated", readonly=False)
     rve_wsdl = fields.Char(related="company_id.rve_wsdl", readonly=False)
+
+    call_server_json_url = fields.Char(related="company_id.call_server_json_url", readonly=False)
