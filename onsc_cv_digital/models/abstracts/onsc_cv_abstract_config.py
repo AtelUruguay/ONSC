@@ -39,7 +39,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'onsc.cv.abstract.name.upper']
     _description = 'Modelo abstracto de catálogos condicionales'
     _fields_2check_unicity = ['name', 'state']
-    
+
     def _default_state(self):
         if self.user_has_groups('onsc_cv_digital.group_gestor_catalogos_cv') and self._context.get('is_config'):
             return 'validated'

@@ -28,3 +28,5 @@ class ResCompany(models.Model):
 
     is_rve_integrated = fields.Boolean(u'Integración con RVE')
     rve_wsdl = fields.Char('URL del WSDL')
+
+    call_server_json_url = fields.Char(string="JSON Url")

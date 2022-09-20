@@ -87,3 +87,24 @@ LOGIC_155 = {
     'desc': u'No se ha identificado un CV activo para este llamado',
     'long_desc': u'',
 }
+
+LOGIC_156 = {
+    'type': 'LOGICA',
+    'code': '156',
+    'desc': u'No se ha podido identificar el llamado',
+    'long_desc': u'',
+}
+
+LOGIC_157 = {
+    'type': 'LOGICA',
+    'code': '157',
+    'desc': u'El llamado ya se encuetra cerrado',
+    'long_desc': u'',
+}
+
+LOGIC_158 = {
+    'type': 'LOGICA',
+    'code': '158',
+    'desc': u'Las copias del llamado ya han sido enviadas',
+    'long_desc': u'',
+}
