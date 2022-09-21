@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="onsc_catalog_validators_inciso_ue_action" model="ir.actions.act_window">
+            <field name="name">Validador de Inciso y UE</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">onsc.catalog.validators.inciso.ue</field>
+            <field name="view_mode">tree,form</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear un nuevo Validador de Inciso y UE
+                </p>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_validators_inciso_ue_form" model="ir.ui.view">
+            <field name="name">onsc.catalog.validators.inciso.ue.form</field>
+            <field name="model">onsc.catalog.validators.inciso.ue</field>
+            <field name="arch" type="xml">
+                <form string="Validador de Inciso y UE">
+                    <header/>
+                    <sheet>
+                        <group>
+                            <field name="inciso_id"/>
+                            <field name="operating_unit_id"/>
+                            <field name="user_id"/>
+                            <field name="security" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_catalog_validators_inciso_ue_tree" model="ir.ui.view">
+            <field name="name">onsc.catalog.validators.inciso.ue.tree</field>
+            <field name="model">onsc.catalog.validators.inciso.ue</field>
+            <field name="arch" type="xml">
+                <tree string="Validador de Inciso y UE">
+                    <field name="inciso_id"/>
+                    <field name="operating_unit_id"/>
+                    <field name="user_id"/>
+                    <field name="security" invisible="1"/>
+                    <field name="active" invisible="1"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>
