@@ -94,7 +94,7 @@ ONSC CV Digital
         'demo/res_partner_demo.xml',
     ],
     'external_dependencies': {
-        'python': ['zeep', 'basicauth', 'spyne'],
+        'python': ['zeep', 'basicauth', 'spyne', 'json'],
     },
     'assets': {
         'web.assets_backend': [

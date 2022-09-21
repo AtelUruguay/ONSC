@@ -73,7 +73,8 @@
                           <label for="is_json_sent"/><field name="is_json_sent"/>
                           <label for="is_cancel"/><field name="is_cancel"/>
                           <label for="is_zip"/><field name="is_zip"/>
-                          <label for="preselected"/><field name="preselected"/>
+                          <label for="is_close"/><field name="is_close"/>
+                            <label for="preselected"/><field name="preselected"/>
                         </div>
                         <div style="padding-bottom:40px">
                           <label for="is_trans"/><field name="is_trans"/>

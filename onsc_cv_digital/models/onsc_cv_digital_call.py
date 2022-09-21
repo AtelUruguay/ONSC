@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import json
 import logging
+from os.path import join
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -18,8 +20,6 @@ class ONSCCVDigitalCall(models.Model):
     _description = 'Llamado'
     _rec_name = 'cv_full_name'
 
-
-
     cv_digital_id = fields.Many2one(
         "onsc.cv.digital",
         string="CV interno",
@@ -36,6 +36,7 @@ class ONSCCVDigitalCall(models.Model):
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
     postulation_date = fields.Datetime(string=u"Fecha de actualización", required=True, index=True)
     postulation_number = fields.Char(string=u"Número de postulación", required=True, index=True)
+    is_close = fields.Boolean(string="Cerrado", default=False)
     is_json_sent = fields.Boolean(string="Copia enviada", default=False)
     is_cancel = fields.Boolean(string="Cancelado")
     is_zip = fields.Boolean(string="ZIP generado")
@@ -210,6 +211,7 @@ class ONSCCVDigitalCall(models.Model):
         values['type'] = 'call'
         return super(ONSCCVDigitalCall, self).create(values)
 
+    # WS Postulacion
     @api.model
     def _create_postulation(self,
                             country_code,
@@ -281,31 +283,78 @@ class ONSCCVDigitalCall(models.Model):
         cv_calls.write({'active': False, 'is_cancel': True, 'postulation_date': postulation_date})
         return cv_calls
 
+    # WS Cierre de llamado
+    @api.model
+    def _call_close(self,
+                    call_number,
+                    inciso_code,
+                    operating_number_code,
+                    is_trans,
+                    is_afro,
+                    is_disabilitie,
+                    is_victim,
+                    ):
+        calls = self.search([('call_number', '=', call_number)])
+        if len(calls) == 0:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
+        if calls[0].is_close:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_157)
+        if calls[0].is_json_sent:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_158)
+        calls.write(
+            self._get_call_close_vals(inciso_code, operating_number_code, is_trans, is_afro, is_disabilitie, is_victim))
+        calls._generate_json(call_number)
+        return True
 
-    def get_data_json(self):
-        basic_formation=self.env['onsc.cv.basic.formation'].get_data_to_array()
-        parser = [
-            'cv_full_name',
-            'call_number',
-            'postulation_date',
-            'postulation_number',
-            'preselected',
-            'is_trans',
-            'is_afro',
-            'is_disabilitie',
-            'is_victim',
-            'cv_emissor_country_id',
-            'cv_document_type_id',
-            'cv_nro_doc',
-            'cv_expiration_date',
-            'partner_id',
-            'cv_birthdate',
-            'cv_sex',
-            'cv_sex_updated_date',
-            'last_modification_date',
+    def _get_call_close_vals(self,
+                             inciso_code,
+                             operating_number_code,
+                             is_trans,
+                             is_afro,
+                             is_disabilitie,
+                             is_victim):
+        return {
+            'is_trans': is_trans,
+            'is_afro': is_afro,
+            'is_disabilitie': is_disabilitie,
+            'is_victim': is_victim,
+            'is_close': True
+        }
 
-            ('basic_formation_ids', basic_formation)
-        ]
+    def _generate_json(self, call_number):
+        call_server_json_url = self.env.user.company_id.call_server_json_url
+        if call_server_json_url is False:
+            return False
+        # if self.filtered(lambda x: x.call_conditional_state != 'validated'):
+        #     return False
+        filename = '%s_%s.json' % (call_number, str(fields.Datetime.now()))
+        json_file = open(join(call_server_json_url, filename), 'w')
+        for record in self:
+            json.dump(record._get_json_dict(), json_file)
+        self.write({
+            'is_json_sent': True
+        })
 
-        json=self.jsonify(parser)
-        print(json)
+    def _get_json_dict(self):
+        # JSONifier
+        return {
+            'name': self.partner_id.display_name
+        }
+
+    @api.model
+    def _run_call_json_cron(self):
+        """
+        Cron que envia la notificación al usuario por período de inactividad en el CV
+        :return:
+        """
+
+        self.env.cr.execute('''SELECT 
+	DISTINCT(call_number)
+FROM 
+	onsc_cv_digital_call call
+WHERE
+	call.is_close is True AND call.is_json_sent is False''')
+        results = self.env.cr.dictfetchall()
+        for result in results:
+            calls = self.search([('call_number', '=', result)])
+            calls._generate_json(result)

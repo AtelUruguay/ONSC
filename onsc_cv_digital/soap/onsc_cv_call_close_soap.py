@@ -8,7 +8,7 @@ from odoo import api, SUPERUSER_ID
 from odoo.addons.ws_int_base.utils.service_registration import register_service
 from odoo.modules.registry import Registry
 from spyne import ServiceBase, ComplexModel
-from spyne import Unicode, DateTime
+from spyne import Unicode, Boolean
 from spyne import rpc
 from spyne.model.fault import Fault
 
@@ -22,29 +22,29 @@ NAMESPACE_BASE = "http://quanam.com/encuestas/abc/"
 NAMESPACE_BASE_V1 = NAMESPACE_BASE
 
 
-class WsCVPostulacionRequest(ComplexModel):
+class WsCVCierreLlamadoRequest(ComplexModel):
     __type_name__ = 'service_request'
     __namespace__ = NAMESPACE_BASE_V1
 
     _type_info = [
-        ('codPais', Unicode(min_occurs=1)),
-        ('tipoDoc', Unicode(min_occurs=1)),
-        ('nroDoc', Unicode(min_occurs=1)),
-        ('fechaPostulacion', DateTime(min_occurs=1)),
-        ('nroPostulacion', Unicode(min_occurs=1)),
         ('nroLlamado', Unicode(min_occurs=1)),
-        ('accion', Unicode(min_occurs=1)),
+        ('inciso', Unicode(min_occurs=1)),
+        ('unidadEjecutora', Unicode(min_occurs=1)),
+        ('trans', Boolean(min_occurs=1)),
+        ('afro', Boolean(min_occurs=1)),
+        ('discapacidad', Boolean(min_occurs=1)),
+        ('victimaDelitos', Boolean(min_occurs=1)),
     ]
 
 
-class WsCVPostulacion(ServiceBase):
-    __service_url_path__ = 'postulacion'
+class WsCVCierreLlamado(ServiceBase):
+    __service_url_path__ = 'cierreLLamado'
     __target_namespace__ = NAMESPACE_BASE_V1
 
-    @rpc(WsCVPostulacionRequest.customize(nullable=False, min_occurs=1),
+    @rpc(WsCVCierreLlamadoRequest.customize(nullable=False, min_occurs=1),
          _body_style='bare',
          _returns=WsCVResponse)
-    def postulacion(self, request):
+    def cierreLLamado(self, request):
         # pylint: disable=invalid-commit
         try:
             cr = False
@@ -76,14 +76,14 @@ class WsCVPostulacion(ServiceBase):
             return response
 
         try:
-            env['onsc.cv.digital.call']._create_postulation(
-                request.codPais,
-                request.tipoDoc,
-                request.nroDoc,
-                request.fechaPostulacion,
-                request.nroPostulacion,
+            env['onsc.cv.digital.call']._call_close(
                 request.nroLlamado,
-                request.accion)
+                request.inciso,
+                request.unidadEjecutora,
+                request.trans,
+                request.afro,
+                request.discapacidad,
+                request.victimaDelitos)
             cr.commit()
             return WsCVResponse(result='ok', errors=[])
         except Fault as e:
@@ -108,4 +108,4 @@ class WsCVPostulacion(ServiceBase):
             cr.close()
 
 
-register_service(WsCVPostulacion)
+register_service(WsCVCierreLlamado)

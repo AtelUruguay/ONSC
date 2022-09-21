@@ -24,8 +24,7 @@
                             <field name="inciso_id"/>
                             <field name="operating_unit_id"/>
                             <field name="user_id"/>
-                            <field name="security" invisible="1"/>
-                            <field name="active" invisible="1"/>
+                            <field name="group_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                     </sheet>
                 </form>
@@ -40,8 +39,7 @@
                     <field name="inciso_id"/>
                     <field name="operating_unit_id"/>
                     <field name="user_id"/>
-                    <field name="security" invisible="1"/>
-                    <field name="active" invisible="1"/>
+                    <field name="group_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                 </tree>
             </field>
         </record>
