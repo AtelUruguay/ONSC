@@ -59,6 +59,6 @@ class ONSCCVWorkInvestigationReceiptFile(models.AbstractModel):
     _name = 'onsc.cv.work.abstract.receipt.file'
     _description = 'Grilla de comprobantes'
 
-    receipt_file = fields.Binary("Comprobante", required=True)
-    receipt_filename = fields.Char('Nombre del documento digital', required=True)
+    receipt_file = fields.Binary("Comprobante")
+    receipt_filename = fields.Char('Nombre del documento digital')
     receipt_description = fields.Char("Descripción del comprobante", required=True)

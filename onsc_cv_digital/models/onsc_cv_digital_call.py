@@ -18,6 +18,8 @@ class ONSCCVDigitalCall(models.Model):
     _description = 'Llamado'
     _rec_name = 'cv_full_name'
 
+
+
     cv_digital_id = fields.Many2one(
         "onsc.cv.digital",
         string="CV interno",
@@ -278,3 +280,32 @@ class ONSCCVDigitalCall(models.Model):
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
         cv_calls.write({'active': False, 'is_cancel': True, 'postulation_date': postulation_date})
         return cv_calls
+
+
+    def get_data_json(self):
+        basic_formation=self.env['onsc.cv.basic.formation'].get_data_to_array()
+        parser = [
+            'cv_full_name',
+            'call_number',
+            'postulation_date',
+            'postulation_number',
+            'preselected',
+            'is_trans',
+            'is_afro',
+            'is_disabilitie',
+            'is_victim',
+            'cv_emissor_country_id',
+            'cv_document_type_id',
+            'cv_nro_doc',
+            'cv_expiration_date',
+            'partner_id',
+            'cv_birthdate',
+            'cv_sex',
+            'cv_sex_updated_date',
+            'last_modification_date',
+
+            ('basic_formation_ids', basic_formation)
+        ]
+
+        json=self.jsonify(parser)
+        print(json)

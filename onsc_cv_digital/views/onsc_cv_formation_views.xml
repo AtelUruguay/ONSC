@@ -104,11 +104,11 @@
                             <field name="title_thesis"
                                    attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
                             <field name="description_thesis"
-                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
                             <field name="final_note_thesis"
-                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
                             <field name="max_note_thesis"
-                                   attrs="{'invisible': [('final_note_thesis', 'in', [0.00,''])],'required': [('final_note_thesis', 'not in', [0.00,''])]}"/>
+                                   attrs="{'invisible': [('final_note_thesis', 'in', [0.00,''])]}"/>
                         </group>
                         <group>
                             <field name="tutor"

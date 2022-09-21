@@ -40,13 +40,13 @@
                             <field name="approbation_mode" states='completed'
                                    attrs="{'invisible': ['|',('record_type', '!=', 'course')], 'required': [('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
                             <field name="evaluation_str" states="completed"
-                                   attrs="{'invisible': ['|',('approbation_mode', '!=', 'by_evaluation')], 'required': [('approbation_mode', '=', 'by_evaluation'),('state', '=', 'completed')]}"/>
+                                   attrs="{'invisible': ['|',('approbation_mode', '!=', 'by_evaluation')]}"/>
                             <field name="evaluation_number"
-                                   attrs="{'invisible': ['|',('evaluation_str', '=', False), ('is_numeric_evaluation', '=', True)], 'required': [('evaluation_str', '!=', False), ('is_numeric_evaluation', '=', False)]}"/>
+                                   attrs="{'invisible': ['|',('evaluation_str', '=', False), ('is_numeric_evaluation', '=', True)]}"/>
                             <field name="evaluation_max_str"
-                                   attrs="{'invisible': [('evaluation_str', '=', False)], 'required': [('evaluation_str', '!=', False)]}"/>
+                                   attrs="{'invisible': [('evaluation_str', '=', False)]}"/>
                             <field name="evaluation_max_number"
-                                   attrs="{'invisible': ['|',('evaluation_max_str', '=', False),('is_numeric_max_evaluation', '=', True)], 'required': [('evaluation_max_str', '!=', False),('is_numeric_max_evaluation', '=', False)]}"/>
+                                   attrs="{'invisible': ['|',('evaluation_max_str', '=', False),('is_numeric_max_evaluation', '=', True)]}"/>
                             <field name="is_numeric_evaluation" invisible="1"/>
                             <field name="is_numeric_max_evaluation" invisible="1"/>
                             <field name="certificate_id_domain" invisible="1"/>

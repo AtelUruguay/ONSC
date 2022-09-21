@@ -18,7 +18,7 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
 SELECTION_RADIO = [('1', 'Si, no puede hacerlo'), ('2', 'Si, mucha dificultad'),
                    ('3', 'Si, alguna dificultad '), ('4', 'No tiene dificultad')]
-SITUATION = u'Está en situación de discapacidad y/o requieres algún apoyo para cumplir con tus actividades laborales?'
+SITUATION = u'¿Está en situación de discapacidad y/o requieres algún apoyo para cumplir con tus actividades laborales?'
 DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
 
 
@@ -256,12 +256,12 @@ class ONSCCVDigital(models.Model):
     speak = fields.Selection(selection=SELECTION_RADIO, string=u'¿Hablar o comunicarse aun usando lengua de señas?')
     realize = fields.Selection(selection=SELECTION_RADIO,
                                string=u'¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?')
-    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender/ y o aprender?')
-    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interacciones y/o relaciones interpersonales?')
+    lear = fields.Selection(selection=SELECTION_RADIO, string=u'¿Entender/ y o aprender?')
+    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'¿Interacciones y/o relaciones interpersonales?')
     type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo', copy=True)
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
                                                compute='_compute_cv_type_support_domain', copy=True)
-    need_other_support = fields.Char(string=u"¿Necesita otro apoyo?")
+    need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
     is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain')
 
     # Participación en Eventos ----<Page>
