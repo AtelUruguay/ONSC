@@ -10,8 +10,13 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     _rec_name = 'user_id'
 
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True, ondelete='restrict')
+    company_id = fields.Many2one('res.company',
+                                 related='inciso_id.company_id',
+                                 store=True,
+                                 ondelete='restrict')
     operating_unit_id = fields.Many2one("operating.unit",
                                         string="Unidad ejecutora",
+                                        domain="[('')]",
                                         required=True,
                                         ondelete='restrict')
     user_id = fields.Many2one('res.users',
@@ -20,6 +25,10 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     group_id = fields.Many2one('res.groups',
                                string='Seguridad',
                                default=lambda self: self.get_default_group_id())
+
+    @api.onchange('inciso_id')
+    def onchange_inciso_id(self):
+        self.operating_unit_id = False
 
     @api.model
     def get_default_group_id(self):
@@ -42,6 +51,17 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
                 'groups_id': [(4, new_recordset.group_id.id)]
             })
         return new_recordset
+
+    def write(self, values):
+        user_id = values.get('user_id')
+        if user_id:
+            for record in self:
+                record.user_id.suspend_security().write({'groups_id': [(3, record.group_id.id)]})
+        recordsets = super(ONSCCatalogValidatorsIncisoUE, self).write(values)
+        if user_id:
+            record.mapped('user_id').suspend_security().write({'groups_id': [(4, user_id)]})
+        return recordsets
+
 
     def unlink(self):
         for record in self:
