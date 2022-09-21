@@ -39,5 +39,5 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
 
     def unlink(self):
         for record in self:
-            record.user_id.write({'groups_id': [(3, record.group_id.id)]})
+            record.user_id.suspend_security().write({'groups_id': [(3, record.group_id.id)]})
         return super(ONSCCatalogValidatorsIncisoUE, self).unlink()
