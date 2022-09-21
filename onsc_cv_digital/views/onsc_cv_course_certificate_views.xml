@@ -73,7 +73,6 @@
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"/>
                             <field name="digital_doc_file" filename="digital_doc_filename" states='completed'
-                                   attrs="{'required': [('state', '=', 'completed')]}"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="digital_doc_filename" invisible="1"/>
                         </group>

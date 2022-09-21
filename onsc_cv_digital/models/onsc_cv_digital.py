@@ -189,9 +189,8 @@ class ONSCCVDigital(models.Model):
 
     civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica")
     civical_credential_filename = fields.Char('Nombre del documento digital')
-    medical_aptitude_certificate_status = fields.Selection(
-        string="¿Tiene certificado de aptitud médico-deportiva?",
-        selection=[('si', 'Si'), ('no', 'No'), ])
+    is_medical_aptitude_certificate_status = fields.Boolean(
+        string="¿Tiene certificado de aptitud médico-deportiva?")
     medical_aptitude_certificate_date = fields.Date(
         string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
     medical_aptitude_certificate_file = fields.Binary(
