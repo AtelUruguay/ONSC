@@ -28,10 +28,10 @@ class ONSCCVFormationAdvanced(models.Model):
 
     advanced_study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de estudio avanzado', required=True)
     academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico', required=True)
-    homologated_title = fields.Selection(string=u'¿Su título esta revalidado/homologado en Uruguay?',
+    homologated_title = fields.Selection(string=u'¿Su título está revalidado/homologado en Uruguay?',
                                          selection=[('yes', u'Si'), ('no', u'No')])
     homologated_title_date = fields.Date(string="Fecha de revalidación",)
-    apostilled_title = fields.Selection(string=u'¿Su título esta apostillado?',
+    apostilled_title = fields.Selection(string=u'¿Su título está apostillado?',
                                         selection=[('yes', u'Si'), ('no', u'No')])
     apostilled_date = fields.Date(string="Fecha de apostillado")
     egress_date = fields.Date(string="Fecha de egreso")

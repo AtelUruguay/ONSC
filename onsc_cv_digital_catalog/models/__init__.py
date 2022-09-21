@@ -2,3 +2,4 @@
 
 from . import onsc_cv_operating_unit_abstract
 from . import onsc_cv_digital
+from . import onsc_catalog_validators_inciso_ue

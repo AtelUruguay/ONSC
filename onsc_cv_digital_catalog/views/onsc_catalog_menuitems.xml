@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <menuitem id="onsc_catalog_validators_inciso_ue_tree_menu"
+              name="Validador de Inciso y UE"
+              action="onsc_catalog_validators_inciso_ue_action"
+              parent="onsc_catalog.onsc_catalog_config_menu"
+              groups="group_catalog_administrador_llamado"
+              sequence="12"/>
+</odoo>
