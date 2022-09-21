@@ -36,7 +36,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                     attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
                     <p class="mb-0">
                         <strong>
-                            Ha sido rechazado. 
+                            Ha sido rechazado 
                         </strong>
                         <p/>
                         <strong>
