@@ -19,7 +19,7 @@ class ONSCCVFormationBasic(models.Model):
     study_certificate_file = fields.Binary(string="Certificado de estudio", required=True)
     study_certificate_filename = fields.Char('Nombre del documento digital')
 
-    def get_data_to_array(self):
+    def _get_json_dict(self):
         return ["start_date","end_date","basic_education_level",("country_id",['name']),("institution_id",['name']),("subinstitution_id",['name'])]
 
 

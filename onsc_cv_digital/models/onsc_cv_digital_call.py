@@ -337,9 +337,31 @@ class ONSCCVDigitalCall(models.Model):
 
     def _get_json_dict(self):
         # JSONifier
-        return {
-            'name': self.partner_id.display_name
-        }
+        basic_formation=self.env['onsc.cv.basic.formation']._get_json_dict()
+        parser = [
+            'cv_full_name',
+            'call_number',
+            'postulation_date',
+            'postulation_number',
+            'preselected',
+            'is_trans',
+            'is_afro',
+            'is_disabilitie',
+            'is_victim',
+            'cv_emissor_country_id',
+            'cv_document_type_id',
+            'cv_nro_doc',
+            'cv_expiration_date',
+            'partner_id',
+            'cv_birthdate',
+            'cv_sex',
+            'cv_sex_updated_date',
+            'last_modification_date',
+            ('basic_formation_ids', basic_formation)
+        ]
+
+        return self.jsonify(parser)
+
 
     @api.model
     def _run_call_json_cron(self):
