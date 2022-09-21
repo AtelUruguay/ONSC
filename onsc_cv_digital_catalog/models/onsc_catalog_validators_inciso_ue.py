@@ -10,10 +10,16 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     _rec_name = 'user_id'
 
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True, ondelete='restrict')
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
+    operating_unit_id = fields.Many2one("operating.unit",
+                                        string="Unidad ejecutora",
+                                        required=True,
                                         ondelete='restrict')
-    user_id = fields.Many2one('res.users', 'Usuario')
-    group_id = fields.Many2one('res.groups', string='Seguridad', default=lambda self: self.get_default_group_id())
+    user_id = fields.Many2one('res.users',
+                              string='Usuario',
+                              required=True, )
+    group_id = fields.Many2one('res.groups',
+                               string='Seguridad',
+                               default=lambda self: self.get_default_group_id())
 
     @api.model
     def get_default_group_id(self):
