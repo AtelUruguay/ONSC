@@ -9,4 +9,13 @@
         <field name='interval_type'>days</field>
         <field name="numbercall">-1</field>
     </record>
+    <record id="call_no_json_send" model="ir.cron">
+        <field name="name">Llamados cerrados sin JSON</field>
+        <field name="model_id" ref="model_onsc_cv_digital_call"/>
+        <field name="state">code</field>
+        <field name="code">model._run_call_json_cron()</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+    </record>
 </odoo>

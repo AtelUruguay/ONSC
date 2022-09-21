@@ -98,7 +98,7 @@ LOGIC_156 = {
 LOGIC_157 = {
     'type': 'LOGICA',
     'code': '157',
-    'desc': u'El llamado ya se encuetra cerrado',
+    'desc': u'El llamado ya se encuentra cerrado',
     'long_desc': u'',
 }
 
