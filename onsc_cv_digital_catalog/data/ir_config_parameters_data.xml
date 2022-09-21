@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <record id="parameter_inactivity_cv" model="ir.config_parameter">
-        <field name="key">called_document_validator</field>
-        <field name="value">False</field>
-    </record>
+    <data noupdate="1">
+        <record id="parameter_group_documentary_validator" model="ir.config_parameter">
+            <field name="key">group_documentary_validator</field>
+            <field name="value"></field>
+        </record>
+    </data>
 </odoo>

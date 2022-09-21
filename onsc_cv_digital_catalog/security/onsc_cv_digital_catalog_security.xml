@@ -8,11 +8,9 @@
         <field name="implied_ids" eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company'))]"/>
     </record>
 
-
-
     <record id="group_catalog_administrador_llamado" model="res.groups">
         <field name="name">Administrador de llamado</field>
         <field name="comment">Administrador de llamado</field>
-        <field name="category_id" ref="onsc_catalog.module_category_onsc_catalog"/>
+        <field name="category_id" ref="onsc_cv_digital.module_category_onsc_cv_digital"/>
     </record>
 </odoo>
