@@ -127,7 +127,7 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            filename="civical_credential_filename"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])],'invisible': [('is_cv_uruguay','!=',True)]}"/>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
@@ -225,13 +225,13 @@
                                     <field name="occupational_health_card_filename" invisible="1"/>
                                 </group>
                                 <group string="Certificado de aptitud médico-deportiva">
-                                    <field name="medical_aptitude_certificate_status"/>
+                                    <field name="is_medical_aptitude_certificate_status"/>
                                     <field name="medical_aptitude_certificate_date"
-                                           attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}"/>
+                                           attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)], 'required': [('is_medical_aptitude_certificate_status', '=',True)]}"/>
                                     <field name="medical_aptitude_certificate_file"
                                            filename="medical_aptitude_certificate_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}"/>
+                                           attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)], 'required': [('is_medical_aptitude_certificate_status', '=', True)]}"/>
                                     <field name="medical_aptitude_certificate_filename" invisible="1"/>
                                 </group>
                             </group>

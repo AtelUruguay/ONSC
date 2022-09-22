@@ -62,7 +62,6 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
             record.mapped('user_id').suspend_security().write({'groups_id': [(4, user_id)]})
         return recordsets
 
-
     def unlink(self):
         for record in self:
             record.user_id.suspend_security().write({'groups_id': [(3, record.group_id.id)]})
