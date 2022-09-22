@@ -7,7 +7,7 @@
             <form>
                 <div class="alert alert-info" role="alert">
                     <p class="mb-0">
-                        <strong>Al confirmar este Asistente el Catálogo pasará al estado Rechazado.</strong>
+                        <strong>Al confirmar este Asistente el registro pasará al estado Rechazado.</strong>
                     </p>
                 </div>
                 <group>
