@@ -22,14 +22,14 @@
                                        attrs="{'required': ['|',('email', '=', False),('prefix_phone_id', '!=', False)]}"/>
                             </div>
                             <field name="company_name" attrs="{'invisible': [('reference_type', '!=', 'working')]}"/>
-                            <field name="email" attrs="{'required': [('phone', '=', False)]}"/>
+                            <field name="email" attrs="{'required': [('phone', '=', False)]}" widget="email"/>
+                        </group>
+                        <group>
+                            <field name="notes"/>
                         </group>
                     </group>
-                    <notebook>
-                        <page string="Comentarios adicionales">
-                            <field name="notes"/>
-                        </page>
-                    </notebook>
+
+
                 </sheet>
             </form>
         </field>

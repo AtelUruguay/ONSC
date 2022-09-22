@@ -13,11 +13,14 @@ class ONSCCVFormationBasic(models.Model):
 
     basic_education_level = fields.Selection(string=u'Nivel de estudios básicos',
                                              selection=[('primary', u'Primaria'),
-                                                        ('secondary', u'Secundaria'),
-                                                        ('utu', u'UTU')], required=True)
+                                                        ('secondary', u'Secundaria')], required=True)
     coursed_years = fields.Text(string="Años cursados")
-    study_certificate_file = fields.Binary(string="Certificado de estudio", required=True)
+    study_certificate_file = fields.Binary(string="Certificado de estudio")
     study_certificate_filename = fields.Char('Nombre del documento digital')
+
+    def _get_json_dict(self):
+        return ["start_date", "end_date", "basic_education_level", ("country_id", ['name']),
+                ("institution_id", ['name']), ("subinstitution_id", ['name'])]
 
 
 class ONSCCVFormationAdvanced(models.Model):
@@ -30,7 +33,7 @@ class ONSCCVFormationAdvanced(models.Model):
     academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico', required=True)
     homologated_title = fields.Selection(string=u'¿Su título está revalidado/homologado en Uruguay?',
                                          selection=[('yes', u'Si'), ('no', u'No')])
-    homologated_title_date = fields.Date(string="Fecha de revalidación",)
+    homologated_title_date = fields.Date(string="Fecha de revalidación", )
     apostilled_title = fields.Selection(string=u'¿Su título está apostillado?',
                                         selection=[('yes', u'Si'), ('no', u'No')])
     apostilled_date = fields.Date(string="Fecha de apostillado")
@@ -55,7 +58,7 @@ class ONSCCVFormationAdvanced(models.Model):
     area_related_education_ids = fields.One2many('onsc.cv.area.related.education', 'advanced_formation_id',
                                                  string=u'Áreas relacionadas con esta educación', copy=True)
     other_relevant_information = fields.Text(string="Otra información relevante")
-    egress_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad", required=True)
+    egress_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad")
     egress_certificate_filename = fields.Char('Nombre del documento digital')
     revalidated_certificate_file = fields.Binary(string="Certificado de reválida de título",
                                                  help="Certificado de reválida de título / Resolución de reválida de título / Titulo revalidado")

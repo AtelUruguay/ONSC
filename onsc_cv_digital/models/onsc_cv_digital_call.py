@@ -337,9 +337,30 @@ class ONSCCVDigitalCall(models.Model):
 
     def _get_json_dict(self):
         # JSONifier
-        return {
-            'name': self.partner_id.display_name
-        }
+        basic_formation = self.env['onsc.cv.basic.formation']._get_json_dict()
+        parser = [
+            'cv_full_name',
+            'call_number',
+            'postulation_date',
+            'postulation_number',
+            'preselected',
+            'is_trans',
+            'is_afro',
+            'is_disabilitie',
+            'is_victim',
+            'cv_emissor_country_id',
+            'cv_document_type_id',
+            'cv_nro_doc',
+            'cv_expiration_date',
+            'partner_id',
+            'cv_birthdate',
+            'cv_sex',
+            'cv_sex_updated_date',
+            'last_modification_date',
+            ('basic_formation_ids', basic_formation)
+        ]
+
+        return self.jsonify(parser)
 
     @api.model
     def _run_call_json_cron(self):
@@ -347,13 +368,8 @@ class ONSCCVDigitalCall(models.Model):
         Cron que envia la notificación al usuario por período de inactividad en el CV
         :return:
         """
-
-        self.env.cr.execute('''SELECT 
-	DISTINCT(call_number)
-FROM 
-	onsc_cv_digital_call call
-WHERE
-	call.is_close is True AND call.is_json_sent is False''')
+        self.env.cr.execute(
+            '''SELECT DISTINCT(call_number) FROM onsc_cv_digital_call call WHERE call.is_close is True AND call.is_json_sent is False''')
         results = self.env.cr.dictfetchall()
         for result in results:
             calls = self.search([('call_number', '=', result)])

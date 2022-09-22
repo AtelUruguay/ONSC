@@ -207,13 +207,13 @@
                                     <field name="occupational_health_card_filename" invisible="1"/>
                                 </group>
                                 <group string="Certificado de aptitud médico-deportiva">
-                                    <field name="medical_aptitude_certificate_status"/>
+                                    <field name="is_medical_aptitude_certificate_status"/>
                                     <field name="medical_aptitude_certificate_date"
-                                           attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}"/>
+                                           attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)], 'required': [('is_medical_aptitude_certificate_status', '=', True)]}"/>
                                     <field name="medical_aptitude_certificate_file"
                                            filename="medical_aptitude_certificate_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'invisible': [('medical_aptitude_certificate_status', '=', 'no')], 'required': [('medical_aptitude_certificate_status', '=', 'si')]}"/>
+                                           attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)], 'required': [('is_medical_aptitude_certificate_status', '=', True)]}"/>
                                     <field name="medical_aptitude_certificate_filename" invisible="1"/>
                                 </group>
                             </group>

@@ -35,9 +35,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 <div class="alert alert-danger" role="alert"
                     attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
                     <p class="mb-0">
-                        <strong>
-                            Ha sido rechazado 
-                        </strong>
+                        <strong>Ha sido rechazado</strong>
                         <p/>
                         <strong>
                             Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline"/>

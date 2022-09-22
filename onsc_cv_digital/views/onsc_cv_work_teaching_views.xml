@@ -34,7 +34,7 @@
                             <field name="professional_link_id"/>
                             <field name="responsible_type"/>
                             <field name="program_name"
-                                   attrs="{'invisible': [('responsible_type', '!=', 'no')],'required': [('responsible_type', '=', 'no')]}"/>
+                                   attrs="{'invisible': [('responsible_type', '!=', 'yes')],'required': [('responsible_type', '!=', 'no')]}"/>
                             <field name="hours_worked_monthly" string="Cantidad de horas mensuales en el instituto"/>
                         </group>
                     </group>
