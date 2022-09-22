@@ -25,10 +25,15 @@ class ONSCCVRejectWizard(models.TransientModel):
 
     def action_documentary_reject(self):
         record = self.env[self.model_name].browse(self.res_id)
-        record.write({
+        if record._name == 'onsc.cv.digital.call':
+            return record._documentary_reject(self.reject_reason)
+        args = {
             'documentary_validation_state': 'rejected',
             'documentary_reject_reason': self.reject_reason,
             'documentary_validation_date': fields.Date.today(),
             'documentary_user_id': self.env.user.id,
-        })
+        }
+        record.write(args)
+        self.env[record._name].search([('id', '=', record.original_instance_identifier)]).write(args)
+        record._update_call_documentary_validation_status()
         return True

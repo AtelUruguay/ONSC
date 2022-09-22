@@ -26,7 +26,9 @@
                             <field name="operating_unit_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    domain="[('inciso_id', '=', inciso_id)]"/>
-                            <field name="user_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="user_id"
+                                   domain="[('share', '=', False)]"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="group_id"
                                    readonly="1"
                                    force_save="1"
