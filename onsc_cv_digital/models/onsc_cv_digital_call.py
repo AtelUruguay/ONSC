@@ -58,19 +58,6 @@ class ONSCCVDigitalCall(models.Model):
         store=True
     )
 
-    address_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
-        selection=DOCUMENTARY_VALIDATION_STATES,
-        default='to_validate')
-    disabilitie_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
-        selection=DOCUMENTARY_VALIDATION_STATES,
-        default='to_validate')
-    nro_doc_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
-        selection=DOCUMENTARY_VALIDATION_STATES,
-        default='to_validate')
-
     @api.constrains("cv_digital_id", "cv_digital_id.active", "call_number", "cv_digital_origin_id")
     def _check_cv_call_unicity(self):
         for record in self.filtered(lambda x: x.active):
@@ -157,43 +144,16 @@ class ONSCCVDigitalCall(models.Model):
 
     def _get_documentary_validation_models(self):
         if not bool(self._context):
-            return ['address_documentary_validation_state',
-                    'civical_credential_documentary_validation_state',
+            return ['civical_credential_documentary_validation_state',
                     'nro_doc_documentary_validation_state',
                     'disabilitie_documentary_validation_state']
         configs = self.env['onsc.cv.documentary.validation.config'].search([])
-        validation_models = ['address_documentary_validation_state',
-                             'civical_credential_documentary_validation_state',
+        validation_models = ['civical_credential_documentary_validation_state',
                              'nro_doc_documentary_validation_state',
                              'disabilitie_documentary_validation_state']
         for config in configs.filtered(lambda x: x.field_id):
             validation_models.append('%s.documentary_validation_state' % config.field_id.name)
         return validation_models
-
-    # @property
-    # def field_documentary_validation_models(self):
-    #     configs = self.env['onsc.cv.documentary.validation.config'].search([])
-    #     validation_models = ['address_documentary_validation_state',
-    #                          'civical_credential_documentary_validation_state',
-    #                          'nro_doc_documentary_validation_state',
-    #                          'disabilitie_documentary_validation_state']
-    #     for config in configs.filtered(lambda x: x.field_id):
-    #         validation_models.append('%s.documentary_validation_state' % config.field_id.name)
-    #     return validation_models
-    #     return [
-    #         'work_experience_ids.documentary_validation_state',
-    #         'basic_formation_ids.documentary_validation_state',
-    #         'advanced_formation_ids.documentary_validation_state',
-    #         'course_certificate_ids.documentary_validation_state',
-    #         'volunteering_ids.documentary_validation_state',
-    #         'work_teaching_ids.documentary_validation_state',
-    #         'work_investigation_ids.documentary_validation_state',
-    #         'publication_production_evaluation_ids.documentary_validation_state',
-    #         'tutoring_orientation_supervision_ids.documentary_validation_state',
-    #         'participation_event_ids.documentary_validation_state',
-    #         'address_documentary_validation_state',
-    #         'disabilitie_documentary_validation_state',
-    #     ]
 
     @api.depends(lambda self: self._get_documentary_validation_models())
     def _compute_gral_info_documentary_validation_state(self):
@@ -205,6 +165,45 @@ class ONSCCVDigitalCall(models.Model):
                     _documentary_validation_state = 'to_validate'
                     break
             record.gral_info_documentary_validation_state = _documentary_validation_state
+
+    def button_documentary_approve(self):
+        if self._context.get('documentary_validation'):
+            documentary = self._context.get('documentary_validation')
+            self.write({
+                '%s_documentary_validation_state' % documentary: 'validated',
+                '%s_documentary_reject_reason' % documentary: '',
+                '%s_documentary_validation_date' % documentary: fields.Date.today(),
+                '%s_documentary_user_id' % documentary: self.env.user.id,
+            })
+
+    def button_documentary_reject(self):
+        ctx = self._context.copy()
+        ctx.update({
+            'default_model_name': self._name,
+            'default_res_id': self.id,
+            'is_documentary_reject': True
+        })
+        return {
+            'name': _('Rechazo de %s' % self._description),
+            'view_mode': 'form',
+            'res_model': 'onsc.cv.reject.wizard',
+            'target': 'new',
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'context': ctx,
+        }
+
+    def _documentary_reject(self, reject_reason):
+        if self._context.get('documentary_validation'):
+            documentary = self._context.get('documentary_validation')
+            vals = {
+                '%s_documentary_validation_state' % documentary: 'rejected',
+                '%s_documentary_reject_reason' % documentary: reject_reason,
+                '%s_documentary_validation_date' % documentary: fields.Date.today(),
+                '%s_documentary_user_id' % documentary: self.env.user.id,
+            }
+            self.write(vals)
+            self.mapped('cv_digital_origin_id').write(vals)
 
     @api.model
     def create(self, values):

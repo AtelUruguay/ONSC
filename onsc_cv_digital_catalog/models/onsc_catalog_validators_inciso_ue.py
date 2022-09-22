@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+import json
 
 
 class ONSCCatalogValidatorsIncisoUE(models.Model):
@@ -16,7 +17,6 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
                                  ondelete='restrict')
     operating_unit_id = fields.Many2one("operating.unit",
                                         string="Unidad ejecutora",
-                                        domain="[('')]",
                                         required=True,
                                         ondelete='restrict')
     user_id = fields.Many2one('res.users',

@@ -343,6 +343,39 @@ class ONSCCVDigital(models.Model):
         default=lambda s: s._get_help('cv_help_reference', True)
     )
 
+    # VALIDACION DOCUMENTAL
+    # DISCAPACIDAD
+    disabilitie_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    disabilitie_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
+                                                        tracking=True)
+    disabilitie_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+    disabilitie_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
+                                                      tracking=True)
+
+    # NRO DOC
+    nro_doc_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    nro_doc_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental', tracking=True)
+    nro_doc_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+    nro_doc_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
+                                                  tracking=True)
+    # CREDENCIAL CIVICA
+    civical_credential_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    civical_credential_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
+                                                               tracking=True)
+    civical_credential_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+    civical_credential_documentary_user_id = fields.Many2one(comodel_name="res.users",
+                                                             string="Usuario validación documental",
+                                                             tracking=True)
+
     def _get_help(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         _html2construct = HTML_HELP % (_url or '/')

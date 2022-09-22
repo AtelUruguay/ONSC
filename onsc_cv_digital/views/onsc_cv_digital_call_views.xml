@@ -69,31 +69,74 @@
                         <h2><field name="postulation_date"/></h2>
                         <label for="postulation_number" string="Número de postulación"/>
                         <h2><field name="postulation_number"/></h2>
-                        <div>
+                        <div invisible="context.get('is_call_documentary_validation', False)">
                           <label for="is_json_sent"/><field name="is_json_sent"/>
                           <label for="is_cancel"/><field name="is_cancel"/>
                           <label for="is_zip"/><field name="is_zip"/>
                           <label for="is_close"/><field name="is_close"/>
                             <label for="preselected"/><field name="preselected"/>
                         </div>
-                        <div style="padding-bottom:40px">
+                        <div name="div_call_is" invisible="context.get('is_call_documentary_validation', False)">
                           <label for="is_trans"/><field name="is_trans"/>
                           <label for="is_afro"/><field name="is_afro"/>
                           <label for="is_disabilitie"/><field name="is_disabilitie"/>
                           <label for="is_victim"/><field name="is_victim"/>
                         </div>
                     </div>
-                    <group>
+                    <group style="padding-top:40px">
                         <group>
                             <field name="cv_emissor_country_id"/>
                             <field name="cv_document_type_id"/>
-                            <field name="cv_nro_doc"/>
+                            <label for="cv_nro_doc"/>
+                            <div>
+                                <div class="request-partner-author-field o_row">
+                                    <field name="cv_nro_doc"/>
+                                    <span>
+                                        <button name="button_documentary_approve"
+                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                context="{'documentary_validation':'nro_doc'}" type="object"
+                                                string="Validar"
+                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-info"/>
+                                        <button name="button_documentary_reject"
+                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                context="{'documentary_validation':'nro_doc'}"
+                                                type="object"
+                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                string="Rechazar"
+                                                icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
+                                    </span>
+                                </div>
+                            </div>
                             <field name="cv_expiration_date" required="1"/>
                             <field name="document_identity_file"
                                            filename="document_identity_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
+                            <div class="row" nolabel="1" colspan="2">
+                                <div class="alert alert-danger" role="alert" style="width:70%"
+                                    attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'rejected')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            El documento de identidad ha sido rechazado. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
+                                            <p/>
+                                            Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                        </strong>
+                                    </p>
+                                </div>
+                                <div class="alert alert-success" role="alert"  style="width:70%"
+                                    attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'validated')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            El documento de identidad ha sido validado
+                                            <p/>
+                                            Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
                             <field name="partner_id" invisible="1"/>
                             <field name="active" invisible="1"/>
+                            <field name="nro_doc_documentary_validation_state" invisible="1"/>
                         </group>
                         <group>
                             <field name="cv_birthdate"
@@ -117,13 +160,57 @@
                                     <field name="uy_citizenship"/>
                                     <field name="crendencial_serie"
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <field name="credential_number"
+                                    <label for="credential_number" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
+                                    <div class="request-partner-author-field o_row" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}">
+                                        <field name="credential_number"
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                        <span>
+                                            <button name="button_documentary_approve"
+                                                    groups="onsc_cv_digital.group_validador_documental_cv"
+                                                    context="{'documentary_validation':'civical_credential'}"
+                                                    type="object"
+                                                    string="Validar"
+                                                    icon="fa-thumbs-o-up"
+                                                    invisible="context.get('is_call_documentary_validation', False) is False"
+                                                    class="btn btn-sm btn-outline-info"/>
+                                            <button name="button_documentary_reject"
+                                                    groups="onsc_cv_digital.group_validador_documental_cv"
+                                                    context="{'documentary_validation':'civical_credential'}"
+                                                    type="object"
+                                                    string="Rechazar"
+                                                    icon="fa-thumbs-o-down"
+                                                    invisible="context.get('is_call_documentary_validation', False) is False"
+                                                    class="btn btn-sm btn-outline-danger"/>
+                                        </span>
+                                    </div>
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            filename="civical_credential_filename"
-                                           attrs="{'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                    <div class="row" nolabel="1" colspan="2">
+                                        <div class="alert alert-danger" role="alert" style="width:70%"
+                                            attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
+                                            <p class="mb-0">
+                                                <strong>
+                                                    La credencial cívica ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
+                                                    <p/>
+                                                    Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                        <div class="alert alert-success" role="alert" style="width:70%"
+                                            attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'validated')]}">
+                                            <p class="mb-0">
+                                                <strong>
+                                                    La credencial cívica ha sido validada
+                                                    <p/>
+                                                    Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
                                     <field name="document_identity_filename" invisible="1"/>
                                     <field name="civical_credential_filename" invisible="1"/>
+                                    <field name="civical_credential_documentary_validation_state" invisible="1"/>
                                 </group>
                                 <group>
                                     <label for="personal_phone"/>
@@ -151,7 +238,7 @@
                             </group>
                             <group string="Licencias de Conducir"
                                    attrs="{'invisible': [('is_driver_license', '=', False)]}">
-                                <field name="drivers_license_ids" nolabel="1" context="{'is_cv_call': True}">
+                                <field name="drivers_license_ids" nolabel="1" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}">
                                     <tree editable="bottom">
                                         <field name="validation_date" width="0.5"/>
                                         <field name="category_id"/>
@@ -254,7 +341,6 @@
                                 </div>
                                 <div class="col-md-auto"/>
                             </div>
-
                             <group>
                                 <group>
                                     <field name="country_id" string="País"
@@ -292,50 +378,83 @@
                             <div>
                                 <h4>Formación básica</h4>
                             </div>
-                            <field name="basic_formation_ids" context="{'is_cv_call': True}"/>
+                            <field name="basic_formation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                             <br/>
                             <div>
                                 <h4>Formación avanzada</h4>
                             </div>
-                            <field name="advanced_formation_ids" context="{'is_cv_call': True}"/>
+                            <field name="advanced_formation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="course_certificate" string="Cursos y certificados">
                             <div>
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
                             <field name="course_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course', 'is_cv_call': True}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
                             </div>
                             <field name="certificate_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'is_cv_call': True}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">
-                            <field name="work_experience_ids" context="{'is_cv_call': True}"/>
+                            <field name="work_experience_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="work_teaching" string="Docencia">
-                            <field name="work_teaching_ids" context="{'is_cv_call': True}"/>
+                            <field name="work_teaching_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="work_investigation" string="Investigación">
-                            <field name="work_investigation_ids" context="{'is_cv_call': True}"/>
+                            <field name="work_investigation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="volunteering" string="Voluntariado">
-                            <field name="volunteering_ids" context="{'is_cv_call': True}"/>
+                            <field name="volunteering_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="language_level" string="Idiomas">
                             <field name="language_level_ids"/>
                         </page>
                         <page name="publications_productions_evaluations"
                               string="Publicaciones, producciones y evaluaciones">
-                            <field name="publication_production_evaluation_ids" context="{'is_cv_call': True}"/>
+                            <field name="publication_production_evaluation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
-                            <field name="tutoring_orientation_supervision_ids" context="{'is_cv_call': True}"/>
+                            <field name="tutoring_orientation_supervision_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page string="Discapacidad"
                             attrs="{'invisible': [('allow_content_public', '=', False),('is_disabilitie', '=', False)]}">
+                            <div>
+                                <field name="disabilitie_documentary_validation_state" invisible="1"/>
+                                <button name="button_documentary_approve"
+                                        groups="onsc_cv_digital.group_validador_documental_cv"
+                                        attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}"
+                                        context="{'documentary_validation':'disabilitie'}"
+                                        type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-info"/>
+                                <button name="button_documentary_reject"
+                                        groups="onsc_cv_digital.group_validador_documental_cv"
+                                        attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}"
+                                        context="{'documentary_validation':'disabilitie'}"
+                                        type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
+                                <div class="alert alert-danger" role="alert"
+                                    attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'rejected')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            Ha sido rechazado. Motivo del rechazo: <field name="disabilitie_documentary_reject_reason" class="oe_inline"/>
+                                            <p/>
+                                            Fecha: <field name="disabilitie_documentary_validation_date" class="oe_inline"/> Usuario: <field name="disabilitie_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                        </strong>
+                                    </p>
+                                </div>
+                                <div class="alert alert-success" role="alert"
+                                    attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'validated')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            El registro ha sido validado
+                                            <p/>
+                                            Fecha: <field name="disabilitie_documentary_validation_date" class="oe_inline"/> Usuario: <field name="disabilitie_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>
                             <group>
                                 <group>
                                     <field name="allow_content_public"/>
@@ -388,7 +507,7 @@
                         </page>
                         <page name="participation_event"
                               string="Participación en eventos">
-                            <field name="participation_event_ids" context="{'is_cv_call': True}"/>
+                            <field name="participation_event_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="other_relevant_information"
                               string="Otra información relevante">
@@ -408,12 +527,41 @@
         </field>
     </record>
 
-    <record id='onsc_cv_digital_call_action' model='ir.actions.act_window'>
+    <record id='onsc_cv_digital_call_copy_action' model='ir.actions.act_window'>
         <field name="name">Copias de CV</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">onsc.cv.digital.call</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{'is_cv_call': True,'search_default_group_by_call_number': True}</field>
+        <field name="context">{'search_default_group_by_call_number': True}</field>
+        <field name="domain">[('type','=','call')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            </p>
+        </field>
+    </record>
+
+    <record id="onsc_cv_digital_call_documentary_validation_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.digital.call.documentary.validation.tree</field>
+        <field name="model">onsc.cv.digital.call</field>
+        <field name="arch" type="xml">
+            <tree string="Consulta de llamados Validador documental" delete="0" edit="0" create="0" duplicate="0">
+                <field name="call_number"/>
+                <field name="partner_id" string="Nombre"/>
+                <field name="postulation_date" string="Fecha de actualización"/>
+                <field name="gral_info_documentary_validation_state" string="Estado"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id='onsc_cv_digital_call_documentary_validation_action' model='ir.actions.act_window'>
+        <field name="name">Consulta de llamados Validador documental</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.cv.digital.call</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{
+            'tree_view_ref': 'onsc_cv_digital.onsc_cv_digital_call_documentary_validation_tree'}
+        </field>
+        <field name="context">{'is_call_documentary_validation': True,'search_default_group_by_call_number': True}</field>
         <field name="domain">[('type','=','call')]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

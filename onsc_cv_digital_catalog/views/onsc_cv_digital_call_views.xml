@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_digital_call_form" model="ir.ui.view">
+        <field name="name">onsc.cv.digital.call.catalog.form</field>
+        <field name="model">onsc.cv.digital.call</field>
+        <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_digital_call_form"/>
+        <field name="arch" type="xml">
+            <div name="div_call_is" position="after">
+                <div invisible="context.get('is_call_documentary_validation', False)">
+                    <label for="inciso_id"/><field name="inciso_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                    <label for="operating_unit_id"/><field name="operating_unit_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                </div>
+            </div>
+        </field>
+    </record>
+</odoo>

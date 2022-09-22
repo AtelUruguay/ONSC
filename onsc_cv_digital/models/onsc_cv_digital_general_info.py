@@ -5,7 +5,7 @@ from odoo import fields, models
 
 class ONSCCVDigitalDriverLicense(models.Model):
     _name = 'onsc.cv.driver.license'
-    _inherit = ['onsc.cv.abstract.documentary.validation', 'onsc.cv.abstract.common']
+    _inherit = ['onsc.cv.abstract.documentary.validation']
     _description = 'Licencia de conducir'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", required=True, index=True, ondelete='cascade')

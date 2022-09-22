@@ -17,6 +17,7 @@ ONSC CV Digital - Catálogo
         'data/ir_config_parameters_data.xml',
         'views/onsc_cv_digital_views.xml',
         'views/onsc_catalog_validators_inciso_ue.xml',
+        'views/onsc_cv_digital_call_views.xml',
         'views/onsc_catalog_menuitems.xml',
     ],
     'external_dependencies': {}

@@ -19,12 +19,19 @@
               groups="group_user_cv"
               sequence="1"/>
 
-    <menuitem id="onsc_cv_digital_call_menu"
+    <menuitem id="onsc_cv_digital_call_copy_menu"
               name="Copias de CV"
-              action="onsc_cv_digital_call_action"
+              action="onsc_cv_digital_call_copy_action"
               parent="onsc_cv_root_menu"
-              groups="group_validador_documental_cv,group_manager_cv"
+              groups="group_manager_cv"
               sequence="2"/>
+
+    <menuitem id="onsc_cv_digital_call_documentary_validation_menu"
+              name="Consulta de llamados Validador documental"
+              action="onsc_cv_digital_call_documentary_validation_action"
+              parent="onsc_cv_root_menu"
+              groups="group_validador_documental_cv"
+              sequence="3"/>
 
     <menuitem id="onsc_cv_config_menu"
               name="Catálogos"
