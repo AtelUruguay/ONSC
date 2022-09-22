@@ -324,8 +324,8 @@ class ONSCCVDigitalCall(models.Model):
         call_server_json_url = self.env.user.company_id.call_server_json_url
         if call_server_json_url is False:
             return False
-        # if self.filtered(lambda x: x.call_conditional_state != 'validated'):
-        #     return False
+        if self.filtered(lambda x: x.call_conditional_state != 'validated'):
+            return False
         filename = '%s_%s.json' % (call_number, str(fields.Datetime.now()))
         json_file = open(join(call_server_json_url, filename), 'w')
         for record in self:
