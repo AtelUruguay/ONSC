@@ -142,17 +142,22 @@ class ONSCCVDigitalCall(models.Model):
             # else:
             #     record.call_conditional_state = 'validated'
 
-    def _get_documentary_validation_models(self):
+    def _get_documentary_validation_models(self, only_fields=False):
         if not bool(self._context):
             return ['civical_credential_documentary_validation_state',
                     'nro_doc_documentary_validation_state',
                     'disabilitie_documentary_validation_state']
         configs = self.env['onsc.cv.documentary.validation.config'].search([])
-        validation_models = ['civical_credential_documentary_validation_state',
-                             'nro_doc_documentary_validation_state',
-                             'disabilitie_documentary_validation_state']
-        for config in configs.filtered(lambda x: x.field_id):
-            validation_models.append('%s.documentary_validation_state' % config.field_id.name)
+        if only_fields:
+            validation_models = []
+            for config in configs.filtered(lambda x: x.field_id):
+                validation_models.append('%s' % config.field_id.name)
+        else:
+            validation_models = ['civical_credential_documentary_validation_state',
+                                 'nro_doc_documentary_validation_state',
+                                 'disabilitie_documentary_validation_state']
+            for config in configs.filtered(lambda x: x.field_id):
+                validation_models.append('%s.documentary_validation_state' % config.field_id.name)
         return validation_models
 
     @api.depends(lambda self: self._get_documentary_validation_models())
@@ -180,7 +185,7 @@ class ONSCCVDigitalCall(models.Model):
         ctx = self._context.copy()
         ctx.update({
             'default_model_name': self._name,
-            'default_res_id': self.id,
+            'default_res_id': len(self.ids) == 1 and self.id or 0,
             'is_documentary_reject': True
         })
         return {
@@ -193,7 +198,7 @@ class ONSCCVDigitalCall(models.Model):
             'context': ctx,
         }
 
-    def _documentary_reject(self, reject_reason):
+    def documentary_reject(self, reject_reason):
         if self._context.get('documentary_validation'):
             documentary = self._context.get('documentary_validation')
             vals = {
@@ -204,6 +209,9 @@ class ONSCCVDigitalCall(models.Model):
             }
             self.write(vals)
             self.mapped('cv_digital_origin_id').write(vals)
+        elif self._context.get('massive_documentary_reject'):
+            self.massive_documentary_reject(reject_reason)
+
 
     @api.model
     def create(self, values):
@@ -212,15 +220,26 @@ class ONSCCVDigitalCall(models.Model):
 
     # WS Postulacion
     @api.model
-    def _create_postulation(self,
-                            country_code,
-                            doc_type_code,
-                            doc_number,
-                            postulation_date,
-                            postulation_number,
-                            call_number,
-                            accion,
-                            ):
+    def create_postulation(self,
+                           country_code,
+                           doc_type_code,
+                           doc_number,
+                           postulation_date,
+                           postulation_number,
+                           call_number,
+                           accion,
+                           ):
+        """
+
+        :param country_code:
+        :param doc_type_code:
+        :param doc_number:
+        :param postulation_date:
+        :param postulation_number:
+        :param call_number:
+        :param accion:
+        :return:
+        """
         if len(country_code) != 2:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_151_1)
         country_id = self.env['res.country'].search([('code', '=', country_code)], limit=1)
@@ -284,15 +303,26 @@ class ONSCCVDigitalCall(models.Model):
 
     # WS Cierre de llamado
     @api.model
-    def _call_close(self,
-                    call_number,
-                    inciso_code,
-                    operating_number_code,
-                    is_trans,
-                    is_afro,
-                    is_disabilitie,
-                    is_victim,
-                    ):
+    def call_close(self,
+                   call_number,
+                   inciso_code,
+                   operating_number_code,
+                   is_trans,
+                   is_afro,
+                   is_disabilitie,
+                   is_victim,
+                   ):
+        """
+
+        :param call_number:
+        :param inciso_code:
+        :param operating_number_code:
+        :param is_trans:
+        :param is_afro:
+        :param is_disabilitie:
+        :param is_victim:
+        :return:
+        """
         calls = self.search([('call_number', '=', call_number)])
         if len(calls) == 0:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
@@ -373,3 +403,25 @@ class ONSCCVDigitalCall(models.Model):
         for result in results:
             calls = self.search([('call_number', '=', result)])
             calls._generate_json(result)
+
+    def massive_documentary_reject(self, reject_reason):
+        today = fields.Date.today()
+        user_id = self.env.user.id
+        self.write({
+            'disabilitie_documentary_validation_state': 'rejected',
+            'nro_doc_documentary_validation_state': 'rejected',
+            'civical_credential_documentary_validation_state': 'rejected',
+            'disabilitie_documentary_reject_reason': reject_reason,
+            'nro_doc_documentary_reject_reason': reject_reason,
+            'civical_credential_documentary_reject_reason': reject_reason,
+            'disabilitie_documentary_validation_date': today,
+            'nro_doc_documentary_validation_date': today,
+            'civical_credential_documentary_validation_date': today,
+            'disabilitie_documentary_user_id': user_id,
+            'nro_doc_documentary_user_id': user_id,
+            'civical_credential_documentary_user_id': user_id,
+        })
+        validation_childs = self._get_documentary_validation_models(only_fields=True)
+        for validation_child in validation_childs:
+            self.mapped(validation_child).documentary_reject(reject_reason)
+
