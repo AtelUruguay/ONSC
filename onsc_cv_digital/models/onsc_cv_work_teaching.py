@@ -50,7 +50,7 @@ class ONSCCVAcademicProgramSubject(models.Model):
     work_teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade', required=True)
     program_ids = fields.Many2many('onsc.cv.academic.program', relation="academic_program_teaching_rel",
                                    string='Programas académicos', required=True, copy=True, ondelete='cascade')
-    subject = fields.Char('Materia',required=True,)
+    subject = fields.Char('Materia', required=True, )
     course_type = fields.Selection(COURSE_TYPES, 'Tipo de curso')
     currently_working_state = fields.Selection(string="¿Actualmente está enseñando la  materia?",
                                                selection=WORKING_STATE, required=True)

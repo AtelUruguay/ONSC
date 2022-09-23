@@ -17,5 +17,3 @@ class ONSCCVAbstractCommon(models.AbstractModel):
             for data in res:
                 data['original_instance_identifier'] = self.id
         return res
-
-
