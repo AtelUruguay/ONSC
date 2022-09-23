@@ -76,7 +76,7 @@ class WsCVCierreLlamado(ServiceBase):
             return response
 
         try:
-            env['onsc.cv.digital.call']._call_close(
+            env['onsc.cv.digital.call'].call_close(
                 request.nroLlamado,
                 request.inciso,
                 request.unidadEjecutora,
