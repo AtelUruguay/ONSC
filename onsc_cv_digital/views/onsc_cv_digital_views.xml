@@ -127,7 +127,7 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            filename="civical_credential_filename"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])],'invisible': [('is_cv_uruguay','!=',True)]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
