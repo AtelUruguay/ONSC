@@ -359,9 +359,9 @@
                             </group>
                             <group>
                                 <group>
-                                    <field name="cv_address_street" string="Calle"/>
-                                    <field name="cv_address_street2" string="Entre calle"/>
-                                    <field name="cv_address_street3" string="Y calle"/>
+                                    <field name="country_code" invisible="1"/>
+                                    <field name="cv_address_street_id" string="Calle" attrs="{'invisible': [('country_code', '!=', 'UY')]}"/>
+                                    <field name="cv_address_street2" string="Calle" attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
                                 </group>
                                 <group>
                                     <field name="cv_address_nro_door"/>
