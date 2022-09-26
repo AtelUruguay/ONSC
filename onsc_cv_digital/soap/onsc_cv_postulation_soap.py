@@ -76,7 +76,7 @@ class WsCVPostulacion(ServiceBase):
             return response
 
         try:
-            env['onsc.cv.digital.call']._create_postulation(
+            env['onsc.cv.digital.call'].create_postulation(
                 request.codPais,
                 request.tipoDoc,
                 request.nroDoc,
