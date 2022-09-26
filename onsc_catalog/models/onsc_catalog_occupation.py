@@ -53,11 +53,17 @@ class ONSCCatalogOccupation(models.Model):
             ]
         }
         _context = dict(self._context, default_active=False)
-        if self.env.user.has_group('onsc_catalog.group_catalog_aprobador_cgn'):
-            vals['context'] = dict(_context, search_default_filter_inactive_cgn=1,
-                                   create=False,
-                                   delete=False,
-                                   edit=False)
+        if not self.env.user.has_group('onsc_catalog.group_catalog_configurador_servicio_civil'):
+            if self.env.user.has_group('onsc_catalog.group_catalog_aprobador_cgn'):
+                vals['context'] = dict(_context, search_default_filter_inactive_cgn=1,
+                                       create=False,
+                                       delete=False,
+                                       edit=False)
+            else:
+                vals['context'] = dict(_context,
+                                       create=False,
+                                       delete=False,
+                                       edit=False)
         else:
             vals['context'] = _context
         return vals

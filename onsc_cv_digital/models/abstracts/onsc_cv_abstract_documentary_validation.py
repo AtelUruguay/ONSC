@@ -139,6 +139,17 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'context': ctx,
         }
 
+    def documentary_reject(self, reject_reason):
+        args = {
+            'documentary_validation_state': 'rejected',
+            'documentary_reject_reason': reject_reason,
+            'documentary_validation_date': fields.Date.today(),
+            'documentary_user_id': self.env.user.id,
+        }
+        self.write(args)
+        self.search([('id', 'in', self.mapped('original_instance_identifier'))]).write(args)
+        self._update_call_documentary_validation_status()
+
     def _update_call_documentary_validation_status(self):
         if self._fields.get('cv_digital_id'):
             calls = self.env['onsc.cv.digital.call'].search([('cv_digital_id', 'in', self.mapped('cv_digital_id').ids)])
