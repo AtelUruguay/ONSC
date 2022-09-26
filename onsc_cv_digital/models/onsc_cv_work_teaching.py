@@ -56,7 +56,9 @@ class ONSCCVAcademicProgramSubject(models.Model):
                                                selection=WORKING_STATE, required=True)
     level_teaching_type = fields.Selection(LEVEL_TEACHING_TYPES, 'Nivel enseñado de la materia', required=True)
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', string="Conocimientos enseñados",
-                                              relation='knowledge_teaching_program_rel', required=True, copy=True,
+                                              relation='knowledge_teaching_program_rel',
+                                              required=True,
+                                              copy=True,
                                               store=True)
     institution_id = fields.Many2one(related='work_teaching_id.institution_id')
     subinstitution_id = fields.Many2one(related='work_teaching_id.subinstitution_id')

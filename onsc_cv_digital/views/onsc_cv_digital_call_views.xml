@@ -252,7 +252,7 @@
                             </group>
                             <group>
                                 <group string="Género"
-                                    attrs="{'invisible': [('is_cv_gender_public', '=', False),('is_trans', '=', False)]}">
+                                    attrs="{'invisible': ['|',('is_cv_gender_public', '=', False),('is_trans', '=', False)]}">
                                     <field name="cv_gender_id"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
@@ -265,7 +265,7 @@
                                     <field name="cv_gender_record_filename" invisible="1"/>
                                 </group>
                                 <group string="Raza"
-                                    attrs="{'invisible': [('is_cv_race_public', '=', False),('is_afro_descendants', '=', False)]}">
+                                    attrs="{'invisible': ['|',('is_cv_race_public', '=', False),('is_afro_descendants', '=', False)]}">
                                     <field name="cv_race_ids" widget="many2many_tags"/>
                                     <field name="cv_race2"
                                            attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
@@ -306,7 +306,7 @@
                             </group>
                             <group>
                                 <group string="Víctima de delitos violentos"
-                                    attrs="{'invisible': [('is_public_information_victim_violent', '=', False),('is_victim_violent', '=', False)]}">
+                                    attrs="{'invisible': ['|',('is_public_information_victim_violent', '=', False),('is_victim_violent', '=', False)]}">
                                     <field name="is_victim_violent"/>
                                     <field name="relationship_victim_violent_file"
                                            filename="relationship_victim_violent_filename"
@@ -421,7 +421,7 @@
                             <field name="tutoring_orientation_supervision_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page string="Discapacidad"
-                            attrs="{'invisible': [('allow_content_public', '=', False),('is_disabilitie', '=', False)]}">
+                            attrs="{'invisible': ['|',('allow_content_public', '=', False),('is_disabilitie', '=', False)]}">
                             <div>
                                 <field name="disabilitie_documentary_validation_state" invisible="1"/>
                                 <button name="button_documentary_approve"

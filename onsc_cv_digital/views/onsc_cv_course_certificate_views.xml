@@ -58,6 +58,7 @@
                         </group>
                         <group>
                             <field name="state"
+                                   force_save="1"
                                    attrs="{'readonly': [('record_type', '=', 'certificate')],'required': [('record_type', '!=', 'certificate')]}"/>
                             <field name="start_date"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>

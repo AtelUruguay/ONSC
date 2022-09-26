@@ -87,9 +87,9 @@
                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
                                         <strong>
-                                            El documento de identidad ha sido rechazado. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
+                                            El documento de identidad ha sido rechazado. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline" readonly="1"/>
                                             <p/>
-                                            Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                            Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                                         </strong>
                                     </p>
                                 </div>
@@ -133,9 +133,9 @@
                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
                                             <p class="mb-0">
                                                 <strong>
-                                                    La credencial cívica ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
+                                                    La credencial cívica ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline" readonly="1"/>
                                                     <p/>
-                                                    Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                    Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                                                 </strong>
                                             </p>
                                         </div>
@@ -393,9 +393,9 @@
                                     attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
                                         <strong>
-                                            Ha sido rechazado. Motivo del rechazo: <field name="disabilitie_documentary_reject_reason" class="oe_inline"/>
+                                            Ha sido rechazado. Motivo del rechazo: <field name="disabilitie_documentary_reject_reason" class="oe_inline" readonly="1"/>
                                             <p/>
-                                            Fecha: <field name="disabilitie_documentary_validation_date" class="oe_inline"/> Usuario: <field name="disabilitie_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                            Fecha: <field name="disabilitie_documentary_validation_date" class="oe_inline readonly="1""/> Usuario: <field name="disabilitie_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                                         </strong>
                                     </p>
                                 </div>
