@@ -147,7 +147,7 @@ class ONSCCVDigital(models.Model):
     cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle")
     cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
     cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
-    cv_address_street2 = fields.Char("Calle")
+    cv_address_street2 = fields.Char(related='partner_id.street', string="Calle")
     cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
     cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
@@ -510,6 +510,15 @@ class ONSCCVDigital(models.Model):
         if self.cv_address_sandlot and not self.cv_address_sandlot.isdigit():
             self.cv_address_sandlot = ''.join(filter(str.isdigit, self.cv_address_sandlot))
             return cv_warning(_("Solar no puden contener letras"))
+
+    @api.onchange('cv_address_location_id')
+    def onchange_location_id(self):
+        self.cv_address_street_id = False
+        self.cv_address_street2
+
+    @api.onchange('cv_address_street_id')
+    def onchange_street(self):
+        self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street})
 
     def button_unlink(self):
         self.unlink()

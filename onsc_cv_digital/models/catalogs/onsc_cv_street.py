@@ -6,7 +6,7 @@ from odoo import fields, models
 class ONSCCVStreet(models.Model):
     _name = 'onsc.cv.street'
     _description = 'Calles para Uruguay'
-    _rec_name = 'code'
+    _rec_name = 'street'
 
     code = fields.Char(string=u"Código", required=True)
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
