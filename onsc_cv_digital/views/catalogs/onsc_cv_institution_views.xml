@@ -71,8 +71,8 @@
                                    force_save="1"/>
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company" invisible="1"/>
                             <field name="active" invisible="1"/>
-                            <field name="basic_formation"/>
-                            <field name="advanced_formation"/>
+                            <field name="is_basic_formation"/>
+                            <field name="is_advanced_formation"/>
                         </group>
                         <group>
                             <field name="reject_reason" states="rejected"/>
