@@ -296,7 +296,7 @@
                             <group>
                                 <group>
                                     <field name="country_code" invisible="1"/>
-                                    <field name="cv_address_street_id" string="Calle" attrs="{'invisible': [('country_code', '!=', 'UY')]}" domain="[('state_id', '=?', cv_address_state_id),('cv_location_id', '=?', cv_address_location_id)]"/>
+                                    <field name="cv_address_street_id" string="Calle" attrs="{'invisible': [('country_code', '!=', 'UY')]}" domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]"/>
                                     <field name="cv_address_street2" string="Calle" attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
                                     <field name="cv_address_place"/>
                                     <field name="cv_address_block"/>

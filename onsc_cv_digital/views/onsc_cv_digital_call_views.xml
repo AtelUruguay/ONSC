@@ -362,6 +362,9 @@
                                     <field name="country_code" invisible="1"/>
                                     <field name="cv_address_street_id" string="Calle" attrs="{'invisible': [('country_code', '!=', 'UY')]}"/>
                                     <field name="cv_address_street2" string="Calle" attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
+                                    <field name="cv_address_place"/>
+                                    <field name="cv_address_block"/>
+                                    <field name="cv_address_sandlot"/>
                                 </group>
                                 <group>
                                     <field name="cv_address_nro_door"/>

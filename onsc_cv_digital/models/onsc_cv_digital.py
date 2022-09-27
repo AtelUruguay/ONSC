@@ -511,14 +511,11 @@ class ONSCCVDigital(models.Model):
             self.cv_address_sandlot = ''.join(filter(str.isdigit, self.cv_address_sandlot))
             return cv_warning(_("Solar no puden contener letras"))
 
+
     @api.onchange('cv_address_location_id')
     def onchange_location_id(self):
         self.cv_address_street_id = False
-        self.cv_address_street2
-
-    @api.onchange('cv_address_street_id')
-    def onchange_street(self):
-        self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street})
+        self.cv_address_street2 = False
 
     def button_unlink(self):
         self.unlink()
@@ -708,6 +705,20 @@ class ONSCCVDigital(models.Model):
         except IOError:
             formatted_response = "Servidor no encontrado."
         return formatted_response
+
+    @api.model
+    def create(self, values):
+        record = super(ONSCCVDigital, self).create(values)
+        if values.get('cv_address_street_id'):
+            record.partner_id.suspend_security().write({'street': record.cv_address_street_id.street})
+        return record
+
+    def write(self, values):
+        record = super(ONSCCVDigital, self).write(values)
+        if values.get('country_code') == 'UY' or values.get('cv_address_street_id'):
+            self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street})
+        return record
+
 
 
 class ONSCCVOtherRelevantInformation(models.Model):

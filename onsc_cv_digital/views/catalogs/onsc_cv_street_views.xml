@@ -5,7 +5,7 @@
         <field name="name">onsc.cv.street.tree</field>
         <field name="model">onsc.cv.street</field>
         <field name="arch" type="xml">
-            <tree string="Tipos de evento">
+            <tree string="Calles">
                 <field name="code"/>
                 <field name="state_id"/>
                 <field name="cv_location_id"/>
@@ -18,7 +18,7 @@
         <field name="name">onsc.cv.street.form</field>
         <field name="model">onsc.cv.street</field>
         <field name="arch" type="xml">
-            <form string="Calles">
+            <form string="Calle">
                 <sheet>
                     <group>
                         <group>
