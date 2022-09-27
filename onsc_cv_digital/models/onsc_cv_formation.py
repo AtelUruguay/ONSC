@@ -70,6 +70,12 @@ class ONSCCVFormationAdvanced(models.Model):
 
     country_code = fields.Char(related="country_id.code")
 
+    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired_advanced_formation_rel',
+                                              string=u'Conocimientos adquiridos',
+                                              copy=True,
+                                              required=True,
+                                              store=True)
+
     @api.onchange('homologated_title_date')
     def onchange_homologated_title_date(self):
         if self.homologated_title_date and self.homologated_title_date > fields.Date.today():

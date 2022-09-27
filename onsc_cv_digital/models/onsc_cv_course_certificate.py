@@ -46,7 +46,9 @@ class ONSCCVCourseCertificate(models.Model):
     digital_doc_file = fields.Binary('Certificado/constancia')
     digital_doc_filename = fields.Char('Nombre del documento digital')
     knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_acquired_course_rel',
-                                              string=u'Conocimientos adquiridos', required=True,
+                                              string=u'Conocimientos adquiridos',
+                                              required=True,
+                                              copy=True,
                                               store=True)
     certificate_start_date = fields.Date('Fecha de obtención del certificado / constancia',
                                          related='start_date', readonly=False)
