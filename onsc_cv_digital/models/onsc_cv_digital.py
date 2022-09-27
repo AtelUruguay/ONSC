@@ -511,7 +511,6 @@ class ONSCCVDigital(models.Model):
             self.cv_address_sandlot = ''.join(filter(str.isdigit, self.cv_address_sandlot))
             return cv_warning(_("Solar no puden contener letras"))
 
-
     @api.onchange('cv_address_location_id')
     def onchange_location_id(self):
         self.cv_address_street_id = False
@@ -718,7 +717,6 @@ class ONSCCVDigital(models.Model):
         if values.get('country_code') == 'UY' or values.get('cv_address_street_id'):
             self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street})
         return record
-
 
 
 class ONSCCVOtherRelevantInformation(models.Model):
