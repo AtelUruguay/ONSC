@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="onsc_cv_street_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.street.tree</field>
+        <field name="model">onsc.cv.street</field>
+        <field name="arch" type="xml">
+            <tree string="Calles">
+                <field name="code"/>
+                <field name="state_id"/>
+                <field name="cv_location_id"/>
+                <field name="street"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_street_form" model="ir.ui.view">
+        <field name="name">onsc.cv.street.form</field>
+        <field name="model">onsc.cv.street</field>
+        <field name="arch" type="xml">
+            <form string="Calle">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="state_id"/>
+                        </group>
+                        <group>
+                            <field name="cv_location_id"/>
+                            <field name="street"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_cv_street_action' model='ir.actions.act_window'>
+        <field name="name">Calles</field>
+        <field name="res_model">onsc.cv.street</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva calle
+            </p>
+        </field>
+    </record>
+</odoo>

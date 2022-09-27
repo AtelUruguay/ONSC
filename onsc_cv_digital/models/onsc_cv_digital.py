@@ -141,19 +141,21 @@ class ONSCCVDigital(models.Model):
 
     # DOMICILIO----<Page>
     country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
+    country_code = fields.Char("Código", related="country_id.code", readonly=True)
     cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
     cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False, store=True)
-    cv_address_street = fields.Char(related='partner_id.street', readonly=False)
+    cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle")
     cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
     cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
-    cv_address_street2 = fields.Char(related='partner_id.street2', readonly=False)
-    cv_address_street3 = fields.Char(related='partner_id.cv_street3', readonly=False)
+    cv_address_street2 = fields.Char(related='partner_id.street', string="Calle")
     cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
     cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
     cv_address_state = fields.Selection(related='cv_address_location_id.state', store=True)
     cv_address_reject_reason = fields.Text(related='cv_address_location_id.reject_reason')
-
+    cv_address_place = fields.Char(string="Paraje", size=200)
+    cv_address_block = fields.Char(string="Manzana", size=5)
+    cv_address_sandlot = fields.Char(string="Solar", size=5)
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
                                       selection=[('legal', 'Legal'), ('natural', 'Natural'),
@@ -491,12 +493,28 @@ class ONSCCVDigital(models.Model):
         if self.crendencial_serie and not self.crendencial_serie.isalpha():
             self.crendencial_serie = ''
             return cv_warning(_("La serie de la credencial no puede contener números"))
+        if not self.crendencial_serie.isupper():
+            self.crendencial_serie = self.crendencial_serie.upper()
 
     @api.onchange('credential_number')
     def onchange_credential_number(self):
         if self.credential_number and not self.credential_number.isdigit():
             self.credential_number = ''.join(filter(str.isdigit, self.credential_number))
             return cv_warning(_("El número de la credencial no puede contener letras"))
+
+    @api.onchange('cv_address_block', 'cv_address_sandlot')
+    def onchange_block_sandlot(self):
+        if self.cv_address_block and not self.cv_address_block.isdigit():
+            self.cv_address_block = ''.join(filter(str.isdigit, self.cv_address_block))
+            return cv_warning(_("Manzana no puden contener letras"))
+        if self.cv_address_sandlot and not self.cv_address_sandlot.isdigit():
+            self.cv_address_sandlot = ''.join(filter(str.isdigit, self.cv_address_sandlot))
+            return cv_warning(_("Solar no puden contener letras"))
+
+    @api.onchange('cv_address_location_id')
+    def onchange_location_id(self):
+        self.cv_address_street_id = False
+        self.cv_address_street2 = False
 
     def button_unlink(self):
         self.unlink()
@@ -686,6 +704,19 @@ class ONSCCVDigital(models.Model):
         except IOError:
             formatted_response = "Servidor no encontrado."
         return formatted_response
+
+    @api.model
+    def create(self, values):
+        record = super(ONSCCVDigital, self).create(values)
+        if values.get('cv_address_street_id'):
+            record.partner_id.suspend_security().write({'street': record.cv_address_street_id.street})
+        return record
+
+    def write(self, values):
+        record = super(ONSCCVDigital, self).write(values)
+        if values.get('country_code') == 'UY' or values.get('cv_address_street_id'):
+            self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street})
+        return record
 
 
 class ONSCCVOtherRelevantInformation(models.Model):
