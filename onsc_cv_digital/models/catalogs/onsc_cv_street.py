@@ -10,7 +10,7 @@ class ONSCCVStreet(models.Model):
 
     code = fields.Char(string=u"Código", required=True)
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
-                               domain="[('country_id.code', '=', 'UY')]")
+                               domain="[('country_id.code','=','UY')]")
     cv_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad', ondelete='restrict',
                                      domain="[('state_id','=',state_id)]")
     street = fields.Char(string="Calle", required=True)
