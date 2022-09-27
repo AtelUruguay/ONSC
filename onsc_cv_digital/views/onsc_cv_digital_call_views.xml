@@ -21,6 +21,7 @@
                 <group expand="1" string="Group By">
                     <filter name="group_by_country_id" string="País" context="{'group_by':'cv_emissor_country_id'}"/>
                     <filter name="group_by_call_number" string="Número de llamado" context="{'group_by':'call_number'}"/>
+                    <filter name="group_by_partner_id" string="Nombre" context="{'group_by':'partner_id'}"/>
                 </group>
             </search>
         </field>
