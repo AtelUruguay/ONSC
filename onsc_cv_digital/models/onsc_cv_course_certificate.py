@@ -23,7 +23,7 @@ class ONSCCVCourseCertificate(models.Model):
 
     record_type = fields.Selection(TYPES, string='Tipo', required=True, default='course')
     course_type = fields.Selection(COURSE_TYPES, string='Tipo')
-    course_title = fields.Char('Título del curso, taller u otra capacitación')
+    course_title = fields.Text('Título del curso, taller u otra capacitación')
     name = fields.Char(compute='_compute_name', store=True, string='Título')
     institution_cert_id = fields.Many2one('onsc.cv.certifying.institution', string=u'Institución certificadora')
     subinstitution_cert_id = fields.Many2one('onsc.cv.certifying.subinstitution',

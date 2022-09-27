@@ -127,7 +127,7 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            filename="civical_credential_filename"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])],'invisible': [('is_cv_uruguay','!=',True)]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
@@ -295,9 +295,12 @@
                             </group>
                             <group>
                                 <group>
-                                    <field name="cv_address_street" string="Calle"/>
-                                    <field name="cv_address_street2" string="Entre calle"/>
-                                    <field name="cv_address_street3" string="Y calle"/>
+                                    <field name="country_code" invisible="1"/>
+                                    <field name="cv_address_street_id" string="Calle" attrs="{'invisible': [('country_code', '!=', 'UY')]}" domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]"/>
+                                    <field name="cv_address_street2" string="Calle" attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
+                                    <field name="cv_address_place"/>
+                                    <field name="cv_address_block"/>
+                                    <field name="cv_address_sandlot"/>
                                 </group>
                                 <group>
                                     <field name="cv_address_nro_door"/>

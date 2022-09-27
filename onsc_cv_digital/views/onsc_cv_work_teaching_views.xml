@@ -178,7 +178,7 @@
                             <field name="work_teaching_id" invisible="1"/>
                             <field name="subject"/>
                             <field name="course_type"
-                                   attrs="{'invisible': [('subject', '=', False)], 'required': [('subject', '!=', False)]}"/>
+                                   required="1"/>
                             <field name="currently_working_state"/>
                             <field name="program_ids" widget="many2many_tags"
                                    domain="[('institution_id', '=', institution_id), ('subinstitution_id', '=', subinstitution_id), ('country_id', '=',country_id)]"

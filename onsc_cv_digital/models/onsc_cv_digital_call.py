@@ -212,7 +212,6 @@ class ONSCCVDigitalCall(models.Model):
         elif self._context.get('massive_documentary_reject'):
             self.massive_documentary_reject(reject_reason)
 
-
     @api.model
     def create(self, values):
         values['type'] = 'call'
@@ -424,4 +423,3 @@ class ONSCCVDigitalCall(models.Model):
         validation_childs = self._get_documentary_validation_models(only_fields=True)
         for validation_child in validation_childs:
             self.mapped(validation_child).documentary_reject(reject_reason)
-
