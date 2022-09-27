@@ -58,6 +58,10 @@ class ONSCCVDigitalCall(models.Model):
         store=True
     )
 
+    show_victim_info = fields.Boolean(compute='_compute_show_victim_info')
+    show_disabilitie_info = fields.Boolean(compute='_compute_show_disabilitie_info')
+    show_gender_info = fields.Boolean(compute='_compute_show_gender_info')
+
     @api.constrains("cv_digital_id", "cv_digital_id.active", "call_number", "cv_digital_origin_id")
     def _check_cv_call_unicity(self):
         for record in self.filtered(lambda x: x.active):
@@ -171,15 +175,28 @@ class ONSCCVDigitalCall(models.Model):
                     break
             record.gral_info_documentary_validation_state = _documentary_validation_state
 
+    def _compute_show_victim_info(self):
+        conditional_show = self._context.get('is_call_documentary_validation', False)
+        for record in self:
+            record.show_victim_info = (conditional_show and
+                                       record.is_public_information_victim_violent or
+                                       record.is_victim) or not conditional_show
+
+    def _compute_show_disabilitie_info(self):
+        conditional_show = self._context.get('is_call_documentary_validation', False)
+        for record in self:
+            record.show_disabilitie_info = (conditional_show and record.allow_content_public or
+                                            record.is_disabilie) or not conditional_show
+
+    def _compute_show_gender_info(self):
+        conditional_show = self._context.get('is_call_documentary_validation', False)
+        for record in self:
+            record.show_gender_info = (conditional_show and record.is_cv_gender_public or
+                                       record.is_trans) or not conditional_show
+
     def button_documentary_approve(self):
         if self._context.get('documentary_validation'):
-            documentary = self._context.get('documentary_validation')
-            self.write({
-                '%s_documentary_validation_state' % documentary: 'validated',
-                '%s_documentary_reject_reason' % documentary: '',
-                '%s_documentary_validation_date' % documentary: fields.Date.today(),
-                '%s_documentary_user_id' % documentary: self.env.user.id,
-            })
+            self._update_documentary(self._context.get('documentary_validation'), 'validated', '')
 
     def button_documentary_reject(self):
         ctx = self._context.copy()
@@ -200,18 +217,19 @@ class ONSCCVDigitalCall(models.Model):
 
     def documentary_reject(self, reject_reason):
         if self._context.get('documentary_validation'):
-            documentary = self._context.get('documentary_validation')
-            vals = {
-                '%s_documentary_validation_state' % documentary: 'rejected',
-                '%s_documentary_reject_reason' % documentary: reject_reason,
-                '%s_documentary_validation_date' % documentary: fields.Date.today(),
-                '%s_documentary_user_id' % documentary: self.env.user.id,
-            }
-            self.write(vals)
-            self.mapped('cv_digital_origin_id').write(vals)
+            self._update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)
         elif self._context.get('massive_documentary_reject'):
             self.massive_documentary_reject(reject_reason)
 
+    def _update_documentary(self, documentary_field, state, reject_reason):
+        vals = {
+            '%s_documentary_validation_state' % documentary_field: state,
+            '%s_documentary_reject_reason' % documentary_field: reject_reason,
+            '%s_documentary_validation_date' % documentary_field: fields.Date.today(),
+            '%s_documentary_user_id' % documentary_field: self.env.user.id,
+        }
+        self.write(vals)
+        self.mapped('cv_digital_origin_id').write(vals)
 
     @api.model
     def create(self, values):
@@ -424,4 +442,3 @@ class ONSCCVDigitalCall(models.Model):
         validation_childs = self._get_documentary_validation_models(only_fields=True)
         for validation_child in validation_childs:
             self.mapped(validation_child).documentary_reject(reject_reason)
-

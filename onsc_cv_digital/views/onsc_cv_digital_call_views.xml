@@ -14,6 +14,9 @@
                         domain="[('cv_emissor_country_id.code','=','UY')]"/>
                 <filter string="Inactivos" name="filter_inactive" icon="terp-personal"
                         domain="[('active','=',False)]"/>
+                <filter string="Para validar" name="filter_documentary_to_validate" icon="terp-personal"
+                        groups="onsc_cv_digital.group_validador_documental_cv"
+                        domain="[('gral_info_documentary_validation_state','=','to_validate')]"/>
                 <separator/>
                 <group expand="1" string="Group By">
                     <filter name="group_by_country_id" string="País" context="{'group_by':'cv_emissor_country_id'}"/>
@@ -32,6 +35,7 @@
                 <field name="call_number"/>
                 <field name="postulation_number"/>
                 <field name="postulation_date" string="Fecha de actualización"/>
+                <field name="gral_info_documentary_validation_state" invisible="1"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -252,7 +256,7 @@
                             </group>
                             <group>
                                 <group string="Género"
-                                    attrs="{'invisible': ['|',('is_cv_gender_public', '=', False),('is_trans', '=', False)]}">
+                                    attrs="{'invisible': [('show_gender_info', '=', False)]}">
                                     <field name="cv_gender_id"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
@@ -263,6 +267,7 @@
                                     <field name="is_cv_gender_option_other_enable" invisible="1"/>
                                     <field name="is_cv_gender_record" invisible="1"/>
                                     <field name="cv_gender_record_filename" invisible="1"/>
+                                    <field name="show_gender_info" invisible="1"/>
                                 </group>
                                 <group string="Raza"
                                     attrs="{'invisible': ['|',('is_cv_race_public', '=', False),('is_afro_descendants', '=', False)]}">
@@ -306,7 +311,7 @@
                             </group>
                             <group>
                                 <group string="Víctima de delitos violentos"
-                                    attrs="{'invisible': ['|',('is_public_information_victim_violent', '=', False),('is_victim_violent', '=', False)]}">
+                                    attrs="{'invisible': [('show_victim_info', '=', False)]}">
                                     <field name="is_victim_violent"/>
                                     <field name="relationship_victim_violent_file"
                                            filename="relationship_victim_violent_filename"
@@ -314,6 +319,7 @@
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="is_public_information_victim_violent"/>
                                     <field name="relationship_victim_violent_filename" invisible="1"/>
+                                    <field name="show_victim_info" invisible="1"/>
                                 </group>
                             </group>
                         </page>
@@ -421,8 +427,9 @@
                             <field name="tutoring_orientation_supervision_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page string="Discapacidad"
-                            attrs="{'invisible': ['|',('allow_content_public', '=', False),('is_disabilitie', '=', False)]}">
+                            attrs="{'invisible': [('show_disabilitie_info', '=', False)]}">
                             <div>
+                                <field name="show_disabilitie_info" invisible="1"/>
                                 <field name="disabilitie_documentary_validation_state" invisible="1"/>
                                 <button name="button_documentary_approve"
                                         groups="onsc_cv_digital.group_validador_documental_cv"
@@ -561,7 +568,7 @@
         <field name="context">{
             'tree_view_ref': 'onsc_cv_digital.onsc_cv_digital_call_documentary_validation_tree'}
         </field>
-        <field name="context">{'is_call_documentary_validation': True,'search_default_group_by_call_number': True}</field>
+        <field name="context">{'is_call_documentary_validation': True,'search_default_group_by_call_number': True,'search_default_filter_documentary_to_validate': True}</field>
         <field name="domain">[('type','=','call')]</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
