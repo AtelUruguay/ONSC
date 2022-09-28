@@ -230,6 +230,7 @@ class ONSCCVDigitalCall(models.Model):
         }
         self.write(vals)
         self.mapped('cv_digital_origin_id').write(vals)
+
     @api.model
     def create(self, values):
         values['type'] = 'call'
