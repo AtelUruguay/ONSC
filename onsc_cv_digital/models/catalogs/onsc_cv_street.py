@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class ONSCCVStreet(models.Model):
@@ -10,10 +10,15 @@ class ONSCCVStreet(models.Model):
 
     code = fields.Char(string=u"Código", required=True)
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
-                               domain="[('country_id.code', '=', 'UY')]")
+                               domain="[('country_id.code','=','UY')]")
     cv_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad', ondelete='restrict',
-                                     domain="[('state_id', '=',state_id)]", required=True)
+                                     domain="[('state_id','=',state_id)]", required=True)
     street = fields.Char(string="Calle", required=True)
+
+    @api.onchange('state_id')
+    def _onchange_state_id(self):
+        if (self.state_id and self.state_id != self.cv_location_id.state_id) or self.state_id.id is False:
+            self.cv_location_id = False
 
     _sql_constraints = [
         ('country_street_location_id_uniq', 'unique(cv_location_id, street)',

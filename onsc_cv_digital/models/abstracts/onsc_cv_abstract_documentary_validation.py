@@ -42,9 +42,9 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                     attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
                     <p class="mb-0">
                         <strong>
-                            Ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline"/>
+                            Ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
                             <p/>
-                            Fecha: <field name="documentary_validation_date" class="oe_inline"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                         </strong>
                     </p>
                 </div>
@@ -54,7 +54,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                         <strong>
                             El registro ha sido validado
                             <p/>
-                            Fecha: <field name="documentary_validation_date" class="oe_inline"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True} readonly="1""/>
                         </strong>
                     </p>
                 </div>
@@ -69,9 +69,9 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                         attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
                         <p class="mb-0">
                             <strong>
-                                Ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline"/>
+                                Ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
                                 <p/>
-                                Fecha: <field name="documentary_validation_date" class="oe_inline"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                             </strong>
                         </p>
                     </div>
@@ -83,10 +83,10 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         res = super(ONSCCVAbstractFileValidation, self).fields_view_get(view_id, view_type, toolbar, submenu)
         if view_type == 'form':
             doc = etree.XML(res['arch'])
-            field_ids = self.env["onsc.cv.documentary.validation.config"].search(
-                [('model_id.model', '=', self._name)]).mapped('field_ids')
+            config = self.env["onsc.cv.documentary.validation.config"].search(
+                [('model_id.model', '=', self._name)])
             if self._context.get('is_call_documentary_validation', False):
-                for field in field_ids:
+                for field in config.mapped('field_ids'):
                     node = doc.xpath("//field[@name='" + field.name + "']")
                     for n in node:
                         n.set('doc-validation', 'label-text-danger')
@@ -94,7 +94,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 widget = self.widget_call_documentary_button
             else:
                 widget = self.widget_documentary_button
-            if len(field_ids):
+            if len(config):
                 for node in doc.xpath('//sheet'):
                     node.insert(0, widget)
                 xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
