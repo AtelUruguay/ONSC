@@ -75,17 +75,17 @@
                         <label for="postulation_number" string="Número de postulación"/>
                         <h2><field name="postulation_number"/></h2>
                         <div invisible="context.get('is_call_documentary_validation', False)">
-                            <label for="is_json_sent"/><field name="is_json_sent"/>
-                            <label for="is_cancel"/><field name="is_cancel"/>
-                            <label for="is_zip"/><field name="is_zip"/>
-                            <label for="is_close"/><field name="is_close"/>
+                          <label for="is_json_sent"/><field name="is_json_sent"/>
+                          <label for="is_cancel"/><field name="is_cancel"/>
+                          <label for="is_zip"/><field name="is_zip"/>
+                          <label for="is_close"/><field name="is_close"/>
                             <label for="preselected"/><field name="preselected"/>
                         </div>
                         <div name="div_call_is" invisible="context.get('is_call_documentary_validation', False)">
-                            <label for="is_trans"/><field name="is_trans"/>
-                            <label for="is_afro"/><field name="is_afro"/>
-                            <label for="is_disabilitie"/><field name="is_disabilitie"/>
-                            <label for="is_victim"/><field name="is_victim"/>
+                          <label for="is_trans"/><field name="is_trans"/>
+                          <label for="is_afro"/><field name="is_afro"/>
+                          <label for="is_disabilitie"/><field name="is_disabilitie"/>
+                          <label for="is_victim"/><field name="is_victim"/>
                         </div>
                     </div>
                     <group style="padding-top:40px">
@@ -115,11 +115,11 @@
                             </div>
                             <field name="cv_expiration_date" required="1"/>
                             <field name="document_identity_file"
-                                   filename="document_identity_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                                           filename="document_identity_filename"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
                             <div class="row" nolabel="1" colspan="2">
                                 <div class="alert alert-danger" role="alert" style="width:70%"
-                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'rejected')]}">
+                                    attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
                                         <strong>
                                             El documento de identidad ha sido rechazado. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
@@ -129,7 +129,7 @@
                                     </p>
                                 </div>
                                 <div class="alert alert-success" role="alert"  style="width:70%"
-                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'validated')]}">
+                                    attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'validated')]}">
                                     <p class="mb-0">
                                         <strong>
                                             El documento de identidad ha sido validado
@@ -168,7 +168,7 @@
                                     <label for="credential_number" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <div class="request-partner-author-field o_row" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}">
                                         <field name="credential_number"
-                                               attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                         <span>
                                             <button name="button_documentary_approve"
                                                     groups="onsc_cv_digital.group_validador_documental_cv"
@@ -193,7 +193,7 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
-                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
+                                            attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La credencial cívica ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
@@ -203,7 +203,7 @@
                                             </p>
                                         </div>
                                         <div class="alert alert-success" role="alert" style="width:70%"
-                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'validated')]}">
+                                            attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'validated')]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La credencial cívica ha sido validada
@@ -257,7 +257,7 @@
                             </group>
                             <group>
                                 <group string="Género"
-                                       attrs="{'invisible': [('show_gender_info', '=', False)]}">
+                                    attrs="{'invisible': [('show_gender_info', '=', False)]}">
                                     <field name="cv_gender_id"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
@@ -271,7 +271,7 @@
                                     <field name="show_gender_info" invisible="1"/>
                                 </group>
                                 <group string="Raza"
-                                       attrs="{'invisible': ['|',('is_cv_race_public', '=', False),('is_afro_descendants', '=', False)]}">
+                                    attrs="{'invisible': ['|',('is_cv_race_public', '=', False),('is_afro_descendants', '=', False)]}">
                                     <field name="cv_race_ids" widget="many2many_tags"/>
                                     <field name="cv_race2"
                                            attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
@@ -312,7 +312,7 @@
                             </group>
                             <group>
                                 <group string="Víctima de delitos violentos"
-                                       attrs="{'invisible': [('show_victim_info', '=', False)]}">
+                                    attrs="{'invisible': [('show_victim_info', '=', False)]}">
                                     <field name="is_victim_violent"/>
                                     <field name="relationship_victim_violent_file"
                                            filename="relationship_victim_violent_filename"
@@ -441,7 +441,7 @@
                             <field name="tutoring_orientation_supervision_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page string="Discapacidad"
-                              attrs="{'invisible': [('show_disabilitie_info', '=', False)]}">
+                            attrs="{'invisible': [('show_disabilitie_info', '=', False)]}">
                             <div>
                                 <field name="show_disabilitie_info" invisible="1"/>
                                 <field name="disabilitie_documentary_validation_state" invisible="1"/>
@@ -456,7 +456,7 @@
                                         context="{'documentary_validation':'disabilitie'}"
                                         type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                 <div class="alert alert-danger" role="alert"
-                                     attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'rejected')]}">
+                                    attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
                                         <strong>
                                             Ha sido rechazado. Motivo del rechazo: <field name="disabilitie_documentary_reject_reason" class="oe_inline"/>
@@ -466,7 +466,7 @@
                                     </p>
                                 </div>
                                 <div class="alert alert-success" role="alert"
-                                     attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'validated')]}">
+                                    attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'validated')]}">
                                     <p class="mb-0">
                                         <strong>
                                             El registro ha sido validado
@@ -514,7 +514,7 @@
                             </group>
                             <group string="Seleccione los apoyos que desea:"
                                    attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
-                                <group>
+                            <group>
                                     <field name="type_support_ids_domain" invisible="1"/>
                                     <field name="type_support_ids" widget="many2many_tags"
                                            domain="[('id', 'in', type_support_ids_domain)]"/>
