@@ -145,9 +145,13 @@ class ONSCCVDigital(models.Model):
     cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
     cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False, store=True)
     cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle")
+    cv_address_street2_id = fields.Many2one('onsc.cv.street', string="Entre calle")
+    cv_address_street3_id = fields.Many2one('onsc.cv.street', string=u'Y calle')
     cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
     cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
-    cv_address_street2 = fields.Char(related='partner_id.street', string="Calle")
+    cv_address_street = fields.Char(related='partner_id.street', readonly=False)
+    cv_address_street2 = fields.Char(related='partner_id.street2', readonly=False)
+    cv_address_street3 = fields.Char(related='partner_id.cv_street3', readonly=False)
     cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
     cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
@@ -514,7 +518,11 @@ class ONSCCVDigital(models.Model):
     @api.onchange('cv_address_location_id')
     def onchange_location_id(self):
         self.cv_address_street_id = False
+        self.cv_address_street2_id = False
+        self.cv_address_street3_id = False
+        self.cv_address_street = False
         self.cv_address_street2 = False
+        self.cv_address_street3 = False
 
     def button_unlink(self):
         self.unlink()
