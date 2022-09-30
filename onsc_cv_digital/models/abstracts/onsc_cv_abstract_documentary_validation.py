@@ -29,7 +29,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     @property
     def widget_call_documentary_button(self):
-        return etree.XML(_("""
+        return etree.XML("""
             <div>
                 <field name="documentary_validation_state" invisible="1"/>
                 <button name="button_documentary_approve"
@@ -54,11 +54,11 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                         <strong>
                             El registro ha sido validado
                             <p/>
-                            Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True} readonly="1""/>
+                            Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                         </strong>
                     </p>
                 </div>
-            </div>"""))
+            </div>""")
 
     @property
     def widget_documentary_button(self):

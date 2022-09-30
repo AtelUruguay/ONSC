@@ -58,7 +58,14 @@ class ONSCCVDigitalCall(models.Model):
         store=True
     )
 
+    documentary_validation_sections_tovalidate = fields.Char(
+        string="Secciones por validar",
+        compute='_compute_gral_info_documentary_validation_state',
+        store=True
+    )
+
     show_victim_info = fields.Boolean(compute='_compute_show_victim_info')
+    show_race_info = fields.Boolean(compute='_compute_show_race_info')
     show_disabilitie_info = fields.Boolean(compute='_compute_show_disabilitie_info')
     show_gender_info = fields.Boolean(compute='_compute_show_gender_info')
 
@@ -168,12 +175,22 @@ class ONSCCVDigitalCall(models.Model):
     def _compute_gral_info_documentary_validation_state(self):
         field_documentary_validation_models = self._get_documentary_validation_models()
         for record in self.filtered(lambda x: x.is_zip is False):
-            _documentary_validation_state = 'validated'
+            sections_tovalidate = []
+            documentary_validation_state = 'validated'
             for documentary_validation_model in field_documentary_validation_models:
                 if 'to_validate' in eval("record.mapped('%s')" % documentary_validation_model):
-                    _documentary_validation_state = 'to_validate'
-                    break
-            record.gral_info_documentary_validation_state = _documentary_validation_state
+                    documentary_validation_state = 'to_validate'
+                    documentary_validation_model_split = documentary_validation_model.split('.')
+                    if len(documentary_validation_model_split) == 2:
+                        sections_tovalidate.append(eval("record.%s._description" % documentary_validation_model_split[0]))
+                    elif documentary_validation_model == 'civical_credential_documentary_validation_state':
+                        sections_tovalidate.append(_('Credenciales cívicas'))
+                    elif documentary_validation_model == 'nro_doc_documentary_validation_state':
+                        sections_tovalidate.append(_('Documento de identidad'))
+                    elif documentary_validation_model == 'disabilitie_documentary_validation_state':
+                        sections_tovalidate.append(_('Discapacidad'))
+            record.gral_info_documentary_validation_state = documentary_validation_state
+            record.documentary_validation_sections_tovalidate = ', '.join(sections_tovalidate)
 
     def _compute_show_victim_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
@@ -182,10 +199,17 @@ class ONSCCVDigitalCall(models.Model):
                                        record.is_public_information_victim_violent or
                                        record.is_victim) or not conditional_show
 
+    def _compute_show_race_info(self):
+        conditional_show = self._context.get('is_call_documentary_validation', False)
+        for record in self:
+            record.show_race_info = (conditional_show and
+                                       record.is_cv_race_public or
+                                       record.is_afro) or not conditional_show
+
     def _compute_show_disabilitie_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
-            record.show_disabilitie_info = (conditional_show and record.allow_content_public or
+            record.show_disabilitie_info = (conditional_show and record.allow_content_public == 'si' or
                                             record.is_disabilitie) or not conditional_show
 
     def _compute_show_gender_info(self):
@@ -199,6 +223,8 @@ class ONSCCVDigitalCall(models.Model):
             self._update_documentary(self._context.get('documentary_validation'), 'validated', '')
 
     def button_documentary_reject(self):
+        if self.filtered(lambda x: x.is_zip):
+            raise ValidationError(_("No se puede rechazar Copias de CV si tiene el ZIP generado!"))
         ctx = self._context.copy()
         ctx.update({
             'default_model_name': self._name,
@@ -221,6 +247,27 @@ class ONSCCVDigitalCall(models.Model):
         elif self._context.get('massive_documentary_reject'):
             self.massive_documentary_reject(reject_reason)
 
+    def massive_documentary_reject(self, reject_reason):
+        today = fields.Date.today()
+        user_id = self.env.user.id
+        self.write({
+            'disabilitie_documentary_validation_state': 'rejected',
+            'nro_doc_documentary_validation_state': 'rejected',
+            'civical_credential_documentary_validation_state': 'rejected',
+            'disabilitie_documentary_reject_reason': reject_reason,
+            'nro_doc_documentary_reject_reason': reject_reason,
+            'civical_credential_documentary_reject_reason': reject_reason,
+            'disabilitie_documentary_validation_date': today,
+            'nro_doc_documentary_validation_date': today,
+            'civical_credential_documentary_validation_date': today,
+            'disabilitie_documentary_user_id': user_id,
+            'nro_doc_documentary_user_id': user_id,
+            'civical_credential_documentary_user_id': user_id,
+        })
+        validation_childs = self._get_documentary_validation_models(only_fields=True)
+        for validation_child in validation_childs:
+            self.mapped(validation_child).documentary_reject(reject_reason)
+
     def _update_documentary(self, documentary_field, state, reject_reason):
         vals = {
             '%s_documentary_validation_state' % documentary_field: state,
@@ -230,10 +277,72 @@ class ONSCCVDigitalCall(models.Model):
         }
         self.write(vals)
         self.mapped('cv_digital_origin_id').write(vals)
+
+
+    def _generate_json(self, call_number):
+        call_server_json_url = self.env.user.company_id.call_server_json_url
+        if call_server_json_url is False:
+            return False
+        if self.filtered(lambda x: x.call_conditional_state != 'validated'):
+            return False
+        filename = '%s_%s.json' % (call_number, str(fields.Datetime.now()))
+        json_file = open(join(call_server_json_url, filename), 'w')
+        for record in self:
+            json.dump(record._get_json_dict(), json_file)
+        self.write({
+            'is_json_sent': True
+        })
+
     @api.model
     def create(self, values):
         values['type'] = 'call'
         return super(ONSCCVDigitalCall, self).create(values)
+
+    # -------------------------------------------------------------------------------------------------------------------
+    #   WS utilities
+    # -------------------------------------------------------------------------------------------------------------------
+
+    def _get_json_dict(self):
+        # JSONifier
+        basic_formation = self.env['onsc.cv.basic.formation']._get_json_dict()
+        parser = [
+            'cv_full_name',
+            'call_number',
+            'postulation_date',
+            'postulation_number',
+            'preselected',
+            'is_trans',
+            'is_afro',
+            'is_disabilitie',
+            'is_victim',
+            'cv_emissor_country_id',
+            'cv_document_type_id',
+            'cv_nro_doc',
+            'cv_expiration_date',
+            'partner_id',
+            'cv_birthdate',
+            'cv_sex',
+            'cv_sex_updated_date',
+            'last_modification_date',
+            ('basic_formation_ids', basic_formation)
+        ]
+
+        return self.jsonify(parser)
+
+    @api.model
+    def _run_call_json_cron(self):
+        """
+        Cron que envia la notificación al usuario por período de inactividad en el CV
+        :return:
+        """
+        self.env.cr.execute(
+            '''SELECT DISTINCT(call_number) FROM onsc_cv_digital_call call WHERE call.is_close is True AND call.is_json_sent is False''')
+        results = self.env.cr.dictfetchall()
+        for result in results:
+            call_number = result.get('call_number')
+            calls = self.search([('call_number', '=', call_number)])
+            if len(calls):
+                calls._generate_json(calls)
 
     # WS Postulacion
     @api.model
@@ -366,78 +475,3 @@ class ONSCCVDigitalCall(models.Model):
             'is_victim': is_victim,
             'is_close': True
         }
-
-    def _generate_json(self, call_number):
-        call_server_json_url = self.env.user.company_id.call_server_json_url
-        if call_server_json_url is False:
-            return False
-        if self.filtered(lambda x: x.call_conditional_state != 'validated'):
-            return False
-        filename = '%s_%s.json' % (call_number, str(fields.Datetime.now()))
-        json_file = open(join(call_server_json_url, filename), 'w')
-        for record in self:
-            json.dump(record._get_json_dict(), json_file)
-        self.write({
-            'is_json_sent': True
-        })
-
-    def _get_json_dict(self):
-        # JSONifier
-        basic_formation = self.env['onsc.cv.basic.formation']._get_json_dict()
-        parser = [
-            'cv_full_name',
-            'call_number',
-            'postulation_date',
-            'postulation_number',
-            'preselected',
-            'is_trans',
-            'is_afro',
-            'is_disabilitie',
-            'is_victim',
-            'cv_emissor_country_id',
-            'cv_document_type_id',
-            'cv_nro_doc',
-            'cv_expiration_date',
-            'partner_id',
-            'cv_birthdate',
-            'cv_sex',
-            'cv_sex_updated_date',
-            'last_modification_date',
-            ('basic_formation_ids', basic_formation)
-        ]
-
-        return self.jsonify(parser)
-
-    @api.model
-    def _run_call_json_cron(self):
-        """
-        Cron que envia la notificación al usuario por período de inactividad en el CV
-        :return:
-        """
-        self.env.cr.execute(
-            '''SELECT DISTINCT(call_number) FROM onsc_cv_digital_call call WHERE call.is_close is True AND call.is_json_sent is False''')
-        results = self.env.cr.dictfetchall()
-        for result in results:
-            calls = self.search([('call_number', '=', result)])
-            calls._generate_json(result)
-
-    def massive_documentary_reject(self, reject_reason):
-        today = fields.Date.today()
-        user_id = self.env.user.id
-        self.write({
-            'disabilitie_documentary_validation_state': 'rejected',
-            'nro_doc_documentary_validation_state': 'rejected',
-            'civical_credential_documentary_validation_state': 'rejected',
-            'disabilitie_documentary_reject_reason': reject_reason,
-            'nro_doc_documentary_reject_reason': reject_reason,
-            'civical_credential_documentary_reject_reason': reject_reason,
-            'disabilitie_documentary_validation_date': today,
-            'nro_doc_documentary_validation_date': today,
-            'civical_credential_documentary_validation_date': today,
-            'disabilitie_documentary_user_id': user_id,
-            'nro_doc_documentary_user_id': user_id,
-            'civical_credential_documentary_user_id': user_id,
-        })
-        validation_childs = self._get_documentary_validation_models(only_fields=True)
-        for validation_child in validation_childs:
-            self.mapped(validation_child).documentary_reject(reject_reason)

@@ -85,8 +85,9 @@ ONSC CV Digital
         'views/onsc_cv_tutoring_orientation_supervision_views.xml',
         'views/onsc_cv_digital_participation_events_views.xml',
         'views/onsc_cv_digital_refernece_views.xml',
-        'views/onsc_cv_digital_call_views.xml',
         'views/onsc_cv_digital_drive_licence.xml',
+        'views/onsc_cv_digital_call_views.xml',
+        'views/onsc_cv_digital_call_documentary_validation_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [

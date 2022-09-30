@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_digital_call_documentary_validation_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.digital.call.documentary.validation.tree</field>
+        <field name="model">onsc.cv.digital.call</field>
+        <field name="arch" type="xml">
+            <tree string="Consulta de llamados Validador documental" delete="0" edit="0" create="0" duplicate="0">
+                <field name="call_number"/>
+                <field name="partner_id" string="Nombre"/>
+                <field name="postulation_date" string="Fecha de actualización"/>
+                <field name="gral_info_documentary_validation_state" string="Estado"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id='onsc_cv_digital_call_documentary_validation_action' model='ir.actions.act_window'>
+        <field name="name">Consulta de llamados Validador documental</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.cv.digital.call</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{
+            'tree_view_ref': 'onsc_cv_digital.onsc_cv_digital_call_documentary_validation_tree'}
+        </field>
+        <field name="context">{'is_call_documentary_validation': True,'search_default_group_by_call_number': True,'search_default_filter_documentary_to_validate': True}</field>
+        <field name="domain">[('type','=','call')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.server" id="onsc_cv_digital_call_massive_documentary_reject">
+        <field name="name">Rechazo documental masivo</field>
+        <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>
+        <field name="binding_model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = records.with_context(massive_documentary_reject = True).button_documentary_reject()
+        </field>
+        <field name="groups_id" eval="[(4,ref('onsc_cv_digital.group_validador_documental_cv'))]"/>
+    </record>
+</odoo>

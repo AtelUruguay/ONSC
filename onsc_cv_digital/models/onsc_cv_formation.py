@@ -19,8 +19,15 @@ class ONSCCVFormationBasic(models.Model):
     study_certificate_filename = fields.Char('Nombre del documento digital')
 
     def _get_json_dict(self):
-        return ["start_date", "end_date", "basic_education_level", ("country_id", ['name']),
-                ("institution_id", ['name']), ("subinstitution_id", ['name'])]
+        return [
+            "id",
+            "start_date",
+            "end_date",
+            "basic_education_level",
+            ("country_id", ['id', 'name']),
+            ("institution_id", ['id', 'name']),
+            ("subinstitution_id", ['id', 'name']),
+        ]
 
 
 class ONSCCVFormationAdvanced(models.Model):
