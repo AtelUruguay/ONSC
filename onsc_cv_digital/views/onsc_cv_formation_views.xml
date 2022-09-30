@@ -13,7 +13,7 @@
                             <field name="institution_id"
                                    required="1"
                                    domain="[('country_id', '=?', country_id),('is_basic_formation', '=', True)]"
-                                   context="{'default_country_id': country_id, 'is_readonly': True}"/>
+                                   context="{'default_country_id': country_id, 'is_readonly': True,'default_is_basic_formation': True}" />
                             <field name="subinstitution_id"
                                    required="1"
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
@@ -70,7 +70,7 @@
                             <field name="institution_id"
                                    required="1"
                                    domain="[('country_id', '=?', country_id),('is_advanced_formation', '=', True)]"
-                                   context="{'default_country_id': country_id, 'is_readonly': True}"/>
+                                   context="{'default_country_id': country_id, 'is_readonly': True,'default_is_advanced_formation': True}" />
                             <field name="subinstitution_id"
                                    required="1"
                                    attrs="{'readonly': [('institution_id', '=', False)]}"

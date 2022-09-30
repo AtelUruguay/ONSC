@@ -12,7 +12,7 @@ class ONSCCVStreet(models.Model):
     state_id = fields.Many2one('res.country.state', string='Departamento', ondelete='restrict', required=True,
                                domain="[('country_id.code','=','UY')]")
     cv_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad', ondelete='restrict',
-                                     domain="[('state_id','=',state_id)]")
+                                     domain="[('state_id','=',state_id)]", required=True)
     street = fields.Char(string="Calle", required=True)
 
     @api.onchange('state_id')
@@ -23,4 +23,5 @@ class ONSCCVStreet(models.Model):
     _sql_constraints = [
         ('country_street_location_id_uniq', 'unique(cv_location_id, street)',
          u'La combinación: calle y departamento debe ser única'),
+        ('code', 'unique(code)', u'El código debe ser único'),
     ]

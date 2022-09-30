@@ -56,83 +56,89 @@
                   sequence="3"
                   groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
 
+        <menuitem id="onsc_cv_street_action_menu"
+                  parent="onsc_cv_config_menu"
+                  action="onsc_cv_street_action"
+                  groups="group_gestor_catalogos_cv"
+                  sequence="4"/>
+
         <menuitem id="onsc_cv_certificate_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_certificate_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="4"/>
+                  sequence="5"/>
 
         <menuitem id="onsc_cv_location_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_location_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="5"/>
+                  sequence="6"/>
 
         <menuitem id="onsc_cv_knowledge_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_knowledge_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="6"/>
+                  sequence="7"/>
 
         <menuitem id="menu_country_state_partner"
                   action="onsc_cv_action_country_state"
                   parent="onsc_cv_config_menu"
                   groups="group_gestor_catalogos_cv"
-                  sequence="7"/>
+                  sequence="8"/>
 
         <menuitem id="onsc_cv_discipline_educational_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_discipline_educational_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="8"/>
+                  sequence="9"/>
 
          <menuitem id="onsc_cv_status_civil_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_status_civil_action"
-                  sequence="9"
+                  sequence="10"
                   groups="onsc_cv_digital.group_gestor_catalogos_cv"/>
 
         <menuitem id="onsc_cv_gender_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_gender_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="10"/>
+                  sequence="11"/>
 
         <menuitem id="onsc_cv_language_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_language_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="11"/>
+                  sequence="12"/>
 
         <menuitem id="onsc_cv_institution_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_institution_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="12"/>
+                  sequence="13"/>
 
         <menuitem id="onsc_cv_certifying_institution_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_certifying_institution_action"
                   groups="group_gestor_catalogos_cv,group_validador_catalogos_cv"
-                  sequence="13"/>
+                  sequence="14"/>
 
         <menuitem id="onsc_cv_divulgation_media_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_divulgation_media_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="14"/>
+                  sequence="15"/>
 
         <menuitem id="onsc_cv_study_level_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_study_level_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="15"/>
+                  sequence="16"/>
 
         <menuitem id="onsc_cv_experience_hierarchical_level_action_menu"
                   parent="onsc_cv_config_menu"
                   action="onsc_cv_experience_hierarchical_level_action"
                   groups="group_gestor_catalogos_cv"
-                  sequence="16"/>
+                  sequence="17"/>
 
         <menuitem id="onsc_cv_country_action_menu"
                   parent="onsc_cv_config_menu"
@@ -281,9 +287,5 @@
                   groups="onsc_cv_digital.group_manager_cv"
                   sequence="2"/>
 
-        <menuitem id="onsc_cv_street_action_menu"
-              parent="onsc_cv_config_menu"
-              action="onsc_cv_street_action"
-              groups="group_gestor_catalogos_cv"
-              sequence="34"/>
+
 </odoo>
