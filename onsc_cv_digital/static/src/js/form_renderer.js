@@ -7,7 +7,7 @@ var FormRenderer = require('web.FormRenderer');
 //          # pylint: disable=javascript-lint
             let result = this._super.apply(this, arguments);
             if(node.attrs['doc-validation']){
-                result.addClass('text-danger')
+                result.addClass('text-muted')
             }
             return result;
         }

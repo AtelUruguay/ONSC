@@ -42,29 +42,24 @@ class ONSCCVDigitalCall(models.Model):
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", )
 
     def _get_call_close_vals(self,
-                             inciso_code,
                              operating_number_code,
                              is_trans,
                              is_afro,
                              is_disabilitie,
                              is_victim):
-        inciso = self.env['onsc.catalog.inciso'].sudo().search([('identifier', '=', inciso_code)], limit=1)
-        if len(inciso) == 0:
-            return cv_digital_soap_error_codes._raise_fault(soap_error_codes.LOGIC_159)
         operating_unit = self.env['operating.unit'].sudo().search([
-            ('code', '=', operating_number_code),
-            ('inciso_id', '=', inciso.id)
+            ('code', '=', operating_number_code)
         ], limit=1)
         if len(operating_unit) == 0:
             return cv_digital_soap_error_codes._raise_fault(soap_error_codes.LOGIC_160)
-        vals = super(ONSCCVDigitalCall, self)._get_call_close_vals(inciso_code,
+        vals = super(ONSCCVDigitalCall, self)._get_call_close_vals(operating_unit.inciso_id.identifier,
                                                                    operating_number_code,
                                                                    is_trans,
                                                                    is_afro,
                                                                    is_disabilitie,
                                                                    is_victim)
         vals.update({
-            'inciso_id': inciso.id,
+            'inciso_id': operating_unit.inciso_id.id,
             'operating_unit_id': operating_unit.id,
         })
         return vals

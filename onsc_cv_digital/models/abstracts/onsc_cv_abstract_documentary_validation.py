@@ -23,6 +23,9 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
     documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
                                           tracking=True)
 
+    create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
+    write_date = fields.Datetime('Fecha de última modificación', index=True, readonly=True)
+
     @property
     def field_documentary_validation_state(self):
         return etree.XML("""<field name="documentary_validation_state" invisible="0"/>""")
@@ -33,11 +36,17 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             <div>
                 <field name="documentary_validation_state" invisible="1"/>
                 <button name="button_documentary_approve"
+                    attrs="{'invisible': [('documentary_validation_state', '=', 'validated')]}"
                     groups="onsc_cv_digital.group_validador_documental_cv"
-                    type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-info"/>
+                    type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                 <button name="button_documentary_reject"
+                    attrs="{'invisible': [('documentary_validation_state', '=', 'rejected')]}"
                     groups="onsc_cv_digital.group_validador_documental_cv"
                     type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
+                <button name="button_documentary_tovalidate"
+                    attrs="{'invisible': [('documentary_validation_state', '=', 'to_validate')]}"
+                    groups="onsc_cv_digital.group_validador_documental_cv"
+                    type="object" string="Para validar" icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                 <div class="alert alert-danger" role="alert"
                     attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
                     <p class="mb-0">
@@ -77,6 +86,10 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                     </div>
                 </div>"""))
 
+    @property
+    def field_documentary_validation_state_tree(self):
+        return etree.XML(_("""<field name='documentary_validation_state' optional='show'/>"""))
+
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         """Add in form view divs with info status off documentary validation """
@@ -89,7 +102,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 for field in config.mapped('field_ids'):
                     node = doc.xpath("//field[@name='" + field.name + "']")
                     for n in node:
-                        n.set('doc-validation', 'label-text-danger')
+                        n.set('doc-validation', 'label-text-muted')
                 res['arch'] = etree.tostring(doc, encoding='unicode')
                 widget = self.widget_call_documentary_button
             else:
@@ -97,6 +110,16 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             if len(config):
                 for node in doc.xpath('//sheet'):
                     node.insert(0, widget)
+                xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
+                res['arch'] = xarch
+                res['fields'] = xfields
+        elif view_type == 'tree' and self._context.get('is_call_documentary_validation', False):
+            doc = etree.XML(res['arch'])
+            config = self.env["onsc.cv.documentary.validation.config"].search(
+                [('model_id.model', '=', self._name)])
+            if len(config):
+                for node in doc.xpath('//tree'):
+                    node.append(self.field_documentary_validation_state_tree)
                 xarch, xfields = self.env['ir.ui.view'].postprocess_and_fields(doc, model=self._name)
                 res['arch'] = xarch
                 res['fields'] = xfields
@@ -111,6 +134,16 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         if self._check_todisable():
             return super(ONSCCVAbstractFileValidation, self).unlink()
 
+    def button_documentary_tovalidate(self):
+        args = {
+            'documentary_validation_state': 'to_validate',
+            'documentary_reject_reason': '',
+            'documentary_validation_date': fields.Date.today(),
+            'documentary_user_id': self.env.user.id,
+        }
+        self.write(args)
+        self.update_original_instances(args)
+
     def button_documentary_approve(self):
         args = {
             'documentary_validation_state': 'validated',
@@ -119,8 +152,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'documentary_user_id': self.env.user.id,
         }
         self.write(args)
-        self.search([('id', 'in', self.mapped('original_instance_identifier'))]).write(args)
-        self._update_call_documentary_validation_status()
+        self.update_original_instances(args)
 
     def button_documentary_reject(self):
         ctx = self._context.copy()
@@ -147,7 +179,13 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'documentary_user_id': self.env.user.id,
         }
         self.write(args)
-        self.search([('id', 'in', self.mapped('original_instance_identifier'))]).write(args)
+        self.update_original_instances(args)
+
+    def update_original_instances(self, args):
+        for record in self:
+            self.search([
+                ('id', 'in', record.original_instance_identifier),
+                ('write_date', '<=', record.create_date)]).write(args)
         self._update_call_documentary_validation_status()
 
     def _update_call_documentary_validation_status(self):

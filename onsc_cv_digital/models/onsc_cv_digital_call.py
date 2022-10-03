@@ -182,7 +182,8 @@ class ONSCCVDigitalCall(models.Model):
                     documentary_validation_state = 'to_validate'
                     documentary_validation_model_split = documentary_validation_model.split('.')
                     if len(documentary_validation_model_split) == 2:
-                        sections_tovalidate.append(eval("record.%s._description" % documentary_validation_model_split[0]))
+                        sections_tovalidate.append(
+                            eval("record.%s._description" % documentary_validation_model_split[0]))
                     elif documentary_validation_model == 'civical_credential_documentary_validation_state':
                         sections_tovalidate.append(_('Credenciales cívicas'))
                     elif documentary_validation_model == 'nro_doc_documentary_validation_state':
@@ -203,8 +204,8 @@ class ONSCCVDigitalCall(models.Model):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
             record.show_race_info = (conditional_show and
-                                       record.is_cv_race_public or
-                                       record.is_afro) or not conditional_show
+                                     record.is_cv_race_public or
+                                     record.is_afro) or not conditional_show
 
     def _compute_show_disabilitie_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
@@ -217,6 +218,10 @@ class ONSCCVDigitalCall(models.Model):
         for record in self:
             record.show_gender_info = (conditional_show and record.is_cv_gender_public or
                                        record.is_trans) or not conditional_show
+
+    def button_documentary_tovalidate(self):
+        if self._context.get('documentary_validation'):
+            self._update_documentary(self._context.get('documentary_validation'), 'to_validate', '')
 
     def button_documentary_approve(self):
         if self._context.get('documentary_validation'):
@@ -277,7 +282,6 @@ class ONSCCVDigitalCall(models.Model):
         }
         self.write(vals)
         self.mapped('cv_digital_origin_id').write(vals)
-
 
     def _generate_json(self, call_number):
         call_server_json_url = self.env.user.company_id.call_server_json_url
@@ -431,7 +435,6 @@ class ONSCCVDigitalCall(models.Model):
     @api.model
     def call_close(self,
                    call_number,
-                   inciso_code,
                    operating_number_code,
                    is_trans,
                    is_afro,
@@ -441,7 +444,6 @@ class ONSCCVDigitalCall(models.Model):
         """
 
         :param call_number:
-        :param inciso_code:
         :param operating_number_code:
         :param is_trans:
         :param is_afro:
@@ -457,12 +459,11 @@ class ONSCCVDigitalCall(models.Model):
         if calls[0].is_json_sent:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_158)
         calls.write(
-            self._get_call_close_vals(inciso_code, operating_number_code, is_trans, is_afro, is_disabilitie, is_victim))
+            self._get_call_close_vals(operating_number_code, is_trans, is_afro, is_disabilitie, is_victim))
         calls._generate_json(call_number)
         return True
 
     def _get_call_close_vals(self,
-                             inciso_code,
                              operating_number_code,
                              is_trans,
                              is_afro,
@@ -475,3 +476,19 @@ class ONSCCVDigitalCall(models.Model):
             'is_victim': is_victim,
             'is_close': True
         }
+
+    @api.model
+    def call_preselection(self, call_number, postulations):
+        """
+
+        :param call_number:
+        :param postulations:
+        :return:
+        """
+        calls_preselected = self.search([('call_number', '=', call_number), ('postulation_number', 'in', postulations)])
+        calls_not_selected = self.search([('call_number', '=', call_number), ('id', 'not in', calls_preselected.ids)])
+        if len(calls_preselected) == 0:
+            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
+        calls_preselected.write({'preselected': 'yes'})
+        calls_not_selected.write({'preselected': 'no'})
+        return True

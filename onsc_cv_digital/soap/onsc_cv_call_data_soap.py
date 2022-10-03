@@ -8,8 +8,9 @@ from odoo import api, SUPERUSER_ID
 from odoo.addons.ws_int_base.utils.service_registration import register_service
 from odoo.modules.registry import Registry
 from spyne import ServiceBase, ComplexModel
-from spyne import Unicode, Boolean
+from spyne import Unicode
 from spyne import rpc
+from spyne.model.complex import Array
 from spyne.model.fault import Fault
 
 from . import soap_error_codes
@@ -22,19 +23,25 @@ NAMESPACE_BASE = "http://quanam.com/encuestas/abc/"
 NAMESPACE_BASE_V1 = NAMESPACE_BASE
 
 
+class WsCVDatosLlamadoPostulacionRequest(ComplexModel):
+    __type_name__ = 'datos_llamado_postulacion'
+    __namespace__ = NAMESPACE_BASE_V1
+    _type_info = [
+        ('nroPostulacion', Unicode(min_occurs=1)),
+    ]
+    _type_info_alt = []
+
+
 class WsCVDatosLlamadoRequest(ComplexModel):
     __type_name__ = 'service_request'
     __namespace__ = NAMESPACE_BASE_V1
 
-    _type_info = [
-        ('nroLlamado', Unicode(min_occurs=1)),
-        ('inciso', Unicode(min_occurs=1)),
-        ('unidadEjecutora', Unicode(min_occurs=1)),
-        ('trans', Boolean(min_occurs=1)),
-        ('afro', Boolean(min_occurs=1)),
-        ('discapacidad', Boolean(min_occurs=1)),
-        ('victimaDelitos', Boolean(min_occurs=1)),
-    ]
+    _type_info = {
+        'nroLlamado': Unicode(min_occurs=1),
+        'postulaciones': Array(WsCVDatosLlamadoPostulacionRequest,
+                               min_occurs=1,
+                               type_name='ArrayOfWsCVDatosLlamadoPostulacionRequest')
+    }
 
 
 class WsCVDatosLlamado(ServiceBase):
@@ -76,6 +83,11 @@ class WsCVDatosLlamado(ServiceBase):
             return response
 
         try:
+            postulations = []
+            for element in request.postulaciones:
+                postulations.append(element.nroPostulacion)
+            env['onsc.cv.digital.call'].call_preselection(request.nroLlamado, postulations)
+            cr.commit()
             return WsCVResponse(result='ok', errors=[])
         except Fault as e:
             cr.rollback()

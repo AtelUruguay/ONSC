@@ -112,16 +112,25 @@
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
                                                 context="{'documentary_validation':'nro_doc'}" type="object"
                                                 string="Validar"
-                                                attrs="{'readonly': [('is_cv_uruguay', '=', True)]}"
                                                 invisible="context.get('is_call_documentary_validation', False) is False"
-                                                icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-info"/>
+                                                attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'validated')]}"
+                                                icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
                                                 context="{'documentary_validation':'nro_doc'}"
                                                 type="object"
                                                 invisible="context.get('is_call_documentary_validation', False) is False"
+                                                attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'rejected')]}"
                                                 string="Rechazar"
                                                 icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
+                                        <button name="button_documentary_tovalidate"
+                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                context="{'documentary_validation':'nro_doc'}"
+                                                type="object"
+                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'to_validate')]}"
+                                                string="Para validar"
+                                                icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                     </span>
                                 </div>
                             </div>
@@ -189,7 +198,8 @@
                                                     string="Validar"
                                                     icon="fa-thumbs-o-up"
                                                     invisible="context.get('is_call_documentary_validation', False) is False"
-                                                    class="btn btn-sm btn-outline-info"/>
+                                                    attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'validated')]}"
+                                                    class="btn btn-sm btn-outline-success"/>
                                             <button name="button_documentary_reject"
                                                     groups="onsc_cv_digital.group_validador_documental_cv"
                                                     context="{'documentary_validation':'civical_credential'}"
@@ -197,7 +207,16 @@
                                                     string="Rechazar"
                                                     icon="fa-thumbs-o-down"
                                                     invisible="context.get('is_call_documentary_validation', False) is False"
+                                                    attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'rejected')]}"
                                                     class="btn btn-sm btn-outline-danger"/>
+                                            <button name="button_documentary_tovalidate"
+                                                    groups="onsc_cv_digital.group_validador_documental_cv"
+                                                    context="{'documentary_validation':'civical_credential'}"
+                                                    type="object"
+                                                    invisible="context.get('is_call_documentary_validation', False) is False"
+                                                    attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'to_validate')]}"
+                                                    string="Para validar"
+                                                    icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                         </span>
                                     </div>
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
@@ -255,17 +274,7 @@
                             </group>
                             <group string="Licencias de Conducir"
                                    attrs="{'invisible': [('is_driver_license', '=', False)]}">
-                                <field name="drivers_license_ids" nolabel="1" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}">
-                                    <tree editable="bottom">
-                                        <field name="validation_date" width="0.5"/>
-                                        <field name="category_id"/>
-                                        <field name="license_file"
-                                               widget="binary"
-                                               filename="license_filename"
-                                               options="{'accepted_file_extensions': '.pdf'}"/>
-                                        <field name="license_filename" invisible="1"/>
-                                    </tree>
-                                </field>
+                                <field name="drivers_license_ids" nolabel="1" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                             </group>
                             <group>
                                 <group string="Género"
@@ -461,13 +470,23 @@
                                 <button name="button_documentary_approve"
                                         groups="onsc_cv_digital.group_validador_documental_cv"
                                         invisible="context.get('is_call_documentary_validation', False) is False"
+                                        attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'validated')]}"
                                         context="{'documentary_validation':'disabilitie'}"
-                                        type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-info"/>
+                                        type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                 <button name="button_documentary_reject"
                                         groups="onsc_cv_digital.group_validador_documental_cv"
                                         invisible="context.get('is_call_documentary_validation', False) is False"
+                                        attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'rejected')]}"
                                         context="{'documentary_validation':'disabilitie'}"
                                         type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
+                                <button name="button_documentary_tovalidate"
+                                        groups="onsc_cv_digital.group_validador_documental_cv"
+                                        context="{'documentary_validation':'disabilitie'}"
+                                        type="object"
+                                        invisible="context.get('is_call_documentary_validation', False) is False"
+                                        attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'to_validate')]}"
+                                        string="Para validar"
+                                        icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                 <div class="alert alert-danger" role="alert"
                                     attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
