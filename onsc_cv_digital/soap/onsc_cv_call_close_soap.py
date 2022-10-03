@@ -28,7 +28,6 @@ class WsCVCierreLlamadoRequest(ComplexModel):
 
     _type_info = [
         ('nroLlamado', Unicode(min_occurs=1)),
-        ('inciso', Unicode(min_occurs=1)),
         ('unidadEjecutora', Unicode(min_occurs=1)),
         ('trans', Boolean(min_occurs=1)),
         ('afro', Boolean(min_occurs=1)),
@@ -78,7 +77,6 @@ class WsCVCierreLlamado(ServiceBase):
         try:
             env['onsc.cv.digital.call'].call_close(
                 request.nroLlamado,
-                request.inciso,
                 request.unidadEjecutora,
                 request.trans,
                 request.afro,
