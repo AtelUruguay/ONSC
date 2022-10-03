@@ -7,7 +7,7 @@
             <tree string="Consulta de llamados Validador documental" delete="0" edit="0" create="0" duplicate="0">
                 <field name="call_number"/>
                 <field name="partner_id" string="Nombre"/>
-                <field name="postulation_date" string="Fecha de actualización"/>
+                <field name="postulation_date" string="Fecha de actualización" width="0.5"/>
                 <field name="gral_info_documentary_validation_state" string="Estado"/>
             </tree>
         </field>
