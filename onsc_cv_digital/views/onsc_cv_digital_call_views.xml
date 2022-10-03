@@ -56,10 +56,19 @@
                     <field name="image_1920" widget='image' class="oe_avatar"
                            options='{"preview_image": "avatar_128"}'/>
                     <div class="oe_avatar" style="padding-right:20px">
-                        <label for="gral_info_documentary_validation_state" string="Estado de validación documental"/>
-                        <h4><field name="gral_info_documentary_validation_state" align="left" style="font-size: 100%; width: 110px;" widget="label_selection" options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
-                        <label for="call_conditional_state" string="Estado de validación condicional"/>
-                        <h4><field name="call_conditional_state" align="left" style="font-size: 100%; width: 110px;" widget="label_selection" options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
+                        <label for="gral_info_documentary_validation_state" string="Estado de validación documental"
+                            invisible="context.get('is_call_documentary_validation', False)"/>
+                        <h4><field name="gral_info_documentary_validation_state"
+                                   align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
+                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"
+                                   invisible="context.get('is_call_documentary_validation', False)"/></h4>
+                        <label for="call_conditional_state" string="Estado de validación condicional"
+                            invisible="context.get('is_call_documentary_validation', True)"/>
+                        <h4><field name="call_conditional_state"
+                                   align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
+                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"
+                                   invisible="context.get('is_call_documentary_validation', True)"
+                        /></h4>
                     </div>
                     <field name="active" invisible="1"/>
                     <field name="is_cv_uruguay" invisible="1"/>
@@ -76,11 +85,11 @@
                         <h2><field name="postulation_number"/></h2>
                         <label for="documentary_validation_sections_tovalidate" string="Secciones a validar"/>
                         <h3><field name="documentary_validation_sections_tovalidate" align="left" style="font-size: 100%;background-color:#17a2b8;" widget="label_selection"/></h3>
-                        <div invisible="context.get('is_call_documentary_validation', False)">
-                          <label for="is_json_sent"/><field name="is_json_sent"/>
-                          <label for="is_cancel"/><field name="is_cancel"/>
+                        <div>
+                          <label for="is_json_sent" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_json_sent" invisible="context.get('is_call_documentary_validation', False)"/>
+                          <label for="is_cancel" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_cancel" invisible="context.get('is_call_documentary_validation', False)"/>
                           <label for="is_zip"/><field name="is_zip"/>
-                          <label for="is_close"/><field name="is_close"/>
+                          <label for="is_close" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_close" invisible="context.get('is_call_documentary_validation', False)"/>
                             <label for="preselected"/><field name="preselected"/>
                         </div>
                         <div name="div_call_is" invisible="context.get('is_call_documentary_validation', False)">

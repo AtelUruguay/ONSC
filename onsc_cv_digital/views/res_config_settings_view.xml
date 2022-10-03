@@ -8,10 +8,9 @@
             <field name="arch" type="xml">
                 <xpath expr="//div[hasclass('settings')]" position="inside">
                     <div class="app_settings_block" data-string="ONSC CV Digital" id="onsc_cv_digital" string="ONSC CV Digital" data-key="onsc_cv_digital">
-                        <h2>ONSC CV Digital</h2>
-                        <div class="row o_settings_container" id="help_online_setting">
-                            <div class="col-12 col-lg-12 o_setting_box" id="cv_json_url_settings">
-                                <div class="o_setting_left_pane"/>
+                        <h2>JSON url</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
                                 <div class="o_setting_right_pane">
                                     <label for="call_server_json_url" string="JSON Url"/>
                                     <span class="fa fa-lg fa-server"/>
@@ -23,75 +22,80 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-12 col-lg-12 o_setting_box" id="cv_help_settings">
-                                <div class="o_setting_left_pane"/>
-                                <div class="o_setting_right_pane">
-                                    <span class="o_form_label">Ayuda en línea</span>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Información general </span>
-                                        <field name="cv_help_general_info" class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Domicilio </span>
-                                        <field name="cv_help_address" class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Formación </span>
-                                        <field name="cv_help_formation" class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Cursos y Certificados</span>
-                                        <field name="cv_help_course_certificate" class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Experiencia laboral</span>
-                                        <field name="cv_help_work_experience" class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Docencia</span>
-                                        <field name="cv_help_work_teaching" class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Investigación</span>
-                                        <field name="cv_help_work_investigation" class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Voluntariado</span>
-                                        <field name="cv_help_volunteering" class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Idiomas</span>
-                                        <field name="cv_help_language_level" class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Publicaciones, Producciones y Evaluaciones</span>
-                                        <field name="cv_help_publications_productions_evaluations"
-                                               class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Tutorías, Orientaciones, Supervisiones</span>
-                                        <field name="cv_help_tutoring_orientation_supervision"
-                                               class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Discapacidad </span>
-                                        <field name="cv_help_disability"
-                                               class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Participación en eventos</span>
-                                        <field name="cv_help_participation_event"
-                                               class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Otra información relevante</span>
-                                        <field name="cv_help_other_relevant_information"
-                                               class="col-12 col-lg-12"/>
-                                    </div>
-                                    <div class="text-muted content-group mt16">
-                                        <span>Referencias</span>
-                                        <field name="cv_help_reference"
-                                               class="col-12 col-lg-12"/>
+                        </div>
+                        <h2>ONSC CV Digital</h2>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="col-12 col-lg-12 o_setting_box" id="cv_help_settings">
+                                    <div class="o_setting_left_pane"/>
+                                    <div class="o_setting_right_pane">
+                                        <span class="o_form_label">Ayuda en línea</span>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Información general </span>
+                                            <field name="cv_help_general_info" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Domicilio </span>
+                                            <field name="cv_help_address" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Formación </span>
+                                            <field name="cv_help_formation" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Cursos y Certificados</span>
+                                            <field name="cv_help_course_certificate" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Experiencia laboral</span>
+                                            <field name="cv_help_work_experience" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Docencia</span>
+                                            <field name="cv_help_work_teaching" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Investigación</span>
+                                            <field name="cv_help_work_investigation" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Voluntariado</span>
+                                            <field name="cv_help_volunteering" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Idiomas</span>
+                                            <field name="cv_help_language_level" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Publicaciones, Producciones y Evaluaciones</span>
+                                            <field name="cv_help_publications_productions_evaluations"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Tutorías, Orientaciones, Supervisiones</span>
+                                            <field name="cv_help_tutoring_orientation_supervision"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Discapacidad </span>
+                                            <field name="cv_help_disability"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Participación en eventos</span>
+                                            <field name="cv_help_participation_event"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Otra información relevante</span>
+                                            <field name="cv_help_other_relevant_information"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Referencias</span>
+                                            <field name="cv_help_reference"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
