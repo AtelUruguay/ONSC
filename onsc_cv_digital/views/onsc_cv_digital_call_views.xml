@@ -84,7 +84,7 @@
                         <label for="postulation_number" string="Número de postulación"/>
                         <h2><field name="postulation_number"/></h2>
                         <label for="documentary_validation_sections_tovalidate" string="Secciones a validar"/>
-                        <h3><field name="documentary_validation_sections_tovalidate" align="left" style="font-size: 100%;background-color:#17a2b8;" widget="label_selection"/></h3>
+                        <h4><field name="documentary_validation_sections_tovalidate" align="left" style="font-size: 100%;background-color:#17a2b8;" widget="label_selection"/></h4>
                         <div>
                           <label for="is_json_sent" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_json_sent" invisible="context.get('is_call_documentary_validation', False)"/>
                           <label for="is_cancel" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_cancel" invisible="context.get('is_call_documentary_validation', False)"/>
