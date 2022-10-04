@@ -734,3 +734,10 @@ class ONSCCVOtherRelevantInformation(models.Model):
     cv_digital_id = fields.Many2one("onsc.cv.digital", string=u"CV", index=True, ondelete='cascade', required=True)
     theme = fields.Char(string=u"Tema")
     description = fields.Text(string=u"Descripción")
+
+    def _get_json_dict(self):
+        return [
+            "id",
+            "theme",
+            "description",
+        ]

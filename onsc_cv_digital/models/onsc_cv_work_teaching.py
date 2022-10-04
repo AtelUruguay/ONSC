@@ -41,28 +41,27 @@ class ONSCCVWorkTeaching(models.Model):
 
     def _get_json_dict(self):
         return [
-                "id",
-                "hours_worked_monthly",
-                "currently_working",
-                "position",
-                "is_paid_activity",
-                "country_id",
-                "company_type",
-                "company_name",
-                "description_tasks",
-                "start_date",
-                "end_date",
-                "position_type",
-                "is_full_time",
-                "responsible_type",
-                "program_name",
-                "other_relevant_information",
-                ("professional_link_id", ['id', 'name']),
-                ("subject_ids", ['id', 'name']),
-                ("education_area_ids", ['id', 'name']),
-                ("receipt_ids", ['id', 'name']),
+            "id",
+            "hours_worked_monthly",
+            "currently_working",
+            "position",
+            "is_paid_activity",
+            "country_id",
+            "company_type",
+            "company_name",
+            "description_tasks",
+            "start_date",
+            "end_date",
+            "position_type",
+            "is_full_time",
+            "responsible_type",
+            "program_name",
+            "other_relevant_information",
+            ("professional_link_id", ['id', 'name']),
+            ("subject_ids", ['id', 'name']),
+            ("education_area_ids", ['id', 'name']),
+            ("receipt_ids", ['id', 'name']),
         ]
-
 
 
 class ONSCCVAcademicProgramSubject(models.Model):

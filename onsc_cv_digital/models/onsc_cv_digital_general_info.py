@@ -13,3 +13,11 @@ class ONSCCVDigitalDriverLicense(models.Model):
     category_id = fields.Many2one("onsc.cv.drivers.license.categories", "Categoría", required=True)
     license_file = fields.Binary("Documento digitalizado licencia de conducir", required=True)
     license_filename = fields.Char('Nombre del documento digital')
+
+    def _get_json_dict(self):
+        return [
+            "id",
+            "validation_date",
+            "category_id",
+            "license_filename"
+        ]

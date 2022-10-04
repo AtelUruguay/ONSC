@@ -70,7 +70,7 @@ class ONSCCVWorkInvestigation(models.Model):
             "description",
             "participation_type",
             "category_type",
-            "situation_type","research_type_id",
+            "situation_type", "research_type_id",
             "other_research_type",
             "additional_information",
             "other_relevant_information",

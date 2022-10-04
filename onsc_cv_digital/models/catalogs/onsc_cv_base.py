@@ -67,6 +67,15 @@ class ONSCCVRace(models.Model):
          u'El nombre de la raza debe ser único'),
     ]
 
+    def _get_json_dict(self):
+        return [
+            "id",
+            "code",
+            "name",
+            "race_type",
+            "is_option_other_enable"
+        ]
+
 
 class ONSCCVDocumentType(models.Model):
     _name = 'onsc.cv.document.type'

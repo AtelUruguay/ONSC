@@ -42,3 +42,21 @@ class ONSCCVDigitalParticipationEvent(models.Model):
                 record.is_roll_event = True
             else:
                 record.is_roll_event = False
+
+    def _get_json_dict(self):
+        return [
+            "id",
+            "name_event",
+            "mode",
+            "name_institution",
+            "description_event",
+            "is_roll_event",
+            "description_topic",
+            "hourly_load",
+            "hours_total",
+            ("type_event_id", ['id', 'name']),
+            ("country_id", ['id', 'name']),
+            ("city_id", ['id', 'name']),
+            ("roll_event_id", ['id', 'name']),
+            ("activity_area_ids", ['id', 'name']),
+        ]

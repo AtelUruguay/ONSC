@@ -70,6 +70,35 @@ class ONSCCVDigitalPPEvaluations(models.Model):
             self.applied_knowledge_ids = self.applied_knowledge_ids[:5]
             return cv_warning(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
+    def _get_json_dict(self):
+        return [
+            "id",
+            "type",
+            "other_subtype_publication",
+            "is_subtype_publication",
+            "other_subtype_production",
+            "is_subtype_production",
+            "other_subtype_evaluation",
+            "is_subtype_evaluation",
+            "other_subtype_other",
+            "is_subtype_other",
+            "date",
+            "tittle",
+            "description",
+            "location",
+            "arbitrated",
+            "is_arbitrated",
+            "paid_activity",
+            "additional_information",
+            ("subtype_publication_id", ['id', 'name']),
+            ("subtype_production_id", ['id', 'name']),
+            ("subtype_evaluation_id", ['id', 'name']),
+            ("subtype_other_id", ['id', 'name']),
+            ("authors_ids", ['id', 'name']),
+            ("activity_area_ids", ['id', 'name']),
+            ("applied_knowledge_ids", ['id', 'name'])
+        ]
+
 
 class ONSCCVAuthors(models.Model):
     _name = 'onsc.cv.authors'
