@@ -464,7 +464,7 @@ class ONSCCVDigitalCall(models.Model):
         return self.jsonify(parser)
 
     def action_get_json_dict(self):
-        print(self._get_json_dict())
+        _logger.debug(self._get_json_dict())
 
     @api.model
     def _run_call_json_cron(self):
