@@ -52,8 +52,7 @@ class ONSCCVDigitalCall(models.Model):
         ], limit=1)
         if len(operating_unit) == 0:
             return cv_digital_soap_error_codes._raise_fault(soap_error_codes.LOGIC_160)
-        vals = super(ONSCCVDigitalCall, self)._get_call_close_vals(operating_unit.inciso_id.identifier,
-                                                                   operating_number_code,
+        vals = super(ONSCCVDigitalCall, self)._get_call_close_vals(operating_number_code,
                                                                    is_trans,
                                                                    is_afro,
                                                                    is_disabilitie,
