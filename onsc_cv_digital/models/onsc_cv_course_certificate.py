@@ -187,6 +187,32 @@ class ONSCCVCourseCertificate(models.Model):
             result = {}
         return result
 
+    def _get_json_dict(self):
+            return [
+                "id",
+                "record_type",
+                "course_type",
+                "course_title",
+                "name",
+                "dictation_mode",
+                "induction_type",
+                "hours_total",
+                "approbation_mode",
+                "evaluation_str",
+                "is_numeric_evaluation",
+                "evaluation_number",
+                "evaluation_max_str",
+                "evaluation_max_number",
+                "is_numeric_max_evaluation",
+                "max_scholarship",
+                "certificate_start_date",
+                ("institution_cert_id", ['id', 'name']),
+                ("subinstitution_cert_id", ['id', 'name']),
+                ("certificate_id", ['id', 'name']),
+                ("line_ids", ['id', 'name']),
+                ("knowledge_acquired_ids", ['id', 'name']),
+            ]
+
 
 class ONSCCVEducationAreaCourse(models.Model):
     _name = 'onsc.cv.education.area.course'

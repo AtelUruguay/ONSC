@@ -52,6 +52,34 @@ class ONSCCVWorkInvestigation(models.Model):
             self.knowledge_acquired_ids = self.knowledge_acquired_ids[:5]
             return cv_warning(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
+    def _get_json_dict(self):
+        return [
+            "id",
+            "hours_worked_monthly",
+            "currently_working",
+            "position",
+            "is_paid_activity",
+            "country_id",
+            "company_type",
+            "company_name",
+            "description_tasks",
+            "start_date",
+            "end_date",
+            "investigation_type",
+            "name",
+            "description",
+            "participation_type",
+            "category_type",
+            "situation_type","research_type_id",
+            "other_research_type",
+            "additional_information",
+            "other_relevant_information",
+            ("member_ids", ['id', 'name']),
+            ("education_area_ids", ['id', 'name']),
+            ("knowledge_acquired_ids", ['id', 'name']),
+            ("receipt_ids", ['id', 'name']),
+        ]
+
 
 class ONSCCVWorkInvestigationMember(models.Model):
     _name = 'onsc.cv.work.investigation.member'
