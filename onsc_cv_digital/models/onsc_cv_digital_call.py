@@ -449,24 +449,24 @@ class ONSCCVDigitalCall(models.Model):
         ]
         if self.show_race_info:
             parser.extend(['cv_race2',
-                          'cv_first_race_id',
-                          'is_cv_race_public',
-                          'is_cv_race_option_other_enable',
-                          'is_multiple_cv_race_selected',
-                          'is_afro_descendants',
-                          ('cv_race_ids', race_json)])
+                           'cv_first_race_id',
+                           'is_cv_race_public',
+                           'is_cv_race_option_other_enable',
+                           'is_multiple_cv_race_selected',
+                           'is_afro_descendants',
+                           ('cv_race_ids', race_json)])
 
         if self.show_gender_info:
             parser.extend(['last_modification_date',
-                          'cv_gender_id',
-                          'cv_gender2',
-                          'is_cv_gender_public',
-                          'is_cv_gender_record',
-                          'is_cv_gender_option_other_enable'])
+                           'cv_gender_id',
+                           'cv_gender2',
+                           'is_cv_gender_public',
+                           'is_cv_gender_record',
+                           'is_cv_gender_option_other_enable'])
         if self.show_victim_info:
             parser.extend(['is_victim_violent',
-                          'relationship_victim_violent_filename',
-                          'is_public_information_victim_violent'])
+                           'relationship_victim_violent_filename',
+                           'is_public_information_victim_violent'])
 
         return self.jsonify(parser)
 
@@ -632,4 +632,11 @@ class ONSCCVDigitalCall(models.Model):
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
         calls_preselected.write({'preselected': 'yes'})
         calls_not_selected.write({'preselected': 'no'})
+        self.send_notification_document_validators(call_number)
         return True
+
+    def send_notification_document_validators(self, call_number):
+        ctx = self.env.context.copy()
+        ctx.update({'call': call_number})
+        template = self.env.ref('onsc_cv_digital.email_template_document_validators_cv')
+        template.with_context(ctx).send_mail(self.id)
