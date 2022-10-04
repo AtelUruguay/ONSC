@@ -23,5 +23,5 @@ class ONSCCVStreet(models.Model):
     _sql_constraints = [
         ('country_street_location_id_uniq', 'unique(cv_location_id, street)',
          u'La combinación: calle y departamento debe ser única'),
-        ('code', 'unique(code)', u'El código debe ser único'),
+        ('code_street_unique', 'unique(code)', u'El código debe ser único'),
     ]
