@@ -554,6 +554,18 @@ class ONSCCVDigital(models.Model):
             return self.with_context(my_cv=self)._action_open_user_cv()
         return result
 
+    def button_copy_cv(self):
+        domain = [('partner_id', '=', self.partner_id.id)]
+        vals = {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree',
+            'res_model': 'onsc.cv.digital.call',
+            'domain': domain,
+            'name': 'Copias de CV',
+            'context': {'active_id': self.id},
+        }
+        return vals
+
     def _action_open_user_cv(self):
         vals = {
             'type': 'ir.actions.act_window',
