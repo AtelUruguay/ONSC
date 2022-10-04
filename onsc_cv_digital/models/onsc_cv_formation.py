@@ -18,6 +18,11 @@ class ONSCCVFormationBasic(models.Model):
     study_certificate_file = fields.Binary(string="Certificado de estudio")
     study_certificate_filename = fields.Char('Nombre del documento digital')
 
+    @api.model
+    def create(self, values):
+        result = super(ONSCCVFormationBasic, self).create(values)
+        return result
+
     def _get_json_dict(self):
         return [
             "id",

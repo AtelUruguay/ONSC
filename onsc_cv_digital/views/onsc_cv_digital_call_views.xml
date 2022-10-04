@@ -56,19 +56,16 @@
                     <field name="image_1920" widget='image' class="oe_avatar"
                            options='{"preview_image": "avatar_128"}'/>
                     <div class="oe_avatar" style="padding-right:20px">
-                        <label for="gral_info_documentary_validation_state" string="Estado de validación documental"
-                            invisible="context.get('is_call_documentary_validation', False)"/>
+                        <label for="gral_info_documentary_validation_state" string="Estado de validación documental"/>
                         <h4><field name="gral_info_documentary_validation_state"
                                    align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
-                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"
-                                   invisible="context.get('is_call_documentary_validation', False)"/></h4>
+                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
                         <label for="call_conditional_state" string="Estado de validación condicional"
-                            invisible="context.get('is_call_documentary_validation', True)"/>
+                            invisible="context.get('is_call_documentary_validation', False)"/>
                         <h4><field name="call_conditional_state"
                                    align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
                                    options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"
-                                   invisible="context.get('is_call_documentary_validation', True)"
-                        /></h4>
+                                   invisible="context.get('is_call_documentary_validation', False)"/></h4>
                     </div>
                     <field name="active" invisible="1"/>
                     <field name="is_cv_uruguay" invisible="1"/>
@@ -83,8 +80,12 @@
                         <h2><field name="postulation_date"/></h2>
                         <label for="postulation_number" string="Número de postulación"/>
                         <h2><field name="postulation_number"/></h2>
-                        <label for="documentary_validation_sections_tovalidate" string="Secciones a validar"/>
-                        <h4><field name="documentary_validation_sections_tovalidate" align="left" style="font-size: 100%;background-color:#17a2b8;" widget="label_selection"/></h4>
+                        <label for="documentary_validation_sections_tovalidate"
+                               string="Secciones a validar documentalmente"
+                               invisible="context.get('is_call_documentary_validation', False) is False"/>
+                        <h4><field name="documentary_validation_sections_tovalidate"
+                                   invisible="context.get('is_call_documentary_validation', False) is False"
+                                   align="left" style="font-size: 100%;background-color:#17a2b8;" widget="label_selection"/></h4>
                         <div>
                           <label for="is_json_sent" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_json_sent" invisible="context.get('is_call_documentary_validation', False)"/>
                           <label for="is_cancel" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_cancel" invisible="context.get('is_call_documentary_validation', False)"/>
@@ -143,7 +144,7 @@
                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
                                         <strong>
-                                            El documento de identidad ha sido rechazado. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
+                                            La sección documento de identidad ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
                                             <p/>
                                             Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                         </strong>
@@ -153,7 +154,7 @@
                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'validated')]}">
                                     <p class="mb-0">
                                         <strong>
-                                            El documento de identidad ha sido validado
+                                            La sección documento de identidad ha sido validada
                                             <p/>
                                             Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                         </strong>
@@ -227,7 +228,7 @@
                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
                                             <p class="mb-0">
                                                 <strong>
-                                                    La credencial cívica ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
+                                                    La sección credencial cívica ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
                                                     <p/>
                                                     Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                                 </strong>
@@ -237,7 +238,7 @@
                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'validated')]}">
                                             <p class="mb-0">
                                                 <strong>
-                                                    La credencial cívica ha sido validada
+                                                    La sección credencial cívica ha sido validada
                                                     <p/>
                                                     Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                                 </strong>
@@ -466,32 +467,11 @@
                             attrs="{'invisible': [('show_disabilitie_info', '=', False)]}">
                             <div>
                                 <field name="show_disabilitie_info" invisible="1"/>
-                                <field name="disabilitie_documentary_validation_state" invisible="1"/>
-                                <button name="button_documentary_approve"
-                                        groups="onsc_cv_digital.group_validador_documental_cv"
-                                        invisible="context.get('is_call_documentary_validation', False) is False"
-                                        attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'validated')]}"
-                                        context="{'documentary_validation':'disabilitie'}"
-                                        type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
-                                <button name="button_documentary_reject"
-                                        groups="onsc_cv_digital.group_validador_documental_cv"
-                                        invisible="context.get('is_call_documentary_validation', False) is False"
-                                        attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'rejected')]}"
-                                        context="{'documentary_validation':'disabilitie'}"
-                                        type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
-                                <button name="button_documentary_tovalidate"
-                                        groups="onsc_cv_digital.group_validador_documental_cv"
-                                        context="{'documentary_validation':'disabilitie'}"
-                                        type="object"
-                                        invisible="context.get('is_call_documentary_validation', False) is False"
-                                        attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'to_validate')]}"
-                                        string="Para validar"
-                                        icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                 <div class="alert alert-danger" role="alert"
                                     attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
                                         <strong>
-                                            Ha sido rechazado. Motivo del rechazo: <field name="disabilitie_documentary_reject_reason" class="oe_inline"/>
+                                            La sección discapacidad ha sido rechazada. Motivo del rechazo: <field name="disabilitie_documentary_reject_reason" class="oe_inline"/>
                                             <p/>
                                             Fecha: <field name="disabilitie_documentary_validation_date" class="oe_inline"/> Usuario: <field name="disabilitie_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                         </strong>
@@ -501,7 +481,7 @@
                                     attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'validated')]}">
                                     <p class="mb-0">
                                         <strong>
-                                            El registro ha sido validado
+                                            La sección discapacidad ha sido validada
                                             <p/>
                                             Fecha: <field name="disabilitie_documentary_validation_date" class="oe_inline"/> Usuario: <field name="disabilitie_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                         </strong>
@@ -517,6 +497,29 @@
                                 </group>
                                 <group>
                                     <field name="document_certificate_filename" invisible="1"/>
+                                    <field name="disabilitie_documentary_validation_state" invisible="1"/>
+                                    <div>
+                                        <button name="button_documentary_approve"
+                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'validated')]}"
+                                                context="{'documentary_validation':'disabilitie'}"
+                                                type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
+                                        <button name="button_documentary_reject"
+                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'rejected')]}"
+                                                context="{'documentary_validation':'disabilitie'}"
+                                                type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
+                                        <button name="button_documentary_tovalidate"
+                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                context="{'documentary_validation':'disabilitie'}"
+                                                type="object"
+                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'to_validate')]}"
+                                                string="Para validar"
+                                                icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
+                                    </div>
                                     <field name="document_certificate_file" filename="document_certificate_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'invisible': [('people_disabilitie', '!=', 'si')],'required': [('people_disabilitie', '=', 'si')]}"/>
@@ -585,7 +588,6 @@
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">onsc.cv.digital.call</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{}</field>
         <field name="context">{'search_default_group_by_call_number': True, 'tree_view_ref': 'onsc_cv_digital.onsc_cv_digital_call_tree'}</field>
         <field name="domain">[('type','=','call')]</field>
         <field name="help" type="html">
