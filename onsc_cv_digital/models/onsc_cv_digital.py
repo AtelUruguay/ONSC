@@ -492,7 +492,7 @@ class ONSCCVDigital(models.Model):
         if self.crendencial_serie and not self.crendencial_serie.isalpha():
             self.crendencial_serie = ''
             return cv_warning(_("La serie de la credencial no puede contener números"))
-        if not self.crendencial_serie.isupper():
+        if self.crendencial_serie and not self.crendencial_serie.isupper():
             self.crendencial_serie = self.crendencial_serie.upper()
 
     @api.onchange('credential_number')
