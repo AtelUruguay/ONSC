@@ -184,7 +184,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
     def update_original_instances(self, args):
         for record in self:
             self.search([
-                ('id', 'in', record.original_instance_identifier),
+                ('id', '=', record.original_instance_identifier),
                 ('write_date', '<=', record.create_date)]).write(args)
         self._update_call_documentary_validation_status()
 
