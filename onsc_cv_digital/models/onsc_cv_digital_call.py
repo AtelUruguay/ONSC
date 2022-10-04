@@ -477,6 +477,7 @@ class ONSCCVDigitalCall(models.Model):
             'is_close': True
         }
 
+    # WS Datos de llamado
     @api.model
     def call_preselection(self, call_number, postulations):
         """
