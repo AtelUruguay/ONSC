@@ -45,23 +45,30 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     @api.model
     def create(self, values):
         new_recordset = super(ONSCCatalogValidatorsIncisoUE, self).create(values)
-        if new_recordset.user_id.id not in new_recordset.group_id.users.ids:
-            new_recordset.user_id.suspend_security().write({
-                'groups_id': [(4, new_recordset.group_id.id)]
-            })
+        user_seg = self.search_count([("user_id", "=", self.user_id.id)])
+        if user_seg == 1:
+            if new_recordset.user_id.id not in new_recordset.group_id.users.ids:
+                new_recordset.user_id.suspend_security().write({
+                    'groups_id': [(4, new_recordset.group_id.id)]
+                })
         return new_recordset
 
     def write(self, values):
         user_id = values.get('user_id')
-        if user_id:
-            for record in self:
-                record.user_id.suspend_security().write({'groups_id': [(3, record.group_id.id)]})
+        user_seg = self.search_count([("user_id", "=", self.user_id.id)])
+        if user_seg == 1:
+            if user_id:
+                for record in self:
+                    record.user_id.suspend_security().write({'groups_id': [(3, record.group_id.id)]})
         recordsets = super(ONSCCatalogValidatorsIncisoUE, self).write(values)
-        if user_id:
-            record.mapped('user_id').suspend_security().write({'groups_id': [(4, user_id)]})
+        if user_seg == 1:
+            if user_id:
+                record.mapped('user_id').suspend_security().write({'groups_id': [(4, user_id)]})
         return recordsets
 
     def unlink(self):
-        for record in self:
-            record.user_id.suspend_security().write({'groups_id': [(3, record.group_id.id)]})
+        user_seg = self.search_count([("user_id", "=", self.user_id.id)])
+        if user_seg == 1:
+            for record in self:
+                record.user_id.suspend_security().write({'groups_id': [(3, record.group_id.id)]})
         return super(ONSCCatalogValidatorsIncisoUE, self).unlink()
