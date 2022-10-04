@@ -280,11 +280,6 @@ class ONSCCVDigital(models.Model):
     # Referencias ------<Page>
     reference_ids = fields.One2many('onsc.cv.reference', inverse_name='cv_digital_id', string='Referencias', copy=True)
 
-    civical_credential_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
-        selection=DOCUMENTARY_VALIDATION_STATES,
-        default='to_validate')
-
     is_cv_uruguay_ci = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay_ci')
 
     # Help online
@@ -721,10 +716,27 @@ class ONSCCVDigital(models.Model):
         return record
 
     def write(self, values):
-        record = super(ONSCCVDigital, self).write(values)
+        records = super(ONSCCVDigital, self).write(values)
+        self.update_header_documentary_validation(values)
         if values.get('country_code') == 'UY' or values.get('cv_address_street_id'):
             self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street})
-        return record
+        return records
+
+    def update_header_documentary_validation(self, values):
+        cv_expiration_date_value = values.get('cv_expiration_date')
+        document_identity_file_value = values.get('document_identity_file')
+        civical_credential_file_value = values.get('civical_credential_file')
+        crendencial_serie_value = values.get('crendencial_serie')
+        credential_number_value = values.get('credential_number')
+        document_certificate_file_value = values.get('document_certificate_file')
+        certificate_date_file_value = values.get('certificate_date')
+        to_date_file_value = values.get('to_date')
+        if cv_expiration_date_value or document_identity_file_value:
+            self.nro_doc_documentary_validation_state = 'to_validate'
+        if civical_credential_file_value or crendencial_serie_value or credential_number_value:
+            self.civical_credential_documentary_validation_state = 'to_validate'
+        if document_certificate_file_value or certificate_date_file_value or to_date_file_value:
+            self.disabilitie_documentary_validation_state = 'to_validate'
 
 
 class ONSCCVOtherRelevantInformation(models.Model):
