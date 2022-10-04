@@ -308,7 +308,44 @@ class ONSCCVDigitalCall(models.Model):
 
     def _get_json_dict(self):
         # JSONifier
-        basic_formation = self.env['onsc.cv.basic.formation']._get_json_dict()
+        race_json = self.env['onsc.cv.race']._get_json_dict()
+        driver_license_json = self.env['onsc.cv.driver.license']._get_json_dict()
+        # Formación----<Page>
+        advanced_formation_json = self.env['onsc.cv.advanced.formation']._get_json_dict()
+        basic_formation_json = self.env['onsc.cv.basic.formation']._get_json_dict()
+
+        # Cursos y certificado----<Page>
+        course_certificate_json = self.env['onsc.cv.course.certificate']._get_json_dict()
+        course_json = self.env['onsc.cv.course.certificate']._get_json_dict()
+        certificate_json = course_json
+
+        # Experiencia Laboral ----<Page>
+        work_experience_json = self.env['onsc.cv.work.experience']._get_json_dict()
+
+        # Docencia ----<Page>
+        work_teaching_json = self.env['onsc.cv.work.teaching']._get_json_dict()
+
+        # Investigación ----<Page>
+        work_investigation_json = self.env['onsc.cv.work.investigation']._get_json_dict()
+
+        # Voluntariado ----<Page>
+        volunteering_json = self.env['onsc.cv.volunteering']._get_json_dict()
+
+        # Idioma ----<Page>
+        language_level_json = self.env['onsc.cv.language.level']._get_json_dict()
+
+        # Publicaciones, Producciones y Evaluaciones ----<Page>
+        publication_production_evaluation_json = self.env['onsc.cv.publication.production.evaluation']._get_json_dict()
+
+        # Tutorías, Orientaciones, Supervisiones ----<Page>
+        tutoring_orientation_supervision_json = self.env['onsc.cv.tutoring.orientation.supervision']._get_json_dict()
+
+        # Participación en Eventos ----<Page>
+        participation_event_json = self.env['onsc.cv.participation.event']._get_json_dict()
+        # Otra información relevante ----<Page>
+        other_relevant_information_json = self.env['onsc.cv.other.relevant.information']._get_json_dict()
+        # Referencias ------<Page>
+        reference_json = self.env['onsc.cv.reference']._get_json_dict()
         parser = [
             'cv_full_name',
             'call_number',
@@ -324,14 +361,110 @@ class ONSCCVDigitalCall(models.Model):
             'cv_nro_doc',
             'cv_expiration_date',
             'partner_id',
+            'email',
             'cv_birthdate',
             'cv_sex',
             'cv_sex_updated_date',
             'last_modification_date',
-            ('basic_formation_ids', basic_formation)
+            'cv_gender_id',
+            'cv_gender2',
+            'is_cv_gender_public',
+            'is_cv_gender_record',
+            'is_cv_race_option_other_enable',
+            'is_multiple_cv_race_selected',
+            'cv_race2',
+            'cv_first_race_id',
+            'is_cv_race_public',
+            # Domicilio
+            'country_id',
+            'country_code',
+            'cv_address_state_id',
+            'cv_address_location_id',
+            'cv_address_street_id'
+            'cv_address_street2_id',
+            'cv_address_street3_id',
+            'cv_address_nro_door',
+            'cv_address_apto',
+            'cv_address_street',
+            'cv_address_street2',
+            'cv_address_street3',
+            'cv_address_zip',
+            'cv_address_is_cv_bis',
+            'cv_address_amplification',
+            'cv_address_state',
+            'cv_address_reject_reason',
+            'cv_address_place',
+            'cv_address_block',
+            'cv_address_sandlot',
+            'country_of_birth_id',
+            'uy_citizenship',
+            # FIN Domicilio
+
+            # Datos personales
+            'marital_status_id',
+            'crendencial_serie',
+            'credential_number',
+            'cjppu_affiliate_number',
+            'professional_resume',
+            'user_linkedIn',
+            'is_afro_descendants',
+            'afro_descendants_filename',
+            'is_driver_license',
+            'prefix_phone_id',
+            'personal_phone',
+            'prefix_mobile_phone_id',
+            'mobile_phone',
+            'is_occupational_health_card',
+            'occupational_health_card_date',
+            'occupational_health_card_filename',
+            'document_identity_filename',
+            'civical_credential_filename',
+            'is_medical_aptitude_certificate_status',
+            'medical_aptitude_certificate_date',
+            'medical_aptitude_certificate_filename',
+            'is_victim_violent',
+            'relationship_victim_violent_filename',
+            'is_public_information_victim_violent',
+            # Discapacidad ----<Page>
+            'allow_content_public',
+            'situation_disability',
+            'people_disabilitie',
+            'document_certificate_filename',
+            'certificate_date',
+            'to_date',
+            'see',
+            'hear',
+            'walk',
+            'speak',
+            'realize',
+            'lear',
+            'interaction',
+            'need_other_support',
+            'is_need_other_support',
+            'civical_credential_documentary_validation_state',
+            ('cv_race_ids', race_json),
+            ('drivers_license_ids', driver_license_json),
+            ('basic_formation_ids', basic_formation_json),
+            ('advanced_formation_ids', advanced_formation_json),
+            ('course_certificate_ids', course_certificate_json),
+            ('course_ids', course_json),
+            ('certificate_ids', certificate_json),
+            ('work_experience_ids', work_experience_json),
+            ('work_teaching_ids', work_teaching_json),
+            ('work_investigation_ids', work_investigation_json),
+            ('volunteering_ids', volunteering_json),
+            ('language_level_ids', language_level_json),
+            ('publication_production_evaluation_ids', publication_production_evaluation_json),
+            ('tutoring_orientation_supervision_ids', tutoring_orientation_supervision_json),
+            ('participation_event_ids', participation_event_json),
+            ('other_relevant_information_ids', other_relevant_information_json),
+            ('reference_ids', reference_json),
         ]
 
         return self.jsonify(parser)
+
+    def action_get_json_dict(self):
+        print(self._get_json_dict())
 
     @api.model
     def _run_call_json_cron(self):

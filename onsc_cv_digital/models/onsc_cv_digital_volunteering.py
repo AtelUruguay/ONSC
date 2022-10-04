@@ -16,6 +16,25 @@ class ONSCCVDigitalVolunteering(models.Model):
     hours_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente", required=True,
                                    help='“En caso de no disponer las horas se debe estimar')
 
+    def _get_json_dict(self):
+        return [
+            "id",
+            "hours_worked_monthly",
+            "currently_working",
+            "position",
+            "is_paid_activity",
+            "country_id",
+            "company_type",
+            "company_name",
+            "description_tasks",
+            "start_date",
+            "end_date",
+            "unit_name",
+            "currently_volunteering",
+            "hours_monthly",
+            ("volunteering_task_ids", ['id', 'name']),
+        ]
+
 
 class ONSCCVDigitalVolunteeringTask(models.Model):
     _name = 'onsc.cv.volunteering.task'

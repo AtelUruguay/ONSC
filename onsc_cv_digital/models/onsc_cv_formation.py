@@ -148,6 +148,34 @@ class ONSCCVFormationAdvanced(models.Model):
             self.knowledge_thesis_ids = self.knowledge_thesis_ids[:5]
             return cv_warning(_(u"Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
+    def _get_json_dict(self):
+        return [
+            "id",
+            "homologated_title",
+            "homologated_title_date",
+            "apostilled_title",
+            "apostilled_date",
+            "egress_date",
+            "issue_title_date",
+            "is_require_thesis",
+            "state_thesis",
+            "title_thesis",
+            "description_thesis",
+            "tutor",
+            "final_note_thesis",
+            "max_note_thesis",
+            "scholarship",
+            "max_scholarship",
+            "credits_far",
+            "credits_training",
+            "other_relevant_information",
+            ("advanced_study_level_id", ['id', 'name']),
+            ("academic_program_id", ['id', 'name']),
+            ("knowledge_thesis_ids", ['id', 'name']),
+            ("area_related_education_ids", ['id', 'name']),
+            ("knowledge_acquired_ids", ['id', 'name']),
+        ]
+
 
 class ONSCCVAreaRelatedEducation(models.Model):
     _name = 'onsc.cv.area.related.education'

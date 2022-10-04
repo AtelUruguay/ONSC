@@ -39,3 +39,16 @@ class ONSCCVDigitalReference(models.Model):
         if self.email and not is_valid_email(self.email):
             self.email = False
             return cv_warning(_('El mail ingresado no tiene un formato válido'))
+
+    def _get_json_dict(self):
+        return [
+            "id",
+            'reference_type',
+            'name',
+            'phone',
+            'email',
+            'company_name',
+            'notes',
+            'prefix_phone_id',
+            'phone_full',
+        ]

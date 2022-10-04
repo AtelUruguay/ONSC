@@ -21,3 +21,12 @@ class LenguageLevel(models.Model):
     write_level = fields.Selection(
         selection=NIVEL,
         required=True, string="Nivel escrito")
+
+    def _get_json_dict(self):
+        return [
+            "id",
+            "spoken_level",
+            "read_level",
+            "write_level",
+            ("language_id", ['id', 'name'])
+        ]

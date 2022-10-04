@@ -80,6 +80,36 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     def onchange_divulgation_media_id(self):
         self.other_divulgation_media = False
 
+    def _get_json_dict(self):
+        return [
+            "id",
+            "work_title",
+            "is_tutor_option_other_enable",
+            "other_tutor_type",
+            "dependence",
+            "postgraduate_type",
+            "student_name",
+            "description",
+            "is_tutor_docent",
+            "is_tutor_master",
+            "is_divulgation_option_other_enable",
+            "other_divulgation_media",
+            "website",
+            "is_tutoring_finished",
+            "co_tutor_name",
+            "is_paid_activity",
+            "is_relevant_work",
+            "is_orientation_type_pie",
+            ("tutor_type_id", ['id', 'name']),
+            ("academic_program_id", ['id', 'name']),
+            ("language_id", ['id', 'name']),
+            ("divulgation_media_id", ['id', 'name']),
+            ("orientation_type_id", ['id', 'name']),
+            ("area_ids", ['id', 'name']),
+            ("knowledge_acquired_ids", ['id', 'name']),
+            ("knowledge_acquired_ids", ['id', 'name'])
+        ]
+
 
 class ONSCCVEducationAreaTutorial(models.Model):
     _name = 'onsc.cv.education.area.tutoring'
