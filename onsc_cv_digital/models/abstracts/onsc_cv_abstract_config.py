@@ -52,6 +52,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     state = fields.Selection(string="Estado",
                              selection=STATES,
                              tracking=True,
+                             copy=True,
                              default=_default_state)
     reject_reason = fields.Text(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)

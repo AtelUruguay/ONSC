@@ -78,7 +78,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                         attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
                         <p class="mb-0">
                             <strong>
-                                Ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
+                                El registro ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
                                 <p/>
                                 Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                             </strong>
