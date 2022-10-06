@@ -566,6 +566,7 @@ class ONSCCVDigital(models.Model):
     def button_copy_cv(self):
         self.ensure_one()
         ctx = dict(self._context)
+        # ctx.update({'is_cv_postulations': True})
         domain = [('partner_id', '=', self.partner_id.id)]
         view_tree_id = self.env.ref('onsc_cv_digital.onsc_cv_digital_call_tree_postulaciones').id
         view_from_id = self.env.ref('onsc_cv_digital.onsc_cv_digital_call_form_postulaciones').id

@@ -654,16 +654,6 @@
                                    align="left" style="font-size: 100%;background-color:#17a2b8;"
                                    widget="label_selection"/>
                         </h4>
-                        <div name="div_call_is" invisible="context.get('is_call_documentary_validation', False)">
-                            <label for="is_trans"/>
-                            <field name="is_trans"/>
-                            <label for="is_afro"/>
-                            <field name="is_afro"/>
-                            <label for="is_disabilitie"/>
-                            <field name="is_disabilitie"/>
-                            <label for="is_victim"/>
-                            <field name="is_victim"/>
-                        </div>
                     </div>
                     <group style="padding-top:40px">
                         <group>
