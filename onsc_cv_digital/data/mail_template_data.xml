@@ -94,6 +94,33 @@
         </record>
 
         <!-- Notificación valores condicionales pendientes para cierre-->
+        <record id="email_template_document_validators_cv" model="mail.template">
+            <field name="name">Notificación a los validadores documentales del llamado</field>
+            <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>
+            <field name="email_from">"{{ object.partner_id.company_id.name }}" &lt;{{ (object.partner_id.company_id.email or user.email) }}&gt;</field>
+            <field name="email_to">{{ object.partner_id.email }}&gt;</field>
+            <field name="subject">CVs del llamado {{ ctx.get('call') }}prontos para validar.</field>
+            <field name="lang">{{ object.partner_id.lang }}</field>
+            <field name="auto_delete" eval="True"/>
+            <field name="body_html" type="html">
+                <html>
+                    <body>
+                        <div style="margin: 0px; padding: 0px;">
+                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                Estimado Gestor de catálogos:
+                                <br/>
+                                Tiene disponibles los CVs del llamado  <t t-out="ctx.get('call') or ''"></t> para comenzar la validación de documentación probatoria.
+                                Puede ingresar a validarlos a la plataforma GHE.uy a través del siguiente
+                                Tiene pendiente de validar nuevos valores condicionales para el llamado.
+                                <lt-highlighter contenteditable="false" style="display: none;"><lt-div spellcheck="false" class="lt-highlighter__wrapper" style="width: 0px !important; height: 0px !important; transform: none !important; transform-origin: 0px 0px !important; zoom: 1 !important; margin-top: 2px !important; margin-left: 1672.5px !important;"><lt-div class="lt-highlighter__scroll-element" style="top: 0px !important; left: 0px !important;"></lt-div></lt-div></lt-highlighter><a style="text-decoration: none; box-sizing: border-box;" data-original-title="" title="" contenteditable="true" data-lt-tmp-id="lt-342034" spellcheck="false" data-gramm="false" href="https://gestionhumanatest.onsc.gub.uy" target="_blank" class="">link</a>
+                            </p>
+                        </div>
+                    </body>
+                </html>
+            </field>
+        </record>
+
+        <!-- Notificación valores condicionales pendientes para cierre-->
         <record id="email_template_conditional_values_cv" model="mail.template">
             <field name="name">Notificación valores condicionales pendientes para cierre</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>

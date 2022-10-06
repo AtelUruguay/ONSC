@@ -37,6 +37,10 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="button_copy_cv"
+                                string="Mis postulaciones"
+                                groups="onsc_cv_digital.group_user_cv"
+                                type="object" icon="fa-copy"/>
                         <button class="oe_stat_button" name="button_unlink"
                                 confirm="¿Está seguro que desea eliminar su CV? Si selecciona Aceptar el mismo se eliminará permanentemente perdiéndose todos los datos ingresados"
                                 string="Eliminar"
@@ -184,7 +188,7 @@
                             </group>
                             <group>
                                 <group string="Género">
-                                    <field name="cv_gender_id"/>
+                                    <field name="cv_gender_id" options="{'limit': 12}"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
                                     <field name="cv_gender_record_file"

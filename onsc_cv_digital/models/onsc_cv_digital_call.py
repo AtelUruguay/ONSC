@@ -281,7 +281,11 @@ class ONSCCVDigitalCall(models.Model):
             '%s_documentary_user_id' % documentary_field: self.env.user.id,
         }
         self.write(vals)
-        self.mapped('cv_digital_origin_id').write(vals)
+        for record in self:
+            cv_digital_origin_id = record.cv_digital_origin_id
+            if cv_digital_origin_id and eval(
+                    'cv_digital_origin_id.%s_write_date' % documentary_field) < record.create_date:
+                cv_digital_origin_id.write(vals)
 
     def _generate_json(self, call_number):
         call_server_json_url = self.env.user.company_id.call_server_json_url
@@ -639,4 +643,11 @@ class ONSCCVDigitalCall(models.Model):
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
         calls_preselected.write({'preselected': 'yes'})
         calls_not_selected.write({'preselected': 'no'})
+        self.send_notification_document_validators(call_number)
         return True
+
+    def send_notification_document_validators(self, call_number):
+        ctx = self.env.context.copy()
+        ctx.update({'call': call_number})
+        template = self.env.ref('onsc_cv_digital.email_template_document_validators_cv')
+        template.with_context(ctx).send_mail(self.id)
