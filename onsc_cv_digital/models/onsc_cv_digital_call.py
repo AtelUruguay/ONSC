@@ -178,7 +178,8 @@ class ONSCCVDigitalCall(models.Model):
             sections_tovalidate = []
             documentary_validation_state = 'validated'
             for documentary_validation_model in field_documentary_validation_models:
-                if 'to_validate' in eval("record.mapped('%s')" % documentary_validation_model):
+                documentary_states = eval("record.mapped('%s')" % documentary_validation_model)
+                if len(documentary_states) and 'to_validate' in documentary_states:
                     documentary_validation_state = 'to_validate'
                     documentary_validation_model_split = documentary_validation_model.split('.')
                     if len(documentary_validation_model_split) == 2:

@@ -10,7 +10,7 @@ REFERENCE_TYPES = [('staff', 'Personal'), ('working', 'Laboral')]
 class ONSCCVDigitalReference(models.Model):
     _name = 'onsc.cv.reference'
     _description = 'Referencias'
-    _inherit = ['onsc.cv.abstract.phone.validated', 'onsc.cv.abstract.common']
+    _inherit = ['onsc.cv.abstract.phone.validated', 'onsc.cv.abstract.documentary.validation']
 
     @property
     def prefix_by_phones(self):
@@ -41,8 +41,8 @@ class ONSCCVDigitalReference(models.Model):
             return cv_warning(_('El mail ingresado no tiene un formato válido'))
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVDigitalReference, self)._get_json_dict()
+        json_dict.extend([
             'reference_type',
             'name',
             'phone',
@@ -51,4 +51,5 @@ class ONSCCVDigitalReference(models.Model):
             'notes',
             'prefix_phone_id',
             'phone_full',
-        ]
+        ])
+        return json_dict

@@ -26,7 +26,6 @@ class ONSCCVFormationBasic(models.Model):
     def _get_json_dict(self):
         json_dict = super(ONSCCVFormationBasic, self)._get_json_dict()
         json_dict.extend([
-            "id",
             "start_date",
             "end_date",
             "basic_education_level",
@@ -151,8 +150,8 @@ class ONSCCVFormationAdvanced(models.Model):
             return cv_warning(_(u"Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVFormationAdvanced, self)._get_json_dict()
+        json_dict.extend([
             "homologated_title",
             "homologated_title_date",
             "apostilled_title",
@@ -176,7 +175,8 @@ class ONSCCVFormationAdvanced(models.Model):
             ("knowledge_thesis_ids", ['id', 'name']),
             ("area_related_education_ids", ['id', 'name']),
             ("knowledge_acquired_ids", ['id', 'name']),
-        ]
+        ])
+        return json_dict
 
 
 class ONSCCVAreaRelatedEducation(models.Model):

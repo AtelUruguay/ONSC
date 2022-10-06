@@ -71,8 +71,8 @@ class ONSCCVDigitalPPEvaluations(models.Model):
             return cv_warning(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVDigitalPPEvaluations, self)._get_json_dict()
+        json_dict.extend([
             "type",
             "other_subtype_publication",
             "is_subtype_publication",
@@ -97,7 +97,8 @@ class ONSCCVDigitalPPEvaluations(models.Model):
             ("authors_ids", ['id', 'name']),
             ("activity_area_ids", ['id', 'name']),
             ("applied_knowledge_ids", ['id', 'name'])
-        ]
+        ])
+        return json_dict
 
 
 class ONSCCVAuthors(models.Model):

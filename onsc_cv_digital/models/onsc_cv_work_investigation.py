@@ -53,8 +53,8 @@ class ONSCCVWorkInvestigation(models.Model):
             return cv_warning(_("Sólo se pueden seleccionar 5 tipos de conocimientos"))
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVWorkInvestigation, self)._get_json_dict()
+        json_dict.extend([
             "hours_worked_monthly",
             "currently_working",
             "position",
@@ -78,7 +78,8 @@ class ONSCCVWorkInvestigation(models.Model):
             ("education_area_ids", ['id', 'name']),
             ("knowledge_acquired_ids", ['id', 'name']),
             ("receipt_ids", ['id', 'name']),
-        ]
+        ])
+        return json_dict
 
 
 class ONSCCVWorkInvestigationMember(models.Model):

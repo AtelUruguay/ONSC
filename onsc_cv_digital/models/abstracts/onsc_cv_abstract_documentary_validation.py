@@ -224,10 +224,11 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             [('model_id.model', '=', self._name)], limit=1)
         if len(config):
             return [
+                "id",
                 "documentary_validation_state",
                 "documentary_reject_reason",
                 "documentary_validation_date",
                 ("documentary_user_id", ["id","name"]),
             ]
         else:
-            return []
+            return ["id"]

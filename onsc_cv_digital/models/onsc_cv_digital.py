@@ -758,6 +758,7 @@ class ONSCCVDigital(models.Model):
 
 class ONSCCVOtherRelevantInformation(models.Model):
     _name = 'onsc.cv.other.relevant.information'
+    _inherit = 'onsc.cv.abstract.documentary.validation'
     _description = 'Otra información relevante'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string=u"CV", index=True, ondelete='cascade', required=True)
@@ -765,8 +766,9 @@ class ONSCCVOtherRelevantInformation(models.Model):
     description = fields.Text(string=u"Descripción")
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVOtherRelevantInformation, self)._get_json_dict()
+        json_dict.extend([
             "theme",
             "description",
-        ]
+        ])
+        return json_dict
