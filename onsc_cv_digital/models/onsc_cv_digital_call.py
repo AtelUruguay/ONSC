@@ -388,8 +388,6 @@ class ONSCCVDigitalCall(models.Model):
             'cv_address_nro_door',
             'cv_address_apto',
             'cv_address_street',
-            'cv_address_street2',
-            'cv_address_street3',
             'cv_address_zip',
             'cv_address_is_cv_bis',
             'cv_address_amplification',
@@ -440,7 +438,7 @@ class ONSCCVDigitalCall(models.Model):
             'interaction',
             'need_other_support',
             'is_need_other_support',
-            'civical_credential_documentary_validation_state',
+            #sacar 'civical_credential_documentary_validation_state',
             ('drivers_license_ids', driver_license_json),
             ('basic_formation_ids', basic_formation_json),
             ('advanced_formation_ids', advanced_formation_json),
@@ -478,6 +476,7 @@ class ONSCCVDigitalCall(models.Model):
             parser.extend(['is_victim_violent',
                            'relationship_victim_violent_filename',
                            'is_public_information_victim_violent'])
+        #falta lo de discapacidad
 
         return self.jsonify(parser)
 

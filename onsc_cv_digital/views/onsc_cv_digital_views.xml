@@ -195,7 +195,7 @@
                                            filename="cv_gender_record_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
-                                    <field name="is_cv_gender_public" help="“Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV”"/>
+                                    <field name="is_cv_gender_public" help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
                                     <field name="is_cv_gender_option_other_enable" invisible="1"/>
                                     <field name="is_cv_gender_record" invisible="1"/>
                                     <field name="cv_gender_record_filename" invisible="1"/>
@@ -206,7 +206,7 @@
                                            attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
                                     <field name="cv_first_race_id"
                                            attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)], 'required': [('is_multiple_cv_race_selected', '=', True)]}"/>
-                                    <field name="is_cv_race_public"/>
+                                    <field name="is_cv_race_public" help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
                                     <field name="is_cv_race_option_other_enable" invisible="1"/>
                                     <field name="is_multiple_cv_race_selected" invisible="1"/>
                                     <field name="is_afro_descendants"/>
@@ -246,7 +246,7 @@
                                            filename="relationship_victim_violent_filename"
                                            attrs="{'invisible': [('is_victim_violent', '=', False)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="is_public_information_victim_violent" help="“Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV”"/>
+                                    <field name="is_public_information_victim_violent" help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
                                     <field name="relationship_victim_violent_filename" invisible="1"/>
                                 </group>
                             </group>
@@ -302,18 +302,14 @@
                                     <field name="country_code" invisible="1"/>
                                     <field name="cv_address_street_id"
                                            attrs="{'invisible': [('country_code', '!=', 'UY')]}"
-                                           domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]"/>
+                                           domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]" context="{'default_cv_location_id': cv_address_location_id,'default_state_id': cv_address_state_id, 'is_readonly': True}" />
                                     <field name="cv_address_street2_id"
                                            attrs="{'invisible': [('country_code', '!=', 'UY')]}"
-                                           domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]"/>
+                                           domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]" context="{'default_cv_location_id': cv_address_location_id, 'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
                                     <field name="cv_address_street3_id"
                                            attrs="{'invisible': [('country_code', '!=', 'UY')]}"
-                                           domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]"/>
+                                           domain="[('state_id', '=', cv_address_state_id),('cv_location_id', '=', cv_address_location_id)]" context="{'default_cv_location_id': cv_address_location_id, 'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
                                     <field name="cv_address_street" string="Calle"
-                                           attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
-                                    <field name="cv_address_street2" string="Entre calle"
-                                           attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
-                                    <field name="cv_address_street3" string="Y calle"
                                            attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
                                     <field name="cv_address_nro_door"/>
                                     <field name="cv_address_is_cv_bis"/>

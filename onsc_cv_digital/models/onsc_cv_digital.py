@@ -123,7 +123,7 @@ class ONSCCVDigital(models.Model):
     is_cv_gender_public = fields.Boolean(string="¿Desea que esta información se incluya en la versión impresa de su CV?")
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
     # Raza
-    cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Raza", required=True,
+    cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial", required=True,
                                    domain="[('race_type','in',['race','both'])]")
     is_cv_race_option_other_enable = fields.Boolean(
         u'¿Permitir opción otra/o?',
@@ -150,8 +150,6 @@ class ONSCCVDigital(models.Model):
     cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
     cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
     cv_address_street = fields.Char(related='partner_id.street', readonly=False)
-    cv_address_street2 = fields.Char(related='partner_id.street2', readonly=False)
-    cv_address_street3 = fields.Char(related='partner_id.cv_street3', readonly=False)
     cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
     cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
@@ -255,14 +253,14 @@ class ONSCCVDigital(models.Model):
     document_certificate_filename = fields.Char('Nombre del documento Digitalizado')
     certificate_date = fields.Date(string=u'Fecha de certificado')
     to_date = fields.Date(string=u'Fecha hasta')
-    see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, ¿aún si usa anteojos o lentes?')
-    hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, ¿aún si usa audífono?')
-    walk = fields.Selection(selection=SELECTION_RADIO, string=u'¿Caminar o subir escalones?')
-    speak = fields.Selection(selection=SELECTION_RADIO, string=u'¿Hablar o comunicarse aun usando lengua de señas?')
+    see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes')
+    hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, aún si usa audífono')
+    walk = fields.Selection(selection=SELECTION_RADIO, string=u'Caminar o subir escalones')
+    speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas')
     realize = fields.Selection(selection=SELECTION_RADIO,
-                               string=u'¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?')
-    lear = fields.Selection(selection=SELECTION_RADIO, string=u'¿Entender/ y o aprender?')
-    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'¿Interacciones y/o relaciones interpersonales?')
+                               string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo')
+    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender')
+    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas')
     type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo', copy=True)
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
                                                compute='_compute_cv_type_support_domain', copy=True)
@@ -525,8 +523,6 @@ class ONSCCVDigital(models.Model):
         self.cv_address_street2_id = False
         self.cv_address_street3_id = False
         self.cv_address_street = False
-        self.cv_address_street2 = False
-        self.cv_address_street3 = False
 
     def button_unlink(self):
         self.unlink()
@@ -739,14 +735,14 @@ class ONSCCVDigital(models.Model):
     def create(self, values):
         record = super(ONSCCVDigital, self).create(values)
         if values.get('cv_address_street_id'):
-            record.partner_id.suspend_security().write({'street': record.cv_address_street_id.street})
+            record.partner_id.suspend_security().write({'street': record.cv_address_street_id.street,'street2': record.cv_address_street2_id.street,'cv_street3':record.cv_address_street3_id.street})
         return record
 
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
         self.update_header_documentary_validation(values)
         if values.get('country_code') == 'UY' or values.get('cv_address_street_id'):
-            self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street})
+            self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street,'street2': self.cv_address_street2_id.street,'cv_street3':self.cv_address_street3_id.street})
         return records
 
     def update_header_documentary_validation(self, values):
