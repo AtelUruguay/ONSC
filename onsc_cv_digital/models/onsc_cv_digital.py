@@ -4,11 +4,11 @@ import logging
 
 from lxml import etree
 from odoo import fields, models, api, _
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from odoo.exceptions import ValidationError
 from zeep import Client
 from zeep.exceptions import Fault
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
 _logger = logging.getLogger(__name__)
@@ -120,7 +120,8 @@ class ONSCCVDigital(models.Model):
     cv_gender2 = fields.Char(string=u"Otro género")
     cv_gender_record_file = fields.Binary(string="Constancia de identidad de género")
     cv_gender_record_filename = fields.Char('Nombre del documento digital')
-    is_cv_gender_public = fields.Boolean(string="¿Desea que esta información se incluya en la versión impresa de su CV?")
+    is_cv_gender_public = fields.Boolean(
+        string="¿Desea que esta información se incluya en la versión impresa de su CV?")
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
     # Raza
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial", required=True,
@@ -348,8 +349,8 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     disabilitie_write_date = fields.Datetime('Fecha de última modificación',
-                                        index=True,
-                                        default=lambda *a: fields.Datetime.now())
+                                             index=True,
+                                             default=lambda *a: fields.Datetime.now())
     disabilitie_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
                                                         tracking=True)
     disabilitie_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
@@ -362,8 +363,8 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     nro_doc_write_date = fields.Datetime('Fecha de última modificación',
-                                        index=True,
-                                        default=lambda *a: fields.Datetime.now())
+                                         index=True,
+                                         default=lambda *a: fields.Datetime.now())
     nro_doc_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental', tracking=True)
     nro_doc_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
     nro_doc_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
@@ -374,8 +375,8 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     civical_credential_write_date = fields.Datetime('Fecha de última modificación',
-                                        index=True,
-                                        default=lambda *a: fields.Datetime.now())
+                                                    index=True,
+                                                    default=lambda *a: fields.Datetime.now())
     civical_credential_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
                                                                tracking=True)
     civical_credential_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
@@ -722,14 +723,18 @@ class ONSCCVDigital(models.Model):
     def create(self, values):
         record = super(ONSCCVDigital, self).create(values)
         if values.get('cv_address_street_id'):
-            record.partner_id.suspend_security().write({'street': record.cv_address_street_id.street,'street2': record.cv_address_street2_id.street,'cv_street3':record.cv_address_street3_id.street})
+            record.partner_id.suspend_security().write(
+                {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
+                 'cv_street3': record.cv_address_street3_id.street})
         return record
 
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
         self.update_header_documentary_validation(values)
         if values.get('country_code') == 'UY' or values.get('cv_address_street_id'):
-            self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street,'street2': self.cv_address_street2_id.street,'cv_street3':self.cv_address_street3_id.street})
+            self.partner_id.suspend_security().write(
+                {'street': self.cv_address_street_id.street, 'street2': self.cv_address_street2_id.street,
+                 'cv_street3': self.cv_address_street3_id.street})
         return records
 
     def update_header_documentary_validation(self, values):

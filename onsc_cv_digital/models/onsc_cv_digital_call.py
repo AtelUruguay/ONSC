@@ -445,7 +445,7 @@ class ONSCCVDigitalCall(models.Model):
             ('other_relevant_information_ids', other_relevant_information_json),
             ('reference_ids', reference_json),
         ]
-        if self.with_context(is_call_documentary_validation = True).show_race_info:
+        if self.with_context(is_call_documentary_validation=True).show_race_info:
             parser.extend(['cv_race2',
                            ('cv_first_race_id', ['id', 'name']),
                            'is_cv_race_public',
@@ -454,18 +454,18 @@ class ONSCCVDigitalCall(models.Model):
                            'is_afro_descendants',
                            'afro_descendants_filename',
                            ('cv_race_ids', race_json)])
-        if self.with_context(is_call_documentary_validation = True).show_gender_info:
+        if self.with_context(is_call_documentary_validation=True).show_gender_info:
             parser.extend(['last_modification_date',
                            ('cv_gender_id', ['id', 'name']),
                            'cv_gender2',
                            'is_cv_gender_public',
                            'is_cv_gender_record',
                            'is_cv_gender_option_other_enable'])
-        if self.with_context(is_call_documentary_validation = True).show_victim_info:
+        if self.with_context(is_call_documentary_validation=True).show_victim_info:
             parser.extend(['is_victim_violent',
                            'relationship_victim_violent_filename',
                            'is_public_information_victim_violent'])
-        if self.with_context(is_call_documentary_validation = True).show_disabilitie_info:
+        if self.with_context(is_call_documentary_validation=True).show_disabilitie_info:
             parser.extend(['allow_content_public',
                            'situation_disability',
                            'people_disabilitie',
@@ -481,7 +481,7 @@ class ONSCCVDigitalCall(models.Model):
                            'interaction',
                            'need_other_support',
                            'is_need_other_support',
-                           ('type_support_ids', type_support_json),])
+                           ('type_support_ids', type_support_json), ])
         return self.jsonify(parser)
 
     def action_get_json_dict(self):
