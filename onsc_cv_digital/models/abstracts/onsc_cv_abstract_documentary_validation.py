@@ -145,8 +145,6 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         if len(set(vals.keys()) - set(excluded_field_names)):
             return True
 
-
-
     def button_documentary_tovalidate(self):
         args = {
             'documentary_validation_state': 'to_validate',
@@ -220,3 +218,17 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     def _check_todisable_dynamic_fields(self):
         return self.cv_digital_id._is_rve_link()
+
+    def _get_json_dict(self):
+        config = self.env["onsc.cv.documentary.validation.config"].search(
+            [('model_id.model', '=', self._name)], limit=1)
+        if len(config):
+            return [
+                "id",
+                "documentary_validation_state",
+                "documentary_reject_reason",
+                "documentary_validation_date",
+                ("documentary_user_id", ["id","name"]),
+            ]
+        else:
+            return ["id"]

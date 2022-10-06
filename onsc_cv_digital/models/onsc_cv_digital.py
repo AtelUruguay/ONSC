@@ -561,21 +561,8 @@ class ONSCCVDigital(models.Model):
 
     def button_copy_cv(self):
         self.ensure_one()
-        ctx = dict(self._context)
-        # ctx.update({'is_cv_postulations': True})
-        domain = [('partner_id', '=', self.partner_id.id)]
-        view_tree_id = self.env.ref('onsc_cv_digital.onsc_cv_digital_call_tree_postulaciones').id
-        view_from_id = self.env.ref('onsc_cv_digital.onsc_cv_digital_call_form_postulaciones').id
-        vals = {
-            'type': 'ir.actions.act_window',
-            'view_type': 'form',
-            'views': [(view_tree_id, 'tree'), (view_from_id, 'form')],
-            'res_model': 'onsc.cv.digital.call',
-            'domain': domain,
-            'name': 'Mis postulaciones',
-            'context': ctx
-        }
-        return vals
+        action = self.env.ref('onsc_cv_digital.onsc_cv_digital_call_mypostulations_action').sudo().read()[0]
+        return action
 
     def _action_open_user_cv(self):
         vals = {
@@ -767,6 +754,7 @@ class ONSCCVDigital(models.Model):
 
 class ONSCCVOtherRelevantInformation(models.Model):
     _name = 'onsc.cv.other.relevant.information'
+    _inherit = 'onsc.cv.abstract.documentary.validation'
     _description = 'Otra información relevante'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string=u"CV", index=True, ondelete='cascade', required=True)
@@ -774,8 +762,9 @@ class ONSCCVOtherRelevantInformation(models.Model):
     description = fields.Text(string=u"Descripción")
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVOtherRelevantInformation, self)._get_json_dict()
+        json_dict.extend([
             "theme",
             "description",
-        ]
+        ])
+        return json_dict

@@ -81,8 +81,8 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         self.other_divulgation_media = False
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVTutorialOrientationSupervision, self)._get_json_dict()
+        json_dict.extend([
             "work_title",
             "is_tutor_option_other_enable",
             "other_tutor_type",
@@ -111,7 +111,8 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
             ("area_ids", ['id', 'name']),
             ("knowledge_acquired_ids", ['id', 'name']),
             ("knowledge_acquired_ids", ['id', 'name'])
-        ]
+        ])
+        return json_dict
 
 
 class ONSCCVEducationAreaTutorial(models.Model):

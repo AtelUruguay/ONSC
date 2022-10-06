@@ -15,9 +15,10 @@ class ONSCCVDigitalDriverLicense(models.Model):
     license_filename = fields.Char('Nombre del documento digital')
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVDigitalDriverLicense, self)._get_json_dict()
+        json_dict.extend([
             "validation_date",
             "category_id",
             "license_filename"
-        ]
+        ])
+        return json_dict

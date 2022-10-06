@@ -6,7 +6,7 @@ NIVEL = [('d', 'Básico'), ('c', 'Intermedio'), ('b', 'Avanzado'), ('a', 'Nativo
 
 class LenguageLevel(models.Model):
     _name = 'onsc.cv.language.level'
-    _inherit = 'onsc.cv.abstract.common'
+    _inherit = ['onsc.cv.abstract.documentary.validation']
     _description = 'Idiomas'
     _order = 'spoken_level,read_level,write_level'
 
@@ -23,10 +23,11 @@ class LenguageLevel(models.Model):
         required=True, string="Nivel escrito")
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(LenguageLevel, self)._get_json_dict()
+        json_dict.extend([
             "spoken_level",
             "read_level",
             "write_level",
             ("language_id", ['id', 'name'])
-        ]
+        ])
+        return json_dict

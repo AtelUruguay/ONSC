@@ -40,8 +40,8 @@ class ONSCCVWorkTeaching(models.Model):
         self.subject_ids = [(5,)]
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVWorkTeaching, self)._get_json_dict()
+        json_dict.extend([
             "hours_worked_monthly",
             "currently_working",
             "position",
@@ -64,7 +64,8 @@ class ONSCCVWorkTeaching(models.Model):
             ("subject_ids", ['id', 'name']),
             ("education_area_ids", ['id', 'name']),
             ("receipt_ids", ['id', 'name']),
-        ]
+        ])
+        return json_dict
 
 
 class ONSCCVAcademicProgramSubject(models.Model):

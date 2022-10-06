@@ -178,7 +178,8 @@ class ONSCCVDigitalCall(models.Model):
             sections_tovalidate = []
             documentary_validation_state = 'validated'
             for documentary_validation_model in field_documentary_validation_models:
-                if 'to_validate' in eval("record.mapped('%s')" % documentary_validation_model):
+                documentary_states = eval("record.mapped('%s')" % documentary_validation_model)
+                if len(documentary_states) and 'to_validate' in documentary_states:
                     documentary_validation_state = 'to_validate'
                     documentary_validation_model_split = documentary_validation_model.split('.')
                     if len(documentary_validation_model_split) == 2:
@@ -287,6 +288,9 @@ class ONSCCVDigitalCall(models.Model):
                     'cv_digital_origin_id.%s_write_date' % documentary_field) < record.create_date:
                 cv_digital_origin_id.write(vals)
 
+    def test_json(self):
+        self._generate_json(self.call_number)
+
     def _generate_json(self, call_number):
         call_server_json_url = self.env.user.company_id.call_server_json_url
         if call_server_json_url is False:
@@ -357,6 +361,9 @@ class ONSCCVDigitalCall(models.Model):
         other_relevant_information_json = self.env['onsc.cv.other.relevant.information']._get_json_dict()
         # Referencias ------<Page>
         reference_json = self.env['onsc.cv.reference']._get_json_dict()
+        # Tipos de apoyo ------<Page>
+        type_support_json = self.env['onsc.cv.type.support']._get_json_dict()
+
         parser = [
             'cv_full_name',
             'call_number',
@@ -407,7 +414,6 @@ class ONSCCVDigitalCall(models.Model):
             'cjppu_affiliate_number',
             'professional_resume',
             'user_linkedIn',
-            'afro_descendants_filename',
             'is_driver_license',
             'prefix_phone_id',
             'personal_phone',
@@ -421,24 +427,7 @@ class ONSCCVDigitalCall(models.Model):
             'is_medical_aptitude_certificate_status',
             'medical_aptitude_certificate_date',
             'medical_aptitude_certificate_filename',
-
-            # Discapacidad ----<Page>
-            'allow_content_public',
-            'situation_disability',
-            'people_disabilitie',
-            'document_certificate_filename',
-            'certificate_date',
-            'to_date',
-            'see',
-            'hear',
-            'walk',
-            'speak',
-            'realize',
-            'lear',
-            'interaction',
-            'need_other_support',
-            'is_need_other_support',
-            #sacar 'civical_credential_documentary_validation_state',
+            'civical_credential_documentary_validation_state',
             ('drivers_license_ids', driver_license_json),
             ('basic_formation_ids', basic_formation_json),
             ('advanced_formation_ids', advanced_formation_json),
@@ -456,28 +445,43 @@ class ONSCCVDigitalCall(models.Model):
             ('other_relevant_information_ids', other_relevant_information_json),
             ('reference_ids', reference_json),
         ]
-        if self.show_race_info:
+        if self.with_context(is_call_documentary_validation = True).show_race_info:
             parser.extend(['cv_race2',
-                           'cv_first_race_id',
+                           ('cv_first_race_id', ['id', 'name']),
                            'is_cv_race_public',
                            'is_cv_race_option_other_enable',
                            'is_multiple_cv_race_selected',
                            'is_afro_descendants',
+                           'afro_descendants_filename',
                            ('cv_race_ids', race_json)])
-
-        if self.show_gender_info:
+        if self.with_context(is_call_documentary_validation = True).show_gender_info:
             parser.extend(['last_modification_date',
-                           'cv_gender_id',
+                           ('cv_gender_id', ['id', 'name']),
                            'cv_gender2',
                            'is_cv_gender_public',
                            'is_cv_gender_record',
                            'is_cv_gender_option_other_enable'])
-        if self.show_victim_info:
+        if self.with_context(is_call_documentary_validation = True).show_victim_info:
             parser.extend(['is_victim_violent',
                            'relationship_victim_violent_filename',
                            'is_public_information_victim_violent'])
-        #falta lo de discapacidad
-
+        if self.with_context(is_call_documentary_validation = True).show_disabilitie_info:
+            parser.extend(['allow_content_public',
+                           'situation_disability',
+                           'people_disabilitie',
+                           'document_certificate_filename',
+                           'certificate_date',
+                           'to_date',
+                           'see',
+                           'hear',
+                           'walk',
+                           'speak',
+                           'realize',
+                           'lear',
+                           'interaction',
+                           'need_other_support',
+                           'is_need_other_support',
+                           ('type_support_ids', type_support_json),])
         return self.jsonify(parser)
 
     def action_get_json_dict(self):

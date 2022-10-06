@@ -41,8 +41,8 @@ class ONSCCVDigitalWorkExperience(models.Model):
             return cv_warning(_(u"Sólo se pueden seleccionar 5 tareas"))
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVDigitalWorkExperience, self)._get_json_dict()
+        json_dict.extend([
             "hours_worked_monthly",
             "currently_working",
             "position",
@@ -60,7 +60,8 @@ class ONSCCVDigitalWorkExperience(models.Model):
             ("entry_institution_id", ['id', 'name']),
             ("hierarchical_level_id", ['id', 'name']),
             ("task_ids", ['id', 'name']),
-        ]
+        ])
+        return json_dict
 
 
 class ONSCCVDigitalOriginInstitutionTask(models.Model):

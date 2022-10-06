@@ -188,8 +188,8 @@ class ONSCCVCourseCertificate(models.Model):
         return result
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVCourseCertificate, self)._get_json_dict()
+        json_dict.extend([
             "record_type",
             "course_type",
             "course_title",
@@ -211,7 +211,8 @@ class ONSCCVCourseCertificate(models.Model):
             ("certificate_id", ['id', 'name']),
             ("line_ids", ['id', 'name']),
             ("knowledge_acquired_ids", ['id', 'name']),
-        ]
+        ])
+        return json_dict
 
 
 class ONSCCVEducationAreaCourse(models.Model):

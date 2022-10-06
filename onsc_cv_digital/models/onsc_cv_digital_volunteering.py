@@ -17,8 +17,8 @@ class ONSCCVDigitalVolunteering(models.Model):
                                    help='“En caso de no disponer las horas se debe estimar')
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVDigitalVolunteering, self)._get_json_dict()
+        json_dict.extend([
             "hours_worked_monthly",
             "currently_working",
             "position",
@@ -33,7 +33,8 @@ class ONSCCVDigitalVolunteering(models.Model):
             "currently_volunteering",
             "hours_monthly",
             ("volunteering_task_ids", ['id', 'name']),
-        ]
+        ])
+        return json_dict
 
 
 class ONSCCVDigitalVolunteeringTask(models.Model):

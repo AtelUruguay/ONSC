@@ -44,8 +44,8 @@ class ONSCCVDigitalParticipationEvent(models.Model):
                 record.is_roll_event = False
 
     def _get_json_dict(self):
-        return [
-            "id",
+        json_dict = super(ONSCCVDigitalParticipationEvent, self)._get_json_dict()
+        json_dict.extend([
             "name_event",
             "mode",
             "name_institution",
@@ -59,4 +59,5 @@ class ONSCCVDigitalParticipationEvent(models.Model):
             ("city_id", ['id', 'name']),
             ("roll_event_id", ['id', 'name']),
             ("activity_area_ids", ['id', 'name']),
-        ]
+        ])
+        return json_dict
