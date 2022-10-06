@@ -188,7 +188,7 @@
                             </group>
                             <group>
                                 <group string="Género">
-                                    <field name="cv_gender_id"/>
+                                    <field name="cv_gender_id" options="{'limit': 12}"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
                                     <field name="cv_gender_record_file"
