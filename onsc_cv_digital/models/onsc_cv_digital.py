@@ -18,7 +18,7 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
 SELECTION_RADIO = [('1', 'Si, no puede hacerlo'), ('2', 'Si, mucha dificultad'),
                    ('3', 'Si, alguna dificultad '), ('4', 'No tiene dificultad')]
-SITUATION = u'¿Está en situación de discapacidad y/o requieres algún apoyo para cumplir con tus actividades laborales?'
+SITUATION = u'¿Está en situación de discapacidad y/o requiere algún apoyo para cumplir con sus actividades laborales?'
 DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
 
 
@@ -120,7 +120,7 @@ class ONSCCVDigital(models.Model):
     cv_gender2 = fields.Char(string=u"Otro género")
     cv_gender_record_file = fields.Binary(string="Constancia de identidad de género")
     cv_gender_record_filename = fields.Char('Nombre del documento digital')
-    is_cv_gender_public = fields.Boolean(string="¿Permite que su género se visualice en su CV?")
+    is_cv_gender_public = fields.Boolean(string="¿Desea que esta información se incluya en la versión impresa de su CV?")
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
     # Raza
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Raza", required=True,
@@ -132,9 +132,9 @@ class ONSCCVDigital(models.Model):
         u'Múltiples razas seleccionadas',
         compute='_compute_cv_race_values', store=True)
     cv_race2 = fields.Char(string=u"Otra raza")
-    cv_first_race_id = fields.Many2one("onsc.cv.race", string="¿Con que raza se reconoce principalmente?",
+    cv_first_race_id = fields.Many2one("onsc.cv.race", string=u"¿Con cuál se reconoce principalmente?",
                                        domain="[('id','in',cv_race_ids)]")
-    is_cv_race_public = fields.Boolean(string="¿Permite que su raza se visualice en su CV?")
+    is_cv_race_public = fields.Boolean(string="¿Permite que su identidad étnico-racial se visualice en su CV?")
     # Información patronímica
     cv_full_name_updated_date = fields.Date(related='partner_id.cv_full_name_updated_date',
                                             string="Fecha de información")
@@ -208,7 +208,7 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
     relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
     is_public_information_victim_violent = fields.Boolean(
-        string="¿Permite que su información de persona víctima de delitos violentos se visualice en su CV?", )
+        string="¿Desea que esta información se incluya en la versión impresa de su CV?", )
 
     # Formación----<Page>
     basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica',
@@ -248,7 +248,7 @@ class ONSCCVDigital(models.Model):
                                                            string="Tutorías, Orientaciones, Supervisiones", copy=True)
     # Discapacidad ----<Page>
     allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
-                                            string=u'¿Permite el contenido de esta sección se visualice en su CV?')
+                                            string=u'¿Permite que el contenido de esta sección se visualice en su CV?')
     situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
     people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
     document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')

@@ -191,13 +191,13 @@
                                            filename="cv_gender_record_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"
                                            attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
-                                    <field name="is_cv_gender_public"/>
+                                    <field name="is_cv_gender_public" help="“Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV”"/>
                                     <field name="is_cv_gender_option_other_enable" invisible="1"/>
                                     <field name="is_cv_gender_record" invisible="1"/>
                                     <field name="cv_gender_record_filename" invisible="1"/>
                                 </group>
-                                <group string="Raza">
-                                    <field name="cv_race_ids" widget="many2many_tags"/>
+                                <group string="Identidad étnico-racial">
+                                    <field name="cv_race_ids" widget="many2many_tags" />
                                     <field name="cv_race2"
                                            attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
                                     <field name="cv_first_race_id"
@@ -242,7 +242,7 @@
                                            filename="relationship_victim_violent_filename"
                                            attrs="{'invisible': [('is_victim_violent', '=', False)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="is_public_information_victim_violent"/>
+                                    <field name="is_public_information_victim_violent" help="“Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV”"/>
                                     <field name="relationship_victim_violent_filename" invisible="1"/>
                                 </group>
                             </group>
