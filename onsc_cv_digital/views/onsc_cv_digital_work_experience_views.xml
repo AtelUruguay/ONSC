@@ -42,7 +42,7 @@
                         </group>
                     </group>
                     <group string="Descripción de tareas">
-                        <field name="description_tasks" required="1" nolabel="1"/>
+                        <field name="description_tasks" required="1" nolabel="1" widget="html"/>
                     </group>
                     <group string="Tareas">
                         <field name="task_ids" nolabel="1"/>
