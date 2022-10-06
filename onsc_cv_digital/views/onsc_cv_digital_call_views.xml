@@ -91,9 +91,9 @@
                         <div>
                           <label for="is_json_sent" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/><field name="is_json_sent" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
                           <label for="is_cancel" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/><field name="is_cancel" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
-                          <label for="is_zip"/><field name="is_zip"/>
+                          <label for="is_zip" invisible="context.get('is_mypostulations', False)"/><field name="is_zip" invisible="context.get('is_mypostulations', False)"/>
                           <label for="is_close" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/><field name="is_close" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
-                            <label for="preselected"/><field name="preselected"/>
+                            <label for="preselected" invisible="context.get('is_mypostulations', False)"/><field name="preselected" invisible="context.get('is_mypostulations', False)"/>
                         </div>
                         <div name="div_call_is" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)">
                           <label for="is_trans"/><field name="is_trans"/>
