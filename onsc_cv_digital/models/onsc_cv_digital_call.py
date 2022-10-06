@@ -369,16 +369,7 @@ class ONSCCVDigitalCall(models.Model):
             'cv_birthdate',
             'cv_sex',
             'cv_sex_updated_date',
-            'last_modification_date',
-            'cv_gender_id',
-            'cv_gender2',
-            'is_cv_gender_public',
-            'is_cv_gender_record',
-            'is_cv_race_option_other_enable',
-            'is_multiple_cv_race_selected',
-            'cv_race2',
-            'cv_first_race_id',
-            'is_cv_race_public',
+
             # Domicilio
             'country_id',
             'country_code',
@@ -411,7 +402,6 @@ class ONSCCVDigitalCall(models.Model):
             'cjppu_affiliate_number',
             'professional_resume',
             'user_linkedIn',
-            'is_afro_descendants',
             'afro_descendants_filename',
             'is_driver_license',
             'prefix_phone_id',
@@ -426,9 +416,7 @@ class ONSCCVDigitalCall(models.Model):
             'is_medical_aptitude_certificate_status',
             'medical_aptitude_certificate_date',
             'medical_aptitude_certificate_filename',
-            'is_victim_violent',
-            'relationship_victim_violent_filename',
-            'is_public_information_victim_violent',
+
             # Discapacidad ----<Page>
             'allow_content_public',
             'situation_disability',
@@ -446,7 +434,6 @@ class ONSCCVDigitalCall(models.Model):
             'need_other_support',
             'is_need_other_support',
             'civical_credential_documentary_validation_state',
-            ('cv_race_ids', race_json),
             ('drivers_license_ids', driver_license_json),
             ('basic_formation_ids', basic_formation_json),
             ('advanced_formation_ids', advanced_formation_json),
@@ -464,6 +451,26 @@ class ONSCCVDigitalCall(models.Model):
             ('other_relevant_information_ids', other_relevant_information_json),
             ('reference_ids', reference_json),
         ]
+        if self.show_race_info:
+            parser.extend(['cv_race2',
+                          'cv_first_race_id',
+                          'is_cv_race_public',
+                          'is_cv_race_option_other_enable',
+                          'is_multiple_cv_race_selected',
+                          'is_afro_descendants',
+                          ('cv_race_ids', race_json)])
+
+        if self.show_gender_info:
+            parser.extend(['last_modification_date',
+                          'cv_gender_id',
+                          'cv_gender2',
+                          'is_cv_gender_public',
+                          'is_cv_gender_record',
+                          'is_cv_gender_option_other_enable'])
+        if self.show_victim_info:
+            parser.extend(['is_victim_violent',
+                          'relationship_victim_violent_filename',
+                          'is_public_information_victim_violent'])
 
         return self.jsonify(parser)
 
