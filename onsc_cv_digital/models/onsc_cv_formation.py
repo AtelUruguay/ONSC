@@ -24,7 +24,8 @@ class ONSCCVFormationBasic(models.Model):
         return result
 
     def _get_json_dict(self):
-        return [
+        json_dict = super(ONSCCVFormationBasic, self)._get_json_dict()
+        json_dict.extend([
             "id",
             "start_date",
             "end_date",
@@ -32,7 +33,8 @@ class ONSCCVFormationBasic(models.Model):
             ("country_id", ['id', 'name']),
             ("institution_id", ['id', 'name']),
             ("subinstitution_id", ['id', 'name']),
-        ]
+        ])
+        return json_dict
 
 
 class ONSCCVFormationAdvanced(models.Model):

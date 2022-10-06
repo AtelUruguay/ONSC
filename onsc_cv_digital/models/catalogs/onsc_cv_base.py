@@ -319,6 +319,13 @@ class ONSCCVTypeSupport(models.Model):
          u'El nombre del tipo de apoyo debe ser único'),
     ]
 
+    def _get_json_dict(self):
+        return [
+            "id",
+            "code",
+            "name"
+        ]
+
 
 class ONSCCVRollEvent(models.Model):
     _name = 'onsc.cv.roll.event'

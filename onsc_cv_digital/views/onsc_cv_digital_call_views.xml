@@ -36,7 +36,7 @@
                 <field name="call_number"/>
                 <field name="postulation_number"/>
                 <field name="postulation_date" string="Fecha de actualización"/>
-                <field name="call_conditional_state"/>
+                <field name="call_conditional_state" invisible="context.get('is_mypostulations', False)"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -56,16 +56,18 @@
                     <field name="image_1920" widget='image' class="oe_avatar"
                            options='{"preview_image": "avatar_128"}'/>
                     <div class="oe_avatar" style="padding-right:20px">
-                        <label for="gral_info_documentary_validation_state" string="Estado de validación documental"/>
+                        <label for="gral_info_documentary_validation_state" string="Estado de validación documental"
+                            invisible="context.get('is_mypostulations', False)"/>
                         <h4><field name="gral_info_documentary_validation_state"
                                    align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
-                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
+                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"
+                                   invisible="context.get('is_mypostulations', False)"/></h4>
                         <label for="call_conditional_state" string="Estado de validación condicional"
-                            invisible="context.get('is_call_documentary_validation', False)"/>
+                            invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
                         <h4><field name="call_conditional_state"
                                    align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
                                    options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"
-                                   invisible="context.get('is_call_documentary_validation', False)"/></h4>
+                                   invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/></h4>
                     </div>
                     <field name="active" invisible="1"/>
                     <field name="is_cv_uruguay" invisible="1"/>
@@ -82,18 +84,18 @@
                         <h2><field name="postulation_number"/></h2>
                         <label for="documentary_validation_sections_tovalidate"
                                string="Secciones a validar documentalmente"
-                               invisible="context.get('is_call_documentary_validation', False) is False"/>
+                               invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
                         <h4><field name="documentary_validation_sections_tovalidate"
-                                   invisible="context.get('is_call_documentary_validation', False) is False"
+                                   invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                    align="left" style="font-size: 100%;background-color:#17a2b8;" widget="label_selection"/></h4>
                         <div>
-                          <label for="is_json_sent" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_json_sent" invisible="context.get('is_call_documentary_validation', False)"/>
-                          <label for="is_cancel" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_cancel" invisible="context.get('is_call_documentary_validation', False)"/>
+                          <label for="is_json_sent" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/><field name="is_json_sent" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
+                          <label for="is_cancel" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/><field name="is_cancel" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
                           <label for="is_zip"/><field name="is_zip"/>
-                          <label for="is_close" invisible="context.get('is_call_documentary_validation', False)"/><field name="is_close" invisible="context.get('is_call_documentary_validation', False)"/>
+                          <label for="is_close" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/><field name="is_close" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
                             <label for="preselected"/><field name="preselected"/>
                         </div>
-                        <div name="div_call_is" invisible="context.get('is_call_documentary_validation', False)">
+                        <div name="div_call_is" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)">
                           <label for="is_trans"/><field name="is_trans"/>
                           <label for="is_afro"/><field name="is_afro"/>
                           <label for="is_disabilitie"/><field name="is_disabilitie"/>
@@ -113,14 +115,14 @@
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
                                                 context="{'documentary_validation':'nro_doc'}" type="object"
                                                 string="Validar"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'validated')]}"
                                                 icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
                                                 context="{'documentary_validation':'nro_doc'}"
                                                 type="object"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'rejected')]}"
                                                 string="Rechazar"
                                                 icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
@@ -128,7 +130,7 @@
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
                                                 context="{'documentary_validation':'nro_doc'}"
                                                 type="object"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'to_validate')]}"
                                                 string="Para validar"
                                                 icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
@@ -198,7 +200,7 @@
                                                     type="object"
                                                     string="Validar"
                                                     icon="fa-thumbs-o-up"
-                                                    invisible="context.get('is_call_documentary_validation', False) is False"
+                                                    invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                                     attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'validated')]}"
                                                     class="btn btn-sm btn-outline-success"/>
                                             <button name="button_documentary_reject"
@@ -207,14 +209,14 @@
                                                     type="object"
                                                     string="Rechazar"
                                                     icon="fa-thumbs-o-down"
-                                                    invisible="context.get('is_call_documentary_validation', False) is False"
+                                                    invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                                     attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'rejected')]}"
                                                     class="btn btn-sm btn-outline-danger"/>
                                             <button name="button_documentary_tovalidate"
                                                     groups="onsc_cv_digital.group_validador_documental_cv"
                                                     context="{'documentary_validation':'civical_credential'}"
                                                     type="object"
-                                                    invisible="context.get('is_call_documentary_validation', False) is False"
+                                                    invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                                     attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'to_validate')]}"
                                                     string="Para validar"
                                                     icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
@@ -275,7 +277,7 @@
                             </group>
                             <group string="Licencias de Conducir"
                                    attrs="{'invisible': [('is_driver_license', '=', False)]}">
-                                <field name="drivers_license_ids" nolabel="1" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                                <field name="drivers_license_ids" nolabel="1" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                             </group>
                             <group>
                                 <group string="Género"
@@ -421,47 +423,47 @@
                             <div>
                                 <h4>Formación básica</h4>
                             </div>
-                            <field name="basic_formation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                            <field name="basic_formation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                             <br/>
                             <div>
                                 <h4>Formación avanzada</h4>
                             </div>
-                            <field name="advanced_formation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                            <field name="advanced_formation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                         </page>
                         <page name="course_certificate" string="Cursos y certificados">
                             <div>
                                 <h4>Cursos, talleres y otras capacitaciones</h4>
                             </div>
                             <field name="course_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                             <br/>
                             <div>
                                 <h4>Certificados</h4>
                             </div>
                             <field name="certificate_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                         </page>
                         <page name="work_experience" string="Experiencia laboral">
-                            <field name="work_experience_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                            <field name="work_experience_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                         </page>
                         <page name="work_teaching" string="Docencia">
-                            <field name="work_teaching_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                            <field name="work_teaching_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                         </page>
                         <page name="work_investigation" string="Investigación">
-                            <field name="work_investigation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                            <field name="work_investigation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                         </page>
                         <page name="volunteering" string="Voluntariado">
-                            <field name="volunteering_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                            <field name="volunteering_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                         </page>
                         <page name="language_level" string="Idiomas">
                             <field name="language_level_ids"/>
                         </page>
                         <page name="publications_productions_evaluations"
                               string="Publicaciones, producciones y evaluaciones">
-                            <field name="publication_production_evaluation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                            <field name="publication_production_evaluation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                         </page>
                         <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
-                            <field name="tutoring_orientation_supervision_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                            <field name="tutoring_orientation_supervision_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                         </page>
                         <page string="Discapacidad"
                             attrs="{'invisible': [('show_disabilitie_info', '=', False)]}">
@@ -501,13 +503,13 @@
                                     <div>
                                         <button name="button_documentary_approve"
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'validated')]}"
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'rejected')]}"
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
@@ -515,7 +517,7 @@
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
+                                                invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'to_validate')]}"
                                                 string="Para validar"
                                                 icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
@@ -563,605 +565,7 @@
                         </page>
                         <page name="participation_event"
                               string="Participación en eventos">
-                            <field name="participation_event_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                        </page>
-                        <page name="other_relevant_information"
-                              string="Otra información relevante">
-                            <field name="other_relevant_information_ids">
-                                <tree editable="top">
-                                    <field name="theme"/>
-                                    <field name="description"/>
-                                </tree>
-                            </field>
-                        </page>
-                        <page name="reference" string="Referencias">
-                            <field name="reference_ids"/>
-                        </page>
-                    </notebook>
-                </sheet>
-            </form>
-        </field>
-    </record>
-
-    <record id="onsc_cv_digital_call_tree_postulaciones" model="ir.ui.view">
-        <field name="name">onsc.cv.digital.call.tree.postulaciones</field>
-        <field name="model">onsc.cv.digital.call</field>
-        <field name="arch" type="xml">
-            <tree string="Copias de CV" delete="0" edit="0" create="0" duplicate="0">
-                <field name="partner_id" string="Nombre"/>
-                <field name="call_number"/>
-                <field name="postulation_number"/>
-                <field name="postulation_date" string="Fecha de actualización"/>
-                <field name="active" invisible="1"/>
-            </tree>
-        </field>
-    </record>
-
-    <record id="onsc_cv_digital_call_form_postulaciones" model="ir.ui.view">
-        <field name="name">onsc.cv.digital.call.form.postulaciones</field>
-        <field name="model">onsc.cv.digital.call</field>
-        <field name="arch" type="xml">
-            <form string="Copias de CV" delete="0" edit="0" create="0" duplicate="0">
-                <header>
-                </header>
-                <sheet>
-                    <div class="oe_button_box" name="button_box">
-                    </div>
-                    <field name="avatar_128" invisible="1"/>
-                    <field name="image_1920" widget='image' class="oe_avatar"
-                           options='{"preview_image": "avatar_128"}'/>
-                    <div class="oe_avatar" style="padding-right:20px">
-                        <label for="gral_info_documentary_validation_state" string="Estado de validación documental"/>
-                        <h4>
-                            <field name="gral_info_documentary_validation_state"
-                                   align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
-                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/>
-                        </h4>
-                        <label for="call_conditional_state" string="Estado de validación condicional"
-                               invisible="context.get('is_call_documentary_validation', False)"/>
-                        <h4>
-                            <field name="call_conditional_state"
-                                   align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
-                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"
-                                   invisible="context.get('is_call_documentary_validation', False)"/>
-                        </h4>
-                    </div>
-                    <field name="active" invisible="1"/>
-                    <field name="is_cv_uruguay" invisible="1"/>
-                    <field name="is_partner_cv" invisible="1"/>
-                    <div class="oe_title">
-                        <h1>
-                            <field name="cv_full_name" readonly="1"/>
-                        </h1>
-                        <label for="call_number" string="Llamado"/>
-                        <h2>
-                            <field name="call_number"/>
-                        </h2>
-                        <label for="postulation_date" string="Fecha de actualización"/>
-                        <h2>
-                            <field name="postulation_date"/>
-                        </h2>
-                        <label for="postulation_number" string="Número de postulación"/>
-                        <h2>
-                            <field name="postulation_number"/>
-                        </h2>
-                        <label for="documentary_validation_sections_tovalidate"
-                               string="Secciones a validar documentalmente"
-                               invisible="context.get('is_call_documentary_validation', False) is False"/>
-                        <h4>
-                            <field name="documentary_validation_sections_tovalidate"
-                                   invisible="context.get('is_call_documentary_validation', False) is False"
-                                   align="left" style="font-size: 100%;background-color:#17a2b8;"
-                                   widget="label_selection"/>
-                        </h4>
-                    </div>
-                    <group style="padding-top:40px">
-                        <group>
-                            <field name="cv_emissor_country_id"/>
-                            <field name="cv_document_type_id"/>
-                            <label for="cv_nro_doc"/>
-                            <div>
-                                <div class="request-partner-author-field o_row">
-                                    <field name="cv_nro_doc"/>
-                                    <span>
-                                        <button name="button_documentary_approve"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
-                                                context="{'documentary_validation':'nro_doc'}" type="object"
-                                                string="Validar"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
-                                                attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'validated')]}"
-                                                icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
-                                        <button name="button_documentary_reject"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
-                                                context="{'documentary_validation':'nro_doc'}"
-                                                type="object"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
-                                                attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'rejected')]}"
-                                                string="Rechazar"
-                                                icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
-                                        <button name="button_documentary_tovalidate"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
-                                                context="{'documentary_validation':'nro_doc'}"
-                                                type="object"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
-                                                attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'to_validate')]}"
-                                                string="Para validar"
-                                                icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
-                                    </span>
-                                </div>
-                            </div>
-                            <field name="cv_expiration_date" required="1"/>
-                            <field name="document_identity_file"
-                                   filename="document_identity_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}"/>
-                            <div class="row" nolabel="1" colspan="2">
-                                <div class="alert alert-danger" role="alert" style="width:70%"
-                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'rejected')]}">
-                                    <p class="mb-0">
-                                        <strong>
-                                            La sección documento de identidad ha sido rechazada. Motivo del rechazo:
-                                            <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
-                                            <p/>
-                                            Fecha:
-                                            <field name="nro_doc_documentary_validation_date" class="oe_inline"/>
-                                            Usuario:
-                                            <field name="nro_doc_documentary_user_id" class="oe_inline"
-                                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                        </strong>
-                                    </p>
-                                </div>
-                                <div class="alert alert-success" role="alert" style="width:70%"
-                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'validated')]}">
-                                    <p class="mb-0">
-                                        <strong>
-                                            La sección documento de identidad ha sido validada
-                                            <p/>
-                                            Fecha:
-                                            <field name="nro_doc_documentary_validation_date" class="oe_inline"/>
-                                            Usuario:
-                                            <field name="nro_doc_documentary_user_id" class="oe_inline"
-                                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                        </strong>
-                                    </p>
-                                </div>
-                            </div>
-                            <field name="partner_id" invisible="1"/>
-                            <field name="active" invisible="1"/>
-                            <field name="nro_doc_documentary_validation_state" invisible="1"/>
-                        </group>
-                        <group>
-                            <field name="cv_birthdate"
-                                   attrs="{'readonly': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
-                            <field name="cv_sex"
-                                   attrs="{'readonly': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
-                            <field name="cv_sex_updated_date"
-                                   attrs="{'invisible': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
-                            <field name="last_modification_date"/>
-                        </group>
-                        <group string="Información patronímica" name="other_info_group">
-                            <field name="cv_full_name_updated_date"/>
-                        </group>
-                    </group>
-                    <notebook>
-                        <page string="Información general">
-                            <group string="Datos personales">
-                                <group>
-                                    <field name="country_of_birth_id"/>
-                                    <field name="marital_status_id"/>
-                                    <field name="uy_citizenship"/>
-                                    <field name="crendencial_serie"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <label for="credential_number"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
-                                    <div class="request-partner-author-field o_row"
-                                         attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}">
-                                        <field name="credential_number"
-                                               attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
-                                        <span>
-                                            <button name="button_documentary_approve"
-                                                    groups="onsc_cv_digital.group_validador_documental_cv"
-                                                    context="{'documentary_validation':'civical_credential'}"
-                                                    type="object"
-                                                    string="Validar"
-                                                    icon="fa-thumbs-o-up"
-                                                    invisible="context.get('is_call_documentary_validation', False) is False"
-                                                    attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'validated')]}"
-                                                    class="btn btn-sm btn-outline-success"/>
-                                            <button name="button_documentary_reject"
-                                                    groups="onsc_cv_digital.group_validador_documental_cv"
-                                                    context="{'documentary_validation':'civical_credential'}"
-                                                    type="object"
-                                                    string="Rechazar"
-                                                    icon="fa-thumbs-o-down"
-                                                    invisible="context.get('is_call_documentary_validation', False) is False"
-                                                    attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'rejected')]}"
-                                                    class="btn btn-sm btn-outline-danger"/>
-                                            <button name="button_documentary_tovalidate"
-                                                    groups="onsc_cv_digital.group_validador_documental_cv"
-                                                    context="{'documentary_validation':'civical_credential'}"
-                                                    type="object"
-                                                    invisible="context.get('is_call_documentary_validation', False) is False"
-                                                    attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'to_validate')]}"
-                                                    string="Para validar"
-                                                    icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
-                                        </span>
-                                    </div>
-                                    <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
-                                           filename="civical_credential_filename"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
-                                    <div class="row" nolabel="1" colspan="2">
-                                        <div class="alert alert-danger" role="alert" style="width:70%"
-                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
-                                            <p class="mb-0">
-                                                <strong>
-                                                    La sección credencial cívica ha sido rechazada. Motivo del rechazo:
-                                                    <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
-                                                    <p/>
-                                                    Fecha:
-                                                    <field name="nro_doc_documentary_validation_date"
-                                                           class="oe_inline"/>
-                                                    Usuario:
-                                                    <field name="nro_doc_documentary_user_id" class="oe_inline"
-                                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                </strong>
-                                            </p>
-                                        </div>
-                                        <div class="alert alert-success" role="alert" style="width:70%"
-                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'validated')]}">
-                                            <p class="mb-0">
-                                                <strong>
-                                                    La sección credencial cívica ha sido validada
-                                                    <p/>
-                                                    Fecha:
-                                                    <field name="nro_doc_documentary_validation_date"
-                                                           class="oe_inline"/>
-                                                    Usuario:
-                                                    <field name="nro_doc_documentary_user_id" class="oe_inline"
-                                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                </strong>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <field name="document_identity_filename" invisible="1"/>
-                                    <field name="civical_credential_filename" invisible="1"/>
-                                    <field name="civical_credential_documentary_validation_state" invisible="1"/>
-                                </group>
-                                <group>
-                                    <label for="personal_phone"/>
-                                    <div class="content-group row" style="margin-left:5px">
-                                        <field name="prefix_phone_id" options="{'no_open': True, 'no_create': True}"
-                                               style='max-width:75px !important; padding:1px !important;'
-                                               class="oe_inline"/>
-                                        <field name="personal_phone" class="oe_inline" style="padding:1px !important;"/>
-                                    </div>
-                                    <label for="mobile_phone"/>
-                                    <div class="content-group row" style="margin-left:5px">
-                                        <field name="prefix_mobile_phone_id"
-                                               options="{'no_open': True, 'no_create': True}"
-                                               style='max-width:75px !important; padding:1px !important;'
-                                               class="oe_inline"/>
-                                        <field name="mobile_phone" class="oe_inline" style="padding:1px !important;"/>
-                                    </div>
-                                    <field name="email" widget="email"/>
-                                    <field name="user_linkedIn"/>
-                                    <field name="cjppu_affiliate_number"/>
-                                    <field name="professional_resume"
-                                           placeholder="Resumen del candidato a modo de introducción"/>
-                                    <field name="is_driver_license"/>
-                                </group>
-                            </group>
-                            <group string="Licencias de Conducir"
-                                   attrs="{'invisible': [('is_driver_license', '=', False)]}">
-                                <field name="drivers_license_ids" nolabel="1"
-                                       context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                            </group>
-                            <group>
-                                <group string="Género"
-                                       attrs="{'invisible': [('show_gender_info', '=', False)]}">
-                                    <field name="cv_gender_id"/>
-                                    <field name="cv_gender2"
-                                           attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
-                                    <field name="cv_gender_record_file"
-                                           filename="cv_gender_record_filename"
-                                           attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
-                                    <field name="is_cv_gender_public"/>
-                                    <field name="is_cv_gender_option_other_enable" invisible="1"/>
-                                    <field name="is_cv_gender_record" invisible="1"/>
-                                    <field name="cv_gender_record_filename" invisible="1"/>
-                                    <field name="show_gender_info" invisible="1"/>
-                                </group>
-                                <group string="Raza"
-                                       attrs="{'invisible': [('show_race_info', '=', False)]}">
-                                    <field name="cv_race_ids" widget="many2many_tags"/>
-                                    <field name="cv_race2"
-                                           attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)], 'required': [('is_cv_race_option_other_enable', '=', True)]}"/>
-                                    <field name="cv_first_race_id"
-                                           attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)], 'required': [('is_multiple_cv_race_selected', '=', True)]}"/>
-                                    <field name="is_cv_race_public"/>
-                                    <field name="is_cv_race_option_other_enable" invisible="1"/>
-                                    <field name="is_multiple_cv_race_selected" invisible="1"/>
-                                    <field name="is_afro_descendants"/>
-                                    <field name="afro_descendants_file"
-                                           filename="afro_descendants_filename"
-                                           attrs="{'required': [('is_afro_descendants', '=', True)]}"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="afro_descendants_filename" invisible="1"/>
-                                    <field name="show_race_info" invisible="1"/>
-                                </group>
-                            </group>
-                            <group>
-                                <group string="Carné de salud laboral">
-                                    <field name="is_occupational_health_card"/>
-                                    <field name="occupational_health_card_date"
-                                           attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"/>
-                                    <field name="occupational_health_card_file"
-                                           filename="occupational_health_card_filename"
-                                           attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="occupational_health_card_filename" invisible="1"/>
-                                </group>
-                                <group string="Certificado de aptitud médico-deportiva">
-                                    <field name="is_medical_aptitude_certificate_status"/>
-                                    <field name="medical_aptitude_certificate_date"
-                                           attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)], 'required': [('is_medical_aptitude_certificate_status', '=', True)]}"/>
-                                    <field name="medical_aptitude_certificate_file"
-                                           filename="medical_aptitude_certificate_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)], 'required': [('is_medical_aptitude_certificate_status', '=', True)]}"/>
-                                    <field name="medical_aptitude_certificate_filename" invisible="1"/>
-                                </group>
-                            </group>
-                            <group>
-                                <group string="Víctima de delitos violentos"
-                                       attrs="{'invisible': [('show_victim_info', '=', False)]}">
-                                    <field name="is_victim_violent"/>
-                                    <field name="relationship_victim_violent_file"
-                                           filename="relationship_victim_violent_filename"
-                                           attrs="{'invisible': [('is_victim_violent', '=', False)]}"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="is_public_information_victim_violent"/>
-                                    <field name="relationship_victim_violent_filename" invisible="1"/>
-                                    <field name="show_victim_info" invisible="1"/>
-                                </group>
-                            </group>
-                        </page>
-                        <page name="address" string="Domicilio">
-                            <div class="row">
-                                <div class="col">
-                                    <field name="cv_address_state" invisible="1"/>
-                                    <div class="alert alert-info" role="alert"
-                                         attrs="{'invisible': [('cv_address_state', '!=', 'to_validate')]}">
-                                        <p class="mb-0">
-                                            <strong>El domicilio ingresado está en proceso de validación, se notificará
-                                                el
-                                                resultado de este a su e-mail
-                                            </strong>
-                                        </p>
-                                    </div>
-                                    <div class="alert alert-danger" role="alert"
-                                         attrs="{'invisible': [('cv_address_state', '!=', 'rejected')]}">
-                                        <p class="mb-0">
-                                            <strong>El domicilio ha sido rechazado. Motivo:
-                                                <field name="cv_address_reject_reason"/>
-                                            </strong>
-                                        </p>
-                                    </div>
-                                </div>
-                                <div class="col-md-auto"/>
-                            </div>
-                            <group>
-                                <group>
-                                    <field name="country_id" string="País"
-                                           options="{&quot;no_open&quot;: True, &quot;no_create&quot;: True}"/>
-                                    <field name="cv_address_state_id" string="Departamento"
-                                           domain="[('country_id', '=?', country_id)]"
-                                           context="{'default_country_id': country_id, 'is_readonly': True}"
-                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                    <field name="cv_address_location_id"
-                                           domain="[('state_id', '=?', cv_address_state_id)]"
-                                           attrs="{'readonly': [('cv_address_state_id', '=', False)]}"
-                                           context="{'default_country_id': country_id, 'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
-                                </group>
-                                <group>
-                                </group>
-                            </group>
-                            <group>
-                                <group>
-                                    <field name="country_code" invisible="1"/>
-                                    <field name="cv_address_street_id"
-                                           attrs="{'invisible': [('country_code', '!=', 'UY')]}"/>
-                                    <field name="cv_address_street2_id"
-                                           attrs="{'invisible': [('country_code', '!=', 'UY')]}"/>
-                                    <field name="cv_address_street3_id"
-                                           attrs="{'invisible': [('country_code', '!=', 'UY')]}"/>
-                                    <field name="cv_address_street" string="Calle"
-                                           attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
-                                    <field name="cv_address_street2" string="Entre calle"
-                                           attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
-                                    <field name="cv_address_street3" string="Y calle"
-                                           attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
-                                    <field name="cv_address_nro_door"/>
-                                    <field name="cv_address_is_cv_bis"/>
-                                    <field name="cv_address_apto"/>
-                                    <field name="cv_address_zip" string="C.P"/>
-                                </group>
-                                <group>
-                                    <field name="cv_address_place"/>
-                                    <field name="cv_address_block"/>
-                                    <field name="cv_address_sandlot"/>
-                                </group>
-                            </group>
-                            <group>
-                                <field name="cv_address_amplification"/>
-                            </group>
-                        </page>
-                        <page name="formation" string="Formación">
-                            <div>
-                                <h4>Formación básica</h4>
-                            </div>
-                            <field name="basic_formation_ids"
-                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                            <br/>
-                            <div>
-                                <h4>Formación avanzada</h4>
-                            </div>
-                            <field name="advanced_formation_ids"
-                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                        </page>
-                        <page name="course_certificate" string="Cursos y certificados">
-                            <div>
-                                <h4>Cursos, talleres y otras capacitaciones</h4>
-                            </div>
-                            <field name="course_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                            <br/>
-                            <div>
-                                <h4>Certificados</h4>
-                            </div>
-                            <field name="certificate_ids"
-                                   context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                        </page>
-                        <page name="work_experience" string="Experiencia laboral">
-                            <field name="work_experience_ids"
-                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                        </page>
-                        <page name="work_teaching" string="Docencia">
-                            <field name="work_teaching_ids"
-                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                        </page>
-                        <page name="work_investigation" string="Investigación">
-                            <field name="work_investigation_ids"
-                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                        </page>
-                        <page name="volunteering" string="Voluntariado">
-                            <field name="volunteering_ids"
-                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                        </page>
-                        <page name="language_level" string="Idiomas">
-                            <field name="language_level_ids"/>
-                        </page>
-                        <page name="publications_productions_evaluations"
-                              string="Publicaciones, producciones y evaluaciones">
-                            <field name="publication_production_evaluation_ids"
-                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                        </page>
-                        <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
-                            <field name="tutoring_orientation_supervision_ids"
-                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
-                        </page>
-                        <page string="Discapacidad"
-                              attrs="{'invisible': [('show_disabilitie_info', '=', False)]}">
-                            <div>
-                                <field name="show_disabilitie_info" invisible="1"/>
-                                <div class="alert alert-danger" role="alert"
-                                     attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'rejected')]}">
-                                    <p class="mb-0">
-                                        <strong>
-                                            La sección discapacidad ha sido rechazada. Motivo del rechazo:
-                                            <field name="disabilitie_documentary_reject_reason" class="oe_inline"/>
-                                            <p/>
-                                            Fecha:
-                                            <field name="disabilitie_documentary_validation_date" class="oe_inline"/>
-                                            Usuario:
-                                            <field name="disabilitie_documentary_user_id" class="oe_inline"
-                                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                        </strong>
-                                    </p>
-                                </div>
-                                <div class="alert alert-success" role="alert"
-                                     attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'validated')]}">
-                                    <p class="mb-0">
-                                        <strong>
-                                            La sección discapacidad ha sido validada
-                                            <p/>
-                                            Fecha:
-                                            <field name="disabilitie_documentary_validation_date" class="oe_inline"/>
-                                            Usuario:
-                                            <field name="disabilitie_documentary_user_id" class="oe_inline"
-                                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                        </strong>
-                                    </p>
-                                </div>
-                            </div>
-                            <group>
-                                <group>
-                                    <field name="allow_content_public"/>
-                                    <field name="situation_disability"/>
-                                    <field name="people_disabilitie"
-                                           attrs="{'invisible': [('situation_disability', '!=', 'si')]}"/>
-                                </group>
-                                <group>
-                                    <field name="document_certificate_filename" invisible="1"/>
-                                    <field name="disabilitie_documentary_validation_state" invisible="1"/>
-                                    <div>
-                                        <button name="button_documentary_approve"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
-                                                attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'validated')]}"
-                                                context="{'documentary_validation':'disabilitie'}"
-                                                type="object" string="Validar" icon="fa-thumbs-o-up"
-                                                class="btn btn-sm btn-outline-success"/>
-                                        <button name="button_documentary_reject"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
-                                                attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'rejected')]}"
-                                                context="{'documentary_validation':'disabilitie'}"
-                                                type="object" string="Rechazar" icon="fa-thumbs-o-down"
-                                                class="btn btn-sm btn-outline-danger"/>
-                                        <button name="button_documentary_tovalidate"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
-                                                context="{'documentary_validation':'disabilitie'}"
-                                                type="object"
-                                                invisible="context.get('is_call_documentary_validation', False) is False"
-                                                attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'to_validate')]}"
-                                                string="Para validar"
-                                                icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
-                                    </div>
-                                    <field name="document_certificate_file" filename="document_certificate_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'invisible': [('people_disabilitie', '!=', 'si')],'required': [('people_disabilitie', '=', 'si')]}"/>
-                                    <field name="certificate_date"
-                                           attrs="{'invisible': [('people_disabilitie', '!=', 'si')],'required': [('people_disabilitie', '=', 'si')]}"/>
-                                    <field name="to_date" attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}"/>
-                                </group>
-                            </group>
-                            <group string="Tiene dificultad permanente para:"
-                                   attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
-                                <group>
-                                    <field name="see" widget="radio"/>
-                                    <br/>
-                                    <field name="walk" widget="radio"/>
-                                    <br/>
-                                    <field name="realize" widget="radio"/>
-                                    <br/>
-                                    <field name="interaction" widget="radio"/>
-                                </group>
-                                <group>
-                                    <field name="hear" widget="radio"/>
-                                    <br/>
-                                    <field name="speak" widget="radio"/>
-                                    <br/>
-                                    <field name="lear" widget="radio"/>
-                                </group>
-                            </group>
-                            <group string="Seleccione los apoyos que desea:"
-                                   attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
-                                <group>
-                                    <field name="type_support_ids_domain" invisible="1"/>
-                                    <field name="type_support_ids" widget="many2many_tags"
-                                           domain="[('id', 'in', type_support_ids_domain)]"/>
-                                    <field name="is_need_other_support" invisible="1"/>
-                                </group>
-                                <group>
-                                    <field name="need_other_support"
-                                           attrs="{'invisible': [('is_need_other_support', '!=', True)]}"/>
-                                </group>
-                            </group>
-                        </page>
-                        <page name="participation_event"
-                              string="Participación en eventos">
-                            <field name="participation_event_ids"
-                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
+                            <field name="participation_event_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)}"/>
                         </page>
                         <page name="other_relevant_information"
                               string="Otra información relevante">
@@ -1193,4 +597,25 @@
             </p>
         </field>
     </record>
+
+    <record id='onsc_cv_digital_call_mypostulations_action' model='ir.actions.act_window'>
+        <field name="name">Mis postulaciones</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.cv.digital.call</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{
+            'default_is_company': False,
+            'default_is_partner_cv': True,
+            'tree_view_ref': 'onsc_cv_digital.onsc_cv_digital_call_tree',
+            'form_view_ref': 'onsc_cv_digital.onsc_cv_digital_call_form',
+            'is_mypostulations':True}
+        </field>
+        <field name="domain">[('type','=','call')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            </p>
+        </field>
+    </record>
+
+
 </odoo>
