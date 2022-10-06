@@ -349,6 +349,9 @@ class ONSCCVDigital(models.Model):
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
+    disabilitie_write_date = fields.Datetime('Fecha de última modificación',
+                                        index=True,
+                                        default=lambda *a: fields.Datetime.now())
     disabilitie_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
                                                         tracking=True)
     disabilitie_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
@@ -360,6 +363,9 @@ class ONSCCVDigital(models.Model):
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
+    nro_doc_write_date = fields.Datetime('Fecha de última modificación',
+                                        index=True,
+                                        default=lambda *a: fields.Datetime.now())
     nro_doc_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental', tracking=True)
     nro_doc_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
     nro_doc_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
@@ -369,6 +375,9 @@ class ONSCCVDigital(models.Model):
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
+    civical_credential_write_date = fields.Datetime('Fecha de última modificación',
+                                        index=True,
+                                        default=lambda *a: fields.Datetime.now())
     civical_credential_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
                                                                tracking=True)
     civical_credential_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
@@ -492,7 +501,7 @@ class ONSCCVDigital(models.Model):
         if self.crendencial_serie and not self.crendencial_serie.isalpha():
             self.crendencial_serie = ''
             return cv_warning(_("La serie de la credencial no puede contener números"))
-        if not self.crendencial_serie.isupper():
+        if self.crendencial_serie and not self.crendencial_serie.isupper():
             self.crendencial_serie = self.crendencial_serie.upper()
 
     @api.onchange('credential_number')
@@ -732,10 +741,13 @@ class ONSCCVDigital(models.Model):
         certificate_date_file_value = values.get('certificate_date')
         to_date_file_value = values.get('to_date')
         if cv_expiration_date_value or document_identity_file_value:
+            self.nro_doc_write_date = fields.Datetime.now()
             self.nro_doc_documentary_validation_state = 'to_validate'
         if civical_credential_file_value or crendencial_serie_value or credential_number_value:
+            self.civical_credential_write_date = fields.Datetime.now()
             self.civical_credential_documentary_validation_state = 'to_validate'
         if document_certificate_file_value or certificate_date_file_value or to_date_file_value:
+            self.disabilitie_write_date = fields.Datetime.now()
             self.disabilitie_documentary_validation_state = 'to_validate'
 
 

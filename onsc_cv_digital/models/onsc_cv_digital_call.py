@@ -281,7 +281,11 @@ class ONSCCVDigitalCall(models.Model):
             '%s_documentary_user_id' % documentary_field: self.env.user.id,
         }
         self.write(vals)
-        self.mapped('cv_digital_origin_id').write(vals)
+        for record in self:
+            cv_digital_origin_id = record.cv_digital_origin_id
+            if cv_digital_origin_id and eval(
+                    'cv_digital_origin_id.%s_write_date' % documentary_field) < record.create_date:
+                cv_digital_origin_id.write(vals)
 
     def _generate_json(self, call_number):
         call_server_json_url = self.env.user.company_id.call_server_json_url

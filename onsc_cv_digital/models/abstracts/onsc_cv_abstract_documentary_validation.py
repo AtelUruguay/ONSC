@@ -25,6 +25,9 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     create_date = fields.Date(string=u'Fecha de creación', index=True, readonly=True)
     write_date = fields.Datetime('Fecha de última modificación', index=True, readonly=True)
+    custom_write_date = fields.Datetime('Fecha de última modificación',
+                                        index=True,
+                                        default=lambda *a: fields.Datetime.now())
 
     @property
     def field_documentary_validation_state(self):
@@ -71,7 +74,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     @property
     def widget_documentary_button(self):
-        return etree.XML(_("""
+        return etree.XML("""
                 <div>
                     <field name="documentary_validation_state" invisible="1"/>
                     <div class="alert alert-danger" role="alert"
@@ -84,7 +87,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                             </strong>
                         </p>
                     </div>
-                </div>"""))
+                </div>""")
 
     @property
     def field_documentary_validation_state_tree(self):
@@ -97,9 +100,9 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         if view_type == 'form':
             doc = etree.XML(res['arch'])
             config = self.env["onsc.cv.documentary.validation.config"].search(
-                [('model_id.model', '=', self._name)])
+                [('model_id.model', '=', self._name)], limit=1)
             if self._context.get('is_call_documentary_validation', False):
-                for field in config.mapped('field_ids'):
+                for field in config.field_ids:
                     node = doc.xpath("//field[@name='" + field.name + "']")
                     for n in node:
                         n.set('doc-validation', 'label-text-muted')
@@ -126,6 +129,8 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         return res
 
     def write(self, vals):
+        if not vals.get('documentary_validation_state', False) and self._update_custom_write_date(vals):
+            vals['custom_write_date'] = fields.Datetime.now()
         if not vals.get('documentary_validation_state', False):
             vals['documentary_validation_state'] = 'to_validate'
         return super(ONSCCVAbstractFileValidation, self).write(vals)
@@ -133,6 +138,14 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
     def unlink(self):
         if self._check_todisable():
             return super(ONSCCVAbstractFileValidation, self).unlink()
+
+    def _update_custom_write_date(self, vals):
+        excluded_field_names = self.env["onsc.cv.documentary.validation.config"].sudo().search([
+            ('model_id.model', '=', self._name)]).field_ids.mapped('name')
+        if len(set(vals.keys()) - set(excluded_field_names)):
+            return True
+
+
 
     def button_documentary_tovalidate(self):
         args = {
@@ -185,7 +198,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         for record in self:
             self.search([
                 ('id', '=', record.original_instance_identifier),
-                ('write_date', '<=', record.create_date)]).write(args)
+                ('custom_write_date', '<=', record.create_date)]).write(args)
         self._update_call_documentary_validation_status()
 
     def _update_call_documentary_validation_status(self):
