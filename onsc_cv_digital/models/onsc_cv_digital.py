@@ -563,6 +563,23 @@ class ONSCCVDigital(models.Model):
             return self.with_context(my_cv=self)._action_open_user_cv()
         return result
 
+    def button_copy_cv(self):
+        self.ensure_one()
+        ctx = dict(self._context)
+        domain = [('partner_id', '=', self.partner_id.id)]
+        view_tree_id = self.env.ref('onsc_cv_digital.onsc_cv_digital_call_tree_postulaciones').id
+        view_from_id = self.env.ref('onsc_cv_digital.onsc_cv_digital_call_form_postulaciones').id
+        vals = {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'views': [(view_tree_id, 'tree'), (view_from_id, 'form')],
+            'res_model': 'onsc.cv.digital.call',
+            'domain': domain,
+            'name': 'Mis postulaciones',
+            'context': ctx
+        }
+        return vals
+
     def _action_open_user_cv(self):
         vals = {
             'type': 'ir.actions.act_window',
