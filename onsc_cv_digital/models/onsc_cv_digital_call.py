@@ -281,13 +281,18 @@ class ONSCCVDigitalCall(models.Model):
             '%s_documentary_user_id' % documentary_field: self.env.user.id,
         }
         self.write(vals)
-        self.mapped('cv_digital_origin_id').write(vals)
+        for record in self:
+            cv_digital_origin_id = record.cv_digital_origin_id
+            if cv_digital_origin_id and eval(
+                    'cv_digital_origin_id.%s_write_date' % documentary_field) < record.create_date:
+                cv_digital_origin_id.write(vals)
 
     def _generate_json(self, call_number):
         call_server_json_url = self.env.user.company_id.call_server_json_url
         if call_server_json_url is False:
             return False
         if self.filtered(lambda x: x.call_conditional_state != 'validated'):
+            self.send_notification_conditional(call_number)
             return False
         filename = '%s_%s.json' % (call_number, str(fields.Datetime.now()))
         json_file = open(join(call_server_json_url, filename), 'w')
@@ -296,6 +301,12 @@ class ONSCCVDigitalCall(models.Model):
         self.write({
             'is_json_sent': True
         })
+
+    def send_notification_conditional(self, call_number):
+        ctx = self.env.context.copy()
+        ctx.update({'call': call_number})
+        template = self.env.ref('onsc_cv_digital.email_template_conditional_values_cv')
+        template.with_context(ctx).send_mail(self.id)
 
     @api.model
     def create(self, values):
@@ -449,24 +460,24 @@ class ONSCCVDigitalCall(models.Model):
         ]
         if self.show_race_info:
             parser.extend(['cv_race2',
-                          'cv_first_race_id',
-                          'is_cv_race_public',
-                          'is_cv_race_option_other_enable',
-                          'is_multiple_cv_race_selected',
-                          'is_afro_descendants',
-                          ('cv_race_ids', race_json)])
+                           'cv_first_race_id',
+                           'is_cv_race_public',
+                           'is_cv_race_option_other_enable',
+                           'is_multiple_cv_race_selected',
+                           'is_afro_descendants',
+                           ('cv_race_ids', race_json)])
 
         if self.show_gender_info:
             parser.extend(['last_modification_date',
-                          'cv_gender_id',
-                          'cv_gender2',
-                          'is_cv_gender_public',
-                          'is_cv_gender_record',
-                          'is_cv_gender_option_other_enable'])
+                           'cv_gender_id',
+                           'cv_gender2',
+                           'is_cv_gender_public',
+                           'is_cv_gender_record',
+                           'is_cv_gender_option_other_enable'])
         if self.show_victim_info:
             parser.extend(['is_victim_violent',
-                          'relationship_victim_violent_filename',
-                          'is_public_information_victim_violent'])
+                           'relationship_victim_violent_filename',
+                           'is_public_information_victim_violent'])
 
         return self.jsonify(parser)
 
@@ -632,4 +643,11 @@ class ONSCCVDigitalCall(models.Model):
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
         calls_preselected.write({'preselected': 'yes'})
         calls_not_selected.write({'preselected': 'no'})
+        self.send_notification_document_validators(call_number)
         return True
+
+    def send_notification_document_validators(self, call_number):
+        ctx = self.env.context.copy()
+        ctx.update({'call': call_number})
+        template = self.env.ref('onsc_cv_digital.email_template_document_validators_cv')
+        template.with_context(ctx).send_mail(self.id)
