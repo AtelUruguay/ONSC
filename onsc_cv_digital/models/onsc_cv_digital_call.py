@@ -168,7 +168,11 @@ class ONSCCVDigitalCall(models.Model):
                                  'nro_doc_documentary_validation_state',
                                  'disabilitie_documentary_validation_state']
             for config in configs.filtered(lambda x: x.field_id):
-                validation_models.append('%s.documentary_validation_state' % config.field_id.name)
+                if config.model_id.model == 'onsc.cv.course.certificate':
+                    validation_models.extend(['course_ids.documentary_validation_state',
+                                              'certificate_ids.documentary_validation_state'])
+                else:
+                    validation_models.append('%s.documentary_validation_state' % config.field_id.name)
         return validation_models
 
     @api.depends(lambda self: self._get_documentary_validation_models())
@@ -219,6 +223,9 @@ class ONSCCVDigitalCall(models.Model):
         for record in self:
             record.show_gender_info = (conditional_show and record.is_cv_gender_public or
                                        record.is_trans) or not conditional_show
+
+    def button_update_documentary_validation_sections_tovalidate(self):
+        self._compute_gral_info_documentary_validation_state()
 
     def button_documentary_tovalidate(self):
         if self._context.get('documentary_validation'):
@@ -647,6 +654,7 @@ class ONSCCVDigitalCall(models.Model):
         if len(calls_preselected) == 0:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
         calls_preselected.write({'preselected': 'yes'})
+        calls_preselected.with_context(is_preselected=True).button_update_documentary_validation_sections_tovalidate()
         calls_not_selected.write({'preselected': 'no'})
         self.send_notification_document_validators(call_number)
         return True
