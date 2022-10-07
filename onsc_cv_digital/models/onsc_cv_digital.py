@@ -731,10 +731,13 @@ class ONSCCVDigital(models.Model):
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
         self.update_header_documentary_validation(values)
-        if values.get('country_code') == 'UY' or values.get('cv_address_street_id'):
+        if values.get('country_code') == 'UY' or values.get('cv_address_street_id') or values.get(
+                'cv_address_street2_id') or values.get('cv_address_street3_id'):
             self.partner_id.suspend_security().write(
                 {'street': self.cv_address_street_id.street, 'street2': self.cv_address_street2_id.street,
                  'cv_street3': self.cv_address_street3_id.street})
+        else:
+            self.partner_id.suspend_security().write({'street2': False, 'cv_street3': False})
         return records
 
     def update_header_documentary_validation(self, values):
