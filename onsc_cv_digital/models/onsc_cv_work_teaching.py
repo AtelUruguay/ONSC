@@ -23,7 +23,7 @@ class ONSCCVWorkTeaching(models.Model):
     is_full_time = fields.Boolean('¿Dedicación total?')
     responsible_type = fields.Selection(RESPONSIBLE_TYPES, '¿Es responsable de cátedra o de programa académico?',
                                         required=True)
-    program_name = fields.Char('Nombre de la cátedra o programa académico responsable')
+    program_name = fields.Char('Nombre de la cátedra o programa académico')
     # Grilla Materias
     subject_ids = fields.One2many('onsc.cv.academic.program.subject', 'work_teaching_id', string='Materias', copy=True)
     # Grilla Áreas relacionadas con esta educación
@@ -57,6 +57,9 @@ class ONSCCVWorkTeaching(models.Model):
             "responsible_type",
             "program_name",
             "other_relevant_information",
+            ("country_id", ['id', 'name']),
+            ("institution_id", ['id', 'name']),
+            ("subinstitution_id", ['id', 'name']),
             ("professional_link_id", ['id', 'name']),
             ("subject_ids", ['id', 'name']),
             ("education_area_ids", ['id', 'name']),
