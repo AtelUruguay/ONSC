@@ -459,7 +459,7 @@
                             <field name="volunteering_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="language_level" string="Idiomas">
-                            <field name="language_level_ids"/>
+                            <field name="language_level_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                         <page name="publications_productions_evaluations"
                               string="Publicaciones, producciones y evaluaciones">
@@ -573,15 +573,19 @@
                         </page>
                         <page name="other_relevant_information"
                               string="Otra información relevante">
-                            <field name="other_relevant_information_ids">
+                            <field name="other_relevant_information_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}">
                                 <tree editable="top">
                                     <field name="theme"/>
                                     <field name="description"/>
                                 </tree>
+                                <form>
+                                    <field name="theme"/>
+                                    <field name="description"/>
+                                </form>
                             </field>
                         </page>
                         <page name="reference" string="Referencias">
-                            <field name="reference_ids"/>
+                            <field name="reference_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False)}"/>
                         </page>
                     </notebook>
                 </sheet>
