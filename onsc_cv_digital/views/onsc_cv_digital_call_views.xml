@@ -88,7 +88,10 @@
                         <h4><field name="documentary_validation_sections_tovalidate"
                                    invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
                                    align="left" style="font-size: 100%;background-color:#17a2b8;" widget="label_selection"/>
-                            <button name="button_update_documentary_validation_sections_tovalidate" type="object" string="AA"/>
+                            <button name="button_update_documentary_validation_sections_tovalidate"
+                                    invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
+                                    type="object"
+                                    icon="fa-refresh"/>
                         </h4>
                         <div>
                           <label for="is_json_sent" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/><field name="is_json_sent" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>

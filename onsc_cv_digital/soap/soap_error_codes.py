@@ -91,7 +91,7 @@ LOGIC_155 = {
 LOGIC_156 = {
     'type': 'LOGICA',
     'code': '156',
-    'desc': u'No se ha podido identificar el llamado',
+    'desc': u'No se ha podido identificar el llamado o la postulación',
     'long_desc': u'',
 }
 
