@@ -4,11 +4,11 @@ import logging
 
 from lxml import etree
 from odoo import fields, models, api, _
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from odoo.exceptions import ValidationError
 from zeep import Client
 from zeep.exceptions import Fault
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
 _logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
 SELECTION_RADIO = [('1', 'Si, no puede hacerlo'), ('2', 'Si, mucha dificultad'),
                    ('3', 'Si, alguna dificultad '), ('4', 'No tiene dificultad')]
-SITUATION = u'¿Está en situación de discapacidad y/o requieres algún apoyo para cumplir con tus actividades laborales?'
+SITUATION = u'¿Está en situación de discapacidad y/o requiere algún apoyo para cumplir con sus actividades laborales?'
 DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
 
 
@@ -120,10 +120,11 @@ class ONSCCVDigital(models.Model):
     cv_gender2 = fields.Char(string=u"Otro género")
     cv_gender_record_file = fields.Binary(string="Constancia de identidad de género")
     cv_gender_record_filename = fields.Char('Nombre del documento digital')
-    is_cv_gender_public = fields.Boolean(string="¿Permite que su género se visualice en su CV?")
+    is_cv_gender_public = fields.Boolean(
+        string="¿Desea que esta información se incluya en la versión impresa de su CV?")
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
     # Raza
-    cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Raza", required=True,
+    cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial", required=True,
                                    domain="[('race_type','in',['race','both'])]")
     is_cv_race_option_other_enable = fields.Boolean(
         u'¿Permitir opción otra/o?',
@@ -132,9 +133,9 @@ class ONSCCVDigital(models.Model):
         u'Múltiples razas seleccionadas',
         compute='_compute_cv_race_values', store=True)
     cv_race2 = fields.Char(string=u"Otra raza")
-    cv_first_race_id = fields.Many2one("onsc.cv.race", string="¿Con que raza se reconoce principalmente?",
+    cv_first_race_id = fields.Many2one("onsc.cv.race", string=u"¿Con cuál se reconoce principalmente?",
                                        domain="[('id','in',cv_race_ids)]")
-    is_cv_race_public = fields.Boolean(string="¿Permite que su raza se visualice en su CV?")
+    is_cv_race_public = fields.Boolean(string="¿Permite que su identidad étnico-racial se visualice en su CV?")
     # Información patronímica
     cv_full_name_updated_date = fields.Date(related='partner_id.cv_full_name_updated_date',
                                             string="Fecha de información")
@@ -150,8 +151,6 @@ class ONSCCVDigital(models.Model):
     cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
     cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
     cv_address_street = fields.Char(related='partner_id.street', readonly=False)
-    cv_address_street2 = fields.Char(related='partner_id.street2', readonly=False)
-    cv_address_street3 = fields.Char(related='partner_id.cv_street3', readonly=False)
     cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
     cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
@@ -208,7 +207,7 @@ class ONSCCVDigital(models.Model):
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
     relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
     is_public_information_victim_violent = fields.Boolean(
-        string="¿Permite que su información de persona víctima de delitos violentos se visualice en su CV?", )
+        string="¿Desea que esta información se incluya en la versión impresa de su CV?", )
 
     # Formación----<Page>
     basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica',
@@ -248,21 +247,21 @@ class ONSCCVDigital(models.Model):
                                                            string="Tutorías, Orientaciones, Supervisiones", copy=True)
     # Discapacidad ----<Page>
     allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
-                                            string=u'¿Permite el contenido de esta sección se visualice en su CV?')
+                                            string=u'¿Permite que el contenido de esta sección se visualice en su CV?')
     situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
     people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
     document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')
     document_certificate_filename = fields.Char('Nombre del documento Digitalizado')
     certificate_date = fields.Date(string=u'Fecha de certificado')
     to_date = fields.Date(string=u'Fecha hasta')
-    see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, ¿aún si usa anteojos o lentes?')
-    hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, ¿aún si usa audífono?')
-    walk = fields.Selection(selection=SELECTION_RADIO, string=u'¿Caminar o subir escalones?')
-    speak = fields.Selection(selection=SELECTION_RADIO, string=u'¿Hablar o comunicarse aun usando lengua de señas?')
+    see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes')
+    hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, aún si usa audífono')
+    walk = fields.Selection(selection=SELECTION_RADIO, string=u'Caminar o subir escalones')
+    speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas')
     realize = fields.Selection(selection=SELECTION_RADIO,
-                               string=u'¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo?')
-    lear = fields.Selection(selection=SELECTION_RADIO, string=u'¿Entender/ y o aprender?')
-    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'¿Interacciones y/o relaciones interpersonales?')
+                               string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo')
+    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender')
+    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas')
     type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo', copy=True)
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
                                                compute='_compute_cv_type_support_domain', copy=True)
@@ -350,8 +349,8 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     disabilitie_write_date = fields.Datetime('Fecha de última modificación',
-                                        index=True,
-                                        default=lambda *a: fields.Datetime.now())
+                                             index=True,
+                                             default=lambda *a: fields.Datetime.now())
     disabilitie_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
                                                         tracking=True)
     disabilitie_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
@@ -364,8 +363,8 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     nro_doc_write_date = fields.Datetime('Fecha de última modificación',
-                                        index=True,
-                                        default=lambda *a: fields.Datetime.now())
+                                         index=True,
+                                         default=lambda *a: fields.Datetime.now())
     nro_doc_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental', tracking=True)
     nro_doc_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
     nro_doc_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
@@ -376,8 +375,8 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     civical_credential_write_date = fields.Datetime('Fecha de última modificación',
-                                        index=True,
-                                        default=lambda *a: fields.Datetime.now())
+                                                    index=True,
+                                                    default=lambda *a: fields.Datetime.now())
     civical_credential_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
                                                                tracking=True)
     civical_credential_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
@@ -525,8 +524,6 @@ class ONSCCVDigital(models.Model):
         self.cv_address_street2_id = False
         self.cv_address_street3_id = False
         self.cv_address_street = False
-        self.cv_address_street2 = False
-        self.cv_address_street3 = False
 
     def button_unlink(self):
         self.unlink()
@@ -726,14 +723,21 @@ class ONSCCVDigital(models.Model):
     def create(self, values):
         record = super(ONSCCVDigital, self).create(values)
         if values.get('cv_address_street_id'):
-            record.partner_id.suspend_security().write({'street': record.cv_address_street_id.street})
+            record.partner_id.suspend_security().write(
+                {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
+                 'cv_street3': record.cv_address_street3_id.street})
         return record
 
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
         self.update_header_documentary_validation(values)
-        if values.get('country_code') == 'UY' or values.get('cv_address_street_id'):
-            self.partner_id.suspend_security().write({'street': self.cv_address_street_id.street})
+        if values.get('country_code') == 'UY' or values.get('cv_address_street_id') or values.get(
+                'cv_address_street2_id') or values.get('cv_address_street3_id'):
+            self.partner_id.suspend_security().write(
+                {'street': self.cv_address_street_id.street, 'street2': self.cv_address_street2_id.street,
+                 'cv_street3': self.cv_address_street3_id.street})
+        else:
+            self.partner_id.suspend_security().write({'street2': False, 'cv_street3': False})
         return records
 
     def update_header_documentary_validation(self, values):

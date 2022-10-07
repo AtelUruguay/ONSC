@@ -228,7 +228,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 "documentary_validation_state",
                 "documentary_reject_reason",
                 "documentary_validation_date",
-                ("documentary_user_id", ["id","name"]),
+                ("documentary_user_id", ["id", "name"]),
             ]
         else:
             return ["id"]

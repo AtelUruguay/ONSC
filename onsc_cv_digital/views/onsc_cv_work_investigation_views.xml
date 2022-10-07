@@ -28,6 +28,9 @@
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
                             <field name="is_option_other_enable" invisible="1"/>
+                            <field name="country_id" required="1"
+                                   domain="country_id_domain"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="institution_id" required="1"
                                    domain="institution_id_domain"
                                    context="{'default_country_id': country_id, 'is_readonly': True}"/>
@@ -36,9 +39,6 @@
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
-                            <field name="country_id" required="1"
-                                   domain="country_id_domain"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="country_id_domain" invisible="1"/>
                             <field name="currently_working" required="1"/>
                             <field name="position" required="1"/>

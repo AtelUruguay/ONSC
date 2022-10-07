@@ -10,6 +10,9 @@
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
                             <field name="basic_education_level"/>
+                            <field name="country_id"
+                                   required="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="institution_id"
                                    required="1"
                                    domain="[('country_id', '=?', country_id),('is_basic_formation', '=', True)]"
@@ -19,9 +22,6 @@
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True}"/>
-                            <field name="country_id"
-                                   required="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                         <group>
                             <field name="state" required="1"/>
@@ -67,6 +67,8 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="country_id" required="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
                             <field name="institution_id"
                                    required="1"
                                    domain="[('country_id', '=?', country_id),('is_advanced_formation', '=', True)]"
@@ -76,8 +78,6 @@
                                    attrs="{'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id,'default_country_id': country_id, 'is_readonly': True}"/>
-                            <field name="country_id" required="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"/>
                             <field name="advanced_study_level_id"/>
                             <field name="academic_program_id"
                                    attrs="{'readonly': ['|',('subinstitution_id', '=', False),('advanced_study_level_id', '=', False)]}"
