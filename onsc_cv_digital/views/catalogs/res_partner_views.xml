@@ -127,12 +127,15 @@
                                     <field name="street" string="Calle"/>
                                     <field name="street2" string="Entre calle"/>
                                     <field name="cv_street3" string="Y calle"/>
-                                </group>
-                                <group>
                                     <field name="cv_nro_door"/>
                                     <field name="is_cv_bis"/>
                                     <field name="cv_apto"/>
                                     <field name="zip" string="C.P"/>
+                                </group>
+                                <group>
+                                    <field name="cv_address_place"/>
+                                    <field name="cv_address_block"/>
+                                    <field name="cv_address_sandlot"/>
                                 </group>
                             </group>
                             <group>
