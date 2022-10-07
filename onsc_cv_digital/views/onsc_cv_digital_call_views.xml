@@ -98,7 +98,7 @@
                           <label for="is_cancel" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/><field name="is_cancel" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
                           <label for="is_zip" invisible="context.get('is_mypostulations', False)"/><field name="is_zip" invisible="context.get('is_mypostulations', False)"/>
                           <label for="is_close" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/><field name="is_close" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)"/>
-                            <label for="preselected" invisible="context.get('is_mypostulations', False)"/><field name="preselected" invisible="context.get('is_mypostulations', False)"/>
+                            <label for="preselected" invisible="context.get('is_mypostulations', False)"/><field name="preselected" class="oe_inline" invisible="context.get('is_mypostulations', False)"/>
                         </div>
                         <div name="div_call_is" invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)">
                           <label for="is_trans"/><field name="is_trans"/>
@@ -158,7 +158,8 @@
                                     </p>
                                 </div>
                                 <div class="alert alert-success" role="alert"  style="width:70%"
-                                    attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'validated')]}">
+                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
+                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'validated')]}">
                                     <p class="mb-0">
                                         <strong>
                                             La sección documento de identidad ha sido validada
@@ -242,7 +243,8 @@
                                             </p>
                                         </div>
                                         <div class="alert alert-success" role="alert" style="width:70%"
-                                            attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'validated')]}">
+                                             invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
+                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'validated')]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La sección credencial cívica ha sido validada
@@ -519,7 +521,8 @@
                                             </p>
                                         </div>
                                         <div class="alert alert-success" role="alert"
-                                            attrs="{'invisible': ['|',('disabilitie_documentary_validation_state', '!=', 'validated'),('people_disabilitie', '!=', 'si')]}">
+                                             invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
+                                             attrs="{'invisible': ['|',('disabilitie_documentary_validation_state', '!=', 'validated'),('people_disabilitie', '!=', 'si')]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La sección discapacidad ha sido validada
