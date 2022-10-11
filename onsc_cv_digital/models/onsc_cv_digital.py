@@ -156,9 +156,9 @@ class ONSCCVDigital(models.Model):
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
     cv_address_state = fields.Selection(related='cv_address_location_id.state', store=True)
     cv_address_reject_reason = fields.Text(related='cv_address_location_id.reject_reason')
-    cv_address_place = fields.Char(string="Paraje", size=200)
-    cv_address_block = fields.Char(string="Manzana", size=5)
-    cv_address_sandlot = fields.Char(string="Solar", size=5)
+    cv_address_place = fields.Char(related='partner_id.cv_address_place',string="Paraje", size=200, readonly=False)
+    cv_address_block = fields.Char(related='partner_id.cv_address_block',string="Manzana", size=5, readonly=False)
+    cv_address_sandlot = fields.Char(related='partner_id.cv_address_sandlot',string="Solar", size=5, readonly=False)
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
                                       selection=[('legal', 'Legal'), ('natural', 'Natural'),
