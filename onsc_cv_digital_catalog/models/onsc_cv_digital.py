@@ -15,6 +15,14 @@ class ONSCCVDigitalWorkExperience(models.Model):
         else:
             self.company_name = False
 
+    def _get_json_dict(self):
+        json_dict = super(ONSCCVDigitalWorkExperience, self)._get_json_dict()
+        json_dict.extend([
+            ("inciso_id", ['id', 'name']),
+            ("operating_unit_id", ['id', 'name']),
+        ])
+        return json_dict
+
 
 class ONSCCVDigitalVolunteering(models.Model):
     _name = 'onsc.cv.volunteering'

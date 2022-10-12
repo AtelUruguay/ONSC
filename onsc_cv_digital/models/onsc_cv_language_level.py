@@ -26,8 +26,12 @@ class LenguageLevel(models.Model):
         json_dict = super(LenguageLevel, self)._get_json_dict()
         json_dict.extend([
             "spoken_level",
-            "read_level",
-            "write_level",
+            ('spoken_level', lambda rec, field_name: rec.parser_selection_tovalue('spoken_level')),
+            ('read_level', lambda rec, field_name: rec.parser_selection_tovalue('read_level')),
+            ('write_level', lambda rec, field_name: rec.parser_selection_tovalue('write_level')),
             ("language_id", ['id', 'name'])
         ])
         return json_dict
+
+    def parser_selection_tovalue(self, field_name):
+        return dict(self._fields.get(field_name).selection).get(eval('self.%s' % field_name))

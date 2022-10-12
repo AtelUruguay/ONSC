@@ -26,11 +26,9 @@ class ONSCCVDigitalVolunteering(models.Model):
     def _get_json_dict(self):
         json_dict = super(ONSCCVDigitalVolunteering, self)._get_json_dict()
         json_dict.extend([
-            "hours_worked_monthly",
-            "currently_working",
             "position",
             "is_paid_activity",
-            "country_id",
+            ("country_id", ['id', 'name']),
             "company_type",
             "company_name",
             "description_tasks",
@@ -39,7 +37,12 @@ class ONSCCVDigitalVolunteering(models.Model):
             "unit_name",
             "currently_volunteering",
             "hours_monthly",
-            ("volunteering_task_ids", ['id', 'name']),
+            ("volunteering_task_ids", [
+                'id',
+                'name',
+                ("key_task_id", ['id', 'name']),
+                ("area_id", ['id', 'name']),
+            ]),
         ])
         return json_dict
 

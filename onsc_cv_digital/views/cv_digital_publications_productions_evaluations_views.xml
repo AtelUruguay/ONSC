@@ -100,7 +100,7 @@
     </record>
 
     <record id="onsc_cv_activity_area_view_tree" model="ir.ui.view">
-        <field name="name">onsc_cv_activity_area_view_tree</field>
+        <field name="name">onsc.cv.activity.area.view.tree</field>
         <field name="model">onsc.cv.activity.area</field>
         <field name="arch" type="xml">
             <tree string="Áreas de actividad">
@@ -131,7 +131,52 @@
                                context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
                         <field name="speciality"
                                attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', '')]}"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
 
+    <!--    EVENTOS-->
+    <record id="onsc_cv_activity_area_event_view_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.activity.area.event.view.tree</field>
+        <field name="model">onsc.cv.activity.area</field>
+        <field name="arch" type="xml">
+            <tree string="Áreas de actividad">
+                <field name="educational_area_id"
+                       string="Área de actividad"/>
+                <field name="educational_subarea_id"
+                       domain="[('area_id', '=', educational_area_id)]"
+                       string="Sub área de actividad"
+                       context="{'default_area_id': educational_area_id}"/>
+                <field name="discipline_educational_id" domain="[('subarea_id', '=', educational_subarea_id)]"
+                       string="Disciplina"
+                       context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                <field name="speciality"
+                       attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', '')]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_activity_area_event_form" model="ir.ui.view">
+        <field name="name">onsc.cv.activity.area.event.form</field>
+        <field name="model">onsc.cv.activity.area</field>
+        <field name="arch" type="xml">
+            <form string="Áreas de actividad">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id"
+                               string="Área de actividad"/>
+                        <field name="educational_subarea_id"
+                               string="Sub área de actividad"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id"
+                               string="Disciplina"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                        <field name="speciality"
+                               attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', '')]}"/>
                     </group>
                 </sheet>
             </form>

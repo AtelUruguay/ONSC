@@ -74,13 +74,18 @@ class ONSCCVWorkInvestigation(models.Model):
             "other_research_type",
             "additional_information",
             "other_relevant_information",
+            "receipt_description",
             ("country_id", ['id', 'name']),
             ("institution_id", ['id', 'name']),
             ("subinstitution_id", ['id', 'name']),
-            ("member_ids", ['id', 'name']),
-            ("education_area_ids", ['id', 'name']),
+            ("member_ids", [
+                'id',
+                'member',
+                'is_responsible',
+                'citation',
+            ]),
+            ("education_area_ids", self.env['onsc.cv.education.area.investigation']._get_json_dict()),
             ("knowledge_acquired_ids", ['id', 'name']),
-            ("receipt_ids", ['id', 'name']),
         ])
         return json_dict
 
@@ -114,6 +119,13 @@ class ONSCCVEducationAreaCourse(models.Model):
     _description = 'Áreas relacionadas con esta educación (Investigación)'
 
     investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
+
+    def _get_json_dict(self):
+        return [
+            ("educational_area_id", ['id', 'name']),
+            ("educational_subarea_id", ['id', 'name']),
+            ("discipline_educational_id", ['id', 'name']),
+        ]
 
 
 class ONSCCVWorkInvestigationReceiptFile(models.Model):

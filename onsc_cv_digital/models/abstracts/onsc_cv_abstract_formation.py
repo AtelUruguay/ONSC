@@ -66,3 +66,10 @@ class ONSCAbstractFormationLine(models.AbstractModel):
         if self.educational_subarea_id.id is False or \
                 (self.educational_subarea_id != self.discipline_educational_id.subarea_id):
             self.discipline_educational_id = False
+
+    def _get_json_dict(self):
+        return [
+            ("educational_area_id", ['id', 'name']),
+            ("educational_subarea_id", ['id', 'name']),
+            ("discipline_educational_id", ['id', 'name']),
+        ]

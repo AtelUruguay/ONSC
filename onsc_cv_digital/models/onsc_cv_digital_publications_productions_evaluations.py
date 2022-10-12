@@ -32,7 +32,7 @@ class ONSCCVDigitalPPEvaluations(models.Model):
     location = fields.Char(string=u"Ubicación")
     arbitrated = fields.Selection(string=u'¿Arbitrado?',
                                   selection=[('yes', u'Si'), ('no', u'No')])
-    is_arbitrated = fields.Boolean(string='Activo', compute='_compute_is_subtype_publication')
+    is_arbitrated = fields.Boolean(compute='_compute_is_subtype_publication')
     paid_activity = fields.Selection(string=u'¿Actividad remunerada?', required=True,
                                      selection=[('yes', u'Si'), ('no', u'No')])
     authors_ids = fields.One2many('onsc.cv.authors', 'publications_productions_evaluations_id', string=u'Autores',
@@ -75,26 +75,21 @@ class ONSCCVDigitalPPEvaluations(models.Model):
         json_dict.extend([
             "type",
             "other_subtype_publication",
-            "is_subtype_publication",
             "other_subtype_production",
-            "is_subtype_production",
             "other_subtype_evaluation",
-            "is_subtype_evaluation",
             "other_subtype_other",
-            "is_subtype_other",
             "date",
             "tittle",
             "description",
             "location",
             "arbitrated",
-            "is_arbitrated",
             "paid_activity",
             "additional_information",
             ("subtype_publication_id", ['id', 'name']),
             ("subtype_production_id", ['id', 'name']),
             ("subtype_evaluation_id", ['id', 'name']),
             ("subtype_other_id", ['id', 'name']),
-            ("authors_ids", ['id', 'name']),
+            ("authors_ids", self.env['onsc.cv.authors']._get_json_dict()),
             ("activity_area_ids", ['id', 'name']),
             ("applied_knowledge_ids", ['id', 'name'])
         ])
@@ -124,6 +119,13 @@ class ONSCCVAuthors(models.Model):
                 x[1]).author) == self.env.user.name, authors_ids)):
             return self.env.user.name
         return False
+    
+    def _get_json_dict(self):
+        return [
+            "author",
+            "citation",
+            "is_primary_author"
+        ]
 
 
 class ONSCCVActivityArea(models.Model):
@@ -138,3 +140,10 @@ class ONSCCVActivityArea(models.Model):
                                               string=u'Publicación, Producción y Evaluación',
                                               ondelete='cascade')
     speciality = fields.Char(string=u"Especialidad")
+
+    def _get_json_dict(self):
+        json_dict = super(ONSCCVActivityArea, self)._get_json_dict()
+        json_dict.extend([
+            "speciality"
+        ])
+        return json_dict

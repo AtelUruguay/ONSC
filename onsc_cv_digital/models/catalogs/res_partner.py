@@ -3,6 +3,7 @@
 from odoo import SUPERUSER_ID, models, fields, api, _
 from odoo.exceptions import ValidationError
 
+# TODO female otherwhise feminine
 CV_SEX = [('male', 'Masculino'), ('feminine', 'Femenino')]
 
 COLUMNS_FROZEN = [
