@@ -524,6 +524,53 @@ class ONSCCVDigital(models.Model):
         self.cv_address_street2_id = False
         self.cv_address_street3_id = False
         self.cv_address_street = False
+        self.cv_address_nro_door = False
+        self.cv_address_is_cv_bis = False
+        self.cv_address_apto = False
+        self.cv_address_zip = False
+        self.cv_address_place = False
+        self.cv_address_block = False
+        self.cv_address_sandlot = False
+
+    @api.onchange('is_occupational_health_card')
+    def onchange_is_occupational_health_card(self):
+        self.occupational_health_card_date = False
+        self.occupational_health_card_file = False
+        self.occupational_health_card_file = False
+        self.occupational_health_card_filename = False
+
+    @api.onchange('is_medical_aptitude_certificate_status')
+    def onchange_is_medical_aptitude_certificate_status(self):
+        self.medical_aptitude_certificate_date = False
+        self.medical_aptitude_certificate_file = False
+        self.medical_aptitude_certificate_filename = False\
+                                                     
+    @api.onchange('is_victim_violent')
+    def onchange_is_victim_violent(self):
+        self.relationship_victim_violent_file = False
+        self.relationship_victim_violent_filename = False\
+                                                    
+    @api.onchange('is_afro_descendants')
+    def onchange_is_afro_descendants(self):
+        self.afro_descendants_file = False
+        self.afro_descendants_filename = False
+    @api.onchange('situation_disability')
+    def onchange_situation_disability(self):
+        self.see = False
+        self.hear = False
+        self.walk = False
+        self.speak = False
+        self.realize = False
+        self.lear = False
+        self.interaction = False
+        self.type_support_ids = [(5,)]
+
+    @api.onchange('people_disabilitie')
+    def onchange_people_disabilitie(self):
+        self.document_certificate_file = False
+        self.document_certificate_filename = False
+        self.certificate_date = False
+        self.to_date = False
 
     def button_unlink(self):
         self.unlink()

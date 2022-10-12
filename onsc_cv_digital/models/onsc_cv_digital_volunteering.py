@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import fields, models, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 
 class ONSCCVDigitalVolunteering(models.Model):
@@ -13,8 +14,14 @@ class ONSCCVDigitalVolunteering(models.Model):
                                             string="Tareas")
     currently_volunteering = fields.Selection(string="Voluntario actualmente", selection=[('si', 'Si'), ('no', 'No')],
                                               required=True, )
-    hours_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente", required=True,
-                                   help='“En caso de no disponer las horas se debe estimar')
+    hours_monthly = fields.Char("Cantidad de horas mensuales", required=True,
+                                help='“En caso de no disponer las horas se debe estimar')
+
+    @api.onchange('hours_monthly')
+    def onchange_hours_monthly(self):
+        if self.hours_monthly and not (self.hours_monthly.isnumeric()):
+            self.hours_monthly = ''.join(filter(str.isdigit, self.hours_monthly))
+            return cv_warning(_("La Cantidad de horas mensuales no puede contener letras"))
 
     def _get_json_dict(self):
         json_dict = super(ONSCCVDigitalVolunteering, self)._get_json_dict()

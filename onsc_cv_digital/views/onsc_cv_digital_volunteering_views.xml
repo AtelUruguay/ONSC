@@ -29,7 +29,7 @@
                         </group>
                     </group>
                     <group string="Descripción de tareas">
-                        <field name="description_tasks" widget="html" required="1" nolabel="1"/>
+                        <field name="description_tasks" required="1" nolabel="1" style="white-space: normal;word-break: break-word;"/>
                     </group>
                     <group string="Tareas">
                         <field name="volunteering_task_ids" nolabel="1">

@@ -10,3 +10,11 @@ def get_onchange_warning_response(message, notif_type='notification'):
             'message': message
         },
     }
+
+
+def filter_str2float(str, float_separator=','):
+    result = ''
+    for letter in str:
+        if letter.isdigit() or letter in (float_separator, '.'):
+            result += letter
+    return result
