@@ -132,7 +132,7 @@ class ONSCCVDigital(models.Model):
     is_multiple_cv_race_selected = fields.Boolean(
         u'Múltiples razas seleccionadas',
         compute='_compute_cv_race_values', store=True)
-    cv_race2 = fields.Char(string=u"Otra raza")
+    cv_race2 = fields.Char(string=u"Otra identidad étnico-racial")
     cv_first_race_id = fields.Many2one("onsc.cv.race", string=u"¿Con cuál se reconoce principalmente?",
                                        domain="[('id','in',cv_race_ids)]")
     is_cv_race_public = fields.Boolean(string="¿Permite que su identidad étnico-racial se visualice en su CV?")
