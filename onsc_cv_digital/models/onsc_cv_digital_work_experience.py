@@ -47,7 +47,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
             "currently_working",
             "position",
             "is_paid_activity",
-            "country_id",
+            ("country_id", ['id', 'name']),
             "company_type",
             "company_name",
             "description_tasks",
@@ -56,10 +56,16 @@ class ONSCCVDigitalWorkExperience(models.Model):
             "take_decisions",
             "people_charge_qty",
             "organizational_units_charge",
+            "unit_name",
             ("city_id", ['id', 'name']),
             ("entry_institution_id", ['id', 'name']),
             ("hierarchical_level_id", ['id', 'name']),
-            ("task_ids", ['id', 'name']),
+            ("task_ids", [
+                'id',
+                'name',
+                ("key_task_id", ['id', 'name']),
+                ("area_id", ['id', 'name'])
+            ]),
         ])
         return json_dict
 

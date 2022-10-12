@@ -9,6 +9,7 @@ from odoo.exceptions import ValidationError
 
 from .abstracts.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
+from .onsc_cv_digital import SELECTION_RADIO
 from ..soap import soap_error_codes
 
 _logger = logging.getLogger(__name__)
@@ -308,16 +309,14 @@ class ONSCCVDigitalCall(models.Model):
         filename = '%s_%s.json' % (call_number, str(fields.Datetime.now()))
         json_file = open(join(call_server_json_url, filename), 'w')
         for record in self:
-            json.dump(record._get_json_dict(), json_file)
+            json.dump(record._get_json(), json_file)
         self.write({
             'is_json_sent': True
         })
 
     def send_notification_conditional(self, call_number):
-        ctx = self.env.context.copy()
-        ctx.update({'call': call_number})
         template = self.env.ref('onsc_cv_digital.email_template_conditional_values_cv')
-        template.with_context(ctx).send_mail(self.id)
+        template.with_context(call=call_number).send_mail(len(self) and self[0].id)
 
     @api.model
     def create(self, values):
@@ -327,6 +326,8 @@ class ONSCCVDigitalCall(models.Model):
     # -------------------------------------------------------------------------------------------------------------------
     #   WS utilities
     # -------------------------------------------------------------------------------------------------------------------
+    def _get_json(self):
+        return self.jsonify(self._get_json_dict())
 
     def _get_json_dict(self):
         # JSONifier
@@ -387,24 +388,24 @@ class ONSCCVDigitalCall(models.Model):
             'is_afro',
             'is_disabilitie',
             'is_victim',
-            'cv_emissor_country_id',
-            'cv_document_type_id',
+            ("cv_emissor_country_id", ["id", "name"]),
+            ("cv_document_type_id", ["id", "name"]),
             'cv_nro_doc',
             'cv_expiration_date',
-            'partner_id',
+            # ("partner_id", ["id", "name"]),
             'email',
             'cv_birthdate',
             'cv_sex',
             'cv_sex_updated_date',
-
+            # 'image_1920',
             # Domicilio
-            'country_id',
+            ("country_id", ["id", "name"]),
             'country_code',
-            'cv_address_state_id',
-            'cv_address_location_id',
-            'cv_address_street_id'
-            'cv_address_street2_id',
-            'cv_address_street3_id',
+            ("cv_address_state_id", ["id", "name"]),
+            ("cv_address_location_id", ["id", "name"]),
+            ("cv_address_street_id", ["id", "name"]),
+            ("cv_address_street2_id", ["id", "name"]),
+            ("cv_address_street3_id", ["id", "name"]),
             'cv_address_nro_door',
             'cv_address_apto',
             'cv_address_street',
@@ -416,12 +417,10 @@ class ONSCCVDigitalCall(models.Model):
             'cv_address_place',
             'cv_address_block',
             'cv_address_sandlot',
-            'country_of_birth_id',
+            ("country_of_birth_id", ["id", "name"]),
             'uy_citizenship',
-            # FIN Domicilio
-
             # Datos personales
-            'marital_status_id',
+            ("marital_status_id", ["id", "name"]),
             'crendencial_serie',
             'credential_number',
             'cjppu_affiliate_number',
@@ -443,10 +442,17 @@ class ONSCCVDigitalCall(models.Model):
             'civical_credential_documentary_reject_reason',
             'civical_credential_documentary_user_id',
             'civical_credential_documentary_validation_date',
+            'disabilitie_documentary_validation_state',
+            'disabilitie_documentary_reject_reason',
+            'disabilitie_documentary_user_id',
+            'disabilitie_documentary_validation_date',
+            'nro_doc_documentary_validation_state',
+            'nro_doc_documentary_reject_reason',
+            'nro_doc_documentary_user_id',
+            'nro_doc_documentary_validation_date',
             ('drivers_license_ids', driver_license_json),
             ('basic_formation_ids', basic_formation_json),
             ('advanced_formation_ids', advanced_formation_json),
-            ('course_certificate_ids', course_certificate_json),
             ('course_ids', course_json),
             ('certificate_ids', certificate_json),
             ('work_experience_ids', work_experience_json),
@@ -483,19 +489,22 @@ class ONSCCVDigitalCall(models.Model):
                            'document_certificate_filename',
                            'certificate_date',
                            'to_date',
-                           'see',
-                           'hear',
-                           'walk',
-                           'speak',
-                           'realize',
-                           'lear',
-                           'interaction',
+                           ('walk', lambda self, field_name: self.parser_selection_tovalue('walk')),
+                           ('see', lambda self, field_name: self.parser_selection_tovalue('see')),
+                           ('hear', lambda self, field_name: self.parser_selection_tovalue('hear')),
+                           ('speak', lambda self, field_name: self.parser_selection_tovalue('speak')),
+                           ('realize', lambda self, field_name: self.parser_selection_tovalue('realize')),
+                           ('lear', lambda self, field_name: self.parser_selection_tovalue('lear')),
+                           ('interaction', lambda self, field_name: self.parser_selection_tovalue('interaction')),
                            'need_other_support',
                            ('type_support_ids', type_support_json), ])
-        return self.jsonify(parser)
+        return parser
+
+    def parser_selection_tovalue(self, field_name):
+        return dict(SELECTION_RADIO).get(eval('self.%s' % field_name))
 
     def action_get_json_dict(self):
-        _logger.debug(self._get_json_dict())
+        _logger.debug(self._get_json())
 
     @api.model
     def _run_call_json_cron(self):

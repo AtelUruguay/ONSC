@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
 import json
+
+from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
@@ -199,17 +200,24 @@ class ONSCCVCourseCertificate(models.Model):
             "hours_total",
             "approbation_mode",
             "evaluation_str",
-            "is_numeric_evaluation",
             "evaluation_number",
             "evaluation_max_str",
             "evaluation_max_number",
-            "is_numeric_max_evaluation",
             "max_scholarship",
             "certificate_start_date",
+            "start_date",
+            "end_date",
+            "other_relevant_information",
+            "state",
+            "conditional_validation_state",
+            "conditional_validation_reject_reason",
+            ("country_id", ['id', 'name']),
+            ("institution_id", ['id', 'name']),
+            ("subinstitution_id", ['id', 'name']),
             ("institution_cert_id", ['id', 'name']),
             ("subinstitution_cert_id", ['id', 'name']),
             ("certificate_id", ['id', 'name']),
-            ("line_ids", ['id', 'name']),
+            ("line_ids", self.env['onsc.cv.education.area.course']._get_json_dict()),
             ("knowledge_acquired_ids", ['id', 'name']),
         ])
         return json_dict
@@ -221,3 +229,10 @@ class ONSCCVEducationAreaCourse(models.Model):
     _description = 'Áreas relacionadas con esta educación (cursos y certificados)'
 
     course_id = fields.Many2one('onsc.cv.course.certificate', 'Curso/Certificado')
+
+    def _get_json_dict(self):
+        return [
+            ("educational_area_id", ['id', 'name']),
+            ("educational_subarea_id", ['id', 'name']),
+            ("discipline_educational_id", ['id', 'name']),
+        ]

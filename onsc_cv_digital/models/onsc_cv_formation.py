@@ -29,6 +29,11 @@ class ONSCCVFormationBasic(models.Model):
             "start_date",
             "end_date",
             "basic_education_level",
+            "coursed_years",
+            "other_relevant_information",
+            "state",
+            "conditional_validation_state",
+            "conditional_validation_reject_reason",
             ("country_id", ['id', 'name']),
             ("institution_id", ['id', 'name']),
             ("subinstitution_id", ['id', 'name']),
@@ -56,7 +61,7 @@ class ONSCCVFormationAdvanced(models.Model):
     state_thesis = fields.Selection(string=u'Estado de la tesis',
                                     selection=[('no_starting', u'Sin comenzar'), ('in_progress', u'En curso'),
                                                ('completed', u'Finalizado')])
-    title_thesis = fields.Char(string="Título de la tesis")
+    title_thesis = fields.Text(string="Título de la tesis")
     description_thesis = fields.Text(string="Describa su tesis")
     tutor = fields.Char(string="Tutor")
     knowledge_thesis_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_thesis_id',
@@ -158,6 +163,8 @@ class ONSCCVFormationAdvanced(models.Model):
             "apostilled_date",
             "egress_date",
             "issue_title_date",
+            "start_date",
+            "end_date",
             "is_require_thesis",
             "state_thesis",
             "title_thesis",
@@ -170,13 +177,16 @@ class ONSCCVFormationAdvanced(models.Model):
             "credits_far",
             "credits_training",
             "other_relevant_information",
+            "state",
+            "conditional_validation_state",
+            "conditional_validation_reject_reason",
             ("country_id", ['id', 'name']),
             ("institution_id", ['id', 'name']),
             ("subinstitution_id", ['id', 'name']),
             ("advanced_study_level_id", ['id', 'name']),
             ("academic_program_id", ['id', 'name']),
             ("knowledge_thesis_ids", ['id', 'name']),
-            ("area_related_education_ids", ['id', 'name']),
+            ("area_related_education_ids", self.env['onsc.cv.area.related.education']._get_json_dict()),
             ("knowledge_acquired_ids", ['id', 'name']),
         ])
         return json_dict
