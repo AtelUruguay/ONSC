@@ -70,7 +70,7 @@ class ResPartner(models.Model):
     prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil',
                                              default=lambda self: self.env['res.country.phone'].search(
                                                  [('country_id.code', '=', 'UY')]))
-    cv_address_place = fields.Char(string="Paraje", size=200)
+    cv_address_place = fields.Text(string="Paraje", size=200)
     cv_address_block = fields.Char(string="Manzana", size=5)
     cv_address_sandlot = fields.Char(string="Solar", size=5)
 
