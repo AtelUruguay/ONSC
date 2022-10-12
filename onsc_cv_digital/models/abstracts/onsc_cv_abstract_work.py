@@ -13,7 +13,7 @@ class ONSCCVAbstractWork(models.AbstractModel):
     _description = 'Modelo abstracto para modelos de trabajos'
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
-    hours_worked_monthly = fields.Integer("Cantidad de horas trabajadas mensualmente")
+    hours_worked_monthly = fields.Char("Cantidad de horas trabajadas mensualmente")
     currently_working = fields.Selection(string="Actualmente trabajando", selection=WORKING_STATE)
     position = fields.Char("Cargo")
     is_paid_activity = fields.Selection(string="¿Actividad remunerada?", selection=PAID_ACTIVITY_TYPES)
@@ -51,7 +51,10 @@ class ONSCCVAbstractWork(models.AbstractModel):
 
     @api.onchange('hours_worked_monthly')
     def onchange_hours_worked_monthly(self):
-        if self.hours_worked_monthly and self.hours_worked_monthly < 45:
+        if self.hours_worked_monthly and not (self.hours_worked_monthly.isnumeric()):
+            self.hours_worked_monthly = ''.join(filter(str.isdigit, self.hours_worked_monthly))
+            return cv_warning(_("La Cantidad de horas trabajadas mensualmente no puede contener letras"))
+        if self.hours_worked_monthly and int(self.hours_worked_monthly) < 45:
             return cv_warning(_("Advertencia: la carga horaria mensual es menor que 45 horas"))
 
 

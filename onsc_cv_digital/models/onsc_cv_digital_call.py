@@ -372,6 +372,12 @@ class ONSCCVDigitalCall(models.Model):
         type_support_json = self.env['onsc.cv.type.support']._get_json_dict()
 
         parser = [
+            'id',
+            'active',
+            'create_date',
+            'create_uid',
+            'write_date',
+            'write_uid',
             'cv_full_name',
             'call_number',
             'postulation_date',
@@ -430,11 +436,13 @@ class ONSCCVDigitalCall(models.Model):
             'occupational_health_card_date',
             'occupational_health_card_filename',
             'document_identity_filename',
-            'civical_credential_filename',
             'is_medical_aptitude_certificate_status',
             'medical_aptitude_certificate_date',
             'medical_aptitude_certificate_filename',
             'civical_credential_documentary_validation_state',
+            'civical_credential_documentary_reject_reason',
+            'civical_credential_documentary_user_id',
+            'civical_credential_documentary_validation_date',
             ('drivers_license_ids', driver_license_json),
             ('basic_formation_ids', basic_formation_json),
             ('advanced_formation_ids', advanced_formation_json),
@@ -456,8 +464,6 @@ class ONSCCVDigitalCall(models.Model):
             parser.extend(['cv_race2',
                            ('cv_first_race_id', ['id', 'name']),
                            'is_cv_race_public',
-                           'is_cv_race_option_other_enable',
-                           'is_multiple_cv_race_selected',
                            'is_afro_descendants',
                            'afro_descendants_filename',
                            ('cv_race_ids', race_json)])
@@ -465,9 +471,7 @@ class ONSCCVDigitalCall(models.Model):
             parser.extend(['last_modification_date',
                            ('cv_gender_id', ['id', 'name']),
                            'cv_gender2',
-                           'is_cv_gender_public',
-                           'is_cv_gender_record',
-                           'is_cv_gender_option_other_enable'])
+                           'is_cv_gender_public'])
         if self.with_context(is_call_documentary_validation=True).show_victim_info:
             parser.extend(['is_victim_violent',
                            'relationship_victim_violent_filename',
@@ -487,7 +491,6 @@ class ONSCCVDigitalCall(models.Model):
                            'lear',
                            'interaction',
                            'need_other_support',
-                           'is_need_other_support',
                            ('type_support_ids', type_support_json), ])
         return self.jsonify(parser)
 

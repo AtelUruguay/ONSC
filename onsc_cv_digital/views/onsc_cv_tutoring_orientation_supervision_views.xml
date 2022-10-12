@@ -69,12 +69,9 @@
                         </group>
                         <group/>
                     </group>
-                    <br/>
-                    <div>
-                        <h4>Descripción</h4>
-                    </div>
-                    <field name="description"/>
-                    <br/>
+                    <group string="Descripción">
+                        <field name="description" nolabel="1" style="white-space: normal;word-break: break-word;"/>
+                    </group>
                     <notebook>
                         <page string="Área de actividad">
                             <field name="area_ids"/>
@@ -121,7 +118,7 @@
         <field name="name">onsc_cv_education_area_tutoring_view_tree</field>
         <field name="model">onsc.cv.education.area.tutoring</field>
         <field name="arch" type="xml">
-            <tree string="Áreas de actividad" editable="top">
+            <tree string="Áreas de actividad">
                 <field name="educational_area_id" string="Área de actividad"/>
                 <field name="educational_subarea_id" string="Sub área de actividad"
                        domain="[('area_id', '=', educational_area_id)]"

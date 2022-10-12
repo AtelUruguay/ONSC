@@ -103,7 +103,7 @@
         <field name="name">onsc_cv_activity_area_view_tree</field>
         <field name="model">onsc.cv.activity.area</field>
         <field name="arch" type="xml">
-            <tree string="Áreas de actividad" editable="top">
+            <tree string="Áreas de actividad">
                 <field name="educational_area_id"/>
                 <field name="educational_subarea_id" domain="[('area_id', '=', educational_area_id)]"
                        context="{'default_area_id': educational_area_id}"/>
