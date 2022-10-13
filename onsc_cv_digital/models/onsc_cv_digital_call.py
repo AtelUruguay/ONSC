@@ -399,7 +399,6 @@ class ONSCCVDigitalCall(models.Model):
             # 'image_1920',
             # Domicilio
             ("country_id", ["id", "name"]),
-            'country_code',
             ("cv_address_state_id", ["id", "name"]),
             ("cv_address_location_id", ["id", "name"]),
             ("cv_address_street_id", ["id", "street"]),
@@ -432,11 +431,8 @@ class ONSCCVDigitalCall(models.Model):
             'mobile_phone',
             'is_occupational_health_card',
             'occupational_health_card_date',
-            'occupational_health_card_filename',
-            'document_identity_filename',
             'is_medical_aptitude_certificate_status',
             'medical_aptitude_certificate_date',
-            'medical_aptitude_certificate_filename',
             'civical_credential_documentary_validation_state',
             'civical_credential_documentary_reject_reason',
             'civical_credential_documentary_user_id',
@@ -455,7 +451,6 @@ class ONSCCVDigitalCall(models.Model):
                            ('cv_first_race_id', ['id', 'name']),
                            'is_cv_race_public',
                            'is_afro_descendants',
-                           'afro_descendants_filename',
                            ('cv_race_ids', race_json)])
         if self.with_context(is_call_documentary_validation=True).show_gender_info:
             parser.extend(['last_modification_date',
@@ -464,13 +459,11 @@ class ONSCCVDigitalCall(models.Model):
                            'is_cv_gender_public'])
         if self.with_context(is_call_documentary_validation=True).show_victim_info:
             parser.extend(['is_victim_violent',
-                           'relationship_victim_violent_filename',
                            'is_public_information_victim_violent'])
         if self.with_context(is_call_documentary_validation=True).show_disabilitie_info:
             parser.extend(['allow_content_public',
                            'situation_disability',
                            'people_disabilitie',
-                           'document_certificate_filename',
                            'certificate_date',
                            'to_date',
                            ('walk', lambda self, field_name: self.parser_selection_tovalue('walk')),
