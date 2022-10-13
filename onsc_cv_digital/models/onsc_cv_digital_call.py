@@ -340,7 +340,6 @@ class ONSCCVDigitalCall(models.Model):
         basic_formation_json = self.env['onsc.cv.basic.formation']._get_json_dict()
 
         # Cursos y certificado----<Page>
-        course_certificate_json = self.env['onsc.cv.course.certificate']._get_json_dict()
         course_json = self.env['onsc.cv.course.certificate']._get_json_dict()
         certificate_json = course_json
 

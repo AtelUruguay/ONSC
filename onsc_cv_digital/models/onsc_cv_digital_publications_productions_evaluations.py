@@ -119,7 +119,7 @@ class ONSCCVAuthors(models.Model):
                 x[1]).author) == self.env.user.name, authors_ids)):
             return self.env.user.name
         return False
-    
+
     def _get_json_dict(self):
         return [
             "author",
