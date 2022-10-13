@@ -1,5 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="onsc_cv_volunteering_task_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.volunteering.task.tree</field>
+        <field name="model">onsc.cv.volunteering.task</field>
+        <field name="arch" type="xml">
+            <tree string="Áreas de actividades" editable="top">
+                <field name="key_task_id"/>
+                <field name="area_id"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="onsc_cv_volunteering_form_view" model="ir.ui.view">
         <field name="name">onsc.cv.volunteering.form</field>
         <field name="model">onsc.cv.volunteering</field>
@@ -32,12 +43,7 @@
                         <field name="description_tasks" required="1" nolabel="1" style="white-space: normal;word-break: break-word;"/>
                     </group>
                     <group string="Tareas">
-                        <field name="volunteering_task_ids" nolabel="1">
-                            <tree string="Tareas" editable="top">
-                                <field name="key_task_id"/>
-                                <field name="area_id"/>
-                            </tree>
-                        </field>
+                        <field name="volunteering_task_ids" nolabel="1"/>
                     </group>
                 </sheet>
             </form>

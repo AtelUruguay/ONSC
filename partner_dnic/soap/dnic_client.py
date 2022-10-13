@@ -5,7 +5,7 @@ import logging
 import re
 import ssl
 
-from suds import Client
+from suds.client import Client
 
 from odoo import _
 from odoo.exceptions import ValidationError
