@@ -197,6 +197,7 @@ class ONSCCVDigitalCall(models.Model):
                     elif documentary_validation_model == 'disabilitie_documentary_validation_state':
                         sections_tovalidate.append(_('Discapacidad'))
             record.gral_info_documentary_validation_state = documentary_validation_state
+            sections_tovalidate = list(dict.fromkeys(sections_tovalidate))
             sections_tovalidate.sort()
             record.documentary_validation_sections_tovalidate = ', '.join(sections_tovalidate)
 
