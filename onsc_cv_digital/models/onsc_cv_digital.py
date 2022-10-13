@@ -480,7 +480,8 @@ class ONSCCVDigital(models.Model):
 
     @api.onchange('cv_address_state_id')
     def onchange_cv_address_state_id(self):
-        self.country_id = self.cv_address_state_id.country_id.id
+        if self.cv_address_state_id:
+            self.country_id = self.cv_address_state_id.country_id.id
         self.cv_address_location_id = False
 
     @api.onchange('certificate_date')
@@ -787,11 +788,15 @@ class ONSCCVDigital(models.Model):
         self.update_header_documentary_validation(values)
         if values.get('country_code') == 'UY' or values.get('cv_address_street_id') or values.get(
                 'cv_address_street2_id') or values.get('cv_address_street3_id'):
-            self.partner_id.suspend_security().write(
-                {'street': self.cv_address_street_id.street, 'street2': self.cv_address_street2_id.street,
-                 'cv_street3': self.cv_address_street3_id.street})
+            for record in self:
+                record.partner_id.suspend_security().write(
+                    {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
+                     'cv_street3': record.cv_address_street3_id.street})
         else:
-            self.partner_id.suspend_security().write({'street2': False, 'cv_street3': False})
+            self.filtered(lambda x: x.country_code != 'UY').mapped('partner_id').suspend_security().write({
+                'street2': False,
+                'cv_street3': False
+            })
         return records
 
     def update_header_documentary_validation(self, values):
