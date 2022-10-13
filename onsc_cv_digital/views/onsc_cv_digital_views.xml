@@ -483,6 +483,12 @@
                                     <field name="theme"/>
                                     <field name="description"/>
                                 </tree>
+                                <form>
+                                    <group>
+                                        <field name="theme"/>
+                                        <field name="description"/>
+                                    </group>
+                                </form>
                             </field>
                         </page>
                         <page name="reference" string="Referencias">

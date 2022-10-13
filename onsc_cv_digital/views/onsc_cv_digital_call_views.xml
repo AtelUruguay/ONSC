@@ -579,8 +579,10 @@
                                     <field name="description"/>
                                 </tree>
                                 <form>
-                                    <field name="theme"/>
-                                    <field name="description"/>
+                                    <group>
+                                        <field name="theme"/>
+                                        <field name="description"/>
+                                    </group>
                                 </form>
                             </field>
                         </page>

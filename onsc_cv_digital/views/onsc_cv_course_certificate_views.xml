@@ -38,7 +38,7 @@
 
 
                             <field name="approbation_mode" states='completed'
-                                   attrs="{'invisible': ['|',('record_type', '!=', 'course')], 'required': [('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
+                                   attrs="{'invisible': ['|',('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course'),('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
                             <field name="evaluation_str" states="completed"
                                    attrs="{'invisible': ['|',('approbation_mode', '!=', 'by_evaluation')]}"/>
                             <field name="evaluation_number"
