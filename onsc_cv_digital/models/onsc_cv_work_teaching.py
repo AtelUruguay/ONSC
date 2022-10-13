@@ -58,6 +58,8 @@ class ONSCCVWorkTeaching(models.Model):
             "program_name",
             "other_relevant_information",
             "receipt_description",
+            "conditional_validation_state",
+            "conditional_validation_reject_reason",
             ("country_id", ['id', 'name']),
             ("institution_id", ['id', 'name']),
             ("subinstitution_id", ['id', 'name']),

@@ -130,9 +130,10 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     def write(self, vals):
         if not vals.get('documentary_validation_state', False) and self._update_custom_write_date(vals):
-            vals['custom_write_date'] = fields.Datetime.now()
-        if not vals.get('documentary_validation_state', False):
-            vals['documentary_validation_state'] = 'to_validate'
+            vals.update({
+                'custom_write_date': fields.Datetime.now(),
+                'documentary_validation_state': 'to_validate'
+            })
         return super(ONSCCVAbstractFileValidation, self).write(vals)
 
     def unlink(self):
