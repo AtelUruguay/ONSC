@@ -56,7 +56,9 @@
                 </header>
                 <sheet>
                     <div class="oe_title oe_inline">
-                        <h1><field name="name_country"/></h1>
+                        <h1>
+                            <field name="name_country"/>
+                        </h1>
                     </div>
                     <group>
                         <group>
@@ -69,10 +71,12 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    readonly="context.get('is_readonly') and context.get('default_country_id')"
                                    force_save="1"/>
-                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company" invisible="1"/>
+                            <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company"
+                                   invisible="1"/>
                             <field name="active" invisible="1"/>
-                            <field name="is_basic_formation"/>
-                            <field name="is_advanced_formation"/>
+                            <field name="is_basic_formation" readonly="context.get('is_readonly')"/>
+                            <field name="is_advanced_formation"
+                                   readonly="context.get('is_readonly')"/>
                         </group>
                         <group>
                             <field name="reject_reason" states="rejected"/>
