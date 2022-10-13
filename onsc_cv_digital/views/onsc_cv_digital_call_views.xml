@@ -5,7 +5,7 @@
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
             <search string="Copias de CV">
-                <field name="partner_id"/>
+                <field name="partner_id" string="Nombre"/>
                 <field name="call_number"/>
                 <field name="postulation_date"/>
                 <field name="postulation_number"/>
@@ -87,7 +87,7 @@
                                invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"/>
                         <h4><field name="documentary_validation_sections_tovalidate"
                                    invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                   align="left" style="font-size: 100%;background-color:#17a2b8;" widget="label_selection"/>
+                                   align="left" style="font-size: 100%;background-color:#17a2b8;white-space: normal;word-break: break-word;" widget="label_selection"/>
                             <button name="button_update_documentary_validation_sections_tovalidate"
                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
                                     type="object"

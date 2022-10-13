@@ -197,6 +197,7 @@ class ONSCCVDigitalCall(models.Model):
                     elif documentary_validation_model == 'disabilitie_documentary_validation_state':
                         sections_tovalidate.append(_('Discapacidad'))
             record.gral_info_documentary_validation_state = documentary_validation_state
+            sections_tovalidate.sort()
             record.documentary_validation_sections_tovalidate = ', '.join(sections_tovalidate)
 
     def _compute_show_victim_info(self):
@@ -392,20 +393,17 @@ class ONSCCVDigitalCall(models.Model):
             ("cv_document_type_id", ["id", "name"]),
             'cv_nro_doc',
             'cv_expiration_date',
-            # ("partner_id", ["id", "name"]),
             'email',
             'cv_birthdate',
-            'cv_sex',
-            'cv_sex_updated_date',
             # 'image_1920',
             # Domicilio
             ("country_id", ["id", "name"]),
             'country_code',
             ("cv_address_state_id", ["id", "name"]),
             ("cv_address_location_id", ["id", "name"]),
-            ("cv_address_street_id", ["id", "name"]),
-            ("cv_address_street2_id", ["id", "name"]),
-            ("cv_address_street3_id", ["id", "name"]),
+            ("cv_address_street_id", ["id", "street"]),
+            ("cv_address_street2_id", ["id", "street"]),
+            ("cv_address_street3_id", ["id", "street"]),
             'cv_address_nro_door',
             'cv_address_apto',
             'cv_address_street',
@@ -450,21 +448,6 @@ class ONSCCVDigitalCall(models.Model):
             'nro_doc_documentary_reject_reason',
             'nro_doc_documentary_user_id',
             'nro_doc_documentary_validation_date',
-            ('drivers_license_ids', driver_license_json),
-            ('basic_formation_ids', basic_formation_json),
-            ('advanced_formation_ids', advanced_formation_json),
-            ('course_ids', course_json),
-            ('certificate_ids', certificate_json),
-            ('work_experience_ids', work_experience_json),
-            ('work_teaching_ids', work_teaching_json),
-            ('work_investigation_ids', work_investigation_json),
-            ('volunteering_ids', volunteering_json),
-            ('language_level_ids', language_level_json),
-            ('publication_production_evaluation_ids', publication_production_evaluation_json),
-            ('tutoring_orientation_supervision_ids', tutoring_orientation_supervision_json),
-            ('participation_event_ids', participation_event_json),
-            ('other_relevant_information_ids', other_relevant_information_json),
-            ('reference_ids', reference_json),
         ]
         if self.with_context(is_call_documentary_validation=True).show_race_info:
             parser.extend(['cv_race2',
@@ -498,6 +481,23 @@ class ONSCCVDigitalCall(models.Model):
                            ('interaction', lambda self, field_name: self.parser_selection_tovalue('interaction')),
                            'need_other_support',
                            ('type_support_ids', type_support_json), ])
+        parser.extend([
+            ('drivers_license_ids', driver_license_json),
+            ('basic_formation_ids', basic_formation_json),
+            ('advanced_formation_ids', advanced_formation_json),
+            ('course_ids', course_json),
+            ('certificate_ids', certificate_json),
+            ('work_experience_ids', work_experience_json),
+            ('work_teaching_ids', work_teaching_json),
+            ('work_investigation_ids', work_investigation_json),
+            ('volunteering_ids', volunteering_json),
+            ('language_level_ids', language_level_json),
+            ('publication_production_evaluation_ids', publication_production_evaluation_json),
+            ('tutoring_orientation_supervision_ids', tutoring_orientation_supervision_json),
+            ('participation_event_ids', participation_event_json),
+            ('other_relevant_information_ids', other_relevant_information_json),
+            ('reference_ids', reference_json),
+        ])
         return parser
 
     def parser_selection_tovalue(self, field_name):

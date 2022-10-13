@@ -57,6 +57,8 @@ class ONSCCVDigitalWorkExperience(models.Model):
             "people_charge_qty",
             "organizational_units_charge",
             "unit_name",
+            "conditional_validation_state",
+            "conditional_validation_reject_reason",
             ("city_id", ['id', 'name']),
             ("entry_institution_id", ['id', 'name']),
             ("hierarchical_level_id", ['id', 'name']),

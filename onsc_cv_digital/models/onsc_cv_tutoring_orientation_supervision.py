@@ -98,6 +98,8 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
             "end_date",
             "other_relevant_information",
             "other_divulgation_media",
+            "conditional_validation_state",
+            "conditional_validation_reject_reason",
             ("country_id", ['id', 'name']),
             ("institution_id", ['id', 'name']),
             ("subinstitution_id", ['id', 'name']),

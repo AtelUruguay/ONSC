@@ -90,7 +90,7 @@ class ONSCCVDigitalPPEvaluations(models.Model):
             ("subtype_evaluation_id", ['id', 'name']),
             ("subtype_other_id", ['id', 'name']),
             ("authors_ids", self.env['onsc.cv.authors']._get_json_dict()),
-            ("activity_area_ids", ['id', 'name']),
+            ("activity_area_ids", self.env['onsc.cv.activity.area']._get_json_dict()),
             ("applied_knowledge_ids", ['id', 'name'])
         ])
         return json_dict
