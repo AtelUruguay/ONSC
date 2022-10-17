@@ -19,3 +19,4 @@ from . import onsc_cv_tutoring_orientation_supervision
 from . import onsc_cv_digital_participation_events
 from . import onsc_cv_digital_reference
 from . import onsc_cv_digital_call
+from . import onsc_cv_report_config
