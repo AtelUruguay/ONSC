@@ -35,6 +35,7 @@ ONSC CV Digital
         'data/onsc_cv_roll_event_data.xml',
         'data/onsc_cv_report_config_data.xml',
         'wizard/views/onsc_cv_reject_wizard_views.xml',
+        'wizard/views/onsc_cv_report_wizard_views.xml',
         'views/res_config_settings_view.xml',
         'views/onsc_cv_documentary_validation_config_views.xml',
         'views/catalogs/onsc_cv_document_type_views.xml',
@@ -89,6 +90,7 @@ ONSC CV Digital
         'views/onsc_cv_digital_drive_licence.xml',
         'views/onsc_cv_digital_call_views.xml',
         'views/onsc_cv_digital_call_documentary_validation_views.xml',
+        'views/onsc_cv_report_config_views.xml',
         'views/onsc_cv_menuitems.xml',
     ],
     'demo': [
