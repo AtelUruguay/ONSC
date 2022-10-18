@@ -41,6 +41,10 @@
                                 string="Mis postulaciones"
                                 groups="onsc_cv_digital.group_user_cv"
                                 type="object" icon="fa-copy"/>
+                        <button class="oe_stat_button" name="%(onsc_cv_digital.onsc_cv_report_wizard_action)d"
+                                string="Imprimir CV"
+                                groups="onsc_cv_digital.group_user_cv"
+                                type="action" icon="fa-print"/>
                         <button class="oe_stat_button" name="button_unlink"
                                 confirm="¿Está seguro que desea eliminar su CV? Si selecciona Aceptar el mismo se eliminará permanentemente perdiéndose todos los datos ingresados"
                                 string="Eliminar"

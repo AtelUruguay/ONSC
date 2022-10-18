@@ -287,5 +287,12 @@
                   groups="onsc_cv_digital.group_manager_cv"
                   sequence="2"/>
 
+        <menuitem id="onsc_cv_report_config_seccion_menu"
+                  name="Configuración de reporte de CV"
+                  action="onsc_cv_report_config_seccion_action"
+                  parent="onsc_cv_settings_menu"
+                  groups="onsc_cv_digital.group_manager_cv"
+                  sequence="5"/>
+
 
 </odoo>
