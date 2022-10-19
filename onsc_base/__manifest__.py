@@ -9,8 +9,9 @@ ONSC - Base
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['base', 'web_responsive'],
+    'depends': ['base', 'web_responsive', 'website'],
     'data': [
+        'security/onsc_base_security.xml'
     ],
     'demo': [],
     'installable': True,

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-<data noupdate="1">
+    <data noupdate="1">
     <record model="ir.module.category" id="module_category_onsc_catalog">
         <field name="name">ONSC Catálogos</field>
         <field name="sequence">1</field>
@@ -19,5 +19,12 @@
         <field name="category_id" ref="module_category_onsc_catalog"/>
         <field name="implied_ids" eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view')),(4, ref('model_history.group_edit_rec_date')),(4, ref('model_history.group_history_retrieve_from')),(4, ref('model_history.group_history_modify'))]"/>
     </record>
-</data>
+    </data>
+
+    <data>
+        <record id="hr.menu_hr_root" model="ir.ui.menu">
+            <field name="groups_id" eval="[(4, ref('onsc_base.group_no_onsc')),(3, ref('base.group_user'))]"/>
+        </record>
+    </data>
+
 </odoo>
