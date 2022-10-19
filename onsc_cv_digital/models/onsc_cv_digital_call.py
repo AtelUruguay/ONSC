@@ -9,6 +9,7 @@ from odoo.exceptions import ValidationError
 
 from .abstracts.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
+from .onsc_cv_digital import SELECTION_RADIO
 from ..soap import soap_error_codes
 
 _logger = logging.getLogger(__name__)
@@ -168,7 +169,11 @@ class ONSCCVDigitalCall(models.Model):
                                  'nro_doc_documentary_validation_state',
                                  'disabilitie_documentary_validation_state']
             for config in configs.filtered(lambda x: x.field_id):
-                validation_models.append('%s.documentary_validation_state' % config.field_id.name)
+                if config.model_id.model == 'onsc.cv.course.certificate':
+                    validation_models.extend(['course_ids.documentary_validation_state',
+                                              'certificate_ids.documentary_validation_state'])
+                else:
+                    validation_models.append('%s.documentary_validation_state' % config.field_id.name)
         return validation_models
 
     @api.depends(lambda self: self._get_documentary_validation_models())
@@ -192,6 +197,8 @@ class ONSCCVDigitalCall(models.Model):
                     elif documentary_validation_model == 'disabilitie_documentary_validation_state':
                         sections_tovalidate.append(_('Discapacidad'))
             record.gral_info_documentary_validation_state = documentary_validation_state
+            sections_tovalidate = list(dict.fromkeys(sections_tovalidate))
+            sections_tovalidate.sort()
             record.documentary_validation_sections_tovalidate = ', '.join(sections_tovalidate)
 
     def _compute_show_victim_info(self):
@@ -219,6 +226,9 @@ class ONSCCVDigitalCall(models.Model):
         for record in self:
             record.show_gender_info = (conditional_show and record.is_cv_gender_public or
                                        record.is_trans) or not conditional_show
+
+    def button_update_documentary_validation_sections_tovalidate(self):
+        self._compute_gral_info_documentary_validation_state()
 
     def button_documentary_tovalidate(self):
         if self._context.get('documentary_validation'):
@@ -301,16 +311,14 @@ class ONSCCVDigitalCall(models.Model):
         filename = '%s_%s.json' % (call_number, str(fields.Datetime.now()))
         json_file = open(join(call_server_json_url, filename), 'w')
         for record in self:
-            json.dump(record._get_json_dict(), json_file)
+            json.dump(record._get_json(), json_file)
         self.write({
             'is_json_sent': True
         })
 
     def send_notification_conditional(self, call_number):
-        ctx = self.env.context.copy()
-        ctx.update({'call': call_number})
         template = self.env.ref('onsc_cv_digital.email_template_conditional_values_cv')
-        template.with_context(ctx).send_mail(self.id)
+        template.with_context(call=call_number).send_mail(len(self) and self[0].id)
 
     @api.model
     def create(self, values):
@@ -320,6 +328,8 @@ class ONSCCVDigitalCall(models.Model):
     # -------------------------------------------------------------------------------------------------------------------
     #   WS utilities
     # -------------------------------------------------------------------------------------------------------------------
+    def _get_json(self):
+        return self.jsonify(self._get_json_dict())
 
     def _get_json_dict(self):
         # JSONifier
@@ -330,7 +340,6 @@ class ONSCCVDigitalCall(models.Model):
         basic_formation_json = self.env['onsc.cv.basic.formation']._get_json_dict()
 
         # Cursos y certificado----<Page>
-        course_certificate_json = self.env['onsc.cv.course.certificate']._get_json_dict()
         course_json = self.env['onsc.cv.course.certificate']._get_json_dict()
         certificate_json = course_json
 
@@ -365,6 +374,12 @@ class ONSCCVDigitalCall(models.Model):
         type_support_json = self.env['onsc.cv.type.support']._get_json_dict()
 
         parser = [
+            'id',
+            'active',
+            'create_date',
+            'create_uid',
+            'write_date',
+            'write_uid',
             'cv_full_name',
             'call_number',
             'postulation_date',
@@ -374,24 +389,20 @@ class ONSCCVDigitalCall(models.Model):
             'is_afro',
             'is_disabilitie',
             'is_victim',
-            'cv_emissor_country_id',
-            'cv_document_type_id',
+            ("cv_emissor_country_id", ["id", "name"]),
+            ("cv_document_type_id", ["id", "name"]),
             'cv_nro_doc',
             'cv_expiration_date',
-            'partner_id',
             'email',
             'cv_birthdate',
-            'cv_sex',
-            'cv_sex_updated_date',
-
+            # 'image_1920',
             # Domicilio
-            'country_id',
-            'country_code',
-            'cv_address_state_id',
-            'cv_address_location_id',
-            'cv_address_street_id'
-            'cv_address_street2_id',
-            'cv_address_street3_id',
+            ("country_id", ["id", "name"]),
+            ("cv_address_state_id", ["id", "name"]),
+            ("cv_address_location_id", ["id", "name"]),
+            ("cv_address_street_id", ["id", "street"]),
+            ("cv_address_street2_id", ["id", "street"]),
+            ("cv_address_street3_id", ["id", "street"]),
             'cv_address_nro_door',
             'cv_address_apto',
             'cv_address_street',
@@ -403,12 +414,10 @@ class ONSCCVDigitalCall(models.Model):
             'cv_address_place',
             'cv_address_block',
             'cv_address_sandlot',
-            'country_of_birth_id',
+            ("country_of_birth_id", ["id", "name"]),
             'uy_citizenship',
-            # FIN Domicilio
-
             # Datos personales
-            'marital_status_id',
+            ("marital_status_id", ["id", "name"]),
             'crendencial_serie',
             'credential_number',
             'cjppu_affiliate_number',
@@ -421,17 +430,54 @@ class ONSCCVDigitalCall(models.Model):
             'mobile_phone',
             'is_occupational_health_card',
             'occupational_health_card_date',
-            'occupational_health_card_filename',
-            'document_identity_filename',
-            'civical_credential_filename',
             'is_medical_aptitude_certificate_status',
             'medical_aptitude_certificate_date',
-            'medical_aptitude_certificate_filename',
             'civical_credential_documentary_validation_state',
+            'civical_credential_documentary_reject_reason',
+            'civical_credential_documentary_user_id',
+            'civical_credential_documentary_validation_date',
+            'disabilitie_documentary_validation_state',
+            'disabilitie_documentary_reject_reason',
+            'disabilitie_documentary_user_id',
+            'disabilitie_documentary_validation_date',
+            'nro_doc_documentary_validation_state',
+            'nro_doc_documentary_reject_reason',
+            'nro_doc_documentary_user_id',
+            'nro_doc_documentary_validation_date',
+        ]
+        if self.with_context(is_call_documentary_validation=True).show_race_info:
+            parser.extend(['cv_race2',
+                           ('cv_first_race_id', ['id', 'name']),
+                           'is_cv_race_public',
+                           'is_afro_descendants',
+                           ('cv_race_ids', race_json)])
+        if self.with_context(is_call_documentary_validation=True).show_gender_info:
+            parser.extend(['last_modification_date',
+                           ('cv_gender_id', ['id', 'name']),
+                           'cv_gender2',
+                           'is_cv_gender_public'])
+        if self.with_context(is_call_documentary_validation=True).show_victim_info:
+            parser.extend(['is_victim_violent',
+                           'is_public_information_victim_violent'])
+        if self.with_context(is_call_documentary_validation=True).show_disabilitie_info:
+            parser.extend(['allow_content_public',
+                           'situation_disability',
+                           'people_disabilitie',
+                           'certificate_date',
+                           'to_date',
+                           ('walk', lambda self, field_name: self.parser_selection_tovalue('walk')),
+                           ('see', lambda self, field_name: self.parser_selection_tovalue('see')),
+                           ('hear', lambda self, field_name: self.parser_selection_tovalue('hear')),
+                           ('speak', lambda self, field_name: self.parser_selection_tovalue('speak')),
+                           ('realize', lambda self, field_name: self.parser_selection_tovalue('realize')),
+                           ('lear', lambda self, field_name: self.parser_selection_tovalue('lear')),
+                           ('interaction', lambda self, field_name: self.parser_selection_tovalue('interaction')),
+                           'need_other_support',
+                           ('type_support_ids', type_support_json), ])
+        parser.extend([
             ('drivers_license_ids', driver_license_json),
             ('basic_formation_ids', basic_formation_json),
             ('advanced_formation_ids', advanced_formation_json),
-            ('course_certificate_ids', course_certificate_json),
             ('course_ids', course_json),
             ('certificate_ids', certificate_json),
             ('work_experience_ids', work_experience_json),
@@ -444,48 +490,14 @@ class ONSCCVDigitalCall(models.Model):
             ('participation_event_ids', participation_event_json),
             ('other_relevant_information_ids', other_relevant_information_json),
             ('reference_ids', reference_json),
-        ]
-        if self.with_context(is_call_documentary_validation=True).show_race_info:
-            parser.extend(['cv_race2',
-                           ('cv_first_race_id', ['id', 'name']),
-                           'is_cv_race_public',
-                           'is_cv_race_option_other_enable',
-                           'is_multiple_cv_race_selected',
-                           'is_afro_descendants',
-                           'afro_descendants_filename',
-                           ('cv_race_ids', race_json)])
-        if self.with_context(is_call_documentary_validation=True).show_gender_info:
-            parser.extend(['last_modification_date',
-                           ('cv_gender_id', ['id', 'name']),
-                           'cv_gender2',
-                           'is_cv_gender_public',
-                           'is_cv_gender_record',
-                           'is_cv_gender_option_other_enable'])
-        if self.with_context(is_call_documentary_validation=True).show_victim_info:
-            parser.extend(['is_victim_violent',
-                           'relationship_victim_violent_filename',
-                           'is_public_information_victim_violent'])
-        if self.with_context(is_call_documentary_validation=True).show_disabilitie_info:
-            parser.extend(['allow_content_public',
-                           'situation_disability',
-                           'people_disabilitie',
-                           'document_certificate_filename',
-                           'certificate_date',
-                           'to_date',
-                           'see',
-                           'hear',
-                           'walk',
-                           'speak',
-                           'realize',
-                           'lear',
-                           'interaction',
-                           'need_other_support',
-                           'is_need_other_support',
-                           ('type_support_ids', type_support_json), ])
-        return self.jsonify(parser)
+        ])
+        return parser
+
+    def parser_selection_tovalue(self, field_name):
+        return dict(SELECTION_RADIO).get(eval('self.%s' % field_name))
 
     def action_get_json_dict(self):
-        _logger.debug(self._get_json_dict())
+        _logger.debug(self._get_json())
 
     @api.model
     def _run_call_json_cron(self):
@@ -645,6 +657,7 @@ class ONSCCVDigitalCall(models.Model):
         if len(calls_preselected) == 0:
             return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
         calls_preselected.write({'preselected': 'yes'})
+        calls_preselected.with_context(is_preselected=True).button_update_documentary_validation_sections_tovalidate()
         calls_not_selected.write({'preselected': 'no'})
         self.send_notification_document_validators(call_number)
         return True

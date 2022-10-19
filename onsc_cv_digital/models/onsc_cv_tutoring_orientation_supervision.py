@@ -84,22 +84,22 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
         json_dict = super(ONSCCVTutorialOrientationSupervision, self)._get_json_dict()
         json_dict.extend([
             "work_title",
-            "is_tutor_option_other_enable",
             "other_tutor_type",
             "dependence",
             "postgraduate_type",
             "student_name",
             "description",
-            "is_tutor_docent",
-            "is_tutor_master",
-            "is_divulgation_option_other_enable",
-            "other_divulgation_media",
             "website",
             "is_tutoring_finished",
             "co_tutor_name",
             "is_paid_activity",
             "is_relevant_work",
-            "is_orientation_type_pie",
+            "start_date",
+            "end_date",
+            "other_relevant_information",
+            "other_divulgation_media",
+            "conditional_validation_state",
+            "conditional_validation_reject_reason",
             ("country_id", ['id', 'name']),
             ("institution_id", ['id', 'name']),
             ("subinstitution_id", ['id', 'name']),
@@ -108,7 +108,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
             ("language_id", ['id', 'name']),
             ("divulgation_media_id", ['id', 'name']),
             ("orientation_type_id", ['id', 'name']),
-            ("area_ids", ['id', 'name']),
+            ("area_ids", self.env['onsc.cv.education.area.tutoring']._get_json_dict()),
             ("knowledge_acquired_ids", ['id', 'name']),
             ("knowledge_acquired_ids", ['id', 'name'])
         ])
@@ -123,3 +123,10 @@ class ONSCCVEducationAreaTutorial(models.Model):
     tutoring_id = fields.Many2one('onsc.cv.tutoring.orientation.supervision', 'Tutoría, Orientación, Supervisión',
                                   ondelete='cascade', required=True)
     speciality = fields.Char(string=u"Especialidad", required=True)
+
+    def _get_json_dict(self):
+        json_dict = super(ONSCCVEducationAreaTutorial, self)._get_json_dict()
+        json_dict.extend([
+            "speciality"
+        ])
+        return json_dict

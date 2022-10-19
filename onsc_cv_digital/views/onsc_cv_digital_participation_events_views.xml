@@ -41,7 +41,30 @@
                     <br/>
                     <notebook>
                         <page string="Área de Actividad">
-                            <field name="activity_area_ids"/>
+                            <field name="activity_area_ids" context="{
+                                         'tree_view_ref': 'onsc_cv_digital.onsc_cv_activity_area_event_view_tree',
+                                         'form_view_ref': 'onsc_cv_digital.onsc_cv_activity_area_event_view_form'
+                                      }">
+
+                                <form string="Área de Actividad">
+                                    <sheet>
+                                        <group>
+                                            <field name="educational_area_id"
+                                                   string="Área de actividad"/>
+                                            <field name="educational_subarea_id"
+                                                   string="Sub área de actividad"
+                                                   domain="[('area_id', '=', educational_area_id)]"
+                                                   context="{'default_area_id': educational_area_id}"/>
+                                            <field name="discipline_educational_id"
+                                                   string="Disciplina"
+                                                   domain="[('subarea_id', '=', educational_subarea_id)]"
+                                                   context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                                            <field name="speciality"
+                                                   attrs="{'invisible': [('educational_area_id', '=', False)],'required': [('educational_area_id', '!=', '')]}"/>
+                                        </group>
+                                    </sheet>
+                                </form>
+                            </field>
                         </page>
                         <page string="Información adicional">
                             <field name="other_relevant_information"/>

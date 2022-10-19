@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import filter_str2float
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
 
@@ -21,12 +23,45 @@ class ONSCCVDigitalParticipationEvent(models.Model):
     roll_event_id = fields.Many2one('onsc.cv.roll.event', string=u'Rol en evento', required=True, ondelete='cascade')
     is_roll_event = fields.Boolean(compute='_compute_is_roll_event')
     description_topic = fields.Char(string=u"Descripción de la temática abordada en el rol")
-    hourly_load = fields.Float('Carga horaria en el rol (en horas)')
-    hours_total = fields.Float('Carga horaria total del evento (en horas)', required='True')
+    hourly_load = fields.Char('Carga horaria en el rol (en horas)')
+    hours_total = fields.Char('Carga horaria total del evento (en horas)', required='True')
     activity_area_ids = fields.One2many('onsc.cv.activity.area', 'participation_events_id', string=u'Área de Actividad',
                                         copy=True)
     documentation_file = fields.Binary(string="Documentación o comprobante")
     documentation_filename = fields.Char('Nombre documentación o comprobante')
+
+    @api.onchange('hourly_load')
+    def onchange_hourly_load(self):
+        try:
+            decimal_point = self.env['res.lang'].search([('code', '=', self.env.user.lang)]).decimal_point
+            if self.hourly_load:
+                if decimal_point == ',':
+                    hourly_load = self.hourly_load.replace(',', '.')
+                else:
+                    hourly_load = self.hourly_load
+                self.hourly_load and float(hourly_load)
+        except ValueError:
+            self.hourly_load = filter_str2float(
+                self.hourly_load,
+                self.env['res.lang'].search([('code', '=', self.env.user.lang)]).decimal_point
+            )
+            return cv_warning(_("La Carga horaria en el rol (en horas) no puede contener letras"))
+
+    @api.onchange('hours_total')
+    def onchange_hours_total(self):
+        try:
+            decimal_point = self.env['res.lang'].search([('code', '=', self.env.user.lang)]).decimal_point
+            if self.hours_total:
+                if decimal_point == ',':
+                    hours_total = self.hours_total.replace(',', '.')
+                else:
+                    hours_total = self.hours_total
+                self.hours_total and float(hours_total)
+        except ValueError:
+            self.hours_total = filter_str2float(
+                self.hours_total,
+                self.env['res.lang'].search([('code', '=', self.env.user.lang)]).decimal_point)
+            return cv_warning(_("La Carga horaria total del evento (en horas) no puede contener letras"))
 
     @api.depends('roll_event_id')
     def _compute_is_roll_event(self):
@@ -50,14 +85,19 @@ class ONSCCVDigitalParticipationEvent(models.Model):
             "mode",
             "name_institution",
             "description_event",
-            "is_roll_event",
             "description_topic",
             "hourly_load",
             "hours_total",
+            "start_date",
+            "end_date",
+            "other_relevant_information",
+            "conditional_validation_state",
+            "conditional_validation_reject_reason",
             ("type_event_id", ['id', 'name']),
             ("country_id", ['id', 'name']),
             ("city_id", ['id', 'name']),
             ("roll_event_id", ['id', 'name']),
-            ("activity_area_ids", ['id', 'name']),
+            ("knowledge_acquired_ids", ['id', 'name']),
+            ("activity_area_ids", self.env['onsc.cv.activity.area']._get_json_dict()),
         ])
         return json_dict

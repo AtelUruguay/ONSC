@@ -57,13 +57,15 @@ class ONSCCVWorkTeaching(models.Model):
             "responsible_type",
             "program_name",
             "other_relevant_information",
+            "receipt_description",
+            "conditional_validation_state",
+            "conditional_validation_reject_reason",
             ("country_id", ['id', 'name']),
             ("institution_id", ['id', 'name']),
             ("subinstitution_id", ['id', 'name']),
             ("professional_link_id", ['id', 'name']),
-            ("subject_ids", ['id', 'name']),
-            ("education_area_ids", ['id', 'name']),
-            ("receipt_ids", ['id', 'name']),
+            ("subject_ids", self.env['onsc.cv.academic.program.subject']._get_json_dict()),
+            ("education_area_ids", self.env['onsc.cv.education.area.teaching']._get_json_dict()),
         ])
         return json_dict
 
@@ -91,6 +93,22 @@ class ONSCCVAcademicProgramSubject(models.Model):
     institution_id = fields.Many2one(related='work_teaching_id.institution_id')
     subinstitution_id = fields.Many2one(related='work_teaching_id.subinstitution_id')
     country_id = fields.Many2one(related='work_teaching_id.country_id')
+
+    def _get_json_dict(self):
+        return [
+            "id",
+            "subject",
+            "course_type",
+            "currently_working_state",
+            "level_teaching_type",
+            ("program_ids", ['id',
+                             'name',
+                             ("study_level_id", ['id', 'name']),
+                             ]),
+            ("institution_id", ['id', 'name']),
+            ("subinstitution_id", ['id', 'name']),
+            ("country_id", ['id', 'name']),
+        ]
 
 
 class ONSCCVEducationAreaCourse(models.Model):

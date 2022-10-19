@@ -38,7 +38,7 @@
 
 
                             <field name="approbation_mode" states='completed'
-                                   attrs="{'invisible': ['|',('record_type', '!=', 'course')], 'required': [('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
+                                   attrs="{'invisible': ['|',('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course'),('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
                             <field name="evaluation_str" states="completed"
                                    attrs="{'invisible': ['|',('approbation_mode', '!=', 'by_evaluation')]}"/>
                             <field name="evaluation_number"
@@ -95,7 +95,7 @@
         <field name="name">onsc_cv_education_area_course_view_tree</field>
         <field name="model">onsc.cv.education.area.course</field>
         <field name="arch" type="xml">
-            <tree string="Formación básica" editable="top">
+            <tree string="Formación básica">
                 <field name="educational_area_id"/>
                 <field name="educational_subarea_id"
                        domain="[('area_id', '=', educational_area_id)]"
@@ -104,6 +104,26 @@
                        domain="[('subarea_id', '=', educational_subarea_id)]"
                        context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
             </tree>
+        </field>
+    </record>
+
+    <record id="onsc_cv_education_area_course_view_form" model="ir.ui.view">
+        <field name="name">onsc_cv_education_area_course_view_form</field>
+        <field name="model">onsc.cv.education.area.course</field>
+        <field name="arch" type="xml">
+            <form string="Formación básica" editable="top">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id"/>
+                        <field name="educational_subarea_id"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
 

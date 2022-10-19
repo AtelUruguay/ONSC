@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital',
-    'version': '15.0.5.0.0',
+    'version': '15.0.6.0.0',
     'summary': 'ONSC CV Digital',
     'sequence': 10,
     'description': """
@@ -33,7 +33,9 @@ ONSC CV Digital
         'data/onsc_cv_type_event_data.xml',
         'data/onsc_cv_type_support_data.xml',
         'data/onsc_cv_roll_event_data.xml',
+        'data/onsc_cv_report_config_data.xml',
         'wizard/views/onsc_cv_reject_wizard_views.xml',
+        'wizard/views/onsc_cv_report_wizard_views.xml',
         'views/res_config_settings_view.xml',
         'views/onsc_cv_documentary_validation_config_views.xml',
         'views/catalogs/onsc_cv_document_type_views.xml',
@@ -88,6 +90,7 @@ ONSC CV Digital
         'views/onsc_cv_digital_drive_licence.xml',
         'views/onsc_cv_digital_call_views.xml',
         'views/onsc_cv_digital_call_documentary_validation_views.xml',
+        'views/onsc_cv_report_config_views.xml',
         'views/onsc_cv_menuitems.xml',
         'report/onsc_cv_digital_report.xml',
     ],

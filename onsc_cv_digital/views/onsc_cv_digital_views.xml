@@ -41,6 +41,10 @@
                                 string="Mis postulaciones"
                                 groups="onsc_cv_digital.group_user_cv"
                                 type="object" icon="fa-copy"/>
+                        <button class="oe_stat_button" name="%(onsc_cv_digital.onsc_cv_report_wizard_action)d"
+                                string="Imprimir CV"
+                                groups="onsc_cv_digital.group_user_cv"
+                                type="action" icon="fa-print"/>
                         <button class="oe_stat_button" name="button_unlink"
                                 confirm="¿Está seguro que desea eliminar su CV? Si selecciona Aceptar el mismo se eliminará permanentemente perdiéndose todos los datos ingresados"
                                 string="Eliminar"
@@ -91,7 +95,7 @@
                                     attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
                                         <strong>
-                                            El documento de identidad ha sido rechazado. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline" readonly="1"/>
+                                            La sección documento de identidad ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline" readonly="1"/>
                                             <p/>
                                             Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                                         </strong>
@@ -137,7 +141,7 @@
                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
                                             <p class="mb-0">
                                                 <strong>
-                                                    La credencial cívica ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline" readonly="1"/>
+                                                    La sección credencial cívica ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline" readonly="1"/>
                                                     <p/>
                                                     Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                                                 </strong>
@@ -409,7 +413,7 @@
                                     attrs="{'invisible': [('disabilitie_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
                                         <strong>
-                                            Ha sido rechazado. Motivo del rechazo: <field name="disabilitie_documentary_reject_reason" class="oe_inline" readonly="1"/>
+                                            La sección discapacidad ha sido rechazada. Motivo del rechazo: <field name="disabilitie_documentary_reject_reason" class="oe_inline" readonly="1"/>
                                             <p/>
                                             Fecha: <field name="disabilitie_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="disabilitie_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                                         </strong>
@@ -483,6 +487,12 @@
                                     <field name="theme"/>
                                     <field name="description"/>
                                 </tree>
+                                <form>
+                                    <group>
+                                        <field name="theme"/>
+                                        <field name="description"/>
+                                    </group>
+                                </form>
                             </field>
                         </page>
                         <page name="reference" string="Referencias">

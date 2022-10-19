@@ -4,11 +4,11 @@ import logging
 
 from lxml import etree
 from odoo import fields, models, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from odoo.exceptions import ValidationError
 from zeep import Client
 from zeep.exceptions import Fault
 
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
 _logger = logging.getLogger(__name__)
@@ -156,7 +156,7 @@ class ONSCCVDigital(models.Model):
     cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
     cv_address_state = fields.Selection(related='cv_address_location_id.state', store=True)
     cv_address_reject_reason = fields.Text(related='cv_address_location_id.reject_reason')
-    cv_address_place = fields.Char(related='partner_id.cv_address_place', string="Paraje", size=200, readonly=False)
+    cv_address_place = fields.Text(related='partner_id.cv_address_place', string="Paraje", size=200, readonly=False)
     cv_address_block = fields.Char(related='partner_id.cv_address_block', string="Manzana", size=5, readonly=False)
     cv_address_sandlot = fields.Char(related='partner_id.cv_address_sandlot', string="Solar", size=5, readonly=False)
     country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
@@ -480,7 +480,8 @@ class ONSCCVDigital(models.Model):
 
     @api.onchange('cv_address_state_id')
     def onchange_cv_address_state_id(self):
-        self.country_id = self.cv_address_state_id.country_id.id
+        if self.cv_address_state_id:
+            self.country_id = self.cv_address_state_id.country_id.id
         self.cv_address_location_id = False
 
     @api.onchange('certificate_date')
@@ -524,6 +525,60 @@ class ONSCCVDigital(models.Model):
         self.cv_address_street2_id = False
         self.cv_address_street3_id = False
         self.cv_address_street = False
+        self.cv_address_nro_door = False
+        self.cv_address_is_cv_bis = False
+        self.cv_address_apto = False
+        self.cv_address_zip = False
+        self.cv_address_place = False
+        self.cv_address_block = False
+        self.cv_address_sandlot = False
+
+    @api.onchange('is_occupational_health_card')
+    def onchange_is_occupational_health_card(self):
+        if self.is_occupational_health_card is False:
+            self.occupational_health_card_date = False
+            self.occupational_health_card_file = False
+            self.occupational_health_card_file = False
+            self.occupational_health_card_filename = False
+
+    @api.onchange('is_medical_aptitude_certificate_status')
+    def onchange_is_medical_aptitude_certificate_status(self):
+        if self.is_medical_aptitude_certificate_status is False:
+            self.medical_aptitude_certificate_date = False
+            self.medical_aptitude_certificate_file = False
+            self.medical_aptitude_certificate_filename = False
+
+    @api.onchange('is_victim_violent')
+    def onchange_is_victim_violent(self):
+        if self.is_victim_violent is False:
+            self.relationship_victim_violent_file = False
+            self.relationship_victim_violent_filename = False
+
+    @api.onchange('is_afro_descendants')
+    def onchange_is_afro_descendants(self):
+        if self.is_afro_descendants is False:
+            self.afro_descendants_file = False
+            self.afro_descendants_filename = False
+
+    @api.onchange('situation_disability')
+    def onchange_situation_disability(self):
+        if self.situation_disability != 'si':
+            self.see = False
+            self.hear = False
+            self.walk = False
+            self.speak = False
+            self.realize = False
+            self.lear = False
+            self.interaction = False
+            self.type_support_ids = [(5,)]
+
+    @api.onchange('people_disabilitie')
+    def onchange_people_disabilitie(self):
+        if self.people_disabilitie != 'si':
+            self.document_certificate_file = False
+            self.document_certificate_filename = False
+            self.certificate_date = False
+            self.to_date = False
 
     def button_unlink(self):
         self.unlink()
@@ -733,11 +788,15 @@ class ONSCCVDigital(models.Model):
         self.update_header_documentary_validation(values)
         if values.get('country_code') == 'UY' or values.get('cv_address_street_id') or values.get(
                 'cv_address_street2_id') or values.get('cv_address_street3_id'):
-            self.partner_id.suspend_security().write(
-                {'street': self.cv_address_street_id.street, 'street2': self.cv_address_street2_id.street,
-                 'cv_street3': self.cv_address_street3_id.street})
+            for record in self:
+                record.partner_id.suspend_security().write(
+                    {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
+                     'cv_street3': record.cv_address_street3_id.street})
         else:
-            self.partner_id.suspend_security().write({'street2': False, 'cv_street3': False})
+            self.filtered(lambda x: x.country_code != 'UY').mapped('partner_id').suspend_security().write({
+                'street2': False,
+                'cv_street3': False
+            })
         return records
 
     def update_header_documentary_validation(self, values):

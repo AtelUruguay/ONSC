@@ -11,6 +11,7 @@ class ONSCCVAcademicProgram(models.Model):
     _fields_2check_unicity = ['name', 'subinstitution_id', 'state']
 
     name = fields.Char("Nombre del programa académico", required=True)
+    enable_mec = fields.Boolean(string=u'Habilitada por el MEC', tracking=True)
     study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de estudio', tracking=True, required=True)
 
     def _check_validation_status(self):

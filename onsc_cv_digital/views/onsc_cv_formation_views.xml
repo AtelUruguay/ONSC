@@ -193,7 +193,7 @@
         <field name="name">onsc_cv_area_related_education_view_tree</field>
         <field name="model">onsc.cv.area.related.education</field>
         <field name="arch" type="xml">
-            <tree string="Áreas relacionadas con esta educación" editable="top">
+            <tree string="Áreas relacionadas con esta educación">
                 <field name="educational_area_id"/>
                 <field name="educational_subarea_id"
                        domain="[('area_id', '=', educational_area_id)]"

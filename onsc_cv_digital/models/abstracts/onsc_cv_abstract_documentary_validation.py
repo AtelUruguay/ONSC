@@ -54,7 +54,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                     attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
                     <p class="mb-0">
                         <strong>
-                            Ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
+                            El registro ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
                             <p/>
                             Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                         </strong>
@@ -130,9 +130,10 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     def write(self, vals):
         if not vals.get('documentary_validation_state', False) and self._update_custom_write_date(vals):
-            vals['custom_write_date'] = fields.Datetime.now()
-        if not vals.get('documentary_validation_state', False):
-            vals['documentary_validation_state'] = 'to_validate'
+            vals.update({
+                'custom_write_date': fields.Datetime.now(),
+                'documentary_validation_state': 'to_validate'
+            })
         return super(ONSCCVAbstractFileValidation, self).write(vals)
 
     def unlink(self):
@@ -202,7 +203,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
     def _update_call_documentary_validation_status(self):
         if self._fields.get('cv_digital_id'):
             calls = self.env['onsc.cv.digital.call'].search([('cv_digital_id', 'in', self.mapped('cv_digital_id').ids)])
-            calls._compute_gral_info_documentary_validation_state()
+            calls.button_update_documentary_validation_sections_tovalidate()
 
     def _check_todisable(self):
         config = self.env['onsc.cv.documentary.validation.config']

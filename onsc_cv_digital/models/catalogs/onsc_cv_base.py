@@ -72,8 +72,6 @@ class ONSCCVRace(models.Model):
             "id",
             "code",
             "name",
-            "race_type",
-            "is_option_other_enable"
         ]
 
 

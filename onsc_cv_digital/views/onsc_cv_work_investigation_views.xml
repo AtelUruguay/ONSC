@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.education.area.investigation.tree</field>
         <field name="model">onsc.cv.education.area.investigation</field>
         <field name="arch" type="xml">
-            <tree editable="top">
+            <tree string="Áreas de actividades">
                 <field name="educational_area_id" string="Área de actividad"/>
                 <field name="educational_subarea_id"
                         string="Sub área de actividad"
@@ -15,6 +15,28 @@
                        domain="[('subarea_id', '=', educational_subarea_id)]"
                        context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
             </tree>
+        </field>
+    </record>
+    
+    <record id="onsc_cv_education_area_investigation_form" model="ir.ui.view">
+        <field name="name">onsc.cv.education.area.investigation.form</field>
+        <field name="model">onsc.cv.education.area.investigation</field>
+        <field name="arch" type="xml">
+            <form string="Áreas de actividades">
+                <sheet>
+                    <group>
+                        <field name="educational_area_id" string="Área de actividad"/>
+                        <field name="educational_subarea_id"
+                                string="Sub área de actividad"
+                               domain="[('area_id', '=', educational_area_id)]"
+                               context="{'default_area_id': educational_area_id}"/>
+                        <field name="discipline_educational_id"
+                               string="Disciplina"
+                               domain="[('subarea_id', '=', educational_subarea_id)]"
+                               context="{'default_area_id': educational_area_id, 'default_subarea_id': educational_subarea_id}"/>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
 

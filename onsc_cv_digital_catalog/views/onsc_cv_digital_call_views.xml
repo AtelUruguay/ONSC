@@ -7,8 +7,9 @@
         <field name="arch" type="xml">
             <div name="div_call_is" position="after">
                 <div invisible="context.get('is_call_documentary_validation', False) or context.get('is_mypostulations', False)">
-                    <label for="inciso_id"/><field name="inciso_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                    <label for="operating_unit_id"/><field name="operating_unit_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                    <label for="inciso_id"/> <field name="inciso_id" class="oe_inline" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                    &amp;nbsp;
+                    <label for="operating_unit_id"/><field name="operating_unit_id" class="oe_inline" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                 </div>
             </div>
         </field>
