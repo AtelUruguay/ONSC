@@ -265,7 +265,7 @@
               name="Contactos"
               action="onsc_cv_action_res_partner"
               parent="onsc_cv_root_menu"
-              groups="group_gestor_catalogos_cv"
+              groups="onsc_cv_digital.group_manager_cv"
               sequence="100"/>
 
     <menuitem id="onsc_cv_settings_menu"
