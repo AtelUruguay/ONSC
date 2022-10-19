@@ -9,7 +9,7 @@ ONSC CV Digital
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['base', 'mail', 'web_domain_field', 'phone_validation', 'onsc_base',
+    'depends': ['base', 'web','mail', 'web_domain_field', 'phone_validation', 'onsc_base',
                 'web_relational_field_with_create_edit_option', 'auto_save_form_view', 'disable_form_quick_edit',
                 'model_history', 'ws_int_base', 'jsonifier'],
     'data': [
@@ -89,6 +89,7 @@ ONSC CV Digital
         'views/onsc_cv_digital_call_views.xml',
         'views/onsc_cv_digital_call_documentary_validation_views.xml',
         'views/onsc_cv_menuitems.xml',
+        'report/onsc_cv_digital_report.xml',
     ],
     'demo': [
         'demo/onsc_cv_demo.xml',
@@ -100,8 +101,12 @@ ONSC CV Digital
     'assets': {
         'web.assets_backend': [
             'onsc_cv_digital/static/src/js/form_renderer.js',
-        ]
+        ],
+        'web.report_assets_common': [
+            'onsc_cv_digital/static/src/css/style.css',
+        ],
     },
+
     'installable': True,
     'application': True,
     'auto_install': False,

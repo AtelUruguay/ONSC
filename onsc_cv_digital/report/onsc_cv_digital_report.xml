@@ -1,0 +1,616 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="onsc_cv_digital_document">
+        <t t-call="web.external_layout">
+            <div class="page">
+                <div class="container bg-primary bg-gradient text-white py-5">
+                    <div class="row">
+                        <div class="col-12">
+                            <img src="/onsc_cv_digital/static/img/logo_cv.png"
+                                 alt="image" title="image"
+                                 class="img-fluid mb8 mt8 d-block mx-auto"/>
+                        </div>
+                    </div>
+                </div>
+                <div class="container bg-primary bg-gradient text-white py-5">
+                    <div class="row">
+                        <div class="col-3 text-left text-md-center mb-3">
+                            <img class="rounded-circle img-fluid" src="https://i.pravatar.cc/175?img=32"
+                                 alt="Profile Photo"/>
+                        </div>
+                        <div class="col-9">
+                            <h1>
+                                <span t-esc="o.partner_id.name"/>
+                            </h1>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <i class="fa fa-fw fa-envelope mr-2"/>
+                                        <span t-esc="o.email"/>
+                                    </td>
+                                    <td>País:
+                                        <span t-esc="o.cv_emissor_country_id.name"/>
+                                        <img t-attf-src="{{o.cv_emissor_country_id.image_url}}"
+                                             alt="image" title="image"
+                                             class="img-fluid d-block mx-auto" width="20"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="fa fa-fw fa-mobile mr-2"/>
+                                        <span t-esc="o.mobile_phone"/>
+                                    </td>
+                                    <td>Tipo de documento:
+                                        <span t-esc="o.partner_id.cv_document_type_id.name"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <i class="fa fa-fw fa-phone mr-2"/>
+                                        <span t-esc="o.personal_phone"/>
+                                    </td>
+                                    <td>Número de documento:
+                                        <span t-esc="o.cv_nro_doc"/>
+                                    </td>
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                    </td>
+                                    <td>Credencial cívica:
+                                        <span t-esc="o.credential_number"/>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-2 pb-2">
+                    <div class="row">
+                        <div class="col-12">
+                            <h3 class="mb-5">INFORMACION GENERAL</h3>
+                            <br></br>
+                            <ul style="list-style:none">
+                                <li>
+                                    <h4>País de nacimiento:
+                                        <span t-esc="o.country_of_birth_id.name"/>
+                                    </h4>
+                                    <h4>Ciudadanía uruguaya:
+                                        <span t-esc="o.uy_citizenship"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Fecha de nacimiento:
+                                        <span t-esc="o.cv_birthdate"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Estado civil:
+                                        <span t-esc="o.marital_status_id.name"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Fecha de vencimiento del documento de identidad:
+                                        <span t-esc="o.cv_expiration_date"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Usuario en LinkedIn:
+                                        <span t-esc="o.user_linkedIn"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Numero de afiliado a la CJPPU:
+                                        <span t-esc="o.cjppu_affiliate_number"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Resumen profesional:
+                                        <span t-esc="o.professional_resume"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Género:
+                                        <span t-esc="o.cv_gender_id.name"/>
+                                    </h4>
+                                    <t t-if="o.cv_gender2">
+                                    <h4>Otro Género:
+                                        <span t-esc="o.cv_gender2"/>
+                                    </h4>
+                                    </t>
+                                </li>
+                                <li>
+                                    <h4>Identidad étnico-racial:
+                                        <t t-foreach="o.cv_race_ids" t-as="race">
+                                            /
+                                            <span t-esc="race.name"/>
+                                        </t>
+                                        <t t-if="o.cv_race2">
+                                            / <span t-esc="o.cv_race2"/>
+                                        </t>
+                                    </h4>
+                                    <h4>Raza con la que se reconoce principalmente::
+                                        <span>
+                                            <t t-esc="o.cv_first_race_id.name"/>
+                                        </span>
+                                    </h4>
+
+                                </li>
+                                <li>
+                                    <h4>Afrodescendientes (Art. 4 Ley N°19.122):
+                                        <span>
+                                            <t t-esc="o.is_afro_descendants and 'SI' or 'NO'"/>
+                                        </span>
+                                    </h4>
+                                </li>
+                            </ul>
+                            <br></br>
+                            <br></br>
+                            <h4 class="mb-5">Licencia de conducir</h4>
+                            <ul>
+                                <t t-foreach="o.drivers_license_ids" t-as="lc">
+                                    <li>
+                                        <h4>Categoría:
+                                            <span t-esc="lc.category_id.name"/>
+                                            - Vencimiento:
+                                            <span t-esc="lc.validation_date"/>
+                                        </h4>
+
+                                    </li>
+                                </t>
+                            </ul>
+                            <br></br>
+                            <br></br>
+                            <table>
+                                <tr>
+                                    <td>
+                                        <h4>Carné de salud laboral:
+                                            <span t-esc="o.is_occupational_health_card and 'SI' or 'NO'"/>
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <t t-if="o.is_occupational_health_card">
+                                        <h4>Fecha de vencimiento:
+                                            <span t-esc="o.occupational_health_card_date"/>
+                                        </h4>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h4>Certificado de aptitud médico-deportiva:
+                                            <span t-esc="o.is_medical_aptitude_certificate_status and 'SI' or 'NO'"/>
+                                        </h4>
+                                    </td>
+                                    <td>
+                                        <t t-if="o.is_medical_aptitude_certificate_status">
+                                        <h4>Fecha de vencimiento:
+                                            <span t-esc="o.medical_aptitude_certificate_date"/>
+                                        </h4>
+                                        </t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <h4>Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889):
+                                            <span  t-esc="o.is_victim_violent and 'SI' or 'NO'"/>
+                                        </h4>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </table>
+                            <h3 class="mb-5">DOMICILIO</h3>
+                            <br></br>
+                            <ul style="list-style:none">
+                                <li>
+                                    <h4>Calle Número BIS Apto.
+                                        <span t-esc="o.country_of_birth_id.name"/>
+                                    </h4>
+                                    <h4>Entre:
+                                        <span t-esc="o.uy_citizenship"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Manzana:
+                                        <span t-esc="o.cv_birthdate"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>CP:
+                                        <span t-esc="o.marital_status_id.name"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Ciudad:
+                                        <span t-esc="o.cv_expiration_date"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>País:
+                                        <span t-esc="o.user_linkedIn"/>
+                                    </h4>
+                                </li>
+                                <li>
+                                    <h4>Aclaraciones:
+                                        <span t-esc="o.cjppu_affiliate_number"/>
+                                    </h4>
+                                </li>
+                            </ul>
+                            <h3 class="mb-5">FORMACIÓN</h3>
+                            <br></br>
+                            <ul style="list-style:none">
+                                <li>
+                                    <h4>POSTDOCTORADO
+                                        <span t-esc="o.country_of_birth_id.name"/>
+                                    </h4>
+                                </li>
+                            </ul>
+                            <br></br>
+                            <br></br>
+                            <t t-call="onsc_cv_digital.cv_digital_section_work">
+                                <t t-set="name_section" t-value="'EXPERIENCIA LABORAL'"/>"
+                                <t t-set="objects"
+                                   t-value="o.work_experience_ids"/>
+                            </t>
+                            <br></br>
+                            <br></br>
+                            <t t-call="onsc_cv_digital.cv_digital_section_certification">
+                                <t t-set="name_section" t-value="'CURSOS'"/>"
+                                <t t-set="objects"
+                                   t-value="o.course_ids.filtered(lambda tx: tx.course_type =='course')"/>
+                            </t>
+                            <br></br>
+                            <br></br>
+                            <t t-call="onsc_cv_digital.cv_digital_section_certification">
+                                <t t-set="name_section" t-value="'TALLERES'"/>
+                                <t t-set="objects"
+                                   t-value="o.course_ids.filtered(lambda tx: tx.course_type =='workshop')"/>
+                            </t>
+                            <br></br>
+                            <br></br>
+                            <t t-call="onsc_cv_digital.cv_digital_section_certification">
+                                <t t-set="name_section" t-value="'OTRA CAPACITACION'"/>
+                                <t t-set="objects"
+                                   t-value="o.course_ids.filtered(lambda tx: tx.course_type =='other')"/>
+                            </t>
+
+                            <br></br>
+                            <br></br>
+                            <!--PARTICIPACIÓN EN EVENTOS-->
+                            <t t-call="onsc_cv_digital.cv_digital_section_event">
+                                <t t-set="name_section" t-value="'PARTICIPACIÓN EN EVENTOS'"/>
+                                <t t-set="objects"
+                                   t-value="o.participation_event_ids"/>
+                            </t>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+    <!--Certificaciones , talleres y otros-->
+
+    <template id="cv_digital_section_certification">
+        <h3 class="mb-5">
+            <t t-esc="name_section"/>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none">
+                <li>
+                    <h4>Titulo
+                        <span t-esc="object.course_title"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>
+                        Institución / Subinstitucion:
+                        <span t-esc="object.institution_id.name"/>
+                        <t t-if="object.institution_id.id!=object.subinstitution_id.id">/
+                        <span t-esc="object.subinstitution_id.name"/>
+                        </t>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Estado:
+                        <span t-esc="object.state"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Modalidad de aprobación:
+                        <span t-esc="object.approbation_mode"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Nota obtenida:
+                        <span t-esc="object.evaluation_str"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Nota máxima posible:
+                        <span t-esc="object.evaluation_max_str"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Programa de inducción al Organismo:
+                        <span t-esc="object.induction_type"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Modalidad de dictado:
+                        <span t-esc="object.induction_type"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Carga horaria total (en horas):
+                        <span t-esc="object.induction_type"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Conocimientos adquiridos:
+                        <span t-esc="object.induction_type"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Conocimientos adquiridos:
+                        <span t-esc="object.induction_type"/>
+                    </h4>
+                </li>
+                <t t-foreach="object.line_ids" t-as="line">
+                    <ul>
+                        <li>
+                            <h4>Area <span t-esc="line.educational_area_id.name"/>/Subárea <span
+                                    t-esc="line.educational_subarea_id.name"/>/Disciplina
+                                <span t-esc="line.discipline_educational_id.name"/>
+                            </h4>
+                        </li>
+                    </ul>
+                </t>
+                <li>
+                    <h4>Otra información relevante:
+                        <span t-esc="object.induction_type"/>
+                    </h4>
+                </li>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+
+    <!--Expreriencia laboral-->
+    <template id="cv_digital_section_work">
+        <h3 class="mb-5">
+            <t t-esc="name_section"/>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none">
+                <li>
+                    <h4>Desde - Hasta: Empresa (País/Ciudad)
+                        <span t-esc="object.company_type"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Tipo de empresa:
+                        <span t-esc="object.company_type"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Cargo:
+                        <span t-esc="object.position"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Área/Unidad:
+                        <span t-esc="object.unit_name"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Rubro:
+                        <span t-esc="object.entry_institution_id.name"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Nivel jerárquico / Toma de decisiones:
+                        <span t-esc="object.hierarchical_level_id.name"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Actividad remunerada:
+                        <span t-esc="object.is_paid_activity"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Cantidad de personas a cargo:
+                        <span t-esc="object.people_charge_qty"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Carga horaria total (en horas):
+                        <span t-esc="object.hours_worked_monthly"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Cantidad de unidades organizativas a cargo:
+                        <span t-esc="object.organizational_units_charge"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Cantidad de horas trabajadas mensualmente:
+                        <span t-esc="object.hours_worked_monthly"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Descripción de tareas:
+                        <t t-esc="object.description_tasks"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Tareas clave: </h4>
+                </li>
+                <t t-foreach="object.task_ids" t-as="line">
+                    <ul>
+                        <li>
+                            <h4>Tarea clave <span t-esc="line.key_task_id.name"/>/Área donde se aplicó <span
+                                    t-esc="line.area_id.name"/>
+                            </h4>
+                        </li>
+                    </ul>
+                </t>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+
+    <!--Eventos-->
+    <template id="cv_digital_section_event">
+        <h3 class="mb-5">
+            <t t-esc="name_section"/>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none">
+                <li>
+                    <h4>Titulo
+                        <span t-esc="object.name_event"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Descripción del evento:
+                        <span t-esc="object.description_event"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Modalidad:
+                        <span t-esc="object.mode"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>País del evento:
+                        <span t-esc="object.country_id.name"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Carga horaria total del evento (en horas):
+                        <span t-esc="object.hours_total"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Conocimientos claves abordados:
+                        <t t-foreach="object.knowledge_acquired_ids" t-as="knowledge">
+                            /
+                            <span t-esc="knowledge.name"/>
+                        </t>
+                    </h4>
+                </li>
+                <li>
+                <h4>Áreas relacionadas </h4>
+                <t t-foreach="object.activity_area_ids" t-as="line">
+                    <ul>
+                        <li>
+                            <h4>Area <span t-esc="line.educational_area_id.name"/>/Subárea <span
+                                    t-esc="line.educational_subarea_id.name"/>/Disciplina
+                                <span t-esc="line.discipline_educational_id.name"/>
+                                /Especialidad
+                                <span t-esc="line.speciality"/>
+                            </h4>
+                        </li>
+                    </ul>
+                </t>
+                </li>
+                <li>
+                    <h4>Otra información relevante:
+                        <span t-esc="object.other_relevant_information"/>
+                    </h4>
+                </li>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+
+    <!--Docencia-->
+    <template id="cv_digital_section_teaching">
+        <h3 class="mb-5">
+            <t t-esc="name_section"/>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none">
+                <li>
+                    <h4>Cargo
+                        <span t-esc="object.name_event"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Descripción del evento:
+                        <span t-esc="object.description_event"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Modalidad:
+                        <span t-esc="object.mode"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>País del evento:
+                        <span t-esc="object.country_id.name"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Carga horaria total del evento (en horas):
+                        <span t-esc="object.hours_total"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Conocimientos claves abordados:
+                        <t t-foreach="object.knowledge_acquired_ids" t-as="knowledge">
+                            /
+                            <span t-esc="knowledge.name"/>
+                        </t>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Áreas relacionadas </h4>
+                    <t t-foreach="object.activity_area_ids" t-as="line">
+                        <ul>
+                            <li>
+                                <h4>Area <span t-esc="line.educational_area_id.name"/>/Subárea <span
+                                        t-esc="line.educational_subarea_id.name"/>/Disciplina
+                                    <span t-esc="line.discipline_educational_id.name"/>
+                                    /Especialidad
+                                    <span t-esc="line.speciality"/>
+                                </h4>
+                            </li>
+                        </ul>
+                    </t>
+                </li>
+                <li>
+                    <h4>Otra información relevante:
+                        <span t-esc="object.other_relevant_information"/>
+                    </h4>
+                </li>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+
+
+    <template id="report_onsc_cv_digital">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="onsc_cv_digital.onsc_cv_digital_document" t-lang="o.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_onsc_cv_digital" model="ir.actions.report">
+        <field name="name">CV PDF</field>
+        <field name="model">onsc.cv.digital</field>
+        <field name="report_type">qweb-html</field>
+        <field name="report_name">onsc_cv_digital.report_onsc_cv_digital</field>
+        <field name="report_file">onsc_cv_digital.report_onsc_cv_digital</field>
+        <field name="print_report_name">object.cv_full_name</field>
+        <field name="binding_model_id" ref="onsc_cv_digital.model_onsc_cv_digital"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>
