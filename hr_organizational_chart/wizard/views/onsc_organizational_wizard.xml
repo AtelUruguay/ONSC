@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="onsc_organizational_form" model="ir.ui.view">
+        <field name="name">onsc.organizational.wizard</field>
+        <field name="model">onsc.organizational.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="inciso_id" required="1" options="{'no_create': True}"/>
+                    <field name="operating_unit_id"
+                           required="1"
+                           domain="[('inciso_id', '=', inciso_id)]"
+                           options="{'no_create': True}"/>
+                </group>
+                <footer>
+                    <button string="Mostrar Organigrama" name="action_show_org" type="object" class="oe_highlight" data-hotkey="q"/>
+                    <button string="Cancelar" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+</odoo>

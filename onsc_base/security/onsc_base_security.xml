@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+    <record id="group_no_onsc" model="res.groups">
+        <field name="name">No ONSC</field>
+    </record>
+    </data>
+
+    <data>
+    <record id="website.menu_website_configuration" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('onsc_base.group_no_onsc')),(3, ref('base.group_user'))]"/>
+    </record>
+        <record id="mail.menu_root_discuss" model="ir.ui.menu">
+        <field name="groups_id" eval="[(4, ref('onsc_base.group_no_onsc')),(3, ref('base.group_user'))]"/>
+    </record>
+    </data>
+</odoo>
