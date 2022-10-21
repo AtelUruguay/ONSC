@@ -26,4 +26,14 @@ class ONSCCVReportWizard(models.TransientModel):
 
     def button_print(self):
         # TODO: Reporte de CV
-        return True
+        active_ids = self._context.get('active_ids', False)
+        if not active_ids:
+            return True
+        onsc_cv_digital_ids = self.env['onsc.cv.digital'].browse(active_ids)
+        seccion_data = []
+        for seccion in self.seccion_ids:
+            seccion_data.append(seccion)
+
+        res = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').report_action(onsc_cv_digital_ids, )
+        res.update({'close_on_report_download': True})
+        return res
