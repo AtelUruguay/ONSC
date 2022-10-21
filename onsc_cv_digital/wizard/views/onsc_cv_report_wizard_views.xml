@@ -9,6 +9,7 @@
                     <field name="seccion_ids"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                            widget="many2many_tags"/>
+                    <field name="cv_digital"></field>
                 </group>
                 <footer>
                     <button string="Imprimir" name="button_print" type="object" class="oe_highlight" data-hotkey="q"/>
@@ -24,7 +25,6 @@
         <field name="res_model">onsc.cv.report.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
-        <field name="context">{}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
             </p>
