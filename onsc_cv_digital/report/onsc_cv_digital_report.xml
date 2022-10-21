@@ -1,19 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <template id="external_layout_cv_digital">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+
+        <t t-if="not company">
+            <!-- Multicompany -->
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+        <t t-out="0"/>
+        <div t-attf-class="footer o_boxed_footer o_company_#{company.id}_layout">
+            <div class="text-center">
+                <div t-field="company.report_footer"/>
+                <div t-if="report_type == 'pdf'">
+                    Generado el: xx/xx/xxxx hh:mm:ss         Hoja <span class="page"/> / <span class="topage"/>
+                </div>
+            </div>
+        </div>
+
+
+    </template>
+
     <template id="onsc_cv_digital_document">
-        <t t-call="web.external_layout">
+        <t t-call="onsc_cv_digital.external_layout_cv_digital">
             <div class="page">
                 <div class="container bg-primary bg-gradient text-white py-5">
                     <div class="row">
-                        <div class="col-12">
+                        <div class="col-8">
+                        </div>
+                        <div class="col-4">
                             <img src="/onsc_cv_digital/static/img/logo_cv.png"
                                  alt="image" title="image"
                                  class="img-fluid mb8 mt8 d-block mx-auto"/>
                         </div>
                     </div>
                 </div>
-                <div class="container bg-primary bg-gradient text-white py-5">
+                <div class="container bg-primary bg-gradient">
                     <div class="row">
                         <div class="col-3 text-left text-md-center mb-3">
                             <img t-if="o.partner_id.image_1920" t-att-src="image_data_uri(o.partner_id.image_1920)"
@@ -33,7 +63,7 @@
                                         <span t-esc="o.cv_emissor_country_id.name"/>
                                         <img t-attf-src="{{o.cv_emissor_country_id.image_url}}"
                                              alt="image" title="image"
-                                             class="img-fluid d-block mx-auto" width="20"/>
+                                             class="img-fluid" width="20"/>
                                     </td>
                                 </tr>
                                 <tr>
@@ -58,9 +88,11 @@
                                 <tr>
                                     <td>
                                     </td>
-                                    <td>Credencial cívica:
-                                        <span t-esc="o.credential_number"/>
-                                    </td>
+                                    <t t-if="o.uy_citizenship!='extranjero'">
+                                        <td>Credencial cívica:
+                                            <span t-esc="o.credential_number"/>
+                                        </td>
+                                    </t>
                                 </tr>
                             </table>
                         </div>
@@ -231,27 +263,45 @@
                                     </h4>
                                 </li>
                                 <li>
-                                    <h4>País:
-                                        <span t-esc="o.user_linkedIn"/>
-                                    </h4>
-                                </li>
-                                <li>
-                                    <h4>Aclaraciones:
-                                        <span t-esc="o.cjppu_affiliate_number"/>
+                                    <h4>Departamento/Ciudad/País:
+                                        <span t-esc="o.cv_address_state_id.name"/>
+                                        /
+                                        <span t-esc="o.cv_address_location_id.name"/>
+                                        /
+                                        <span t-esc="o.country_id.name"/>
                                     </h4>
                                 </li>
                             </ul>
                             <!--/t-->
                             <!--t t-if="'formation' in env.context.get('seccions', True)" -->
-                            <h3 class="mb-5">FORMACIÓN</h3>
                             <br></br>
-                            <ul style="list-style:none">
-                                <li>
-                                    <h4>POSTDOCTORADO
-                                        <span t-esc="o.country_of_birth_id.name"/>
-                                    </h4>
-                                </li>
-                            </ul>
+                            <t t-call="onsc_cv_digital.cv_digital_section_formation">
+                                <t t-set="name_section" t-value="'FORMACIÓN AVANZADA'"/>"
+                                <t t-set="objects"
+                                   t-value="o.advanced_formation_ids"/>
+                            </t>
+                            <br></br>
+
+                            <br></br>
+                            <t t-call="onsc_cv_digital.cv_digital_section_formation">
+                                <t t-set="name_section" t-value="'CARRERAS TECNICAS Y TECNOLOGICAS'"/>"
+                                <t t-set="objects"
+                                   t-value="o.advanced_formation_ids"/>
+                            </t>
+                            <br></br>
+                            <br></br>
+                            <t t-call="onsc_cv_digital.cv_digital_section_formation_basic">
+                                <t t-set="name_section" t-value="'SECUNDARIA'"/>"
+                                <t t-set="objects"
+                                   t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level =='secondary')"/>
+                            </t>
+                            <br></br>
+                            <br></br>
+                            <t t-call="onsc_cv_digital.cv_digital_section_formation_basic">
+                                <t t-set="name_section" t-value="'PRIMARIA'"/>"
+                                <t t-set="objects"
+                                   t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level !='secondary')"/>
+                            </t>
                             <br></br>
                             <!--/t>
                             <t t-if="'work_experience' in env.context.get('seccions', True)" -->
@@ -311,7 +361,7 @@
                             <!--/t>
                             <t t-if="'work_teaching' in env.context.get('seccions', True)" -->
                             <br></br>
-                            <!--Docencia-->
+                            <!--INVESTIGACIONES-->
                             <t t-call="onsc_cv_digital.cv_digital_section_investigation">
                                 <t t-set="name_section" t-value="'INVESTIGACIONES'"/>
                                 <t t-set="objects"
@@ -332,11 +382,11 @@
                             <!--/t-->
 
                             <!--Tutorias-->
-                            <!--t t-call="onsc_cv_digital.cv_digital_section_investigation">
+                            <t t-call="onsc_cv_digital.cv_digital_section_supervision">
                                 <t t-set="name_section" t-value="'TUTORÍAS, ORIENTACIONES, SUPERVISIONES'"/>
                                 <t t-set="objects"
                                    t-value="o.tutoring_orientation_supervision_ids"/>
-                            </t-->
+                            </t>
 
                         </div>
                     </div>
@@ -344,6 +394,171 @@
             </div>
         </t>
     </template>
+
+    <!--Formacion Avanzada-->
+
+    <template id="cv_digital_section_formation">
+        <h3 class="mb-5">
+            <t t-esc="name_section"/>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none">
+                <li>
+                    <h4>
+                        <span t-esc="object.advanced_study_level_id.name"/>
+                    </h4>
+
+                </li>
+                <li>
+                    <h4>
+                        <span t-esc="object.institution_id.name_country"/>
+                        <t t-if="object.institution_id.id!=object.subinstitution_id.id">/
+                            <span t-esc="object.subinstitution_id.name"/>
+                        </t>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Estado:
+                        <span t-esc="object.state"/>
+                    </h4>
+                </li>
+
+                <li>
+                    <h4>Revalidado/ Homologado:
+                        <span t-esc="object.homologated_title"/>
+                        Fecha de revalidación:
+                        <span t-esc="object.homologated_title_date"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Apostillado:
+                        <span t-esc="object.apostilled_title"/>
+                        Fecha de apostillado:
+                        <span t-esc="object.apostilled_date"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Escolaridad:
+                        <span t-esc="object.scholarship"/>
+                    </h4>
+                    <h4>Escolaridad máxima posible:
+                        <span t-esc="object.max_scholarship"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Créditos aprobados:
+                        <span t-esc="object.scholarship"/>
+                        Créditos totales:
+                        <span t-esc="object.max_scholarship"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Conocimientos adquiridos:
+                        <t t-foreach="object.knowledge_acquired_ids" t-as="knowledge">
+                            /
+                            <span t-esc="knowledge.name"/>
+                        </t>
+                    </h4>
+                </li>
+                <t t-foreach="object.area_related_education_ids" t-as="line">
+                    <ul>
+                        <li>
+                            <h4>Area<span t-esc="line.educational_area_id.name"/>/Subárea<span
+                                    t-esc="line.educational_subarea_id.name"/>/Disciplina
+                                <span t-esc="line.discipline_educational_id.name"/>
+                            </h4>
+                        </li>
+                    </ul>
+                </t>
+                <li>
+                    <h4>Información relacionada a la tesis:
+                    </h4>
+                </li>
+                <ul>
+                    <li>
+                        <h4>Estado:
+                            <span t-esc="object.state_thesis"/>
+                        </h4>
+                    </li>
+                    <li>
+                        <h4>Titulo:
+                            <span t-esc="object.title_thesis"/>
+                        </h4>
+                    </li>
+                    <li>
+                        <h4>Tutor:
+                            <span t-esc="object.title_thesis"/>
+                        </h4>
+                    </li>
+                    <li>
+                        <h4>Nota:
+                            <span t-esc="object.final_note_thesis"/>
+                        </h4>
+                    </li>
+
+                    <li>
+                        <h4>Nota máxima posible:
+                            <span t-esc="object.max_note_thesis"/>
+                        </h4>
+                    </li>
+                </ul>
+                <li>
+                    <h4>Otra información:
+                        <span t-esc="object.other_relevant_information"/>
+                    </h4>
+                </li>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+
+    <!--Formacion Basica-->
+
+    <template id="cv_digital_section_formation_basic">
+        <h3 class="mb-5">
+            <t t-esc="name_section"/>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none">
+                <li>
+                    <h4>
+                        <span t-esc="object.start_date"/>
+                        -
+                        <t t-if="object.state!='completed'">
+                            <span>Actualidad</span>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="object.end_date"/>
+                        </t>
+
+                        <span t-esc="object.institution_id.name_country"/>
+                        <t t-if="object.institution_id.id!=object.subinstitution_id.id">/
+                            <span t-esc="object.subinstitution_id.name"/>
+                        </t>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Estado:
+                        <span t-esc="object.state"/>
+                    </h4>
+                </li>
+
+                <li>
+                    <h4>Años cursados:
+                        <span t-esc="object.coursed_years"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Otra información:
+                        <span t-esc="object.other_relevant_information"/>
+                    </h4>
+                </li>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+
+
 
     <!--Certificaciones , talleres y otros-->
 
@@ -355,12 +570,22 @@
             <ul style="list-style:none">
                 <li>
                     <h4>
+                        <span t-esc="object.start_date"/>
+                        -
+                        <t t-if="object.state!='completed'">
+                            <span>Actualidad</span>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="object.end_date"/>
+                        </t>
+                        :
                         <span t-esc="object.course_title"/>
                     </h4>
+
                 </li>
                 <li>
                     <h4>
-                        <span t-esc="object.institution_id.name"/>
+                        <span t-esc="object.institution_id.name_country"/>
                         <t t-if="object.institution_id.id!=object.subinstitution_id.id">/
                             <span t-esc="object.subinstitution_id.name"/>
                         </t>
@@ -371,6 +596,7 @@
                         <span t-esc="object.state"/>
                     </h4>
                 </li>
+
                 <li>
                     <h4>Modalidad de aprobación:
                         <span t-esc="object.approbation_mode"/>
@@ -442,13 +668,29 @@
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
                 <li>
-                    <h4>Desde - Hasta: Empresa (País/Ciudad)
-                        <span t-esc="object.position"/>
+                    <h4>
+                        <span t-esc="object.start_date"/>
+                        -
+                        <t t-if="object.currently_working">
+                            <span>Actualidad</span>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="object.end_date"/>
+                        </t>
+                        :
+                        <t t-if="object.company_name">
+                            <span t-esc="object.company_name"/>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="object.unit_name"/>
+                        </t>
+                        (<span t-esc="object.country_id.name"/>/<span t-esc="object.city_id.name"/>)
+
                     </h4>
                 </li>
                 <li>
                     <h4>Tipo de empresa:
-                        <span t-esc="object.position"/>
+                        <span t-esc="object.company_type"/>
                     </h4>
                 </li>
                 <li>
@@ -473,7 +715,7 @@
                 </li>
                 <li>
                     <h4>Actividad remunerada:
-                        <span t-esc="object.is_paid_activity"/>
+                        <span t-esc="object.is_paid_activity and 'SI' or 'NO'"/>
                     </h4>
                 </li>
                 <li>
@@ -528,8 +770,22 @@
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
                 <li>
-                    <h4>Titulo
-                        <span t-esc="object.name_event"/>
+                    <h4>
+                        <span t-esc="object.start_date"/>
+                        -
+                        <span t-esc="object.end_date"/>
+                        :<span t-esc="object.name_event"/>/
+                        <span t-esc="object.type_event_id.name"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Descripción de la temática abordada en el rol:
+                        <span t-esc="object.description_topic"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Carga horaria en el rol (en horas):
+                        <span t-esc="object.hourly_load"/>
                     </h4>
                 </li>
                 <li>
@@ -537,6 +793,12 @@
                         <span t-esc="object.description_event"/>
                     </h4>
                 </li>
+                <li>
+                    <h4>Nombre de la institucion organizadora:
+                        <span t-esc="object.name_institution"/>
+                    </h4>
+                </li>
+
                 <li>
                     <h4>Modalidad:
                         <span t-esc="object.mode"/>
@@ -593,6 +855,24 @@
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
                 <li>
+                    <h4>
+                        <span t-esc="object.start_date"/>
+                        -
+                        <t t-if="object.currently_working">
+                            <span>Actualidad</span>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="object.end_date"/>
+                        </t>
+                        :
+                        <span t-esc="object.institution_id.name_country"/>
+                        <t t-if="object.institution_id.id!=object.subinstitution_id.id">/
+                            <span t-esc="object.subinstitution_id.name"/>
+                        </t>
+                    </h4>
+
+                </li>
+                <li>
                     <h4>Cargo
                         <span t-esc="object.position"/>
                     </h4>
@@ -609,7 +889,7 @@
                 </li>
                 <li>
                     <h4>Actividad remunerada:
-                        <span t-esc="object.is_paid_activity"/>
+                        <span t-esc="object.is_paid_activity and 'SI' or 'NO'"/>
                     </h4>
                 </li>
                 <li>
@@ -623,7 +903,7 @@
                     </h4>
                 </li>
                 <li>
-                    <h4>Nombre de la cátedra o programa académico responsable:
+                    <h4>Nombre de la cátedra o programa académico:
                         <span t-esc="object.program_name"/>
                     </h4>
                 </li>
@@ -638,9 +918,13 @@
                     <t t-foreach="object.subject_ids" t-as="line">
                         <ul>
                             <li>
-                                <h4>
-                                    <span t-esc="line.subject"/>
-                                </h4>
+                                <span t-esc="line.subject"/>
+                                <span t-esc="line.course_type"/>
+                                <t t-foreach="line.program_ids" t-as="program">
+                                    /
+                                    <span t-esc="program.name"/>
+                                </t>
+                                <span t-esc="line.level_teaching_type"/>
                             </li>
                         </ul>
                     </t>
@@ -676,9 +960,19 @@
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
                 <li>
-                    <h4>Desde - Hasta: Empresa (País/Ciudad)
-                        <span t-esc="object.company_type"/>
+                    <h4>
+                        <span t-esc="object.start_date"/>
+                        -
+                        <t t-if="object.currently_working">
+                            <span>Actualidad</span>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="object.end_date"/>
+                        </t>
+                        :
+                        <span t-esc="object.name"/>
                     </h4>
+
                 </li>
                 <li>
                     <h4>Tipo de investigación:
@@ -692,7 +986,7 @@
                 </li>
                 <li>
                     <h4>
-                        <span t-esc="object.institution_id.name"/>
+                        <span t-esc="object.institution_id.name_country"/>
                         <t t-if="object.institution_id.id!=object.subinstitution_id.id">/
                             <span t-esc="object.subinstitution_id.name"/>
                         </t>
@@ -708,11 +1002,7 @@
                         <span t-esc="object.participation_type"/>
                     </h4>
                 </li>
-                <li>
-                    <h4>Categoría:
-                        <span t-esc="object.category_type"/>
-                    </h4>
-                </li>
+
                 <li>
                     <h4>Situación:
                         <span t-esc="object.situation_type"/>
@@ -733,7 +1023,7 @@
                 </li>
                 <li>
                     <h4>Actividad remunerada:
-                        <span t-esc="object.is_paid_activity"/>
+                        <span t-esc="object.is_paid_activity and 'SI' or 'NO'"/>
                     </h4>
                 </li>
                 <li>
@@ -783,12 +1073,15 @@
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
                 <li>
-                    <h4>Fecha de publicación - Título
-                        <span t-esc="object.type"/>
+                    <h4>
+                        <span t-esc="object.date"/>
+                        -
+                        <span t-esc="object.tittle"/>
+
                     </h4>
                 </li>
                 <li>
-                    <h4>Sub tipo de producción:
+                    <h4>Sub tipo:
                         <span t-esc="object.subtype_production_id.name"/>
                     </h4>
                 </li>
@@ -804,7 +1097,12 @@
                 </li>
                 <li>
                     <h4>Actividad remunerada:
-                        <span t-esc="object.paid_activity"/>
+                        <span t-esc="object.paid_activity and 'SI' or 'NO'"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Actividad Arbitrada:
+                        <span t-esc="object.paid_activity  and 'SI' or 'NO'"/>
                     </h4>
                 </li>
                 <li>
@@ -827,38 +1125,18 @@
                         </ul>
                     </t>
                 </li>
-                <!--li>
-                    <h4>Tipo de empresa:
-                        <span t-esc="object.paid_activity"/>
-                    </h4>
-                </li>
+
                 <li>
-                    <h4>Área/Unidad:
-                        <span t-esc="object.paid_activity"/>
-                    </h4>
-                </li>
-                <li>
-                    <h4>Voluntario actualmente:
-                        <span t-esc="object.currently_volunteering"/>
-                    </h4>
-                </li>
-                <li>
-                    <h4>Cantidad de horas mensuales:
-                        <span t-esc="object.hours_worked_monthly"/>
-                    </h4>
-                </li-->
-                <li>
-                    <h4>Descripción de tareas :
-                        <p t-esc="object.description"/>
-                    </h4>
-                </li>
-                <li>
-                    <h4>Tareas clave:</h4>
+                    <h4>Areas de Actividad:</h4>
                     <t t-foreach="object.activity_area_ids" t-as="line">
                         <ul>
                             <li>
-                                <h4>Tarea clave<span t-esc="line.educational_area_id.name"/>/Área donde se aplicó
+                                <h4>Área<span t-esc="line.educational_area_id.name"/>/Subárea
                                     <span t-esc="line.educational_subarea_id.name"/>
+                                    /Disciplina
+                                    <span t-esc="line.discipline_educational_id.name"/>
+                                    /Especialidad
+                                    <span t-esc="line.speciality"/>
                                 </h4>
                             </li>
                         </ul>
@@ -870,21 +1148,30 @@
     </template>
 
     <!--Tutorias-->
-    <template id="cv_digital_section_investigation">
+    <template id="cv_digital_section_supervision">
         <h3 class="mb-5">
             <t t-esc="name_section"/>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
                 <li>
-                    <h4>Desde - Hasta: Titulo del trabajo
-                        <span t-esc="object.company_type"/>
+                    <h4>
+                        <span t-esc="object.start_date"/>
+                        -
+                        <t t-if="object.is_tutoring_finished">
+                            <span>Actualidad</span>
+                        </t>
+                        <t t-else="">
+                            <span t-esc="object.end_date"/>
+                        </t>
+                        :
+                        <span t-esc="object.work_title"/>
                     </h4>
                 </li>
                 <li>
                     <h4>
                         Institución / Subinstitucion:
-                        <span t-esc="object.institution_id.name"/>
+                        <span t-esc="object.institution_id.name_country"/>
                         <t t-if="object.institution_id.id!=object.subinstitution_id.id">/
                             <span t-esc="object.subinstitution_id.name"/>
                         </t>
@@ -900,46 +1187,60 @@
                         <span t-esc="object.description"/>
                     </h4>
                 </li>
-
                 <li>
-                    <h4>Tipo de investigación:
-                        <span t-esc="object.position"/>
+                    <h4>Tipo/clase:
+                        <span t-esc="object.tutor_type_id.name"/>
                     </h4>
                 </li>
                 <li>
-                    <h4>Tipo/clase:
-                        <span t-esc="object.participation_type"/>
+                    <h4>Otro Tipo/clase:
+                        <span t-esc="object.other_tutor_type"/>
                     </h4>
                 </li>
                 <li>
                     <h4>Tipo de orientación:
-                        <span t-esc="object.category_type"/>
+                        <span t-esc="object.orientation_type_id.name"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Tipo posgrado:
+                        <span t-esc="object.postgraduate_type"/>
                     </h4>
                 </li>
                 <li>
                     <h4>Nombre del co-tutor:
-                        <span t-esc="object.situation_type"/>
+                        <span t-esc="object.co_tutor_name"/>
                     </h4>
                 </li>
                 <li>
                     <h4>Nombre del orientado/estudiante:
-                        <span t-esc="object.research_type_id.name"/>
+                        <span t-esc="object.student_name"/>
                     </h4>
 
                 </li>
                 <li>
-                    <h4>Idioma
-                        <span t-esc="object.other_research_type"/>
+                    <h4>Idioma:
+                        <span t-esc="object.language_id.name"/>
                     </h4>
                 </li>
                 <li>
                     <h4>Dependencia:
-                        <span t-esc="object.hours_worked_monthly"/>
+                        <span t-esc="object.dependence"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Medio de divulgación:
+                        <span t-esc="object.divulgation_media_id.name"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Sitio web:
+                        <span t-esc="object.website"/>
                     </h4>
                 </li>
                 <li>
                     <h4>Actividad remunerada:
-                        <span t-esc="object.is_paid_activity"/>
+                        <span t-esc="object.is_paid_activity and 'SI' or 'NO'"/>
                     </h4>
                 </li>
                 <li>
@@ -950,25 +1251,17 @@
                         </t>
                     </h4>
                 </li>
-                <li>
-                    <h4>Integrantes:</h4>
-                    <t t-foreach="object.member_ids" t-as="line">
-                        <ul>
-                            <li>
-                                <h4>
-                                    <span t-esc="line.member"/>
-                                </h4>
-                            </li>
-                        </ul>
-                    </t>
-                </li>
+
                 <li>
                     <h4>Áreas relacionadas</h4>
-                    <t t-foreach="object.education_area_ids" t-as="line">
+                    <t t-foreach="object.area_ids" t-as="line">
                         <ul>
                             <li>
-                                <h4>Area<span t-esc="line.educational_area_id.name"/>/Subárea<span
-                                        t-esc="line.educational_subarea_id.name"/>/Disciplina
+                                <h4>Area
+                                    <span t-esc="line.educational_area_id.name"/>
+                                    /Subárea
+                                    <span t-esc="line.educational_subarea_id.name"/>
+                                    /Disciplina
                                     <span t-esc="line.discipline_educational_id.name"/>
                                 </h4>
                             </li>
@@ -999,5 +1292,6 @@
         <field name="binding_model_id" ref="onsc_cv_digital.model_onsc_cv_digital"/>
         <field name="binding_type">report</field>
     </record>
+
 
 </odoo>
