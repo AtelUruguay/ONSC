@@ -21,16 +21,16 @@
             <div class="text-center">
                 <div t-field="company.report_footer"/>
                 <div t-if="report_type == 'pdf'">
-                    Generado el: xx/xx/xxxx hh:mm:ss         Hoja <span class="page"/> / <span class="topage"/>
+                    Generado el: xx/xx/xxxx hh:mm:ss Hoja
+                    <span class="page"/>
+                    /
+                    <span class="topage"/>
                 </div>
             </div>
         </div>
-
-
     </template>
-
     <template id="onsc_cv_digital_document">
-        <t t-call="onsc_cv_digital.external_layout_cv_digital">
+        <t t-call="web.external_layout">
             <div class="page">
                 <div class="container bg-primary bg-gradient text-white py-5">
                     <div class="row">
@@ -557,7 +557,6 @@
             <br></br>
         </t>
     </template>
-
 
 
     <!--Certificaciones , talleres y otros-->
@@ -1285,7 +1284,7 @@
     <record id="action_report_onsc_cv_digital" model="ir.actions.report">
         <field name="name">CV PDF</field>
         <field name="model">onsc.cv.digital</field>
-        <field name="report_type">qweb-html</field>
+        <field name="report_type">qweb-pdf</field>
         <field name="report_name">onsc_cv_digital.report_onsc_cv_digital</field>
         <field name="report_file">onsc_cv_digital.report_onsc_cv_digital</field>
         <field name="print_report_name">object.cv_full_name</field>
