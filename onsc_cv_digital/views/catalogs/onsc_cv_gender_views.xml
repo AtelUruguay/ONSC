@@ -17,9 +17,12 @@
         <field name="arch" type="xml">
             <tree string="Géneros" editable="top">
                 <field name="name"/>
-                <field name="code"/>
-                <field name="is_option_other_enable"/>
-                <field name="record"/>
+                <field name="code"
+                    groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                <field name="is_option_other_enable"
+                    groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                <field name="record"
+                    groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>

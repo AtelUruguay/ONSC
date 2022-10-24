@@ -444,14 +444,18 @@ class ONSCCVDigital(models.Model):
         for record in self:
             record.is_cv_uruguay_ci = record.cv_emissor_country_id.code == 'UY' and record.cv_document_type_id.code == 'ci'
 
-    @api.constrains('cv_sex_updated_date', 'cv_birthdate')
+    @api.constrains('cv_birthdate')
     def _check_valid_dates(self):
         today = fields.Date.from_string(fields.Date.today())
         for record in self:
-            if record.cv_sex_updated_date and fields.Date.from_string(record.cv_sex_updated_date) > today:
-                raise ValidationError(_("La Fecha de información sexo no puede ser posterior a la fecha actual"))
             if record.cv_birthdate and fields.Date.from_string(record.cv_birthdate) > today:
                 raise ValidationError(_("La Fecha de nacimiento no puede ser posterior a la fecha actual"))
+
+    @api.constrains('crendencial_serie')
+    def _check_crendencial_serie(self):
+        for record in self:
+            if len(record.crendencial_serie) != 3:
+                raise ValidationError(_("La Serie de la credencial debe ser de 3 letras"))
 
     @api.constrains('personal_phone', 'mobile_phone')
     def _check_valid_phone(self):

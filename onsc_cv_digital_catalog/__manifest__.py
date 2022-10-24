@@ -10,7 +10,7 @@ ONSC CV Digital - Catálogo
 =====================================================
 
 """,
-    'depends': ['onsc_cv_digital', 'onsc_catalog'],
+    'depends': ['onsc_cv_digital', 'onsc_catalog', 'hr'],
     'data': [
         'security/onsc_cv_digital_catalog_security.xml',
         'security/ir.model.access.csv',

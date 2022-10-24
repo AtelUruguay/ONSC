@@ -20,6 +20,11 @@
                                     <div class="text-muted content-group mt16">
                                         <field name="call_server_json_url" required="1" class="col-12 col-lg-12"/>
                                     </div>
+                                    <label for="cv_zip_url" string="ZIP Url"/>
+                                    <span class="fa fa-lg fa-server"/>
+                                    <div class="text-muted content-group mt16">
+                                        <field name="cv_zip_url" required="1" class="col-12 col-lg-12"/>
+                                    </div>
                                 </div>
                             </div>
                         </div>

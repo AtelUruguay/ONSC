@@ -30,3 +30,4 @@ class ResCompany(models.Model):
     rve_wsdl = fields.Char('URL del WSDL')
 
     call_server_json_url = fields.Char(string="JSON Url")
+    cv_zip_url = fields.Char(string="ZIP Directorio")

@@ -176,10 +176,6 @@
                         <group>
                             <field name="cv_birthdate"
                                    attrs="{'readonly': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
-                            <field name="cv_sex"
-                                   attrs="{'readonly': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
-                            <field name="cv_sex_updated_date"
-                                   attrs="{'invisible': [('is_cv_uruguay', '=', True)], 'required': [('is_cv_uruguay', '=', False)]}"/>
                             <field name="last_modification_date"/>
                         </group>
                         <group string="Información patronímica" name="other_info_group">

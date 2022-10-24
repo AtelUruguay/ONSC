@@ -2,6 +2,9 @@
 
 import json
 import logging
+import base64
+import io
+import zipfile
 from os.path import join
 
 from odoo import fields, models, api, _
@@ -299,7 +302,7 @@ class ONSCCVDigitalCall(models.Model):
                 cv_digital_origin_id.write(vals)
 
     def test_json(self):
-        self._generate_json(self.call_number)
+        self.send_notification_document_validators(self.call_number)
 
     def _generate_json(self, call_number):
         call_server_json_url = self.env.user.company_id.call_server_json_url
@@ -319,6 +322,32 @@ class ONSCCVDigitalCall(models.Model):
     def send_notification_conditional(self, call_number):
         template = self.env.ref('onsc_cv_digital.email_template_conditional_values_cv')
         template.with_context(call=call_number).send_mail(len(self) and self[0].id)
+
+    # GENERANDO ZIP
+    def generate_zip(self):
+        cv_zip_url = self.env.user.company_id.cv_zip_url
+        if len(self) == 0 or not cv_zip_url:
+            return
+        if len(self.mapped('call_number')) != 1:
+            raise ValidationError(_("Debe seleccionar un único llamado"))
+        report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital')._render_qweb_pdf(self[0].cv_digital_origin_id.id)[0]
+        filename = '%s_%s.pdf' % (self[0].call_number, str(fields.Datetime.now()))
+
+        report_file = open(join(cv_zip_url, filename), 'wb+')
+        report_file.write(report)
+
+        zip_filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now()))
+        zip_archive = zipfile.ZipFile(zip_filename, "w")
+        zip_archive.writestr(base64.encodebytes(report),compress_type=zipfile.ZIP_DEFLATED)
+        zip_archive.close()
+
+        # report_filename = open(join(cv_zip_url, zip_filename), 'wb+')
+        # stream = io.BytesIO()
+        # with zipfile.ZipFile(stream, 'w') as doc_zip:
+        #     doc_zip.writestr(report_filename, base64.encodebytes(report),compress_type=zipfile.ZIP_DEFLATED)
+        return True
+
+
 
     @api.model
     def create(self, values):
@@ -662,8 +691,12 @@ class ONSCCVDigitalCall(models.Model):
         self.send_notification_document_validators(call_number)
         return True
 
+    def _get_mailto_send_notification_document_validators(self):
+        return {'email_to': self.env.user_id.partner_id.email}
+
     def send_notification_document_validators(self, call_number):
         ctx = self.env.context.copy()
         ctx.update({'call': call_number})
+        email_values = self._get_mailto_send_notification_document_validators()
         template = self.env.ref('onsc_cv_digital.email_template_document_validators_cv')
-        template.with_context(ctx).send_mail(self.id)
+        template.with_context(ctx).send_mail(self.id, email_values=email_values)

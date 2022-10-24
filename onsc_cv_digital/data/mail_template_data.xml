@@ -107,7 +107,7 @@
                     <body>
                         <div style="margin: 0px; padding: 0px;">
                             <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                                Estimado Gestor de catálogos:
+                                Estimado Usuario:
                                 <br/>
                                 Tiene disponibles los CVs del llamado  <t t-out="ctx.get('call') or ''"></t> para comenzar la validación de documentación probatoria.
                                 Puede ingresar a validarlos a la plataforma GHE.uy a través del siguiente link
