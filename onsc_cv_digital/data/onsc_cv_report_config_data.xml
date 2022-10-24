@@ -31,11 +31,6 @@
             <field name="internal_field">work_teaching</field>
         </record>
 
-        <record id="onsc_cv_report_config_" model="onsc.cv.report.config.seccion">
-            <field name="seccion">Información</field>
-            <field name="internal_field">gral_info</field>
-        </record>
-
         <record id="onsc_cv_report_config_investigation" model="onsc.cv.report.config.seccion">
             <field name="seccion">Investigación</field>
             <field name="internal_field">investigation</field>

@@ -21,18 +21,27 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     user_id = fields.Many2one('res.users',
                               string='Usuario',
                               required=True, )
+    role_id = fields.Many2one("res.users.role",
+                              string="Seguridad",
+                              default=lambda self: self._get_default_role_id(),
+                              required=True)
     group_id = fields.Many2one('res.groups',
                                string='Seguridad',
-                               default=lambda self: self.get_default_group_id())
+                               default=lambda self: self._get_default_group_id())
 
     @api.onchange('inciso_id')
     def onchange_inciso_id(self):
         self.operating_unit_id = False
 
     @api.model
-    def get_default_group_id(self):
+    def _get_default_group_id(self):
         security_param = self.env['ir.config_parameter'].sudo().get_param("group_documentary_validator", "")
-        return self.env['res.groups'].search([('name', '=', security_param)]).id
+        return self.env['res.groups'].search([('name', '=', security_param)], limit=1).id
+
+    @api.model
+    def _get_default_role_id(self):
+        security_param = self.env['ir.config_parameter'].sudo().get_param("group_documentary_validator", "")
+        return self.env['res.users.role'].search([('name', '=', security_param)]).id
 
     @api.constrains('inciso_id', 'operating_unit_id', 'user_id')
     def _check_valid(self):
@@ -45,9 +54,9 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     @api.model
     def create(self, values):
         new_recordset = super(ONSCCatalogValidatorsIncisoUE, self).create(values)
-        if new_recordset.user_id.id not in new_recordset.group_id.users.ids:
+        if new_recordset.user_id.id not in new_recordset.role_id.line_ids.mapped('user_id').ids:
             new_recordset.user_id.suspend_security().write({
-                'groups_id': [(4, new_recordset.group_id.id)]
+                'role_line_ids': [(0, 0, {'role_id': new_recordset.role_id.id})]
             })
         return new_recordset
 
@@ -56,8 +65,10 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
         if user_id:
             self.update_user_security()
         recordsets = super(ONSCCatalogValidatorsIncisoUE, self).write(values)
-        if user_id:
-            self.mapped('user_id').suspend_security().write({'groups_id': [(4, user_id)]})
+        if user_id and len(self):
+            self.mapped('user_id').suspend_security().write({
+                'role_line_ids': [(0, 0, {'role_id': self[0].role_id.id})]
+            })
         return recordsets
 
     def unlink(self):
@@ -65,6 +76,9 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
         return super(ONSCCatalogValidatorsIncisoUE, self).unlink()
 
     def update_user_security(self):
+        UsersRoleLine = self.env['res.users.role.line']
+        user_ids = []
         for record in self:
             if self.search_count([("user_id", "=", record.user_id.id), ('id', '!=', record.id)]) == 0:
-                record.user_id.suspend_security().write({'groups_id': [(3, record.group_id.id)]})
+                user_ids.append(record.user_id.id)
+        UsersRoleLine.search([('role_id', '=', self[0].role_id.id), ('user_id', 'in', user_ids)]).unlink()
