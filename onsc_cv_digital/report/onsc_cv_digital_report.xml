@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <template id="external_layout_cv_digital">
+    <template id="external_layout_cv">
         <t t-if="not o" t-set="o" t-value="doc"/>
 
         <t t-if="not company">
@@ -16,23 +16,45 @@
                 <t t-set="company" t-value="res_company"/>
             </t>
         </t>
-        <t t-out="0"/>
-        <div t-attf-class="footer o_boxed_footer o_company_#{company.id}_layout">
-            <div class="text-center">
-                <div t-field="company.report_footer"/>
-                <div t-if="report_type == 'pdf'">
-                    Generado el: xx/xx/xxxx hh:mm:ss Hoja
-                    <span class="page"/>
-                    /
-                    <span class="topage"/>
-                </div>
-            </div>
+
+
+        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout {{  'o_layout_background' if company.layout_background in ['Geometric', 'Custom']  else  '' }}"
+             t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % company.layout_background_image.decode('utf-8') if company.layout_background_image and company.layout_background == 'Custom' else '/base/static/img/bg_background_template.jpg' if company.layout_background == 'Geometric' else ''}});"
+             t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+             t-att-data-oe-lang="o and o.env.context.get('lang')">
+
+            <t t-out="0"/>
         </div>
+
+        <div t-attf-class="footer o_standard_footer o_company_#{company.id}_layout">
+
+            <table style="border-spacing: 0; width:100% ;max-width: 600px;">
+                <tr>
+                    <td>
+                        <div t-if="report_type == 'pdf'">
+                            Generado el:
+                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M:%S')"/>
+                        </div>
+                    </td>
+                    <td></td>
+                    <td>
+                        <div t-if="report_type == 'pdf'">
+                            Hoja:
+                            <span class="page"/>
+                            de
+                            <span class="topage"/>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+
     </template>
+
     <template id="onsc_cv_digital_document">
-        <t t-call="web.external_layout">
+        <t t-call="onsc_cv_digital.external_layout_cv">
             <div class="page">
-                <span t-esc="context"/>
                 <div class="container bg-primary bg-gradient text-white py-5">
                     <div class="row">
                         <div class="col-8">
@@ -104,341 +126,365 @@
                         <div class="col-12">
                             <br></br>
                             <br></br>
-                            <!--t t-if="'gral_info' in env.context.get('seccions', True)" -->
-                            <h3 class="mb-5">INFORMACION GENERAL</h3>
-                            <br></br>
-                            <ul style="list-style:none">
-                                <li>
-                                    <table style="border-spacing: 0; width: 100%; max-width: 600px;">
-                                        <tr>
-                                            <td>
-                                                <h4>País de nacimiento:
-                                                    <span t-esc="o.country_of_birth_id.name"/>
-                                                </h4>
-                                            </td>
-                                            <td>
-                                                <h4>Ciudadanía uruguaya:
-                                                    <span t-esc="o.uy_citizenship"/>
-                                                </h4>
-                                            </td>
-                                        </tr>
-                                    </table>
-                                </li>
-                                <li>
-                                    <h4>Fecha de nacimiento:
-                                        <span  t-field="o.cv_birthdate" t-options='{"format": "dd/MM/yyyy"}'/>
-                                    </h4>
-                                </li>
-                                <li>
-                                    <h4>Estado civil:
-                                        <span t-esc="o.marital_status_id.name"/>
-                                    </h4>
-                                </li>
-                                <li>
-                                    <h4>Fecha de vencimiento del documento de identidad:
-                                        <span t-field="o.cv_expiration_date" t-options='{"format": "dd/MM/yyyy"}'/>
-                                    </h4>
-                                </li>
-                                <li>
-                                    <h4>Usuario en LinkedIn:
-                                        <span t-esc="o.user_linkedIn"/>
-                                    </h4>
-                                </li>
-                                <li>
-                                    <h4>Numero de afiliado a la CJPPU:
-                                        <span t-esc="o.cjppu_affiliate_number"/>
-                                    </h4>
-                                </li>
-                                <li>
-                                    <h4>Resumen profesional:
-                                        <span t-esc="o.professional_resume"/>
-                                    </h4>
-                                </li>
-                                <li>
-                                    <h4>Género:
-                                        <span t-esc="o.cv_gender_id.name"/>
-                                    </h4>
-                                    <t t-if="o.cv_gender2">
-                                        <h4>Otro Género:
-                                            <span t-esc="o.cv_gender2"/>
-                                        </h4>
-                                    </t>
-                                </li>
-                                <li>
-                                    <h4>Identidad étnico-racial:
-                                        <t t-foreach="o.cv_race_ids" t-as="race">
-                                            /
-                                            <span t-esc="race.name"/>
-                                        </t>
-                                        <t t-if="o.cv_race2">
-                                            /
-                                            <span t-esc="o.cv_race2"/>
-                                        </t>
-                                    </h4>
-                                    <h4>Raza con la que se reconoce principalmente:
-                                        <span>
-                                            <t t-esc="o.cv_first_race_id.name"/>
-                                        </span>
-                                    </h4>
-
-                                </li>
-                                <li>
-                                    <h4>Afrodescendientes (Art. 4 Ley N°19.122):
-                                        <span>
-                                            <t t-esc="o.is_afro_descendants and 'SI' or 'NO'"/>
-                                        </span>
-                                    </h4>
-                                </li>
-                            </ul>
-                            <br></br>
-                            <h4 class="mb-5">Licencia de conducir</h4>
-                            <ul>
-                                <t t-foreach="o.drivers_license_ids" t-as="lc">
+                            <t t-if="'gral_info' in env.context.get('seccions', True)">
+                                <h3 class="mb-5">INFORMACION GENERAL</h3>
+                                <br></br>
+                                <ul style="list-style:none">
                                     <li>
-                                        <h4>Categoría:
-                                            <span t-esc="lc.category_id.name"/>
-                                            - Vencimiento:
-                                            <span t-field="lc.validation_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                                        <table style="border-spacing: 0; width: 100%; max-width: 600px;">
+                                            <tr>
+                                                <td>
+                                                    <h4>País de nacimiento:
+                                                        <span t-esc="o.country_of_birth_id.name"/>
+                                                    </h4>
+                                                </td>
+                                                <td>
+                                                    <h4>Ciudadanía uruguaya:
+                                                        <span t-esc="o.uy_citizenship"/>
+                                                    </h4>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </li>
+                                    <li>
+                                        <h4>Fecha de nacimiento:
+                                            <span t-field="o.cv_birthdate" t-options='{"format": "dd/MM/yyyy"}'/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>Estado civil:
+                                            <span t-esc="o.marital_status_id.name"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>Fecha de vencimiento del documento de identidad:
+                                            <span t-field="o.cv_expiration_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>Usuario en LinkedIn:
+                                            <span t-esc="o.user_linkedIn"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>Numero de afiliado a la CJPPU:
+                                            <span t-esc="o.cjppu_affiliate_number"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>Resumen profesional:
+                                            <span t-esc="o.professional_resume"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>Género:
+                                            <span t-esc="o.cv_gender_id.name"/>
+                                        </h4>
+                                        <t t-if="o.cv_gender2">
+                                            <h4>Otro Género:
+                                                <span t-esc="o.cv_gender2"/>
+                                            </h4>
+                                        </t>
+                                    </li>
+                                    <li>
+                                        <h4>Identidad étnico-racial:
+                                            <t t-foreach="o.cv_race_ids" t-as="race">
+                                                /
+                                                <span t-esc="race.name"/>
+                                            </t>
+                                            <t t-if="o.cv_race2">
+                                                /
+                                                <span t-esc="o.cv_race2"/>
+                                            </t>
+                                        </h4>
+                                        <h4>Raza con la que se reconoce principalmente:
+                                            <span>
+                                                <t t-esc="o.cv_first_race_id.name"/>
+                                            </span>
                                         </h4>
 
                                     </li>
-                                </t>
-                            </ul>
-                            <br></br>
-                            <table>
-                                <tr>
-                                    <td>
-                                        <h4>Carné de salud laboral:
-                                            <span t-esc="o.is_occupational_health_card and 'SI' or 'NO'"/>
+                                    <li>
+                                        <h4>Afrodescendientes (Art. 4 Ley N°19.122):
+                                            <span>
+                                                <t t-esc="o.is_afro_descendants and 'SI' or 'NO'"/>
+                                            </span>
                                         </h4>
-                                    </td>
-                                    <td>
-                                        <t t-if="o.is_occupational_health_card">
-                                            <h4>Fecha de vencimiento:
+                                    </li>
+                                </ul>
+                                <br></br>
+                                <h4 class="mb-5">Licencia de conducir</h4>
+                                <ul>
+                                    <t t-foreach="o.drivers_license_ids" t-as="lc">
+                                        <li>
+                                            <h4>Categoría:
+                                                <span t-esc="lc.category_id.name"/>
+                                                - Vencimiento:
+                                                <span t-field="lc.validation_date"
+                                                      t-options='{"format": "dd/MM/yyyy"}'/>
                                             </h4>
-                                            <h4 t-field="o.occupational_health_card_date" t-options='{"format": "dd/MM/yyyy"}'/>
-                                        </t>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <h4>Certificado de aptitud médico-deportiva:
-                                            <span t-esc="o.is_medical_aptitude_certificate_status and 'SI' or 'NO'"/>
-                                        </h4>
-                                    </td>
-                                    <td>
-                                        <t t-if="o.is_medical_aptitude_certificate_status">
-                                            <h4>Fecha de vencimiento:
-                                            </h4>
-                                            <h4 t-field="o.medical_aptitude_certificate_date" t-options='{"format": "dd/MM/yyyy"}'/>
-                                        </t>
-                                    </td>
-                                </tr>
 
-                                <tr>
-                                    <td>
-                                        <h4>Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889):
-
-                                        </h4>
-                                    </td>
-                                    <td>
-                                        <h4 t-esc="o.is_victim_violent and 'SI' or 'NO'"/>
-                                    </td>
-                                </tr>
-                            </table>
-                            <br></br>
-                            <!--/t-->
-
-                            <!--t t-if="'address' in env.context.get('seccions', True)" -->
-                            <h3 class="mb-5">DOMICILIO</h3>
-                            <ul style="list-style:none">
-                                <li>
-
-                                    <h4>
-                                        <t t-if="o.cv_address_street_id">
-                                            <span t-esc="o.cv_address_street_id.street"/>
-                                        </t>
-                                        <t t-else="">
-                                            <span t-esc="o.cv_address_street"/>
-                                        </t>
-                                        <span t-esc="o.cv_address_nro_door"/>
-                                        <t t-if="o.cv_address_is_cv_bis">
-                                            BIS
-                                        </t>
-                                        <t t-if="o.cv_address_apto">
-                                            Apto
-                                            <span t-esc="o.cv_address_apto"/>
-                                        </t>
-                                    </h4>
-                                    <t t-if="o.cv_address_street2_id">
-                                        <h4>Entre:
-                                            <span t-esc="o.cv_address_street2_id.street"/>
-                                            y
-                                            <span t-esc="o.cv_address_street3_id.street"/>
-                                        </h4>
+                                        </li>
                                     </t>
-                                </li>
-                                <li>
-                                    <table style="border-spacing: 0; width: 100%; max-width: 60px;">
-
+                                </ul>
+                                <br></br>
+                                <table>
+                                    <tr>
                                         <td>
-                                            <t t-if="o.cv_address_block">
-                                                <h4>Manzana:
-                                                    <span t-esc="o.cv_address_block"/>
-                                                </h4>
-                                            </t>
+                                            <h4>Carné de salud laboral:
+                                                <span t-esc="o.is_occupational_health_card and 'SI' or 'NO'"/>
+                                            </h4>
                                         </td>
                                         <td>
-                                            <t t-if="o.cv_address_sandlot">
-                                                <h4>Solar:
-                                                    <span t-esc="o.cv_address_sandlot"/>
+                                            <t t-if="o.is_occupational_health_card">
+                                                <h4>Fecha de vencimiento:
                                                 </h4>
+                                                <h4 t-field="o.occupational_health_card_date"
+                                                    t-options='{"format": "dd/MM/yyyy"}'/>
                                             </t>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <h4>Certificado de aptitud médico-deportiva:
+                                                <span t-esc="o.is_medical_aptitude_certificate_status and 'SI' or 'NO'"/>
+                                            </h4>
                                         </td>
                                         <td>
-                                            <t t-if="o.cv_address_place">
-                                                <h4>Paraje:
-                                                    <span t-esc="o.cv_address_place"/>
+                                            <t t-if="o.is_medical_aptitude_certificate_status">
+                                                <h4>Fecha de vencimiento:
                                                 </h4>
+                                                <h4 t-field="o.medical_aptitude_certificate_date"
+                                                    t-options='{"format": "dd/MM/yyyy"}'/>
                                             </t>
                                         </td>
-                                    </table>
-                                </li>
-                                <li>
-                                    <h4>CP:
-                                        <span t-esc="o.cv_address_zip"/>
-                                    </h4>
-                                </li>
-                                <li>
-                                    <h4>
-                                        <span t-if="o.cv_address_state_id" t-esc="o.cv_address_state_id.name"/>
-                                        /
-                                        <span t-if="o.cv_address_location_id" t-esc="o.cv_address_location_id.name"/>
-                                        -
-                                        <span t-if="o.country_id" t-esc="o.country_id.name"/>
-                                    </h4>
-                                </li>
-                                <li>
-                                    <h4>Aclaraciones:
-                                        <span t-esc="o.cv_address_amplification"/>
-                                    </h4>
-                                </li>
-                            </ul>
-                            <!--/t-->
-                            <!--t t-if="'formation' in env.context.get('seccions', True)" -->
-                            <br></br>
-                            <t t-call="onsc_cv_digital.cv_digital_section_formation">
-                                <t t-set="name_section" t-value="'FORMACIÓN AVANZADA'"/>"
-                                <t t-set="objects"
-                                   t-value="o.advanced_formation_ids"/>
-                            </t>
-                            <br></br>
+                                    </tr>
 
-                            <br></br>
-                            <t t-call="onsc_cv_digital.cv_digital_section_formation">
-                                <t t-set="name_section" t-value="'CARRERAS TECNICAS Y TECNOLOGICAS'"/>"
-                                <t t-set="objects"
-                                   t-value="o.advanced_formation_ids"/>
-                            </t>
-                            <br></br>
-                            <br></br>
-                            <t t-call="onsc_cv_digital.cv_digital_section_formation_basic">
-                                <t t-set="name_section" t-value="'SECUNDARIA'"/>"
-                                <t t-set="objects"
-                                   t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level =='secondary')"/>
-                            </t>
-                            <br></br>
-                            <br></br>
-                            <t t-call="onsc_cv_digital.cv_digital_section_formation_basic">
-                                <t t-set="name_section" t-value="'PRIMARIA'"/>"
-                                <t t-set="objects"
-                                   t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level !='secondary')"/>
-                            </t>
-                            <br></br>
-                            <!--/t>
-                            <t t-if="'work_experience' in env.context.get('seccions', True)" -->
-                            <br></br>
-                            <t t-call="onsc_cv_digital.cv_digital_section_work">
-                                <t t-set="name_section" t-value="'EXPERIENCIA LABORAL'"/>"
-                                <t t-set="objects"
-                                   t-value="o.work_experience_ids"/>
-                            </t>
-                            <br></br>
-                            <!--/t>
-                            <t t-if="'course_certificates' in env.context.get('seccions', True)" -->
-                            <br></br>
-                            <t t-call="onsc_cv_digital.cv_digital_section_certification">
-                                <t t-set="name_section" t-value="'CURSOS'"/>"
-                                <t t-set="objects"
-                                   t-value="o.course_ids.filtered(lambda tx: tx.course_type =='course')"/>
-                            </t>
-                            <br></br>
-                            <br></br>
-                            <t t-call="onsc_cv_digital.cv_digital_section_certification">
-                                <t t-set="name_section" t-value="'TALLERES'"/>
-                                <t t-set="objects"
-                                   t-value="o.course_ids.filtered(lambda tx: tx.course_type =='workshop')"/>
-                            </t>
-                            <br></br>
-                            <br></br>
-                            <t t-call="onsc_cv_digital.cv_digital_section_certification">
-                                <t t-set="name_section" t-value="'OTRA CAPACITACION'"/>
-                                <t t-set="objects"
-                                   t-value="o.course_ids.filtered(lambda tx: tx.course_type =='other')"/>
+                                    <tr>
+                                        <td>
+                                            <h4>Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889):
+
+                                            </h4>
+                                        </td>
+                                        <td>
+                                            <h4 t-esc="o.is_victim_violent and 'SI' or 'NO'"/>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <br></br>
                             </t>
 
-                            <br></br>
-                            <br></br>
-                            <t t-call="onsc_cv_digital.cv_digital_section_certification">
-                                <t t-set="name_section" t-value="CERTIFICADOS"/>
-                                <t t-set="objects"
-                                   t-value="o.course_ids.filtered(lambda tx: tx.record_type =='certificate')"/>
+                            <t t-if="'address' in env.context.get('seccions', True)">
+                                <h3 class="mb-5">DOMICILIO</h3>
+                                <ul style="list-style:none">
+                                    <li>
+
+                                        <h4>
+                                            <t t-if="o.cv_address_street_id">
+                                                <span t-esc="o.cv_address_street_id.street"/>
+                                            </t>
+                                            <t t-else="">
+                                                <span t-esc="o.cv_address_street"/>
+                                            </t>
+                                            <span t-esc="o.cv_address_nro_door"/>
+                                            <t t-if="o.cv_address_is_cv_bis">
+                                                BIS
+                                            </t>
+                                            <t t-if="o.cv_address_apto">
+                                                Apto
+                                                <span t-esc="o.cv_address_apto"/>
+                                            </t>
+                                        </h4>
+                                        <t t-if="o.cv_address_street2_id">
+                                            <h4>Entre:
+                                                <span t-esc="o.cv_address_street2_id.street"/>
+                                                y
+                                                <span t-esc="o.cv_address_street3_id.street"/>
+                                            </h4>
+                                        </t>
+                                    </li>
+                                    <li>
+                                        <table style="border-spacing: 0; width: 100%; max-width: 60px;">
+
+                                            <td>
+                                                <t t-if="o.cv_address_block">
+                                                    <h4>Manzana:
+                                                        <span t-esc="o.cv_address_block"/>
+                                                    </h4>
+                                                </t>
+                                            </td>
+                                            <td>
+                                                <t t-if="o.cv_address_sandlot">
+                                                    <h4>Solar:
+                                                        <span t-esc="o.cv_address_sandlot"/>
+                                                    </h4>
+                                                </t>
+                                            </td>
+                                            <td>
+                                                <t t-if="o.cv_address_place">
+                                                    <h4>Paraje:
+                                                        <span t-esc="o.cv_address_place"/>
+                                                    </h4>
+                                                </t>
+                                            </td>
+                                        </table>
+                                    </li>
+                                    <li>
+                                        <h4>CP:
+                                            <span t-esc="o.cv_address_zip"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>
+                                            <span t-if="o.cv_address_state_id" t-esc="o.cv_address_state_id.name"/>
+                                            /
+                                            <span t-if="o.cv_address_location_id"
+                                                  t-esc="o.cv_address_location_id.name"/>
+                                            -
+                                            <span t-if="o.country_id" t-esc="o.country_id.name"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>Aclaraciones:
+                                            <span t-esc="o.cv_address_amplification"/>
+                                        </h4>
+                                    </li>
+                                </ul>
                             </t>
-                            <br></br>
-                            <!--/t>
-                            <t t-if="'events' in env.context.get('seccions', True)" -->
-                            <br></br>
-                            <!--PARTICIPACIÓN EN EVENTOS-->
-                            <t t-call="onsc_cv_digital.cv_digital_section_event">
-                                <t t-set="name_section" t-value="'PARTICIPACIÓN EN EVENTOS'"/>
-                                <t t-set="objects"
-                                   t-value="o.participation_event_ids"/>
+                            <t t-if="'formation' in env.context.get('seccions', True)">
+                                <br></br>
+                                <h3>
+                                    <strong>FORMACIÓN AVANZADA</strong>
+                                </h3>
+                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
+                                    <t t-set="name_section" t-value="'POSTDOCTORADO'"/>
+                                    <t t-set="objects"
+                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Postdoctorado')"/>
+                                </t>
+                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
+                                    <t t-set="name_section" t-value="'DOCTORADO'"/>
+                                    <t t-set="objects"
+                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Doctorado')"/>
+                                </t>
+                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
+                                    <t t-set="name_section" t-value="'MAESTRIA'"/>
+                                    <t t-set="objects"
+                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Maestría')"/>
+                                </t>
+                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
+                                    <t t-set="name_section" t-value="'POSTGRADO'"/>
+                                    <t t-set="objects"
+                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Postgrado')"/>
+                                </t>
+                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
+                                    <t t-set="name_section" t-value="'GRADO'"/>
+                                    <t t-set="objects"
+                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Grado')"/>
+                                </t>
+                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
+                                    <t t-set="name_section" t-value="'CARRERAS TECNICAS Y TECNOLOGICAS'"/>
+                                    <t t-set="objects"
+                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name not in ['Maestría','Doctorado','Postdoctorado','Postgrado','Grado'])"/>
+                                </t>
+                                <br></br>
+                                <br></br>
+                                <t t-call="onsc_cv_digital.cv_digital_section_formation_basic">
+                                    <t t-set="name_section" t-value="'SECUNDARIA'"/>
+                                    <t t-set="objects"
+                                       t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level =='secondary')"/>
+                                </t>
+                                <br></br>
+                                <br></br>
+                                <t t-call="onsc_cv_digital.cv_digital_section_formation_basic">
+                                    <t t-set="name_section" t-value="'PRIMARIA'"/>
+                                    <t t-set="objects"
+                                       t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level !='secondary')"/>
+                                </t>
+                                <br></br>
+                            </t>
+                            <t t-if="'work_experience' in env.context.get('seccions', True)">
+                                <br></br>
+                                <t t-call="onsc_cv_digital.cv_digital_section_work">
+                                    <t t-set="name_section" t-value="'EXPERIENCIA LABORAL'"/>
+                                    <t t-set="objects"
+                                       t-value="o.work_experience_ids"/>
+                                </t>
+                                <br></br>
+                            </t>
+                            <t t-if="'course_certificates' in env.context.get('seccions', True)">
+                                <br></br>
+                                <t t-call="onsc_cv_digital.cv_digital_section_certification">
+                                    <t t-set="name_section" t-value="'CURSOS'"/>
+                                    <t t-set="objects"
+                                       t-value="o.course_ids.filtered(lambda tx: tx.course_type =='course')"/>
+                                </t>
+                                <br></br>
+                                <br></br>
+                                <t t-call="onsc_cv_digital.cv_digital_section_certification">
+                                    <t t-set="name_section" t-value="'TALLERES'"/>
+                                    <t t-set="objects"
+                                       t-value="o.course_ids.filtered(lambda tx: tx.course_type =='workshop')"/>
+                                </t>
+                                <br></br>
+                                <br></br>
+                                <t t-call="onsc_cv_digital.cv_digital_section_certification">
+                                    <t t-set="name_section" t-value="'OTRA CAPACITACION'"/>
+                                    <t t-set="objects"
+                                       t-value="o.course_ids.filtered(lambda tx: tx.course_type =='other')"/>
+                                </t>
+
+                                <br></br>
+                                <br></br>
+                                <t t-call="onsc_cv_digital.cv_digital_section_certification">
+                                    <t t-set="name_section" t-value="CERTIFICADOS"/>
+                                    <t t-set="objects"
+                                       t-value="o.course_ids.filtered(lambda tx: tx.record_type =='certificate')"/>
+                                </t>
+                                <br></br>
+                            </t>
+                            <t t-if="'events' in env.context.get('seccions', True)">
+                                <br></br>
+                                <!--PARTICIPACIÓN EN EVENTOS-->
+                                <t t-call="onsc_cv_digital.cv_digital_section_event">
+                                    <t t-set="name_section" t-value="'PARTICIPACIÓN EN EVENTOS'"/>
+                                    <t t-set="objects"
+                                       t-value="o.participation_event_ids"/>
+                                </t>
+
+                                <br></br>
+                            </t>
+                            <t t-if="'events' in env.context.get('seccions', True)">
+                                <br></br>
+                                <!--Docencia-->
+                                <t t-call="onsc_cv_digital.cv_digital_section_teaching">
+                                    <t t-set="name_section" t-value="'DOCENCIA'"/>
+                                    <t t-set="objects"
+                                       t-value="o.work_teaching_ids"/>
+                                </t>
+
+                                <br></br>
+                            </t>
+                            <t t-if="'work_teaching' in env.context.get('seccions', True)">
+                                <br></br>
+                                <!--INVESTIGACIONES-->
+                                <t t-call="onsc_cv_digital.cv_digital_section_investigation">
+                                    <t t-set="name_section" t-value="'INVESTIGACIONES'"/>
+                                    <t t-set="objects"
+                                       t-value="o.work_investigation_ids"/>
+                                </t>
+                                <br></br>
                             </t>
 
-                            <br></br>
-                            <!--/t>
-                            <t t-if="'events' in env.context.get('seccions', True)" -->
-                            <br></br>
-                            <!--Docencia-->
-                            <t t-call="onsc_cv_digital.cv_digital_section_teaching">
-                                <t t-set="name_section" t-value="'DOCENCIA'"/>
-                                <t t-set="objects"
-                                   t-value="o.work_teaching_ids"/>
+                            <t t-if="'ppe' in env.context.get('seccions', True)">
+                                <br></br>
+                                <!--PUBLICACIONES-->
+                                <t t-call="onsc_cv_digital.cv_digital_section_publication">
+                                    <t t-set="name_section"
+                                       t-value="'PUBLICACIONES (IDEM PARA: PRODUCCIONES YEVALUACIONES)'"/>
+                                    <t t-set="objects"
+                                       t-value="o.publication_production_evaluation_ids"/>
+                                </t>
                             </t>
-
-                            <br></br>
-                            <!--/t>
-                            <t t-if="'work_teaching' in env.context.get('seccions', True)" -->
-                            <br></br>
-                            <!--INVESTIGACIONES-->
-                            <t t-call="onsc_cv_digital.cv_digital_section_investigation">
-                                <t t-set="name_section" t-value="'INVESTIGACIONES'"/>
-                                <t t-set="objects"
-                                   t-value="o.work_investigation_ids"/>
-                            </t>
-                            <br></br>
-                            <!--/t>
-
-                            <t t-if="'ppe' in env.context.get('seccions', True)" -->
-                            <br></br>
-                            <!--PUBLICACIONES-->
-                            <t t-call="onsc_cv_digital.cv_digital_section_publication">
-                                <t t-set="name_section"
-                                   t-value="'PUBLICACIONES (IDEM PARA: PRODUCCIONES YEVALUACIONES)'"/>
-                                <t t-set="objects"
-                                   t-value="o.publication_production_evaluation_ids"/>
-                            </t>
-                            <!--/t-->
 
                             <!--Tutorias-->
                             <t t-call="onsc_cv_digital.cv_digital_section_supervision">
@@ -446,21 +492,6 @@
                                 <t t-set="objects"
                                    t-value="o.tutoring_orientation_supervision_ids"/>
                             </t>
-                            <!--Otra información relevante-->
-                           <t t-call="onsc_cv_digital.cv_digital_section_other_relevant_information">
-                                <t t-set="name_section" t-value="'OTRA INFORMACIÓN RELEVANTE:'"/>
-                                <t t-set="objects"
-                                   t-value="o.other_relevant_information_ids"/>
-                            </t>
-                            <!--REFERENCIAS-->
-                           <t t-call="onsc_cv_digital.cv_digital_section_reference">
-                                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-                                 <t t-set="objects"
-                                   t-value="o.reference_ids.filtered(lambda tx: tx.reference_type =='staff')"/>
-                                <t t-set="objects2"
-                                   t-value="o.reference_ids.filtered(lambda tx: tx.reference_type =='working')"/>
-                            </t>
-
                             <!--Idiomas-->
                             <t t-call="onsc_cv_digital.cv_digital_section_language">
                                 <t t-set="name_section" t-value="'IDIOMAS'"/>
@@ -471,7 +502,20 @@
                                 <t t-set="name_section" t-value="'DISCAPACIDAD'"/>
                                 <t t-set="objects" t-value="o"/>
                             </t>
-
+                            <!--Otra información relevante-->
+                            <t t-call="onsc_cv_digital.cv_digital_section_other_relevant_information">
+                                <t t-set="name_section" t-value="'OTRA INFORMACIÓN RELEVANTE:'"/>
+                                <t t-set="objects"
+                                   t-value="o.other_relevant_information_ids"/>
+                            </t>
+                            <!--REFERENCIAS-->
+                            <t t-call="onsc_cv_digital.cv_digital_section_reference">
+                                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
+                                <t t-set="objects"
+                                   t-value="o.reference_ids.filtered(lambda tx: tx.reference_type =='staff')"/>
+                                <t t-set="objects2"
+                                   t-value="o.reference_ids.filtered(lambda tx: tx.reference_type =='working')"/>
+                            </t>
 
                         </div>
                     </div>
@@ -619,9 +663,9 @@
     <!--Formacion Basica-->
 
     <template id="cv_digital_section_formation_basic">
-        <h3 class="mb-5">
+        <h4 t-if="objects" class="mb-5">
             <t t-esc="name_section"/>
-        </h3>
+        </h4>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
                 <li>
@@ -860,7 +904,7 @@
                 </li>
                 <li>
                     <h4>Descripción de tareas:
-                        <t t-esc="object.description_tasks"/>
+                        <span t-esc="object.description_tasks"/>
                     </h4>
                 </li>
                 <li>
@@ -1041,17 +1085,47 @@
                 </li>
                 <li>
                     <h4>Materias dictadas:</h4>
-                    <h4>Nombre materias</h4>
                     <t t-foreach="object.subject_ids" t-as="line">
                         <ul>
                             <li>
-                                <span t-esc="line.subject"/>
-                                <span t-esc="line.course_type"/>
-                                <t t-foreach="line.program_ids" t-as="program">
-                                    /
-                                    <span t-esc="program.name"/>
-                                </t>
-                                <span t-esc="line.level_teaching_type"/>
+                                <h4 t-esc="line.subject"></h4>
+                                <ul>
+                                    <li>
+                                        <h4>
+                                            Inicio:
+                                            <span t-esc="line.start_date"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>
+                                            Fin:
+                                            <span t-esc="line.end_date"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>
+                                            Programas académicos:
+                                            <t t-foreach="line.program_ids" t-as="program">
+                                                /
+                                                <span t-esc="program.name"/>
+                                            </t>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>
+                                            Nivel enseñado:
+                                            <span t-esc="line.level_teaching_type"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>Conocimientos aplicados:
+                                            <t t-foreach="line.knowledge_acquired_ids" t-as="knowledge">
+                                                /
+                                                <span t-esc="knowledge.name"/>
+                                            </t>
+                                        </h4>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </t>
@@ -1242,15 +1316,27 @@
                 </li>
                 <li>
                     <h4>Autores:</h4>
-                    <t t-foreach="object.authors_ids" t-as="line">
-                        <ul>
+                    <ul>
+                        <t t-foreach="object.authors_ids" t-as="line">
                             <li>
                                 <h4>
-                                    <span t-esc="line.author"/>
+                                    Autor: <span t-esc="line.author"/>
                                 </h4>
+                                <ul>
+                                    <li>
+                                        <h4>
+                                            Citación:<span t-esc="line.citation"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>
+                                            Autor principal: <span t-esc="line.is_primary_author and 'SI' or 'NO'"/>
+                                        </h4>
+                                    </li>
+                                </ul>
                             </li>
-                        </ul>
-                    </t>
+                        </t>
+                    </ul>
                 </li>
 
                 <li>
@@ -1544,7 +1630,8 @@
             <ul style="list-style:none">
                 <li>
                     <h4>
-                        <span t-esc="object.theme"/>: <span t-esc="object.description"/>
+                        <span t-esc="object.theme"/>:
+                        <span t-esc="object.description"/>
                     </h4>
                 </li>
             </ul>
@@ -1552,7 +1639,7 @@
         </t>
     </template>
 
-     <!--Referencias-->
+    <!--Referencias-->
     <template id="cv_digital_section_reference">
         <t t-if="objects">
             <h3 class="mb-5">
