@@ -81,4 +81,4 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
         for record in self:
             if self.search_count([("user_id", "=", record.user_id.id), ('id', '!=', record.id)]) == 0:
                 user_ids.append(record.user_id.id)
-        UsersRoleLine.search([('role_id', '=', self[0].role_id.id), ('user_id', 'in', user_ids)]).unlink()
+        UsersRoleLine.suspend_security().search([('role_id', '=', self[0].role_id.id), ('user_id', 'in', user_ids)]).unlink()

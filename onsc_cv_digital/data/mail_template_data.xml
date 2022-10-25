@@ -133,7 +133,7 @@
                     <body>
                         <div style="margin: 0px; padding: 0px;">
                             <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                                Estimado Gestor de catálogos:
+                                Estimado Validador de catálogos:
                                 <br/>
                                 Tiene pendiente de validar nuevos valores condicionales para el llamado <t t-out="ctx.get('call') or ''"></t>.
                                 Recuerde que no se podrá continuar con el proceso de contratación hasta que los valores pendientes hayan sido validados o rechazados.
