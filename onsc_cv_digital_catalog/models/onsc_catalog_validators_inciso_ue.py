@@ -41,7 +41,7 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     @api.model
     def _get_default_role_id(self):
         security_param = self.env['ir.config_parameter'].sudo().get_param("group_documentary_validator", "")
-        return self.env['res.users.role'].search([('name', '=', security_param)]).id
+        return self.env['res.users.role'].sudo().search([('name', '=', security_param)]).id
 
     @api.constrains('inciso_id', 'operating_unit_id', 'user_id')
     def _check_valid(self):

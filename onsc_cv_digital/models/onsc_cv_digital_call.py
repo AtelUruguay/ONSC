@@ -302,7 +302,7 @@ class ONSCCVDigitalCall(models.Model):
                 cv_digital_origin_id.write(vals)
 
     def test_json(self):
-        self.send_notification_document_validators(self.call_number)
+        self.send_notification_conditional(self.call_number)
 
     def _generate_json(self, call_number):
         call_server_json_url = self.env.user.company_id.call_server_json_url
@@ -319,11 +319,6 @@ class ONSCCVDigitalCall(models.Model):
             'is_json_sent': True
         })
 
-    def send_notification_conditional(self, call_number):
-        template = self.env.ref('onsc_cv_digital.email_template_conditional_values_cv')
-        template.with_context(call=call_number).send_mail(len(self) and self[0].id)
-
-    # GENERANDO ZIP
     def generate_zip(self):
         cv_zip_url = self.env.user.company_id.cv_zip_url
         if len(self) == 0 or not cv_zip_url:
@@ -699,4 +694,14 @@ class ONSCCVDigitalCall(models.Model):
         ctx.update({'call': call_number})
         email_values = self._get_mailto_send_notification_document_validators()
         template = self.env.ref('onsc_cv_digital.email_template_document_validators_cv')
-        template.with_context(ctx).send_mail(self.id, email_values=email_values)
+        template.with_context(ctx).send_mail(len(self) and self[0].id, email_values=email_values)
+
+    def send_notification_conditional(self, call_number):
+        template = self.env.ref('onsc_cv_digital.email_template_conditional_values_cv')
+        validador_group = self.env.ref("onsc_cv_digital.group_validador_catalogos_cv")
+        users = self.env['res.users'].sudo().search([
+            ('groups_id', 'in', [validador_group.id])
+        ])
+        emailto = ','.join(users.filtered(lambda x: x.partner_id.email).mapped('partner_id.email'))
+        template.with_context(call=call_number).send_mail(len(self) and self[0].id, email_values={'email_to': emailto})
+

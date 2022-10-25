@@ -6,7 +6,7 @@
               sequence="2"/>
 
     <menuitem id="onsc_cv_digital_menu"
-              name="CV"
+              name="CVs"
               action="onsc_cv_digital_action"
               parent="onsc_cv_root_menu"
               groups="group_manager_cv"
