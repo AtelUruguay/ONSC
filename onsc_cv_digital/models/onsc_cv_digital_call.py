@@ -302,7 +302,7 @@ class ONSCCVDigitalCall(models.Model):
                 cv_digital_origin_id.write(vals)
 
     def test_json(self):
-        self.send_notification_conditional(self.call_number)
+        self.send_notification_document_validators(self.call_number)
 
     def _generate_json(self, call_number):
         call_server_json_url = self.env.user.company_id.call_server_json_url
