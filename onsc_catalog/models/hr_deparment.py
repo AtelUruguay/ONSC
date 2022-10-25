@@ -35,9 +35,8 @@ class Department(models.Model):
                                        selection=[
                                            ('adviser', 'Asesora'),
                                            ('operative', 'Ejecutora'),
-                                           ('comite', 'Comité'),
-                                           ('commission_project', 'Comisión/Proyecto'),
-                                           ('program', 'Programa'),
+                                           ('comite', 'Comité/Comisión'),
+                                           ('program', 'Programa/Proyecto'),
                                        ], tracking=True, history=True)
     hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico",
                                             tracking=True,
@@ -85,7 +84,7 @@ class Department(models.Model):
             domain = [('is_central_administration', '=', record.inciso_id.is_central_administration)]
             if record.function_nature == 'adviser':
                 domain.append(('order', 'in', [1, 2]))
-            elif record.function_nature in ['program', 'commission_project', 'comite']:
+            elif record.function_nature in ['program', 'comite']:
                 domain.append(('order', 'in', [1]))
             record.hierarchical_level_id_domain = json.dumps([('id', 'in', HierarchicalLevel.search(domain).ids)])
 

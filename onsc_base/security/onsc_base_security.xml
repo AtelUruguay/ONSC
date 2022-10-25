@@ -12,5 +12,8 @@
     <record id="mail.menu_root_discuss" model="ir.ui.menu">
         <field name="groups_id" eval="[(4, ref('onsc_base.group_no_onsc')),(3, ref('base.group_user'))]"/>
     </record>
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[(3, ref('mail.group_mail_template_editor'))]"/>
+    </record>
     </data>
 </odoo>
