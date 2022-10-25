@@ -67,7 +67,9 @@ class ONSCCVDigitalCall(models.Model):
         if len(self) == 0:
             return
         self = self[0]
+        validador_group = self.env.ref("onsc_cv_digital.group_validador_documental_cv")
         users = self.env['res.users'].sudo().search([
+            ('groups_id', 'in', [validador_group.id]),
             ('company_ids', 'in', [self.inciso_id.company_id.id]),
             ('operating_unit_ids', 'in', [self.operating_unit_id.id])])
         emailto = ','.join(users.filtered(lambda x: x.partner_id.email).mapped('partner_id.email'))
