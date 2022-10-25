@@ -32,8 +32,8 @@ class ONSCCVReportWizard(models.TransientModel):
         onsc_cv_digital_ids = self.env['onsc.cv.digital'].browse(active_ids)
         seccion_data = []
         for seccion in self.seccion_ids:
-            seccion_data.append(seccion)
+            seccion_data.append(seccion.internal_field)
 
-        res = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').report_action(onsc_cv_digital_ids, )
+        res = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').report_action(onsc_cv_digital_ids)
         res.update({'close_on_report_download': True})
         return res
