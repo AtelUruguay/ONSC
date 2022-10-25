@@ -32,6 +32,7 @@
     <template id="onsc_cv_digital_document">
         <t t-call="web.external_layout">
             <div class="page">
+                <span t-esc="context"/>
                 <div class="container bg-primary bg-gradient text-white py-5">
                     <div class="row">
                         <div class="col-8">
@@ -444,6 +445,20 @@
                                 <t t-set="name_section" t-value="'TUTORÍAS, ORIENTACIONES, SUPERVISIONES'"/>
                                 <t t-set="objects"
                                    t-value="o.tutoring_orientation_supervision_ids"/>
+                            </t>
+                            <!--Otra información relevante-->
+                           <t t-call="onsc_cv_digital.cv_digital_section_other_relevant_information">
+                                <t t-set="name_section" t-value="'OTRA INFORMACIÓN RELEVANTE:'"/>
+                                <t t-set="objects"
+                                   t-value="o.other_relevant_information_ids"/>
+                            </t>
+                            <!--REFERENCIAS-->
+                           <t t-call="onsc_cv_digital.cv_digital_section_reference">
+                                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
+                                 <t t-set="objects"
+                                   t-value="o.reference_ids.filtered(lambda tx: tx.reference_type =='staff')"/>
+                                <t t-set="objects2"
+                                   t-value="o.reference_ids.filtered(lambda tx: tx.reference_type =='working')"/>
                             </t>
 
                             <!--Idiomas-->
@@ -1517,6 +1532,99 @@
                 </li>
             </ul>
             <br></br>
+        </t>
+    </template>
+
+    <!--Otra información relevante-->
+    <template id="cv_digital_section_other_relevant_information">
+        <h3 class="mb-5">
+            <t t-esc="name_section"/>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none">
+                <li>
+                    <h4>
+                        <span t-esc="object.theme"/>: <span t-esc="object.description"/>
+                    </h4>
+                </li>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+
+     <!--Referencias-->
+    <template id="cv_digital_section_reference">
+        <t t-if="objects">
+            <h3 class="mb-5">
+                <t t-esc="name_section"/>
+            </h3>
+            <ul style="list-style:none">
+                <li>
+                    <h4>
+                        <u>
+                            Personales:
+                        </u>
+                    </h4>
+                </li>
+            </ul>
+            <t t-foreach="objects" t-as="object">
+                <ul style="list-style:none">
+                    <li>
+                        <h4>
+                            Nombre de la referencia
+                            <span t-esc="object.name"/>
+                            /
+                            Teléfono
+                            <span t-esc="object.phone"/>
+                            /
+                            Mail
+                            <span t-esc="object.email"/>
+                        </h4>
+                    </li>
+                    <li>
+                        <h4>
+                            Comentarios adicionales
+                            <span t-esc="object.notes"/>
+                        </h4>
+                    </li>
+                </ul>
+                <br></br>
+                <br></br>
+            </t>
+        </t>
+        <t t-if="objects2">
+            <ul style="list-style:none">
+                <li>
+                    <h4>
+                        <u>
+                            Laborales:
+                        </u>
+                    </h4>
+                </li>
+            </ul>
+            <t t-foreach="objects2" t-as="object2">
+                <ul style="list-style:none">
+                    <li>
+                        <h4>
+                            Nombre de la referencia
+                            <span t-esc="object2.name"/>
+                            /
+                            Teléfono
+                            <span t-esc="object2.phone"/>
+                            /
+                            Mail
+                            <span t-esc="object2.email"/>
+                        </h4>
+                    </li>
+                    <li>
+                        <h4>
+                            Comentarios adicionales
+                            <span t-esc="object2.notes"/>
+                        </h4>
+                    </li>
+                </ul>
+                <br></br>
+            </t>
         </t>
     </template>
 

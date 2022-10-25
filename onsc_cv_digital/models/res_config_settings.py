@@ -30,3 +30,4 @@ class ResConfigSettings(models.TransientModel):
     rve_wsdl = fields.Char(related="company_id.rve_wsdl", readonly=False)
 
     call_server_json_url = fields.Char(related="company_id.call_server_json_url", readonly=False)
+    cv_zip_url = fields.Char(related="company_id.cv_zip_url", readonly=False)

@@ -62,3 +62,13 @@ class ONSCCVDigitalCall(models.Model):
             'operating_unit_id': operating_unit.id,
         })
         return vals
+
+    def _get_mailto_send_notification_document_validators(self):
+        if len(self) == 0:
+            return
+        self = self[0]
+        users = self.env['res.users'].sudo().search([
+            ('company_ids', 'in', [self.inciso_id.company_id.id]),
+            ('operating_unit_ids', 'in', [self.operating_unit_id.id])])
+        emailto = ','.join(users.filtered(lambda x: x.partner_id.email).mapped('partner_id.email'))
+        return {'email_to': emailto}
