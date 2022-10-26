@@ -83,19 +83,22 @@
                                         <span t-field="o.email"/>
                                     </td>
                                     <td>País:
-                                        <span t-field="o.cv_emissor_country_id.name"/>
-                                        <img t-attf-src="{{o.cv_emissor_country_id.image_url}}"
+                                        <span t-if="o.cv_emissor_country_id" t-field="o.cv_emissor_country_id.name"/>
+                                        <img t-if="o.cv_emissor_country_id"
+                                             t-attf-src="{{o.cv_emissor_country_id.image_url}}"
                                              alt="image" title="image"
                                              class="img-fluid" width="20"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <i class="fa fa-fw fa-mobile mr-2"/>
-                                        <span t-field="o.mobile_phone"/>
+                                        <i t-if="o.mobile_phone" class="fa fa-fw fa-mobile mr-2"/>
+                                        <span t-if="o.mobile_phone" t-field="o.mobile_phone"/>
                                     </td>
-                                    <td>Tipo de documento:
-                                        <span t-field="o.partner_id.cv_document_type_id.name"/>
+                                    <td>
+                                        <t t-if="o.cv_document_type_id">Tipo de documento:
+                                            <span t-field="o.partner_id.cv_document_type_id.name"/>
+                                        </t>
                                     </td>
                                 </tr>
                                 <tr>
@@ -259,6 +262,7 @@
                                             </t>
                                         </td>
                                     </tr>
+
 
                                     <tr>
                                         <td>
@@ -436,9 +440,9 @@
                                 <br></br>
                                 <br></br>
                                 <t t-call="onsc_cv_digital.cv_digital_section_certification">
-                                    <t t-set="name_section" t-value="CERTIFICADOS"/>
+                                    <t t-set="name_section" t-value="'CERTIFICADOS'"/>
                                     <t t-set="objects"
-                                       t-value="o.course_ids.filtered(lambda tx: tx.record_type =='certificate')"/>
+                                       t-value="o.certificate_ids.filtered(lambda tx: tx.record_type =='certificate')"/>
                                 </t>
                                 <br></br>
                             </t>
@@ -530,6 +534,14 @@
                                 </t>
                                 <br></br>
                             </t>
+                            <t t-if="'volunteering' in env.context.get('seccions', True)">
+                                <br></br>
+                                <t t-call="onsc_cv_digital.cv_digital_section_volunteering">
+                                    <t t-set="name_section" t-value="'VOLUNTARIADO'"/>
+                                    <t t-set="objects" t-value="o.volunteering_ids"/>
+                                </t>
+                                <br></br>
+                            </t>
                             <t t-if="'other_info' in env.context.get('seccions', True)">
                                 <br></br>
                                 <!--Otra información relevante-->
@@ -562,7 +574,7 @@
 
     <template id="cv_digital_section_formation">
         <h4 t-if="objects" class="mb-5">
-            <t t-esc="name_section"/>
+            <u><t t-esc="name_section"/></u>
         </h4>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -607,10 +619,6 @@
                                 </h4>
                             </td>
                         </tr>
-                    </table>
-                </li>
-                <li>
-                    <table style="border-spacing: 0; width: 100%; max-width: 600px;">
                         <tr>
                             <td>
                                 <h4>Apostillado:
@@ -623,10 +631,6 @@
                                 </h4>
                             </td>
                         </tr>
-                    </table>
-                </li>
-                <li>
-                    <table style="border-spacing: 0; width: 100%; max-width: 600px;">
                         <tr>
                             <td>
                                 <h4>Escolaridad:
@@ -639,19 +643,15 @@
                                 </h4>
                             </td>
                         </tr>
-                    </table>
-                </li>
-                <li>
-                     <table style="border-spacing: 0; width: 100%; max-width: 600px;">
                         <tr>
                             <td>
                                 <h4>Créditos aprobados:
-                                    <span t-field="object.scholarship"/>
+                                    <span t-field="object.credits_far"/>
                                 </h4>
                             </td>
                             <td>
                                 <h4>Créditos totales:
-                                    <span t-field="object.max_scholarship"/>
+                                    <span t-field="object.credits_training"/>
                                 </h4>
                             </td>
                         </tr>
@@ -730,6 +730,14 @@
                             <span t-field="object.max_note_thesis"/>
                         </h4>
                     </li>
+                    <li>
+                        <h4>Conocimientos aplicados:
+                            <t t-foreach="object.knowledge_thesis_ids" t-as="knowledge">
+                                /
+                                <span t-field="knowledge.name"/>
+                            </t>
+                        </h4>
+                    </li>
                 </ul>
                 <li>
                     <h4>Otra información:
@@ -745,7 +753,9 @@
 
     <template id="cv_digital_section_formation_basic">
         <h4 t-if="objects" class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <u><t t-esc="name_section"/></u>
+            </strong>
         </h4>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -793,22 +803,30 @@
 
     <template id="cv_digital_section_certification">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
                 <li>
                     <h4>
                         <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/>
-                        -
-                        <t t-if="object.state!='completed'">
-                            <span>Actualidad</span>
+                        <t t-if="not object.certificate_id">
+                            -
+                            <t t-if="object.state!='completed'">
+                                <span>Actualidad</span>
+                            </t>
+                            <t t-else="">
+                                <span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                            </t>
+                            :
+                            <span t-field="object.course_title"/>
                         </t>
                         <t t-else="">
-                            <span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                            :
+                            <span t-field="object.certificate_id.name"/>
                         </t>
-                        :
-                        <span t-field="object.course_title"/>
                     </h4>
 
                 </li>
@@ -836,22 +854,22 @@
                         <span t-field="object.evaluation_str"/>
                     </h4>
                 </li>
-                    <li>
-                        <h4>Representación numérica de nota obtenida:
-                            <span t-field="object.evaluation_number"/>
-                        </h4>
-                    </li>
+                <li>
+                    <h4>Representación numérica de nota obtenida:
+                        <span t-field="object.evaluation_number"/>
+                    </h4>
+                </li>
                 <li>
                     <h4>Nota máxima posible:
                         <span t-field="object.evaluation_max_str"/>
                     </h4>
                 </li>
 
-                    <li>
-                        <h4>Representación numérica de nota máxima posible:
-                            <span t-field="object.evaluation_max_number"/>
-                        </h4>
-                    </li>
+                <li>
+                    <h4>Representación numérica de nota máxima posible:
+                        <span t-field="object.evaluation_max_number"/>
+                    </h4>
+                </li>
                 <li>
                     <h4>Programa de inducción al Organismo:
                         <span t-field="object.induction_type"/>
@@ -876,20 +894,18 @@
                     </h4>
                 </li>
                 <li>
-                    <h4>Conocimientos adquiridos:
-                        <span t-field="object.induction_type"/>
-                    </h4>
+                    <h4>Áreas relacionadas</h4>
+                    <t t-foreach="object.line_ids" t-as="line">
+                        <ul>
+                            <li>
+                                <h4><span t-field="line.educational_area_id.name"/>/<span
+                                        t-esc="line.educational_subarea_id.name"/>/
+                                    <span t-field="line.discipline_educational_id.name"/>
+                                </h4>
+                            </li>
+                        </ul>
+                    </t>
                 </li>
-                <t t-foreach="object.line_ids" t-as="line">
-                    <ul>
-                        <li>
-                            <h4><span t-field="line.educational_area_id.name"/>/<span
-                                    t-esc="line.educational_subarea_id.name"/>/
-                                <span t-field="line.discipline_educational_id.name"/>
-                            </h4>
-                        </li>
-                    </ul>
-                </t>
                 <li>
                     <h4>Otra información relevante:
                         <span t-field="object.other_relevant_information"/>
@@ -903,7 +919,9 @@
     <!--Expreriencia laboral-->
     <template id="cv_digital_section_work">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1007,7 +1025,9 @@
     <!--Eventos-->
     <template id="cv_digital_section_event">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1099,7 +1119,9 @@
     <!--Docencia-->
     <template id="cv_digital_section_teaching">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1234,7 +1256,9 @@
     <!--Invetigaciones-->
     <template id="cv_digital_section_investigation">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1323,15 +1347,30 @@
                 </li>
                 <li>
                     <h4>Integrantes:</h4>
-                    <t t-foreach="object.member_ids" t-as="line">
-                        <ul>
+                    <ul>
+                        <t t-foreach="object.member_ids" t-as="line">
                             <li>
                                 <h4>
+                                    Nombre
                                     <span t-field="line.member"/>
                                 </h4>
+                                <ul>
+                                    <li>
+                                        <h4>
+                                            Responsable:
+                                            <span t-esc="line.is_responsible and 'SI' or 'NO'"/>
+                                        </h4>
+                                    </li>
+                                    <li>
+                                        <h4>
+                                            Citación:
+                                            <span t-field="line.citation"/>
+                                        </h4>
+                                    </li>
+                                </ul>
                             </li>
-                        </ul>
-                    </t>
+                        </t>
+                    </ul>
                 </li>
                 <li>
                     <h4>Áreas relacionadas</h4>
@@ -1355,7 +1394,9 @@
     <!--PUBLICACIONES-->
     <template id="cv_digital_section_publication">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1444,6 +1485,11 @@
                         </ul>
                     </t>
                 </li>
+                <li>
+                    <h4>Información adicional:
+                        <span t-esc="object.additional_information"/>
+                    </h4>
+                </li>
             </ul>
             <br></br>
         </t>
@@ -1452,7 +1498,9 @@
     <!--Tutorias-->
     <template id="cv_digital_section_supervision">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1553,6 +1601,11 @@
                         </t>
                     </h4>
                 </li>
+                <li>
+                    <h4>Es uno de los cinco trabajos más relevantes de su producción:
+                        <span t-esc="object.is_relevant_work and 'SI' or 'NO'"/>
+                    </h4>
+                </li>
 
                 <li>
                     <h4>Áreas relacionadas</h4>
@@ -1583,7 +1636,9 @@
     <!--IDIOMAS-->
     <template id="cv_digital_section_language">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <table style="border-spacing: 0; width: 100%; max-width: 600px;">
             <tr>
@@ -1632,7 +1687,9 @@
     <!--Discapacidad-->
     <template id="cv_digital_section_disabilitie">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1715,10 +1772,92 @@
         </t>
     </template>
 
+    <!--VOLUNTARIADO-->
+    <template id="cv_digital_section_volunteering">
+        <h3 class="mb-5">
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none">
+                <li>
+                    <h4>
+                        <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                        -
+                        <t t-if="object.currently_volunteering">
+                            <span>Actualidad</span>
+                        </t>
+                        <t t-else="">
+                            <span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                        </t>
+                        :
+                        <t t-if="object.country_code in ['UY',False] and object.company_type in ['public','both',False]">
+                            <span t-field="object.company_name"/>
+                        </t>
+
+                        <t t-else="">
+                            <span t-field="object.inciso_id.name"/>
+                            <span t-field="object.operating_unit_id.name"/>
+                        </t>
+                        <span t-field="object.country_id.name"/>
+
+                    </h4>
+                </li>
+                <li>
+                    <h4>Tipo de empresa:
+                        <span t-field="object.company_type"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Área/Unidad:
+                        <span t-field="object.unit_name"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Voluntario actualmente:
+                        <span t-esc="object.currently_volunteering and 'SI' or 'NO'"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Cantidad de horas mensuales:
+                        <span t-esc="object.hours_monthly"/>
+                    </h4>
+                </li>
+                <li>
+                    <h4>Descripción de tareas:
+                        <span t-field="object.description_tasks"/>
+                    </h4>
+                </li>
+                <li>
+                    <br></br>
+                    <h4>Tareas clave:</h4>
+                    <t t-foreach="object.volunteering_task_ids" t-as="line">
+                        <ul>
+                            <li>
+                                <h4><span t-field="line.key_task_id.name"/>/
+                                    <span t-esc="line.area_id.name"/>
+                                </h4>
+                            </li>
+                        </ul>
+                    </t>
+                </li>
+                <li>
+                    <h4>Otra información relevante:
+                        <span t-field="object.description_tasks"/>
+                    </h4>
+                </li>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+
     <!--Otra información relevante-->
     <template id="cv_digital_section_other_relevant_information">
         <h3 class="mb-5">
-            <t t-esc="name_section"/>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1737,7 +1876,9 @@
     <template id="cv_digital_section_reference">
         <t t-if="objects">
             <h3 class="mb-5">
-                <t t-esc="name_section"/>
+                <strong>
+                    <t t-esc="name_section"/>
+                </strong>
             </h3>
             <ul style="list-style:none">
                 <li>
