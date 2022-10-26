@@ -66,11 +66,6 @@
             <field name="internal_field">events</field>
         </record>
 
-        <record id="onsc_cv_report_config_" model="onsc.cv.report.config.seccion">
-            <field name="seccion">Investigación</field>
-            <field name="internal_field">investigation</field>
-        </record>
-
         <record id="onsc_cv_report_config_other_info" model="onsc.cv.report.config.seccion">
             <field name="seccion">Otra información relevante</field>
             <field name="internal_field">other_info</field>

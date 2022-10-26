@@ -1826,6 +1826,7 @@
         <field name="report_file">onsc_cv_digital.report_onsc_cv_digital</field>
         <field name="print_report_name">object.cv_full_name</field>
         <field name="binding_model_id" ref="onsc_cv_digital.model_onsc_cv_digital"/>
+        <field name="paperformat_id" ref="onsc_cv_digital.paperformat_report_cv"/>
         <field name="binding_type">report</field>
     </record>
 
