@@ -897,16 +897,19 @@
                         <span t-field="object.induction_type"/>
                     </h4>
                 </li>
-                <t t-foreach="object.line_ids" t-as="line">
-                    <ul>
-                        <li>
-                            <h4><span t-field="line.educational_area_id.name"/>/<span
-                                    t-esc="line.educational_subarea_id.name"/>/
-                                <span t-field="line.discipline_educational_id.name"/>
-                            </h4>
-                        </li>
-                    </ul>
-                </t>
+                <li>
+                    <h4>Áreas relacionadas</h4>
+                    <t t-foreach="object.line_ids" t-as="line">
+                        <ul>
+                            <li>
+                                <h4><span t-field="line.educational_area_id.name"/>/<span
+                                        t-esc="line.educational_subarea_id.name"/>/
+                                    <span t-field="line.discipline_educational_id.name"/>
+                                </h4>
+                            </li>
+                        </ul>
+                    </t>
+                </li>
                 <li>
                     <h4>Otra información relevante:
                         <span t-field="object.other_relevant_information"/>
