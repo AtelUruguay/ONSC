@@ -37,7 +37,6 @@
                 <field name="postulation_number"/>
                 <field name="postulation_date" string="Fecha de actualización"/>
                 <field name="call_conditional_state" invisible="context.get('is_mypostulations', False)"/>
-                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -51,6 +50,11 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button class="oe_stat_button" name="button_print_cv_copy"
+                                string="Imprimir CV"
+                                groups="onsc_cv_digital.group_user_cv"
+                                invisible="context.get('is_mypostulations', False)==False"
+                                type="object" icon="fa-print"/>
                     </div>
                     <field name="avatar_128" invisible="1"/>
                     <field name="image_1920" widget='image' class="oe_avatar"
@@ -620,6 +624,18 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
             </p>
+        </field>
+    </record>
+
+    <record id="onsc_cv_digital_call_print_action" model="ir.actions.server">
+        <field name="name">Imprimir PDF</field>
+        <field name="type">ir.actions.server</field>
+         <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>
+        <field name="binding_model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>
+        <field name="binding_view_types">list,form</field>
+        <field name="state">code</field>
+        <field name="code">
+            action = model.onsc_cv_digital_call_print_cv()
         </field>
     </record>
 </odoo>

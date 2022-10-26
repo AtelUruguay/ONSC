@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import base64
 import json
 import logging
-import base64
-import io
 import zipfile
 from os.path import join
 
@@ -325,7 +324,9 @@ class ONSCCVDigitalCall(models.Model):
             return
         if len(self.mapped('call_number')) != 1:
             raise ValidationError(_("Debe seleccionar un único llamado"))
-        report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital')._render_qweb_pdf(self[0].cv_digital_origin_id.id)[0]
+        report = \
+        self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital')._render_qweb_pdf(self[0].cv_digital_origin_id.id)[
+            0]
         filename = '%s_%s.pdf' % (self[0].call_number, str(fields.Datetime.now()))
 
         report_file = open(join(cv_zip_url, filename), 'wb+')
@@ -333,7 +334,7 @@ class ONSCCVDigitalCall(models.Model):
 
         zip_filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now()))
         zip_archive = zipfile.ZipFile(zip_filename, "w")
-        zip_archive.writestr(base64.encodebytes(report),compress_type=zipfile.ZIP_DEFLATED)
+        zip_archive.writestr(base64.encodebytes(report), compress_type=zipfile.ZIP_DEFLATED)
         zip_archive.close()
 
         # report_filename = open(join(cv_zip_url, zip_filename), 'wb+')
@@ -341,8 +342,6 @@ class ONSCCVDigitalCall(models.Model):
         # with zipfile.ZipFile(stream, 'w') as doc_zip:
         #     doc_zip.writestr(report_filename, base64.encodebytes(report),compress_type=zipfile.ZIP_DEFLATED)
         return True
-
-
 
     @api.model
     def create(self, values):
@@ -683,7 +682,7 @@ class ONSCCVDigitalCall(models.Model):
         calls_preselected.write({'preselected': 'yes'})
         calls_preselected.with_context(is_preselected=True).button_update_documentary_validation_sections_tovalidate()
         calls_not_selected.write({'preselected': 'no'})
-        self.send_notification_document_validators(call_number)
+        calls_preselected.send_notification_document_validators(call_number)
         return True
 
     def _get_mailto_send_notification_document_validators(self):
@@ -705,3 +704,22 @@ class ONSCCVDigitalCall(models.Model):
         emailto = ','.join(users.filtered(lambda x: x.partner_id.email).mapped('partner_id.email'))
         template.with_context(call=call_number).send_mail(len(self) and self[0].id, email_values={'email_to': emailto})
 
+    def button_print_cv_copy(self):
+        res = {
+            'name': 'Imprimir CV',
+            'view_mode': 'form',
+            'res_model': 'onsc.cv.report.wizard',
+            'target': 'new',
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'context': {'default_cv_digital_ids': self.cv_digital_id.ids},
+        }
+        return res
+
+    def onsc_cv_digital_call_print_cv(self):
+        active_ids = self._context.get('active_ids', False)
+        onsc_cv_digital_ids = self.env['onsc.cv.digital.call'].browse(active_ids)
+        onsc_cv_report_wizard = self.env['onsc.cv.report.wizard'].create({
+            'cv_digital_ids': onsc_cv_digital_ids.cv_digital_id.ids
+        })
+        return onsc_cv_report_wizard.button_print()
