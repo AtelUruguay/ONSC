@@ -893,11 +893,6 @@
                     </h4>
                 </li>
                 <li>
-                    <h4>Conocimientos adquiridos:
-                        <span t-field="object.induction_type"/>
-                    </h4>
-                </li>
-                <li>
                     <h4>Áreas relacionadas</h4>
                     <t t-foreach="object.line_ids" t-as="line">
                         <ul>
