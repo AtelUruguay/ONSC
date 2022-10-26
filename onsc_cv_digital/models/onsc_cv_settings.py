@@ -32,7 +32,7 @@ class ONSCCVSettings(models.TransientModel):
         return {
             'type': 'ir.actions.client',
             'tag': 'reload',
-        })
+        }
 
     def write(self, vals):
         res = super(ONSCCVSettings, self.suspend_security()).write(vals)
