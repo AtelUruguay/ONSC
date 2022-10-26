@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="onsc_cv_settings_view_form" model="ir.ui.view">
+            <field name="name">onsc.cv.settings.view.form.inherit.onsc.cv.digital</field>
+            <field name="model">onsc.cv.settings</field>
+            <field name="arch" type="xml">
+                <form class="oe_form_configuration o_base_settings">
+                    <div class="o_control_panel">
+                        <div class="o_panel">
+                            <ol role="navigation" class="breadcrumb o_settings_title d-none d-md-block">
+                                <li class="breadcrumb-item active">Ajustes</li>
+                            </ol>
+                        </div>
+                        <header>
+                            <button string="Guardar" type="object" name="execute" class="oe_highlight" />
+                            <button string="Descartar" type="object" name="cancel" special="cancel" data-hotkey="z" />
+                        </header>
+                    </div>
+                    <div class="app_settings_block" id="onsc_cv_digital">
+                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Ayuda en línea</h6>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="col-12 col-lg-12 o_setting_box" id="cv_help_settings">
+                                    <div class="o_setting_left_pane"/>
+                                    <div class="o_setting_right_pane">
+                                        <div class="text-muted content-group mt16">
+                                            <span>Información general </span>
+                                            <field name="cv_help_general_info" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Domicilio </span>
+                                            <field name="cv_help_address" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Formación </span>
+                                            <field name="cv_help_formation" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Cursos y Certificados</span>
+                                            <field name="cv_help_course_certificate" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Experiencia laboral</span>
+                                            <field name="cv_help_work_experience" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Docencia</span>
+                                            <field name="cv_help_work_teaching" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Investigación</span>
+                                            <field name="cv_help_work_investigation" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Voluntariado</span>
+                                            <field name="cv_help_volunteering" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Idiomas</span>
+                                            <field name="cv_help_language_level" class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Publicaciones, Producciones y Evaluaciones</span>
+                                            <field name="cv_help_publications_productions_evaluations"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Tutorías, Orientaciones, Supervisiones</span>
+                                            <field name="cv_help_tutoring_orientation_supervision"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Discapacidad </span>
+                                            <field name="cv_help_disability"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Participación en eventos</span>
+                                            <field name="cv_help_participation_event"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Otra información relevante</span>
+                                            <field name="cv_help_other_relevant_information"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                        <div class="text-muted content-group mt16">
+                                            <span>Referencias</span>
+                                            <field name="cv_help_reference"
+                                                   class="col-12 col-lg-12"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <field name="company_id" invisible="1"/>
+                    </div>
+                </form>
+            </field>
+    </record>
+
+    <record id="onsc_cv_digital_config_action" model="ir.actions.act_window">
+        <field name="name">Configuración</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.cv.settings</field>
+        <field name="view_mode">form</field>
+        <field name="context">{'is_admin_cv': True}</field>
+        <field name="target">inline</field>
+    </record>
+</odoo>

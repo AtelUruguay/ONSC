@@ -39,6 +39,7 @@ ONSC CV Digital
         'wizard/views/onsc_cv_reject_wizard_views.xml',
         'wizard/views/onsc_cv_report_wizard_views.xml',
         'views/res_config_settings_view.xml',
+        'views/onsc_cv_settings_view.xml',
         'views/onsc_cv_documentary_validation_config_views.xml',
         'views/catalogs/onsc_cv_document_type_views.xml',
         'views/catalogs/onsc_cv_civil_status_views.xml',

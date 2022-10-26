@@ -35,7 +35,7 @@ class ONSCCVReportWizard(models.TransientModel):
             seccion_data.append(seccion.internal_field)
 
         action_report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital')
-        action_report.context = {'seccions': seccion_data}
+        action_report.suspend_security().context = {'seccions': seccion_data}
         res = action_report.report_action(onsc_cv_digital_ids)
         res.update({'close_on_report_download': True})
         return res

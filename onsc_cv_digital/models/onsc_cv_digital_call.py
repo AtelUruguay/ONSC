@@ -683,7 +683,7 @@ class ONSCCVDigitalCall(models.Model):
         calls_preselected.write({'preselected': 'yes'})
         calls_preselected.with_context(is_preselected=True).button_update_documentary_validation_sections_tovalidate()
         calls_not_selected.write({'preselected': 'no'})
-        self.send_notification_document_validators(call_number)
+        calls_preselected.send_notification_document_validators(call_number)
         return True
 
     def _get_mailto_send_notification_document_validators(self):
