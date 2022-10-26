@@ -10,6 +10,11 @@ DNIC_DOC_TYPE = [
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
+    def write(self, vals):
+        if self._context.get('is_admin_cv'):
+            return super(ResCompany, self.suspend_security()).write(vals)
+        super(ResCompany, self).write(vals)
+
     cv_help_general_info = fields.Char('Información General')
     cv_help_address = fields.Char('Domicilio')
     cv_help_work_experience = fields.Char('Experiencia laboral')
