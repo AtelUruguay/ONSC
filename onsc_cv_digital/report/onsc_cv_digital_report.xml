@@ -439,9 +439,9 @@
                                 <br></br>
                                 <br></br>
                                 <t t-call="onsc_cv_digital.cv_digital_section_certification">
-                                    <t t-set="name_section" t-value="CERTIFICADOS"/>
+                                    <t t-set="name_section" t-value="'CERTIFICADOS'"/>
                                     <t t-set="objects"
-                                       t-value="o.course_ids.filtered(lambda tx: tx.record_type =='certificate')"/>
+                                       t-value="o.certificate_ids.filtered(lambda tx: tx.record_type =='certificate')"/>
                                 </t>
                                 <br></br>
                             </t>
@@ -752,7 +752,9 @@
 
     <template id="cv_digital_section_formation_basic">
         <h4 t-if="objects" class="mb-5">
-            <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h4>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -800,22 +802,30 @@
 
     <template id="cv_digital_section_certification">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
                 <li>
                     <h4>
                         <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/>
-                        -
-                        <t t-if="object.state!='completed'">
-                            <span>Actualidad</span>
+                        <t t-if="not object.certificate_id">
+                            -
+                            <t t-if="object.state!='completed'">
+                                <span>Actualidad</span>
+                            </t>
+                            <t t-else="">
+                                <span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                            </t>
+                            :
+                            <span t-field="object.course_title"/>
                         </t>
                         <t t-else="">
-                            <span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                            :
+                            <span t-field="object.certificate_id.name"/>
                         </t>
-                        :
-                        <span t-field="object.course_title"/>
                     </h4>
 
                 </li>
@@ -910,7 +920,9 @@
     <!--Expreriencia laboral-->
     <template id="cv_digital_section_work">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1014,7 +1026,9 @@
     <!--Eventos-->
     <template id="cv_digital_section_event">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1106,7 +1120,9 @@
     <!--Docencia-->
     <template id="cv_digital_section_teaching">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1241,7 +1257,9 @@
     <!--Invetigaciones-->
     <template id="cv_digital_section_investigation">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1377,7 +1395,9 @@
     <!--PUBLICACIONES-->
     <template id="cv_digital_section_publication">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1479,7 +1499,9 @@
     <!--Tutorias-->
     <template id="cv_digital_section_supervision">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1615,7 +1637,9 @@
     <!--IDIOMAS-->
     <template id="cv_digital_section_language">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <table style="border-spacing: 0; width: 100%; max-width: 600px;">
             <tr>
@@ -1664,7 +1688,9 @@
     <!--Discapacidad-->
     <template id="cv_digital_section_disabilitie">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1750,7 +1776,9 @@
     <!--VOLUNTARIADO-->
     <template id="cv_digital_section_volunteering">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1828,7 +1856,9 @@
     <!--Otra información relevante-->
     <template id="cv_digital_section_other_relevant_information">
         <h3 class="mb-5">
-             <strong> <t t-esc="name_section"/> </strong>
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -1847,7 +1877,9 @@
     <template id="cv_digital_section_reference">
         <t t-if="objects">
             <h3 class="mb-5">
-                 <strong> <t t-esc="name_section"/> </strong>
+                <strong>
+                    <t t-esc="name_section"/>
+                </strong>
             </h3>
             <ul style="list-style:none">
                 <li>
