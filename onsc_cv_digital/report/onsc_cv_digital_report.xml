@@ -263,6 +263,7 @@
                                         </td>
                                     </tr>
 
+
                                     <tr>
                                         <td>
                                             <h4>Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889):
@@ -573,7 +574,7 @@
 
     <template id="cv_digital_section_formation">
         <h4 t-if="objects" class="mb-5">
-            <t t-esc="name_section"/>
+            <u><t t-esc="name_section"/></u>
         </h4>
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none">
@@ -645,12 +646,12 @@
                         <tr>
                             <td>
                                 <h4>Créditos aprobados:
-                                    <span t-field="object.scholarship"/>
+                                    <span t-field="object.credits_far"/>
                                 </h4>
                             </td>
                             <td>
                                 <h4>Créditos totales:
-                                    <span t-field="object.max_scholarship"/>
+                                    <span t-field="object.credits_training"/>
                                 </h4>
                             </td>
                         </tr>
@@ -753,7 +754,7 @@
     <template id="cv_digital_section_formation_basic">
         <h4 t-if="objects" class="mb-5">
             <strong>
-                <t t-esc="name_section"/>
+                <u><t t-esc="name_section"/></u>
             </strong>
         </h4>
         <t t-foreach="objects" t-as="object">
