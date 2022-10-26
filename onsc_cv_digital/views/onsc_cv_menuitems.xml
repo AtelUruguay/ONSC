@@ -275,7 +275,7 @@
 
         <menuitem id="onsc_cv_config_settings_menu"
                   name="Configuración"
-                  action="onsc_cv_digital_config_settings_action"
+                  action="onsc_cv_digital_config_action"
                   parent="onsc_cv_settings_menu"
                   groups="onsc_cv_digital.group_manager_cv"
                   sequence="1"/>
