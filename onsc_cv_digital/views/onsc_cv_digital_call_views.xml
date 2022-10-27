@@ -632,7 +632,7 @@
         <field name="type">ir.actions.server</field>
          <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>
         <field name="binding_model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>
-        <field name="binding_view_types">list,form</field>
+        <field name="binding_view_types">list</field>
         <field name="state">code</field>
         <field name="code">
             action = model.onsc_cv_digital_call_print_cv()
