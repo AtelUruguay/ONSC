@@ -245,7 +245,9 @@
                             </t>
 
                             <t t-if="'address' in env.context.get('seccions', True)">
-                                <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">DOMICILIO</h3>
+                                <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
+                                    <strong>DOMICILIO</strong>
+                                </h3>
                                 <ul style="list-style:none">
                                     <li>
                                         <h4>
@@ -408,7 +410,7 @@
 
                                 <br></br>
                             </t>
-                            <t t-if="'events' in env.context.get('seccions', True)">
+                            <t t-if="'work_teaching' in env.context.get('seccions', True)">
                                 <br></br>
                                 <!--Docencia-->
                                 <t t-call="onsc_cv_digital.cv_digital_section_teaching">
@@ -419,7 +421,7 @@
 
                                 <br></br>
                             </t>
-                            <t t-if="'work_teaching' in env.context.get('seccions', True)">
+                            <t t-if="'investigation' in env.context.get('seccions', True)">
                                 <br></br>
                                 <!--INVESTIGACIONES-->
                                 <t t-call="onsc_cv_digital.cv_digital_section_investigation">
@@ -1379,7 +1381,7 @@
                 <t t-esc="name_section"/>
             </strong>
         </h3>
-        <table style="border-spacing: 0; width: 100%; max-width: 600px;">
+        <table class="ml-5" style="border-spacing: 0; width: 100%; max-width: 600px;">
             <tr>
                 <th>
                     <h4>Idioma</h4>
