@@ -325,21 +325,16 @@ class ONSCCVDigitalCall(models.Model):
             return
         if len(self.mapped('call_number')) != 1:
             raise ValidationError(_("Debe seleccionar un único llamado"))
-        report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital')._render_qweb_pdf(self[0].cv_digital_origin_id.id)[0]
-        filename = '%s_%s.pdf' % (self[0].call_number, str(fields.Datetime.now()))
-
-        report_file = open(join(cv_zip_url, filename), 'wb+')
-        report_file.write(report)
-
-        zip_filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now()))
-        zip_archive = zipfile.ZipFile(zip_filename, "w")
-        zip_archive.writestr(base64.encodebytes(report),compress_type=zipfile.ZIP_DEFLATED)
+        wizard = self.env['onsc.cv.report.wizard'].create({})
+        a = wizard.button_print()
+        report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(seccions=a['context'].get('seccions'))._render_qweb_pdf(
+            self[0].cv_digital_origin_id.id)[0]
+        filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now()))
+        zip_archive = zipfile.ZipFile(join(cv_zip_url, filename), "w")
+        with zipfile.ZipFile(join(cv_zip_url, 'w')) as zip:
+            zip.write(report)
+        # zip_archive.write(report)
         zip_archive.close()
-
-        # report_filename = open(join(cv_zip_url, zip_filename), 'wb+')
-        # stream = io.BytesIO()
-        # with zipfile.ZipFile(stream, 'w') as doc_zip:
-        #     doc_zip.writestr(report_filename, base64.encodebytes(report),compress_type=zipfile.ZIP_DEFLATED)
         return True
 
 

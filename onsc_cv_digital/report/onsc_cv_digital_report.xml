@@ -55,24 +55,12 @@
     <template id="onsc_cv_digital_document">
         <t t-call="onsc_cv_digital.external_layout_cv">
             <div class="page">
-                <div class="container bg-primary bg-gradient text-white py-5">
+                <div class="container bg-primary bg-gradient text-white py-1">
                     <div class="row">
+                        <div class="col-2 text-left text-md-center mb-3">
+                            <img t-if="o.partner_id.image_1920" t-att-src="image_data_uri(o.partner_id.image_1920)" class="rounded-circle img-fluid" alt="Partner Photo"/>
+                        </div>
                         <div class="col-8">
-                        </div>
-                        <div class="col-4">
-                            <img src="/onsc_cv_digital/static/img/logo_cv.png"
-                                 alt="image" title="image"
-                                 class="img-fluid mb8 mt8 d-block mx-auto"/>
-                        </div>
-                    </div>
-                </div>
-                <div class="container bg-primary bg-gradient">
-                    <div class="row">
-                        <div class="col-3 text-left text-md-center mb-3">
-                            <img t-if="o.partner_id.image_1920" t-att-src="image_data_uri(o.partner_id.image_1920)"
-                                 class="rounded-circle img-fluid" alt="Partner Photo"/>
-                        </div>
-                        <div class="col-9">
                             <h1>
                                 <span t-field="o.partner_id.name"/>
                             </h1>
@@ -83,19 +71,19 @@
                                         <span t-field="o.email"/>
                                     </td>
                                     <td>País:
-                                        <span t-field="o.cv_emissor_country_id.name"/>
-                                        <img t-attf-src="{{o.cv_emissor_country_id.image_url}}"
-                                             alt="image" title="image"
-                                             class="img-fluid" width="20"/>
+                                        <span t-if="o.cv_emissor_country_id" t-field="o.cv_emissor_country_id.name"/>
+                                        <img t-if="o.cv_emissor_country_id" t-attf-src="{{o.cv_emissor_country_id.image_url}}" alt="image" title="image" class="img-fluid" width="20"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <i class="fa fa-fw fa-mobile mr-2"/>
-                                        <span t-field="o.mobile_phone"/>
+                                        <i t-if="o.mobile_phone" class="fa fa-fw fa-mobile mr-2"/>
+                                        <span t-if="o.mobile_phone" t-field="o.mobile_phone"/>
                                     </td>
-                                    <td>Tipo de documento:
-                                        <span t-field="o.partner_id.cv_document_type_id.name"/>
+                                    <td>
+                                        <t t-if="o.cv_document_type_id">Tipo de documento:
+                                            <span t-field="o.partner_id.cv_document_type_id.name"/>
+                                        </t>
                                     </td>
                                 </tr>
                                 <tr>
@@ -119,9 +107,12 @@
                                 </tr>
                             </table>
                         </div>
+                        <div class="col-2">
+                            <img src="/onsc_cv_digital/static/img/logo_cv.png" alt="image" title="image" class="img-fluid mb8 mt8 d-block mx-auto"/>
+                        </div>
                     </div>
                 </div>
-                <div class="pt-2 pb-2">
+                <div class="pt-1 pb-1">
                     <div class="row">
                         <div class="col-12">
                             <br></br>
