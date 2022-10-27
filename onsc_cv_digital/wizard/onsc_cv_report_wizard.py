@@ -7,6 +7,7 @@ class ONSCCVReportWizard(models.TransientModel):
     _name = 'onsc.cv.report.wizard'
     _description = 'Reporte de CV'
 
+    cv_digital_ids = fields.Many2many("onsc.cv.digital")
     seccion_ids = fields.Many2many("onsc.cv.report.config.seccion",
                                    string="Secciones",
                                    default=lambda self: self._get_default_seccion_ids())
@@ -26,14 +27,16 @@ class ONSCCVReportWizard(models.TransientModel):
 
     def button_print(self):
         # TODO: Reporte de CV
-        active_ids = self._context.get('active_ids', False)
-        if not active_ids:
+        if self.cv_digital_ids:
+            onsc_cv_digital_ids = self.cv_digital_ids
+        else:
+            active_ids = self._context.get('active_ids', False)
+            onsc_cv_digital_ids = self.env['onsc.cv.digital'].browse(active_ids)
+        if len(onsc_cv_digital_ids) == 0:
             return True
-        onsc_cv_digital_ids = self.env['onsc.cv.digital'].browse(active_ids)
         seccion_data = []
         for seccion in self.seccion_ids:
             seccion_data.append(seccion.internal_field)
-
         action_report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital')
         action_report.suspend_security().context = {'seccions': seccion_data}
         res = action_report.report_action(onsc_cv_digital_ids)

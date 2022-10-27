@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import base64
 import json
 import logging
-import base64
-import io
 import zipfile
 from os.path import join
 
@@ -336,8 +335,6 @@ class ONSCCVDigitalCall(models.Model):
         # zip_archive.write(report)
         zip_archive.close()
         return True
-
-
 
     @api.model
     def create(self, values):
@@ -700,3 +697,22 @@ class ONSCCVDigitalCall(models.Model):
         emailto = ','.join(users.filtered(lambda x: x.partner_id.email).mapped('partner_id.email'))
         template.with_context(call=call_number).send_mail(len(self) and self[0].id, email_values={'email_to': emailto})
 
+    def button_print_cv_copy(self):
+        res = {
+            'name': 'Imprimir CV',
+            'view_mode': 'form',
+            'res_model': 'onsc.cv.report.wizard',
+            'target': 'new',
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'context': {'default_cv_digital_ids': self.cv_digital_id.ids},
+        }
+        return res
+
+    def onsc_cv_digital_call_print_cv(self):
+        active_ids = self._context.get('active_ids', False)
+        onsc_cv_digital_ids = self.env['onsc.cv.digital.call'].browse(active_ids)
+        onsc_cv_report_wizard = self.env['onsc.cv.report.wizard'].create({
+            'cv_digital_ids': onsc_cv_digital_ids.cv_digital_id.ids
+        })
+        return onsc_cv_report_wizard.button_print()
