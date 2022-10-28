@@ -57,8 +57,8 @@
             <div class="page">
                 <div class="container text-white py-1" style="background-color:rgb(82, 113, 255)">
                     <div class="row">
-                        <div class="col-2 text-left text-md-center">
-                            <img t-if="o.partner_id.image_1920" t-att-src="image_data_uri(o.partner_id.image_1920)" class="rounded-circle img-fluid" alt="Partner Photo"/>
+                        <div t-if="o.partner_id.image_1920" class="col-2 text-left text-md-center">
+                            <img t-att-src="image_data_uri(o.partner_id.image_1920)" class="rounded-circle img-fluid" alt="Partner Photo"/>
                         </div>
                         <div class="col-8">
                             <h1>
@@ -66,32 +66,31 @@
                             </h1>
                             <table style="border-spacing: 0; width: 100%; max-width: 600px;">
                                 <tr>
-                                    <td>
+                                    <td style="width:60%">
                                         <i class="fa fa-fw fa-envelope mr-2"/>
                                         <span t-field="o.email"/>
                                     </td>
                                     <td>País:
                                         <span t-if="o.cv_emissor_country_id" t-field="o.cv_emissor_country_id.name"/>
-                                        <img t-if="o.cv_emissor_country_id"
-                                             t-attf-src="{{o.cv_emissor_country_id.image_url}}"
-                                             alt="image" title="image"
-                                             class="img-fluid" width="20"/>
+                                        <img t-if="o.cv_emissor_country_id" t-attf-src="{{o.cv_emissor_country_id.image_url}}" alt="image" title="image" class="img-fluid" width="20"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
                                         <i t-if="o.mobile_phone" class="fa fa-fw fa-mobile mr-2"/>
+                                        <span t-if="o.mobile_phone" t-field="o.prefix_mobile_phone_id"/>
                                         <span t-if="o.mobile_phone" t-field="o.mobile_phone"/>
                                     </td>
                                     <td>
-                                        <t t-if="o.cv_document_type_id">Tipo de documento:
+                                        <t t-if="o.cv_document_type_id">Tipo de documento:<br/>
                                             <span t-field="o.partner_id.cv_document_type_id.name"/>
                                         </t>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <i class="fa fa-fw fa-phone mr-2"/>
+                                        <i t-if="o.personal_phone" class="fa fa-fw fa-phone mr-2"/>
+                                        <span t-if="o.personal_phone" t-field="o.prefix_phone_id"/>
                                         <span t-field="o.personal_phone"/>
                                     </td>
                                     <td>Número de documento:
@@ -112,8 +111,7 @@
                             </table>
                         </div>
                         <div class="col-2">
-                            <img src="/onsc_cv_digital/static/img/logo_cv.png" alt="image" title="image"
-                                 class="img-fluid mb8 mt8 d-block mx-auto"/>
+                            <img src="/onsc_cv_digital/static/img/logo_cv.png" alt="image" title="image" class="img-fluid mb8 mt8 d-block mx-auto"/>
                         </div>
                     </div>
                 </div>
@@ -173,7 +171,7 @@
                                             <span t-field="o.professional_resume"/>
                                         </h4>
                                     </li>
-                                    <li>
+                                    <li t-if="o.is_cv_gender_public">
                                         <h4 t-if="o.cv_gender_id">Género:
                                             <span t-field="o.cv_gender_id.name"/>
                                         </h4>
@@ -183,6 +181,7 @@
                                             </h4>
                                         </t>
                                     </li>
+                                    <t t-if="o.is_cv_race_public">
                                     <li>
                                         <h4 t-if="o.cv_race_ids">Identidad étnico-racial:
                                             <t t-set="emp_count" t-value="0"/>
@@ -219,6 +218,7 @@
                                             </span>
                                         </h4>
                                     </li>
+                                    </t>
                                 </ul>
                                 <br></br>
                                 <ul>
@@ -262,7 +262,7 @@
                                                 </h4>
                                             </td>
                                         </tr>
-                                        <tr>
+                                        <tr t-if="o.is_public_information_victim_violent">
                                             <td>
                                                 <h4 t-if="o.is_victim_violent">Persona víctima de delitos violentos
                                                     (Art. 105 Ley Nº 19.889):
@@ -532,7 +532,7 @@
                                 </t>
                                 <br></br>
                             </t>
-                            <t t-if="'disabilitie' in env.context.get('seccions', True)">
+                            <t t-if="'disabilitie' in env.context.get('seccions', True) and o.allow_content_public == 'si'">
                                 <br></br>
                                 <t t-call="onsc_cv_digital.cv_digital_section_disabilitie">
                                     <t t-set="name_section" t-value="'DISCAPACIDAD'"/>
