@@ -25,6 +25,12 @@ class ONSCCVReportWizard(models.TransientModel):
         else:
             self.seccion_ids = [(5,)]
 
+    def get_seccions(self):
+        seccion_data = []
+        for seccion in self.seccion_ids:
+            seccion_data.append(seccion.internal_field)
+        return seccion_data
+
     def button_print(self):
         # TODO: Reporte de CV
         if self.cv_digital_ids:
@@ -34,11 +40,8 @@ class ONSCCVReportWizard(models.TransientModel):
             onsc_cv_digital_ids = self.env['onsc.cv.digital'].browse(active_ids)
         if len(onsc_cv_digital_ids) == 0:
             return True
-        seccion_data = []
-        for seccion in self.seccion_ids:
-            seccion_data.append(seccion.internal_field)
         action_report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital')
-        action_report.suspend_security().context = {'seccions': seccion_data}
+        action_report.suspend_security().context = {'seccions': self.get_seccions()}
         res = action_report.report_action(onsc_cv_digital_ids)
         res.update({'close_on_report_download': True})
         return res

@@ -4,7 +4,9 @@ import base64
 import json
 import logging
 import zipfile
+import io
 from os.path import join
+from odoo.http import request, content_disposition
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -322,18 +324,15 @@ class ONSCCVDigitalCall(models.Model):
         cv_zip_url = self.env.user.company_id.cv_zip_url
         if len(self) == 0 or not cv_zip_url:
             return
-        if len(self.mapped('call_number')) != 1:
-            raise ValidationError(_("Debe seleccionar un único llamado"))
-        wizard = self.env['onsc.cv.report.wizard'].create({})
-        a = wizard.button_print()
-        report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(seccions=a['context'].get('seccions'))._render_qweb_pdf(
-            self[0].cv_digital_origin_id.id)[0]
         filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now()))
         zip_archive = zipfile.ZipFile(join(cv_zip_url, filename), "w")
-        with zipfile.ZipFile(join(cv_zip_url, 'w')) as zip:
-            zip.write(report)
-        # zip_archive.write(report)
-        zip_archive.close()
+        stream = io.BytesIO()
+        wizard = self.env['onsc.cv.report.wizard'].create({})
+        report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(
+            seccions=wizard.get_seccions())._render_qweb_pdf(
+            self[0].cv_digital_origin_id.id)
+        with zipfile.ZipFile(join(cv_zip_url, filename), 'w') as doc_zip:
+            doc_zip.writestr('CV.pdf', base64.b64decode(report[0]))
         return True
 
     @api.model

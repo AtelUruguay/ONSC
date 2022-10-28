@@ -58,8 +58,7 @@
                 <div class="container text-white py-1" style="background-color:rgb(82, 113, 255)">
                     <div class="row">
                         <div class="col-2 text-left text-md-center">
-                            <img t-if="o.partner_id.image_1920" t-att-src="image_data_uri(o.partner_id.image_1920)"
-                                 class="rounded-circle img-fluid" alt="Partner Photo"/>
+                            <img t-if="o.partner_id.image_1920" t-att-src="image_data_uri(o.partner_id.image_1920)" class="rounded-circle img-fluid" alt="Partner Photo"/>
                         </div>
                         <div class="col-8">
                             <h1>
@@ -85,7 +84,7 @@
                                         <span t-if="o.mobile_phone" t-field="o.mobile_phone"/>
                                     </td>
                                     <td>
-                                        <t t-if="o.partner_id.cv_document_type_id">Tipo de documento:
+                                        <t t-if="o.cv_document_type_id">Tipo de documento:
                                             <span t-field="o.partner_id.cv_document_type_id.name"/>
                                         </t>
                                     </td>
@@ -276,7 +275,9 @@
                             </t>
 
                             <t t-if="'address' in env.context.get('seccions', True)">
-                                <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">DOMICILIO</h3>
+                                <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
+                                    <strong>DOMICILIO</strong>
+                                </h3>
                                 <ul style="list-style:none">
                                     <li>
                                         <h4>
@@ -346,6 +347,13 @@
                                         </h4>
                                     </li>
                                 </ul>
+                                <div t-if="o.cv_address_state == 'rejected'" class="alert alert-info" role="alert">
+                                    <p class="mb-0">
+                                        <strong>El domicilio ha sido rechazado. Motivo:
+                                            <span t-field="o.cv_address_reject_reason"/>
+                                        </strong>
+                                    </p>
+                                </div>
                             </t>
                             <t t-if="'formation' in env.context.get('seccions', True)">
                                 <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
@@ -376,7 +384,6 @@
                                     <t t-set="objects"
                                        t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Grado terciario')"/>
                                 </t>
-
                                 <t t-call="onsc_cv_digital.cv_digital_section_formation">
                                     <t t-set="name_section" t-value="'CARRERAS TECNICAS Y TECNOLOGICAS'"/>
                                     <t t-set="objects"
@@ -449,7 +456,7 @@
 
                                 <br></br>
                             </t>
-                            <t t-if="'events' in env.context.get('seccions', True)">
+                            <t t-if="'work_teaching' in env.context.get('seccions', True)">
                                 <br></br>
                                 <!--Docencia-->
                                 <t t-call="onsc_cv_digital.cv_digital_section_teaching">
@@ -460,7 +467,7 @@
 
                                 <br></br>
                             </t>
-                            <t t-if="'work_teaching' in env.context.get('seccions', True)">
+                            <t t-if="'investigation' in env.context.get('seccions', True)">
                                 <br></br>
                                 <!--INVESTIGACIONES-->
                                 <t t-call="onsc_cv_digital.cv_digital_section_investigation">
@@ -545,7 +552,7 @@
                                 <br></br>
                                 <!--Otra información relevante-->
                                 <t t-call="onsc_cv_digital.cv_digital_section_other_relevant_information">
-                                    <t t-set="name_section" t-value="'OTRA INFORMACIÓN RELEVANTE:'"/>
+                                    <t t-set="name_section" t-value="'OTRA INFORMACIÓN RELEVANTE'"/>
                                     <t t-set="objects"
                                        t-value="o.other_relevant_information_ids"/>
                                 </t>
@@ -567,6 +574,17 @@
                 </div>
             </div>
         </t>
+    </template>
+
+    <template id="cv_conditional_validation">
+        <div t-if="object.conditional_validation_state == 'rejected'" class="alert alert-info" role="alert">
+            <p class="mb-0">
+                <strong>
+                    El registro ha sido rechazado por los siguientes motivos:
+                    <span t-field="object.conditional_validation_reject_reason"/>
+                </strong>
+            </p>
+        </div>
     </template>
 
     <!--Formacion Avanzada-->
@@ -743,6 +761,7 @@
                     <span t-field="object.other_relevant_information"/>
                 </h4>
             </ul>
+            <t t-call="onsc_cv_digital.cv_conditional_validation"/>
             <br></br>
         </t>
     </template>
@@ -784,6 +803,7 @@
                     <span t-field="object.other_relevant_information"/>
                 </h4>
             </ul>
+            <t t-call="onsc_cv_digital.cv_conditional_validation"/>
         </t>
     </template>
 
@@ -876,6 +896,7 @@
                     <span t-field="object.other_relevant_information"/>
                 </h4>
             </ul>
+            <t t-call="onsc_cv_digital.cv_conditional_validation"/>
             <br></br>
         </t>
     </template>
@@ -958,6 +979,7 @@
                     </ul>
                 </t>
             </ul>
+            <t t-call="onsc_cv_digital.cv_conditional_validation"/>
             <br></br>
         </t>
     </template>
@@ -1037,6 +1059,7 @@
                     <span t-field="object.other_relevant_information"/>
                 </h4>
             </ul>
+            <t t-call="onsc_cv_digital.cv_conditional_validation"/>
             <br></br>
         </t>
     </template>
@@ -1097,26 +1120,26 @@
                         <li>
                             <h4 t-esc="line.subject"></h4>
                             <ul>
-                                <li>
-                                    <h4 t-if="line.start_date">
+                                <li t-if="line.start_date">
+                                    <h4>
                                         Inicio:
                                         <span t-field="line.start_date"/>
                                     </h4>
                                 </li>
-                                <li>
-                                    <h4 t-if="line.end_date">
+                                <li t-if="line.end_date">
+                                    <h4>
                                         Fin:
                                         <span t-field="line.end_date"/>
                                     </h4>
                                 </li>
-                                <li>
-                                    <h4 t-if="line.course_type">
+                                <li t-if="line.course_type">
+                                    <h4>
                                         Tipo de Curso:
                                         <span t-field="line.course_type"/>
                                     </h4>
                                 </li>
-                                <li>
-                                    <h4 t-if="line.program_ids">
+                                <li t-if="line.program_ids">
+                                    <h4>
                                         Programas académicos:
                                         <t t-set="emp_count" t-value="0"/>
                                         <t t-foreach="line.program_ids" t-as="program">
@@ -1128,14 +1151,14 @@
                                         </t>
                                     </h4>
                                 </li>
-                                <li>
-                                    <h4 t-if="line.level_teaching_type">
+                                <li t-if="line.level_teaching_type">
+                                    <h4>
                                         Nivel enseñado:
                                         <span t-field="line.level_teaching_type"/>
                                     </h4>
                                 </li>
-                                <li>
-                                    <h4 t-if="line.knowledge_acquired_ids">Conocimientos enseñados:
+                                <li t-if="line.knowledge_acquired_ids">
+                                    <h4>Conocimientos enseñados:
                                         <t t-set="emp_count" t-value="0"/>
                                         <t t-foreach="line.knowledge_acquired_ids" t-as="knowledge">
                                             <t t-set="emp_count" t-value="emp_count + 1"/>
@@ -1165,11 +1188,12 @@
                     <span t-field="object.other_relevant_information"/>
                 </h4>
             </ul>
+            <t t-call="onsc_cv_digital.cv_conditional_validation"/>
             <br></br>
         </t>
     </template>
 
-    <!--Invetigaciones-->
+    <!--Investigaciones-->
     <template id="cv_digital_section_investigation">
         <h3 t-if="objects" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
             <strong>
@@ -1290,6 +1314,7 @@
                     </h4>
                 </t>
             </ul>
+            <t t-call="onsc_cv_digital.cv_conditional_validation"/>
             <br></br>
         </t>
     </template>
@@ -1487,6 +1512,7 @@
                     <span t-field="object.other_relevant_information"/>
                 </h4>
             </ul>
+            <t t-call="onsc_cv_digital.cv_conditional_validation"/>
             <br></br>
         </t>
     </template>
@@ -1498,7 +1524,7 @@
                 <t t-esc="name_section"/>
             </strong>
         </h3>
-        <table t-if="objects" style="border-spacing: 0; width: 100%; max-width: 600px;">
+        <table t-if="objects" class="ml-5" style="border-spacing: 0; width: 100%; max-width: 600px;">
             <tr>
                 <th>
                     <h4>Idioma</h4>
@@ -1817,7 +1843,6 @@
         <field name="report_name">onsc_cv_digital.report_onsc_cv_digital</field>
         <field name="report_file">onsc_cv_digital.report_onsc_cv_digital</field>
         <field name="print_report_name">object.cv_full_name</field>
-        <field name="binding_model_id" ref="onsc_cv_digital.model_onsc_cv_digital"/>
         <field name="paperformat_id" ref="onsc_cv_digital.paperformat_report_cv"/>
         <field name="binding_type">report</field>
     </record>
