@@ -178,7 +178,7 @@
                                         <h4 t-if="o.cv_gender_id">Género:
                                             <span t-field="o.cv_gender_id.name"/>
                                         </h4>
-                                        <t t-if="o.cv_gender2">
+                                        <t t-if="o.cv_gender2 and o.is_cv_gender_option_other_enable ">
                                             <h4>Otro Género:
                                                 <span t-field="o.cv_gender2"/>
                                             </h4>
@@ -197,7 +197,7 @@
                                         </h4>
                                     </li>
                                     <li>
-                                        <t t-if="o.cv_race2">
+                                        <t t-if="o.cv_race2 and o.is_cv_race_option_other_enable">
                                             <h4>Otra identidad étnico-racial:
                                                 <span>
                                                     <t t-esc="o.cv_race2"/>
@@ -206,7 +206,8 @@
                                         </t>
                                     </li>
                                     <li>
-                                        <h4 t-if="o.cv_first_race_id">¿Con cuál se reconoce principalmente?:
+                                        <h4 t-if="o.cv_first_race_id and o.is_multiple_cv_race_selected">¿Con cuál se
+                                            reconoce principalmente?:
                                             <span>
                                                 <t t-esc="o.cv_first_race_id.name"/>
                                             </span>
@@ -223,20 +224,22 @@
                                 </ul>
                                 <br></br>
                                 <ul>
-                                    <h4 t-if="o.drivers_license_ids">Licencia de conducir</h4>
-                                    <t t-foreach="o.drivers_license_ids" t-as="lc">
-                                        <li class="ml-4">
-                                            <h4>Categoría:
-                                                <span t-field="lc.category_id.name"/>
-                                                - Vencimiento:
-                                                <span t-field="lc.validation_date"
-                                                      t-options='{"format": "dd/MM/yyyy"}'/>
-                                            </h4>
+                                    <t t-if="o.is_driver_license">
+                                        <h4 t-if="o.drivers_license_ids">Licencia de conducir</h4>
+                                        <t t-foreach="o.drivers_license_ids" t-as="lc">
+                                            <li class="ml-4">
+                                                <h4>Categoría:
+                                                    <span t-field="lc.category_id.name"/>
+                                                    - Vencimiento:
+                                                    <span t-field="lc.validation_date"
+                                                          t-options='{"format": "dd/MM/yyyy"}'/>
+                                                </h4>
 
-                                        </li>
+                                            </li>
+                                        </t>
                                     </t>
                                 </ul>
-                                <br></br>
+                                <br t-if="o.is_driver_license"></br>
                                 <ul>
                                     <table>
                                         <tr>
@@ -848,7 +851,8 @@
                 <h4 t-if="object.state">Estado:
                     <span t-field="object.state"/>
                 </h4>
-                <h4 t-if="object.certificate_start_date and name_section=='CERTIFICADOS'">Fecha de obtención del certificado/constancia:
+                <h4 t-if="object.certificate_start_date and name_section=='CERTIFICADOS'">Fecha de obtención del
+                    certificado/constancia:
                     <span t-field="object.certificate_start_date"/>
                 </h4>
 
@@ -1794,7 +1798,8 @@
                             <span t-field="object.name"/>
                             /
                             Teléfono:
-                            <span t-field="object.prefix_phone_id"/><span t-field="object.phone"/>
+                            <span t-field="object.prefix_phone_id"/>
+                            <span t-field="object.phone"/>
                             /
                             Mail:
                             <span t-field="object.email"/>
