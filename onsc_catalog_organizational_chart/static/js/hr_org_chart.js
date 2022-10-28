@@ -53,7 +53,7 @@ odoo.define("hr_org_chart_employee.hr_org_chart", function (require) {
     render: function() {
         var super_render = this._super;
         var self = this;
-        var org_chart = QWeb.render('hr_organizational_chart.org_chart_template', {
+        var org_chart = QWeb.render('onsc_catalog_organizational_chart.org_chart_template', {
             widget: self,
         });
         $(".o_control_panel").addClass("o_hidden");

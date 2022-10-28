@@ -5,19 +5,18 @@
         <field name="tag">employee_organization_chart</field>
     </record>
     <record id="onsc_action_organizational_wizard_tree" model="ir.actions.act_window">
-        <field name="name">Seleccione Unidade ejecutora</field>
+        <field name="name">Asistente de organigrama</field>
         <field name="res_model">onsc.organizational.wizard</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="onsc_organizational_form"/>
         <field name="context">{}</field>
         <field name="target">new</field>
     </record>
-
-    <menuitem id="menu_hr_organizational_chart"
-              name="Organizational Chart"
+    <menuitem id="menu_onsc_catalog_organizational_chart"
+              name="Organigrama"
               action="onsc_action_organizational_wizard_tree"
-              parent="hr.menu_hr_employee_payroll"
-              groups="base.group_user"
-              sequence="4"/>
+              parent="onsc_catalog.onsc_cv_catalog_parent_uo_menu"
+              sequence="49"
+              groups="onsc_catalog.group_catalog_configurador_servicio_civil,onsc_catalog.group_catalog_aprobador_cgn"/>
 
 </odoo>

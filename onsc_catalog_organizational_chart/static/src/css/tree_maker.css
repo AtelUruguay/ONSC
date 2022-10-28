@@ -12,7 +12,7 @@
 .tree__container__step__card p {
     padding: 10px;
     box-shadow: 0 0 4px 1px rgba(121, 121, 121, 0.3);
-    border-radius: 4px;
+    border-radius: 0px;
     text-align: center;
     width: 150px;
     display: inline-block;

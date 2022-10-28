@@ -72,6 +72,7 @@
 #o_organizational_chart .o_org_chart_title.mb16.mt0 {
     background-color: darkgray;
     padding: 17px;
+    width: 300rem;
 }
 #parent{
     display: flex;
@@ -95,22 +96,32 @@
     height: 100%;
     border-bottom: dashed;
     min-width: 100%;
-    justify-content: center;
+    justify-content: space-evenly;
     flex-wrap: nowrap;
     gap: 1rem;
     align-items: center;
     padding: 2rem;
 }
-.node{
-	height: 80px;
-    max-width: 140px;
-    min-width: 140px;
-    background-color: #318CDA;
-    position: relative;
-    margin-top: 1rem;
-    cursor: pointer;
+div.node{
+	height: 50px !important;
+    max-width: 100px !important;
+    min-width: 100px !important;
+    background-color: #318CDA !important;
+//     position: relative;
+//     margin-top: 1rem;
+//     cursor: pointer;
+//     border: 2px solid;
+//     border-radius: 5px;
 //     flex-basis: 50%;
 //     flex-grow: 1;
+}
+div.orgChart {
+    border: none !important;
+    background-color: #f8f9fa !important;
+    }
+div.orgChart h2{
+    font-size: 0.6rem !important;
+    line-height: 1.2rem !important;
 }
 .text-level{
 writing-mode: vertical-rl;
@@ -121,10 +132,11 @@ transform: rotate(180deg);
 overflow: hidden;
    text-overflow: ellipsis;
    display: -webkit-box;
-   line-height: 16px;     /* fallback */
+   line-height: 8px;     /* fallback */
    max-height: 80px;      /* fallback */
    -webkit-line-clamp: 7; /* number of lines to show */
    -webkit-box-orient: vertical;
+   font-size: 8px;
 }
 .div-content{
 display: flex;
@@ -138,5 +150,12 @@ display: flex;
 .div-parent{
 	display: flex;
 	gap: 0.5rem;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
 }
+
+#svgContainer {
+      z-index: -10;
+      position: absolute;
+
+      opacity: 0.5;
+    }

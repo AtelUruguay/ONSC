@@ -82,6 +82,21 @@ class EmployeeChart(http.Controller):
                 tree[root_node.id][node.id] = {}
                 self.get_hierarchycal_structure(node, tree[root_node.id])
 
+    def get_hierarchycal_structure2(self, root_node):
+        tree = ''
+        if root_node.function_nature in ['comite']:
+            return f'<adjunct>{root_node.name}</adjunct>'
+        if not root_node.child_ids:
+            return ''
+        else:
+            tree += "<ul>"
+            for node in root_node.child_ids:
+                tree += f'<li>{node.name}'
+                tree += self.get_hierarchycal_structure2(node)
+            tree += "</ul>"
+            tree += '</li>'
+        return tree
+
     def get_nodes(self, child_ids):
         # if child_ids:
         #     child_nodes = """<tr>"""
@@ -119,83 +134,85 @@ class EmployeeChart(http.Controller):
         #     child_ids = request.env['hr.department'].sudo().search([('operating_unit_id', '=', val), ('parent_id', '=', False)])
         #     emp = request.env['operating.unit'].sudo().browse(val)
 
-        organization_data_tree = {}
         operating_unit_id = post.get('operating_unit_id', False)
+        department_id = post.get('department_id', False)
+        domain = [('operating_unit_id', '=', operating_unit_id)]
+        if department_id:
+            domain.extend(['|', ('parent_id', '=', int(department_id)), ('id', '=', int(department_id))])
         nodes_by_level = request.env['hr.department'].sudo().search(
-            [
-                ('operating_unit_id', '=', operating_unit_id),
-            ], order='id asc, parent_id asc'
+            domain, order='id asc, parent_id asc'
         )
         root_node = nodes_by_level.filtered(
             lambda node: not node.parent_id
         )
-        organization_data_tree[root_node.id] = {
-
-        }
-        self.get_hierarchycal_structure(root_node, organization_data_tree)
+        organization_data_tree = f'<ul id="organisation" class="d-none"><li><em>{root_node.name}</em>'
+        tree = self.get_hierarchycal_structure2(root_node)
+        organization_data_tree += tree + '</li></ul>'
         organization_data = {}
         in_organization = []
-        for level in levels:
-            organization_data[level.id] = {
-                'name': level.name,
-                'code': level.code,
-                'parents': {},
-            }
-            nodes_by_level = request.env['hr.department'].sudo().search(
-                [
-                    ('operating_unit_id', '=', operating_unit_id),
-                    ('hierarchical_level_id', '=', level.id),
-                ], order='id asc, parent_id asc'
-            )
-            parents_groups = [
-                group['parent_id'] for group in
-                request.env['hr.department'].read_group(
-                    [
-                        (
-                            'parent_id',  'in', nodes_by_level.mapped(
-                                'parent_id.id'
-                            )
-                        ),
-                        ('id', 'not in', in_organization)
-                    ],
-                    ['parent_id'],
-                    ['parent_id']
-                )
-            ] or [False]
-            for parent in parents_groups:
-                if not parent:
-                    parent_id = False
-                    nodes = nodes_by_level
-                    organization_data[level.id]['parents'][False] = {
-                        'name': nodes_by_level[0].name,
-                        'nodes': []
-                    }
-                else:
-                    parent_id = parent and parent[0] or False
-                    nodes = request.env['hr.department'].search(
-                        [('parent_id', '=', parent_id)]
-                    )
-                    organization_data[level.id]['parents'][parent_id] = {
-                        'name': parent[1],
-                        'nodes': []
-                    }
-                for node in nodes:
-                    in_organization.append(node.id)
-                    organization_data[level.id]['parents'][parent_id][
-                        'nodes'
-                    ].append(
-                        {
-                            'name': node.name,
-                            'parent_id': node.parent_id and node.parent_id.id or False,
-                            'level': level.id,
-                            'id': node.id,
-                            'metadata': {
-                                'operating_unit_id': node.operating_unit_id.id,
-                                'code': node.code,
-                                'inciso_id': node.inciso_id.id,
-                            }
-                        }
-                    )
+        # for level in levels:
+        #     organization_data[level.id] = {
+        #         'name': level.name,
+        #         'code': level.code,
+        #         'parents': {},
+        #     }
+        #     nodes_by_level = request.env['hr.department'].sudo().search(
+        #         [
+        #             ('operating_unit_id', '=', operating_unit_id),
+        #             ('hierarchical_level_id', '=', level.id),
+        #         ], order='id asc, parent_id asc'
+        #     )
+        #     parents_groups = [
+        #         group['parent_id'] for group in
+        #         request.env['hr.department'].read_group(
+        #             [
+        #                 (
+        #                     'parent_id',  'in', nodes_by_level.mapped(
+        #                         'parent_id.id'
+        #                     )
+        #                 ),
+        #                 ('id', 'not in', in_organization)
+        #             ],
+        #             ['parent_id'],
+        #             ['parent_id']
+        #         )
+        #     ] or [False]
+        #     for parent in parents_groups:
+        #         if not parent:
+        #             parent_id = False
+        #             nodes = nodes_by_level
+        #             if nodes_by_level:
+        #                 organization_data[level.id]['parents'].update({False: {
+        #                     'name': nodes_by_level[0].name,
+        #                     'nodes': []
+        #                 }})
+        #         else:
+        #             parent_id = parent and parent[0] or False
+        #             nodes = request.env['hr.department'].search(
+        #                 [('parent_id', '=', parent_id)]
+        #             )
+        #             organization_data[level.id]['parents'][parent_id] = {
+        #                 'name': parent[1],
+        #                 'nodes': []
+        #             }
+        #         for node in nodes:
+        #             in_organization.append(node.id)
+        #             organization_data[level.id]['parents'][parent_id][
+        #                 'nodes'
+        #             ].append(
+        #                 {
+        #                     'name': node.name,
+        #                     'parent_id': node.parent_id and node.parent_id.id or False,
+        #                     'level': level.id,
+        #                     'id': node.id,
+        #                     'relation': f'ID: {node.id} -> PARENT: {node.parent_id.id}',
+        #                     'metadata': {
+        #                         'operating_unit_id': node.operating_unit_id.id,
+        #                         'code': node.code,
+        #                         'inciso_id': node.inciso_id.id,
+        #                     }
+        #                 }
+        #             )
         return {'data': organization_data, 'tree': organization_data_tree}
 
     @http.route('/get/child/data', type='json', auth='user', method=['POST'], csrf=False)

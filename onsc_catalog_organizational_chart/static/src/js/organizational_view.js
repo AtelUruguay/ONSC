@@ -1,4 +1,4 @@
-odoo.define('hr_organizational_chart.view_chart', function (require){
+odoo.define('onsc_catalog_organizational_chart.view_chart', function (require){
 "use strict";
 var AbstractAction = require('web.AbstractAction');
 var ajax = require('web.ajax');
@@ -23,8 +23,16 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
     init: function(parent, context) {
 
         this._super(parent, context);
-        const operating_unit_id = context.params.operating_unit_id
-        this.renderEmployeeDetails(operating_unit_id);
+        const operating_unit_id = context.params.operating_unit_id;
+        const department_id = context.params.department_id;
+        const short_name = context.params.short_name;
+        const responsible = context.params.responsible;
+        this.renderEmployeeDetails(
+        operating_unit_id,
+        department_id,
+        short_name,
+        responsible,
+        );
     },
     getOffset: function(el) {
       const rect = el.getBoundingClientRect();
@@ -136,6 +144,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
     },
     drawPath: function (svg, path, startX, startY, endX, endY) {
         // get the path's stroke width (if one wanted to be  really precize, one could use half the stroke size)
+        if(!path) return ;
         let stroke = parseFloat(path.getAttribute("stroke-width"));
         // check if the svg is big enough to draw the path, if not, set heigh/width
         if (svg.getAttribute("height") < endY) svg.setAttribute("height", endY);
@@ -189,81 +198,131 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         // call function for drawing the path
         this.drawPath(svg, path, startX, startY, endX, endY);
     },
+    connect1: function(start, end, strokeWith, color){
+
+        return { start: start, end: end, strokeWidth: strokeWith,stroke: color };
+    },
     connectCard: function () {
         // magic
         const svg = document.getElementById('tree__svg-container__svg');
+//        var mySVG = $('#o_parent_employee').connect();
+        let path = []
+
         for (let i = 0; allLinks.length > i; i++) {
-            this.connectElements(svg, document.getElementById(allLinks[i][0]), document.getElementById(allLinks[i][1]), document.getElementById(allLinks[i][2]));
-//            this.connect(document.getElementById(allLinks[i][1]), document.getElementById(allLinks[i][2]), 'green', 5);
+            const color = '#' + Math.floor(Math.random()*16777215).toString(16);
+//            mySVG.drawLine({
+//                left_node: allLinks[i][1],
+//                right_node: allLinks[i][2],
+//                horizantal_gap:10,
+//                error:true,
+//                width:1
+//            });
+//            $( allLinks[i][1] ).draggable({
+//              drag: function(event, ui){mySVG.redrawLines();}
+//            });
+//            $( allLinks[i][2] ).draggable({
+//              drag: function(event, ui){mySVG.redrawLines();}
+//            });
+            path.push(this.connect1(document.getElementById(allLinks[i][1]), document.getElementById(allLinks[i][2]), 5, color));
+//            this.connectElements(svg, document.getElementById(allLinks[i][0]), document.getElementById(allLinks[i][1]), document.getElementById(allLinks[i][2]));
+//            this.connect(document.getElementById(allLinks[i][1]), document.getElementById(allLinks[i][2]), color, 5);
         }
+        $("#svgContainer").HTMLSVGconnect({
+            stroke: "#000",
+            strokeWidth: 1,
+            orientation: "auto",
+            paths: path
+          });
     },
-    renderEmployeeDetails: function (operating_unit_id){
+    renderEmployeeDetails: function (operating_unit_id,
+        department_id,
+        short_name,
+        responsible
+    ){
         var employee_id = 1
         var self = this;
         this._rpc({
             route: '/get/organizational/level',
-            params: {'operating_unit_id': operating_unit_id}
+            params: {'operating_unit_id': operating_unit_id, 'department_id': department_id}
         }).then(function (result) {
-                const svgDiv = document.createElement('div');
-                svgDiv.id = 'tree__svg-container';
-                $('#o_parent_employee').append(svgDiv);
-                const svgContainer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-                svgContainer.id = 'tree__svg-container__svg';
-                svgDiv.append(svgContainer);
+//                const svgDiv = document.createElement('div');
+//                svgDiv.id = 'tree__svg-container';
+//                $('#o_parent_employee').append(svgDiv);
+//                const newSVG = document.createElement('div');
+//                newSVG.id = 'svgContainer';
+//                $('#o_parent_employee').append(newSVG);
+//                const svgContainer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+//                svgContainer.id = 'tree__svg-container__svg';
+//                svgDiv.append(svgContainer);
             const {data, tree} = result;
-            const levels = Object.entries(data);
-            levels.map((level) => {
-                const tr = document.createElement("div");
-                tr.className = "row level"
+//            console.log(tree.trim())
+//            const content = document.createElement('div');
+//            content.innerHTML = tree.trim();
+//            $('#o_parent_employee').append(content);
 
-                const div_level = document.createElement('div');
-                div_level.className = "div-level";
-                const text_level = document.createElement('span');
-                text_level.appendChild(document.createTextNode(level[1]['name']));
-                text_level.className = "text-level";
-                div_level.appendChild(text_level);
-                const parents = Object.entries(level[1]['parents']);
-                const width = 100 / parents.length;
-                parents.forEach((parent) => {
-                    const div_parent = document.createElement('div');
-                    div_parent.style.width = width + ' %';
-                    div_parent.setAttribute('style','max-width:'+width+'%');
-                    div_parent.className = "div-parent";
-                    div_parent.id = parent[0] === 'false' ? 'tree__container__step__card__first' : '';
-                    tr.appendChild(div_parent);
-                    parent[1]['nodes'].forEach((node) => {
-                        if(node['id'] !== parent[0]){
-                        const child = document.createElement("div");
-                        child.className = "col node";
-                        child.id = node['id'];
-                        child.setAttribute("data-id", node['id']);
-                        child.setAttribute("data-parent", node['parent_id']);
-                        const nodeText = document.createElement("div");
-                        nodeText.className = "node-text";
+            const content1 = document.createElement('div');
+            content1.innerHTML = tree + `
+            <div id="content">
 
-                        nodeText.appendChild(document.createTextNode(node['name']));
-                        child.appendChild(nodeText);
-                        div_parent.appendChild(child);
-                        }
-                    });
-                });
-                const div_content = document.createElement('div');
-                div_content.className = "div-content row";
-                div_content.appendChild(div_level);
-                div_content.appendChild(tr);
-                $('#o_parent_employee').append(
-                  div_content
-                );
-            });
-            self.iterate(tree[Object.keys(tree)[0]], true, 'tree__container__step__card__first');
-
-            self.connectCard();
-            window.onresize = function () {
-                $('.line-path').remove();
-                svgDiv.setAttribute('height', '0');
-                svgDiv.setAttribute('width', '0');
-                self.connectCard();
-            };
+                    <div id="main">
+                    </div>
+        `;
+        $('#o_parent_employee').append(content1);
+         $("#organisation").orgChart({container: $("#main")});
+//            const levels = Object.entries(data);
+//            levels.map((level) => {
+//                const tr = document.createElement("div");
+//                tr.className = "row level"
+//
+//                const div_level = document.createElement('div');
+//                div_level.className = "div-level";
+//                const text_level = document.createElement('span');
+//                text_level.appendChild(document.createTextNode(level[1]['name']));
+//                text_level.className = "text-level";
+//                div_level.appendChild(text_level);
+//                const parents = Object.entries(level[1]['parents']);
+//                const width = 100 / parents.length;
+//                parents.forEach((parent) => {
+//                    const div_parent = document.createElement('div');
+//                    div_parent.style.width = width + ' %';
+////                    div_parent.setAttribute('style','max-width:'+width+'%');
+//                    div_parent.className = "div-parent";
+//                    div_parent.id = parent[0] === 'false' ? 'tree__container__step__card__first' : '';
+//                    tr.appendChild(div_parent);
+//                    parent[1]['nodes'].forEach((node) => {
+//                        if(node['id'] !== parent[0]){
+//                        const child = document.createElement("div");
+//                        child.className = "col node";
+//                        child.id = node['id'];
+//                        child.setAttribute("data-id", node['id']);
+//                        child.setAttribute("data-parent", node['parent_id']);
+//                        const nodeText = document.createElement("div");
+//                        nodeText.className = "node-text";
+//
+//                        nodeText.appendChild(document.createTextNode(node['name']));
+//                        nodeText.appendChild(document.createTextNode(node['relation']));
+//                        child.appendChild(nodeText);
+//                        div_parent.appendChild(child);
+//                        }
+//                    });
+//                });
+//                const div_content = document.createElement('div');
+//                div_content.className = "div-content row";
+//                div_content.appendChild(div_level);
+//                div_content.appendChild(tr);
+//                $('#o_parent_employee').append(
+//                  div_content
+//                );
+//            });
+//            self.iterate(tree[Object.keys(tree)[0]], true, 'tree__container__step__card__first');
+//
+//            self.connectCard();
+//            window.onresize = function () {
+//                $('.line-path').remove();
+//                svgDiv.setAttribute('height', '0');
+//                svgDiv.setAttribute('width', '0');
+//                self.connectCard();
+//            };
 
         });
 

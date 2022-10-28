@@ -11,6 +11,11 @@
                            required="1"
                            domain="[('inciso_id', '=', inciso_id)]"
                            options="{'no_create': True}"/>
+                    <field name="department_id"
+                           domain="[('inciso_id', '=', inciso_id),('operating_unit_id', '=', operating_unit_id)]"
+                           options="{'no_create': True}"/>
+                    <field name="short_name"/>
+                    <field name="responsible"/>
                 </group>
                 <footer>
                     <button string="Mostrar Organigrama" name="action_show_org" type="object" class="oe_highlight" data-hotkey="q"/>
