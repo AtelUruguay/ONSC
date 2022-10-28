@@ -744,7 +744,7 @@
                             <span t-field="object.max_note_thesis"/>
                         </h4>
                     </li>
-                    <li>
+                    <li t-if="object.knowledge_thesis_ids">
                         <h4 t-if="object.knowledge_thesis_ids">Conocimientos aplicados:
                             <t t-set="emp_count" t-value="0"/>
                             <t t-foreach="object.knowledge_thesis_ids" t-as="knowledge">
