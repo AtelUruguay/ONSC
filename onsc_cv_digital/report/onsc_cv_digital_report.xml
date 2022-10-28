@@ -1357,6 +1357,11 @@
                         <span t-field="object.subtype_publication_id.name"/>
                     </h4>
                 </t>
+                <t t-if="object.subtype_evaluation_id">
+                    <h4>Sub tipo:
+                        <span t-field="object.subtype_evaluation_id.name"/>
+                    </h4>
+                </t>
                 <h4 t-if="object.description">Descripción:
                     <span t-field="object.description"/>
                 </h4>
