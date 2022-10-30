@@ -17,10 +17,15 @@
               parent="onsc_catalog_root_menu"
               groups="group_catalog_configurador_servicio_civil"
               sequence="2"/>
+    <menuitem id="onsc_cv_catalog_parent_uo_menu"
+              name="Unidades organizativas"
+              parent="onsc_catalog_root_menu"
+              groups="group_catalog_configurador_servicio_civil,group_catalog_aprobador_cgn"
+              sequence="3"/>
     <menuitem id="onsc_cv_catalog_uo_menu"
               name="Unidades organizativas"
               action="onsc_catalog_department_server_action"
-              parent="onsc_catalog_root_menu"
+              parent="onsc_cv_catalog_parent_uo_menu"
               groups="group_catalog_configurador_servicio_civil,group_catalog_aprobador_cgn"
               sequence="3"/>
     <menuitem id="onsc_cv_catalog_occupation_menu"
