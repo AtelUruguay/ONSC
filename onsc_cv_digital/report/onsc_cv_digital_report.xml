@@ -64,9 +64,9 @@
                             <h1>
                                 <span t-field="o.partner_id.name"/>
                             </h1>
-                            <table style="border-spacing: 0; width: 100%; max-width: 600px;">
+                            <table style="border-spacing: 0; width: 100%; max-width: 800px;">
                                 <tr>
-                                    <td style="width:60%">
+                                    <td style="width:55%">
                                         <i class="fa fa-fw fa-envelope mr-2"/>
                                         <span t-field="o.email"/>
                                     </td>
@@ -82,7 +82,7 @@
                                         <span t-if="o.mobile_phone" t-field="o.mobile_phone"/>
                                     </td>
                                     <td>
-                                        <t t-if="o.cv_document_type_id">Tipo de documento:<br/>
+                                        <t t-if="o.cv_document_type_id">Tipo de documento:
                                             <span t-field="o.partner_id.cv_document_type_id.name"/>
                                         </t>
                                     </td>
