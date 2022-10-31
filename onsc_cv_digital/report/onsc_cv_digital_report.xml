@@ -1662,7 +1662,7 @@
                     </ul>
                 </li>
 
-                <li t-if="object.type_support_ids">
+                <li t-if="object.type_support_ids and object.situation_disability=='si'">
                     <h4>Tipos de apoyo:
                         <t t-set="emp_count" t-value="0"/>
                         <t t-foreach="object.type_support_ids" t-as="type_support">
@@ -1675,7 +1675,7 @@
                     </h4>
                 </li>
 
-                <li t-if="object.need_other_support">
+                <li t-if="object.need_other_support and object.situation_disability=='si'">
                     <h4>Otro apoyo:
                         <span t-field="object.need_other_support"/>
                     </h4>
