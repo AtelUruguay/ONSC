@@ -767,11 +767,11 @@
     <!--Formacion Basica-->
 
     <template id="cv_digital_section_formation_basic">
-        <h4 t-if="objects">
+        <h5 t-if="objects">
             <u>
                 <t t-esc="name_section"/>
             </u>
-        </h4>
+        </h5>
         <t t-foreach="objects" t-as="object">
             <ul>
                 <li>
@@ -1827,18 +1827,18 @@
                 <ul>
                     <li>
                         <h4>
-                            Nombre de la referencia
+                            Nombre de la referencia:
                             <span t-field="object2.name"/>
                             /
-                            Teléfono
+                            Teléfono:
                             <span t-field="object2.phone"/>
                             /
-                            Mail
+                            Mail:
                             <span t-field="object2.email"/>
                         </h4>
                     </li>
                     <h4>
-                        Comentarios adicionales
+                        Comentarios adicionales:
                         <span t-field="object2.notes"/>
                     </h4>
                 </ul>
