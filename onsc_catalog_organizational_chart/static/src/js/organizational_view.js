@@ -243,7 +243,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         var self = this;
         this._rpc({
             route: '/get/organizational/level',
-            params: {'operating_unit_id': operating_unit_id, 'department_id': department_id}
+            params: {'operating_unit_id': operating_unit_id, 'department_id': department_id, 'responsible': responsible}
         }).then(function (result) {
 //                const svgDiv = document.createElement('div');
 //                svgDiv.id = 'tree__svg-container';

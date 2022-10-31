@@ -1,26 +1,4 @@
 # -*- coding: utf-8 -*-
-###################################################################################
-#    A part of OpenHRMS Project <https://www.openhrms.com>
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#    Copyright (C) 2018-TODAY Cybrosys Technologies (<https://www.cybrosys.com>).
-#    Author: Cybrosys Technologies (<https://www.cybrosys.com>)
-#
-#    This program is free software: you can modify
-#    it under the terms of the GNU Affero General Public License (AGPL) as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
-###################################################################################
-from docutils.nodes import organization
 
 from odoo import http
 from odoo.exceptions import UserError
@@ -45,7 +23,8 @@ class EmployeeChart(http.Controller):
         key = []
         if len(operatin_unit) == 1:
             key.append(operatin_unit.id)
-            key.append(len(request.env['hr.department'].sudo().search([('operating_unit_id', '=', parent_id), ('parent_id', '=', False)])))
+            key.append(len(request.env['hr.department'].sudo().search(
+                [('operating_unit_id', '=', parent_id), ('parent_id', '=', False)])))
             return key
         elif len(operatin_unit) == 0:
             raise UserError(
@@ -67,7 +46,7 @@ class EmployeeChart(http.Controller):
                     else:
                         lines += """<td class="rightLine topLine"></td>"""
                 else:
-                    if i == loop_count-1:
+                    if i == loop_count - 1:
                         lines += """<td class="leftLine"></td>"""
                     else:
                         lines += """<td class="leftLine topLine"></td>"""
@@ -82,19 +61,40 @@ class EmployeeChart(http.Controller):
                 tree[root_node.id][node.id] = {}
                 self.get_hierarchycal_structure(node, tree[root_node.id])
 
-    def get_hierarchycal_structure2(self, root_node):
+    def get_hierarchycal_structure2(self, root_node, visited_nodes, responsible):
         tree = ''
-        if root_node.function_nature in ['comite']:
-            return f'<adjunct>{root_node.name}</adjunct>'
+        if not root_node.parent_id:
+            adjunt = ''
+            for ajunt_node in root_node.child_ids.filtered(
+                    lambda x: x.function_nature in ['comite']
+            ):
+                visited_nodes.append(ajunt_node.id)
+                adjunt_name = ajunt_node.name if not ajunt_node.show_short_name else ajunt_node.short_name
+                if responsible:
+                    adjunt_name += f'\n({ajunt_node.manager_id and ajunt_node.manager_id.name or ""})'
+                adjunt += f'<adjunct>{adjunt_name}</adjunct>'
+            root_name = root_node.name if not root_node.show_short_name else root_node.short_name
+            if responsible:
+                root_name += f'\n({root_node.manager_id and root_node.manager_id.name or ""})'
+            tree += f'<ul id="organisation" class="d-none"><li>{adjunt}<em>{root_name}</em>'
+            visited_nodes.append(root_node.id)
+        if root_node.parent_id and root_node.function_nature in ['comite'] and root_node.id not in visited_nodes:
+            rnode_name = root_node.name if not root_node.show_short_name else root_node.short_name
+            if responsible:
+                root_name += f'\n({root_node.manager_id and root_node.manager_id.name or ""})'
+            return f'<adjunct>{rnode_name}</adjunct>'
         if not root_node.child_ids:
             return ''
-        else:
-            tree += "<ul>"
-            for node in root_node.child_ids:
-                tree += f'<li>{node.name}'
-                tree += self.get_hierarchycal_structure2(node)
-            tree += "</ul>"
-            tree += '</li>'
+        tree += "<ul>"
+        for node in root_node.child_ids.filtered(lambda x: x.id not in visited_nodes):
+            node_name = node.name if not node.show_short_name else node.short_name
+            if responsible:
+                node_name += f'\n({node.manager_id and node.manager_id.name or ""})'
+            tree += f'<li>{node_name}' if not node.function_nature == 'program' else f'<li class="program">{node_name}'
+            tree += self.get_hierarchycal_structure2(node, visited_nodes, responsible)
+            visited_nodes.append(node.id)
+        tree += "</ul>"
+        tree += '</li>'
         return tree
 
     def get_nodes(self, child_ids):
@@ -124,18 +124,9 @@ class EmployeeChart(http.Controller):
 
     @http.route('/get/organizational/level', type='json', auth='user', method=['POST'], csrf=False)
     def get_parent_child(self, **post):
-        levels = request.env['onsc.catalog.hierarchical.level'].sudo().search([])
-
-        # if post:
-        #     val = 0
-        #     for line in post:
-        #         if line:
-        #             val = int(line)
-        #     child_ids = request.env['hr.department'].sudo().search([('operating_unit_id', '=', val), ('parent_id', '=', False)])
-        #     emp = request.env['operating.unit'].sudo().browse(val)
-
         operating_unit_id = post.get('operating_unit_id', False)
         department_id = post.get('department_id', False)
+        responsible = post.get('responsible')
         domain = [('operating_unit_id', '=', operating_unit_id)]
         if department_id:
             domain.extend(['|', ('parent_id', '=', int(department_id)), ('id', '=', int(department_id))])
@@ -144,10 +135,13 @@ class EmployeeChart(http.Controller):
         )
         root_node = nodes_by_level.filtered(
             lambda node: not node.parent_id
-        )
-        organization_data_tree = f'<ul id="organisation" class="d-none"><li><em>{root_node.name}</em>'
-        tree = self.get_hierarchycal_structure2(root_node)
-        organization_data_tree += tree + '</li></ul>'
+        ) or nodes_by_level[0]
+        if len(root_node) > 1:
+            root_node = root_node[0]
+        organization_data_tree = ''
+        visited_nodes = []
+        tree = self.get_hierarchycal_structure2(root_node, visited_nodes, responsible)
+        organization_data_tree += f'{tree}</li></ul>'
         organization_data = {}
         in_organization = []
         # for level in levels:
@@ -227,8 +221,3 @@ class EmployeeChart(http.Controller):
                 child_table = nodes + lines
                 value.append(child_table)
                 return child_table
-
-
-
-
-

@@ -2,8 +2,8 @@
 {
     'name': 'ONSC - HR Organizational Chart',
     'version': '15.0.1.0.0',
-    'summary': 'UO organizational chart',
-    'description': 'UO organizational chart',
+    'summary': 'ONSC - HR Organizational Chart',
+    'description': 'ONSC - HR Organizational Chart',
     'category': 'ONSC',
     'depends': ['hr', 'onsc_catalog'],
     'data': [
@@ -13,14 +13,8 @@
     ],
     'assets': {
         'web.assets_backend': [
-            # 'onsc_catalog_organizational_chart/static/src/js/tree_maker.js',
-            # 'onsc_catalog_organizational_chart/static/src/js/html2canvas.js',
             'onsc_catalog_organizational_chart/static/src/js/jquery.orgchart.js',
-            # 'onsc_catalog_organizational_chart/static/src/js/jquery.connectingLine.js',
-            # 'onsc_catalog_organizational_chart/static/src/js/jquery.svg.min.js',
-            # 'onsc_catalog_organizational_chart/static/src/js/jquery.html-svg-connect.js',
             'onsc_catalog_organizational_chart/static/src/css/jquery.orgchart.css',
-            # 'onsc_catalog_organizational_chart/static/src/css/tree_maker.css',
             'onsc_catalog_organizational_chart/static/src/js/organizational_view.js',
             'onsc_catalog_organizational_chart/static/src/scss/chart_view.scss',
         ],

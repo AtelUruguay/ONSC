@@ -154,8 +154,24 @@ display: flex;
 }
 
 #svgContainer {
-      z-index: -10;
-      position: absolute;
+  z-index: -10;
+  position: absolute;
 
-      opacity: 0.5;
-    }
+  opacity: 0.5;
+}
+
+div.orgChart div.adjunct.node {
+    margin-left: -150px !important;
+    font-size: 0.7rem !important;
+    font-weight: bold !important;
+}
+div.orgChart div.adjunct-link {
+    margin-left: -50px !important;
+    width: 50px !important;
+}
+
+div.program {
+    border                : 2px dashed !important;
+
+
+}

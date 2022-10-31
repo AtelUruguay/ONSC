@@ -18,5 +18,15 @@
               parent="onsc_catalog.onsc_cv_catalog_parent_uo_menu"
               sequence="49"
               groups="onsc_catalog.group_catalog_configurador_servicio_civil,onsc_catalog.group_catalog_aprobador_cgn"/>
+    <record id="onsc_catalog_department_form_inherit" model="ir.ui.view">
+        <field name="name">onsc.catalog.hr.department.inherit.form</field>
+        <field name="inherit_id" ref="onsc_catalog.onsc_catalog_department_form"/>
+        <field name="model">hr.department</field>
+        <field name="arch" type="xml">
+            <field name="approve_cgn_date" position="after">
+                <field name="show_short_name"/>
+            </field>
+        </field>
+    </record>
 
 </odoo>

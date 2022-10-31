@@ -14,7 +14,6 @@
                     <field name="department_id"
                            domain="[('inciso_id', '=', inciso_id),('operating_unit_id', '=', operating_unit_id)]"
                            options="{'no_create': True}"/>
-                    <field name="short_name"/>
                     <field name="responsible"/>
                 </group>
                 <footer>
