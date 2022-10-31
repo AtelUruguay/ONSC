@@ -40,7 +40,7 @@
                             <field name="approbation_mode" states='completed'
                                    attrs="{'invisible': ['|',('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course'),('state', '=', 'completed')], 'readonly': [('record_type', '=', 'certificate')]}"/>
                             <field name="evaluation_str" states="completed"
-                                   attrs="{'invisible': ['|',('approbation_mode', '!=', 'by_evaluation')]}"/>
+                                   attrs="{'invisible': ['|','&amp;',('approbation_mode', '!=', 'by_evaluation'),('record_type', '!=', 'certificate')]}"/>
                             <field name="evaluation_number"
                                    attrs="{'invisible': ['|',('evaluation_str', '=', False), ('is_numeric_evaluation', '=', True)]}"/>
                             <field name="evaluation_max_str"

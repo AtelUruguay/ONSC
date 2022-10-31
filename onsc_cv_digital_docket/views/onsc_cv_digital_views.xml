@@ -22,8 +22,8 @@
                 <field name="gender_public_visualization_date"
                        attrs="{'invisible': [('is_docket', '=', False)]}"/>
                 <!--TODO-->
-                <field name="is_docket" invisible="0"/>
-                <field name="is_docket_active" invisible="0"/>
+                <field name="is_docket" invisible="1"/>
+                <field name="is_docket_active" invisible="1"/>
             </field>
             <field name="afro_descendants_file" position="after">
                 <field name="afro_descendant_date"
