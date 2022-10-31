@@ -7,5 +7,5 @@ class Department(models.Model):
     _inherit = 'hr.department'
 
     show_short_name = fields.Boolean(
-        'Nombre Corto en Organigrama'
+        'Nombre corto en organigrama'
     )
