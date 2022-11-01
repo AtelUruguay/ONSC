@@ -9,15 +9,15 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     _description = 'Validadores por Inciso y UE'
     _rec_name = 'user_id'
 
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True, ondelete='restrict')
-    company_id = fields.Many2one('res.company',
-                                 related='inciso_id.company_id',
-                                 store=True,
-                                 ondelete='restrict')
-    operating_unit_id = fields.Many2one("operating.unit",
-                                        string="Unidad ejecutora",
-                                        required=True,
-                                        ondelete='restrict')
+    # inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True, ondelete='restrict')
+    # company_id = fields.Many2one('res.company',
+    #                              related='inciso_id.company_id',
+    #                              store=True,
+    #                              ondelete='restrict')
+    # operating_unit_id = fields.Many2one("operating.unit",
+    #                                     string="Unidad ejecutora",
+    #                                     required=True,
+    #                                     ondelete='restrict')
     user_id = fields.Many2one('res.users',
                               string='Usuario',
                               required=True, )

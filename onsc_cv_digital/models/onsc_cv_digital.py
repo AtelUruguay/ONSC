@@ -622,6 +622,7 @@ class ONSCCVDigital(models.Model):
     def button_copy_cv(self):
         self.ensure_one()
         action = self.env.ref('onsc_cv_digital.onsc_cv_digital_call_mypostulations_action').sudo().read()[0]
+        action['domain'] = "[('type','=','call'),('cv_digital_origin_id','in',%s)]" % self.ids
         return action
 
     def _action_open_user_cv(self):
