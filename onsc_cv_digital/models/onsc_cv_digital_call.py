@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import base64
+import io
 import json
 import logging
 import zipfile
-import io
 from os.path import join
-from odoo.http import request, content_disposition
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
