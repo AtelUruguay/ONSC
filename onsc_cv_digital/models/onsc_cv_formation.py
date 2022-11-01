@@ -46,6 +46,7 @@ class ONSCCVFormationAdvanced(models.Model):
     _inherit = ['onsc.cv.abstract.formation', 'onsc.cv.abstract.institution', 'onsc.cv.abstract.conditional.state']
     _description = 'Formación avanzada'
     _catalogs_2validate = ['institution_id', 'subinstitution_id']
+    _order = 'start_date desc'
 
     advanced_study_level_id = fields.Many2one('onsc.cv.study.level', string=u'Nivel de estudio avanzado', required=True)
     academic_program_id = fields.Many2one('onsc.cv.academic.program', string=u'Programa académico', required=True)

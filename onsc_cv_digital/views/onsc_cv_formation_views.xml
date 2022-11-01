@@ -112,9 +112,9 @@
                         </group>
                         <group>
                             <field name="tutor"
-                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
                             <field name="knowledge_thesis_ids" options="{'limit':5}" widget="many2many_tags"
-                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
+                                   attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])]}"/>
                             <field name="country_code" invisible="1"/>
                             <field name="scholarship"/>
                             <field name="max_scholarship"
@@ -162,7 +162,7 @@
         <field name="arch" type="xml">
             <tree string="Formaciones avanzadas" decoration-danger="conditional_validation_state == 'rejected'">
                 <field name="start_date" string="Inicio" optional="show" width="0.5"/>
-                <field name="end_date" string="Fin" optional="show" width="0.5"/>
+                <field name="egress_date" string="Fin" optional="show" width="0.5"/>
                 <field name="advanced_study_level_id" string="Nivel" optional="show"/>
                 <field name="country_id" string="País" optional="hide"/>
                 <field name="institution_id" optional="show"/>
