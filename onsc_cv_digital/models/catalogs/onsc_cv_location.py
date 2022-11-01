@@ -2,6 +2,8 @@
 
 from odoo import fields, models, api, _
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+
 
 class ONSCCVLocation(models.Model):
     _name = 'onsc.cv.location'
@@ -16,11 +18,18 @@ class ONSCCVLocation(models.Model):
                                tracking=True,
                                domain="[('country_id','=',country_id)]")
     other_code = fields.Integer(string=u'Otro código', tracking=True)
+    code = fields.Char(string=u'Código', size=10)
 
     @api.onchange('country_id')
     def _onchange_country_id(self):
         if (self.country_id and self.country_id != self.state_id.country_id) or self.country_id.id is False:
             self.state_id = False
+
+    @api.onchange('code')
+    def onchange_code(self):
+        if self.code and not self.code.isdigit():
+            self.code = ''.join(filter(str.isdigit, self.code))
+            return cv_warning(_("El número de la credencial no puede contener letras"))
 
     @api.model
     def create(self, values):
