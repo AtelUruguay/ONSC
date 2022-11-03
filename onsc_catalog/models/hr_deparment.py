@@ -44,9 +44,8 @@ class Department(models.Model):
                                             history=True)
     hierarchical_level_order = fields.Integer(string="Orden", related='hierarchical_level_id.order', store=True)
     hierarchical_level_id_domain = fields.Char(compute='_compute_hierarchical_level_id_domain')
-    function_nature_form = fields.Selection(selection=[
-        ('form1', 'Formulario 1'),
-        ('form2', 'Formulario 2'),
+    function_nature_form = fields.Selection(string="Tipo de formulario (atendiendo la naturaleza)",
+        selection=[('form1', 'Formulario 1'),('form2', 'Formulario 2'),
     ], compute='_compute_function_nature_form', store=True)
     mission = fields.Char(string="Misión", history=True, tracking=True)
     reponsability_ids = fields.One2many("hr.department.responsability",
