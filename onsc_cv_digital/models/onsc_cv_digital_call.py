@@ -324,18 +324,19 @@ class ONSCCVDigitalCall(models.Model):
         if len(self) == 0 or not cv_zip_url:
             return
         wizard = self.env['onsc.cv.report.wizard'].create({})
-        report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(
-            seccions=wizard.get_seccions())._render_qweb_pdf(
-            self[0].cv_digital_origin_id.id)
-
+        for record in self:
+            report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(
+                seccions=wizard.get_seccions())._render_qweb_pdf(record.cv_digital_id.id)
+            pdfname = '%s_%s.pdf' % (self[0].call_number, str(fields.Datetime.now()))
+            pdf_url = join(cv_zip_url, pdfname)
+            # tratando de guardar el pdf(report) en el mismo directorio del zip
+            thePdf = open(pdf_url, 'wb')
+            thePdf.write(thePdf.write(base64.b64encode(report[0])))
+            thePdf.close()
 
         filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now()))
-        pdfname = '%s_%s.pdf' % (self[0].call_number, str(fields.Datetime.now()))
-        pdf_url = join(cv_zip_url, pdfname)
+
         cv_zip_url = join(cv_zip_url, filename)
-        thePdf = open(pdf_url, 'wb')
-        thePdf.write(thePdf.write(base64.b64encode(report[0])))
-        thePdf.close()
         zip_archive = zipfile.ZipFile(cv_zip_url, "w")
         zip_archive.close()
         return True
