@@ -111,7 +111,7 @@ div.node{
 //     margin-top: 1rem;
 //     cursor: pointer;
 //     border: 2px solid;
-//     border-radius: 5px;
+    border-radius: 0 !important;
 //     flex-basis: 50%;
 //     flex-grow: 1;
 }
@@ -119,9 +119,20 @@ div.orgChart {
     border: none !important;
     background-color: #f8f9fa !important;
     }
-div.orgChart h2{
-    font-size: 0.6rem !important;
+div.singular-node{
+    font-size: 0.7rem !important;
     line-height: 1.2rem !important;
+    display: flex !important;
+    align-items: center !important;
+    flex-direction: column !important;
+    gap: 1.2rem;
+    color: #fff;
+}
+span.reponsible{
+    width: 100% !important;
+    background-color: #fff !important;
+    border-radius: 3px;
+    color: #000 !important;
 }
 .text-level{
 writing-mode: vertical-rl;
@@ -163,7 +174,7 @@ display: flex;
 div.orgChart div.adjunct.node {
     margin-left: -150px !important;
     font-size: 0.7rem !important;
-    font-weight: bold !important;
+    //font-weight: bold !important;
 }
 div.orgChart div.adjunct-link {
     margin-left: -50px !important;

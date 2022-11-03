@@ -23,8 +23,7 @@ class EmployeeChart(http.Controller):
         key = []
         if len(operatin_unit) == 1:
             key.append(operatin_unit.id)
-            key.append(len(request.env['hr.department'].sudo().search(
-                [('operating_unit_id', '=', parent_id), ('parent_id', '=', False)])))
+            key.append(len(request.env['hr.department'].sudo().search([('operating_unit_id', '=', parent_id), ('parent_id', '=', False)])))
             return key
         elif len(operatin_unit) == 0:
             raise UserError(
@@ -46,7 +45,7 @@ class EmployeeChart(http.Controller):
                     else:
                         lines += """<td class="rightLine topLine"></td>"""
                 else:
-                    if i == loop_count - 1:
+                    if i == loop_count-1:
                         lines += """<td class="leftLine"></td>"""
                     else:
                         lines += """<td class="leftLine topLine"></td>"""
@@ -61,7 +60,7 @@ class EmployeeChart(http.Controller):
                 tree[root_node.id][node.id] = {}
                 self.get_hierarchycal_structure(node, tree[root_node.id])
 
-    def get_hierarchycal_structure2(self, root_node, visited_nodes, responsible):
+    def get_hierarchycal_structure2(self, root_node, visited_nodes, presponsible, base_node):
         tree = ''
         if not root_node.parent_id:
             adjunt = ''
@@ -70,28 +69,45 @@ class EmployeeChart(http.Controller):
             ):
                 visited_nodes.append(ajunt_node.id)
                 adjunt_name = ajunt_node.name if not ajunt_node.show_short_name else ajunt_node.short_name
-                if responsible:
-                    adjunt_name += f'\n({ajunt_node.manager_id and ajunt_node.manager_id.name or ""})'
+                if presponsible:
+                    adjunt_name += f'\n{ajunt_node.manager_id and ajunt_node.manager_id.name or ""}'
                 adjunt += f'<adjunct>{adjunt_name}</adjunct>'
             root_name = root_node.name if not root_node.show_short_name else root_node.short_name
-            if responsible:
-                root_name += f'\n({root_node.manager_id and root_node.manager_id.name or ""})'
+            if presponsible:
+                responsible = root_node.manager_id and root_node.manager_id.name or ""
+                if responsible:
+                    responsible = f'<span class="reponsible">{responsible}</span>'
+                root_name += f'{responsible}'
             tree += f'<ul id="organisation" class="d-none"><li>{adjunt}<em>{root_name}</em>'
             visited_nodes.append(root_node.id)
         if root_node.parent_id and root_node.function_nature in ['comite'] and root_node.id not in visited_nodes:
             rnode_name = root_node.name if not root_node.show_short_name else root_node.short_name
-            if responsible:
-                root_name += f'\n({root_node.manager_id and root_node.manager_id.name or ""})'
+            if presponsible:
+                responsible = root_node.manager_id and root_node.manager_id.name or ""
+                if responsible:
+                    responsible = f'<span class="reponsible">{responsible}</span>'
+                root_name += f'{responsible}'
             return f'<adjunct>{rnode_name}</adjunct>'
         if not root_node.child_ids:
             return ''
+        if base_node.id not in visited_nodes:
+            root_name = base_node.name if not base_node.show_short_name else base_node.short_name
+            if presponsible:
+                responsible = base_node.manager_id and base_node.manager_id.name or ""
+                if responsible:
+                    responsible = f'<span class="reponsible">{responsible}</span>'
+                root_name += f'{responsible}'
+            tree += f'<ul id="organisation" class="d-none"><li>{root_name}'
         tree += "<ul>"
         for node in root_node.child_ids.filtered(lambda x: x.id not in visited_nodes):
             node_name = node.name if not node.show_short_name else node.short_name
-            if responsible:
-                node_name += f'\n({node.manager_id and node.manager_id.name or ""})'
+            if presponsible:
+                responsible = node.manager_id and node.manager_id.name or ""
+                if presponsible:
+                    responsible = f'<span class="reponsible">{responsible}</span>'
+                node_name += f'{responsible}'
             tree += f'<li>{node_name}' if not node.function_nature == 'program' else f'<li class="program">{node_name}'
-            tree += self.get_hierarchycal_structure2(node, visited_nodes, responsible)
+            tree += self.get_hierarchycal_structure2(node, visited_nodes, presponsible, base_node)
             visited_nodes.append(node.id)
         tree += "</ul>"
         tree += '</li>'
@@ -135,12 +151,18 @@ class EmployeeChart(http.Controller):
         )
         root_node = nodes_by_level.filtered(
             lambda node: not node.parent_id
-        ) or nodes_by_level[0]
+        ) or (len(nodes_by_level) and nodes_by_level[0] or [])
         if len(root_node) > 1:
             root_node = root_node[0]
+        if not root_node:
+            raise UserError(
+                "No tiene datos para mostrar"
+            )
         organization_data_tree = ''
         visited_nodes = []
-        tree = self.get_hierarchycal_structure2(root_node, visited_nodes, responsible)
+        tree = self.get_hierarchycal_structure2(
+            root_node, visited_nodes, responsible, root_node
+        )
         organization_data_tree += f'{tree}</li></ul>'
         organization_data = {}
         in_organization = []
@@ -221,3 +243,4 @@ class EmployeeChart(http.Controller):
                 child_table = nodes + lines
                 value.append(child_table)
                 return child_table
+
