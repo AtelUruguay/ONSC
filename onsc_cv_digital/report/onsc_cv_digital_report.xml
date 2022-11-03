@@ -819,9 +819,7 @@
                 </h4>
             </ul>
             <t t-call="onsc_cv_digital.cv_conditional_validation"/>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
 
         </t>
@@ -971,9 +969,7 @@
                 </h4>
             </ul>
             <t t-call="onsc_cv_digital.cv_conditional_validation"/>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>
     </template>
@@ -1057,9 +1053,7 @@
                 </t>
             </ul>
             <t t-call="onsc_cv_digital.cv_conditional_validation"/>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>
     </template>
@@ -1140,9 +1134,7 @@
                 </h4>
             </ul>
             <t t-call="onsc_cv_digital.cv_conditional_validation"/>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>
     </template>
@@ -1272,9 +1264,7 @@
                 </h4>
             </ul>
             <t t-call="onsc_cv_digital.cv_conditional_validation"/>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>
     </template>
@@ -1401,9 +1391,7 @@
                 </t>
             </ul>
             <t t-call="onsc_cv_digital.cv_conditional_validation"/>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>
     </template>
@@ -1507,9 +1495,7 @@
                     <span t-esc="object.additional_information"/>
                 </h4>
             </ul>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>
     </template>
@@ -1615,9 +1601,7 @@
                 </h4>
             </ul>
             <t t-call="onsc_cv_digital.cv_conditional_validation"/>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>
     </template>
@@ -1858,9 +1842,7 @@
                     </strong>
                 </p>
             </div>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>
     </template>
@@ -1885,9 +1867,7 @@
                     </h4>
                 </li>
             </ul>
-            <t t-call="onsc_cv_digital.cv_documentary_validation">
-                <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-            </t>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>
     </template>
