@@ -95,7 +95,7 @@
             $adjunct.remove();
         }
 
-        var $heading = $("<h2>").html(opts.nodeText($node));
+        var $heading = $("<div>").addClass("singular-node").html(opts.nodeText($node));
         var $nodeDiv = $("<div>").addClass("node").addClass("level"+level).addClass("node"+index).addClass("level"+level+"-node"+index).append($heading);
 
         // Copy classes from the source list to the chart node

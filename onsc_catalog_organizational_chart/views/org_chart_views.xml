@@ -4,21 +4,23 @@
         <field name="name">Organizational Chart</field>
         <field name="tag">employee_organization_chart</field>
     </record>
+
     <record id="onsc_action_organizational_wizard_tree" model="ir.actions.act_window">
-        <field name="name">Asistente de organigrama</field>
+        <field name="name">Seleccione los parámetros para visualizar el organigrama</field>
         <field name="res_model">onsc.organizational.wizard</field>
         <field name="view_mode">form</field>
         <field name="view_id" ref="onsc_organizational_form"/>
         <field name="context">{}</field>
         <field name="target">new</field>
     </record>
+
     <record id="onsc_catalog_department_form_inherit" model="ir.ui.view">
         <field name="name">onsc.catalog.hr.department.inherit.form</field>
         <field name="inherit_id" ref="onsc_catalog.onsc_catalog_department_form"/>
         <field name="model">hr.department</field>
         <field name="arch" type="xml">
             <field name="approve_cgn_date" position="after">
-                <field name="show_short_name"/>
+                <field name="show_short_name" attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
             </field>
         </field>
     </record>
