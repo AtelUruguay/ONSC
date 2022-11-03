@@ -1909,9 +1909,7 @@
                         <span t-field="object.notes"/>
                     </h4>
                 </ul>
-                <t t-call="onsc_cv_digital.cv_documentary_validation">
-                    <t t-set="name_section" t-value="'REFERENCIAS:'"/>
-                </t>
+                <t t-call="onsc_cv_digital.cv_documentary_validation"/>
                 <br></br>
             </t>
         </t>
