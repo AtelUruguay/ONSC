@@ -25,31 +25,15 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
                               string="Seguridad",
                               default=lambda self: self._get_default_role_id(),
                               required=True)
-    group_id = fields.Many2one('res.groups',
-                               string='Seguridad',
-                               default=lambda self: self._get_default_group_id())
 
-    @api.onchange('inciso_id')
-    def onchange_inciso_id(self):
-        self.operating_unit_id = False
-
-    @api.model
-    def _get_default_group_id(self):
-        security_param = self.env['ir.config_parameter'].sudo().get_param("group_documentary_validator", "")
-        return self.env['res.groups'].search([('name', '=', security_param)], limit=1).id
+    _sql_constraints = [
+        ("instance_uniq", "unique (user_id)", "El usuario ya está configurado!",)
+    ]
 
     @api.model
     def _get_default_role_id(self):
         security_param = self.env['ir.config_parameter'].sudo().get_param("group_documentary_validator", "")
         return self.env['res.users.role'].sudo().search([('name', '=', security_param)]).id
-
-    @api.constrains('inciso_id', 'operating_unit_id', 'user_id')
-    def _check_valid(self):
-        for record in self:
-            if record.inciso_id and record.operating_unit_id and record.user_id and self.search_count(
-                    [('inciso_id', '=', record.inciso_id.id), ('operating_unit_id', '=', record.operating_unit_id.id),
-                     ('user_id', '=', record.user_id.id), ('id', '!=', record.id)]):
-                raise ValidationError(_("Ya existe un usuario configurado para ese Inciso y UE"))
 
     @api.model
     def create(self, values):
@@ -81,4 +65,5 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
         for record in self:
             if self.search_count([("user_id", "=", record.user_id.id), ('id', '!=', record.id)]) == 0:
                 user_ids.append(record.user_id.id)
-        UsersRoleLine.suspend_security().search([('role_id', '=', self[0].role_id.id), ('user_id', 'in', user_ids)]).unlink()
+        UsersRoleLine.suspend_security().search(
+            [('role_id', '=', self[0].role_id.id), ('user_id', 'in', user_ids)]).unlink()

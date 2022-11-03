@@ -323,15 +323,21 @@ class ONSCCVDigitalCall(models.Model):
         cv_zip_url = self.env.user.company_id.cv_zip_url
         if len(self) == 0 or not cv_zip_url:
             return
-        filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now()))
-        zip_archive = zipfile.ZipFile(join(cv_zip_url, filename), "w")
-        stream = io.BytesIO()
         wizard = self.env['onsc.cv.report.wizard'].create({})
         report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(
             seccions=wizard.get_seccions())._render_qweb_pdf(
             self[0].cv_digital_origin_id.id)
-        with zipfile.ZipFile(join(cv_zip_url, filename), 'w') as doc_zip:
-            doc_zip.writestr('CV.pdf', base64.b64decode(report[0]))
+
+
+        filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now()))
+        pdfname = '%s_%s.pdf' % (self[0].call_number, str(fields.Datetime.now()))
+        pdf_url = join(cv_zip_url, pdfname)
+        cv_zip_url = join(cv_zip_url, filename)
+        thePdf = open(pdf_url, 'wb')
+        thePdf.write(thePdf.write(base64.b64encode(report[0])))
+        thePdf.close()
+        zip_archive = zipfile.ZipFile(cv_zip_url, "w")
+        zip_archive.close()
         return True
 
     @api.model
