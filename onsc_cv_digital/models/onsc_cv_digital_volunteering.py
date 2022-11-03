@@ -7,6 +7,7 @@ class ONSCCVDigitalVolunteering(models.Model):
     _name = 'onsc.cv.volunteering'
     _inherit = 'onsc.cv.abstract.work'
     _description = 'Voluntariado'
+    _order = 'start_date desc'
 
     unit_name = fields.Char("Área/Unidad")
     volunteering_task_ids = fields.One2many("onsc.cv.volunteering.task", inverse_name="volunteering_id",
