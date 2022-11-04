@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="onsc_catalog.onsc_cv_catalog_parent_uo_menu" model="ir.ui.menu">
+            <field name="name">Unidades organizativas</field>
+            <field name="groups_id" eval="[(4, ref('onsc_catalog_organizational_chart.group_catalog_consulta_organigrama'))]"/>
+        </record>
+    </data>
+</odoo>

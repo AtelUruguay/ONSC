@@ -41,7 +41,7 @@
                                     attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
                                 <field name="parent_id"
                                        domain="parent_id_domain"
-                                       attrs="{'required': [('hierarchical_level_order','>',1)]}"
+                                       attrs="{'required': ['|',('hierarchical_level_order','>',1),('function_nature','!=','operative')]}"
                                        string="UO de la que depende"
                                        options="{'no_create': True}"/>
                                 <field name="category"
