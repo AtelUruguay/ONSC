@@ -1,15 +1,13 @@
 # -*- coding: utf-8 -*-
 
-import base64
-import io
 import json
 import logging
 import zipfile
+from os import remove
 from os.path import join
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-
 from .abstracts.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 from .onsc_cv_digital import SELECTION_RADIO
@@ -320,6 +318,7 @@ class ONSCCVDigitalCall(models.Model):
         })
 
     def generate_zip(self):
+        pdf_list = []
         cv_zip_url = self.env.user.company_id.cv_zip_url
         if len(self) == 0 or not cv_zip_url:
             return
@@ -327,18 +326,25 @@ class ONSCCVDigitalCall(models.Model):
         for record in self:
             report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(
                 seccions=wizard.get_seccions())._render_qweb_pdf(record.cv_digital_id.id)
-            pdfname = '%s_%s.pdf' % (self[0].call_number, str(fields.Datetime.now()))
+            pdfname = '%s_%s.pdf' % (record.call_number, str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
             pdf_url = join(cv_zip_url, pdfname)
-            # tratando de guardar el pdf(report) en el mismo directorio del zip
             thePdf = open(pdf_url, 'wb')
-            thePdf.write(thePdf.write(base64.b64encode(report[0])))
+            thePdf.write(report[0])
+            pdf_list.append(pdf_url)
             thePdf.close()
-
-        filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now()))
-
+        filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
         cv_zip_url = join(cv_zip_url, filename)
         zip_archive = zipfile.ZipFile(cv_zip_url, "w")
-        zip_archive.close()
+        try:
+            compression = zipfile.ZIP_DEFLATED
+        except:
+            compression = zipfile.ZIP_STORED
+        try:
+            for l in pdf_list:
+                zip_archive.write(l, arcname=pdfname, compress_type=compression)
+                remove(l)
+        finally:
+            zip_archive.close()
         return True
 
     @api.model
@@ -710,7 +716,7 @@ class ONSCCVDigitalCall(models.Model):
             'target': 'new',
             'view_id': False,
             'type': 'ir.actions.act_window',
-            'context': {'default_cv_digital_ids': self.cv_digital_id.ids,'cv_digital_call':True},
+            'context': {'default_cv_digital_ids': self.cv_digital_id.ids},
         }
         return res
 
