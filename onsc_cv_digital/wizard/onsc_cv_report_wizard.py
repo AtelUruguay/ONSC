@@ -41,7 +41,9 @@ class ONSCCVReportWizard(models.TransientModel):
         if len(onsc_cv_digital_ids) == 0:
             return True
         action_report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital')
-        action_report.suspend_security().context = {'seccions': self.get_seccions()}
+        _ctx = self._context.copy()
+        _ctx['seccions'] = self.get_seccions()
+        action_report.suspend_security().context = _ctx
         res = action_report.report_action(onsc_cv_digital_ids)
         res.update({'close_on_report_download': True})
         return res
