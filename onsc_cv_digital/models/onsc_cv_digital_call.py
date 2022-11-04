@@ -325,7 +325,7 @@ class ONSCCVDigitalCall(models.Model):
             return
         if self.filtered(lambda x:x.gral_info_documentary_validation_state != 'validated'):
             raise ValidationError(_("No se puede generar ZIP si no están validados documentalmente"))
-        if len(self.mapped('call_number')) > 1:
+        if len(list(dict.fromkeys(self.mapped('call_number')))) > 1:
             raise ValidationError(_("No se puede generar ZIP de CVs de diferentes llamados"))
         try:
             wizard = self.env['onsc.cv.report.wizard'].create({})
