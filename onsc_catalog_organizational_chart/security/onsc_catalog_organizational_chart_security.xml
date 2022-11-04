@@ -4,6 +4,7 @@
     <record id="group_catalog_consulta_organigrama" model="res.groups">
         <field name="name">Consulta Organigramas</field>
         <field name="category_id" ref="onsc_catalog.module_category_onsc_catalog"/>
+        <field name="implied_ids" eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
     </record>
     </data>
 </odoo>

@@ -9,6 +9,7 @@
     'data': [
         'security/onsc_catalog_organizational_chart_security.xml',
         'security/ir.model.access.csv',
+        'data/onsc_catalog_organizational_chart_data.xml',
         'wizard/views/onsc_organizational_wizard.xml',
         'views/org_chart_views.xml',
     ],
