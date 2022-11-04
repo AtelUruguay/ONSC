@@ -710,7 +710,7 @@ class ONSCCVDigitalCall(models.Model):
             'target': 'new',
             'view_id': False,
             'type': 'ir.actions.act_window',
-            'context': {'default_cv_digital_ids': self.cv_digital_id.ids},
+            'context': {'default_cv_digital_ids': self.cv_digital_id.ids,'cv_digital_call':True},
         }
         return res
 

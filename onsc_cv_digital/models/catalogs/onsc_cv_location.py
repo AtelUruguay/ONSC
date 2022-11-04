@@ -1,6 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
+
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 
 
 class ONSCCVLocation(models.Model):
@@ -16,11 +19,24 @@ class ONSCCVLocation(models.Model):
                                tracking=True,
                                domain="[('country_id','=',country_id)]")
     other_code = fields.Integer(string=u'Otro código', tracking=True)
+    code = fields.Char(string=u'Código', size=10)
+
+    @api.constrains('code')
+    def _check_code_location(self):
+        for record in self:
+            if len(record.code) != 10:
+                raise ValidationError(_("El Código debe tener 10 dígitos"))
 
     @api.onchange('country_id')
     def _onchange_country_id(self):
         if (self.country_id and self.country_id != self.state_id.country_id) or self.country_id.id is False:
             self.state_id = False
+
+    @api.onchange('code')
+    def onchange_code(self):
+        if self.code and not self.code.isdigit():
+            self.code = ''.join(filter(str.isdigit, self.code))
+            return cv_warning(_("El código no puede contener letras"))
 
     @api.model
     def create(self, values):

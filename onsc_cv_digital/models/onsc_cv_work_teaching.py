@@ -17,6 +17,7 @@ class ONSCCVWorkTeaching(models.Model):
     _description = 'Docencia'
     _inherit = ['onsc.cv.abstract.work', 'onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.institution']
     _catalogs_2validate = ['institution_id', 'subinstitution_id', 'professional_link_id']
+    _order = 'start_date desc'
 
     professional_link_id = fields.Many2one('onsc.cv.professional.link', 'Vínculo profesional', required=True)
     position_type = fields.Selection(POSITION_TYPES, 'Tipo de cargo')

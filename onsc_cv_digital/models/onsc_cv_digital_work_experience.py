@@ -8,6 +8,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     _inherit = ['onsc.cv.abstract.work', 'onsc.cv.abstract.conditional.state']
     _description = 'Experiencia laboral'
     _catalogs_2validate = ['city_id']
+    _order = 'start_date desc'
 
     city_id = fields.Many2one("onsc.cv.location", string="Ciudad donde desempeñó", required=True)
     unit_name = fields.Char("Área/Unidad")
