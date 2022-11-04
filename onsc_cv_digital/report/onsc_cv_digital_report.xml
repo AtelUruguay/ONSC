@@ -281,7 +281,7 @@
                                     </table>
                                 </ul>
                                 <div class="alert alert-info" role="alert"
-                                     t-if="o.nro_doc_documentary_validation_state == 'rejected'">
+                                     t-if="o.nro_doc_documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False)">
                                     <p class="mb-0">
                                         <strong>
                                             La sección documento de identidad ha sido rechazada. Motivo del rechazo:
@@ -299,7 +299,7 @@
                                     </p>
                                 </div>
                                 <div class="alert alert-info" role="alert"
-                                     t-if="o.civical_credential_documentary_validation_state == 'rejected'">
+                                     t-if="o.civical_credential_documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False)">
                                     <p class="mb-0">
                                         <strong>
                                             La sección credencial cívica ha sido rechazada. Motivo del rechazo:
@@ -623,7 +623,7 @@
 
     <template id="cv_documentary_validation">
         <div class="alert alert-info" role="alert"
-             t-if="object.documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', True)">
+             t-if="object.documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False)">
             <p class="mb-0">
                 <strong>
                     El registro de validación documental ha sido rechazado. Motivo del rechazo:
@@ -1751,7 +1751,7 @@
                     </h4>
                 </li>
             </ul>
-            <div class="alert alert-info" role="alert" t-if="o.disabilitie_documentary_validation_state == 'rejected'">
+            <div class="alert alert-info" role="alert" t-if="o.disabilitie_documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False)">
                 <p class="mb-0">
                     <strong>
                         La sección discapacidad ha sido rechazada. Motivo del rechazo:
