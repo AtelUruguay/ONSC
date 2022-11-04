@@ -740,4 +740,4 @@ class ONSCCVDigitalCall(models.Model):
         onsc_cv_report_wizard = self.env['onsc.cv.report.wizard'].create({
             'cv_digital_ids': onsc_cv_digital_ids.cv_digital_id.ids
         })
-        return onsc_cv_report_wizard.button_print()
+        return onsc_cv_report_wizard.with_context(cv_digital_call=True).button_print()

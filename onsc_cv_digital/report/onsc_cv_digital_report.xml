@@ -1909,23 +1909,23 @@
                     </h4>
                 </li>
             </ul>
-            <t t-foreach="objects2" t-as="object2">
+            <t t-foreach="objects2" t-as="object">
                 <ul>
                     <li>
                         <h4>
                             Nombre de la referencia:
-                            <span t-field="object2.name"/>
+                            <span t-field="object.name"/>
                             /
                             Teléfono:
-                            <span t-field="object2.phone"/>
+                            <span t-field="object.phone"/>
                             /
                             Mail:
-                            <span t-field="object2.email"/>
+                            <span t-field="object.email"/>
                         </h4>
                     </li>
                     <h4>
                         Comentarios adicionales:
-                        <span t-field="object2.notes"/>
+                        <span t-field="object.notes"/>
                     </h4>
                 </ul>
                 <t t-call="onsc_cv_digital.cv_documentary_validation"/>
