@@ -319,35 +319,43 @@ class ONSCCVDigitalCall(models.Model):
         })
 
     def generate_zip(self):
-        pdf_list = []
+        pdf_list = {}
         cv_zip_url = self.env.user.company_id.cv_zip_url
         if len(self) == 0 or not cv_zip_url:
             return
-        wizard = self.env['onsc.cv.report.wizard'].create({})
-        for record in self:
-            report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(
-                seccions=wizard.get_seccions())._render_qweb_pdf(record.cv_digital_id.id)
-            pdfname = '%s_%s_%s.pdf' % (record.call_number,
-                                        record.postulation_number,
-                                        str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
-            pdf_url = join(cv_zip_url, pdfname)
-            thePdf = open(pdf_url, 'wb')
-            thePdf.write(report[0])
-            pdf_list.append(pdf_url)
-            thePdf.close()
-        filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
-        cv_zip_url = join(cv_zip_url, filename)
-        zip_archive = zipfile.ZipFile(cv_zip_url, "w")
+        if self.filtered(lambda x:x.gral_info_documentary_validation_state != 'validated'):
+            raise ValidationError(_("No se puede generar ZIP si no están validados documentalmente"))
+        if len(self.mapped('call_number')) > 1:
+            raise ValidationError(_("No se puede generar ZIP de CVs de diferentes llamados"))
         try:
-            compression = zipfile.ZIP_DEFLATED
-        except:
-            compression = zipfile.ZIP_STORED
-        try:
-            for l in pdf_list:
-                zip_archive.write(l, arcname=pdfname, compress_type=compression)
-                remove(l)
-        finally:
-            zip_archive.close()
+            wizard = self.env['onsc.cv.report.wizard'].create({})
+            for record in self:
+                report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(
+                    seccions=wizard.get_seccions())._render_qweb_pdf(record.cv_digital_id.id)
+                pdfname = '%s_%s_%s.pdf' % (record.call_number,
+                                            record.postulation_number,
+                                            str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
+                pdf_url = join(cv_zip_url, pdfname)
+                thePdf = open(pdf_url, 'wb')
+                thePdf.write(report[0])
+                pdf_list[pdfname] = pdf_url
+                thePdf.close()
+            filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
+            cv_zip_url = join(cv_zip_url, filename)
+            zip_archive = zipfile.ZipFile(cv_zip_url, "w")
+            try:
+                compression = zipfile.ZIP_DEFLATED
+            except:
+                compression = zipfile.ZIP_STORED
+            try:
+                for pdfname, pdf_url in pdf_list.items():
+                    zip_archive.write(pdf_url, arcname=pdfname, compress_type=compression)
+                    remove(pdf_url)
+            finally:
+                zip_archive.close()
+        except Exception:
+            raise ValidationError(_("No se ha podido generar el ZIP. Contacte con el administrador"))
+        self.write({'is_zip': True})
         return True
 
     @api.model
@@ -719,7 +727,10 @@ class ONSCCVDigitalCall(models.Model):
             'target': 'new',
             'view_id': False,
             'type': 'ir.actions.act_window',
-            'context': {'default_cv_digital_ids': self.cv_digital_id.ids, 'cv_digital_call': True},
+            'context': {
+                'default_cv_digital_ids': self.cv_digital_id.ids,
+                'cv_digital_call': True,
+            },
         }
         return res
 

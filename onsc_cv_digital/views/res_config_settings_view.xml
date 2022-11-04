@@ -8,20 +8,23 @@
             <field name="arch" type="xml">
                 <xpath expr="//div[hasclass('settings')]" position="inside">
                     <div class="app_settings_block" data-string="ONSC CV Digital" id="onsc_cv_digital" string="ONSC CV Digital" data-key="onsc_cv_digital">
-                        <h2>JSON url</h2>
+                        <h2>URLs de servidor</h2>
                         <div class="row mt16 o_settings_container">
                             <div class="col-xs-12 col-md-6 o_setting_box">
                                 <div class="o_setting_right_pane">
-                                    <label for="call_server_json_url" string="JSON Url"/>
+                                    <label for="call_server_json_url" string="JSON"/>
                                     <span class="fa fa-lg fa-server"/>
                                     <div class="text-muted">
-                                        URL donde el sistema guardará el JSON del llamado
+                                        URL donde el sistema guardará el JSON del llamado en el servidor
                                     </div>
                                     <div class="text-muted content-group mt16">
                                         <field name="call_server_json_url" required="1" class="col-12 col-lg-12"/>
                                     </div>
-                                    <label for="cv_zip_url" string="ZIP Url"/>
+                                    <label for="cv_zip_url" string="ZIP"/>
                                     <span class="fa fa-lg fa-server"/>
+                                    <div class="text-muted">
+                                        URL donde el sistema guardará el ZIP con los CVs del llamado en el servidor
+                                    </div>
                                     <div class="text-muted content-group mt16">
                                         <field name="cv_zip_url" required="1" class="col-12 col-lg-12"/>
                                     </div>
