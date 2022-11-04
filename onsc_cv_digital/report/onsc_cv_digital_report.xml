@@ -626,7 +626,7 @@
              t-if="object.documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', True)">
             <p class="mb-0">
                 <strong>
-                    La registro de validación documental ha sido rechazada. Motivo del rechazo:
+                    El registro de validación documental ha sido rechazado. Motivo del rechazo:
                     <span t-field="object.documentary_reject_reason" class="oe_inline" readonly="1"/>
                     <p/>
                     Fecha:
@@ -1828,20 +1828,6 @@
                     </ul>
                 </t>
             </ul>
-            <div class="alert alert-info" role="alert" t-if="object.documentary_validation_state == 'rejected'">
-                <p class="mb-0">
-                    <strong>
-                        La sección discapacidad ha sido rechazada. Motivo del rechazo:
-                        <span t-field="object.documentary_reject_reason" class="oe_inline" readonly="1"/>
-                        <p/>
-                        Fecha:
-                        <span t-field="object.documentary_validation_date" class="oe_inline" readonly="1"/>
-                        Usuario:
-                        <span t-field="object.documentary_user_id" class="oe_inline"
-                              options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
-                    </strong>
-                </p>
-            </div>
             <t t-call="onsc_cv_digital.cv_documentary_validation"/>
             <br></br>
         </t>

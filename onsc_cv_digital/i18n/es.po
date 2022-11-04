@@ -1,0 +1,47 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* onsc_cv_digital
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 15.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2022-07-28 15:16+0000\n"
+"PO-Revision-Date: 2022-07-28 15:16+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: onsc_cv_digital
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital__is_need_other_support
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital_call__is_need_other_support
+msgid "Is Need Other Support"
+msgstr "¿Necesita otro apoyo?"
+
+#. module: onsc_cv_digital
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital__type_support_ids_domain
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital_call__type_support_ids_domain
+msgid "Type Support Ids Domain"
+msgstr "Tipos de apoyo"
+
+#. module: onsc_cv_digital
+#: model:ir.model,name:onsc_cv_digital.model_res_country
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital__country_id
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital_call__country_id
+msgid "Country"
+msgstr "País"
+
+#. module: onsc_cv_digital
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital__cv_address_state_id
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital_call__cv_address_state_id
+msgid "State"
+msgstr "Estado"
+
+#. module: onsc_cv_digital
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital__cv_address_street
+#: model:ir.model.fields,field_description:onsc_cv_digital.field_onsc_cv_digital_call__cv_address_street
+msgid "Street"
+msgstr "Calle"
