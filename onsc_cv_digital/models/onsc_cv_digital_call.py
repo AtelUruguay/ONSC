@@ -8,6 +8,7 @@ from os.path import join
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+
 from .abstracts.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 from .onsc_cv_digital import SELECTION_RADIO
@@ -326,7 +327,9 @@ class ONSCCVDigitalCall(models.Model):
         for record in self:
             report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(
                 seccions=wizard.get_seccions())._render_qweb_pdf(record.cv_digital_id.id)
-            pdfname = '%s_%s.pdf' % (record.call_number, str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
+            pdfname = '%s_%s_%s.pdf' % (record.call_number,
+                                        record.postulation_number,
+                                        str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
             pdf_url = join(cv_zip_url, pdfname)
             thePdf = open(pdf_url, 'wb')
             thePdf.write(report[0])
@@ -716,7 +719,7 @@ class ONSCCVDigitalCall(models.Model):
             'target': 'new',
             'view_id': False,
             'type': 'ir.actions.act_window',
-            'context': {'default_cv_digital_ids': self.cv_digital_id.ids,'cv_digital_call':True},
+            'context': {'default_cv_digital_ids': self.cv_digital_id.ids, 'cv_digital_call': True},
         }
         return res
 
