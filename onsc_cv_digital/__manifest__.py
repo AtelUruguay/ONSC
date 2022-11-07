@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital',
-    'version': '15.0.7.0.0',
+    'version': '15.0.7.1.0',
     'summary': 'ONSC CV Digital',
     'sequence': 10,
     'description': """
@@ -12,7 +12,8 @@ ONSC CV Digital
     # TODO report_context adicionado en su version 14 OCA no lo ha subido a 15 todavia
     'depends': ['base', 'web', 'mail', 'web_domain_field', 'phone_validation', 'onsc_base',
                 'web_relational_field_with_create_edit_option', 'auto_save_form_view', 'disable_form_quick_edit',
-                'model_history', 'ws_int_base', 'jsonifier', 'base_user_role_hide_admin', 'report_context'],
+                'model_history', 'ws_int_base', 'jsonifier', 'base_user_role_hide_admin', 'report_context',
+                'auth_oauth'],
     'data': [
         'security/onsc_cv_digital_security.xml',
         'security/onsc_cv_digital_rules.xml',
@@ -38,6 +39,7 @@ ONSC CV Digital
         'data/report_paperformat_data.xml',
         'wizard/views/onsc_cv_reject_wizard_views.xml',
         'wizard/views/onsc_cv_report_wizard_views.xml',
+        'views/auth_oauth_templates.xml',
         'views/res_config_settings_view.xml',
         'views/onsc_cv_settings_view.xml',
         'views/onsc_cv_documentary_validation_config_views.xml',
