@@ -61,7 +61,7 @@
                             <img t-att-src="image_data_uri(o.partner_id.image_1920)"
                                  class="rounded-circle img-fluid" alt="Partner Photo"/>
                         </div>
-                        <div class="col-8">
+                        <div class="col-10">
                             <h1>
                                 <span t-field="o.partner_id.name"/>
                             </h1>
@@ -112,10 +112,6 @@
                                     </t>
                                 </tr>
                             </table>
-                        </div>
-                        <div class="col-2">
-                            <img src="/onsc_cv_digital/static/img/logo_cv.png" alt="image" title="image"
-                                 class="img-fluid mb8 mt8 d-block mx-auto"/>
                         </div>
                     </div>
                 </div>

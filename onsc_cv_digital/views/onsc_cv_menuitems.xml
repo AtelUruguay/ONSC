@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <menuitem id="onsc_cv_root_menu"
-              name="CV digital"
+              name="CV Digital"
               web_icon="onsc_cv_digital,static/description/icon.png"
               sequence="2"/>
 
