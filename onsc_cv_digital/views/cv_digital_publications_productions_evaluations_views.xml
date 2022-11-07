@@ -38,7 +38,7 @@
                             <field name="location"/>
                             <field name="is_arbitrated" invisible="1"/>
                             <field name="arbitrated"
-                                   attrs="{'invisible': ['|',('type', '!=', 'publication'),('is_arbitrated', '=', False)],'required': ['|',('type', '=', 'publication'),('is_arbitrated', '=', True)]}"/>
+                                   attrs="{'invisible': ['|',('type', '!=', 'publication'),('is_arbitrated', '=', False)],'required': ['&amp;',('type', '=', 'publication'),('is_arbitrated', '=', True)]}"/>
                             <field name="paid_activity"/>
                             <field name="applied_knowledge_ids" options="{'limit':5}" widget="many2many_tags"/>
                         </group>
