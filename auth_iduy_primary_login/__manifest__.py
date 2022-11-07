@@ -1,6 +1,6 @@
 {
     'name': 'ID Uruguay Primary Login',
-    'version': '15.0.1.0.0.',
+    'version': '15.0.1.1.0.',
     'license': '',
     'author': "Quanam",
     'website': "https://www.quanam.com",
