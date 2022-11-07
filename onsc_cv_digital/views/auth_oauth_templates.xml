@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-        <template id="providers" name="OAuth Providers"  inherit_id="auth_oauth.providers">
-            <xpath expr="//em" position="replace"/>
+        <template id="providers" name="OAuth Providers CV Digital"  inherit_id="auth_oauth.providers">
             <xpath expr="//div[hasclass('o_auth_oauth_providers')]" position="replace">
                 <div class="o_auth_oauth_providers list-group mt-1 mb-1 text-left">
                     <a t-foreach="providers" t-as="p" class="list-group-item list-group-item-action py-2" t-att-href="p['auth_link']" style="align-items:center;text-align:center">
                         <i t-att-class="p['css_class']"/>
-                        <img src="/auth_iduy_primary_login/static/src/img/logo-gubuy.png" alt="Logo IdUY!" style="width:100px;margin:20px 0;"/>
-<!--                        <strong><t t-esc="p['body']"/></strong>-->
+                        <img src="/onsc_cv_digital/static/img/cv_digital_login.png" alt="Logo IdUY!" style="width:200px;margin:20px 0;"/>
                     </a>
                 </div>
             </xpath>

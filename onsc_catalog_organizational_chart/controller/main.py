@@ -98,6 +98,7 @@ class EmployeeChart(http.Controller):
                     responsible = f'<span class="reponsible">{responsible}</span>'
                 root_name += f'{responsible}'
             tree += f'<ul id="organisation" class="d-none"><li>{root_name}'
+            visited_nodes.append(base_node.id)
         tree += "<ul>"
         for node in root_node.child_ids.filtered(lambda x: x.id not in visited_nodes):
             node_name = node.name if not node.show_short_name else node.short_name
