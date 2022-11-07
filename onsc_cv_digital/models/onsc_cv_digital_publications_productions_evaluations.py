@@ -14,6 +14,7 @@ class ONSCCVDigitalPPEvaluations(models.Model):
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", string="CV", index=True, ondelete='cascade', required=True)
     type = fields.Selection(TYPES, string='Tipo', required=True)
+    subtype = fields.Char(string="Sub tipo", compute='_compute_subtype', store=True)
     subtype_publication_id = fields.Many2one("onsc.cv.subtype.publication", 'Sub tipo de publicación')
     other_subtype_publication = fields.Char(string=u"Otro sub tipo de publicación")
     is_subtype_publication = fields.Boolean(related="subtype_publication_id.is_option_other_enable")
@@ -43,6 +44,18 @@ class ONSCCVDigitalPPEvaluations(models.Model):
                                              string=u'Conocimientos aplicados', copy=True)
     additional_information = fields.Text(string="Información adicional")
 
+    @api.depends('type', 'subtype_publication_id', 'subtype_production_id', 'subtype_evaluation_id', 'subtype_other_id')
+    def _compute_subtype(self):
+        for record in self:
+            if record.type == 'publication':
+                record.subtype = record.subtype_publication_id.display_name
+            elif record.type == 'productions':
+                record.subtype = record.subtype_production_id.display_name
+            elif record.type == 'evaluation':
+                record.subtype = record.subtype_evaluation_id.display_name
+            if record.type == 'other':
+                record.subtype = record.subtype_other_id.display_name
+
     @api.depends('subtype_publication_id')
     def _compute_is_subtype_publication(self):
         id_publication_scientific = self.env.ref('onsc_cv_digital.onsc_cv_subtype_publication_scientific_magazine').id
@@ -59,10 +72,10 @@ class ONSCCVDigitalPPEvaluations(models.Model):
     @api.onchange('type')
     def onchange_type(self):
         if self.type:
-            self.subtype_evaluation_id = ''
-            self.subtype_publication_id = ''
-            self.subtype_production_id = ''
-            self.subtype_other_id = ''
+            self.subtype_evaluation_id = False
+            self.subtype_publication_id = False
+            self.subtype_production_id = False
+            self.subtype_other_id = False
 
     @api.onchange('applied_knowledge_ids')
     def onchange_knowledge_key_insights_ids(self):

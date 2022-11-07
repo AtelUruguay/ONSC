@@ -67,7 +67,7 @@
             <tree string="Publicaciones, producciones y evaluaciones">
                 <field name="date" width="0.5" optional="show" string="Fecha"/>
                 <field name="type" optional="show"/>
-                <field name="subtype_publication_id" string="Sub tipo" optional="show"/>
+                <field name="subtype" string="Sub tipo" optional="show"/>
                 <field name="tittle" optional="show"/>
                 <field name="location" optional="hide"/>
                 <field name="paid_activity" optional="hide"/>
