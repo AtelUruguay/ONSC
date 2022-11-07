@@ -1437,10 +1437,10 @@
                     <span t-field="object.location"/>
                 </h4>
                 <h4 t-if="object.paid_activity">Actividad remunerada:
-                    <span t-esc="object.paid_activity and 'SI' or 'NO'"/>
+                    <span t-esc="object.paid_activity == 'yes' and 'SI' or 'NO'"/>
                 </h4>
                 <h4 t-if="object.type == 'publication' and object.is_arbitrated == True">Actividad Arbitrada:
-                    <span t-esc="object.arbitrated  and 'SI' or 'NO'"/>
+                    <span t-esc="object.arbitrated == 'yes' and 'SI' or 'NO'"/>
                 </h4>
                 <t t-if="object.applied_knowledge_ids">
                     <h4>Conocimientos aplicados:
