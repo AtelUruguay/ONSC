@@ -24,7 +24,7 @@ variables:
 before_script:
   - curl -sL https://deb.nodesource.com/setup_14.x | bash -
   - apt-get install -y  sudo postgresql-client expect-dev nodejs python-dev python3-pip build-essential libsasl2-dev libldap2-dev libssl-dev libxml2-dev libxslt1-dev
-  - pip3 install coverage coveralls codecov pylint
+  - pip3 install coverage coveralls codecov pylint six
 
 lint:
   stage: test
