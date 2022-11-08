@@ -24,7 +24,7 @@ variables:
 before_script:
   - curl -sL https://deb.nodesource.com/setup_14.x | bash -
   - apt-get install -y  sudo postgresql-client expect-dev nodejs python-dev python3-pip build-essential libsasl2-dev libldap2-dev libssl-dev libxml2-dev libxslt1-dev
-  - pip3 install coverage coveralls codecov pylint six
+  - pip3 install coverage coveralls codecov pylint
 
 lint:
   stage: test
@@ -44,6 +44,7 @@ lint:
     - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
     - update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
     - sed -i '/^ignore =/ s/$/,E501,C8202,C8103/' ${HOME}/maintainer-quality-tools/travis/cfg/travis_run_flake8.cfg
+    - sed -i 's/getargspec/getfullargspec/g' ${HOME}/maintainer-quality-tools/travis/run_pylint.py
     - travis_install_nightly
     - travis_run_tests
     - travis_after_tests_success || true
