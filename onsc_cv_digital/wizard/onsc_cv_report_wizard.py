@@ -18,7 +18,7 @@ class ONSCCVReportWizard(models.TransientModel):
 
     @api.onchange('is_all_seccions')
     def onchange_is_all_seccions(self):
-        if self.is_all_seccions == False:
+        if self.is_all_seccions is False:
             self.seccion_ids = [
                 (6, 0, self.env['onsc.cv.report.config.seccion'].search([('is_default', '=', True)]).ids)
             ]

@@ -323,7 +323,7 @@ class ONSCCVDigitalCall(models.Model):
         cv_zip_url = self.env.user.company_id.cv_zip_url
         if len(self) == 0 or not cv_zip_url:
             return
-        if self.filtered(lambda x:x.gral_info_documentary_validation_state != 'validated'):
+        if self.filtered(lambda x: x.gral_info_documentary_validation_state != 'validated'):
             raise ValidationError(_("No se puede generar ZIP si no están validados documentalmente"))
         if len(list(dict.fromkeys(self.mapped('call_number')))) > 1:
             raise ValidationError(_("No se puede generar ZIP de CVs de diferentes llamados"))
