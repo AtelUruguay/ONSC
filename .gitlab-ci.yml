@@ -44,7 +44,7 @@ lint:
     - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
     #- update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
     #- sed -i '/^ignore =/ s/$/,E501,C8202,C8103/' ${HOME}/maintainer-quality-tools/travis/cfg/travis_run_flake8.cfg
-    #- sed -i 's/getargspec/getfullargspec/g' ${HOME}/maintainer-quality-tools/travis/run_pylint.py
+    - sed -i 's/getargspec/getfullargspec/g' ${HOME}/maintainer-quality-tools/travis/run_pylint.py
     - travis_install_nightly
     - travis_run_tests
     - travis_after_tests_success || true
