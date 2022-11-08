@@ -82,7 +82,7 @@ class Department(models.Model):
         for record in self:
             domain = [('is_central_administration', '=', record.inciso_id.is_central_administration)]
             if record.function_nature == 'adviser':
-                domain.append(('order', 'in', [1, 2]))
+                domain.append(('order', 'in', [3, 4]))
             elif record.function_nature in ['program', 'comite']:
                 domain.append(('order', 'in', [1]))
             record.hierarchical_level_id_domain = json.dumps([('id', 'in', HierarchicalLevel.search(domain).ids)])
