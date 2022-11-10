@@ -31,7 +31,7 @@
         <field name="name">onsc.cv.digital.form</field>
         <field name="model">onsc.cv.digital</field>
         <field name="arch" type="xml">
-            <form string="Currículums digitales" delete="0">
+            <form string="Currículums digitales" delete="0" duplicate="0">
                 <header>
                 </header>
                 <sheet>
