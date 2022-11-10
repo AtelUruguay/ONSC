@@ -124,7 +124,8 @@ class ONSCCVAbstractConfig(models.AbstractModel):
         return result
 
     def write(self, values):
-        if self.filtered(lambda x: not x._check_can_write()):
+        check_write_is_needed = len(values) > 1 or (len(values) == 1 and list(values.keys())[0] != 'active')
+        if check_write_is_needed and self.filtered(lambda x: not x._check_can_write()):
             raise ValidationError(_("No puede modificar un registro en estado validado o rechazado."))
         result = super(ONSCCVAbstractConfig, self).write(values)
         if values.get('state') == 'validated':

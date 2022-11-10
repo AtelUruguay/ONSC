@@ -4,7 +4,7 @@
         <field name="name">onsc.cv.digital.call.documentary.validation.tree</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-            <tree string="Consulta de llamados Validador documental" delete="0" edit="0" create="0" duplicate="0" export_xlsx="false">
+            <tree string="Consulta de llamados Validador documental" delete="0" edit="0" create="0" duplicate="0">
                 <field name="call_number"/>
                 <field name="partner_id" string="Nombre"/>
                 <field name="postulation_date" string="Fecha de actualización" width="0.5"/>

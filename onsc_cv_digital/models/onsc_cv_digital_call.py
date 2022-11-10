@@ -283,6 +283,8 @@ class ONSCCVDigitalCall(models.Model):
             'civical_credential_documentary_user_id': user_id,
         })
         validation_childs = self._get_documentary_validation_models(only_fields=True)
+        if 'certificate_ids' in validation_childs:
+            validation_childs.append('course_ids')
         for validation_child in validation_childs:
             self.mapped(validation_child).documentary_reject(reject_reason)
 
@@ -730,6 +732,7 @@ class ONSCCVDigitalCall(models.Model):
             'context': {
                 'default_cv_digital_ids': self.cv_digital_id.ids,
                 'cv_digital_call': True,
+                'is_mypostulations': self._context.get('is_mypostulations', False)
             },
         }
         return res
@@ -748,10 +751,18 @@ class ONSCCVDigitalCall(models.Model):
                                                              submenu=submenu)
         is_call_documentary_validation = self._context.get('is_call_documentary_validation', False)
         toolbar = res.get('toolbar', False)
-        if toolbar and not is_call_documentary_validation:
-            onsc_cv_digital_call_zip = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_zip")
-            onsc_cv_digital_call_massive_documentary_reject = self.env.ref(
-                "onsc_cv_digital.onsc_cv_digital_call_massive_documentary_reject")
-            actions = [onsc_cv_digital_call_zip.id, onsc_cv_digital_call_massive_documentary_reject.id]
-            res['toolbar']['action'] = [act for act in res['toolbar']['action'] if act['id'] not in actions]
+        if toolbar:
+            toolbar_actions = res['toolbar'].get('action')
+            actions_exclude = []
+            if not is_call_documentary_validation:
+                onsc_cv_digital_call_zip = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_zip")
+                onsc_cv_digital_call_massive_documentary_reject = self.env.ref(
+                    "onsc_cv_digital.onsc_cv_digital_call_massive_documentary_reject")
+                actions_exclude.extend(
+                    [onsc_cv_digital_call_zip.id, onsc_cv_digital_call_massive_documentary_reject.id])
+            if self._context.get('is_mypostulations'):
+                onsc_cv_digital_print_action = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_print_action")
+                actions_exclude.extend([onsc_cv_digital_print_action.id])
+            toolbar_actions = [act for act in toolbar_actions if act['id'] not in actions_exclude]
+            res['toolbar']['action'] = toolbar_actions
         return res
