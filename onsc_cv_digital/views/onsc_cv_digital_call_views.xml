@@ -45,7 +45,7 @@
         <field name="name">onsc.cv.digital.call.form</field>
         <field name="model">onsc.cv.digital.call</field>
         <field name="arch" type="xml">
-            <form string="Copias de CV" delete="0" edit="0" create="0" duplicate="0">
+            <form string="Copias de CV" delete="0" edit="0" create="0" duplicate="0" >
                 <header>
                 </header>
                 <sheet>

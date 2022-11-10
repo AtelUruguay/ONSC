@@ -741,3 +741,17 @@ class ONSCCVDigitalCall(models.Model):
             'cv_digital_ids': onsc_cv_digital_ids.cv_digital_id.ids
         })
         return onsc_cv_report_wizard.with_context(cv_digital_call=True).button_print()
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super(ONSCCVDigitalCall, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+                                                             submenu=submenu)
+        is_call_documentary_validation = self._context.get('is_call_documentary_validation', False)
+        toolbar = res.get('toolbar', False)
+        if toolbar and not is_call_documentary_validation:
+            onsc_cv_digital_call_zip = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_zip")
+            onsc_cv_digital_call_massive_documentary_reject = self.env.ref(
+                "onsc_cv_digital.onsc_cv_digital_call_massive_documentary_reject")
+            actions = [onsc_cv_digital_call_zip.id, onsc_cv_digital_call_massive_documentary_reject.id]
+            res['toolbar']['action'] = [act for act in res['toolbar']['action'] if act['id'] not in actions]
+        return res
