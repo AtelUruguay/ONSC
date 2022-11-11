@@ -8,7 +8,7 @@
             <field name="name">Título intermedio</field>
         </record>
         <record id="onsc_cv_study_level_postgraduate" model="onsc.cv.study.level">
-            <field name="name">Postgrado</field>
+            <field name="name">Diploma o especialización de posgrado</field>
         </record>
         <record id="onsc_cv_study_level_master_degree" model="onsc.cv.study.level">
             <field name="name">Maestría</field>
@@ -17,7 +17,7 @@
             <field name="name">Doctorado</field>
         </record>
         <record id="onsc_cv_study_level_postdoc" model="onsc.cv.study.level">
-            <field name="name">Postdoctorado</field>
+            <field name="name">Posdoctorado</field>
         </record>
         <record id="onsc_cv_study_university_degree" model="onsc.cv.study.level">
             <field name="name">Grado universitario</field>

@@ -400,7 +400,6 @@
                                     <strong>FORMACIÓN</strong>
                                 </h3>
                                 <t t-set="values" t-value="o._get_report_cv_formation_seccion()"/>
-                                <span t-esc="values"/>
                                 <t t-call="onsc_cv_digital.cv_digital_section_formation">
                                     <t t-set="values" t-value="values"/>
                                 </t>
@@ -655,12 +654,9 @@
                         </t>
                     </t>
                 </h4>
-
-                <t t-if="name_section=='CARRERAS TECNICAS Y TECNOLOGICAS'">
-                    <h4 t-if="object.advanced_study_level_id">Nivel de estudio:
-                        <span t-field="object.advanced_study_level_id.name"/>
-                    </h4>
-                </t>
+                <h4 t-if="object.advanced_study_level_id">Nivel de estudio:
+                    <span t-field="object.advanced_study_level_id.name"/>
+                </h4>
                 <h4 t-if="object.state">Estado:
                     <span t-field="object.state"/>
                 </h4>

@@ -17,9 +17,9 @@
         <field name="arch" type="xml">
             <tree string="Niveles de estudio" editable="top">
                 <field name="name"/>
-                <field name="code"/>
-                <field name="report_cv_seccion"/>
-                <field name="report_cv_order"/>
+                <field name="code" groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                <field name="report_cv_seccion" required="1" groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                <field name="report_cv_order" required="1" groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -34,6 +34,10 @@
                     <group>
                         <field name="name"/>
                         <field name="code"
+                               groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                        <field name="report_cv_seccion" required="1"
+                               groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
+                        <field name="report_cv_order" required="1"
                                groups="onsc_cv_digital.group_gestor_catalogos_cv,onsc_cv_digital.group_validador_catalogos_cv"/>
                         <field name="active" invisible="1"/>
                     </group>
