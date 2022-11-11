@@ -113,6 +113,9 @@ ONSC CV Digital
         'web.report_assets_common': [
             'onsc_cv_digital/static/src/css/style.css',
         ],
+        'web.assets_qweb': [
+            'onsc_cv_digital/static/src/xml/*.xml',
+        ],
     },
 
     'installable': True,
