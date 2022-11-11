@@ -23,7 +23,8 @@ class EmployeeChart(http.Controller):
         key = []
         if len(operatin_unit) == 1:
             key.append(operatin_unit.id)
-            key.append(len(request.env['hr.department'].sudo().search([('operating_unit_id', '=', parent_id), ('parent_id', '=', False)])))
+            key.append(len(request.env['hr.department'].sudo().search(
+                [('operating_unit_id', '=', parent_id), ('parent_id', '=', False)])))
             return key
         elif len(operatin_unit) == 0:
             raise UserError(
@@ -45,7 +46,7 @@ class EmployeeChart(http.Controller):
                     else:
                         lines += """<td class="rightLine topLine"></td>"""
                 else:
-                    if i == loop_count-1:
+                    if i == loop_count - 1:
                         lines += """<td class="leftLine"></td>"""
                     else:
                         lines += """<td class="leftLine topLine"></td>"""
@@ -166,7 +167,6 @@ class EmployeeChart(http.Controller):
         )
         organization_data_tree += f'{tree}</li></ul>'
         organization_data = {}
-        in_organization = []
         # for level in levels:
         #     organization_data[level.id] = {
         #         'name': level.name,
@@ -244,4 +244,3 @@ class EmployeeChart(http.Controller):
                 child_table = nodes + lines
                 value.append(child_table)
                 return child_table
-

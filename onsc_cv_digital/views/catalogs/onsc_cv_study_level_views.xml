@@ -18,6 +18,8 @@
             <tree string="Niveles de estudio" editable="top">
                 <field name="name"/>
                 <field name="code"/>
+                <field name="report_cv_seccion"/>
+                <field name="report_cv_order"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>

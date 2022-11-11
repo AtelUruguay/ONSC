@@ -40,9 +40,13 @@ lint:
     - export PGUSER="postgres"
     - export PGPASSWORD=""
     - git clone https://github.com/OCA/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+    - pip3 install --upgrade -r ${HOME}/maintainer-quality-tools/requirements.txt
     - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
-    - update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+    #- update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 1
+    # Se deshabilitan controles con no corresponde hacer
     - sed -i '/^ignore =/ s/$/,E501,C8202,C8103/' ${HOME}/maintainer-quality-tools/travis/cfg/travis_run_flake8.cfg
+    - sed -i 's/getargspec/getfullargspec/g' ${HOME}/maintainer-quality-tools/travis/run_pylint.py
+    - sed -i 's/if is_version_number/if False/g' ${HOME}/maintainer-quality-tools/travis/run_pylint.py
     - travis_install_nightly
     - travis_run_tests
     - travis_after_tests_success || true

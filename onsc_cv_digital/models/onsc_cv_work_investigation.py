@@ -122,6 +122,22 @@ class ONSCCVEducationAreaCourse(models.Model):
 
     investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
 
+    @api.model
+    def create(self, values):
+        _investigation_id = values.get('investigation_id')
+        _educational_area_id = values.get('educational_area_id')
+        _educational_subarea_id = values.get('educational_subarea_id')
+        _discipline_educational_id = values.get('discipline_educational_id')
+        all_values_tocheck = _investigation_id and _educational_area_id and _educational_subarea_id and _discipline_educational_id
+        if all_values_tocheck and self.search_count([
+            ('investigation_id', '=', _investigation_id),
+            ('educational_area_id', '=', _educational_area_id),
+            ('educational_subarea_id', '=', _educational_subarea_id),
+            ('discipline_educational_id', '=', _discipline_educational_id),
+        ]):
+            return self
+        return super(ONSCCVEducationAreaCourse, self).create(values)
+
     def _get_json_dict(self):
         return [
             ("educational_area_id", ['id', 'name']),

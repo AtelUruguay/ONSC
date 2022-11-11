@@ -277,7 +277,7 @@
                                     </table>
                                 </ul>
                                 <div class="alert alert-info" role="alert"
-                                     t-if="o.nro_doc_documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False)">
+                                     t-if="o.nro_doc_documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False) and env.context.get('is_mypostulations', False) is False">
                                     <p class="mb-0">
                                         <strong>
                                             La sección documento de identidad ha sido rechazada. Motivo del rechazo:
@@ -295,7 +295,7 @@
                                     </p>
                                 </div>
                                 <div class="alert alert-info" role="alert"
-                                     t-if="o.civical_credential_documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False)">
+                                     t-if="o.civical_credential_documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False) and env.context.get('is_mypostulations', False) is False">
                                     <p class="mb-0">
                                         <strong>
                                             La sección credencial cívica ha sido rechazada. Motivo del rechazo:
@@ -399,35 +399,10 @@
                                 <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
                                     <strong>FORMACIÓN</strong>
                                 </h3>
+                                <t t-set="values" t-value="o._get_report_cv_formation_seccion()"/>
+                                <span t-esc="values"/>
                                 <t t-call="onsc_cv_digital.cv_digital_section_formation">
-                                    <t t-set="name_section" t-value="'POSTDOCTORADO'"/>
-                                    <t t-set="objects"
-                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Postdoctorado')"/>
-                                </t>
-                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
-                                    <t t-set="name_section" t-value="'DOCTORADO'"/>
-                                    <t t-set="objects"
-                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Doctorado')"/>
-                                </t>
-                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
-                                    <t t-set="name_section" t-value="'MAESTRIA'"/>
-                                    <t t-set="objects"
-                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Maestría')"/>
-                                </t>
-                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
-                                    <t t-set="name_section" t-value="'POSTGRADO'"/>
-                                    <t t-set="objects"
-                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Postgrado')"/>
-                                </t>
-                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
-                                    <t t-set="name_section" t-value="'GRADO TERCIARIO'"/>
-                                    <t t-set="objects"
-                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name =='Grado terciario')"/>
-                                </t>
-                                <t t-call="onsc_cv_digital.cv_digital_section_formation">
-                                    <t t-set="name_section" t-value="'CARRERAS TECNICAS Y TECNOLOGICAS'"/>
-                                    <t t-set="objects"
-                                       t-value="o.advanced_formation_ids.filtered(lambda tx: tx.advanced_study_level_id.name not in ['Maestría','Doctorado','Postdoctorado','Postgrado','Grado'])"/>
+                                    <t t-set="values" t-value="values"/>
                                 </t>
                                 <br></br>
                                 <br></br>
@@ -619,7 +594,7 @@
 
     <template id="cv_documentary_validation">
         <div class="alert alert-info" role="alert"
-             t-if="object.documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False)">
+             t-if="object.documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False) and env.context.get('is_mypostulations', False) is False">
             <p class="mb-0">
                 <strong>
                     El registro de validación documental ha sido rechazado. Motivo del rechazo:
@@ -649,12 +624,13 @@
     <!--Formacion Avanzada-->
 
     <template id="cv_digital_section_formation">
-        <h5 t-if="objects">
-            <u>
-                <t t-esc="name_section "/>
-            </u>
-        </h5>
-        <t t-foreach="objects" t-as="object">
+        <t t-foreach="values" t-as="value">
+            <h5>
+                <u>
+                    <t t-esc="value "/>
+                </u>
+            </h5>
+            <t t-foreach="values[value]" t-as="object">
             <ul>
                 <li>
                     <h4 style="font-weight:bold;">
@@ -816,8 +792,8 @@
             </ul>
             <t t-call="onsc_cv_digital.cv_conditional_validation"/>
             <t t-call="onsc_cv_digital.cv_documentary_validation"/>
-            <br></br>
-
+            </t>
+            <br/>
         </t>
     </template>
 
@@ -1437,10 +1413,10 @@
                     <span t-field="object.location"/>
                 </h4>
                 <h4 t-if="object.paid_activity">Actividad remunerada:
-                    <span t-esc="object.paid_activity and 'SI' or 'NO'"/>
+                    <span t-esc="object.paid_activity == 'yes' and 'SI' or 'NO'"/>
                 </h4>
-                <h4 t-if="object.paid_activity">Actividad Arbitrada:
-                    <span t-esc="object.paid_activity  and 'SI' or 'NO'"/>
+                <h4 t-if="object.type == 'publication' and object.is_arbitrated == True">Actividad Arbitrada:
+                    <span t-esc="object.arbitrated == 'yes' and 'SI' or 'NO'"/>
                 </h4>
                 <t t-if="object.applied_knowledge_ids">
                     <h4>Conocimientos aplicados:
@@ -1747,7 +1723,7 @@
                     </h4>
                 </li>
             </ul>
-            <div class="alert alert-info" role="alert" t-if="o.disabilitie_documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False)">
+            <div class="alert alert-info" role="alert" t-if="o.disabilitie_documentary_validation_state == 'rejected' and env.context.get('cv_digital_call', False) and env.context.get('is_mypostulations', False) is False">
                 <p class="mb-0">
                     <strong>
                         La sección discapacidad ha sido rechazada. Motivo del rechazo:

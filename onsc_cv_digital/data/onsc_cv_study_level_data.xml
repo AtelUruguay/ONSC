@@ -1,20 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <record id="onsc_cv_study_level_professional_technician" model="onsc.cv.study.level">
-            <field name="name">Técnico profesional</field>
-        </record>
-        <record id="onsc_cv_study_level_technologist" model="onsc.cv.study.level">
-            <field name="name">Tecnólogo</field>
-        </record>
-        <record id="onsc_cv_study_level_tertiary_title" model="onsc.cv.study.level">
-            <field name="name">Título terciario</field>
+        <record id="onsc_cv_study_level_tertiary_title_tecnologic" model="onsc.cv.study.level">
+            <field name="name">Terciario, técnico o tecnológico</field>
         </record>
         <record id="onsc_cv_study_level_intermediate_title" model="onsc.cv.study.level">
             <field name="name">Título intermedio</field>
-        </record>
-        <record id="onsc_cv_study_level_tertiary_degree" model="onsc.cv.study.level">
-            <field name="name">Grado terciario</field>
         </record>
         <record id="onsc_cv_study_level_postgraduate" model="onsc.cv.study.level">
             <field name="name">Postgrado</field>
@@ -27,6 +18,9 @@
         </record>
         <record id="onsc_cv_study_level_postdoc" model="onsc.cv.study.level">
             <field name="name">Postdoctorado</field>
+        </record>
+        <record id="onsc_cv_study_university_degree" model="onsc.cv.study.level">
+            <field name="name">Grado universitario</field>
         </record>
     </data>
 </odoo>

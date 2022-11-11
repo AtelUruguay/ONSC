@@ -13,3 +13,19 @@ var FormRenderer = require('web.FormRenderer');
         }
     })
 });
+
+odoo.define('onsc_cv_digital.BasicView', function (require) {
+var BasicView = require('web.BasicView');
+BasicView.include({
+
+        init: function(viewInfo, params) {
+            var self = this;
+            this._super.apply(this, arguments);
+            const models =  ['onsc.cv.digital','onsc.cv.digital.call'] ;
+            if(models.includes(self.controllerParams.modelName))
+            {
+               self.controllerParams.archiveEnabled = 'False' in viewInfo.fields;
+            }
+        },
+    });
+});

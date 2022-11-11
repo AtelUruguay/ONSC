@@ -8,4 +8,4 @@ class ONSCCVTypeEvent(models.Model):
     _description = 'Tipo de evento'
     _inherit = ['onsc.cv.abstract.config']
 
-    name = fields.Char(" Nombre del tipo de evento", required=True, tracking=True)
+    name = fields.Char("Nombre del tipo de evento", required=True, tracking=True)

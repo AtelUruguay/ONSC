@@ -101,7 +101,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             doc = etree.XML(res['arch'])
             config = self.env["onsc.cv.documentary.validation.config"].search(
                 [('model_id.model', '=', self._name)], limit=1)
-            if self._context.get('is_call_documentary_validation', False):
+            if self._context.get('is_call_documentary_validation', False) and not self._context.get('is_zip', False):
                 for field in config.field_ids:
                     node = doc.xpath("//field[@name='" + field.name + "']")
                     for n in node:

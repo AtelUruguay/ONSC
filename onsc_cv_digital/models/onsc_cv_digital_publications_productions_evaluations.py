@@ -154,6 +154,27 @@ class ONSCCVActivityArea(models.Model):
                                               ondelete='cascade')
     speciality = fields.Char(string=u"Especialidad")
 
+    @api.model
+    def create(self, values):
+        _publications_productions_evaluations_id = values.get('publications_productions_evaluations_id')
+        _educational_area_id = values.get('educational_area_id')
+        _educational_subarea_id = values.get('educational_subarea_id')
+        _discipline_educational_id = values.get('discipline_educational_id')
+        args = [
+            ('educational_area_id', '=', _educational_area_id),
+            ('educational_subarea_id', '=', _educational_subarea_id),
+            ('discipline_educational_id', '=', _discipline_educational_id)
+        ]
+        if values.get('publications_productions_evaluations_id'):
+            args.append(('publications_productions_evaluations_id', '=', _publications_productions_evaluations_id))
+        else:
+            args.append(('participation_events_id', '=', values.get('participation_events_id')))
+
+        all_values_tocheck = _educational_area_id and _educational_subarea_id and _discipline_educational_id
+        if all_values_tocheck and self.search_count(args):
+            return self
+        return super(ONSCCVActivityArea, self).create(values)
+
     def _get_json_dict(self):
         json_dict = super(ONSCCVActivityArea, self)._get_json_dict()
         json_dict.extend([

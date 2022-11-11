@@ -119,6 +119,22 @@ class ONSCCVEducationAreaCourse(models.Model):
 
     teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade')
 
+    @api.model
+    def create(self, values):
+        _teaching_id = values.get('teaching_id')
+        _educational_area_id = values.get('educational_area_id')
+        _educational_subarea_id = values.get('educational_subarea_id')
+        _discipline_educational_id = values.get('discipline_educational_id')
+        all_values_tocheck = _teaching_id and _educational_area_id and _educational_subarea_id and _discipline_educational_id
+        if all_values_tocheck and self.search_count([
+            ('teaching_id', '=', _teaching_id),
+            ('educational_area_id', '=', _educational_area_id),
+            ('educational_subarea_id', '=', _educational_subarea_id),
+            ('discipline_educational_id', '=', _discipline_educational_id),
+        ]):
+            return self
+        return super(ONSCCVEducationAreaCourse, self).create(values)
+
 
 class ONSCCVWorkInvestigationReceiptFile(models.Model):
     _name = 'onsc.cv.work.teaching.receipt.file'
