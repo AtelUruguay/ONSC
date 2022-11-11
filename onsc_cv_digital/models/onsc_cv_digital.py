@@ -822,6 +822,18 @@ class ONSCCVDigital(models.Model):
         if document_certificate_file_value or certificate_date_file_value or to_date_file_value:
             self.disabilitie_write_date = fields.Datetime.now()
             self.disabilitie_documentary_validation_state = 'to_validate'
+            
+    def _get_report_cv_formation_seccion(self):
+        result = {}
+        report_cv_seccions = []
+        formations = self.advanced_formation_ids
+        seccions = formations.mapped('advanced_study_level_id')
+        seccions = sorted(seccions, key=lambda x: x.report_cv_order)
+        for seccion in seccions:
+            if seccion.report_cv_seccion not in report_cv_seccions:
+                result[seccion.report_cv_seccion] = formations.filtered(lambda x: x.advanced_study_level_id.report_cv_seccion == seccion.report_cv_seccion)
+                report_cv_seccions.append(seccion.report_cv_seccion)
+        return result
 
 
 class ONSCCVOtherRelevantInformation(models.Model):

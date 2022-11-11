@@ -202,3 +202,19 @@ class ONSCCVAreaRelatedEducation(models.Model):
     advanced_formation_id = fields.Many2one('onsc.cv.advanced.formation',
                                             string=u'Formación avanzada',
                                             ondelete='cascade')
+
+    @api.model
+    def create(self, values):
+        _advanced_formation_id = values.get('advanced_formation_id')
+        _educational_area_id = values.get('educational_area_id')
+        _educational_subarea_id = values.get('educational_subarea_id')
+        _discipline_educational_id = values.get('discipline_educational_id')
+        all_values_tocheck = _advanced_formation_id and _educational_area_id and _educational_subarea_id and _discipline_educational_id
+        if all_values_tocheck and self.search_count([
+            ('advanced_formation_id', '=', _advanced_formation_id),
+            ('educational_area_id', '=', _educational_area_id),
+            ('educational_subarea_id', '=', _educational_subarea_id),
+            ('discipline_educational_id', '=', _discipline_educational_id),
+        ]):
+            return self
+        return super(ONSCCVAreaRelatedEducation, self).create(values)

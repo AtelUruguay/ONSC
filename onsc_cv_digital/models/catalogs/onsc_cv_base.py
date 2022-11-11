@@ -100,10 +100,13 @@ class ONSCCVDocumentType(models.Model):
 class ONSCCVStudyLevel(models.Model):
     _name = 'onsc.cv.study.level'
     _description = 'Nivel de estudio'
+    _order = 'report_cv_order'
 
     code = fields.Char(u'Código')
     name = fields.Char(u'Nombre del nivel de estudio', required=True)
     active = fields.Boolean(string='Activo', default=True)
+    report_cv_seccion = fields.Char(string="Sección en reporte")
+    report_cv_order = fields.Integer(string="Orden en reporte")
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)',

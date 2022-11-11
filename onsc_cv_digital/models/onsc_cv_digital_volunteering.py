@@ -56,3 +56,17 @@ class ONSCCVDigitalVolunteeringTask(models.Model):
     key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
     area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
                               required=True)
+
+    @api.model
+    def create(self, values):
+        _volunteering_id = values.get('volunteering_id')
+        _key_task_id = values.get('key_task_id')
+        _area_id = values.get('area_id')
+        all_values_tocheck = _volunteering_id and _key_task_id and _area_id
+        if all_values_tocheck and self.search_count([
+            ('volunteering_id', '=', _volunteering_id),
+            ('key_task_id', '=', _key_task_id),
+            ('area_id', '=', _area_id)
+        ]):
+            return self
+        return super(ONSCCVDigitalVolunteeringTask, self).create(values)
