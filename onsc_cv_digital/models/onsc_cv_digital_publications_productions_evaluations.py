@@ -133,6 +133,22 @@ class ONSCCVAuthors(models.Model):
             return self.env.user.name
         return False
 
+    @api.model
+    def create(self, values):
+        _publications_productions_evaluations_id = values.get('publications_productions_evaluations_id')
+        _author = values.get('author')
+        _is_primary_author = values.get('is_primary_author')
+        _citation = values.get('citation')
+        all_values_tocheck = _publications_productions_evaluations_id and _author and _is_primary_author and _citation
+        if all_values_tocheck and self.search_count([
+            ('publications_productions_evaluations_id', '=', _publications_productions_evaluations_id),
+            ('author', '=', _author),
+            ('is_primary_author', '=', _is_primary_author),
+            ('citation', '=', _citation),
+        ]):
+            return self
+        return super(ONSCCVAuthors, self).create(values)
+
     def _get_json_dict(self):
         return [
             "author",
@@ -150,7 +166,7 @@ class ONSCCVActivityArea(models.Model):
                                                               string=u'Publicación, Producción y Evaluación',
                                                               ondelete='cascade')
     participation_events_id = fields.Many2one('onsc.cv.participation.event',
-                                              string=u'Publicación, Producción y Evaluación',
+                                              string=u'Participación en eventos',
                                               ondelete='cascade')
     speciality = fields.Char(string=u"Especialidad")
 
@@ -160,10 +176,12 @@ class ONSCCVActivityArea(models.Model):
         _educational_area_id = values.get('educational_area_id')
         _educational_subarea_id = values.get('educational_subarea_id')
         _discipline_educational_id = values.get('discipline_educational_id')
+        _speciality = values.get('speciality')
         args = [
             ('educational_area_id', '=', _educational_area_id),
             ('educational_subarea_id', '=', _educational_subarea_id),
             ('discipline_educational_id', '=', _discipline_educational_id)
+            ('speciality', '=', _speciality)
         ]
         if values.get('publications_productions_evaluations_id'):
             args.append(('publications_productions_evaluations_id', '=', _publications_productions_evaluations_id))

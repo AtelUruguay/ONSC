@@ -95,6 +95,26 @@ class ONSCCVAcademicProgramSubject(models.Model):
     subinstitution_id = fields.Many2one(related='work_teaching_id.subinstitution_id')
     country_id = fields.Many2one(related='work_teaching_id.country_id')
 
+    @api.model
+    def create(self, values):
+        _work_teaching_id = values.get('work_teaching_id')
+        _subject = values.get('subject')
+        _course_type = values.get('course_type')
+        _level_teaching_type = values.get('level_teaching_type')
+        _start_date = values.get('start_date')
+        _end_date = values.get('end_date')
+        all_values_tocheck = _work_teaching_id and _subject and _course_type and _level_teaching_type and _start_date and _end_date
+        if all_values_tocheck and self.search_count([
+            ('work_teaching_id', '=', _work_teaching_id),
+            ('subject', '=', _subject),
+            ('course_type', '=', _course_type)
+            ('level_teaching_type', '=', _level_teaching_type)
+            ('start_date', '=', _start_date)
+            ('end_date', '=', _end_date)
+        ]):
+            return self
+        return super(ONSCCVAcademicProgramSubject, self).create(values)
+
     def _get_json_dict(self):
         return [
             "id",
@@ -110,6 +130,7 @@ class ONSCCVAcademicProgramSubject(models.Model):
             ("subinstitution_id", ['id', 'name']),
             ("country_id", ['id', 'name']),
         ]
+
 
 
 class ONSCCVEducationAreaCourse(models.Model):
@@ -142,3 +163,17 @@ class ONSCCVWorkInvestigationReceiptFile(models.Model):
     _inherit = 'onsc.cv.work.abstract.receipt.file'
 
     teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade')
+
+    @api.model
+    def create(self, values):
+        _teaching_id = values.get('teaching_id')
+        _receipt_filename = values.get('receipt_filename')
+        _receipt_description = values.get('receipt_description')
+        all_values_tocheck = _teaching_id and _receipt_filename and _receipt_description
+        if all_values_tocheck and self.search_count([
+            ('teaching_id', '=', _teaching_id),
+            ('receipt_filename', '=', _receipt_filename),
+            ('receipt_description', '=', _receipt_description)
+        ]):
+            return self
+        return super(ONSCCVEducationAreaCourse, self).create(values)

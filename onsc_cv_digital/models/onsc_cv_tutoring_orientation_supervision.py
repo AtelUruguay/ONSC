@@ -130,12 +130,14 @@ class ONSCCVEducationAreaTutorial(models.Model):
         _educational_area_id = values.get('educational_area_id')
         _educational_subarea_id = values.get('educational_subarea_id')
         _discipline_educational_id = values.get('discipline_educational_id')
+        _speciality = values.get('speciality')
         all_values_tocheck = _tutoring_id and _educational_area_id and _educational_subarea_id and _discipline_educational_id
         if all_values_tocheck and self.search_count([
             ('tutoring_id', '=', _tutoring_id),
             ('educational_area_id', '=', _educational_area_id),
             ('educational_subarea_id', '=', _educational_subarea_id),
             ('discipline_educational_id', '=', _discipline_educational_id),
+            ('speciality', '=', _speciality),
         ]):
             return self
         return super(ONSCCVEducationAreaTutorial, self).create(values)

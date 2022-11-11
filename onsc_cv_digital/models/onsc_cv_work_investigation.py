@@ -114,6 +114,20 @@ class ONSCCVWorkInvestigationMember(models.Model):
             return self.env.user.name
         return False
 
+    @api.model
+    def create(self, values):
+        _investigation_id = values.get('investigation_id')
+        _member = values.get('member')
+        _citation = values.get('citation')
+        all_values_tocheck = _investigation_id and _member and _citation
+        if all_values_tocheck and self.search_count([
+            ('investigation_id', '=', _investigation_id),
+            ('member', '=', _member),
+            ('citation', '=', _citation),
+        ]):
+            return self
+        return super(ONSCCVEducationAreaCourse, self).create(values)
+
 
 class ONSCCVEducationAreaCourse(models.Model):
     _name = 'onsc.cv.education.area.investigation'
@@ -152,3 +166,17 @@ class ONSCCVWorkInvestigationReceiptFile(models.Model):
     _inherit = 'onsc.cv.work.abstract.receipt.file'
 
     investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
+
+    @api.model
+    def create(self, values):
+        _investigation_id = values.get('investigation_id')
+        _receipt_filename = values.get('receipt_filename')
+        _receipt_description = values.get('receipt_description')
+        all_values_tocheck = _investigation_id and _receipt_filename and _receipt_description
+        if all_values_tocheck and self.search_count([
+            ('investigation_id', '=', _investigation_id),
+            ('receipt_filename', '=', _receipt_filename),
+            ('receipt_description', '=', _receipt_description)
+        ]):
+            return self
+        return super(ONSCCVEducationAreaCourse, self).create(values)
