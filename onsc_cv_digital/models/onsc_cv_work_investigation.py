@@ -126,7 +126,7 @@ class ONSCCVWorkInvestigationMember(models.Model):
             ('citation', '=', _citation),
         ]):
             return self
-        return super(ONSCCVEducationAreaCourse, self).create(values)
+        return super(ONSCCVWorkInvestigationMember, self).create(values)
 
 
 class ONSCCVEducationAreaCourse(models.Model):
@@ -179,4 +179,4 @@ class ONSCCVWorkInvestigationReceiptFile(models.Model):
             ('receipt_description', '=', _receipt_description)
         ]):
             return self
-        return super(ONSCCVEducationAreaCourse, self).create(values)
+        return super(ONSCCVWorkInvestigationReceiptFile, self).create(values)
