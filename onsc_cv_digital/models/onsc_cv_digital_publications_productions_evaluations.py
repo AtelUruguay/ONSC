@@ -180,7 +180,7 @@ class ONSCCVActivityArea(models.Model):
         args = [
             ('educational_area_id', '=', _educational_area_id),
             ('educational_subarea_id', '=', _educational_subarea_id),
-            ('discipline_educational_id', '=', _discipline_educational_id)
+            ('discipline_educational_id', '=', _discipline_educational_id),
             ('speciality', '=', _speciality)
         ]
         if values.get('publications_productions_evaluations_id'):
