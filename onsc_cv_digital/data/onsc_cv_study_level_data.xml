@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <record id="onsc_cv_study_level_tertiary_title_tecnologic" model="onsc.cv.study.level">
+        <record id="onsc_cv_study_level_tertiary_title" model="onsc.cv.study.level">
             <field name="name">Terciario, técnico o tecnológico</field>
         </record>
         <record id="onsc_cv_study_level_intermediate_title" model="onsc.cv.study.level">
