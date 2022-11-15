@@ -55,6 +55,7 @@
     <template id="onsc_cv_digital_document">
         <t t-call="onsc_cv_digital.external_layout_cv">
             <div class="page">
+                <t t-set="cupos" t-value="o._get_cupos_info()"/>
                 <div class="container text-white py-1" style="background-color:rgb(82, 113, 255)">
                     <div class="row">
                         <div t-if="o.partner_id.image_1920" class="col-2 text-left text-md-center">
@@ -546,7 +547,7 @@
                                 </t>
                                 <br></br>
                             </t>
-                            <t t-if="'disabilitie' in env.context.get('seccions', True) and o.allow_content_public == 'si'">
+                            <t t-if="'disabilitie' in env.context.get('seccions', True) and (o.allow_content_public == 'si' or ((cupos.get('is_disabilitie', False) and env.context.get('is_call_documentary_validation', True))))">
                                 <br></br>
                                 <t t-call="onsc_cv_digital.cv_digital_section_disabilitie">
                                     <t t-set="name_section" t-value="'DISCAPACIDAD'"/>

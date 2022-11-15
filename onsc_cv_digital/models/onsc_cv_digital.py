@@ -822,7 +822,8 @@ class ONSCCVDigital(models.Model):
         if document_certificate_file_value or certificate_date_file_value or to_date_file_value:
             self.disabilitie_write_date = fields.Datetime.now()
             self.disabilitie_documentary_validation_state = 'to_validate'
-            
+
+    # REPORTE DE CV: UTILITIES
     def _get_report_cv_formation_seccion(self):
         result = {}
         report_cv_seccions = []
@@ -831,9 +832,26 @@ class ONSCCVDigital(models.Model):
         seccions = sorted(seccions, key=lambda x: x.report_cv_order)
         for seccion in seccions:
             if seccion.report_cv_seccion not in report_cv_seccions:
-                result[seccion.report_cv_seccion] = formations.filtered(lambda x: x.advanced_study_level_id.report_cv_seccion == seccion.report_cv_seccion)
+                result[seccion.report_cv_seccion] = formations.filtered(
+                    lambda x: x.advanced_study_level_id.report_cv_seccion == seccion.report_cv_seccion)
                 report_cv_seccions.append(seccion.report_cv_seccion)
         return result
+
+    def _get_cupos_info(self):
+        if self.type == 'call':
+            cv_call_id = self.env['onsc.cv.digital.call'].search([('cv_digital_id', '=', self.id)], limit=1)
+            return {
+                'is_trans': cv_call_id.is_trans,
+                'is_afro': cv_call_id.is_afro,
+                'is_disabilitie': cv_call_id.is_disabilitie,
+                'is_victim': cv_call_id.is_victim,
+            }
+        return {
+            'is_trans': False,
+            'is_afro': False,
+            'is_disabilitie': False,
+            'is_victim': False
+        }
 
 
 class ONSCCVOtherRelevantInformation(models.Model):
