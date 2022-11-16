@@ -840,6 +840,8 @@ class ONSCCVDigital(models.Model):
     def _get_cupos_info(self):
         if self.type == 'call':
             cv_call_id = self.env['onsc.cv.digital.call'].search([('cv_digital_id', '=', self.id)], limit=1)
+            _logger.warning('******************************************')
+            _logger.warning(self._context)
             return {
                 'is_trans': cv_call_id.is_trans,
                 'is_afro': cv_call_id.is_afro,
