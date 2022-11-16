@@ -732,7 +732,6 @@ class ONSCCVDigitalCall(models.Model):
             'context': {
                 'default_cv_digital_ids': self.cv_digital_id.ids,
                 'cv_digital_call': True,
-                'is_call_documentary_validation': self._context.get('is_call_documentary_validation', False),
                 'is_mypostulations': self._context.get('is_mypostulations', False)
             },
         }

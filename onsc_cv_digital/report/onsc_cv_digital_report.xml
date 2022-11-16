@@ -172,7 +172,7 @@
                                             <span t-field="o.professional_resume"/>
                                         </h4>
                                     </li>
-                                    <li t-if="o.is_cv_gender_public">
+                                    <li t-if=" and cupos.get('show_trans', False) == True">
                                         <h4 t-if="o.cv_gender_id">Género:
                                             <span t-field="o.cv_gender_id.name"/>
                                         </h4>
@@ -215,7 +215,7 @@
 
                                         </li>
                                         <li>
-                                            <h4 t-if="o.is_afro_descendants">Afrodescendientes (Art. 4 Ley N°19.122):
+                                            <h4 t-if="cupos.get('show_afro', False) == True">Afrodescendientes (Art. 4 Ley N°19.122):
                                                 <span>
                                                     <t t-esc="o.is_afro_descendants and 'SI' or 'NO'"/>
                                                 </span>
@@ -267,7 +267,7 @@
                                                 </h4>
                                             </td>
                                         </tr>
-                                        <tr t-if="o.is_public_information_victim_violent">
+                                        <tr t-if="cupos.get('show_victim', False) == True">
                                             <td>
                                                 <h4 t-if="o.is_victim_violent">Persona víctima de delitos violentos
                                                     (Art. 105 Ley Nº 19.889):
@@ -547,7 +547,7 @@
                                 </t>
                                 <br></br>
                             </t>
-                            <t t-if="'disabilitie' in env.context.get('seccions', True) and (o.allow_content_public == 'si' or ((cupos.get('is_disabilitie', False) and env.context.get('is_call_documentary_validation', True))))">
+                            <t t-if="'disabilitie' in env.context.get('seccions', True) and cupos.get('show_disabilitie', False) == True">
                                 <br></br>
                                 <t t-call="onsc_cv_digital.cv_digital_section_disabilitie">
                                     <t t-set="name_section" t-value="'DISCAPACIDAD'"/>

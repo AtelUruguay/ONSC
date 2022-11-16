@@ -842,17 +842,35 @@ class ONSCCVDigital(models.Model):
             cv_call_id = self.env['onsc.cv.digital.call'].search([('cv_digital_id', '=', self.id)], limit=1)
             _logger.warning('******************************************')
             _logger.warning(self._context)
+            is_call_documentary_validation = self._context.get('is_call_documentary_validation')
+            is_cv_copy = self._context.get('is_cv_copy', False)
+            if cv_call_id.allow_content_public == 'si' or is_cv_copy or (is_call_documentary_validation and (cv_call_id.allow_content_public == 'si' or cv_call_id.is_disabilitie)):
+                show_disabilitie = True
+            else:
+                show_disabilitie = False
+            if cv_call_id.is_cv_race_public or is_cv_copy or (is_call_documentary_validation and (cv_call_id.is_cv_race_public or cv_call_id.is_afro)):
+                show_afro = True
+            else:
+                show_afro = False
+            if cv_call_id.is_cv_gender_public or is_cv_copy or (is_call_documentary_validation and (cv_call_id.is_cv_gender_public or cv_call_id.is_trans)):
+                show_trans = True
+            else:
+                show_trans = False
+            if cv_call_id.is_public_information_victim_violent or is_cv_copy or (is_call_documentary_validation and (cv_call_id.is_public_information_victim_violent or cv_call_id.is_victim)):
+                show_victim = True
+            else:
+                show_victim = False
             return {
-                'is_trans': cv_call_id.is_trans,
-                'is_afro': cv_call_id.is_afro,
-                'is_disabilitie': cv_call_id.is_disabilitie,
-                'is_victim': cv_call_id.is_victim,
+                'show_disabilitie': show_disabilitie,
+                'show_afro': show_afro,
+                'show_trans': show_trans,
+                'show_victim': show_victim,
             }
         return {
-            'is_trans': False,
-            'is_afro': False,
-            'is_disabilitie': False,
-            'is_victim': False
+            'show_disabilitie': False,
+            'show_afro': False,
+            'show_trans': False,
+            'show_victim': False
         }
 
 
