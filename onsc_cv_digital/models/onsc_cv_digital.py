@@ -840,9 +840,7 @@ class ONSCCVDigital(models.Model):
     def _get_cupos_info(self):
         if self.type == 'call':
             cv_call_id = self.env['onsc.cv.digital.call'].search([('cv_digital_id', '=', self.id)], limit=1)
-            _logger.warning('******************************************')
-            _logger.warning(self._context)
-            is_call_documentary_validation = self._context.get('is_call_documentary_validation')
+            is_call_documentary_validation = self._context.get('is_call_documentary_validation', False)
             is_cv_copy = self._context.get('is_cv_copy', False)
             if cv_call_id.allow_content_public == 'si' or is_cv_copy or (is_call_documentary_validation and (cv_call_id.allow_content_public == 'si' or cv_call_id.is_disabilitie)):
                 show_disabilitie = True

@@ -21,7 +21,7 @@
 
     <menuitem id="onsc_cv_digital_call_copy_menu"
               name="Copias de CV"
-              action="onsc_cv_digital_call_copy_action"
+              action="onsc_cv_digital_call_iscopy_action"
               parent="onsc_cv_root_menu"
               groups="group_manager_cv"
               sequence="2"/>

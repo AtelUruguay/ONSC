@@ -737,7 +737,7 @@ class ONSCCVDigitalCall(models.Model):
         }
         return res
 
-    def onsc_cv_digital_call_print_cv(self):
+    def cv_digital_call_print_cv(self):
         active_ids = self._context.get('active_ids', False)
         onsc_cv_digital_ids = self.env['onsc.cv.digital.call'].browse(active_ids)
         onsc_cv_report_wizard = self.env['onsc.cv.report.wizard'].create({
@@ -755,14 +755,24 @@ class ONSCCVDigitalCall(models.Model):
             toolbar_actions = res['toolbar'].get('action')
             actions_exclude = []
             if not is_call_documentary_validation:
+                print_action = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_documentary_validation_print_action")
                 onsc_cv_digital_call_zip = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_zip")
                 onsc_cv_digital_call_massive_documentary_reject = self.env.ref(
                     "onsc_cv_digital.onsc_cv_digital_call_massive_documentary_reject")
-                actions_exclude.extend(
-                    [onsc_cv_digital_call_zip.id, onsc_cv_digital_call_massive_documentary_reject.id])
+                actions_exclude.extend([
+                    onsc_cv_digital_call_zip.id,
+                     onsc_cv_digital_call_massive_documentary_reject.id,
+                     print_action.id
+                ])
+            else:
+                print_action = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_print_action")
+                actions_exclude.extend([
+                    print_action.id
+                ])
             if self._context.get('is_mypostulations'):
-                onsc_cv_digital_print_action = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_print_action")
-                actions_exclude.extend([onsc_cv_digital_print_action.id])
+                print_action1 = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_print_action")
+                print_action2 = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_documentary_validation_print_action")
+                actions_exclude.extend([print_action1.id,print_action2.id])
             toolbar_actions = [act for act in toolbar_actions if act['id'] not in actions_exclude]
             res['toolbar']['action'] = toolbar_actions
         return res

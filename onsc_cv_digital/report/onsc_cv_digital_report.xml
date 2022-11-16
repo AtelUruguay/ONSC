@@ -172,7 +172,7 @@
                                             <span t-field="o.professional_resume"/>
                                         </h4>
                                     </li>
-                                    <li t-if=" and cupos.get('show_trans', False) == True">
+                                    <li t-if="cupos.get('show_trans', False) == True">
                                         <h4 t-if="o.cv_gender_id">Género:
                                             <span t-field="o.cv_gender_id.name"/>
                                         </h4>
