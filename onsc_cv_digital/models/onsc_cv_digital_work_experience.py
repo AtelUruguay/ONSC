@@ -76,20 +76,9 @@ class ONSCCVDigitalWorkExperience(models.Model):
 class ONSCCVDigitalOriginInstitutionTask(models.Model):
     _name = 'onsc.cv.work.experience.task'
     _description = 'Tareas de experiencia laboral'
+    _no_create_ifautosave = True
 
     work_experience_id = fields.Many2one("onsc.cv.work.experience", string="Experiencia laboral", ondelete='cascade')
     key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
     area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
                               required=True)
-
-    @api.model
-    def create(self, values):
-        _work_experience_id = values.get('work_experience_id')
-        _key_task_id = values.get('key_task_id')
-        all_values_tocheck = _work_experience_id and _key_task_id
-        if all_values_tocheck and self.search_count([
-            ('work_experience_id', '=', _work_experience_id),
-            ('key_task_id', '=', _key_task_id)
-        ]):
-            return self
-        return super(ONSCCVDigitalOriginInstitutionTask, self).create(values)

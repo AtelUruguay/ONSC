@@ -227,25 +227,9 @@ class ONSCCVEducationAreaCourse(models.Model):
     _name = 'onsc.cv.education.area.course'
     _inherit = ['onsc.cv.abstract.formation.line']
     _description = 'Áreas relacionadas con esta educación (cursos y certificados)'
+    _no_create_ifautosave = True
 
     course_id = fields.Many2one('onsc.cv.course.certificate', 'Curso/Certificado')
-
-    # FIXE workaround to solve autosave problem
-    @api.model
-    def create(self, values):
-        _course_id = values.get('course_id')
-        _educational_area_id = values.get('educational_area_id')
-        _educational_subarea_id = values.get('educational_subarea_id')
-        _discipline_educational_id = values.get('discipline_educational_id')
-        all_values_tocheck = _course_id and _educational_area_id and _educational_subarea_id and _discipline_educational_id
-        if all_values_tocheck and self.search_count([
-            ('course_id', '=', _course_id),
-            ('educational_area_id', '=', _educational_area_id),
-            ('educational_subarea_id', '=', _educational_subarea_id),
-            ('discipline_educational_id', '=', _discipline_educational_id),
-        ]):
-            return self
-        return super(ONSCCVEducationAreaCourse, self).create(values)
 
     def _get_json_dict(self):
         return [

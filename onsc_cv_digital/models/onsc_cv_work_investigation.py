@@ -95,6 +95,7 @@ class ONSCCVWorkInvestigation(models.Model):
 class ONSCCVWorkInvestigationMember(models.Model):
     _name = 'onsc.cv.work.investigation.member'
     _description = 'Integrante de la investigación'
+    _no_create_ifautosave = True
 
     investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
     member = fields.Char('Integrante', required=True, default=lambda self: self.get_default_member())
@@ -114,43 +115,14 @@ class ONSCCVWorkInvestigationMember(models.Model):
             return self.env.user.name
         return False
 
-    @api.model
-    def create(self, values):
-        _investigation_id = values.get('investigation_id')
-        _member = values.get('member')
-        _citation = values.get('citation')
-        all_values_tocheck = _investigation_id and _member and _citation
-        if all_values_tocheck and self.search_count([
-            ('investigation_id', '=', _investigation_id),
-            ('member', '=', _member),
-            ('citation', '=', _citation),
-        ]):
-            return self
-        return super(ONSCCVWorkInvestigationMember, self).create(values)
-
 
 class ONSCCVEducationAreaCourse(models.Model):
     _name = 'onsc.cv.education.area.investigation'
     _inherit = ['onsc.cv.abstract.formation.line']
     _description = 'Áreas relacionadas con esta educación (Investigación)'
+    _no_create_ifautosave = True
 
     investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
-
-    @api.model
-    def create(self, values):
-        _investigation_id = values.get('investigation_id')
-        _educational_area_id = values.get('educational_area_id')
-        _educational_subarea_id = values.get('educational_subarea_id')
-        _discipline_educational_id = values.get('discipline_educational_id')
-        all_values_tocheck = _investigation_id and _educational_area_id and _educational_subarea_id and _discipline_educational_id
-        if all_values_tocheck and self.search_count([
-            ('investigation_id', '=', _investigation_id),
-            ('educational_area_id', '=', _educational_area_id),
-            ('educational_subarea_id', '=', _educational_subarea_id),
-            ('discipline_educational_id', '=', _discipline_educational_id),
-        ]):
-            return self
-        return super(ONSCCVEducationAreaCourse, self).create(values)
 
     def _get_json_dict(self):
         return [
@@ -164,19 +136,6 @@ class ONSCCVWorkInvestigationReceiptFile(models.Model):
     _name = 'onsc.cv.work.investigation.receipt.file'
     _description = 'Comprobantes de investigación'
     _inherit = 'onsc.cv.work.abstract.receipt.file'
+    _no_create_ifautosave = True
 
     investigation_id = fields.Many2one('onsc.cv.work.investigation', 'Investigación', ondelete='cascade')
-
-    @api.model
-    def create(self, values):
-        _investigation_id = values.get('investigation_id')
-        _receipt_filename = values.get('receipt_filename')
-        _receipt_description = values.get('receipt_description')
-        all_values_tocheck = _investigation_id and _receipt_filename and _receipt_description
-        if all_values_tocheck and self.search_count([
-            ('investigation_id', '=', _investigation_id),
-            ('receipt_filename', '=', _receipt_filename),
-            ('receipt_description', '=', _receipt_description)
-        ]):
-            return self
-        return super(ONSCCVWorkInvestigationReceiptFile, self).create(values)

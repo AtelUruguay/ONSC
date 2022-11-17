@@ -112,6 +112,7 @@ class ONSCCVDigitalPPEvaluations(models.Model):
 class ONSCCVAuthors(models.Model):
     _name = 'onsc.cv.authors'
     _description = 'Autor'
+    _no_create_ifautosave = True
 
     publications_productions_evaluations_id = fields.Many2one('onsc.cv.publication.production.evaluation',
                                                               string=u'Publicación, Producción y Evaluación',
@@ -133,22 +134,6 @@ class ONSCCVAuthors(models.Model):
             return self.env.user.name
         return False
 
-    @api.model
-    def create(self, values):
-        _publications_productions_evaluations_id = values.get('publications_productions_evaluations_id')
-        _author = values.get('author')
-        _is_primary_author = values.get('is_primary_author')
-        _citation = values.get('citation')
-        all_values_tocheck = _publications_productions_evaluations_id and _author and _is_primary_author and _citation
-        if all_values_tocheck and self.search_count([
-            ('publications_productions_evaluations_id', '=', _publications_productions_evaluations_id),
-            ('author', '=', _author),
-            ('is_primary_author', '=', _is_primary_author),
-            ('citation', '=', _citation),
-        ]):
-            return self
-        return super(ONSCCVAuthors, self).create(values)
-
     def _get_json_dict(self):
         return [
             "author",
@@ -161,6 +146,7 @@ class ONSCCVActivityArea(models.Model):
     _name = 'onsc.cv.activity.area'
     _inherit = ['onsc.cv.abstract.formation.line']
     _description = 'Área de Actividad'
+    _no_create_ifautosave = True
 
     publications_productions_evaluations_id = fields.Many2one('onsc.cv.publication.production.evaluation',
                                                               string=u'Publicación, Producción y Evaluación',
@@ -188,9 +174,6 @@ class ONSCCVActivityArea(models.Model):
         else:
             args.append(('participation_events_id', '=', values.get('participation_events_id')))
 
-        all_values_tocheck = _educational_area_id and _educational_subarea_id and _discipline_educational_id
-        if all_values_tocheck and self.search_count(args):
-            return self
         return super(ONSCCVActivityArea, self).create(values)
 
     def _get_json_dict(self):
