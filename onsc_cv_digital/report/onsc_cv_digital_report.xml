@@ -172,7 +172,7 @@
                                             <span t-field="o.professional_resume"/>
                                         </h4>
                                     </li>
-                                    <li t-if="cupos.get('show_trans', False) == True">
+                                    <li t-if="cupos.get('show_gender_info', False) == True">
                                         <h4 t-if="o.cv_gender_id">Género:
                                             <span t-field="o.cv_gender_id.name"/>
                                         </h4>
@@ -182,7 +182,7 @@
                                             </h4>
                                         </t>
                                     </li>
-                                    <t t-if="o.is_cv_race_public">
+                                    <t t-if="cupos.get('show_gender_info', False) == True">
                                         <li>
                                             <h4 t-if="o.cv_race_ids">Identidad étnico-racial:
                                                 <t t-set="emp_count" t-value="0"/>
@@ -196,7 +196,7 @@
                                             </h4>
                                         </li>
                                         <li>
-                                            <t t-if="o.cv_race2 and o.is_cv_race_option_other_enable">
+                                            <t t-if="o.cv_race2 and cupos.get('show_gender_info', False) == True">
                                                 <h4>Otra identidad étnico-racial:
                                                     <span>
                                                         <t t-esc="o.cv_race2"/>

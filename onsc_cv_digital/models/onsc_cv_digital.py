@@ -851,9 +851,9 @@ class ONSCCVDigital(models.Model):
             else:
                 show_afro = False
             if cv_call_id.is_cv_gender_public or is_cv_copy or (is_call_documentary_validation and (cv_call_id.is_cv_gender_public or cv_call_id.is_trans)):
-                show_trans = True
+                show_gender_info = True
             else:
-                show_trans = False
+                show_gender_info = False
             if cv_call_id.is_public_information_victim_violent or is_cv_copy or (is_call_documentary_validation and (cv_call_id.is_public_information_victim_violent or cv_call_id.is_victim)):
                 show_victim = True
             else:
@@ -861,7 +861,7 @@ class ONSCCVDigital(models.Model):
             return {
                 'show_disabilitie': show_disabilitie,
                 'show_afro': show_afro,
-                'show_trans': show_trans,
+                'show_gender_info': show_gender_info,
                 'show_victim': show_victim,
             }
         return {
