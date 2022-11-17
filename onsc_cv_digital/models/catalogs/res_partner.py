@@ -136,7 +136,7 @@ class ResPartner(models.Model):
             raise ValidationError(_('No puede modificar un Contacto de ONSC'))
         res = super(ResPartner, self).write(values)
         # Actualizar los nombres en los registros con el campo calculado en caso que existan diferencias
-        for rec in self.filtered(lambda x: x.name != x.cv_full_name and x.cv_full_name):
+        for rec in self.filtered(lambda x: x.name != x.cv_full_name and x.cv_full_name and x.is_partner_cv):
             rec.name = rec.cv_full_name
             rec.cv_full_name_updated_date = fields.Date.today()
         return res
