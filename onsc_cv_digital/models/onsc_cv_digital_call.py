@@ -761,8 +761,8 @@ class ONSCCVDigitalCall(models.Model):
                     "onsc_cv_digital.onsc_cv_digital_call_massive_documentary_reject")
                 actions_exclude.extend([
                     onsc_cv_digital_call_zip.id,
-                     onsc_cv_digital_call_massive_documentary_reject.id,
-                     print_action.id
+                    onsc_cv_digital_call_massive_documentary_reject.id,
+                    print_action.id
                 ])
             else:
                 print_action = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_print_action")
@@ -772,7 +772,7 @@ class ONSCCVDigitalCall(models.Model):
             if self._context.get('is_mypostulations'):
                 print_action1 = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_print_action")
                 print_action2 = self.env.ref("onsc_cv_digital.onsc_cv_digital_call_documentary_validation_print_action")
-                actions_exclude.extend([print_action1.id,print_action2.id])
+                actions_exclude.extend([print_action1.id, print_action2.id])
             toolbar_actions = [act for act in toolbar_actions if act['id'] not in actions_exclude]
             res['toolbar']['action'] = toolbar_actions
         return res

@@ -113,7 +113,6 @@ class ONSCCVAcademicProgramSubject(models.Model):
         ]
 
 
-
 class ONSCCVEducationAreaCourse(models.Model):
     _name = 'onsc.cv.education.area.teaching'
     _inherit = ['onsc.cv.abstract.formation.line']

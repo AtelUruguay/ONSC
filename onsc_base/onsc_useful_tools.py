@@ -12,9 +12,9 @@ def get_onchange_warning_response(message, notif_type='notification'):
     }
 
 
-def filter_str2float(str, float_separator=','):
+def filter_str2float(original_str, float_separator=','):
     result = ''
-    for letter in str:
+    for letter in original_str:
         if letter.isdigit() or letter in (float_separator, '.'):
             result += letter
     return result
