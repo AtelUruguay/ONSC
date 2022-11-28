@@ -21,7 +21,7 @@
         <field name="name">onsc.cv.digital.tree</field>
         <field name="model">onsc.cv.digital</field>
         <field name="arch" type="xml">
-            <tree string="Currículums digitales" delete="0">
+            <tree string="Currículums digitales" delete="0" create="0">
                 <field name="partner_id"/>
             </tree>
         </field>
@@ -31,7 +31,7 @@
         <field name="name">onsc.cv.digital.form</field>
         <field name="model">onsc.cv.digital</field>
         <field name="arch" type="xml">
-            <form string="Currículums digitales" delete="0" duplicate="0">
+            <form string="Currículums digitales" delete="0" duplicate="0" create="0">
                 <header>
                 </header>
                 <sheet>
@@ -536,7 +536,7 @@
         <field name="model">onsc.cv.digital</field>
         <field name="priority" eval="1000"/>
         <field name="arch" type="xml">
-            <kanban class="o_res_partner_kanban">
+            <kanban class="o_res_partner_kanban" create="0">
                 <field name="id"/>
                 <field name="cv_full_name"/>
                 <field name="email"/>

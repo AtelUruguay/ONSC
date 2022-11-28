@@ -454,7 +454,7 @@ class ONSCCVDigital(models.Model):
     @api.constrains('crendencial_serie')
     def _check_crendencial_serie(self):
         for record in self:
-            if len(record.crendencial_serie) != 3:
+            if record.crendencial_serie and len(record.crendencial_serie) != 3:
                 raise ValidationError(_("La Serie de la credencial debe ser de 3 letras"))
 
     @api.constrains('personal_phone', 'mobile_phone')
@@ -764,12 +764,12 @@ class ONSCCVDigital(models.Model):
 
     def _response_connect(self, obj):
         # TODO check con RVE
-        wsdl = self.env.user.company_id.rve_wsdl
-        client = Client(wsdl)
-        paisCod = obj.cv_emissor_country_id.code_rve
-        tipoDoc = obj.cv_document_type_id.code_other
-        numDoc = obj.cv_nro_doc
         try:
+            wsdl = self.env.user.company_id.rve_wsdl
+            client = Client(wsdl)
+            paisCod = obj.cv_emissor_country_id.code_rve
+            tipoDoc = obj.cv_document_type_id.code_other
+            numDoc = obj.cv_nro_doc
             response = client.service.Execute(Paiscod=paisCod, Tipodoc=tipoDoc, Numdoc=numDoc)
             # _logger.info("XML respuesta :" + etree_to_string(response).decode())
             return response
