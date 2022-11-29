@@ -100,6 +100,7 @@
                                    attrs="{'invisible': [('state', '!=', 'completed')],'required': [('state', '=', 'completed')]}"/>
                             <field name="is_require_thesis"/>
                             <field name="state_thesis"
+                                   force_save="1"
                                    attrs="{'invisible': [('is_require_thesis', '=', False)],'required': [('is_require_thesis', '=', True)], 'readonly': [('state', '=', 'completed')]}"/>
                             <field name="title_thesis"
                                    attrs="{'invisible': ['|',('is_require_thesis', '=', False),('state_thesis', 'in', ['no_starting',False])],'required': [('is_require_thesis', '=', True), ('state_thesis', '!=', 'no_starting')]}"/>
