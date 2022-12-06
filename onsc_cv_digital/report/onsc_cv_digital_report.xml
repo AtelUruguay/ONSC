@@ -754,9 +754,9 @@
                             <span t-field="object.description_thesis"/>
                         </h4>
                     </li>
-                    <li t-if="object.title_thesis">
+                    <li t-if="object.tutor">
                         <h4>Tutor:
-                            <span t-field="object.title_thesis"/>
+                            <span t-field="object.tutor"/>
                         </h4>
                     </li>
                     <li t-if="object.final_note_thesis">

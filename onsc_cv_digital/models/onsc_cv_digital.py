@@ -631,7 +631,8 @@ class ONSCCVDigital(models.Model):
             'view_mode': 'form',
             'res_model': self._name,
             'name': 'Curriculum vitae',
-            'context': self.env.context
+            'context': self.env.context,
+            "target": "main",
         }
         if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
             my_cv = self._context.get('my_cv', False) or self.search(

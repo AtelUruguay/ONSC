@@ -71,7 +71,7 @@ class ONSCCVFormationAdvanced(models.Model):
                                             help='Sólo se pueden seleccionar 5 tipos de conocimientos')
     final_note_thesis = fields.Float(string="Nota final de tesis")
     max_note_thesis = fields.Float(string="Nota máxima posible de tesis")
-    scholarship = fields.Float(string="Escolaridad", required=True)
+    scholarship = fields.Float(string="Escolaridad", required=False)
     max_scholarship = fields.Float(string="Escolaridad máxima posible")
     credits_far = fields.Float(string="Créditos / Materias aprobadas hasta el momento")
     credits_training = fields.Float(string="Créditos / Materias totales de la formación")
