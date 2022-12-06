@@ -34,7 +34,7 @@
                             <field name="professional_link_id"/>
                             <field name="responsible_type"/>
                             <field name="program_name" required="1"/>
-                            <field name="hours_worked_monthly" string="Cantidad de horas mensuales en el instituto"/>
+                            <field name="hours_worked_monthly" required="1" string="Cantidad de horas mensuales en el instituto"/>
                         </group>
                     </group>
                     <notebook>
