@@ -183,11 +183,9 @@ class ONSCCVDigitalCall(models.Model):
         field_documentary_validation_models = self._get_documentary_validation_models()
         for record in self.filtered(lambda x: x.is_zip is False):
             sections_tovalidate = []
-            documentary_validation_state = 'validated'
             for documentary_validation_model in field_documentary_validation_models:
                 documentary_states = eval("record.mapped('%s')" % documentary_validation_model)
                 if len(documentary_states) and 'to_validate' in documentary_states:
-                    documentary_validation_state = 'to_validate'
                     documentary_validation_model_split = documentary_validation_model.split('.')
                     if len(documentary_validation_model_split) == 2:
                         sections_tovalidate.append(
@@ -198,6 +196,10 @@ class ONSCCVDigitalCall(models.Model):
                         sections_tovalidate.append(_('Documento de identidad'))
                     elif documentary_validation_model == 'disabilitie_documentary_validation_state' and record.people_disabilitie == 'si':
                         sections_tovalidate.append(_('Discapacidad'))
+            if len(sections_tovalidate) > 0:
+                documentary_validation_state = 'to_validate'
+            else:
+                documentary_validation_state = 'validated'
             record.gral_info_documentary_validation_state = documentary_validation_state
             sections_tovalidate = list(dict.fromkeys(sections_tovalidate))
             sections_tovalidate.sort()
