@@ -5,7 +5,7 @@
             <field name="name">onsc.catalog.occupation.form</field>
             <field name="model">onsc.catalog.occupation</field>
             <field name="arch" type="xml">
-                <form string="Ocupaciones">
+                <form string="Ocupaciones" duplicate="0">
                     <header>
                         <button name="action_aprobar_cgn" string="Aprobar CGN"
                                 class="oe_highlight" type="object"

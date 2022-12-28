@@ -137,7 +137,7 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            filename="civical_credential_filename"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
                                              attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
@@ -228,7 +228,7 @@
                                     <field name="is_afro_descendants"/>
                                     <field name="afro_descendants_file"
                                            filename="afro_descendants_filename"
-                                           attrs="{'invisible': [('is_afro_descendants', '!=', True)], 'required': [('is_afro_descendants', '=', True)]}"
+                                           attrs="{'invisible': [('is_afro_descendants', '!=', True)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="afro_descendants_filename" invisible="1"/>
                                 </group>
@@ -240,7 +240,7 @@
                                            attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"/>
                                     <field name="occupational_health_card_file"
                                            filename="occupational_health_card_filename"
-                                           attrs="{'invisible': [('is_occupational_health_card', '=', False)], 'required': [('is_occupational_health_card', '=', True)]}"
+                                           attrs="{'invisible': [('is_occupational_health_card', '=', False)]}"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="occupational_health_card_filename" invisible="1"/>
                                 </group>
@@ -251,7 +251,7 @@
                                     <field name="medical_aptitude_certificate_file"
                                            filename="medical_aptitude_certificate_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"
-                                           attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)], 'required': [('is_medical_aptitude_certificate_status', '=', True)]}"/>
+                                           attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)]}"/>
                                     <field name="medical_aptitude_certificate_filename" invisible="1"/>
                                 </group>
                             </group>

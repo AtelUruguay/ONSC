@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as catalog_warning
+from odoo.exceptions import ValidationError
 
 
 class ONSCCatalogOccupation(models.Model):
@@ -81,6 +81,11 @@ class ONSCCatalogOccupation(models.Model):
             self.end_date = False
             return catalog_warning(_(u"La fecha de fin de vigencia no puede ser menor "
                                      u"que la fecha de inicio de vigencia"))
+
+    def unlink(self):
+        if self.filtered(lambda x: x.is_approve_cgn):
+            raise ValidationError(_("No se puede eliminar una Ocupación luego de ser aprobada por CGN"))
+        return super(ONSCCatalogOccupation, self).unlink()
 
 
 class ONSCCatalogOccupationHistory(models.Model):
