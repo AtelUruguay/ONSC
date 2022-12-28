@@ -153,6 +153,11 @@ class Department(models.Model):
             self.process_contributor = False
             self.reponsability_ids = [(5,)]
 
+    def unlink(self):
+        if self.filtered(lambda x: x.is_approve_cgn):
+            raise ValidationError(_("No se puede eliminar una UO luego de ser aprobada por CGN"))
+        return super(Department, self).unlink()
+
     def toggle_active(self):
         self._check_toggle_active()
         return super(Department, self.with_context(no_check_write=True)).toggle_active()
