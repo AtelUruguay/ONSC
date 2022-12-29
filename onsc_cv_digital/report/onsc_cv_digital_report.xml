@@ -1152,9 +1152,6 @@
                 <h4 t-if="object.responsible_type">Es responsable de cátedra o de programa académico:
                     <span t-field="object.responsible_type"/>
                 </h4>
-                <h4 t-if="object.program_name">Nombre de la cátedra o programa académico:
-                    <span t-field="object.program_name"/>
-                </h4>
                 <h4 t-if="object.hours_worked_monthly">Cantidad de horas mensuales en el instituto:
                     <span t-field="object.hours_worked_monthly"/>
                 </h4>
@@ -1180,19 +1177,6 @@
                                     <h4>
                                         Tipo de Curso:
                                         <span t-field="line.course_type"/>
-                                    </h4>
-                                </li>
-                                <li t-if="line.program_ids">
-                                    <h4>
-                                        Programas académicos:
-                                        <t t-set="emp_count" t-value="0"/>
-                                        <t t-foreach="line.program_ids" t-as="program">
-                                            <t t-set="emp_count" t-value="emp_count + 1"/>
-                                            <t t-if="emp_count!=1">
-                                                /
-                                            </t>
-                                            <span t-field="program.name"/>
-                                        </t>
                                     </h4>
                                 </li>
                                 <li t-if="line.level_teaching_type">

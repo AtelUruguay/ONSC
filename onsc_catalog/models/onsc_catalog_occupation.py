@@ -87,6 +87,16 @@ class ONSCCatalogOccupation(models.Model):
             raise ValidationError(_("No se puede eliminar una Ocupación luego de ser aprobada por CGN"))
         return super(ONSCCatalogOccupation, self).unlink()
 
+    def toggle_active(self):
+        self._check_toggle_active()
+        return super(ONSCCatalogOccupation, self.with_context(no_check_write=True)).toggle_active()
+
+    def _check_toggle_active(self):
+        if False in self.mapped('is_approve_cgn'):
+            raise ValidationError(
+                _("No puede archivar o desarchivar una %s si no está Aprobada CGN!") % self._description)
+        return True
+
 
 class ONSCCatalogOccupationHistory(models.Model):
     _inherit = ['model.history.data']

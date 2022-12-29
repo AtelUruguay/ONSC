@@ -24,7 +24,6 @@ class ONSCCVWorkTeaching(models.Model):
     is_full_time = fields.Boolean('¿Dedicación total?')
     responsible_type = fields.Selection(RESPONSIBLE_TYPES, '¿Es responsable de cátedra o de programa académico?',
                                         required=True)
-    program_name = fields.Char('Nombre de la cátedra o programa académico')
     # Grilla Materias
     subject_ids = fields.One2many('onsc.cv.academic.program.subject', 'work_teaching_id', string='Materias', copy=True)
     # Grilla Áreas relacionadas con esta educación
@@ -74,14 +73,11 @@ class ONSCCVWorkTeaching(models.Model):
 class ONSCCVAcademicProgramSubject(models.Model):
     _name = 'onsc.cv.academic.program.subject'
     _description = 'Materias'
-    _inherit = ['onsc.cv.abstract.conditional.state', 'onsc.cv.abstract.formation']
-    _catalogs_2validate = ['program_ids']
+    _inherit = ['onsc.cv.abstract.formation']
     _no_create_ifautosave = True
 
     cv_digital_id = fields.Many2one("onsc.cv.digital", required=False)
     work_teaching_id = fields.Many2one('onsc.cv.work.teaching', 'Docencia', ondelete='cascade', required=True)
-    program_ids = fields.Many2many('onsc.cv.academic.program', relation="academic_program_teaching_rel",
-                                   string='Programas académicos', required=True, copy=True, ondelete='cascade')
     subject = fields.Char('Materia', required=True, )
     course_type = fields.Selection(COURSE_TYPES, 'Tipo de curso')
     currently_working_state = fields.Selection(string="¿Actualmente está enseñando la  materia?",
@@ -92,9 +88,6 @@ class ONSCCVAcademicProgramSubject(models.Model):
                                               required=True,
                                               copy=True,
                                               store=True)
-    institution_id = fields.Many2one(related='work_teaching_id.institution_id')
-    subinstitution_id = fields.Many2one(related='work_teaching_id.subinstitution_id')
-    country_id = fields.Many2one(related='work_teaching_id.country_id')
 
     def _get_json_dict(self):
         return [
@@ -103,13 +96,6 @@ class ONSCCVAcademicProgramSubject(models.Model):
             "course_type",
             "currently_working_state",
             "level_teaching_type",
-            ("program_ids", ['id',
-                             'name',
-                             ("study_level_id", ['id', 'name']),
-                             ]),
-            ("institution_id", ['id', 'name']),
-            ("subinstitution_id", ['id', 'name']),
-            ("country_id", ['id', 'name']),
         ]
 
 
