@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models
 
 POSITION_TYPES = [('effective', 'Efectivo'), ('interim', 'Interino'), ('honorary', 'Honorario')]
 RESPONSIBLE_TYPES = [('yes', 'Sí'), ('no', 'No')]
@@ -34,10 +34,6 @@ class ONSCCVWorkTeaching(models.Model):
     # Grila Comprobantes
     receipt_ids = fields.One2many('onsc.cv.work.teaching.receipt.file', inverse_name='teaching_id',
                                   string='Comprobantes', copy=True)
-
-    @api.onchange('subinstitution_id')
-    def onchange_academic_program_id_parents(self):
-        self.subject_ids = [(5,)]
 
     def _get_json_dict(self):
         json_dict = super(ONSCCVWorkTeaching, self)._get_json_dict()

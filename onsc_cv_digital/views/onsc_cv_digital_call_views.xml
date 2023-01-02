@@ -484,13 +484,13 @@
                                         <button name="button_documentary_approve"
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|','|',('disabilitie_documentary_validation_state', '=', 'validated'),('people_disabilitie', '!=', 'si'),('is_zip','=',True)]}"
+                                                attrs="{'invisible': ['|','|','|',('disabilitie_documentary_validation_state', '=', 'validated'),('situation_disability', '!=', 'si'),('show_disabilitie_info', '=', False),('is_zip','=',True)]}"
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|','|',('disabilitie_documentary_validation_state', '=', 'rejected'),('people_disabilitie', '!=', 'si'),('is_zip','=',True)]}"
+                                                attrs="{'invisible': ['|','|','|',('disabilitie_documentary_validation_state', '=', 'rejected'),('situation_disability', '!=', 'si'),('show_disabilitie_info', '=', False),('is_zip','=',True)]}"
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                         <button name="button_documentary_tovalidate"
@@ -498,7 +498,7 @@
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|','|',('disabilitie_documentary_validation_state', '=', 'to_validate'),('people_disabilitie', '!=', 'si'),('is_zip','=',True)]}"
+                                                attrs="{'invisible': ['|','|','|',('disabilitie_documentary_validation_state', '=', 'to_validate'),('situation_disability', '!=', 'si'),('show_disabilitie_info', '=', False),('is_zip','=',True)]}"
                                                 string="Para validar"
                                                 icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                     </div>
