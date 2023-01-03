@@ -1,32 +1,7 @@
 # -*- coding: utf-8 -*-
-###################################################################################
-#    A part of OpenHRMS Project <https://www.openhrms.com>
-#
-#    Cybrosys Technologies Pvt. Ltd.
-#    Copyright (C) 2018-TODAY Cybrosys Technologies (<https://www.cybrosys.com>).
-#    Author: Cybrosys Technologies (<https://www.cybrosys.com>)
-#
-#    This program is free software: you can modify
-#    it under the terms of the GNU Affero General Public License (AGPL) as
-#    published by the Free Software Foundation, either version 3 of the
-#    License, or (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <https://www.gnu.org/licenses/>.
-#
-###################################################################################
-from docutils.nodes import organization
-
 from odoo import http
 from odoo.exceptions import UserError
 from odoo.http import request
-from lxml import etree, html
-from lxml.html import builder as E
 
 
 class EmployeeChart(http.Controller):
@@ -58,13 +33,14 @@ class EmployeeChart(http.Controller):
             level_ids = []
             for level in levels:
                 if level.order < root_node.hierarchical_level_order:
-                    level_ids.append(level.order-1)
+                    level_ids.append(level.order - 1)
                 else:
                     break
             levels_result = [('', level_ids)]
-            levels_result.extend((level.name, [level.order-1]) for level in levels if level.order >= root_node.hierarchical_level_order)
+            levels_result.extend((level.name, [level.order - 1]) for level in levels if
+                                 level.order >= root_node.hierarchical_level_order)
         else:
-            levels_result.extend((level.name, [level.order-1]) for level in levels)
+            levels_result.extend((level.name, [level.order - 1]) for level in levels)
 
         items = []
         for node in nodes_by_level.filtered(lambda node: node.function_nature not in ('comite', 'commission_project')):
@@ -96,7 +72,7 @@ class EmployeeChart(http.Controller):
         right_left = 'right'
         assistances = nodes_by_level.filtered(
             lambda node: not root_node.parent_id and node.function_nature in (
-            'comite', 'commission_project'))
+                'comite', 'commission_project'))
         dummy_assistance_qty = 0 if len(assistances) <= 2 else len(
             assistances) // 2
         for index, assistant in enumerate(assistances):
