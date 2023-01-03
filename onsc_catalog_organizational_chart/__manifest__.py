@@ -9,14 +9,13 @@
     'data': [
         'security/onsc_catalog_organizational_chart_security.xml',
         'security/ir.model.access.csv',
-        'data/onsc_catalog_organizational_chart_data.xml',
         'wizard/views/onsc_organizational_wizard.xml',
         'views/org_chart_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
-            'onsc_catalog_organizational_chart/static/src/js/jquery.orgchart.js',
-            'onsc_catalog_organizational_chart/static/src/css/jquery.orgchart.css',
+            'onsc_catalog_organizational_chart/static/src/js/primitives.js',
+            'onsc_catalog_organizational_chart/static/src/css/primitives.css',
             'onsc_catalog_organizational_chart/static/src/js/organizational_view.js',
             'onsc_catalog_organizational_chart/static/src/scss/chart_view.scss',
         ],

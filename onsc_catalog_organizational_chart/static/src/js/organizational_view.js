@@ -26,7 +26,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         const operating_unit_id = context.params.operating_unit_id;
         const department_id = context.params.department_id;
         const short_name = context.params.short_name;
-        const responsible = context.params.responsible;
+        const responsible = context.params.responsible || false;
         this.renderEmployeeDetails(
         operating_unit_id,
         department_id,
@@ -34,205 +34,125 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         responsible,
         );
     },
-    getOffset: function(el) {
-      const rect = el.getBoundingClientRect();
-      return {
-        left: rect.left + window.pageXOffset,
-        top: rect.top + window.pageYOffset,
-        width: rect.width || el.offsetWidth,
-        height: rect.height || el.offsetHeight
-      };
-    },
 
-    connect: function(div1, div2, color, thickness) {
-      const off1 = this.getOffset(div1);
-      const off2 = this.getOffset(div2);
+    getContactTemplate: function(responsible) {
+        var result = new primitives.TemplateConfig();
+        result.name = "contactTemplate";
+        result.itemSize = new primitives.Size(150, 75);
+        result.minimizedItemSize = new primitives.Size(3, 3);
 
-      const x1 = off1.left + off1.width;
-      const y1 = off1.top + off1.height;
+        /* the following example demonstrates JSONML template see http://http://www.jsonml.org/ for details: */
+        result.itemTemplate = ["div",
+            {
+                "style": {
+                    "width": result.itemSize.width + "px",
+                    "height": result.itemSize.height + "px"
+                },
+                "class": ["contactTemplate"]
+            },
+            ["div",
+                    {
+                        "name": "title",
+                        "class": ["ContactTitle"],
+                    }
+            ],
 
-      const x2 = off2.left + off2.width;
-      const y2 = off2.top;
-
-      const length = Math.sqrt(((x2 - x1) * (x2 - x1)) + ((y2 - y1) * (y2 - y1)));
-
-      const cx = ((x1 + x2) / 2) - (length / 2);
-      const cy = ((y1 + y2) / 2) - (thickness / 2);
-
-      const angle = Math.atan2((y1 - y2), (x1 - x2)) * (180 / Math.PI);
-
-      const htmlLine = "<div class='line-path' style='padding:0px; margin:0px; height:" + thickness + "px; background-color:" + color + "; line-height:1px; position:absolute; left:" + cx + "px; top:" + cy + "px; width:" + length + "px; -moz-transform:rotate(" + angle + "deg); -webkit-transform:rotate(" + angle + "deg); -o-transform:rotate(" + angle + "deg); -ms-transform:rotate(" + angle + "deg); transform:rotate(" + angle + "deg);' />";
-
-      document.body.innerHTML += htmlLine;
-    },
-
-//    const d1 = document.getElementById('d1')
-//    const d2 = document.getElementById('d2')
-//    connect(d1, d2, 'green', 5)
-    _toggleDisplayNode: function(node){
-        let self = this;
-        const {id} = node.data();
-        const childs = $('*[data-parent="'+id+'"]');
-        if (childs.length === 0){
-            if($(node).hasClass('d-none')){
-            	$(node).removeClass('d-none');
-            }
-            else{
-            	$(node).addClass('d-none');
-            }
+        ];
+        if(responsible){
+            result.itemTemplate.push(
+                ["div",
+                    {
+                        "name": "responsible",
+                        "class": ["responsabletTag"],
+                    }
+                ]
+            )
+        }else{
+        result.itemTemplate.push(
+                ["div",
+                    {
+                        "name": "responsibleEmpty",
+                        "class": ["responsabletEmptyTag"],
+                    }
+                ]
+            )
         }
-        $.each(childs, (index, element) => {
-//            if($(element).hasClass('d-none')){
-//                $(element).removeClass('d-none');
-//            }
-//            else{
-//                $(element).addClass('d-none');
-//            }
-            self._toggleDisplayNode($(element))
-        });
-
-
+        return result;
     },
-    _onClickNodeText: function(event) {
-        let self = this;
-        const {parent, id} = $(event.target).data();
-        console.log(id, parent);
-        const childs = $('*[data-parent="'+id+'"]');
-        $.each(childs, (index, element) => {
-            if($(element).hasClass('d-none')){
-            	$(element).removeClass('d-none');
-            }
-            else{
-            	$(element).addClass('d-none');
-            }
-            self._toggleDisplayNode($(element));
-        });
+    getcontactTemplateDashed: function(responsible) {
+        var result = new primitives.TemplateConfig();
+        result.name = "contactTemplateDashed";
+        result.itemSize = new primitives.Size(150, 75);
+        result.minimizedItemSize = new primitives.Size(3, 3);
 
-    },
-    iterate: function(tree, start, from) {
-        let self = this;
-        const strokeColor = Math.floor(Math.random()*16777215).toString(16);
-        const svgContainer = document.getElementById('tree__svg-container__svg');
-        const treeContainer = document.createElement('div');
-        treeContainer.classList.add('tree__container__branch', `from_${from}`);
-        document.getElementById(from).after(treeContainer);
-
-        for (const key in tree) {
-//            const textCard = treeParams[key] !== undefined && treeParams[key].trad !== undefined ? treeParams[key].trad : key;
-//
-//            if (!document.getElementById(`card_${key}`)){
-//                treeContainer.innerHTML += `<div class="tree__container__step"><div class="tree__container__step__card" id="${key}"><p id="card_${key}" class="tree__container__step__card__p">${textCard}</p></div></div>`;
-//                addStyleToCard(treeParams[key], key);
-//            }
-
-            if ((from && !start) || start){
-                const newPath = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                newPath.id = "path" + pathNumber;
-                newPath.setAttribute('stroke', "#" + strokeColor);
-                newPath.setAttribute('fill', 'none');
-                newPath.setAttribute('stroke-width', strokeWidth);
-                newPath.setAttribute('color', "red");
-                svgContainer.appendChild(newPath);
-                allLinks.push(['path' + pathNumber, from ? from : 'tree__container__step__card__first', key]);
-                pathNumber++;
-            }
-
-            if (Object.keys(tree[key]).length > 0) {
-                self.iterate(tree[key], false, key);
-            }
+        /* the following example demonstrates JSONML template see http://http://www.jsonml.org/ for details: */
+        result.itemTemplate = ["div",
+            {
+                "style": {
+                    "width": result.itemSize.width + "px",
+                    "height": result.itemSize.height + "px"
+                },
+                "class": ["contactTemplateDashed"]
+            },
+            ["div",
+                    {
+                        "name": "title",
+                        "class": ["ContactTitle"],
+                    }
+            ],
+        ];
+        if(responsible){
+            result.itemTemplate.push(
+                ["div",
+                    {
+                        "name": "responsible",
+                        "class": ["responsabletTag"],
+                    }
+                ]
+            )
         }
-    },
-    drawPath: function (svg, path, startX, startY, endX, endY) {
-        // get the path's stroke width (if one wanted to be  really precize, one could use half the stroke size)
-        if(!path) return ;
-        let stroke = parseFloat(path.getAttribute("stroke-width"));
-        // check if the svg is big enough to draw the path, if not, set heigh/width
-        if (svg.getAttribute("height") < endY) svg.setAttribute("height", endY);
-        if (svg.getAttribute("width") < (startX + stroke)) svg.setAttribute("width", (startX + stroke));
-        if (svg.getAttribute("width") < (endX + stroke)) svg.setAttribute("width", (endX + stroke));
-
-        let deltaX = (endX - startX) * 0.15;
-        let deltaY = (endY - startY) * 0.15;
-        // for further calculations which ever is the shortest distance
-        let delta = deltaY < absolute(deltaX)
-            ? deltaY
-            : absolute(deltaX);
-
-        // set sweep-flag (counter/clock-wise)
-        // if start element is closer to the left edge,
-        // draw the first arc counter-clockwise, and the second one clock-wise
-        let arc1 = 0;
-        let arc2 = 1;
-        if (startX > endX) {
-            arc1 = 1;
-            arc2 = 0;
+        else{
+        result.itemTemplate.push(
+                ["div",
+                    {
+                        "name": "responsibleEmpty",
+                        "class": ["responsabletEmptyTag"],
+                    }
+                ]
+            )
         }
-        // draw tha pipe-like path
-        // 1. move a bit down, 2. arch,  3. move a bit to the right, 4.arch, 5. move down to the end
-        path.setAttribute("d", "M" + startX + " " + startY + " V" + (startY + delta) + " A" + delta + " " + delta + " 0 0 " + arc1 + " " + (startX + delta * signum(deltaX)) + " " + (startY + 2 * delta) + " H" + (endX - delta * signum(deltaX)) + " A" + delta + " " + delta + " 0 0 " + arc2 + " " + endX + " " + (startY + 3 * delta) + " V" + endY);
+        return result;
     },
-
-     connectElements: function(svg, path, startElem, endElem) {
-        const svgContainer = document.getElementById('tree__svg-container');
-
-        // if first element is lower than the second, swap!
-        if (startElem.offsetTop > endElem.offsetTop) {
-            const temp = startElem;
-            startElem = endElem;
-            endElem = temp;
+    onTemplateRender: function(event, data) {
+        switch (data.renderingMode) {
+            case primitives.RenderingMode.Create:
+                /* Initialize template content here */
+                break;
+            case primitives.RenderingMode.Update:
+                /* Update template content here */
+                break;
         }
 
-        // get (top, left) corner coordinates of the svg container
-        const svgTop = svgContainer.offsetTop;
-        const svgLeft = svgContainer.offsetLeft;
+        var itemConfig = data.context;
 
-        // calculate path's start (x,y)  coords
-        // we want the x coordinate to visually result in the element's mid point
-        const startX = startElem.offsetLeft + 0.5 * startElem.offsetWidth - svgLeft;    // x = left offset + 0.5*width - svg's left offset
-        const startY = startElem.offsetTop + startElem.offsetHeight - svgTop;        // y = top offset + height - svg's top offset
+        if (data.templateName == "contactTemplateDashed") {
+            var title = data.element.firstChild;
+            title.textContent = itemConfig.title;
 
-        // calculate path's end (x,y) coords
-        const endX = endElem.offsetLeft + 0.5 * endElem.offsetWidth - svgLeft;
-        const endY = endElem.offsetTop - svgTop;
+            var responsible = data.element.childNodes[1];
+            responsible.textContent = itemConfig.responsible;
+        } else if (data.templateName == "contactTemplate") {
 
-        // call function for drawing the path
-        this.drawPath(svg, path, startX, startY, endX, endY);
-    },
-    connect1: function(start, end, strokeWith, color){
+            var title = data.element.firstChild;
+            title.textContent = itemConfig.title;
 
-        return { start: start, end: end, strokeWidth: strokeWith,stroke: color };
-    },
-    connectCard: function () {
-        // magic
-        const svg = document.getElementById('tree__svg-container__svg');
-//        var mySVG = $('#o_parent_employee').connect();
-        let path = []
+            if(itemConfig.responsible){
+                var responsible = data.element.childNodes[1];
+                if(responsible)
+                    responsible.textContent = itemConfig?.responsible;
+            }
 
-        for (let i = 0; allLinks.length > i; i++) {
-            const color = '#' + Math.floor(Math.random()*16777215).toString(16);
-//            mySVG.drawLine({
-//                left_node: allLinks[i][1],
-//                right_node: allLinks[i][2],
-//                horizantal_gap:10,
-//                error:true,
-//                width:1
-//            });
-//            $( allLinks[i][1] ).draggable({
-//              drag: function(event, ui){mySVG.redrawLines();}
-//            });
-//            $( allLinks[i][2] ).draggable({
-//              drag: function(event, ui){mySVG.redrawLines();}
-//            });
-            path.push(this.connect1(document.getElementById(allLinks[i][1]), document.getElementById(allLinks[i][2]), 5, color));
-//            this.connectElements(svg, document.getElementById(allLinks[i][0]), document.getElementById(allLinks[i][1]), document.getElementById(allLinks[i][2]));
-//            this.connect(document.getElementById(allLinks[i][1]), document.getElementById(allLinks[i][2]), color, 5);
         }
-        $("#svgContainer").HTMLSVGconnect({
-            stroke: "#000",
-            strokeWidth: 1,
-            orientation: "auto",
-            paths: path
-          });
     },
     renderEmployeeDetails: function (operating_unit_id,
         department_id,
@@ -245,84 +165,108 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
             route: '/get/organizational/level',
             params: {'operating_unit_id': operating_unit_id, 'department_id': department_id, 'responsible': responsible}
         }).then(function (result) {
-//                const svgDiv = document.createElement('div');
-//                svgDiv.id = 'tree__svg-container';
-//                $('#o_parent_employee').append(svgDiv);
-//                const newSVG = document.createElement('div');
-//                newSVG.id = 'svgContainer';
-//                $('#o_parent_employee').append(newSVG);
-//                const svgContainer = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-//                svgContainer.id = 'tree__svg-container__svg';
-//                svgDiv.append(svgContainer);
-            const {data, tree} = result;
-//            console.log(tree.trim())
-//            const content = document.createElement('div');
-//            content.innerHTML = tree.trim();
-//            $('#o_parent_employee').append(content);
-
-            const content1 = document.createElement('div');
-            content1.innerHTML = tree + `
-            <div id="content">
-
-                    <div id="main">
-                    </div>
-        `;
-        $('#o_parent_employee').append(content1);
-         $("#organisation").orgChart({container: $("#main")});
-//            const levels = Object.entries(data);
-//            levels.map((level) => {
-//                const tr = document.createElement("div");
-//                tr.className = "row level"
-//
-//                const div_level = document.createElement('div');
-//                div_level.className = "div-level";
-//                const text_level = document.createElement('span');
-//                text_level.appendChild(document.createTextNode(level[1]['name']));
-//                text_level.className = "text-level";
-//                div_level.appendChild(text_level);
-//                const parents = Object.entries(level[1]['parents']);
-//                const width = 100 / parents.length;
-//                parents.forEach((parent) => {
-//                    const div_parent = document.createElement('div');
-//                    div_parent.style.width = width + ' %';
-////                    div_parent.setAttribute('style','max-width:'+width+'%');
-//                    div_parent.className = "div-parent";
-//                    div_parent.id = parent[0] === 'false' ? 'tree__container__step__card__first' : '';
-//                    tr.appendChild(div_parent);
-//                    parent[1]['nodes'].forEach((node) => {
-//                        if(node['id'] !== parent[0]){
-//                        const child = document.createElement("div");
-//                        child.className = "col node";
-//                        child.id = node['id'];
-//                        child.setAttribute("data-id", node['id']);
-//                        child.setAttribute("data-parent", node['parent_id']);
-//                        const nodeText = document.createElement("div");
-//                        nodeText.className = "node-text";
-//
-//                        nodeText.appendChild(document.createTextNode(node['name']));
-//                        nodeText.appendChild(document.createTextNode(node['relation']));
-//                        child.appendChild(nodeText);
-//                        div_parent.appendChild(child);
-//                        }
-//                    });
-//                });
-//                const div_content = document.createElement('div');
-//                div_content.className = "div-content row";
-//                div_content.appendChild(div_level);
-//                div_content.appendChild(tr);
-//                $('#o_parent_employee').append(
-//                  div_content
-//                );
-//            });
-//            self.iterate(tree[Object.keys(tree)[0]], true, 'tree__container__step__card__first');
-//
-//            self.connectCard();
-//            window.onresize = function () {
-//                $('.line-path').remove();
-//                svgDiv.setAttribute('height', '0');
-//                svgDiv.setAttribute('width', '0');
-//                self.connectCard();
-//            };
+            const {levels, items, responsible} = result;
+            items.map((item) => {
+                if(item.itemType === 'Assistant'){
+                    item.itemType = primitives.ItemType.Assistant;
+                    item.adviserPlacementType = item.adviserPlacementType === 'right' ? primitives.AdviserPlacementType.Right : primitives.AdviserPlacementType.Left;
+                }
+                else if(item.title === 'Aggregator'){
+                    item.childrenPlacementType = item.childrenPlacementType === 'Horizontal' ? primitives.ChildrenPlacementType.Horizontal : primitives.ChildrenPlacementType.Auto;
+                }
+            });
+            let annotations = []
+            levels.map((level) => {
+                annotations.push(new primitives.LevelAnnotationConfig({
+                  levels: level[1],
+                  title: level[0],
+                  titleFontColor: primitives.Colors.Black,
+                  titleColor: "#F2F2F2",
+                  offset: new primitives.Thickness(0, 0, 0, -5),
+                  lineWidth: new primitives.Thickness(0, 0, 0, 2),
+                  opacity: 1,
+                  borderColor: "#318CDA",
+                  fillColor: "#F2F2F2",
+                  lineType: primitives.LineType.Dashed
+                }))
+            });
+            var control = primitives.OrgDiagram(document.getElementById('basicdiagram'), {
+                pageFitMode: primitives.PageFitMode.AutoSize,
+                autoSizeMinimum: { width: 1800, height: 800 },
+                cursorItem: 0,
+                levelTitleOrientation: primitives.TextOrientationType.RotateLeft,
+                levelTitleFontWeight: 'bold',
+                levelTitleFontSize: '14px',
+                linesColor: primitives.Colors.Black,
+                lineLevelShift: 40,
+                lineItemsInterval: 20,
+                normalLevelShift: 40,
+                scale: 1,
+                highlightItem: 0,
+                hasSelectorCheckbox: primitives.Enabled.False,
+                defaultTemplateName: "contactTemplate",
+                templates: [
+                    self.getContactTemplate(responsible),
+                    self.getcontactTemplateDashed(responsible)
+                  ],
+                onItemRender: self.onTemplateRender,
+                items: items,
+                annotations: annotations,
+                onLevelTitleRender: function(data) {
+                  var title = data.context.title;
+                  var titleColor = data.context.titleColor;
+                  var width = data.width;
+                  var height = data.height;
+                  var element = data.element;
+                  element.innerHTML = "";
+                  element.appendChild(primitives.JsonML.toHTML(["table",
+                    {
+                      "style": {
+                        fontSize: "12px",
+                        fontFamily: "Arial, Helvetica, sans-serif",
+                        fontWeight: "normal",
+                        fontStyle: "normal",
+                        color: "black",
+                        position: "absolute",
+                        padding: 0,
+                        margin: 0,
+                        textAlign: "center",
+                        lineHeight: 1,
+                        transformOrigin: "center center",
+                        transform: "rotate(-90deg)",
+                        textOverflow: "ellipsis",
+                        whiteSpace: "nowrap",
+                        overflow: "hidden",
+                        tableLayout: "fixed",
+                        maxWidth: height + "px",
+                        maxHeight: width + "px",
+                        width: height + "px",
+                        height: width + "px",
+                        left: (Math.round(width / 2.0 - height / 2.0)) + "px",
+                        top: (Math.round(height / 2.0 - width / 2.0)) + "px",
+                        background: titleColor,
+                        borderRadius: "4px"
+                      },
+                    },
+                    ["tbody",
+                      ["tr",
+                        ["td",
+                          {
+                          "style": {
+                            "verticalAlign": "middle",
+                            "padding": 0,
+                            "textOverflow": "ellipsis",
+                            "whiteSpace": "nowrap",
+                            "overflow": "hidden"
+                          }
+                          },
+                          title
+                        ]
+                      ]
+                    ]
+                  ]));
+                },
+              });
 
         });
 
