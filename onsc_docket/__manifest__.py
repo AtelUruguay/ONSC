@@ -1,0 +1,23 @@
+# -*- coding: utf-8 -*-
+{
+    'name': 'ONSC - Legajo',
+    'version': '15.0.0.0.0',
+    'summary': 'ONSC - Legajo',
+    'sequence': 11,
+    'description': """
+ONSC - Legajo
+====================
+    """,
+    'category': 'ONSC',
+    'depends': ['onsc_base', 'onsc_catalog'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/catalogs/onsc_catalog_base_views.xml',
+        'views/onsc_docket_menuitems.xml',
+    ],
+    'demo': [],
+    'installable': True,
+    'application': False,
+    'auto_install': False,
+    'license': 'LGPL-3',
+}
