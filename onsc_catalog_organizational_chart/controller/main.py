@@ -24,11 +24,10 @@ class EmployeeChart(http.Controller):
 
                 ]
             )
-        levels = request.env['onsc.catalog.hierarchical.level'].sudo().search(
-            [])
+        levels = request.env['onsc.catalog.hierarchical.level'].sudo().search([])
         if department_id:
             domain.extend(['|', ('parent_id', '=', int(department_id)), ('id', '=', int(department_id))])
-        nodes_by_level = request.env['hr.department'].sudo().search(
+        nodes_by_level = request.env['hr.department'].sudo().with_context(as_of_date=end_date).search(
             domain, order='id asc, parent_id asc'
         )
         root_node = nodes_by_level.filtered(

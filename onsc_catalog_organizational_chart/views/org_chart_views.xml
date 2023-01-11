@@ -22,6 +22,9 @@
             <field name="approve_cgn_date" position="after">
                 <field name="show_short_name" attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
             </field>
+            <field name="short_name" position="attributes">
+                <attribute name="attrs">{'invisible': [('function_nature_form', '=', 'form2')],'required': [('function_nature_form', '=', 'form1'),('show_short_name', '=',True)]}</attribute>
+            </field>
         </field>
     </record>
 
