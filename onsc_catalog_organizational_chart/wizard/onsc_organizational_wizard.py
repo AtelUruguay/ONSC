@@ -25,6 +25,9 @@ class ONSCOrganizationalWizard(models.TransientModel):
     responsible = fields.Boolean(
         'Visualizar Responsable UO'
     )
+    date = fields.Date(
+        'Fecha'
+    )
 
     def action_show_org(self):
         return {
@@ -35,5 +38,8 @@ class ONSCOrganizationalWizard(models.TransientModel):
                 'department_id': self.department_id.id,
                 'short_name': self.short_name,
                 'responsible': self.responsible,
+                'end_date': self.date,
+                'inciso': self.inciso_id.name or '',
+                'ue': self.operating_unit_id.name or '',
             },
         }

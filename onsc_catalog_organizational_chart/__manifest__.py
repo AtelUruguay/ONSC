@@ -15,6 +15,7 @@
     'assets': {
         'web.assets_backend': [
             'onsc_catalog_organizational_chart/static/src/js/primitives.js',
+            'onsc_catalog_organizational_chart/static/src/js/pdfkitsamples.js',
             'onsc_catalog_organizational_chart/static/src/css/primitives.css',
             'onsc_catalog_organizational_chart/static/src/js/organizational_view.js',
             'onsc_catalog_organizational_chart/static/src/scss/chart_view.scss',
