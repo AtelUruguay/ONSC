@@ -11,7 +11,19 @@ class EmployeeChart(http.Controller):
         operating_unit_id = post.get('operating_unit_id', False)
         department_id = post.get('department_id', False)
         responsible = post.get('responsible')
-        domain = [('operating_unit_id', '=', operating_unit_id)]
+        end_date = post.get('end_date', False)
+        domain = [
+            ('operating_unit_id', '=', operating_unit_id),
+        ]
+        if end_date:
+            domain.extend(
+                [
+                    # '|',
+                    ('end_date', '>=', end_date),
+                    # ('end_date', '=', False),
+
+                ]
+            )
         levels = request.env['onsc.catalog.hierarchical.level'].sudo().search(
             [])
         if department_id:
@@ -43,7 +55,8 @@ class EmployeeChart(http.Controller):
             levels_result.extend((level.name, [level.order - 1]) for level in levels)
 
         items = []
-        for node in nodes_by_level.filtered(lambda node: node.function_nature not in ('comite', 'commission_project')):
+        for node in nodes_by_level.filtered(
+                lambda node: node.function_nature not in ('comite', 'commission_project', 'adviser')):
             last_parent = node.parent_id.id
             if node.parent_id and node.hierarchical_level_order - node.parent_id.hierarchical_level_order != 1:
                 for level_order in range(node.hierarchical_level_order - node.parent_id.hierarchical_level_order - 1):
@@ -66,40 +79,44 @@ class EmployeeChart(http.Controller):
                 'responsible': node.manager_id.name or '',
                 'responsibleEmpty': '',
                 'title': node.name,
-                'templateName': 'contactTemplate'
+                'templateName': 'contactTemplate',
+                'showShortName': node.show_short_name,
             }
             items.append(item)
         right_left = 'right'
         assistances = nodes_by_level.filtered(
             lambda node: not root_node.parent_id and node.function_nature in (
-                'comite', 'commission_project'))
-        dummy_assistance_qty = 0 if len(assistances) <= 2 else len(
-            assistances) // 2
-        for index, assistant in enumerate(assistances):
-            lastparent = root_node.id
-            if dummy_assistance_qty >= 1 and index > 0 and (index + 1) % 2 != 0:
-                dummy_item = {
-                    'id': f'dummy-{lastparent}-{index}',
-                    'parent': lastparent,
-                    'isVisible': False,
-                    'title': "Aggregator",
-                    'description': "Invisible aggregator",
-                    'childrenPlacementType': 'Horizontal'
-                }
-                items.append(dummy_item)
-                lastparent = dummy_item['id']
+                'comite', 'commission_project', 'adviser'))
+        levelOffset = 0
+        for assistant in assistances:
+            # lastparent = root_node.id
+            # if dummy_assistance_qty >= 1 and index > 0 and (index + 1) % 2 != 0:
+            #     dummy_item = {
+            #         'id': f'dummy-{lastparent}-{index}',
+            #         'parent': lastparent,
+            #         'isVisible': False,
+            #         'title': "Aggregator",
+            #         'description': "Invisible aggregator",
+            #         'childrenPlacementType': 'Horizontal'
+            #     }
+            #     items.append(dummy_item)
+            #     lastparent = dummy_item['id']
+
             item = {
                 'id': assistant.id,
-                'parent': lastparent,
+                'parent': root_node.id,
                 'isVisible': True,
                 'short_name': assistant.short_name,
                 'responsible': assistant.manager_id.name or '',
                 'responsibleEmpty': '',
                 'title': assistant.name,
-                'itemType': 'Assistant',
+                'itemType': 'Assistant' if assistant.function_nature == 'adviser' else 'SubAssistant',
                 'adviserPlacementType': right_left,
-                'templateName': 'contactTemplate'
+                'templateName': 'contactTemplate',
+                'levelOffset': levelOffset,
+                'showShortName': assistant.show_short_name,
             }
+            levelOffset = levelOffset + 1 if levelOffset // 2 == 0 else levelOffset
             items.append(item)
             right_left = 'left' if right_left == 'right' else 'right'
         return {'levels': levels_result, 'items': items, 'responsible': responsible}

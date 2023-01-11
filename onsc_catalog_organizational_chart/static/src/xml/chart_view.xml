@@ -3,9 +3,27 @@
 
     <t t-name="OrganizationalEmployeeChart">
         <div id="o_organizational_chart">
-        <h4 class="o_org_chart_title mb16 mt0" align="center">Organigrama</h4>
             <center>
-                <div id="basicdiagram" style="width: 640px; height: 480px; border-style: dotted; border-width: 1px;"></div>
+                <div class="header-hamb">
+                    <div><h4 class="o_org_chart_title mb16 mt0" align="center">Organigrama</h4></div>
+                    <div class="org-route"/>
+                    <div>
+                        <button class="btn-50 btn" data-percentage="0.5">50%</button>
+                        <button class="btn-100 btn" data-percentage="1">100%</button>
+                        <button class="btn-150 btn" data-percentage="1.5">150%</button>
+    <!--                    <input class="btn btn-downloadpdf" type="button" value="Download PDF" />-->
+                        <button type="button" class="toggle button-hamb" id="toggle">
+                           <span></span>
+                        </button>
+                    </div>
+                </div>
+                <div id="basicdiagram" style="width: 640px; height: 480px; border-style: dotted; border-width: 1px;"/>
+                <div class="sidebar" id='sidebar'>
+                  <h4>Leyenda</h4>
+                    <div id="org-legend">
+
+                    </div>
+                </div>
             </center>
         </div>
         </t>

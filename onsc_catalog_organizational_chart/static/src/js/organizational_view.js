@@ -18,6 +18,11 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         'click .o_employee_border': '_getChild_data',
         'click .employee_name': 'view_employee',
         'click .node': '_onClickNodeText',
+        'click .btn-50': 'onScale',
+        'click .btn-100': 'onScale',
+        'click .btn-150': 'onScale',
+        'click .btn-downloadpdf': 'DownloadPDF',
+        'click .button-hamb': 'toogleSideBar',
     },
 
     init: function(parent, context) {
@@ -26,15 +31,83 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         const operating_unit_id = context.params.operating_unit_id;
         const department_id = context.params.department_id;
         const short_name = context.params.short_name;
+        const end_date = context.params.end_date;
         const responsible = context.params.responsible || false;
+        const inciso = context.params.inciso || '';
+        const ue = context.params.ue || '';
+        this.control = null;
+        this.btnst = true;
         this.renderEmployeeDetails(
         operating_unit_id,
         department_id,
         short_name,
         responsible,
+        end_date,
+        inciso,
+        ue
         );
     },
+    toogleSideBar: function(ev){
+    if(this.btnst === true) {
+        document.querySelector('.toggle span').classList.add('toggle');
+        document.getElementById('sidebar').classList.add('sidebarshow');
+        this.btnst = false;
+    }else if(this.btnst === false) {
+        document.querySelector('.toggle span').classList.remove('toggle');
+        document.getElementById('sidebar').classList.remove('sidebarshow');
+        this.btnst = true;
+      }
+    },
+    onScale: function(ev) {
+        const scale = ev.target?.dataset?.percentage || 1;
+        this.control.setOption("scale", parseFloat(scale));
+        this.control.update(primitives.UpdateMode.Refresh);
+    },
+    DownloadPDF: function() {
+      // create a document and pipe to a blob
+        var doc = new pdfkitsamples.PDFDocument({size: 'LEGAL'});
+        var blobStream = pdfkitsamples.blobStream;
+        var saveAs = pdfkitsamples.saveAs;
+        var stream = doc.pipe(blobStream());
 
+//      doc.fontSize(25)
+//        .text('First Organizational Chart', 30, 30);
+
+      var newItems = [];
+      const items = this.control.getOptions().items;
+      for (var index = 0; index < items.length; index += 1) {
+        var item = items[index];
+        newItems.push({
+          id: item.id,
+          parent: item.parent,
+          title: item.title,
+          description: item.description,
+        })
+      }
+      var sampleChart = primitives.OrgDiagramPdfkit({
+        items: items,
+        cursorItem: null,
+        hasSelectorCheckbox: primitives.Enabled.False
+      });
+      var sample3size = sampleChart.getSize();
+      var size = sampleChart.draw(doc, 50, 100);
+      var legalSize = { width: 612.00, height: 1008.00 } // See http://pdfkit.org/docs/paper_sizes.html
+      var scale = Math.min(legalSize.width / (sample3size.width + 100), legalSize.height / (sample3size.height + 100))
+      doc.save();
+      doc.scale(scale);
+      doc.restore();
+
+      doc.end();
+
+      if (typeof stream !== 'undefined') {
+        stream.on('finish', function () {
+          var string = stream.toBlob('application/pdf');
+          window.saveAs(string, 'sample.pdf');
+        });
+      } else {
+        alert('Error: Failed to create file stream.');
+      }
+    },
     getContactTemplate: function(responsible) {
         var result = new primitives.TemplateConfig();
         result.name = "contactTemplate";
@@ -157,22 +230,50 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
     renderEmployeeDetails: function (operating_unit_id,
         department_id,
         short_name,
-        responsible
+        responsible,
+        end_date,
+        inciso,
+        ue
     ){
         var employee_id = 1
         var self = this;
         this._rpc({
             route: '/get/organizational/level',
-            params: {'operating_unit_id': operating_unit_id, 'department_id': department_id, 'responsible': responsible}
+            params: {'operating_unit_id': operating_unit_id, 'department_id': department_id, 'responsible': responsible, 'end_date': end_date}
         }).then(function (result) {
+            var orgRoute = '';
+            if(inciso){
+                orgRoute += `<span><strong>INCISO: </strong>${inciso}</span>`;
+            }
+            if(ue){
+                orgRoute += ` <span style="margin-left: 2rem"><strong>UE: </strong>${ue}</span>`;
+            }
+            if(orgRoute.length){
+                document.querySelector('.org-route').innerHTML = `<span>${orgRoute}</span>`;
+            }
             const {levels, items, responsible} = result;
+            let allShortNames = [];
             items.map((item) => {
                 if(item.itemType === 'Assistant'){
                     item.itemType = primitives.ItemType.Assistant;
                     item.adviserPlacementType = item.adviserPlacementType === 'right' ? primitives.AdviserPlacementType.Right : primitives.AdviserPlacementType.Left;
                 }
+                else if(item.itemType === 'SubAssistant'){
+                    item.itemType = primitives.ItemType.SubAssistant;
+                    item.adviserPlacementType = item.adviserPlacementType === 'right' ? primitives.AdviserPlacementType.Right : primitives.AdviserPlacementType.Left;
+                }
                 else if(item.title === 'Aggregator'){
                     item.childrenPlacementType = item.childrenPlacementType === 'Horizontal' ? primitives.ChildrenPlacementType.Horizontal : primitives.ChildrenPlacementType.Auto;
+                }
+                if(item.showShortName === true){
+                    allShortNames.push({name: item.title, short_name: item.short_name});
+                    var legengItem = document.createElement('div')
+                    legengItem.className = 'legendItem';
+                    legengItem.innerHTML = `<span class="legendItemTitle"><strong>${item.short_name}:</strong> ${item.title}</span>`;
+                    document.querySelector('#org-legend').appendChild(
+                        legengItem
+                    );
+                    item.title = item.short_name;
                 }
             });
             let annotations = []
@@ -190,7 +291,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                   lineType: primitives.LineType.Dashed
                 }))
             });
-            var control = primitives.OrgDiagram(document.getElementById('basicdiagram'), {
+            self.control = primitives.OrgDiagram(document.getElementById('basicdiagram'), {
                 pageFitMode: primitives.PageFitMode.AutoSize,
                 autoSizeMinimum: { width: 1800, height: 800 },
                 cursorItem: 0,
@@ -199,6 +300,18 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                 levelTitleFontSize: '14px',
                 linesColor: primitives.Colors.Black,
                 lineLevelShift: 40,
+                onMouseClick: function (e, data) {
+                    var id = data.context.id;
+                    self.do_action({
+                        name: _t("UO"),
+                        type: 'ir.actions.act_window',
+                        res_model: 'hr.department',
+                        res_id: id,
+                        view_mode: 'form',
+                        views: [[false, 'form']],
+                    })
+                },
+                alignBranches: true,
                 lineItemsInterval: 20,
                 normalLevelShift: 40,
                 scale: 1,
