@@ -40,24 +40,25 @@ class EmployeeChart(http.Controller):
                 "No tiene datos para mostrar"
             )
         levels_result = []
-        if root_node.hierarchical_level_order != 1:
-            level_ids = []
-            for level in levels:
-                if level.order < root_node.hierarchical_level_order:
-                    level_ids.append(level.order - 1)
-                else:
-                    break
-            levels_result = [('', level_ids)]
-            levels_result.extend((level.name, [level.order - 1]) for level in levels if
-                                 level.order >= root_node.hierarchical_level_order)
-        else:
-            levels_result.extend((level.name, [level.order - 1]) for level in levels)
+        if not root_node.parent_id:
+            if root_node.hierarchical_level_order != 1:
+                level_ids = []
+                for level in levels:
+                    if level.order < root_node.hierarchical_level_order:
+                        level_ids.append(level.order - 1)
+                    else:
+                        break
+                levels_result = [('', level_ids)]
+                levels_result.extend((level.name, [level.order - 1]) for level in levels if
+                                     level.order >= root_node.hierarchical_level_order)
+            else:
+                levels_result.extend((level.name, [level.order - 1]) for level in levels)
 
         items = []
         for node in nodes_by_level.filtered(
                 lambda node: node.function_nature not in ('comite', 'commission_project', 'adviser')):
             last_parent = node.parent_id.id
-            if node.parent_id and node.hierarchical_level_order - node.parent_id.hierarchical_level_order != 1:
+            if not root_node.parent_id and node.parent_id and node.hierarchical_level_order - node.parent_id.hierarchical_level_order != 1:
                 for level_order in range(node.hierarchical_level_order - node.parent_id.hierarchical_level_order - 1):
                     dummy_item = {
                         'id': f'dummy-{level_order}-{node.id}',
@@ -78,7 +79,8 @@ class EmployeeChart(http.Controller):
                 'responsible': node.manager_id.name or '',
                 'responsibleEmpty': '',
                 'title': node.name,
-                'templateName': 'contactTemplate',
+                'show_responsible': responsible,
+                'templateName': 'contactTemplate' if not responsible or not node.manager_id else 'contactTemplateResponsible',
                 'showShortName': node.show_short_name,
             }
             items.append(item)
@@ -88,18 +90,6 @@ class EmployeeChart(http.Controller):
                 'comite', 'commission_project', 'adviser'))
         levelOffset = 0
         for assistant in assistances:
-            # lastparent = root_node.id
-            # if dummy_assistance_qty >= 1 and index > 0 and (index + 1) % 2 != 0:
-            #     dummy_item = {
-            #         'id': f'dummy-{lastparent}-{index}',
-            #         'parent': lastparent,
-            #         'isVisible': False,
-            #         'title': "Aggregator",
-            #         'description': "Invisible aggregator",
-            #         'childrenPlacementType': 'Horizontal'
-            #     }
-            #     items.append(dummy_item)
-            #     lastparent = dummy_item['id']
 
             item = {
                 'id': assistant.id,
@@ -108,10 +98,11 @@ class EmployeeChart(http.Controller):
                 'short_name': assistant.short_name,
                 'responsible': assistant.manager_id.name or '',
                 'responsibleEmpty': '',
+                'show_responsible': responsible,
                 'title': assistant.name,
                 'itemType': 'Assistant' if assistant.function_nature == 'adviser' else 'SubAssistant',
                 'adviserPlacementType': right_left,
-                'templateName': 'contactTemplate',
+                'templateName': 'contactTemplate' if not responsible or not assistant.manager_id else 'contactTemplateResponsible',
                 'levelOffset': levelOffset,
                 'showShortName': assistant.show_short_name,
             }

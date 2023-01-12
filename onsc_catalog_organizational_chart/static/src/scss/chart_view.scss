@@ -8,11 +8,22 @@
     align-items: center;
     gap: 1.5rem;
 }
+.contactTemplateResponsible{
+    background-color: #318CDA !important;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1.5rem;
+}
 .ContactTitle{
     text-overflow: ellipsis;
     overflow: hidden;
     line-height: 1;
     padding: 0 0.01rem 0 0.01rem;
+    color: #fff;
+    font-weight: bold;
 }
 .contactTemplateDashed{
     background-color: #318CDA !important;
