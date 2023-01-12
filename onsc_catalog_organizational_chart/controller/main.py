@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
-from odoo import http, fields
+from odoo import http
 from odoo.exceptions import UserError
 from odoo.http import request
 
 
 class EmployeeChart(http.Controller):
-
 
     @http.route('/get/organizational/level', type='json', auth='user', method=['POST'], csrf=False)
     def get_parent_child(self, **post):
@@ -25,11 +24,10 @@ class EmployeeChart(http.Controller):
 
                 ]
             )
-        levels = request.env['onsc.catalog.hierarchical.level'].sudo().search(
-            [])
+        levels = request.env['onsc.catalog.hierarchical.level'].sudo().search([])
         if department_id:
             domain.extend(['|', ('parent_id', '=', int(department_id)), ('id', '=', int(department_id))])
-        nodes_by_level = request.env['hr.department'].sudo().search(
+        nodes_by_level = request.env['hr.department'].sudo().with_context(as_of_date=end_date).search(
             domain, order='id asc, parent_id asc'
         )
         root_node = nodes_by_level.filtered(
@@ -57,7 +55,8 @@ class EmployeeChart(http.Controller):
                 levels_result.extend((level.name, [level.order - 1]) for level in levels)
 
         items = []
-        for node in nodes_by_level.filtered(lambda node: node.function_nature not in ('comite', 'commission_project', 'adviser')):
+        for node in nodes_by_level.filtered(
+                lambda node: node.function_nature not in ('comite', 'commission_project', 'adviser')):
             last_parent = node.parent_id.id
             if not root_node.parent_id and node.parent_id and node.hierarchical_level_order - node.parent_id.hierarchical_level_order != 1:
                 for level_order in range(node.hierarchical_level_order - node.parent_id.hierarchical_level_order - 1):

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <menuitem id="onsc_docket_root_menu"
+              name="Legajos"
+              web_icon="onsc_catalog,static/description/icon.png"
+              sequence="4"/>
+    <menuitem id="onsc_docket_config_menu"
+              name="Catálogos"
+              parent="onsc_docket_root_menu"
+              sequence="50"/>
+        <menuitem id="onsc_docket_emergency_menu"
+              name="Emergencias"
+              action="onsc_docket_emergency_action"
+              parent="onsc_docket_config_menu"
+              groups="onsc_catalog.group_catalog_configurador_servicio_civil"
+              sequence="1"/>
+</odoo>
