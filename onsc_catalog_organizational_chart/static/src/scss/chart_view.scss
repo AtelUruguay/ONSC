@@ -127,10 +127,10 @@
 
 .sidebar {
   background:#fff;
-  width:335px;
+  width:435px;
   position:fixed;
   top:112px;
-  right:-335px;
+  right:-435px;
   height:100%;
   box-shadow:0 2px 8px rgba(0,0,0,0.2);
   padding-top:10px;
@@ -190,4 +190,6 @@
 
 .legendItem{
 border-bottom: 1px solid #cfcfcf52;
+text-align: left;
+margin-left: 1rem;
 }
