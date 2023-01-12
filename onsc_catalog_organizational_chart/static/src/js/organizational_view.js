@@ -115,13 +115,60 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         result.minimizedItemSize = new primitives.Size(3, 3);
 
         /* the following example demonstrates JSONML template see http://http://www.jsonml.org/ for details: */
-        result.itemTemplate = ["div",
+        result.itemTemplate =
+//        `<div style="width: ${result.itemSize.width}px; height: ${result.itemSize.height}px;" class="contactTemplate">
+//            <div name="title" class="ContactTitle">
+//            </div>
+//
+//        </div>`;
+
+        ["div",
             {
                 "style": {
                     "width": result.itemSize.width + "px",
                     "height": result.itemSize.height + "px"
                 },
                 "class": ["contactTemplate"]
+            },
+            ["div",
+                    {
+                        "name": "title",
+                        "class": ["ContactTitle"],
+                    }
+            ],
+
+        ];
+        result.itemTemplate.push(
+                ["div",
+                    {
+                        "name": "responsibleEmpty",
+                        "class": ["responsabletEmptyTag"],
+                    }
+                ]
+            )
+        return result;
+    },
+    getContactTemplateResponsible: function(responsible) {
+        var result = new primitives.TemplateConfig();
+        result.name = "contactTemplateResponsible";
+        result.itemSize = new primitives.Size(150, 75);
+        result.minimizedItemSize = new primitives.Size(3, 3);
+
+        /* the following example demonstrates JSONML template see http://http://www.jsonml.org/ for details: */
+        result.itemTemplate =
+//        `<div style="width: ${result.itemSize.width}px; height: ${result.itemSize.height}px;" class="contactTemplate">
+//            <div name="title" class="ContactTitle">
+//            </div>
+//
+//        </div>`;
+
+        ["div",
+            {
+                "style": {
+                    "width": result.itemSize.width + "px",
+                    "height": result.itemSize.height + "px"
+                },
+                "class": ["contactTemplateResponsible"]
             },
             ["div",
                     {
@@ -140,7 +187,8 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                     }
                 ]
             )
-        }else{
+        }
+        else{
         result.itemTemplate.push(
                 ["div",
                     {
@@ -174,26 +222,26 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                     }
             ],
         ];
-        if(responsible){
-            result.itemTemplate.push(
-                ["div",
-                    {
-                        "name": "responsible",
-                        "class": ["responsabletTag"],
-                    }
-                ]
-            )
-        }
-        else{
-        result.itemTemplate.push(
-                ["div",
-                    {
-                        "name": "responsibleEmpty",
-                        "class": ["responsabletEmptyTag"],
-                    }
-                ]
-            )
-        }
+//        if(responsible){
+//            result.itemTemplate.push(
+//                ["div",
+//                    {
+//                        "name": "responsible",
+//                        "class": ["responsabletTag"],
+//                    }
+//                ]
+//            )
+//        }
+//        else{
+//        result.itemTemplate.push(
+//                ["div",
+//                    {
+//                        "name": "responsibleEmpty",
+//                        "class": ["responsabletEmptyTag"],
+//                    }
+//                ]
+//            )
+//        }
         return result;
     },
     onTemplateRender: function(event, data) {
@@ -208,22 +256,24 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
 
         var itemConfig = data.context;
 
-        if (data.templateName == "contactTemplateDashed") {
+        if (data.templateName === "contactTemplateDashed") {
             var title = data.element.firstChild;
             title.textContent = itemConfig.title;
 
             var responsible = data.element.childNodes[1];
             responsible.textContent = itemConfig.responsible;
-        } else if (data.templateName == "contactTemplate") {
+        } else if (data.templateName === "contactTemplate") {
 
             var title = data.element.firstChild;
             title.textContent = itemConfig.title;
 
-            if(itemConfig.responsible){
-                var responsible = data.element.childNodes[1];
-                if(responsible)
-                    responsible.textContent = itemConfig?.responsible;
-            }
+        }else if (data.templateName === "contactTemplateResponsible") {
+
+            var title = data.element.firstChild;
+            title.textContent = itemConfig.title;
+            var responsible = data.element.childNodes[1];
+            if(responsible)
+                responsible.textContent = itemConfig?.responsible;
 
         }
     },
@@ -320,7 +370,8 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                 defaultTemplateName: "contactTemplate",
                 templates: [
                     self.getContactTemplate(responsible),
-                    self.getcontactTemplateDashed(responsible)
+                    self.getcontactTemplateDashed(responsible),
+                    self.getContactTemplateResponsible(responsible)
                   ],
                 onItemRender: self.onTemplateRender,
                 items: items,
