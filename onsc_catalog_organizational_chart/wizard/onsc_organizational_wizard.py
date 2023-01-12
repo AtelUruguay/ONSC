@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class ONSCOrganizationalWizard(models.TransientModel):
@@ -28,6 +28,14 @@ class ONSCOrganizationalWizard(models.TransientModel):
     date = fields.Date(
         'Fecha'
     )
+
+    @api.onchange('date')
+    def onchange_date(self):
+        self.inciso_id = False
+
+    @api.onchange('inciso_id')
+    def onchange_inciso_id(self):
+        self.operating_unit_id = False
 
     def action_show_org(self):
         return {

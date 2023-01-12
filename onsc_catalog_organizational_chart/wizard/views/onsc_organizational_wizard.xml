@@ -6,12 +6,16 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="inciso_id" required="1" options="{'no_create': True}"/>
+                    <field name="date"/>
+                    <field name="inciso_id"
+                           context="{'as_of_date': date}"
+                           required="1"
+                           options="{'no_create': True}"/>
                     <field name="operating_unit_id"
+                           context="{'as_of_date': date}"
                            required="1"
                            domain="[('inciso_id', '=', inciso_id)]"
                            options="{'no_create': True}"/>
-                    <field name="date" />
                     <field name="department_id"
                            domain="[('inciso_id', '=', inciso_id),('operating_unit_id', '=', operating_unit_id)]"
                            options="{'no_create': True}"/>
