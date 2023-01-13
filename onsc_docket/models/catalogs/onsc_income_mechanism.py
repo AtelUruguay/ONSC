@@ -34,10 +34,7 @@ class ONSCDocketIncomeMechanism(models.Model):
             self.end_date = False
             return cv_warning(_(u"La fecha de hasta no puede ser menor que la fecha de desde"))
 
-
     _sql_constraints = [
-            ('code_uniq', 'unique(code)', u'El código del mecanismos de ingreso debe ser único'),
-            ('name_uniq', 'unique(name)', u'El nombre del mecanismos de ingreso debe ser único'),
-        ]
-
-
+        ('code_uniq', 'unique(code)', u'El código del mecanismos de ingreso debe ser único'),
+        ('name_uniq', 'unique(name)', u'El nombre del mecanismos de ingreso debe ser único'),
+    ]
