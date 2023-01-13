@@ -78,15 +78,15 @@ class EmployeeChart(http.Controller):
         domain = [
             ('operating_unit_id', '=', operating_unit_id),
         ]
-        if end_date:
-            domain.extend(
-                [
-                    # '|',
-                    ('end_date', '>=', end_date),
-                    # ('end_date', '=', False),
-
-                ]
-            )
+        # if end_date:
+        #     domain.extend(
+        #         [
+        #             # '|',
+        #             ('end_date', '>=', end_date),
+        #             # ('end_date', '=', False),
+        #
+        #         ]
+        #     )
         levels = request.env['onsc.catalog.hierarchical.level'].sudo().search([])
         if department_id:
             domain.extend(['|', ('id', 'child_of', int(department_id)), ('id', '=', int(department_id))])

@@ -10,6 +10,7 @@ class ONSCCatalogInciso(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'model.history']
     _description = 'Incisos'
     _history_model = 'onsc.catalog.inciso.history'
+    _rec_name = 'company_name'
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
