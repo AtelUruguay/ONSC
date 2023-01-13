@@ -11,7 +11,7 @@
                         <button class="btn-50 btn" data-percentage="0.5">50%</button>
                         <button class="btn-100 btn" data-percentage="1">100%</button>
                         <button class="btn-150 btn" data-percentage="1.5">150%</button>
-    <!--                    <input class="btn btn-downloadpdf" type="button" value="Download PDF" />-->
+<!--                        <input class="btn btn-downloadpdf" type="button" value="Download PDF" />-->
                         <button type="button" class="toggle button-hamb" id="toggle">
                            <span></span>
                         </button>
