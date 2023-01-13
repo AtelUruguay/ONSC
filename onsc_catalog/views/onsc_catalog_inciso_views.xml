@@ -5,7 +5,7 @@
         <field name="model">onsc.catalog.inciso</field>
         <field name="arch" type="xml">
             <search string="Incisos">
-                <field name="name"/>
+                <field name="company_name"/>
                 <field name="identifier"/>
                 <field name="budget_code"/>
                 <field name="short_name"/>
@@ -91,7 +91,7 @@
         <field name="model">onsc.catalog.inciso</field>
         <field name="arch" type="xml">
             <tree string="Incisos">
-                <field name="name"/>
+                <field name="company_name"/>
                 <field name="identifier"/>
                 <field name="budget_code"/>
                 <field name="short_name"/>

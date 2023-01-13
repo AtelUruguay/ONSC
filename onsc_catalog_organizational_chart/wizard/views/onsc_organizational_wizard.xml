@@ -10,7 +10,14 @@
                     <field name="inciso_id"
                            context="{'as_of_date': date}"
                            required="1"
-                           options="{'no_create': True}"/>
+                           options="{'no_create': True}">
+                        <tree>
+                            <field name="company_name"/>
+                            <field name="identifier"/>
+                            <field name="budget_code"/>
+                            <field name="short_name"/>
+                        </tree>
+                    </field>
                     <field name="operating_unit_id"
                            context="{'as_of_date': date}"
                            required="1"
