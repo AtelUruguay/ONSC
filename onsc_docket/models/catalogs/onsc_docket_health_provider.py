@@ -5,7 +5,7 @@ from odoo import fields, models
 
 class ONSCDocketHealthProvider(models.Model):
     _name = 'onsc.docket.health.provider'
-    _description = 'Prestadores de salud'
+    _description = 'Prestador de salud'
 
     code = fields.Char(u"Código", required=True)
     name = fields.Char("Nombre del prestador de salud", required=True)
