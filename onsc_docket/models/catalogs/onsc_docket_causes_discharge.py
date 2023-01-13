@@ -20,7 +20,7 @@ class ONSCDocketCausesDischarge(models.Model):
     is_require_extended = fields.Boolean(u"¿Requiere extendido?")
     causes_discharge_line_ids = fields.One2many("onsc.docket.causes.discharge.line", "causes_discharge_id",
                                                 string="Motivos de causal de egreso extendido")
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean('Activo', default=True)
 
     @api.onchange('is_require_extended')
     def onchange_require_extended(self):
