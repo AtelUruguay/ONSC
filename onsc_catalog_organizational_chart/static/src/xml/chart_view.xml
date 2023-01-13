@@ -5,12 +5,18 @@
         <div id="o_organizational_chart">
             <center>
                 <div class="header-hamb">
-                    <div><h4 class="o_org_chart_title mb16 mt0" align="center">Organigrama</h4></div>
+                    <div class="org-title"><h4 class="o_org_chart_title mb16 mt0" align="center">Organigrama</h4></div>
                     <div class="org-route"/>
-                    <div>
-                        <button class="btn-50 btn" data-percentage="0.5">50%</button>
-                        <button class="btn-100 btn" data-percentage="1">100%</button>
-                        <button class="btn-150 btn" data-percentage="1.5">150%</button>
+                    <div class="right-buttons">
+                        <div class="slidecontainer">
+                            <img src="/onsc_catalog_organizational_chart/static/src/img/zoomout.png" alt="Out" id="slide-zoomout" style="width: 25px; height: 25px;"/>
+                            <input type="range" min="1" max="30" value="10" class="slider" id="myRange"/>
+                            <img src="/onsc_catalog_organizational_chart/static/src/img/zoomin.png" alt="In" id="slide-zoomin" style="width: 25px; height: 25px;"/>
+
+                        </div>
+<!--                        <button class="btn-50 btn" data-percentage="0.5">50%</button>-->
+<!--                        <button class="btn-100 btn" data-percentage="1">100%</button>-->
+<!--                        <button class="btn-150 btn" data-percentage="1.5">150%</button>-->
 <!--                        <input class="btn btn-downloadpdf" type="button" value="Download PDF" />-->
                         <button type="button" class="toggle button-hamb" id="toggle">
                            <span></span>
