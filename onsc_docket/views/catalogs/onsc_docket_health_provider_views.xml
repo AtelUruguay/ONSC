@@ -1,41 +1,39 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_docket_emergency_search" model="ir.ui.view">
-        <field name="name">onsc.docket.emergency.search</field>
-        <field name="model">onsc.docket.emergency</field>
+    <record id="onsc_health_provider_search" model="ir.ui.view">
+        <field name="name">onsc.health.provider.search</field>
+        <field name="model">onsc.docket.health.provider</field>
         <field name="arch" type="xml">
-            <search string="Emergencias">
+            <search string="Prestadores de salud">
                 <field name="name"/>
                 <field name="code"/>
             </search>
         </field>
     </record>
 
-    <record id="onsc_docket_emergency_tree" model="ir.ui.view">
-        <field name="name">onsc.docket.emergency.tree</field>
-        <field name="model">onsc.docket.emergency</field>
+    <record id="onsc_health_provider_tree" model="ir.ui.view">
+        <field name="name">onsc.health.provider.tree</field>
+        <field name="model">onsc.docket.health.provider</field>
         <field name="arch" type="xml">
-            <tree string="Emergencias" editable="top">
+            <tree string="Prestadores de salud" editable="top">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="phone" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
 
-    <record id="onsc_docket_emergency_form" model="ir.ui.view">
-        <field name="name">onsc.docket.emergency.form</field>
-        <field name="model">onsc.docket.emergency</field>
+    <record id="onsc_health_provider_form" model="ir.ui.view">
+        <field name="name">onsc.health.provider.form</field>
+        <field name="model">onsc.docket.health.provider</field>
         <field name="arch" type="xml">
-            <form string="Emergencias">
+            <form string="Prestadores de salud">
                 <header/>
                 <sheet>
                     <group>
                         <group>
                             <field name="name"/>
                             <field name="code"/>
-                            <field name="phone"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group/>
@@ -45,13 +43,13 @@
         </field>
     </record>
 
-    <record id='onsc_docket_emergency_action' model='ir.actions.act_window'>
-        <field name="name">Emergencias</field>
-        <field name="res_model">onsc.docket.emergency</field>
+    <record id='onsc_health_provider_action' model='ir.actions.act_window'>
+        <field name="name">Prestadores de salud</field>
+        <field name="res_model">onsc.docket.health.provider</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nueva emergencia
+                Crear un nuevo prestador de salud
             </p>
         </field>
     </record>

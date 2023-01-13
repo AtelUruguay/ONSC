@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_docket_income_mechanism_search" model="ir.ui.view">
+        <field name="name">onsc.docket.income.mechanism.search</field>
+        <field name="model">onsc.docket.income.mechanism</field>
+        <field name="arch" type="xml">
+            <search string="Mecanismos de ingresos">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="change_date"/>
+                <field name="is_call_number_required"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_docket_income_mechanism_tree" model="ir.ui.view">
+        <field name="name">onsc.docket.income.mechanism.tree</field>
+        <field name="model">onsc.docket.income.mechanism</field>
+        <field name="arch" type="xml">
+            <tree string="Mecanismos de ingreso">
+                <field name="name"/>
+                <field name="code"/>
+                <field name="start_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="end_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="change_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="is_call_number_required" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="onsc_docket_income_mechanism_form" model="ir.ui.view">
+        <field name="name">onsc.docket.income.mechanism.form</field>
+        <field name="model">onsc.docket.income.mechanism</field>
+        <field name="arch" type="xml">
+            <form string="Mecanismos de ingresos">
+                <header/>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="code"/>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                        </group>
+                        <group>
+                            <field name="change_date"/>
+                            <field name="is_call_number_required"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id='onsc_docket_income_mechanism_action' model='ir.actions.act_window'>
+        <field name="name">Mecanismos de ingresos</field>
+        <field name="res_model">onsc.docket.income.mechanism</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo mecanismo de ingreso
+            </p>
+        </field>
+    </record>
+</odoo>
