@@ -19,6 +19,7 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="phone" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -35,6 +36,7 @@
                             <field name="name"/>
                             <field name="code"/>
                             <field name="phone"/>
+                            <field name="active" invisible="1"/>
                         </group>
                         <group/>
                     </group>

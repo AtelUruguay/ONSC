@@ -4,15 +4,15 @@
         <field name="name">onsc.docket.causes.discharge.views.search</field>
         <field name="model">onsc.docket.causes.discharge</field>
         <field name="arch" type="xml">
-            <search string="Causales de Egreso">
+            <search string="Causales de egreso">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="code_bps"/>
-                <field name="description_bps"/>
-                <field name="code_cgn"/>
-                <field name="description_cgn"/>
-                <field name="code_rve"/>
-                <field name="description_rve"/>
+                <field name="code_bps" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="description_bps" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="code_cgn" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="description_cgn" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="code_rve" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="description_rve" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
             </search>
         </field>
     </record>
@@ -21,7 +21,7 @@
         <field name="name">onsc.docket.causes.discharge.views.tree</field>
         <field name="model">onsc.docket.causes.discharge</field>
         <field name="arch" type="xml">
-            <tree string="Causales de Egreso">
+            <tree string="Causales de egreso">
                 <field name="name"/>
                 <field name="code"/>
                 <field name="code_bps"/>
@@ -33,7 +33,7 @@
                 <field name="is_by_inciso"/>
                 <field name="inciso_id"/>
                 <field name="is_require_extended"/>
-
+                <field name="active" invisible="1"/>
             </tree>
         </field>
     </record>
@@ -41,7 +41,7 @@
         <field name="name">onsc.docket.causes.discharge.views.form</field>
         <field name="model">onsc.docket.causes.discharge</field>
         <field name="arch" type="xml">
-            <form string="Causales de Egreso">
+            <form string="Causales de egreso">
                 <sheet>
                     <group>
                         <group>
@@ -58,11 +58,12 @@
                             <field name="is_by_inciso"/>
                             <field name="inciso_id"/>
                             <field name="is_require_extended"/>
+                            <field name="active" invisible="1"/>
                         </group>
 
                     </group>
                     <notebook>
-                        <page string="Motivos de Causal de egreso extendido"
+                        <page string="Motivos de causal de egreso extendido"
                               attrs="{'invisible': [('is_require_extended', '!=', True)]}">
                             <field name="causes_discharge_line_ids"
                                    nolabel="1">
@@ -79,12 +80,12 @@
     </record>
 
     <record id='onsc_docket_causes_discharge_action' model='ir.actions.act_window'>
-        <field name="name">Causales de Egreso</field>
+        <field name="name">Causales de egreso</field>
         <field name="res_model">onsc.docket.causes.discharge</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nuevo causal de egreso
+                Crear un nuevo causal de egreso
             </p>
         </field>
     </record>

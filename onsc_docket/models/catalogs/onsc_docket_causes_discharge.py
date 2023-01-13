@@ -5,7 +5,7 @@ from odoo import fields, models, api
 
 class ONSCDocketCausesDischarge(models.Model):
     _name = 'onsc.docket.causes.discharge'
-    _description = 'Causales de Egreso'
+    _description = 'Causal de egreso'
 
     name = fields.Char("Nombre del causal de egreso", required=True)
     code = fields.Char(u"Código", required=True)
@@ -15,11 +15,12 @@ class ONSCDocketCausesDischarge(models.Model):
     description_cgn = fields.Char(u"Descripción CGN")
     code_rve = fields.Char(u"Código RVE")
     description_rve = fields.Char(u"Descripción RVE")
-    is_by_inciso = fields.Boolean(u"Por inciso", default=False)
+    is_by_inciso = fields.Boolean(u"Por inciso")
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
-    is_require_extended = fields.Boolean(u"¿Requiere extendido?", default=False)
+    is_require_extended = fields.Boolean(u"¿Requiere extendido?")
     causes_discharge_line_ids = fields.One2many("onsc.docket.causes.discharge.line", "causes_discharge_id",
-                                                string="Motivos de Causal de egreso extendido")
+                                                string="Motivos de causal de egreso extendido")
+    active = fields.Boolean('Active', default=True)
 
     @api.onchange('is_require_extended')
     def onchange_require_extended(self):
@@ -34,7 +35,7 @@ class ONSCDocketCausesDischarge(models.Model):
 
 class ONSCDocketCausesDischargeLine(models.Model):
     _name = 'onsc.docket.causes.discharge.line'
-    _description = 'Causales de Egreso Linea'
+    _description = 'Causal de egreso Linea'
 
     name = fields.Char("Nombre", required=True)
     description = fields.Char(u"Descripción", required=True)
