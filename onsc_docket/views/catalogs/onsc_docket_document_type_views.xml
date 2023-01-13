@@ -5,7 +5,7 @@
         <field name="name">onsc.docket.document.type.search</field>
         <field name="model">onsc.docket.document.type</field>
         <field name="arch" type="xml">
-            <search string="Tipos de documento">
+            <search string="Tipos de documentos">
                 <field name="name"/>
                 <field name="description"/>
             </search>
@@ -15,7 +15,7 @@
         <field name="name">onsc.docket.document.type.tree</field>
         <field name="model">onsc.docket.document.type</field>
         <field name="arch" type="xml">
-            <tree string="Tipos de documento" editable="top">
+            <tree string="Tipos de documentos" editable="top">
                 <field name="name"/>
                 <field name="description" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                 <field name="active" invisible="1"/>
@@ -26,7 +26,7 @@
         <field name="name">onsc.docket.document.type.form</field>
         <field name="model">onsc.docket.document.type</field>
         <field name="arch" type="xml">
-            <form string="Tipos de documento">
+            <form string="Tipos de documentos">
                 <header/>
                 <sheet>
                     <group>
@@ -42,7 +42,7 @@
         </field>
     </record>
     <record id='onsc_docket_document_type_action' model='ir.actions.act_window'>
-        <field name="name">Tipos de documento</field>
+        <field name="name">Tipos de documentos</field>
         <field name="res_model">onsc.docket.document.type</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
