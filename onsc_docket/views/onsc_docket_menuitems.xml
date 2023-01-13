@@ -8,7 +8,7 @@
               name="Catálogos"
               parent="onsc_docket_root_menu"
               sequence="50"/>
-    <menuitem id="onsc_docket_emergency_menu"
+        <menuitem id="onsc_docket_emergency_menu"
               name="Emergencias"
               action="onsc_docket_emergency_action"
               parent="onsc_docket_config_menu"
@@ -38,4 +38,10 @@
               parent="onsc_docket_config_menu"
               groups="onsc_catalog.group_catalog_configurador_servicio_civil"
               sequence="5"/>
+        <menuitem id="onsc_docket_regime_menu"
+              name="Régimen"
+              action="onsc_docket_regime_action"
+              parent="onsc_docket_config_menu"
+              groups="onsc_catalog.group_catalog_configurador_servicio_civil"
+              sequence="10"/>
 </odoo>

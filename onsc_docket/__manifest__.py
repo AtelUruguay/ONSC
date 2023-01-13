@@ -12,11 +12,12 @@ ONSC - Legajo
     'depends': ['onsc_base', 'onsc_catalog'],
     'data': [
         'security/ir.model.access.csv',
-        'views/catalogs/onsc_catalog_base_views.xml',
+        'views/catalogs/onsc_docket_emergency_views.xml',
         'views/catalogs/onsc_docket_health_provider_views.xml',
         'views/catalogs/onsc_docket_document_type_views.xml',
         'views/catalogs/onsc_docket_income_mechanism_views.xml',
         'views/catalogs/onsc_docket_causes_discharge_views.xml',
+        'views/catalogs/onsc_docket_base_views.xml',
         'views/onsc_docket_menuitems.xml',
     ],
     'demo': [],
