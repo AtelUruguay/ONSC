@@ -11,7 +11,7 @@ class EmployeeChart(http.Controller):
         operating_unit_id = post.get('operating_unit_id', False)
         department_id = post.get('department_id', False)
         responsible = post.get('responsible')
-        end_date = post.get('end_date', False)
+        # end_date = post.get('end_date', False)
         form_id = request.env.ref('onsc_catalog.onsc_catalog_department_form').id
         domain = [
             ('operating_unit_id', '=', operating_unit_id),
@@ -92,7 +92,6 @@ class EmployeeChart(http.Controller):
                 'comite', 'commission_project', 'adviser'))
         levelOffset = 0
         for assistant in assistances:
-
             item = {
                 'id': assistant.id,
                 'parent': root_node.id,
