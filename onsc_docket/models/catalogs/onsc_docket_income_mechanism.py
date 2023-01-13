@@ -15,7 +15,7 @@ class ONSCDocketIncomeMechanism(models.Model):
     end_date = fields.Date(string="Fecha hasta")
     change_date = fields.Date(string="Fecha de cambio")
     is_call_number_required = fields.Boolean(string="¿Requiere número de llamado?")
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean('Activo', default=True)
 
     @api.onchange('start_date')
     def onchange_start_date(self):
