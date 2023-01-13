@@ -358,7 +358,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                         res_model: 'hr.department',
                         res_id: id,
                         view_mode: 'form',
-                        views: [[false, 'form']],
+                        views: [[data.context.form_id, 'form']],
                     })
                 },
                 alignBranches: true,
@@ -445,7 +445,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
             res_model: 'hr.department',
             res_id: id,
             view_mode: 'form',
-            views: [[false, 'form']],
+            views: [['onsc_catalog.onsc_catalog_department_form', 'form']],
             })
         }
     },

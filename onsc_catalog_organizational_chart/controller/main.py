@@ -12,6 +12,7 @@ class EmployeeChart(http.Controller):
         department_id = post.get('department_id', False)
         responsible = post.get('responsible')
         end_date = post.get('end_date', False)
+        form_id = request.env.ref('onsc_catalog.onsc_catalog_department_form').id
         domain = [
             ('operating_unit_id', '=', operating_unit_id),
         ]
@@ -74,6 +75,7 @@ class EmployeeChart(http.Controller):
             item = {
                 'id': node.id,
                 'parent': last_parent,
+                'form_id': form_id,
                 'isVisible': True,
                 'short_name': node.short_name,
                 'responsible': node.manager_id.name or '',
@@ -95,6 +97,7 @@ class EmployeeChart(http.Controller):
                 'id': assistant.id,
                 'parent': root_node.id,
                 'isVisible': True,
+                'form_id': form_id,
                 'short_name': assistant.short_name,
                 'responsible': assistant.manager_id.name or '',
                 'responsibleEmpty': '',
