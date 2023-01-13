@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_docket_regime_search" model="ir.ui.view">
+        <field name="name">onsc.docket.regime.search</field>
+        <field name="model">onsc.docket.regime</field>
+        <field name="arch" type="xml">
+            <search string="Régimen">
+                <field name="name"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_docket_regime_tree" model="ir.ui.view">
+        <field name="name">onsc.docket.regime.tree</field>
+        <field name="model">onsc.docket.regime</field>
+        <field name="arch" type="xml">
+            <tree string="Régimen" editable="top">
+                <field name="codigo" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="descripcion" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="name"/>
+                <field name="ind_vencimiento" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="presupuesto" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="vigente" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id='onsc_docket_regime_action' model='ir.actions.act_window'>
+        <field name="name">Régimen</field>
+        <field name="res_model">onsc.docket.regime</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo régimen
+            </p>
+        </field>
+    </record>
+</odoo>
