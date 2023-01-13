@@ -7,12 +7,12 @@
             <search string="Causales de egreso">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="code_bps" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="description_bps" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="code_cgn" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="description_cgn" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="code_rve" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="description_rve" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="code_bps"/>
+                <field name="description_bps"/>
+                <field name="code_cgn"/>
+                <field name="description_cgn"/>
+                <field name="code_rve"/>
+                <field name="description_rve"/>
             </search>
         </field>
     </record>
@@ -24,16 +24,16 @@
             <tree string="Causales de egreso">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="code_bps"/>
-                <field name="description_bps"/>
-                <field name="code_cgn"/>
-                <field name="description_cgn"/>
-                <field name="code_rve"/>
-                <field name="description_rve"/>
-                <field name="is_by_inciso"/>
-                <field name="inciso_id"/>
-                <field name="is_require_extended"/>
-                <field name="active" invisible="1"/>
+                <field name="code_bps" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="description_bps" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="code_cgn" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="description_cgn" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="code_rve" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="description_rve" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="is_by_inciso" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="inciso_id" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="is_require_extended" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="active" invisible="1" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
             </tree>
         </field>
     </record>
