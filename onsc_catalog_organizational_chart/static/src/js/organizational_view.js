@@ -18,11 +18,11 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         'click .o_employee_border': '_getChild_data',
         'click .employee_name': 'view_employee',
         'click .node': '_onClickNodeText',
-        'click .btn-50': 'onScale',
-        'click .btn-100': 'onScale',
-        'click .btn-150': 'onScale',
         'click .btn-downloadpdf': 'DownloadPDF',
         'click .button-hamb': 'toogleSideBar',
+        'click #slide-zoomout': 'onClickZoomOut',
+        'click #slide-zoomin': 'onClickZoomIn',
+        'change #myRange': 'onScale',
     },
 
     init: function(parent, context) {
@@ -36,6 +36,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         const inciso = context.params.inciso || '';
         const ue = context.params.ue || '';
         this.control = null;
+        this.scale = 1;
         this.btnst = true;
         this.renderEmployeeDetails(
         operating_unit_id,
@@ -58,9 +59,24 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         this.btnst = true;
       }
     },
+    onClickZoomOut: function(ev) {
+        let slide = document.querySelector('#myRange');
+        slide.value = parseInt(slide.value) - 1;
+        let scale = parseFloat(slide.value);
+        this.control.setOption("scale", scale/10);
+        this.control.update(primitives.UpdateMode.Refresh);
+    },
+    onClickZoomIn: function(ev) {
+        let slide = document.querySelector('#myRange');
+        slide.value = parseInt(slide.value)  + 1;
+        let scale = parseFloat(slide.value);
+        this.control.setOption("scale", scale/10);
+        this.control.update(primitives.UpdateMode.Refresh);
+    },
     onScale: function(ev) {
-        const scale = ev.target?.dataset?.percentage || 1;
-        this.control.setOption("scale", parseFloat(scale));
+        const scale = parseFloat(ev.target?.value || 1);
+        this.scale = scale/10;
+        this.control.setOption("scale", scale/10);
         this.control.update(primitives.UpdateMode.Refresh);
     },
     DownloadPDF: function() {
@@ -114,15 +130,8 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         result.itemSize = new primitives.Size(150, 75);
         result.minimizedItemSize = new primitives.Size(3, 3);
 
-        /* the following example demonstrates JSONML template see http://http://www.jsonml.org/ for details: */
-        result.itemTemplate =
-//        `<div style="width: ${result.itemSize.width}px; height: ${result.itemSize.height}px;" class="contactTemplate">
-//            <div name="title" class="ContactTitle">
-//            </div>
-//
-//        </div>`;
-
-        ["div",
+        result.itemTemplate =[
+        "div",
             {
                 "style": {
                     "width": result.itemSize.width + "px",
@@ -138,14 +147,6 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
             ],
 
         ];
-        result.itemTemplate.push(
-                ["div",
-                    {
-                        "name": "responsibleEmpty",
-                        "class": ["responsabletEmptyTag"],
-                    }
-                ]
-            )
         return result;
     },
     getContactTemplateResponsible: function(responsible) {
@@ -154,13 +155,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         result.itemSize = new primitives.Size(150, 75);
         result.minimizedItemSize = new primitives.Size(3, 3);
 
-        /* the following example demonstrates JSONML template see http://http://www.jsonml.org/ for details: */
         result.itemTemplate =
-//        `<div style="width: ${result.itemSize.width}px; height: ${result.itemSize.height}px;" class="contactTemplate">
-//            <div name="title" class="ContactTitle">
-//            </div>
-//
-//        </div>`;
 
         ["div",
             {
@@ -206,7 +201,6 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         result.itemSize = new primitives.Size(150, 75);
         result.minimizedItemSize = new primitives.Size(3, 3);
 
-        /* the following example demonstrates JSONML template see http://http://www.jsonml.org/ for details: */
         result.itemTemplate = ["div",
             {
                 "style": {
@@ -222,26 +216,48 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                     }
             ],
         ];
-//        if(responsible){
-//            result.itemTemplate.push(
-//                ["div",
-//                    {
-//                        "name": "responsible",
-//                        "class": ["responsabletTag"],
-//                    }
-//                ]
-//            )
-//        }
-//        else{
-//        result.itemTemplate.push(
-//                ["div",
-//                    {
-//                        "name": "responsibleEmpty",
-//                        "class": ["responsabletEmptyTag"],
-//                    }
-//                ]
-//            )
-//        }
+        return result;
+    },
+    getcontactTemplateDashedResponsible: function(responsible) {
+        var result = new primitives.TemplateConfig();
+        result.name = "contactTemplateDashedResponsible";
+        result.itemSize = new primitives.Size(150, 75);
+        result.minimizedItemSize = new primitives.Size(3, 3);
+        result.itemTemplate = ["div",
+            {
+                "style": {
+                    "width": result.itemSize.width + "px",
+                    "height": result.itemSize.height + "px"
+                },
+                "class": ["contactTemplateDashedResponsible"]
+            },
+            ["div",
+                    {
+                        "name": "title",
+                        "class": ["ContactTitle"],
+                    }
+            ],
+        ];
+        if(responsible){
+            result.itemTemplate.push(
+                ["div",
+                    {
+                        "name": "responsible",
+                        "class": ["responsabletTag"],
+                    }
+                ]
+            )
+        }
+        else{
+            result.itemTemplate.push(
+                ["div",
+                    {
+                        "name": "responsibleEmpty",
+                        "class": ["responsabletEmptyTag"],
+                    }
+                ]
+            )
+        }
         return result;
     },
     onTemplateRender: function(event, data) {
@@ -268,6 +284,14 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
             title.textContent = itemConfig.title;
 
         }else if (data.templateName === "contactTemplateResponsible") {
+
+            var title = data.element.firstChild;
+            title.textContent = itemConfig.title;
+            var responsible = data.element.childNodes[1];
+            if(responsible)
+                responsible.textContent = itemConfig?.responsible;
+
+        }else if (data.templateName === "contactTemplateDashedResponsible") {
 
             var title = data.element.firstChild;
             title.textContent = itemConfig.title;
@@ -344,7 +368,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
             self.control = primitives.OrgDiagram(document.getElementById('basicdiagram'), {
                 pageFitMode: primitives.PageFitMode.AutoSize,
                 autoSizeMinimum: { width: 1800, height: 800 },
-                cursorItem: 0,
+//                cursorItem: 0,
                 levelTitleOrientation: primitives.TextOrientationType.RotateLeft,
                 levelTitleFontWeight: 'bold',
                 levelTitleFontSize: '14px',
@@ -365,13 +389,13 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                 lineItemsInterval: 20,
                 normalLevelShift: 40,
                 scale: 1,
-                highlightItem: 0,
                 hasSelectorCheckbox: primitives.Enabled.False,
                 defaultTemplateName: "contactTemplate",
                 templates: [
                     self.getContactTemplate(responsible),
                     self.getcontactTemplateDashed(responsible),
-                    self.getContactTemplateResponsible(responsible)
+                    self.getContactTemplateResponsible(responsible),
+                    self.getcontactTemplateDashedResponsible(responsible)
                   ],
                 onItemRender: self.onTemplateRender,
                 items: items,
