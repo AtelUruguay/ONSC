@@ -19,5 +19,5 @@
               action="onsc_docket_regime_action"
               parent="onsc_docket_config_menu"
               groups="onsc_catalog.group_catalog_configurador_servicio_civil"
-              sequence="1"/>
+              sequence="10"/>
 </odoo>
