@@ -12,6 +12,7 @@ ONSC - Legajo
     'depends': ['onsc_base', 'onsc_catalog'],
     'data': [
         'security/ir.model.access.csv',
+        'data/ir_cron_data.xml',
         'views/catalogs/onsc_docket_emergency_views.xml',
         'views/catalogs/onsc_docket_health_provider_views.xml',
         'views/catalogs/onsc_docket_document_type_views.xml',
