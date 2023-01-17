@@ -12,8 +12,8 @@ class ONSCDocketCommissionRegime(models.Model):
     name = fields.Char(string='Descripción', required=True)
     code = fields.Char(string='Código', required=True)
     cgn_code = fields.Char(string='Código CGN')
-    date_from = fields.Date(string='Fecha desde')
-    date_to = fields.Date(string='Fecha hasta')
+    start_date = fields.Date(string="Fecha desde")
+    end_date = fields.Date(string="Fecha hasta")
     date_change = fields.Date(string='Fecha de cambio')
     active = fields.Boolean('Activo', default=True)
 
@@ -25,18 +25,12 @@ class ONSCDocketCommissionRegime(models.Model):
 
     @api.onchange('start_date')
     def onchange_start_date(self):
-        if self.start_date and self.start_date > fields.Date.today():
-            self.start_date = False
-            return warning_response(_(u"La fecha desde debe ser menor que la fecha hasta"))
         if self.start_date and self.end_date and self.end_date < self.start_date:
             self.start_date = False
-            return warning_response(_(u"La fecha de desde no puede ser mayor que la fecha de hasta"))
+            return warning_response(_(u"La fecha de desde no puede ser mayor que la fecha hasta"))
 
     @api.onchange('end_date')
     def onchange_end_date(self):
-        if self.end_date and self.end_date > fields.Date.today():
-            self.end_date = False
-            return warning_response(_(u"La fecha de hasta debe ser menor que la fecha desde"))
         if self.end_date and self.start_date and self.end_date < self.start_date:
             self.end_date = False
-            return warning_response(_(u"La fecha de hasta no puede ser menor que la fecha de desde"))
+            return warning_response(_(u"La fecha de hasta no puede ser menor que la fecha desde"))

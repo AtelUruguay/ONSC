@@ -8,8 +8,8 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="date_from" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="date_to" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="start_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="end_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                 <field name="date_change" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                 <field name="active" invisible="1"/>
             </tree>
@@ -26,8 +26,8 @@
                             <field name="name"/>
                             <field name="code"/>
                             <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                            <field name="date_from" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                            <field name="date_to" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                            <field name="start_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                            <field name="end_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                             <field name="date_change" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -44,8 +44,8 @@
                 <field name="name"/>
                 <field name="code"/>
                 <field name="cgn_code"/>
-                <field name="date_from"/>
-                <field name="date_to"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
                 <field name="date_change"/>
             </search>
         </field>
