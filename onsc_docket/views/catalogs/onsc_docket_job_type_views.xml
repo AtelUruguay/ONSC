@@ -4,7 +4,7 @@
         <field name="name">onsc.docket.job.type.tree</field>
         <field name="model">onsc.docket.job.type</field>
         <field name="arch" type="xml">
-            <tree string="Tipo de Puesto">
+            <tree string="Tipo de puesto">
                 <field name="name"/>
                 <field name="is_uo_responsible" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                 <field name="role_id" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
@@ -16,7 +16,7 @@
         <field name="name">onsc.docket.job.type.form</field>
         <field name="model">onsc.docket.job.type</field>
         <field name="arch" type="xml">
-            <form string="Tipo de Puesto">
+            <form string="Tipo de puesto">
                 <sheet>
                     <group>
                         <group>
@@ -34,7 +34,7 @@
         <field name="name">onsc.docket.job.type.search</field>
         <field name="model">onsc.docket.job.type</field>
         <field name="arch" type="xml">
-            <search string="Tipo de Puesto">
+            <search string="Tipo de puesto">
                 <field name="name"/>
                 <field name="is_uo_responsible"/>
                 <field name="role_id"/>
