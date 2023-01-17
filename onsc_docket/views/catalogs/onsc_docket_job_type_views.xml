@@ -42,7 +42,7 @@
         </field>
     </record>
     <record id="onsc_docket_job_type_action" model="ir.actions.act_window">
-        <field name="name">Tipo de plaza</field>
+        <field name="name">Tipo de puesto</field>
         <field name="res_model">onsc.docket.job.type</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">

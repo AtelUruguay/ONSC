@@ -16,7 +16,6 @@ ONSC - Legajo
         'data/onsc_docket_state_square_data.xml',
         'data/onsc_docket_reason_extinction_commission_data.xml',
         'data/onsc_docket_commission_regime_data.xml',
-        'views/catalogs/onsc_catalog_base_views.xml',
         'views/catalogs/onsc_docket_emergency_views.xml',
         'views/catalogs/onsc_docket_health_provider_views.xml',
         'views/catalogs/onsc_docket_document_type_views.xml',
