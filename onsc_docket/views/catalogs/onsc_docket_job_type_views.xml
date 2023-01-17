@@ -23,7 +23,7 @@
                             <field name="name" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                             <field name="is_uo_responsible"
                                    groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                            <field name="role_ids" widget="many2many_tags"/>
+                            <field name="role_ids" widget="many2many_tags" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                             <field name="active" invisible="1"/>
                         </group>
                     </group>
