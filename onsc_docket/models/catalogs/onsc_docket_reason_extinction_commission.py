@@ -27,10 +27,10 @@ class ONSCDocketReasonExtinctionCommission(models.Model):
     def onchange_start_date(self):
         if self.start_date and self.end_date and self.end_date < self.start_date:
             self.start_date = False
-            return warning_response(_(u"La fecha de desde no puede ser mayor que la fecha hasta"))
+            return warning_response(_(u"La fecha desde no puede ser mayor que la fecha hasta"))
 
     @api.onchange('end_date')
     def onchange_end_date(self):
         if self.end_date and self.start_date and self.end_date < self.start_date:
             self.end_date = False
-            return warning_response(_(u"La fecha de hasta no puede ser menor que la fecha desde"))
+            return warning_response(_(u"La fecha hasta no puede ser menor que la fecha desde"))
