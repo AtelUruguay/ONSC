@@ -13,5 +13,5 @@ class ONSCDocketJobType(models.Model):
     active = fields.Boolean('Activo', default=True)
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name)',u'El nombre del tipo del puesto debe ser único'),
+        ('name_uniq', 'unique(name)', u'El nombre del tipo del puesto debe ser único'),
     ]

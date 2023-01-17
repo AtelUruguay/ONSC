@@ -2,8 +2,8 @@
 
 from odoo import fields, models, api, _
 
-
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
 
 class ONSCDocketCommissionRegime(models.Model):
     _name = 'onsc.docket.commission.regime'
@@ -41,4 +41,3 @@ class ONSCDocketCommissionRegime(models.Model):
         if self.end_date and self.start_date and self.end_date < self.start_date:
             self.end_date = False
             return warning_response(_(u"La fecha de hasta no puede ser menor que la fecha de desde"))
-

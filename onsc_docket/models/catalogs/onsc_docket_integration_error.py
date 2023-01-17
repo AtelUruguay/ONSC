@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api, _
+from odoo import fields, models
+
 
 class ONSCDocketIntegrationError(models.Model):
     _name = 'onsc.docket.integration.error'
