@@ -12,8 +12,8 @@ class ONSCDocketReasonExtinctionCommission(models.Model):
     name = fields.Char(string='Descripción', required=True)
     code = fields.Char(string='Código', required=True)
     cgn_code = fields.Char(string='Código CGN')
-    start_date = fields.Date(string="Fecha desde")
-    end_date = fields.Date(string="Fecha hasta")
+    start_date = fields.Date(string='Fecha desde')
+    end_date = fields.Date(string='Fecha hasta')
     date_change = fields.Date(string='Fecha de cambio')
     active = fields.Boolean('Activo', default=True)
 
