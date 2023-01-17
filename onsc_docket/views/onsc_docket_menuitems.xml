@@ -38,4 +38,36 @@
               parent="onsc_docket_config_menu"
               groups="onsc_catalog.group_catalog_configurador_servicio_civil"
               sequence="5"/>
+    <menuitem id="onsc_docket_state_square_menu"
+                name="Estados de la plaza"
+                action="onsc_docket_state_square_action"
+                parent="onsc_docket_config_menu"
+                groups="onsc_catalog.group_catalog_configurador_servicio_civil"
+                sequence="6"/>
+    <menuitem id="onsc_docket_integration_error_menu"
+              name="Errores de integración"
+              action="onsc_docket_integration_error_action"
+              parent="onsc_docket_config_menu"
+              groups="onsc_catalog.group_catalog_configurador_servicio_civil"
+              sequence="7"/>
+    <menuitem id="onsc_docket_reason_extinction_commission_menu"
+              name="Motivos extinción de la comisión"
+              action="onsc_docket_reason_extinction_commission_action"
+              parent="onsc_docket_config_menu"
+              groups="onsc_catalog.group_catalog_configurador_servicio_civil"
+              sequence="8"/>
+    <menuitem id="onsc_docket_commission_regime_menu"
+              name="Régimen comisión"
+              action="onsc_docket_commission_regime_action"
+              parent="onsc_docket_config_menu"
+              groups="onsc_catalog.group_catalog_configurador_servicio_civil"
+              sequence="9"/>
+
+    <menuitem id="onsc_docket_job_type_menu"
+              name="Tipos de Puesto"
+              action="onsc_docket_job_type_action"
+              parent="onsc_docket_config_menu"
+              groups="onsc_catalog.group_catalog_configurador_servicio_civil"
+              sequence="10"/>
+
 </odoo>

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_docket_reason_extinction_commission_view_tree" model="ir.ui.view">
+        <field name="name">onsc.docket.reason.extinction.commission.tree</field>
+        <field name="model">onsc.docket.reason.extinction.commission</field>
+        <field name="arch" type="xml">
+            <tree string="Motivo extinción de la comisión">
+                <field name="description"/>
+                <field name="code"/>
+                <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="date_from" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="date_to" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="date_change" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="onsc_docket_reason_extinction_commission_view_form" model="ir.ui.view">
+        <field name="name">onsc.docket.reason.extinction.commission.form</field>
+        <field name="model">onsc.docket.reason.extinction.commission</field>
+        <field name="arch" type="xml">
+            <form string="Motivo extinción de la comisión">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="description"/>
+                            <field name="code"/>
+                            <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                            <field name="date_from" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                            <field name="date_to" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                            <field name="date_change" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="onsc_docket_reason_extinction_commission_view_search" model="ir.ui.view">
+        <field name="name">onsc.docket.reason.extinction.commission.search</field>
+        <field name="model">onsc.docket.reason.extinction.commission</field>
+        <field name="arch" type="xml">
+            <search string="Motivo extinción de la comisión">
+                <field name="description"/>
+                <field name="code"/>
+                <field name="cgn_code"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="date_change"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_docket_reason_extinction_commission_action" model="ir.actions.act_window">
+        <field name="name">Motivo extinción de la comisión</field>
+        <field name="res_model">onsc.docket.reason.extinction.commission</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo motivo de extinción de la comisión
+            </p>
+        </field>
+    </record>
+</odoo>
