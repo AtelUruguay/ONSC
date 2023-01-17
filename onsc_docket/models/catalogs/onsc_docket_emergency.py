@@ -10,7 +10,7 @@ class ONSCDocketEmergency(models.Model):
     code = fields.Char(u"Código", required=True)
     name = fields.Char("Nombre de la emergencia", required=True)
     phone = fields.Char(u"Teléfono")
-    active = fields.Boolean('Active', default=True)
+    active = fields.Boolean('Activo', default=True)
 
     _sql_constraints = [
         ('code_uniq', 'unique(code)', u'El código de la emergencia debe ser único'),
