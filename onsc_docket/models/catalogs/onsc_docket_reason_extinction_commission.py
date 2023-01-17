@@ -11,7 +11,7 @@ class ONSCDocketReasonExtinctionCommission(models.Model):
     _rec_name = 'description'
 
     description = fields.Char(string='Descripción', required=True)
-    code = fields.Char(string='Código')
+    code = fields.Char(string='Código', required=True)
     cgn_code = fields.Char(string='Código CGN')
     date_from = fields.Date(string='Fecha desde')
     date_to = fields.Date(string='Fecha hasta')
