@@ -4,8 +4,8 @@
         <field name="name">onsc.docket.reason.extinction.commission.tree</field>
         <field name="model">onsc.docket.reason.extinction.commission</field>
         <field name="arch" type="xml">
-            <tree string="Motivo extinción de la comisión">
-                <field name="description"/>
+            <tree string="Motivos extinción de la comisión">
+                <field name="name"/>
                 <field name="code"/>
                 <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                 <field name="date_from" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
@@ -19,11 +19,11 @@
         <field name="name">onsc.docket.reason.extinction.commission.form</field>
         <field name="model">onsc.docket.reason.extinction.commission</field>
         <field name="arch" type="xml">
-            <form string="Motivo extinción de la comisión">
+            <form string="Motivos extinción de la comisión">
                 <sheet>
                     <group>
                         <group>
-                            <field name="description"/>
+                            <field name="name"/>
                             <field name="code"/>
                             <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                             <field name="date_from" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
@@ -40,8 +40,8 @@
         <field name="name">onsc.docket.reason.extinction.commission.search</field>
         <field name="model">onsc.docket.reason.extinction.commission</field>
         <field name="arch" type="xml">
-            <search string="Motivo extinción de la comisión">
-                <field name="description"/>
+            <search string="Motivos extinción de la comisión">
+                <field name="name"/>
                 <field name="code"/>
                 <field name="cgn_code"/>
                 <field name="date_from"/>
@@ -51,7 +51,7 @@
         </field>
     </record>
     <record id="onsc_docket_reason_extinction_commission_action" model="ir.actions.act_window">
-        <field name="name">Motivo extinción de la comisión</field>
+        <field name="name">Motivos extinción de la comisión</field>
         <field name="res_model">onsc.docket.reason.extinction.commission</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">

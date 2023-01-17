@@ -4,7 +4,7 @@
         <field name="name">onsc.docket.integration.error.tree</field>
         <field name="model">onsc.docket.integration.error</field>
         <field name="arch" type="xml">
-            <tree string="Error de integración">
+            <tree string="Errores de integración">
                 <field name="integration_code"/>
                 <field name="code_error"/>
                 <field name="description"/>
@@ -16,7 +16,7 @@
         <field name="name">onsc.docket.integration.error.form</field>
         <field name="model">onsc.docket.integration.error</field>
         <field name="arch" type="xml">
-            <form string="Error de integración">
+            <form string="Errores de integración">
                 <sheet>
                     <group>
                         <group>
@@ -34,7 +34,7 @@
         <field name="name">onsc.docket.integration.error.search</field>
         <field name="model">onsc.docket.integration.error</field>
         <field name="arch" type="xml">
-            <search string="Error de integración">
+            <search string="Errores de integración">
                 <field name="integration_code"/>
                 <field name="code_error"/>
                 <field name="description"/>
@@ -42,7 +42,7 @@
         </field>
     </record>
     <record id="onsc_docket_integration_error_action" model="ir.actions.act_window">
-        <field name="name">Error de integración</field>
+        <field name="name">Errores de integración</field>
         <field name="res_model">onsc.docket.integration.error</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">

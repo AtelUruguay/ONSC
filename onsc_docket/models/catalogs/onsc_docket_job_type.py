@@ -9,7 +9,7 @@ class ONSCDocketJobType(models.Model):
 
     name = fields.Char(string='Nombre del tipo de puesto', required=True)
     is_uo_responsible = fields.Boolean(string='Es responsable UO')
-    role_id = fields.Many2one('res.groups', string='Rol')
+    role_ids = fields.Many2many('res.groups', string='Roles')
     active = fields.Boolean('Activo', default=True)
 
     _sql_constraints = [

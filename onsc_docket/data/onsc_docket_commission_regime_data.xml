@@ -1,82 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
-        <record id="onsc_docket_1" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_1" model="onsc.docket.commission.regime">
             <field name="code">1</field>
-            <field name="description">Comisión por traslado de cónyuge o concubino Art. 35 Ley 18.719</field>
+            <field name="name">Comisión por traslado de cónyuge o concubino Art. 35 Ley 18.719</field>
         </record>
-        <record id="onsc_docket_2" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_2" model="onsc.docket.commission.regime">
             <field name="code">2</field>
-            <field name="description">Comisión por tareas de asistencia directa a Presidente, Vicepresidente, Ministros,
+            <field name="name">Comisión por tareas de asistencia directa a Presidente, Vicepresidente, Ministros,
                 Subsecretarios y Legisladores Art. 67 Ley 17.556 y Art. 32 Ley 15851 en la redacción dada por Art. 13
                 Ley 17.930
             </field>
         </record>
-        <record id="onsc_docket_3" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_3" model="onsc.docket.commission.regime">
             <field name="code">3</field>
-            <field name="description">Comisión por tareas de asistencia directa a Intendentes Art. 47 Ley 18.046</field>
+            <field name="name">Comisión por tareas de asistencia directa a Intendentes Art. 47 Ley 18.046</field>
         </record>
-        <record id="onsc_docket_4" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_4" model="onsc.docket.commission.regime">
             <field name="code">4</field>
-            <field name="description">Pases a la Presidencia de la República Art. 31 Ley 13.640, Art. 29 Decreto Ley 14.106 y
+            <field name="name">Pases a la Presidencia de la República Art. 31 Ley 13.640, Art. 29 Decreto Ley 14.106 y
                 Art. 91 Ley 14.189
             </field>
         </record>
-        <record id="onsc_docket_5" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_5" model="onsc.docket.commission.regime">
             <field name="code">5</field>
-            <field name="description">Pases en comisión a EX Presidentes Art. 1 Decreto 595/993</field>
+            <field name="name">Pases en comisión a EX Presidentes Art. 1 Decreto 595/993</field>
         </record>
-        <record id="onsc_docket_6" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_6" model="onsc.docket.commission.regime">
             <field name="code">6</field>
-            <field name="description">Comisiones de Servicio dentro del Inciso Art. 16 Ley 17.930</field>
+            <field name="name">Comisiones de Servicio dentro del Inciso Art. 16 Ley 17.930</field>
         </record>
-        <record id="onsc_docket_7" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_7" model="onsc.docket.commission.regime">
             <field name="code">7</field>
-            <field name="description">Comisiones a la Dirección General de Aduanas Art. 166 Ley 17.296</field>
+            <field name="name">Comisiones a la Dirección General de Aduanas Art. 166 Ley 17.296</field>
         </record>
-        <record id="onsc_docket_8" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_8" model="onsc.docket.commission.regime">
             <field name="code">8</field>
-            <field name="description">Comisiones a la Unidad Reguladora de Servicios de Comunicaciones Art. 1 Inc. 1 y 2 Ley
+            <field name="name">Comisiones a la Unidad Reguladora de Servicios de Comunicaciones Art. 1 Inc. 1 y 2 Ley
                 17.820
             </field>
         </record>
-        <record id="onsc_docket_9" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_9" model="onsc.docket.commission.regime">
             <field name="code">9</field>
-            <field name="description">Comisiones a la Unidad Reguladora de Servicios de Agua y Energía Art. 16 Inc. 1 y 2 Ley
+            <field name="name">Comisiones a la Unidad Reguladora de Servicios de Agua y Energía Art. 16 Inc. 1 y 2 Ley
                 17.598
             </field>
         </record>
-        <record id="onsc_docket_10" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_10" model="onsc.docket.commission.regime">
             <field name="code">10</field>
-            <field name="description">Comisiones Adscriptos a Directores Generales de Secretaría Art 9 Ley 16.320</field>
+            <field name="name">Comisiones Adscriptos a Directores Generales de Secretaría Art 9 Ley 16.320</field>
         </record>
-        <record id="onsc_docket_11" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_11" model="onsc.docket.commission.regime">
             <field name="code">11</field>
-            <field name="description">Comisiones a la Corporación de Ahorro Bancario Art. 54 Ley 18.401</field>
+            <field name="name">Comisiones a la Corporación de Ahorro Bancario Art. 54 Ley 18.401</field>
         </record>
-        <record id="onsc_docket_12" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_12" model="onsc.docket.commission.regime">
             <field name="code">12</field>
-            <field name="description">Pase anticipado entrante de Org. Externo a AC.</field>
+            <field name="name">Pase anticipado entrante de Org. Externo a AC.</field>
         </record>
-        <record id="onsc_docket_13" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_13" model="onsc.docket.commission.regime">
             <field name="code">13</field>
-            <field name="description">Comisión de Servicio fuera del Inciso con destino a Incisos de AC (Ref. Art. 40, Ley
+            <field name="name">Comisión de Servicio fuera del Inciso con destino a Incisos de AC (Ref. Art. 40, Ley
                 16.104)
             </field>
         </record>
-        <record id="onsc_docket_14" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_14" model="onsc.docket.commission.regime">
             <field name="code">14</field>
-            <field name="description">Comisión de Servicio fuera del Inciso con destino distinto a Incisos de AC (Ref.Art.13,
+            <field name="name">Comisión de Servicio fuera del Inciso con destino distinto a Incisos de AC (Ref.Art.13,
                 Ley 19.121)
             </field>
         </record>
-        <record id="onsc_docket_15" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_15" model="onsc.docket.commission.regime">
             <field name="code">15</field>
-            <field name="description">Otros motivos</field>
+            <field name="name">Otros motivos</field>
         </record>
-        <record id="onsc_docket_16" model="onsc.docket.commission.regime">
+        <record id="onsc_docket_commission_regime_16" model="onsc.docket.commission.regime">
             <field name="code">16</field>
-            <field name="description">Actividad Comisionada Ley 19.121 Art 13</field>
+            <field name="name">Actividad Comisionada Ley 19.121 Art 13</field>
         </record>
 
 

@@ -5,7 +5,7 @@
         <field name="model">onsc.docket.commission.regime</field>
         <field name="arch" type="xml">
             <tree string="Régimen de la comisión">
-                <field name="description"/>
+                <field name="name"/>
                 <field name="code"/>
                 <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                 <field name="date_from" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
@@ -23,7 +23,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="description"/>
+                            <field name="name"/>
                             <field name="code"/>
                             <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                             <field name="date_from" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
@@ -41,7 +41,7 @@
         <field name="model">onsc.docket.commission.regime</field>
         <field name="arch" type="xml">
             <search string="Régimen de la comisión">
-                <field name="description"/>
+                <field name="name"/>
                 <field name="code"/>
                 <field name="cgn_code"/>
                 <field name="date_from"/>

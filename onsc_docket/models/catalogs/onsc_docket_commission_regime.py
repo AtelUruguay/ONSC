@@ -8,9 +8,8 @@ from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_respons
 class ONSCDocketCommissionRegime(models.Model):
     _name = 'onsc.docket.commission.regime'
     _description = 'Régimen comisión'
-    _rec_name = 'description'
 
-    description = fields.Char(string='Descripción', required=True)
+    name = fields.Char(string='Descripción', required=True)
     code = fields.Char(string='Código', required=True)
     cgn_code = fields.Char(string='Código CGN')
     date_from = fields.Date(string='Fecha desde')
@@ -20,7 +19,7 @@ class ONSCDocketCommissionRegime(models.Model):
 
     _sql_constraints = [
         ('code_uniq', 'unique(code)', u'El código del motivo extinción de la comisión debe ser único'),
-        ('description_uniq', 'unique(description)',
+        ('name_uniq', 'unique(name)',
          u'La descripción del motivo extinción de la comisión debe ser única'),
     ]
 

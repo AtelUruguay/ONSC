@@ -4,7 +4,7 @@
         <field name="name">onsc.docket.state.square.tree</field>
         <field name="model">onsc.docket.state.square</field>
         <field name="arch" type="xml">
-            <tree string="Estado de la plaza" editable="top">
+            <tree string="Estados de las plazas" editable="top">
                 <field name="code"/>
                 <field name="name"/>
                 <field name="active" invisible="1"/>
@@ -15,7 +15,7 @@
         <field name="name">onsc.docket.state.square.form</field>
         <field name="model">onsc.docket.state.square</field>
         <field name="arch" type="xml">
-            <form string="Estado de la plaza">
+            <form string="Estados de las plazas">
                 <sheet>
                     <group>
                         <group>
@@ -32,14 +32,14 @@
         <field name="name">onsc.docket.state.square.search</field>
         <field name="model">onsc.docket.state.square</field>
         <field name="arch" type="xml">
-            <search string="Estado de la plaza">
+            <search string="Estados de las plazas">
                 <field name="code"/>
                 <field name="name"/>
             </search>
         </field>
     </record>
     <record id="onsc_docket_state_square_action" model="ir.actions.act_window">
-        <field name="name">Estado de la plaza</field>
+        <field name="name">Estados de la plazas</field>
         <field name="res_model">onsc.docket.state.square</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
