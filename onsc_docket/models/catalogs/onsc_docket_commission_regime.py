@@ -18,9 +18,9 @@ class ONSCDocketCommissionRegime(models.Model):
     active = fields.Boolean('Activo', default=True)
 
     _sql_constraints = [
-        ('code_uniq', 'unique(code)', u'El código del motivo extinción de la comisión debe ser único'),
+        ('code_uniq', 'unique(code)', u'El código del régimen comisión debe ser único'),
         ('name_uniq', 'unique(name)',
-         u'La descripción del motivo extinción de la comisión debe ser única'),
+         u'La descripción del régimen comisión debe ser única'),
     ]
 
     @api.onchange('start_date')

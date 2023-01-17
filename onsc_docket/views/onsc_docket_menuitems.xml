@@ -64,7 +64,7 @@
               sequence="9"/>
 
     <menuitem id="onsc_docket_job_type_menu"
-              name="Tipos de puesto"
+              name="Tipos de puestos"
               action="onsc_docket_job_type_action"
               parent="onsc_docket_config_menu"
               groups="onsc_catalog.group_catalog_configurador_servicio_civil"

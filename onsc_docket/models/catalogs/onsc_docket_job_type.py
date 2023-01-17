@@ -8,7 +8,7 @@ class ONSCDocketJobType(models.Model):
     _description = 'Tipo de Puesto'
 
     name = fields.Char(string='Nombre del tipo de puesto', required=True)
-    is_uo_responsible = fields.Boolean(string='Es responsable UO')
+    is_uo_manager = fields.Boolean(string='Es responsable UO')
     role_ids = fields.Many2many('res.groups', string='Roles', required=True)
     active = fields.Boolean('Activo', default=True)
 
