@@ -8,7 +8,7 @@
                 <group>
                     <field name="date"/>
                     <field name="inciso_id"
-                           context="{'as_of_date': date}"
+                           context="{'as_of_date': date, 'find_history': True}"
                            required="1"
                            options="{'no_create': True}">
                         <tree>
@@ -19,7 +19,7 @@
                         </tree>
                     </field>
                     <field name="operating_unit_id"
-                           context="{'as_of_date': date}"
+                           context="{'as_of_date': date, 'find_history': True}"
                            required="1"
                            domain="[('inciso_id', '=', inciso_id)]"
                            options="{'no_create': True}"/>
