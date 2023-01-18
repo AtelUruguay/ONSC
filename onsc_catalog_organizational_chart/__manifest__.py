@@ -5,7 +5,7 @@
     'summary': 'ONSC - HR Organizational Chart',
     'description': 'ONSC - HR Organizational Chart',
     'category': 'ONSC',
-    'depends': ['hr', 'onsc_catalog'],
+    'depends': ['hr', 'onsc_catalog', 'model_history'],
     'data': [
         'security/onsc_catalog_organizational_chart_security.xml',
         'security/ir.model.access.csv',
