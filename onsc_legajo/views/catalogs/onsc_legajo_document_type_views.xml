@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="onsc_legajo_document_type_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.document.type.search</field>
+        <field name="model">onsc.legajo.document.type</field>
+        <field name="arch" type="xml">
+            <search string="Tipos de documentos">
+                <field name="name"/>
+                <field name="description"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_legajo_document_type_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.document.type.tree</field>
+        <field name="model">onsc.legajo.document.type</field>
+        <field name="arch" type="xml">
+            <tree string="Tipos de documentos" editable="top">
+                <field name="name"/>
+                <field name="description" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+    <record id="onsc_legajo_document_type_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.document.type.form</field>
+        <field name="model">onsc.legajo.document.type</field>
+        <field name="arch" type="xml">
+            <form string="Tipos de documentos">
+                <header/>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="description"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id='onsc_legajo_document_type_action' model='ir.actions.act_window'>
+        <field name="name">Tipos de documentos</field>
+        <field name="res_model">onsc.legajo.document.type</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo tipo de documento
+            </p>
+        </field>
+    </record>
+</odoo>
