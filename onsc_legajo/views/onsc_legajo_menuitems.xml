@@ -4,6 +4,11 @@
               name="Legajos"
               web_icon="onsc_catalog,static/description/icon.png"
               sequence="4"/>
+    <menuitem id="onsc_hr_employee_menu"
+              name="Empleados"
+              action="onsc_hr_employee_action"
+              parent="onsc_legajo_root_menu"
+              sequence="1"/>
     <menuitem id="onsc_legajo_config_menu"
               name="Catálogos"
               parent="onsc_legajo_root_menu"

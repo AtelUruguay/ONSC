@@ -28,6 +28,7 @@ ONSC - Legajo
         'views/catalogs/onsc_legajo_commission_regime_views.xml',
         'views/catalogs/onsc_legajo_job_type_views.xml',
         'views/catalogs/onsc_legajo_base_views.xml',
+        'views/onsc_cv_hr_employee_views.xml',
         'views/onsc_legajo_menuitems.xml',
     ],
     'demo': [],
