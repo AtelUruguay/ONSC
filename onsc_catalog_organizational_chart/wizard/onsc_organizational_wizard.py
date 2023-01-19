@@ -36,7 +36,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
         self.department_id = False
 
     def action_show_org(self):
-        inciso_withhistory = self.inciso_id.with_context(find_history = True, as_of_date=self.date)
+        inciso_withhistory = self.inciso_id.with_context(find_history=True, as_of_date=self.date)
         operating_unit_withhistory = self.operating_unit_id.with_context(find_history=True, as_of_date=self.date)
         if inciso_withhistory:
             inciso_name = inciso_withhistory.name_get()[0][1]
@@ -58,6 +58,6 @@ class ONSCOrganizationalWizard(models.TransientModel):
                 'responsible': self.responsible,
                 'end_date': self.date,
                 'inciso': inciso_name or '',
-                'ue':operating_unit_name or '',
+                'ue': operating_unit_name or '',
             },
         }
