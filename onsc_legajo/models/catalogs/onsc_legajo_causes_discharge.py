@@ -16,21 +16,26 @@ class ONSCLegajoCausesDischarge(models.Model):
     code_rve = fields.Char(u"Código RVE")
     description_rve = fields.Char(u"Descripción RVE")
     is_by_inciso = fields.Boolean(u"Por inciso")
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
+    inciso_ids = fields.Many2many('onsc.catalog.inciso', string='Incisos')
     is_require_extended = fields.Boolean(u"¿Requiere extendido?")
     causes_discharge_line_ids = fields.One2many("onsc.legajo.causes.discharge.line", "causes_discharge_id",
                                                 string="Motivos de causal de egreso extendido")
     active = fields.Boolean('Activo', default=True)
+
+    _sql_constraints = [
+        ('code_uniq', 'unique(code)', u'El código del causal de egreso debe ser único'),
+        ('name_uniq', 'unique(name)', u'El nombre del causal de egreso debe ser único'),
+    ]
 
     @api.onchange('is_require_extended')
     def onchange_require_extended(self):
         if not self.is_require_extended:
             self.causes_discharge_line_ids = [(5, 0, 0)]
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', u'El código del causal de egreso debe ser único'),
-        ('name_uniq', 'unique(name)', u'El nombre del causal de egreso debe ser único'),
-    ]
+    @api.onchange('is_by_inciso')
+    def onchange_is_by_inciso(self):
+        if not self.is_by_inciso:
+            self.inciso_ids = [(5, 0, 0)]
 
 
 class ONSCLegajoCausesDischargeLine(models.Model):
