@@ -36,6 +36,18 @@ class ONSCOrganizationalWizard(models.TransientModel):
         self.department_id = False
 
     def action_show_org(self):
+        inciso_withhistory = self.inciso_id.with_context(find_history=True, as_of_date=self.date)
+        operating_unit_withhistory = self.operating_unit_id.with_context(find_history=True, as_of_date=self.date)
+        if inciso_withhistory:
+            inciso_name = inciso_withhistory.name_get()[0][1]
+        else:
+            inciso_name = self.inciso_id.name
+        if operating_unit_withhistory:
+            operating_unit_name = operating_unit_withhistory.name_search(
+                args=[('id', '=', operating_unit_withhistory.id)])[0][1]
+        else:
+            operating_unit_name = self.operating_unit_id.name
+
         return {
             'type': 'ir.actions.client',
             'tag': 'organization_dashboard',
@@ -45,7 +57,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
                 'short_name': self.short_name,
                 'responsible': self.responsible,
                 'end_date': self.date,
-                'inciso': self.inciso_id.name or '',
-                'ue': self.operating_unit_id.name or '',
+                'inciso': inciso_name or '',
+                'ue': operating_unit_name or '',
             },
         }

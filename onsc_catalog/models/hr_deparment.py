@@ -70,6 +70,20 @@ class Department(models.Model):
     create_uid = fields.Many2one('res.users', 'Creado por', index=True, readonly=True)
     write_uid = fields.Many2one('res.users', string='Actualizado por', index=True, readonly=True)
 
+    complete_name = fields.Char('Complete Name',
+                                compute='_compute_complete_name',
+                                recursive=True,
+                                store=True,
+                                history=True)
+
+    @api.depends('name', 'parent_id.complete_name')
+    def _compute_complete_name(self):
+        for department in self:
+            if department.parent_id:
+                department.complete_name = '%s / %s' % (department.parent_id.complete_name, department.name)
+            else:
+                department.complete_name = department.name
+
     @api.depends('function_nature')
     def _compute_function_nature_form(self):
         for record in self:
