@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
-        <record id="onsc_hr_employee_tree" model="ir.ui.view">
-            <field name="name">onsc.hr.employee.tree</field>
+        <record id="onsc_legajo_hr_employee_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.hr.employee.tree</field>
             <field name="model">hr.employee</field>
             <field name="arch" type="xml">
                 <tree string="Empleados">
@@ -17,8 +17,8 @@
                 </tree>
             </field>
         </record>
-        <record id="onsc_hr_employee_form" model="ir.ui.view">
-            <field name="name">onsc.hr.employee.form</field>
+        <record id="onsc_legajo_hr_employee_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.hr.employee.form</field>
             <field name="model">hr.employee</field>
             <field name="arch" type="xml">
                 <form string="Empleados">
@@ -57,6 +57,7 @@
                                        groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                                 <field name="photo_updated_date" required="1"
                                        groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                                <field name="resource_id"/>
                             </group>
                         </group>
 
@@ -64,7 +65,7 @@
                 </form>
             </field>
         </record>
-        <record id='onsc_hr_employee_action' model='ir.actions.act_window'>
+        <record id='onsc_legajo_hr_employee_action' model='ir.actions.act_window'>
             <field name="name">Empleados</field>
             <field name="res_model">hr.employee</field>
             <field name="view_mode">tree,form</field>

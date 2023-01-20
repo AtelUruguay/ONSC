@@ -14,7 +14,7 @@ class HrEmployee(models.Model):
     _name = 'hr.employee'
     _inherit = ["hr.employee", 'onsc.contact.common.data']
 
-    full_name = fields.Char('Nombre',compute='_compute_cv_full_name', store=True)
+    full_name = fields.Char('Nombre',compute='_compute_full_name', store=True)
     first_name = fields.Char(string="Primer nombre")
     second_name = fields.Char(string="Segundo nombre")
     first_surname = fields.Char(string="Primer apellido")
@@ -30,7 +30,7 @@ class HrEmployee(models.Model):
     birthdate = fields.Date(string=u'Fecha de nacimiento')
 
     @api.depends('first_name', 'second_name', 'first_surname', 'second_surname')
-    def _compute_cv_full_name(self):
+    def _compute_full_name(self):
         for record in self:
             full_name = calc_full_name(record.first_name, record.second_name,
                                                      record.first_surname, record.second_surname)
