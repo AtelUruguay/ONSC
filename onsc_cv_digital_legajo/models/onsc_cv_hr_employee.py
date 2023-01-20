@@ -20,10 +20,7 @@ class HrEmployee(models.Model):
     second_name = fields.Char(string="Segundo nombre")
     first_surname = fields.Char(string="Primer apellido")
     second_surname = fields.Char(string="Segundo apellido")
-    photo_file = fields.Image(string='Documento digital: "foto de la/del funcionaria/o"', max_width=1920,
-                              max_height=1920)
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
-
     emissor_country_id = fields.Many2one('res.country', string=u'País emisor del documento', )
     document_type_id = fields.Many2one('onsc.cv.document.type', string=u'Tipo de documento', )
     nro_doc = fields.Char(string=u'Número de documento de identidad ')

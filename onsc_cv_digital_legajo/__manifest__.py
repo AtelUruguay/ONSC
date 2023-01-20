@@ -9,7 +9,7 @@ ONSC CV Digital - Legajo
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['onsc_cv_digital','hr'],
+    'depends': ['onsc_cv_digital', 'hr'],
     'data': [
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
