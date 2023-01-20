@@ -57,7 +57,6 @@
                                        groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                                 <field name="photo_updated_date" required="1"
                                        groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                                <field name="resource_id"/>
                             </group>
                         </group>
 
@@ -75,8 +74,8 @@
                 </p>
             </field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_hr_employee_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_hr_employee_form')})]"/>
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_hr_employee_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_hr_employee_form')})]"/>
         </record>
 
     </data>

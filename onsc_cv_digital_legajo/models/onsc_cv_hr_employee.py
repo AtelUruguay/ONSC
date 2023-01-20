@@ -10,11 +10,12 @@ def calc_full_name(first_name, second_name, last_name_1, last_name_2):
                    last_name_2]
     return ' '.join([x for x in name_values if x])
 
-class HrEmployee(models.Model):
-    _name = 'hr.employee'
-    _inherit = ["hr.employee", 'onsc.contact.common.data']
 
-    full_name = fields.Char('Nombre',compute='_compute_full_name', store=True)
+class HrEmployee(models.Model):
+    _name = "hr.employee"
+    _inherit = ['hr.employee', 'onsc.contact.common.data']
+
+    full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     first_name = fields.Char(string="Primer nombre")
     second_name = fields.Char(string="Segundo nombre")
     first_surname = fields.Char(string="Primer apellido")
@@ -33,7 +34,7 @@ class HrEmployee(models.Model):
     def _compute_full_name(self):
         for record in self:
             full_name = calc_full_name(record.first_name, record.second_name,
-                                                     record.first_surname, record.second_surname)
+                                       record.first_surname, record.second_surname)
             if full_name:
                 record.full_name = full_name
             else:
@@ -41,10 +42,11 @@ class HrEmployee(models.Model):
 
     @api.model
     def create(self, values):
+        full_name = calc_full_name(values.get('first_name'), values.get('second_name'),
+                                   values.get('first_surname'), values.get('second_surname'))
+        if full_name:
+            values['name'] = full_name
         res = super(HrEmployee, self).create(values)
-        # Actualizar los nombres en los registros con el campo calculado en caso que existan diferencias
-        if res.full_name and res.full_name != res.name:
-            res.name = res.full_name
         return res
 
     def write(self, values):
