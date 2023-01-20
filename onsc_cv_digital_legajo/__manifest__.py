@@ -14,7 +14,7 @@ ONSC CV Digital - Legajo
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
         'views/onsc_cv_digital_views.xml',
-        'views/onsc_legajo_hr_employee_views.xml',
+        'views/onsc_cv_hr_employee_views.xml',
     ],
     'demo': [],
     'installable': True,
