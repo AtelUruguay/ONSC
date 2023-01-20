@@ -59,7 +59,7 @@
                             <field name="is_by_inciso"/>
                             <field name="inciso_ids" widget="many2many_tags"
                                    attrs="{'invisible': [('is_by_inciso', '=', False)]}"
-                                   groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                                   groups="onsc_catalog.group_catalog_configurador_servicio_civil" options="{'no_create': True}"/>
                             <field name="is_require_extended"/>
                             <field name="active" invisible="1"/>
                         </group>
