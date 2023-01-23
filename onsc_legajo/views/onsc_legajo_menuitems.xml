@@ -44,12 +44,6 @@
                 parent="onsc_legajo_config_menu"
                 groups="onsc_legajo.group_legajo_configurador"
                 sequence="6"/>
-    <menuitem id="onsc_legajo_integration_error_menu"
-              name="Errores de integración"
-              action="onsc_legajo_integration_error_action"
-              parent="onsc_legajo_config_menu"
-              groups="onsc_legajo.group_legajo_configurador"
-              sequence="7"/>
     <menuitem id="onsc_legajo_reason_extinction_commission_menu"
               name="Motivos extinción de la comisión"
               action="onsc_legajo_reason_extinction_commission_action"
@@ -70,10 +64,16 @@
               groups="onsc_legajo.group_legajo_configurador"
               sequence="10"/>
 
-        <menuitem id="onsc_legajo_regime_menu"
-              name="Régimen"
-              action="onsc_legajo_regime_action"
-              parent="onsc_legajo_config_menu"
-              groups="onsc_legajo.group_legajo_configurador"
-              sequence="11"/>
+    <menuitem id="onsc_legajo_regime_menu"
+          name="Régimen"
+          action="onsc_legajo_regime_action"
+          parent="onsc_legajo_config_menu"
+          groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"
+          sequence="11"/>
+    <menuitem id="onsc_legajo_integration_error_menu"
+          name="Errores de integración"
+          action="onsc_legajo_integration_error_action"
+          parent="onsc_legajo_config_menu"
+          groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"
+          sequence="100"/>
 </odoo>
