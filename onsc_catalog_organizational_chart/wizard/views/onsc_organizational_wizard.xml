@@ -24,6 +24,7 @@
                            domain="[('inciso_id', '=', inciso_id)]"
                            options="{'no_create': True}"/>
                     <field name="department_id"
+                           context="{'as_of_date': date, 'find_history': True}"
                            domain="[('inciso_id', '=', inciso_id),('operating_unit_id', '=', operating_unit_id)]"
                            options="{'no_create': True}"/>
                     <field name="responsible"/>

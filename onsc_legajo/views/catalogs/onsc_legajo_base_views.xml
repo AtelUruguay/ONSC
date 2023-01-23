@@ -15,12 +15,12 @@
         <field name="model">onsc.legajo.regime</field>
         <field name="arch" type="xml">
             <tree string="Régimen" editable="top">
-                <field name="codigo" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="descripcion" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="codigo" groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion"/>
                 <field name="name"/>
-                <field name="ind_vencimiento" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="presupuesto" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="vigente" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="ind_vencimiento" groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                <field name="presupuesto" groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                <field name="vigente" groups="onsc_legajo.group_legajo_configurador_integracion"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>

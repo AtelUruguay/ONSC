@@ -5,7 +5,7 @@ from odoo import fields, models, api
 
 class ONSCLegajoRegime(models.Model):
     _name = 'onsc.legajo.regime'
-    _description = 'Regimen'
+    _description = 'Régimen'
 
     codigo = fields.Char(string=u"Código")
     descripcion = fields.Char(string=u"Descripción")

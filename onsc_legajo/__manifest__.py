@@ -11,6 +11,7 @@ ONSC - Legajo
     'category': 'ONSC',
     'depends': ['onsc_base', 'onsc_catalog'],
     'data': [
+        'security/onsc_legajo_security.xml',
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',
         'data/onsc_legajo_state_square_data.xml',
