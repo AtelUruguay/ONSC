@@ -21,10 +21,10 @@
             <tree string="Mecanismos de ingreso">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="start_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="end_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="change_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="is_call_number_required" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="start_date" groups="onsc_legajo.group_legajo_configurador"/>
+                <field name="end_date" groups="onsc_legajo.group_legajo_configurador"/>
+                <field name="change_date" groups="onsc_legajo.group_legajo_configurador"/>
+                <field name="is_call_number_required" groups="onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>

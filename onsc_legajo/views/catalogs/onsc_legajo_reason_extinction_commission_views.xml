@@ -7,10 +7,10 @@
             <tree string="Motivos extinción de la comisión">
                 <field name="name"/>
                 <field name="code"/>
-                <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="start_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="end_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                <field name="date_change" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                <field name="cgn_code" groups="onsc_legajo.group_legajo_configurador"/>
+                <field name="start_date" groups="onsc_legajo.group_legajo_configurador"/>
+                <field name="end_date" groups="onsc_legajo.group_legajo_configurador"/>
+                <field name="date_change" groups="onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -25,10 +25,10 @@
                         <group>
                             <field name="name"/>
                             <field name="code"/>
-                            <field name="cgn_code" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                            <field name="start_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                            <field name="end_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                            <field name="date_change" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                            <field name="cgn_code" groups="onsc_legajo.group_legajo_configurador"/>
+                            <field name="start_date" groups="onsc_legajo.group_legajo_configurador"/>
+                            <field name="end_date" groups="onsc_legajo.group_legajo_configurador"/>
+                            <field name="date_change" groups="onsc_legajo.group_legajo_configurador"/>
                             <field name="active" invisible="1"/>
                         </group>
                     </group>
