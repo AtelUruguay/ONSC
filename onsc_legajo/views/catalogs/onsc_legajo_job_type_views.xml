@@ -20,12 +20,12 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="name" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                            <field name="name" groups="onsc_legajo.group_legajo_configurador"/>
                             <field name="is_uo_manager"
                                    groups="onsc_legajo.group_legajo_configurador"/>
                             <field name="user_role_ids"
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                                   widget="many2many_tags" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                                   widget="many2many_tags" groups="onsc_legajo.group_legajo_configurador"/>
                             <field name="active" invisible="1"/>
                         </group>
                     </group>
