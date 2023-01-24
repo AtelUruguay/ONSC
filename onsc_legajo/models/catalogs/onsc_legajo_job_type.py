@@ -9,7 +9,7 @@ class ONSCLegajoJobType(models.Model):
 
     name = fields.Char(string='Nombre del tipo de puesto', required=True)
     is_uo_manager = fields.Boolean(string='Es responsable UO')
-    user_role_ids = fields.Many2many('res.users.role', string='Roles', required=True)
+    role_ids = fields.Many2many('res.groups', string='Roles', required=True)
     active = fields.Boolean('Activo', default=True)
 
     _sql_constraints = [
