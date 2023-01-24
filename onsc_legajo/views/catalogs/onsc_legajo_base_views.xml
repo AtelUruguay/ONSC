@@ -16,12 +16,12 @@
         <field name="model">onsc.legajo.regime</field>
         <field name="arch" type="xml">
             <tree string="Régimen" editable="top">
-                <field name="codigo" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                <field name="codigo" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="name"/>
-                <field name="ind_vencimiento" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="presupuesto" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="vigente" groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                <field name="ind_vencimiento" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="presupuesto" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="vigente" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -57,16 +57,16 @@
                 <field name="codPartida"/>
                 <field name="dsc1Id"
                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                       groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                       groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="dsc2Id"
                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                       groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                       groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="dsc3Id"
                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                       groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                       groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="dsc4Id"
                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                       groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                       groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -100,15 +100,15 @@
         <field name="arch" type="xml">
             <tree string="Normas" editable="top">
                 <field name="pk"/>
-                <field name="anioNorma" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="numeroNorma" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="articuloNorma" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="numeroLiteral" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="tipoNormaSigla" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="tipoNorma" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="fechaDerogacion" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="fechaVencimiento" groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                <field name="anioNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="numeroNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="articuloNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="numeroLiteral" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="tipoNormaSigla" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="tipoNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="fechaDerogacion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="fechaVencimiento" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
