@@ -8,7 +8,7 @@ class ONSCLegajoNorm(models.Model):
     _description = 'Norma'
     _rec_name = 'pk'
 
-    pk = fields.Char(string=u"Código", required=True)
+    pk = fields.Char(string=u"Código de la norma", required=True)
     anioNorma = fields.Integer(string=u"Año")
     numeroNorma = fields.Integer(string=u"Número")
     articuloNorma = fields.Integer(string=u"Artículo")
