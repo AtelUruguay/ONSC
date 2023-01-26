@@ -83,6 +83,3 @@ class HrJobRoleLine(models.Model):
         if self.job_id.end_date and self.end_date and self.job_id.end_date < self.end_date:
             self.end_date = False
             return warning_response(_(u"La fecha hasta no puede ser mayor que la fecha hasta del puesto"))
-
-
-
