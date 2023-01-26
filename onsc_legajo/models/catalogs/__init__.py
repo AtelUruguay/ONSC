@@ -10,4 +10,4 @@ from . import onsc_legajo_state_square
 from . import onsc_legajo_integration_error
 from . import onsc_legajo_reason_extinction_commission
 from . import onsc_legajo_commission_regime
-from . import onsc_legajo_job_type
+from . import onsc_legajo_security_job

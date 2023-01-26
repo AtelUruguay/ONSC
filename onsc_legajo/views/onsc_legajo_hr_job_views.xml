@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_hr_job_form_view" model="ir.ui.view">
+        <field name="name">onsc.legajo.hr.job.form</field>
+        <field name="model">hr.job</field>
+        <field name="priority" eval="2000"/>
+        <field name="arch" type="xml">
+            <form string="Puestos de trabajo">
+                <header>
+                    <field name="state" widget="statusbar" statusbar_visible="recruit,open"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name" placeholder="Gestor de Ventas"
+                                   attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="department_id" groups=""
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                        <field name="hr_employee_id"
+                               groups="onsc_legajo.group_legajo_configurador,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                        <field name="start_date"
+                               groups="onsc_legajo.group_legajo_configurador,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               required="True" attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                        <field name="end_date"
+                               groups="onsc_legajo.group_legajo_configurador,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                        <field name="active" invisible="1"/>
+                        <field name="hr_contract_id"
+                               groups="onsc_legajo.group_legajo_configurador,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                        <field name="security_job_id"
+                               groups="onsc_legajo.group_legajo_configurador,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                        <field name="company_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               invisible="1"/>
+                        <field name="is_read_only" invisible="1"/>
+                    </group>
+                    <notebook>
+                        <page string="Roles">
+                            <field name="role_ids"
+                                   groups="onsc_legajo.group_legajo_configurador,
+                                   onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                                   onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                                   nolabel="1">
+                                <tree editable="top">
+                                    <field name="user_role_id"
+                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                    <field name="start_date" required="True"/>
+                                    <field name="end_date"/>
+                                    <field name="creation_mode" readonly="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Descripción del puesto">
+                            <field name="description" options="{'collaborative': true}"
+                                   attrs="{'invisible': [('state', '!=', 'recruit')],'readonly': [('is_read_only', '=', True)]}"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" options="{'open_attachments': True}"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_hr_job_tree_view" model="ir.ui.view">
+        <field name="name">hr.job.tree</field>
+        <field name="model">hr.job</field>
+        <field name="arch" type="xml">
+            <tree string="Puestos de trabajo">
+                <field name="name"/>
+                <field name="department_id"
+                       groups="onsc_legajo.group_legajo_configurador,
+                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+                <field name="security_job_id"
+                       groups="onsc_legajo.group_legajo_configurador,
+                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+                <field name="start_date"
+                       groups="onsc_legajo.group_legajo_configurador,
+                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+                <field name="end_date"
+                       groups="onsc_legajo.group_legajo_configurador,
+                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
+                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_hr_job_action" model="ir.actions.act_window">
+        <field name="name">Puestos de trabajo</field>
+        <field name="res_model">hr.job</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo_hr_job_tree_view')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo_hr_job_form_view')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo puesto de trabajo
+            </p>
+        </field>
+    </record>
+
+
+</odoo>

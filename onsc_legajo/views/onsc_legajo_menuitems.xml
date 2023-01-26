@@ -4,6 +4,12 @@
               name="Legajos"
               web_icon="onsc_catalog,static/description/icon.png"
               sequence="4"/>
+    <menuitem id="onsc_legajo_hr_job_menu"
+              name="Puestos de trabajo"
+              parent="onsc_legajo_root_menu"
+              action="onsc_legajo_hr_job_action"
+              groups="onsc_legajo.group_legajo_configurador,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+              sequence="5"/>
     <menuitem id="onsc_legajo_config_menu"
               name="Catálogos"
               parent="onsc_legajo_root_menu"
@@ -39,11 +45,11 @@
               groups="onsc_legajo.group_legajo_configurador"
               sequence="5"/>
     <menuitem id="onsc_legajo_state_square_menu"
-                name="Estados de la plaza"
-                action="onsc_legajo_state_square_action"
-                parent="onsc_legajo_config_menu"
-                groups="onsc_legajo.group_legajo_configurador"
-                sequence="6"/>
+              name="Estados de la plaza"
+              action="onsc_legajo_state_square_action"
+              parent="onsc_legajo_config_menu"
+              groups="onsc_legajo.group_legajo_configurador"
+              sequence="6"/>
     <menuitem id="onsc_legajo_reason_extinction_commission_menu"
               name="Motivos extinción de la comisión"
               action="onsc_legajo_reason_extinction_commission_action"
@@ -57,23 +63,23 @@
               groups="onsc_legajo.group_legajo_configurador"
               sequence="9"/>
 
-    <menuitem id="onsc_legajo_job_type_menu"
-              name="Tipos de puestos"
-              action="onsc_legajo_job_type_action"
+    <menuitem id="onsc_legajo_security_job_menu"
+              name="Seguridad de puestos"
+              action="onsc_legajo_security_job_action"
               parent="onsc_legajo_config_menu"
               groups="onsc_legajo.group_legajo_configurador"
               sequence="10"/>
 
     <menuitem id="onsc_legajo_regime_menu"
-          name="Régimen"
-          action="onsc_legajo_regime_action"
-          parent="onsc_legajo_config_menu"
-          groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"
-          sequence="11"/>
+              name="Régimen"
+              action="onsc_legajo_regime_action"
+              parent="onsc_legajo_config_menu"
+              groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"
+              sequence="11"/>
     <menuitem id="onsc_legajo_integration_error_menu"
-          name="Errores de integración"
-          action="onsc_legajo_integration_error_action"
-          parent="onsc_legajo_config_menu"
-          groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"
-          sequence="100"/>
+              name="Errores de integración"
+              action="onsc_legajo_integration_error_action"
+              parent="onsc_legajo_config_menu"
+              groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"
+              sequence="100"/>
 </odoo>
