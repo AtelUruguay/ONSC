@@ -19,18 +19,22 @@
                         </h1>
                     </div>
                     <group>
-                        <field name="department_id" groups=""
+                        <field name="department_id"
+                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               required="True"
                                attrs="{'readonly': [('is_read_only', '=', True)]}"/>
                         <field name="hr_employee_id"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_read_only', '=', True)]}"
+                               required="True"
                                domain="[('department_id', '=', department_id)]" />
                         <field name="hr_contract_id"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_read_only', '=', True)]}"
+                               required="True"
                                domain="hr_contract_id_domain"/>
                         <field name="hr_contract_id_domain" invisible="1"/>
                         <field name="start_date"
