@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+<!--    REGIMEN-->
     <record id="onsc_legajo_regime_search" model="ir.ui.view">
         <field name="name">onsc.legajo.regime.search</field>
         <field name="model">onsc.legajo.regime</field>
@@ -15,12 +16,12 @@
         <field name="model">onsc.legajo.regime</field>
         <field name="arch" type="xml">
             <tree string="Régimen" editable="top">
-                <field name="codigo" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                <field name="codigo" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="name"/>
-                <field name="ind_vencimiento" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="presupuesto" groups="onsc_legajo.group_legajo_configurador_integracion"/>
-                <field name="vigente" groups="onsc_legajo.group_legajo_configurador_integracion"/>
+                <field name="ind_vencimiento" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="presupuesto" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="vigente" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -33,6 +34,175 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Crear un nuevo régimen
+            </p>
+        </field>
+    </record>
+
+    <!--PARTIDAS-->
+    <record id="onsc_legajo_budget_item_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.budget.item.search</field>
+        <field name="model">onsc.legajo.budget.item</field>
+        <field name="arch" type="xml">
+            <search string="Partidas">
+                <field name="codPartida"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_budget_item_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.budget.item.tree</field>
+        <field name="model">onsc.legajo.budget.item</field>
+        <field name="arch" type="xml">
+            <tree string="Partidas" editable="top">
+                <field name="codPartida"/>
+                <field name="dsc1Id"
+                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                       groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="dsc2Id"
+                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                       groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="dsc3Id"
+                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                       groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="dsc4Id"
+                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                       groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id='onsc_legajo_budget_item_action' model='ir.actions.act_window'>
+        <field name="name">Partidas</field>
+        <field name="res_model">onsc.legajo.budget.item</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva Partida
+            </p>
+        </field>
+    </record>
+
+    <!--NORMA-->
+    <record id="onsc_legajo_norm_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.norm.search</field>
+        <field name="model">onsc.legajo.norm</field>
+        <field name="arch" type="xml">
+            <search string="Normas">
+                <field name="pk"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_norm_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.norm.tree</field>
+        <field name="model">onsc.legajo.norm</field>
+        <field name="arch" type="xml">
+            <tree string="Normas" editable="top">
+                <field name="pk"/>
+                <field name="anioNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="numeroNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="articuloNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="numeroLiteral" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="tipoNormaSigla" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="tipoNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="fechaDerogacion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="fechaVencimiento" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id='onsc_legajo_norm_action' model='ir.actions.act_window'>
+        <field name="name">Normas</field>
+        <field name="res_model">onsc.legajo.norm</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva norma
+            </p>
+        </field>
+    </record>
+    
+    <!--OFICINA-->
+    <record id="onsc_legajo_office_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.office.search</field>
+        <field name="model">onsc.legajo.office</field>
+        <field name="arch" type="xml">
+            <search string="Oficinas">
+                <field name="code"/>
+                <field name="inciso" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="unidadEjecutora" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="programa" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="proyecto" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_office_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.office.tree</field>
+        <field name="model">onsc.legajo.office</field>
+        <field name="arch" type="xml">
+            <tree string="Oficinas">
+                <field name="code"/>
+                <field name="inciso" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="unidadEjecutora" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="programa" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="programaDescripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="proyecto" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="proyectoDescripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_office_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.office.form</field>
+        <field name="model">onsc.legajo.office</field>
+        <field name="arch" type="xml">
+            <form string="Oficinas">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="inciso"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                   groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="unidadEjecutora"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                   groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="programa" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="programaDescripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="proyecto" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="proyectoDescripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Jornadas retributivas" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador">
+                            <field name="jornada_retributiva_ids">
+                                <tree editable="top">
+                                    <field name="codigoJornada"/>
+                                    <field name="descripcionJornada"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_legajo_office_action' model='ir.actions.act_window'>
+        <field name="name">Oficinas</field>
+        <field name="res_model">onsc.legajo.office</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva officea
             </p>
         </field>
     </record>

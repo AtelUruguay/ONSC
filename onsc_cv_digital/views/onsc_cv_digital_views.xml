@@ -87,8 +87,7 @@
                             <field name="is_cv_uruguay_ci" invisible="1"/>
                             <field name="document_identity_file"
                                    filename="document_identity_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}"
-                                   attrs="{'required': [('is_cv_uruguay_ci','=',True)]}"/>
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
                             <div class="row" nolabel="1" colspan="2">
                                 <div class="alert alert-danger" role="alert" style="width:70%"
                                      attrs="{'invisible': [('nro_doc_documentary_validation_state', '!=', 'rejected')]}">
