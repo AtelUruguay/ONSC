@@ -166,8 +166,12 @@
                     <group>
                         <group>
                             <field name="code"/>
-                            <field name="inciso" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
-                            <field name="unidadEjecutora" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="inciso"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                   groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="unidadEjecutora"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                   groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
