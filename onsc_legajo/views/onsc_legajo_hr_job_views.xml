@@ -7,15 +7,14 @@
         <field name="arch" type="xml">
             <form string="Puestos de trabajo">
                 <header>
-                    <field name="state" widget="statusbar" statusbar_visible="recruit,open"/>
+
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box"/>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>
-                            <field name="name" placeholder="Gestor de Ventas"
-                                   attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                            <field name="name" attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         </h1>
                     </div>
                     <group>
@@ -23,34 +22,32 @@
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                required="True"
-                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
-                        <field name="hr_employee_id"
+                               attrs="{'readonly': [('is_readonly', '=', True)]}"/>
+                        <field name="employee_id"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               attrs="{'readonly': [('is_read_only', '=', True)]}"
+                               attrs="{'readonly': [('is_readonly', '=', True)]}"
                                required="True"
-                               domain="[('department_id', '=', department_id)]" />
-                        <field name="hr_contract_id"
+                               domain="[('department_id', '=', department_id)]"/>
+                        <field name="contract_id"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               attrs="{'readonly': [('is_read_only', '=', True)]}"
+                               attrs="{'readonly': [('is_readonly', '=', True)]}"
                                required="True"
-                               domain="hr_contract_id_domain"/>
-                        <field name="hr_contract_id_domain" invisible="1"/>
+                               domain="[('employee_id', '=', employee_id)]"/>
                         <field name="start_date"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
-                               required="True" attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                               required="True" attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="end_date"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
-                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                               attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="active" invisible="1"/>
                         <field name="security_job_id"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
-                        <field name="company_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               invisible="1"/>
-                        <field name="is_read_only" invisible="1"/>
+                               attrs="{'readonly': [('is_readonly', '=', True)]}"/>
+                        <field name="company_id" invisible="1"/>
+                        <field name="is_readonly" invisible="1"/>
                     </group>
                     <notebook>
                         <page string="Roles">
@@ -62,13 +59,13 @@
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="start_date" required="True"/>
                                     <field name="end_date"/>
-                                    <field name="creation_mode" readonly="1"  force_save="1"/>
+                                    <field name="creation_mode_type" readonly="1" force_save="1"/>
                                 </tree>
                             </field>
                         </page>
                         <page string="Descripción del puesto">
                             <field name="description" options="{'collaborative': true}"
-                                   attrs="{'invisible': [('state', '!=', 'recruit')],'readonly': [('is_read_only', '=', True)]}"/>
+                                   attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         </page>
                     </notebook>
                 </sheet>
