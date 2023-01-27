@@ -19,7 +19,6 @@ class HrJob(models.Model):
     is_read_only = fields.Boolean(string="Solo lectura", compute="_compute_is_read_only")
     hr_contract_id_domain = fields.Char(compute='_compute_hr_contract_id_domain')
 
-
     @api.depends('hr_employee_id')
     def _compute_hr_contract_id_domain(self):
         for rec in self:
@@ -49,8 +48,8 @@ class HrJob(models.Model):
     @api.onchange('security_job_id')
     def onchange_security_job_id(self):
         if self.security_job_id:
-            _role_ids=[(2, role.id) for role in
-                       self.role_ids.filtered(lambda r: r.creation_mode == 'seguridad_puesto')]
+            _role_ids = [(2, role.id) for role in
+                         self.role_ids.filtered(lambda r: r.creation_mode == 'seguridad_puesto')]
             _role_ids.extend([
                 (0, 0, {'user_role_id': role.id, 'creation_mode': 'seguridad_puesto',
                         'start_date': self.start_date if self.start_date else fields.Date.today()})
@@ -82,9 +81,6 @@ class HrJobRoleLine(models.Model):
     end_date = fields.Date(string="Fecha hasta")
     creation_mode = fields.Selection([('manual', 'Manual'), ('seguridad_puesto', 'Seguridad de Puesto')],
                                      string='Modo de creación', default='manual')
-
-
-
 
     @api.onchange('start_date')
     def onchange_start_date(self):
