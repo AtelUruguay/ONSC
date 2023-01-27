@@ -8,9 +8,7 @@
               name="Puestos de trabajo"
               parent="onsc_legajo_root_menu"
               action="onsc_legajo_hr_job_action"
-              groups="onsc_legajo.group_legajo_configurador_puesto,
-              onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-              onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+              groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
               sequence="5"/>
     <menuitem id="onsc_legajo_config_menu"
               name="Catálogos"

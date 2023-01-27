@@ -23,32 +23,25 @@
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_read_only', '=', True)]}"/>
                         <field name="hr_employee_id"
-                               groups="onsc_legajo.group_legajo_configurador,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
+                               attrs="{'readonly': [('is_read_only', '=', True)]}"
+                               domain="[('department_id', '=', department_id)]" />
+                        <field name="hr_contract_id"
+                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               attrs="{'readonly': [('is_read_only', '=', True)]}"
+                               domain="hr_contract_id_domain"/>
+                        <field name="hr_contract_id_domain" invisible="1"/>
                         <field name="start_date"
-                               groups="onsc_legajo.group_legajo_configurador,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                required="True" attrs="{'readonly': [('is_read_only', '=', True)]}"/>
                         <field name="end_date"
-                               groups="onsc_legajo.group_legajo_configurador,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                attrs="{'readonly': [('is_read_only', '=', True)]}"/>
                         <field name="active" invisible="1"/>
-                        <field name="hr_contract_id"
-                               groups="onsc_legajo.group_legajo_configurador,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
-                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               attrs="{'readonly': [('is_read_only', '=', True)]}"/>
                         <field name="security_job_id"
-                               groups="onsc_legajo.group_legajo_configurador,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                               onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_read_only', '=', True)]}"/>
                         <field name="company_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
@@ -58,16 +51,14 @@
                     <notebook>
                         <page string="Roles">
                             <field name="role_ids"
-                                   groups="onsc_legajo.group_legajo_configurador,
-                                   onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                                   onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                                   groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                    nolabel="1">
                                 <tree editable="top">
                                     <field name="user_role_id"
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="start_date" required="True"/>
                                     <field name="end_date"/>
-                                    <field name="creation_mode" readonly="1"/>
+                                    <field name="creation_mode" readonly="1"  force_save="1"/>
                                 </tree>
                             </field>
                         </page>
@@ -92,21 +83,13 @@
             <tree string="Puestos de trabajo">
                 <field name="name"/>
                 <field name="department_id"
-                       groups="onsc_legajo.group_legajo_configurador,
-                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+                       groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
                 <field name="security_job_id"
-                       groups="onsc_legajo.group_legajo_configurador,
-                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+                       groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
                 <field name="start_date"
-                       groups="onsc_legajo.group_legajo_configurador,
-                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+                       groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
                 <field name="end_date"
-                       groups="onsc_legajo.group_legajo_configurador,
-                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,
-                       onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+                       groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
             </tree>
         </field>
     </record>

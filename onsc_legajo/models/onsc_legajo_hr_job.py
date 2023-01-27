@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 
 from odoo import fields, models, api, _
 
@@ -16,12 +17,22 @@ class HrJob(models.Model):
     hr_contract_id = fields.Many2one('hr.contract', string="Contrato", ondelete='restrict')
     hr_employee_id = fields.Many2one('hr.employee', string="Empleado", ondelete='restrict')
     is_read_only = fields.Boolean(string="Solo lectura", compute="_compute_is_read_only")
+    hr_contract_id_domain = fields.Char(compute='_compute_hr_contract_id_domain')
+
+
+    @api.depends('hr_employee_id')
+    def _compute_hr_contract_id_domain(self):
+        for rec in self:
+            if rec.hr_employee_id:
+                rec.hr_contract_id_domain = json.dumps(
+                    [('id', 'in', rec.hr_employee_id.contract_ids.ids)]
+                )
+            else:
+                rec.hr_contract_id_domain = json.dumps([])
 
     def _compute_is_read_only(self):
         for record in self:
-            record.is_read_only = self.user_has_groups(
-                'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso') or self.user_has_groups(
-                'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc')
+            record.is_read_only = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto')
 
     @api.onchange('start_date')
     def onchange_start_date(self):
@@ -38,15 +49,27 @@ class HrJob(models.Model):
     @api.onchange('security_job_id')
     def onchange_security_job_id(self):
         if self.security_job_id:
-            self.role_ids = [(2, role.id) for role in
-                             self.role_ids.filtered(lambda r: r.creation_mode == 'seguridad_puesto')]
-            self.role_ids = [
+            _role_ids=[(2, role.id) for role in
+                       self.role_ids.filtered(lambda r: r.creation_mode == 'seguridad_puesto')]
+            _role_ids.extend([
                 (0, 0, {'user_role_id': role.id, 'creation_mode': 'seguridad_puesto',
                         'start_date': self.start_date if self.start_date else fields.Date.today()})
                 for role in
-                self.security_job_id.user_role_ids]
+                self.security_job_id.user_role_ids])
+            self.role_ids = _role_ids
         else:
             self.role_ids = [(5, 0, 0)]
+
+    @api.onchange('department_id')
+    def onchange_department_id(self):
+        if self.department_id:
+            self.hr_employee_id = False
+            self.hr_contract_id = False
+
+    @api.onchange('hr_employee_id')
+    def onchange_hr_employee_id(self):
+        if self.hr_employee_id:
+            self.hr_contract_id = False
 
 
 class HrJobRoleLine(models.Model):
@@ -54,11 +77,14 @@ class HrJobRoleLine(models.Model):
     _description = 'Línea de roles de puesto'
 
     job_id = fields.Many2one('hr.job', string='Puesto', ondelete='cascade')
-    user_role_id = fields.Many2one('res.users.role', string='Rol', required=True, ondelete='cascade')
+    user_role_id = fields.Many2one('res.users.role', string='Rol', required=True, ondelete='restrict')
     start_date = fields.Date(string="Fecha desde")
     end_date = fields.Date(string="Fecha hasta")
     creation_mode = fields.Selection([('manual', 'Manual'), ('seguridad_puesto', 'Seguridad de Puesto')],
                                      string='Modo de creación', default='manual')
+
+
+
 
     @api.onchange('start_date')
     def onchange_start_date(self):
