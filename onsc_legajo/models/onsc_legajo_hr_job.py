@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import json
 
 from odoo import fields, models, api, _
 
@@ -67,7 +66,7 @@ class HrJobRoleLine(models.Model):
     start_date = fields.Date(string="Fecha desde")
     end_date = fields.Date(string="Fecha hasta")
     creation_mode_type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de Puesto')],
-                                     string='Modo de creación', default='manual')
+                                          string='Modo de creación', default='manual')
 
     @api.onchange('start_date')
     def onchange_start_date(self):
