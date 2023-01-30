@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class ONSCLegajoOffice(models.Model):
@@ -25,6 +25,10 @@ class ONSCLegajoOffice(models.Model):
     _sql_constraints = [
         ('code_uniq', 'unique(code)', u'El código de la oficina debe ser único')
     ]
+
+    @api.onchange('inciso')
+    def onchange_inciso(self):
+        self.unidadEjecutora = False
 
     def syncronize(self):
         return True
