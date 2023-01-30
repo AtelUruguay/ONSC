@@ -15,7 +15,7 @@ class ONSCLegajoBudgetItem(models.Model):
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
-        ('code_uniq', 'unique(codPartida)', u'El código de la partida debe ser único'),
+        ('code_uniq', 'unique("codPartida")', u'El código de la partida debe ser único'),
     ]
 
     def syncronize(self):
