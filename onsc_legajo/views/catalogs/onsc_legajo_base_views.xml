@@ -170,6 +170,7 @@
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                    groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                             <field name="unidadEjecutora"
+                                   domain="[('inciso_id', '=', inciso)]"
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                    groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                             <field name="active" invisible="1"/>
