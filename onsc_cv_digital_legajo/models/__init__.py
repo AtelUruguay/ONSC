@@ -2,3 +2,4 @@
 from . import res_partner
 from . import onsc_cv_documentary_validation
 from . import onsc_cv_digital
+from . import onsc_cv_hr_employee
