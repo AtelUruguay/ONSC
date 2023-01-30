@@ -66,7 +66,7 @@ class HrJobRoleLine(models.Model):
     start_date = fields.Date(string="Fecha desde")
     end_date = fields.Date(string="Fecha hasta")
     type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de puesto')],
-                                          string='Modo de creación', default='manual')
+                            string='Modo de creación', default='manual')
 
     @api.onchange('start_date')
     def onchange_start_date(self):
