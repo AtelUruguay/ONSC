@@ -79,5 +79,10 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_cv_digital_legajo.onsc_legajo_hr_employee_form')})]"/>
         </record>
 
+        <menuitem id="onsc_hr_employee_menu"
+              name="Empleados"
+              action="onsc_legajo_hr_employee_action"
+              parent="onsc_legajo.onsc_legajo_root_menu"
+              sequence="1"/>
     </data>
 </odoo>
