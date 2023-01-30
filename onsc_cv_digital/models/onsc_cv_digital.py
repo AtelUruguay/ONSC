@@ -4,11 +4,11 @@ import logging
 
 from lxml import etree
 from odoo import fields, models, api, _
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from odoo.exceptions import ValidationError
 from zeep import Client
 from zeep.exceptions import Fault
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
 _logger = logging.getLogger(__name__)
@@ -30,7 +30,7 @@ class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
     _description = 'Currículum digital'
     _rec_name = 'cv_full_name'
-    _inherit = 'onsc.cv.abstract.phone.validated'
+    _inherit = ['onsc.cv.abstract.phone.validated', 'onsc.contact.common.data']
 
     @property
     def prefix_by_phones(self):
@@ -188,9 +188,6 @@ class ONSCCVDigital(models.Model):
     occupational_health_card_file = fields.Binary(
         string="Documento digitalizado del carné de salud laboral")
     occupational_health_card_filename = fields.Char('Nombre del documento digital')
-
-    document_identity_file = fields.Binary(string="Documento digitalizado del documento de identidad")
-    document_identity_filename = fields.Char('Nombre del documento digital')
 
     civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica")
     civical_credential_filename = fields.Char('Nombre del documento digital')
