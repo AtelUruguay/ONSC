@@ -5,7 +5,7 @@ from odoo import fields, models
 
 class ONSCLegajoSecurityJob(models.Model):
     _name = 'onsc.legajo.security.job'
-    _description = 'Seguridad de Puesto'
+    _description = 'Seguridad de puesto'
 
     name = fields.Char(string='Nombre de la seguridad de puesto', required=True)
     is_uo_manager = fields.Boolean(string='Es responsable UO')

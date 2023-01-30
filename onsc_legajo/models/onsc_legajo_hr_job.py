@@ -12,7 +12,7 @@ class HrJob(models.Model):
     end_date = fields.Date(string="Fecha hasta")
     role_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles", tracking=True)
     active = fields.Boolean('Activo', default=True)
-    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de Puesto", ondelete='restrict')
+    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict')
     contract_id = fields.Many2one('hr.contract', string="Contrato", ondelete='restrict')
     employee_id = fields.Many2one('hr.employee', string="Empleado", ondelete='restrict')
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
@@ -37,9 +37,9 @@ class HrJob(models.Model):
     def onchange_security_job_id(self):
         if self.security_job_id:
             _role_ids = [(2, role.id) for role in
-                         self.role_ids.filtered(lambda r: r.creation_mode_type == 'system')]
+                         self.role_ids.filtered(lambda r: r.type == 'system')]
             _role_ids.extend([
-                (0, 0, {'user_role_id': role.id, 'creation_mode_type': 'system',
+                (0, 0, {'user_role_id': role.id, 'type': 'system',
                         'start_date': self.start_date if self.start_date else fields.Date.today()})
                 for role in
                 self.security_job_id.user_role_ids])
@@ -65,7 +65,7 @@ class HrJobRoleLine(models.Model):
     user_role_id = fields.Many2one('res.users.role', string='Rol', required=True, ondelete='restrict')
     start_date = fields.Date(string="Fecha desde")
     end_date = fields.Date(string="Fecha hasta")
-    creation_mode_type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de Puesto')],
+    type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de puesto')],
                                           string='Modo de creación', default='manual')
 
     @api.onchange('start_date')

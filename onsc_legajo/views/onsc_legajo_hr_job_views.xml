@@ -59,7 +59,7 @@
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="start_date" required="True"/>
                                     <field name="end_date"/>
-                                    <field name="creation_mode_type" readonly="1" force_save="1"/>
+                                    <field name="type" readonly="1" force_save="1"/>
                                 </tree>
                             </field>
                         </page>
