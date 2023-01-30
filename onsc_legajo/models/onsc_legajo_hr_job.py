@@ -63,7 +63,7 @@ class HrJobRoleLine(models.Model):
 
     job_id = fields.Many2one('hr.job', string='Puesto', ondelete='cascade')
     user_role_id = fields.Many2one('res.users.role', string='Rol', required=True, ondelete='restrict')
-    start_date = fields.Date(string="Fecha desde")
+    start_date = fields.Date(string="Fecha desde", default=fields.Date.today())
     end_date = fields.Date(string="Fecha hasta")
     type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de puesto')],
                             string='Modo de creación', default='manual')
