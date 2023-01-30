@@ -8,7 +8,7 @@ from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_respons
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
-    start_date = fields.Date(string="Fecha desde")
+    start_date = fields.Date(string="Fecha desde", default=fields.Date.today())
     end_date = fields.Date(string="Fecha hasta")
     role_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles", tracking=True)
     active = fields.Boolean('Activo', default=True)

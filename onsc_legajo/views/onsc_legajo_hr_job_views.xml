@@ -19,6 +19,8 @@
                     </div>
                     <group>
                         <field name="department_id"
+                               domain="[]"
+                               string="Unidad organizativa"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                required="True"
