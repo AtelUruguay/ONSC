@@ -18,25 +18,25 @@
                         </h1>
                     </div>
                     <group>
-                        <field name="department_id"
-                               domain="[]"
-                               string="Unidad organizativa"
-                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
-                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               required="True"
-                               attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="employee_id"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_readonly', '=', True)]}"
-                               required="True"
-                               domain="[('department_id', '=', department_id)]"/>
+                               required="True"/>
                         <field name="contract_id"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_readonly', '=', True)]}"
                                required="True"
                                domain="[('employee_id', '=', employee_id)]"/>
+                        <field name="department_id_domain" invisible="1"/>
+                        <field name="department_id"
+                               domain="department_id_domain"
+                               string="Unidad organizativa"
+                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               required="True"
+                               attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="start_date"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                required="True" attrs="{'readonly': [('is_readonly', '=', True)]}"/>
@@ -55,13 +55,26 @@
                         <page string="Roles">
                             <field name="role_ids"
                                    groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                                   nolabel="1"
+                                   readonly="1"
+                                   force_save="1">
+                                <tree editable="top">
+                                    <field name="user_role_id"
+                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                    <field name="start_date" required="True"/>
+                                    <field name="end_date"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Roles adicionales">
+                            <field name="role_extra_ids"
+                                   groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                    nolabel="1">
                                 <tree editable="top">
                                     <field name="user_role_id"
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="start_date" required="True"/>
                                     <field name="end_date"/>
-                                    <field name="type" readonly="1" force_save="1"/>
                                 </tree>
                             </field>
                         </page>
