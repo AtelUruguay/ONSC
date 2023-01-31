@@ -30,7 +30,7 @@ class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
     _description = 'Currículum digital'
     _rec_name = 'cv_full_name'
-    _inherit = ['onsc.cv.abstract.phone.validated', 'onsc.contact.common.data']
+    _inherit = ['onsc.cv.abstract.phone.validated', 'onsc.cv.common.data']
 
     @property
     def prefix_by_phones(self):
@@ -112,17 +112,18 @@ class ONSCCVDigital(models.Model):
 
     # INFORMACION GENERAL---<Page>
     # Genero
-    cv_gender_id = fields.Many2one("onsc.cv.gender", string=u"Género", required=True, )
-    is_cv_gender_option_other_enable = fields.Boolean(
-        u'¿Permitir opción otra/o?',
-        related='cv_gender_id.is_option_other_enable',
-        store=True)
-    cv_gender2 = fields.Char(string=u"Otro género")
-    cv_gender_record_file = fields.Binary(string="Constancia de identidad de género")
-    cv_gender_record_filename = fields.Char('Nombre del documento digital')
-    is_cv_gender_public = fields.Boolean(
-        string="¿Desea que esta información se incluya en la versión impresa de su CV?")
-    is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
+    # cv_gender_id = fields.Many2one("onsc.cv.gender", string=u"Género", required=True, )
+    # is_cv_gender_option_other_enable = fields.Boolean(
+    #     u'¿Permitir opción otra/o?',
+    #     related='cv_gender_id.is_option_other_enable',
+    #     store=True)
+    # cv_gender2 = fields.Char(string=u"Otro género")
+    # cv_gender_record_file = fields.Binary(string="Constancia de identidad de género")
+    # cv_gender_record_filename = fields.Char('Nombre del documento digital')
+    # is_cv_gender_public = fields.Boolean(
+    #     string="¿Desea que esta información se incluya en la versión impresa de su CV?")
+    # is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
+
     # Raza
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial", required=True,
                                    domain="[('race_type','in',['race','both'])]")
@@ -132,10 +133,11 @@ class ONSCCVDigital(models.Model):
     is_multiple_cv_race_selected = fields.Boolean(
         u'Múltiples razas seleccionadas',
         compute='_compute_cv_race_values', store=True)
-    cv_race2 = fields.Char(string=u"Otra identidad étnico-racial")
+    # cv_race2 = fields.Char(string=u"Otra identidad étnico-racial")
     cv_first_race_id = fields.Many2one("onsc.cv.race", string=u"¿Con cuál se reconoce principalmente?",
                                        domain="[('id','in',cv_race_ids)]")
-    is_cv_race_public = fields.Boolean(string="¿Permite que su identidad étnico-racial se visualice en su CV?")
+    # is_cv_race_public = fields.Boolean(string="¿Permite que su identidad étnico-racial se visualice en su CV?")
+
     # Información patronímica
     cv_full_name_updated_date = fields.Date(related='partner_id.cv_full_name_updated_date',
                                             string="Fecha de información")
@@ -159,21 +161,21 @@ class ONSCCVDigital(models.Model):
     cv_address_place = fields.Text(related='partner_id.cv_address_place', string="Paraje", size=200, readonly=False)
     cv_address_block = fields.Char(related='partner_id.cv_address_block', string="Manzana", size=5, readonly=False)
     cv_address_sandlot = fields.Char(related='partner_id.cv_address_sandlot', string="Solar", size=5, readonly=False)
-    country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
-    uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
-                                      selection=[('legal', 'Legal'), ('natural', 'Natural'),
-                                                 ('extranjero', 'Extranjero')], required=True)
-    marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", required=True)
-    crendencial_serie = fields.Char(string="Serie de la credencial", size=3)
-    credential_number = fields.Char(string="Numero de la credencial", size=6)
-    cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU")
-    professional_resume = fields.Text(string="Resumen profesional")
-    user_linkedIn = fields.Char(string="Usuario en LinkedIn")
-    is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
-    afro_descendants_file = fields.Binary(
-        string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)"')
-    afro_descendants_filename = fields.Char('Nombre del documento digital')
-    is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir?")
+    # country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
+    # uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
+    #                                   selection=[('legal', 'Legal'), ('natural', 'Natural'),
+    #                                              ('extranjero', 'Extranjero')], required=True)
+    # marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", required=True)
+    # crendencial_serie = fields.Char(string="Serie de la credencial", size=3)
+    # credential_number = fields.Char(string="Numero de la credencial", size=6)
+    # cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU")
+    # professional_resume = fields.Text(string="Resumen profesional")
+    # user_linkedIn = fields.Char(string="Usuario en LinkedIn")
+    # is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
+    # afro_descendants_file = fields.Binary(
+    #     string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)"')
+    # afro_descendants_filename = fields.Char('Nombre del documento digital')
+    # is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir?")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
                                           inverse_name="cv_digital_id", string="Licencias de conducir", copy=True)
 
@@ -183,21 +185,21 @@ class ONSCCVDigital(models.Model):
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
     email = fields.Char(string="Email", related='partner_id.email')
 
-    is_occupational_health_card = fields.Boolean(string="¿Tiene carné de salud laboral?")
-    occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
-    occupational_health_card_file = fields.Binary(
-        string="Documento digitalizado del carné de salud laboral")
-    occupational_health_card_filename = fields.Char('Nombre del documento digital')
+    # is_occupational_health_card = fields.Boolean(string="¿Tiene carné de salud laboral?")
+    # occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
+    # occupational_health_card_file = fields.Binary(
+    #     string="Documento digitalizado del carné de salud laboral")
+    # occupational_health_card_filename = fields.Char('Nombre del documento digital')
 
-    civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica")
-    civical_credential_filename = fields.Char('Nombre del documento digital')
-    is_medical_aptitude_certificate_status = fields.Boolean(
-        string="¿Tiene certificado de aptitud médico-deportiva?")
-    medical_aptitude_certificate_date = fields.Date(
-        string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
-    medical_aptitude_certificate_file = fields.Binary(
-        string="Documento digitalizado del certificado de aptitud médico-deportiva")
-    medical_aptitude_certificate_filename = fields.Char('Nombre del documento digital')
+    # civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica")
+    # civical_credential_filename = fields.Char('Nombre del documento digital')
+    # is_medical_aptitude_certificate_status = fields.Boolean(
+    #     string="¿Tiene certificado de aptitud médico-deportiva?")
+    # medical_aptitude_certificate_date = fields.Date(
+    #     string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
+    # medical_aptitude_certificate_file = fields.Binary(
+    #     string="Documento digitalizado del certificado de aptitud médico-deportiva")
+    # medical_aptitude_certificate_filename = fields.Char('Nombre del documento digital')
 
     is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)", )
     relationship_victim_violent_file = fields.Binary(

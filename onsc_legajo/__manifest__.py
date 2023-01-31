@@ -9,7 +9,7 @@ ONSC - Legajo
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['onsc_base', 'onsc_catalog', 'base_user_role', 'hr_contract'],
+    'depends': ['onsc_base', 'onsc_catalog', 'base_user_role', 'hr_contract', 'model_history'],
     'data': [
         'security/onsc_legajo_security.xml',
         'security/ir.model.access.csv',
@@ -29,6 +29,7 @@ ONSC - Legajo
         'views/catalogs/onsc_legajo_commission_regime_views.xml',
         'views/catalogs/onsc_legajo_security_job_views.xml',
         'views/catalogs/onsc_legajo_base_views.xml',
+        'views/hr_employee_views.xml',
         'views/onsc_legajo_hr_job_views.xml',
         'views/onsc_legajo_menuitems.xml',
     ],
