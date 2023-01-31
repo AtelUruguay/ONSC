@@ -11,9 +11,10 @@ class HrJob(models.Model):
 
     start_date = fields.Date(string="Fecha desde", default=fields.Date.today())
     end_date = fields.Date(string="Fecha hasta")
-    role_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles", tracking=True)
-    role_extra_ids = fields.One2many('hr.job.role.line', inverse_name='job_extra_id', string="Roles adicionales",
-                                     tracking=True)
+    role_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles", tracking=True,
+                               domain=[('type', '=', 'system')], )
+    role_extra_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles adicionales",
+                                     tracking=True, domain=[('type', '=', 'manual')])
     active = fields.Boolean('Activo', default=True)
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict')
     contract_id = fields.Many2one('hr.contract', string="Contrato", ondelete='restrict')
@@ -51,7 +52,7 @@ class HrJob(models.Model):
             _role_ids = [(5, 0)]
             _role_ids.extend([
                 (0, 0,
-                 {'user_role_id': role.id, 'start_date': self.start_date if self.start_date else fields.Date.today()})
+                 {'user_role_id': role.id,'type':'system', 'start_date': self.start_date if self.start_date else fields.Date.today()})
                 for role in
                 self.security_job_id.user_role_ids])
             self.role_ids = _role_ids
@@ -74,9 +75,10 @@ class HrJobRoleLine(models.Model):
 
     job_id = fields.Many2one('hr.job', string='Puesto', ondelete='cascade')
     user_role_id = fields.Many2one('res.users.role', string='Rol', required=True, ondelete='restrict')
-    job_extra_id = fields.Many2one('hr.job', string='Puesto adicional', ondelete='cascade')
     start_date = fields.Date(string="Fecha desde")
     end_date = fields.Date(string="Fecha hasta")
+    type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de puesto')],
+                            string='Modo de creación', default='manual')
 
     @api.onchange('start_date')
     def onchange_start_date(self):

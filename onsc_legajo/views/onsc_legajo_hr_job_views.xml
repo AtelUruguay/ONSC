@@ -63,18 +63,21 @@
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="start_date" required="True"/>
                                     <field name="end_date"/>
+                                    <field name="type" invisible="1"/>
                                 </tree>
                             </field>
                         </page>
                         <page string="Roles adicionales">
                             <field name="role_extra_ids"
                                    groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
-                                   nolabel="1">
+                                   nolabel="1"
+                                   context="{'default_type': 'manual'}">
                                 <tree editable="top">
                                     <field name="user_role_id"
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="start_date" required="True"/>
                                     <field name="end_date"/>
+                                    <field name="type" invisible="1"/>
                                 </tree>
                             </field>
                         </page>
