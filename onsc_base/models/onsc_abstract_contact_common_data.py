@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models
+
 CV_SEX = [('male', 'Masculino'), ('feminine', 'Femenino')]
+
 
 class ONSCPartnerCommonData(models.AbstractModel):
     _name = 'onsc.partner.common.data'
