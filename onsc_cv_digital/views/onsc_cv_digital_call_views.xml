@@ -190,9 +190,9 @@
                         <page string="Información general">
                             <group string="Datos personales">
                                 <group>
-                                    <field name="country_of_birth_id"/>
-                                    <field name="marital_status_id"/>
-                                    <field name="uy_citizenship"/>
+                                    <field name="country_of_birth_id" required="True"/>
+                                    <field name="marital_status_id" required="True"/>
+                                    <field name="uy_citizenship" required="True"/>
                                     <field name="crendencial_serie"
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                     <label for="credential_number" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
@@ -289,7 +289,7 @@
                             <group>
                                 <group string="Género"
                                     attrs="{'invisible': [('show_gender_info', '=', False)]}">
-                                    <field name="cv_gender_id"/>
+                                    <field name="cv_gender_id" required="True"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
                                     <field name="cv_gender_record_file"

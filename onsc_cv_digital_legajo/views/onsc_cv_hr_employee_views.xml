@@ -1,88 +1,149 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
-        <record id="onsc_legajo_hr_employee_tree" model="ir.ui.view">
-            <field name="name">onsc.legajo.hr.employee.tree</field>
-            <field name="model">hr.employee</field>
-            <field name="arch" type="xml">
-                <tree string="Empleados">
-                    <field name="full_name"/>
-                    <field name="photo_updated_date" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                    <field name="emissor_country_id" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                    <field name="document_type_id" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                    <field name="nro_doc" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                    <field name="identity_document_expiration_date_doc"
-                           groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                    <field name="birthdate" groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                </tree>
-            </field>
-        </record>
         <record id="onsc_legajo_hr_employee_form" model="ir.ui.view">
             <field name="name">onsc.legajo.hr.employee.form</field>
             <field name="model">hr.employee</field>
+            <field name="inherit_id" ref="onsc_legajo.onsc_legajo_hr_employee_form"/>
             <field name="arch" type="xml">
-                <form string="Empleados">
-                    <header/>
-                    <sheet>
-                        <field name="avatar_128" invisible="1"/>
-                        <field name="image_1920" widget="image" class="oe_avatar"
-                               options="{&quot;zoom&quot;: true, &quot;preview_image&quot;:&quot;avatar_128&quot;}"/>
-                        <div class="oe_title">
-                            <h1>
-                                <field name="full_name"/>
-                            </h1>
-                        </div>
-                        <group>
+                <header position="inside">
+                    <button name="button_get_info_fromcv" type="object" string="Sincronizar con CV"/>
+                </header>
+                <field name="cv_sex_updated_date" position="after">
+                    <field name="cv_digital_id" groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                </field>
+                <field name="cv_expiration_date" position="after">
+                    <field name="document_identity_file" readonly="1"
+                           filename="document_identity_filename"
+                           options="{'accepted_file_extensions': '.pdf'}"
+                           groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                    <field name="document_identity_filename" invisible="1"
+                       groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                </field>
+                <notebook position="inside">
+                    <page string="Información general">
+                        <group string="Datos personales">
                             <group>
-                                <field name="first_name" required="1"/>
-                                <field name="second_name"/>
-                                <field name="first_surname" required="1"/>
-                                <field name="second_surname" required="1"/>
-                                <field name="emissor_country_id" required="1"
-                                       groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                                <field name="document_type_id" required="1"
-                                       groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                                <field name="nro_doc" required="1"
-                                       groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                                <field name="identity_document_expiration_date_doc" required="1"
-                                       groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                                <field name="document_identity_file"
-                                       filename="document_identity_filename"
-                                       options="{'accepted_file_extensions': '.pdf'}"
-                                       groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                                <field name="country_of_birth_id"/>
+                                <field name="marital_status_id"/>
+                                <field name="uy_citizenship"/>
+                                <field name="crendencial_serie"
+                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
+                                <field name="credential_number"
+                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
+                                <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
+                                       filename="civical_credential_filename"
+                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
+                                <field name="document_identity_filename" invisible="1"/>
+                                <field name="civical_credential_filename" invisible="1"/>
                             </group>
-                            <field name="document_identity_filename" invisible="1"
-                                   groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
                             <group>
-                                <field name="birthdate" required="1"
-                                       groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
-                                <field name="photo_updated_date" required="1"
-                                       groups="onsc_catalog.group_catalog_configurador_servicio_civil"/>
+                                <label for="personal_phone"/>
+                                <div class="content-group row" style="margin-left:5px">
+                                    <field name="prefix_phone_id" options="{'no_open': True, 'no_create': True}"
+                                           style='max-width:75px !important; padding:1px !important;'
+                                           class="oe_inline"/>
+                                    <field name="personal_phone" class="oe_inline" style="padding:1px !important;"/>
+                                </div>
+                                <label for="mobile_phone"/>
+                                <div class="content-group row" style="margin-left:5px">
+                                    <field name="prefix_mobile_phone_id"
+                                           options="{'no_open': True, 'no_create': True}"
+                                           style='max-width:75px !important; padding:1px !important;'
+                                           class="oe_inline"/>
+                                    <field name="mobile_phone" class="oe_inline" style="padding:1px !important;"/>
+                                </div>
+                                <field name="email" widget="email"/>
+                                <field name="user_linkedIn"/>
+                                <field name="cjppu_affiliate_number"/>
+                                <field name="professional_resume"
+                                       placeholder="Resumen del candidato a modo de introducción"/>
+                                <field name="is_driver_license"/>
                             </group>
                         </group>
-
-                    </sheet>
-                </form>
+                        <group string="Licencias de Conducir"
+                               attrs="{'invisible': [('is_driver_license', '=', False)]}">
+                            <field name="drivers_license_ids" nolabel="1">
+                                <tree editable="bottom">
+                                    <field name="validation_date" width="0.5"/>
+                                    <field name="category_id"/>
+                                    <field name="license_file"
+                                           widget="binary"
+                                           filename="license_filename"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="license_filename" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group>
+                            <group string="Género">
+                                <field name="cv_gender_id" options="{'limit': 12}" readonly="1"/>
+                                <field name="cv_gender2"
+                                       readonly="1"
+                                       attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)]}"/>
+                                <field name="cv_gender_record_file"
+                                       readonly="1"
+                                       filename="cv_gender_record_filename"
+                                       options="{'accepted_file_extensions': '.pdf'}"
+                                       attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
+                                <field name="is_cv_gender_public"
+                                        readonly="1"
+                                       help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
+                                <field name="is_cv_gender_option_other_enable" invisible="1"/>
+                                <field name="is_cv_gender_record" invisible="1"/>
+                                <field name="cv_gender_record_filename" invisible="1"/>
+                            </group>
+                            <group string="Identidad étnico-racial">
+                                <field name="cv_race_ids" widget="many2many_tags"  readonly="1"/>
+                                <field name="cv_race2"
+                                       readonly="1"
+                                       attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)]}"/>
+                                <field name="cv_first_race_id"
+                                       readonly="1"
+                                       attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)]}"/>
+                                <field name="is_cv_race_public"
+                                       readonly="1"
+                                       help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
+                                <field name="is_cv_race_option_other_enable" invisible="1"/>
+                                <field name="is_multiple_cv_race_selected" invisible="1"/>
+                                <field name="is_afro_descendants"  readonly="1"/>
+                                <field name="afro_descendants_file"
+                                       readonly="1"
+                                       filename="afro_descendants_filename"
+                                       attrs="{'invisible': [('is_afro_descendants', '!=', True)]}"
+                                       options="{'accepted_file_extensions': '.pdf'}"/>
+                                <field name="afro_descendants_filename" invisible="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="Carné de salud laboral">
+                                <field name="is_occupational_health_card" readonly="1"/>
+                                <field name="occupational_health_card_date"
+                                       readonly="1"
+                                       attrs="{'invisible': [('is_occupational_health_card', '=', False)]}"/>
+                                <field name="occupational_health_card_file"
+                                       readonly="1"
+                                       filename="occupational_health_card_filename"
+                                       attrs="{'invisible': [('is_occupational_health_card', '=', False)]}"
+                                       options="{'accepted_file_extensions': '.pdf'}"/>
+                                <field name="occupational_health_card_filename" invisible="1"/>
+                            </group>
+                            <group string="Certificado de aptitud médico-deportiva">
+                                <field name="is_medical_aptitude_certificate_status"  readonly="1"/>
+                                <field name="medical_aptitude_certificate_date"
+                                       readonly="1"
+                                       attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)]}"/>
+                                <field name="medical_aptitude_certificate_file"
+                                       readonly="1"
+                                       filename="medical_aptitude_certificate_filename"
+                                       options="{'accepted_file_extensions': '.pdf'}"
+                                       attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)]}"/>
+                                <field name="medical_aptitude_certificate_filename" invisible="1"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
             </field>
         </record>
-        <record id='onsc_legajo_hr_employee_action' model='ir.actions.act_window'>
-            <field name="name">Empleados</field>
-            <field name="res_model">hr.employee</field>
-            <field name="view_mode">tree,form</field>
-            <field name="help" type="html">
-                <p class="o_view_nocontent_smiling_face">
-                    Crear un nuevo empleado
-                </p>
-            </field>
-            <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_cv_digital_legajo.onsc_legajo_hr_employee_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_cv_digital_legajo.onsc_legajo_hr_employee_form')})]"/>
-        </record>
-
-        <menuitem id="onsc_hr_employee_menu"
-              name="Empleados"
-              action="onsc_legajo_hr_employee_action"
-              parent="onsc_legajo.onsc_legajo_root_menu"
-              sequence="1"/>
     </data>
 </odoo>

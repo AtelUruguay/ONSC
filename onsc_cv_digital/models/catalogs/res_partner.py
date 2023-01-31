@@ -37,22 +37,11 @@ def calc_full_name(cv_first_name, cv_second_name, cv_last_name_1, cv_last_name_2
 
 
 class ResPartner(models.Model):
-    _inherit = 'res.partner'
+    _name = 'res.partner'
+    _inherit = ['res.partner', 'onsc.partner.common.data']
 
-    cv_emissor_country_id = fields.Many2one('res.country', u'País emisor del documento')
-    cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento')
-    cv_nro_doc = fields.Char(u'Número de documento')
-
-    cv_first_name = fields.Char(u'Primer nombre')
-    cv_second_name = fields.Char(u'Segundo nombre')
-    cv_last_name_1 = fields.Char(u'Primer apellido')
-    cv_last_name_2 = fields.Char(u'Segundo apellido')
-
-    cv_birthdate = fields.Date(u'Fecha de nacimiento')
-    cv_sex = fields.Selection(CV_SEX, u'Sexo')
     cv_full_name_updated_date = fields.Date(u'Fecha de información nombre completo', default=fields.Date.context_today)
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo', compute='_compute_cv_sex_updated_date', store=True)
-    cv_expiration_date = fields.Date(u'Fecha de vencimiento documento de identidad')
     cv_photo_updated_date = fields.Date(u'Fecha de foto del/de la funcionario/a', compute='_compute_photo_updated_date')
     is_partner_cv = fields.Boolean(u'¿Es un contacto de CV?')
     is_cv_uruguay = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay')
