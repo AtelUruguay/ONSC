@@ -24,9 +24,10 @@ class HrJob(models.Model):
 
     @api.depends('contract_id')
     def _compute_department_domain(self):
+        uos = self.env['hr.department'].search([])
         for rec in self:
             if rec.contract_id:
-                rec.department_id_domain = json.dumps([('id', '=', rec.contract_id.department_id.id)])
+                rec.department_id_domain = json.dumps([('id', 'in', uos.ids)])
             else:
                 rec.department_id_domain = json.dumps([])
 
