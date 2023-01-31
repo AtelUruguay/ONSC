@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 
 from odoo import fields, models, api, _
 
@@ -10,12 +11,24 @@ class HrJob(models.Model):
 
     start_date = fields.Date(string="Fecha desde", default=fields.Date.today())
     end_date = fields.Date(string="Fecha hasta")
-    role_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles", tracking=True)
+    role_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles", tracking=True,
+                               domain=[('type', '=', 'system')], )
+    role_extra_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles adicionales",
+                                     tracking=True, domain=[('type', '=', 'manual')])
     active = fields.Boolean('Activo', default=True)
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict')
     contract_id = fields.Many2one('hr.contract', string="Contrato", ondelete='restrict')
     employee_id = fields.Many2one('hr.employee', string="Empleado", ondelete='restrict')
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
+    department_id_domain = fields.Char(compute='_compute_department_domain')
+
+    @api.depends('contract_id')
+    def _compute_department_domain(self):
+        for rec in self:
+            if rec.contract_id:
+                rec.department_id_domain = json.dumps([('id', '=', rec.contract_id.department_id.id)])
+            else:
+                rec.department_id_domain = json.dumps([])
 
     def _compute_is_readonly(self):
         for record in self:
@@ -36,25 +49,25 @@ class HrJob(models.Model):
     @api.onchange('security_job_id')
     def onchange_security_job_id(self):
         if self.security_job_id:
-            _role_ids = [(2, role.id) for role in
-                         self.role_ids.filtered(lambda r: r.type == 'system')]
+            _role_ids = [(5, 0)]
             _role_ids.extend([
-                (0, 0, {'user_role_id': role.id, 'type': 'system',
-                        'start_date': self.start_date if self.start_date else fields.Date.today()})
+                (0, 0,
+                 {'user_role_id': role.id, 'type': 'system',
+                  'start_date': self.start_date if self.start_date else fields.Date.today()})
                 for role in
                 self.security_job_id.user_role_ids])
             self.role_ids = _role_ids
         else:
-            self.role_ids = [(5, 0, 0)]
-
-    @api.onchange('department_id')
-    def onchange_department_id(self):
-        self.employee_id = False
-        self.contract_id = False
+            self.role_ids = [(5, 0)]
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
         self.contract_id = False
+        self.department_id = False
+
+    @api.onchange('contract_id')
+    def onchange_contract_id(self):
+        self.department_id = False
 
 
 class HrJobRoleLine(models.Model):
