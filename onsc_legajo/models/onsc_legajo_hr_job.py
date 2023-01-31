@@ -63,6 +63,10 @@ class HrJob(models.Model):
         self.contract_id = False
         self.department_id = False
 
+    @api.onchange('contract_id')
+    def onchange_contract_id(self):
+        self.department_id = False
+
 
 class HrJobRoleLine(models.Model):
     _name = 'hr.job.role.line'
