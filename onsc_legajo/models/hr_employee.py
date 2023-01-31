@@ -21,7 +21,8 @@ class HrEmployee(models.Model):
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo')
 
     prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
-                                      default=lambda self: self.env['res.country.phone'].search([('country_id.code', '=', 'UY')]))
+                                      default=lambda self: self.env['res.country.phone'].search(
+                                          [('country_id.code', '=', 'UY')]))
     personal_phone = fields.Char(string="Teléfono particular")
     prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil',
                                              default=lambda self: self.env['res.country.phone'].search(
