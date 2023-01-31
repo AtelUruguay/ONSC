@@ -52,7 +52,8 @@ class HrJob(models.Model):
             _role_ids = [(5, 0)]
             _role_ids.extend([
                 (0, 0,
-                 {'user_role_id': role.id,'type':'system', 'start_date': self.start_date if self.start_date else fields.Date.today()})
+                 {'user_role_id': role.id, 'type': 'system',
+                  'start_date': self.start_date if self.start_date else fields.Date.today()})
                 for role in
                 self.security_job_id.user_role_ids])
             self.role_ids = _role_ids
