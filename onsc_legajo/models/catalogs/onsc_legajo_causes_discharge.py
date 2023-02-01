@@ -42,6 +42,8 @@ class ONSCLegajoCausesDischargeLine(models.Model):
     _name = 'onsc.legajo.causes.discharge.line'
     _description = 'Causal de egreso Linea'
 
-    name = fields.Char("Nombre", required=True)
+    name = fields.Char("Código", required=True)
     description = fields.Char(u"Descripción", required=True)
-    causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string="Causal de egreso")
+    causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge",
+                                          string="Causal de egreso",
+                                          ondelete='cascade')
