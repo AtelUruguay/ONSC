@@ -131,13 +131,13 @@ class HrEmployee(models.Model):
                 'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
                 # RAZA
                 'cv_race2': record.cv_digital_id.cv_race2,
-                'cv_race_ids':record.cv_digital_id.cv_race_ids,
-                'cv_first_race_id':record.cv_digital_id.cv_first_race_id,
+                'cv_race_ids': record.cv_digital_id.cv_race_ids,
+                'cv_first_race_id': record.cv_digital_id.cv_first_race_id,
                 'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
                 'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
                 'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
-                'is_cv_race_public':record.cv_digital_id.is_cv_race_public,
-                #Victima de Delitos violentos
+                'is_cv_race_public': record.cv_digital_id.is_cv_race_public,
+                # Victima de Delitos violentos
                 'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
                 'is_victim_violent': record.cv_digital_id.is_victim_violent,
                 'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
@@ -178,14 +178,14 @@ class HrEmployee(models.Model):
                 'mergency_service_id': record.cv_digital_id.mergency_service_id.id,
                 'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
                 'emergency_service_telephone': record.cv_digital_id.emergency_service_telephone,
-                #'department_id': record.cv_digital_id.department_id.id,
+                # 'department_id': record.cv_digital_id.department_id.id,
                 'blood_type': record.cv_digital_id.blood_type,
                 'other_information_official': record.cv_digital_id.other_information_official,
                 'institutional_email': record.cv_digital_id.institutional_email,
                 'digitized_document_file': record.cv_digital_id.digitized_document_file,
                 'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
                 'information_contact_ids': self._get_information_contact_orm(),
-                #Extras
+                # Extras
                 'last_modification_date': record.cv_digital_id.last_modification_date,
 
             }

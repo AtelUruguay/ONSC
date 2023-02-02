@@ -8,10 +8,11 @@ name_doc_one = u'Documento digitalizado "Partida de matrimonio / Partida de uni�
 name_doc_two = u'Certificado de convivencia / Partida o Certificado de divorcio / Partida de defunción'
 digitized_document_full_name = f'{name_doc_one}{name_doc_two}'
 
+
 class ONSCCVLegajoAbstractCommon(models.AbstractModel):
     _name = 'onsc.cv.legajo.abstract.common'
 
-    #Información de salud
+    # Información de salud
     @property
     def prefix_by_phones(self):
         res = super().prefix_by_phones

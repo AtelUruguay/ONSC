@@ -3,9 +3,10 @@
 
 from odoo import fields, models, api
 
+
 class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
-    _inherit = ['onsc.cv.digital','onsc.cv.legajo.abstract.common']
+    _inherit = ['onsc.cv.digital', 'onsc.cv.legajo.abstract.common']
 
     @property
     def prefix_by_phones(self):
@@ -20,20 +21,20 @@ class ONSCCVDigital(models.Model):
 
     is_docket = fields.Boolean(string="Tiene legajo")
     is_docket_active = fields.Boolean(string="Tiene legajo activo")
-    #gender_date = fields.Date(string="Fecha de información género")
+    # gender_date = fields.Date(string="Fecha de información género")
     gender_public_visualization_date = fields.Date(string="Fecha información visualización pública de género",
                                                    compute='_compute_gender_public_visualization_date', store=True)
     afro_descendant_date = fields.Date(string="Fecha de información afrodescendencia")
-    #status_civil_date = fields.Date(string="Fecha de información estado civil")
+    # status_civil_date = fields.Date(string="Fecha de información estado civil")
     address_info_date = fields.Date(string="Fecha de información domicilio",
                                     related='partner_id.address_info_date',
                                     readonly=False,
                                     store=True)
-    #disability_date = fields.Date(string="Fecha de información discapacidad")
+    # disability_date = fields.Date(string="Fecha de información discapacidad")
     # Datos del Legajo ----<Page>
-    #institutional_email = fields.Char(string=u'Correo electrónico institucional', readonly=True)
-    #digitized_document_file = fields.Binary(string=digitized_document_full_name)
-    #digitized_document_filename = fields.Char('Nombre del documento Digitalizado')
+    # institutional_email = fields.Char(string=u'Correo electrónico institucional', readonly=True)
+    # digitized_document_file = fields.Binary(string=digitized_document_full_name)
+    # digitized_document_filename = fields.Char('Nombre del documento Digitalizado')
     address_receipt_file = fields.Binary(related='partner_id.address_receipt_file', readonly=False)
     address_receipt_file_name = fields.Char(related='partner_id.address_receipt_file_name', readonly=False)
 
@@ -50,7 +51,8 @@ class ONSCCVDigital(models.Model):
     # blood_type = fields.Selection(BLOOD_TYPE, string=u'Tipo de sangre')
     information_contact_ids = fields.One2many('onsc.cv.information.contact', 'cv_digital_id',
                                               string=u'Información de Contacto')
-    #other_information_official = fields.Text(string="Otra información del funcionario/a")
+
+    # other_information_official = fields.Text(string="Otra información del funcionario/a")
 
     @api.depends('is_cv_gender_public')
     def _compute_gender_public_visualization_date(self):
