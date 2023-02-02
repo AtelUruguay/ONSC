@@ -5,14 +5,14 @@ from odoo import models, fields, api
 
 class HrEmployee(models.Model):
     _name = "hr.employee"
-    _inherit = ['hr.employee', 'onsc.cv.common.data']
+    _inherit = ['hr.employee', 'onsc.cv.common.data', 'onsc.cv.legajo.abstract.common']
 
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital",
                                     string="CV Digital",
                                     compute='_compute_cv_digital_id',
                                     store=True)
     drivers_license_ids = fields.One2many("onsc.legajo.driver.license",
-                                          inverse_name="legajo_id",
+                                          inverse_name="employee_id",
                                           string="Licencias de conducir",
                                           copy=True)
 
@@ -27,6 +27,30 @@ class HrEmployee(models.Model):
         compute='_compute_cv_race_values', store=True)
     cv_first_race_id = fields.Many2one("onsc.cv.race", string=u"¿Con cuál se reconoce principalmente?",
                                        domain="[('id','in',cv_race_ids)]")
+
+    # Domicilio
+
+    country_code = fields.Char("Código", related="country_id.code", readonly=True)
+    cv_address_state_id = fields.Many2one('res.country.state', string='Departamento')
+    cv_address_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad')
+    cv_address_nro_door = fields.Char(u'Número')
+    cv_address_apto = fields.Char(u'Apto')
+    cv_address_street = fields.Char(u'Calle')
+    cv_address_zip = fields.Char(u'Código postal')
+    cv_address_is_cv_bis = fields.Boolean(u'BIS')
+    cv_address_amplification = fields.Text(u"Aclaraciones")
+    cv_address_place = fields.Text(string="Paraje", size=200, )
+    cv_address_block = fields.Char(string="Manzana", size=5, )
+    cv_address_sandlot = fields.Char(string="Solar", size=5, )
+
+    # Discapacidad
+    type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo')
+    is_need_other_support = fields.Boolean(u'¿Necesita otro tipo de apoyo?')
+
+    # Datos del legajo
+    information_contact_ids = fields.One2many('onsc.cv.legajo.information.contact', 'employee_id',
+                                              string=u'Información de Contacto')
+    last_modification_date = fields.Date(string=u'Fecha última modificación')
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):
@@ -56,7 +80,19 @@ class HrEmployee(models.Model):
             }))
         return driver_licences_orm
 
+    def _get_information_contact_orm(self):
+        information_contact_orm = [(5,)]
+        for information_contact in self.cv_digital_id.information_contact_ids:
+            information_contact_orm.append((0, 0, {
+                'name_contact': information_contact.name_contact,
+                'prefix_phone_id': information_contact.prefix_phone_id.id,
+                'contact_person_telephone': information_contact.contact_person_telephone,
+                'remark_contact_person': information_contact.remark_contact_person,
+            }))
+        return information_contact_orm
+
     def button_get_info_fromcv(self):
+
         for record in self.suspend_security():
             vals = {
                 'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
@@ -86,7 +122,7 @@ class HrEmployee(models.Model):
                 'professional_resume': record.cv_digital_id.professional_resume,
                 'user_linkedIn': record.cv_digital_id.user_linkedIn,
                 'is_driver_license': record.cv_digital_id.is_driver_license,
-                # 'drivers_license_ids': record._get_driver_licences_orm()
+                'drivers_license_ids': record._get_driver_licences_orm(),
                 # GENERO
                 'cv_gender_id': record.cv_digital_id.cv_gender_id.id,
                 'cv_gender2': record.cv_digital_id.cv_gender2,
@@ -95,7 +131,65 @@ class HrEmployee(models.Model):
                 'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
                 # RAZA
                 'cv_race2': record.cv_digital_id.cv_race2,
+                'cv_race_ids':record.cv_digital_id.cv_race_ids,
+                'cv_first_race_id':record.cv_digital_id.cv_first_race_id,
+                'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
+                'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
+                'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
+                'is_cv_race_public':record.cv_digital_id.is_cv_race_public,
+                #Victima de Delitos violentos
+                'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
+                'is_victim_violent': record.cv_digital_id.is_victim_violent,
+                'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
+                'relationship_victim_violent_filename': record.cv_digital_id.relationship_victim_violent_filename,
+                # Domicilio
+                'country_id': record.cv_digital_id.country_id.id,
+                'cv_address_street_id': record.cv_digital_id.cv_address_street_id.id,
+                'cv_address_street2_id': record.cv_digital_id.cv_address_street2_id.id,
+                'cv_address_street3_id': record.cv_digital_id.cv_address_street3_id.id,
+                'cv_address_state_id': record.cv_digital_id.cv_address_state_id.id,
+                'cv_address_location_id': record.cv_digital_id.cv_address_location_id.id,
+                'cv_address_nro_door': record.cv_digital_id.cv_address_nro_door,
+                'cv_address_apto': record.cv_digital_id.cv_address_apto,
+                'cv_address_street': record.cv_digital_id.cv_address_street,
+                'cv_address_zip': record.cv_digital_id.cv_address_zip,
+                'cv_address_is_cv_bis': record.cv_digital_id.cv_address_is_cv_bis,
+                'cv_address_amplification': record.cv_digital_id.cv_address_amplification,
+                'cv_address_place': record.cv_digital_id.cv_address_place,
+                'cv_address_block': record.cv_digital_id.cv_address_block,
+                'cv_address_sandlot': record.cv_digital_id.cv_address_sandlot,
+                # Discapacidad
+                'allow_content_public': record.cv_digital_id.allow_content_public,
+                'situation_disability': record.cv_digital_id.situation_disability,
+                'people_disabilitie': record.cv_digital_id.people_disabilitie,
+                'document_certificate_file': record.cv_digital_id.document_certificate_file,
+                'document_certificate_filename': record.cv_digital_id.document_certificate_filename,
+                'certificate_date': record.cv_digital_id.certificate_date,
+                'to_date': record.cv_digital_id.to_date,
+                'see': record.cv_digital_id.see,
+                'hear': record.cv_digital_id.hear,
+                'walk': record.cv_digital_id.walk,
+                'speak': record.cv_digital_id.speak,
+                'realize': record.cv_digital_id.realize,
+                'lear': record.cv_digital_id.lear,
+                'interaction': record.cv_digital_id.interaction,
+                'need_other_support': record.cv_digital_id.need_other_support,
+                # Datos del legajo
+                'mergency_service_id': record.cv_digital_id.mergency_service_id.id,
+                'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
+                'emergency_service_telephone': record.cv_digital_id.emergency_service_telephone,
+                #'department_id': record.cv_digital_id.department_id.id,
+                'blood_type': record.cv_digital_id.blood_type,
+                'other_information_official': record.cv_digital_id.other_information_official,
+                'institutional_email': record.cv_digital_id.institutional_email,
+                'digitized_document_file': record.cv_digital_id.digitized_document_file,
+                'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
+                'information_contact_ids': self._get_information_contact_orm(),
+                #Extras
+                'last_modification_date': record.cv_digital_id.last_modification_date,
+
             }
+
             record.write(vals)
 
 
@@ -103,7 +197,7 @@ class ONSCLegajoDriverLicense(models.Model):
     _name = 'onsc.legajo.driver.license'
     _description = 'Licencia de conducir'
 
-    legajo_id = fields.Many2one("onsc.legajo", string="Legajo", required=True, index=True, ondelete='cascade')
+    employee_id = fields.Many2one("hr.employee", string="Legajo", required=True, index=True, ondelete='cascade')
     validation_date = fields.Date("Fecha de vencimiento", required=True)
     category_id = fields.Many2one("onsc.cv.drivers.license.categories", "Categoría", required=True)
     license_file = fields.Binary("Documento digitalizado licencia de conducir")
@@ -113,3 +207,30 @@ class ONSCLegajoDriverLicense(models.Model):
     def create(self, values):
         record = super(ONSCLegajoDriverLicense, self).create(values)
         return record
+
+
+class ONSCCVLegajoInformationContact(models.Model):
+    _name = 'onsc.cv.legajo.information.contact'
+    _description = 'Información de Contacto para el legajo'
+    _inherit = 'onsc.cv.abstract.phone.validated'
+
+    @property
+    def prefix_by_phones(self):
+        res = super().prefix_by_phones
+        return res + [('prefix_phone_id', 'contact_person_telephone')]
+
+    employee_id = fields.Many2one("hr.employee", string="Legajo", required=True, index=True, ondelete='cascade')
+    name_contact = fields.Char(string=u'Nombre de persona de contacto', required=True)
+    # TO-DO: Revisar este campo, No esta en catalogo
+    # link_people_contact_id = fields.Many2one("model", u"Vínculo con persona de contacto", required=True)
+    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
+                                      default=lambda self: self.env['res.country.phone'].search(
+                                          [('country_id.code', '=', 'UY')]), required=True)
+    contact_person_telephone = fields.Char(string=u'Teléfono de persona de contacto', required=True)
+    phone_full = fields.Char(compute='_compute_phone_full', string=u'Teléfono de persona de contacto')
+    remark_contact_person = fields.Text(string=u'Observación para la persona de contacto', required=True)
+
+    @api.depends('prefix_phone_id', 'contact_person_telephone')
+    def _compute_phone_full(self):
+        for rec in self:
+            rec.phone_full = '+%s %s' % (rec.prefix_phone_id.prefix_code, rec.contact_person_telephone)

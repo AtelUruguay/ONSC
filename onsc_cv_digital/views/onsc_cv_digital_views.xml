@@ -445,7 +445,7 @@
                             </div>
                             <group>
                                 <group>
-                                    <field name="allow_content_public"/>
+                                    <field name="allow_content_public" required="1"/>
                                     <field name="situation_disability"/>
                                     <field name="people_disabilitie"
                                            attrs="{'invisible': [('situation_disability', '!=', 'si')]}"/>

@@ -10,6 +10,7 @@
                     <button name="button_get_info_fromcv" type="object" string="Sincronizar con CV"/>
                 </header>
                 <field name="cv_sex_updated_date" position="after">
+                    <field name="last_modification_date" readonly="1"/>
                     <field name="cv_digital_id" groups="onsc_legajo.group_legajo_configurador_empleado"/>
                 </field>
                 <field name="cv_expiration_date" position="after">
@@ -18,66 +19,74 @@
                            options="{'accepted_file_extensions': '.pdf'}"
                            groups="onsc_legajo.group_legajo_configurador_empleado"/>
                     <field name="document_identity_filename" invisible="1"
-                       groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                           groups="onsc_legajo.group_legajo_configurador_empleado"/>
                 </field>
                 <notebook position="inside">
                     <page string="Información general">
                         <group string="Datos personales">
                             <group>
-                                <field name="country_of_birth_id"/>
-                                <field name="marital_status_id"/>
-                                <field name="uy_citizenship"/>
+                                <field name="country_of_birth_id" readonly="1"/>
+                                <field name="status_civil_date" readonly="1"/>
+                                <field name="marital_status_id" readonly="1"/>
+                                <field name="uy_citizenship" readonly="1"/>
                                 <field name="crendencial_serie"
-                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
+                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"
+                                       readonly="1"/>
                                 <field name="credential_number"
-                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
+                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"
+                                       readonly="1"/>
                                 <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                        filename="civical_credential_filename"
-                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
-                                <field name="document_identity_filename" invisible="1"/>
-                                <field name="civical_credential_filename" invisible="1"/>
+                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"
+                                       readonly="1"/>
+                                <field name="document_identity_filename" invisible="1" readonly="1"/>
+                                <field name="civical_credential_filename" invisible="1" readonly="1"/>
                             </group>
                             <group>
-                                <label for="personal_phone"/>
+                                <label for="personal_phone" readonly="1"/>
                                 <div class="content-group row" style="margin-left:5px">
                                     <field name="prefix_phone_id" options="{'no_open': True, 'no_create': True}"
                                            style='max-width:75px !important; padding:1px !important;'
-                                           class="oe_inline"/>
-                                    <field name="personal_phone" class="oe_inline" style="padding:1px !important;"/>
+                                           class="oe_inline" readonly="1"/>
+                                    <field name="personal_phone" class="oe_inline" style="padding:1px !important;"
+                                           readonly="1"/>
                                 </div>
                                 <label for="mobile_phone"/>
                                 <div class="content-group row" style="margin-left:5px">
                                     <field name="prefix_mobile_phone_id"
                                            options="{'no_open': True, 'no_create': True}"
                                            style='max-width:75px !important; padding:1px !important;'
-                                           class="oe_inline"/>
-                                    <field name="mobile_phone" class="oe_inline" style="padding:1px !important;"/>
+                                           class="oe_inline" readonly="1"/>
+                                    <field name="mobile_phone" class="oe_inline" style="padding:1px !important;"
+                                           readonly="1"/>
                                 </div>
-                                <field name="email" widget="email"/>
-                                <field name="user_linkedIn"/>
-                                <field name="cjppu_affiliate_number"/>
+                                <field name="email" widget="email" readonly="1"/>
+                                <field name="user_linkedIn" readonly="1"/>
+                                <field name="cjppu_affiliate_number" readonly="1"/>
                                 <field name="professional_resume"
-                                       placeholder="Resumen del candidato a modo de introducción"/>
-                                <field name="is_driver_license"/>
+                                       placeholder="Resumen del candidato a modo de introducción" readonly="1"/>
+                                <field name="is_driver_license" readonly="1"/>
                             </group>
                         </group>
                         <group string="Licencias de Conducir"
                                attrs="{'invisible': [('is_driver_license', '=', False)]}">
-                            <field name="drivers_license_ids" nolabel="1">
+                            <field name="drivers_license_ids" nolabel="1" readonly="1">
                                 <tree editable="bottom">
-                                    <field name="validation_date" width="0.5"/>
-                                    <field name="category_id"/>
+                                    <field name="validation_date" width="0.5" readonly="1"/>
+                                    <field name="category_id" readonly="1"/>
                                     <field name="license_file"
                                            widget="binary"
                                            filename="license_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                           options="{'accepted_file_extensions': '.pdf'}" readonly="1"/>
                                     <field name="license_filename" invisible="1"/>
                                 </tree>
                             </field>
                         </group>
                         <group>
                             <group string="Género">
-                                <field name="cv_gender_id" options="{'limit': 12}" readonly="1"/>
+                                <field name="cv_gender_id" readonly="1"/>
+                                <field name="gender_date" readonly="1"/>
+
                                 <field name="cv_gender2"
                                        readonly="1"
                                        attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)]}"/>
@@ -87,30 +96,24 @@
                                        options="{'accepted_file_extensions': '.pdf'}"
                                        attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
                                 <field name="is_cv_gender_public"
-                                        readonly="1"
+                                       readonly="1"
                                        help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
                                 <field name="is_cv_gender_option_other_enable" invisible="1"/>
                                 <field name="is_cv_gender_record" invisible="1"/>
                                 <field name="cv_gender_record_filename" invisible="1"/>
                             </group>
                             <group string="Identidad étnico-racial">
-                                <field name="cv_race_ids" widget="many2many_tags"  readonly="1"/>
+                                <field name="cv_race_ids" widget="many2many_tags"/>
                                 <field name="cv_race2"
-                                       readonly="1"
                                        attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)]}"/>
                                 <field name="cv_first_race_id"
-                                       readonly="1"
                                        attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)]}"/>
-                                <field name="is_cv_race_public"
-                                       readonly="1"
-                                       help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
+                                <field name="is_cv_race_public"/>
                                 <field name="is_cv_race_option_other_enable" invisible="1"/>
                                 <field name="is_multiple_cv_race_selected" invisible="1"/>
-                                <field name="is_afro_descendants"  readonly="1"/>
+                                <field name="is_afro_descendants"/>
                                 <field name="afro_descendants_file"
-                                       readonly="1"
                                        filename="afro_descendants_filename"
-                                       attrs="{'invisible': [('is_afro_descendants', '!=', True)]}"
                                        options="{'accepted_file_extensions': '.pdf'}"/>
                                 <field name="afro_descendants_filename" invisible="1"/>
                             </group>
@@ -129,7 +132,7 @@
                                 <field name="occupational_health_card_filename" invisible="1"/>
                             </group>
                             <group string="Certificado de aptitud médico-deportiva">
-                                <field name="is_medical_aptitude_certificate_status"  readonly="1"/>
+                                <field name="is_medical_aptitude_certificate_status" readonly="1"/>
                                 <field name="medical_aptitude_certificate_date"
                                        readonly="1"
                                        attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)]}"/>
@@ -139,6 +142,167 @@
                                        options="{'accepted_file_extensions': '.pdf'}"
                                        attrs="{'invisible': [('is_medical_aptitude_certificate_status', '=', False)]}"/>
                                 <field name="medical_aptitude_certificate_filename" invisible="1"/>
+                            </group>
+
+                            <group>
+                                <group string="Víctima de delitos violentos">
+                                    <field name="is_victim_violent" readonly="1"/>
+                                    <field name="relationship_victim_violent_file"
+                                           filename="relationship_victim_violent_filename"
+                                           attrs="{'invisible': [('is_victim_violent', '=', False)]}"
+                                           options="{'accepted_file_extensions': '.pdf'}" readonly="1"/>
+                                    <field name="is_public_information_victim_violent" readonly="1"
+                                           help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
+                                    <field name="relationship_victim_violent_filename" invisible="1"/>
+                                </group>
+                            </group>
+                        </group>
+                    </page>
+
+                    <page name="address" string="Domicilio">
+
+                        <group>
+                            <group>
+                                <field name="country_id" string="País" readonly="1"/>
+                                <field name="cv_address_state_id" string="Departamento" readonly="1"/>
+                                <field name="cv_address_location_id" readonly="1"/>
+                            </group>
+                            <group>
+                            </group>
+                        </group>
+                        <group>
+                            <group>
+                                <field name="country_code" invisible="1"/>
+                                <field name="cv_address_street_id"
+                                       attrs="{'invisible': [('country_code', '!=', 'UY')]}" readonly="1"/>
+                                <field name="cv_address_street2_id"
+                                       attrs="{'invisible': [('country_code', '!=', 'UY')]}" readonly="1"/>
+                                <field name="cv_address_street3_id"
+                                       attrs="{'invisible': [('country_code', '!=', 'UY')]}" readonly="1"/>
+                                <field name="cv_address_street" string="Calle"
+                                       attrs="{'invisible': [('country_code', '=', 'UY')]}" readonly="1"/>
+                                <field name="cv_address_nro_door" readonly="1"/>
+                                <field name="cv_address_is_cv_bis" readonly="1"/>
+                                <field name="cv_address_apto" readonly="1"/>
+                                <field name="cv_address_zip" string="C.P" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="cv_address_place" readonly="1"/>
+                                <field name="cv_address_block" readonly="1"/>
+                                <field name="cv_address_sandlot" readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="cv_address_amplification" readonly="1"/>
+                        </group>
+                    </page>
+                    <page string="Discapacidad">
+                        <group>
+                            <group>
+                                <field name="allow_content_public" readonly="1"/>
+                                <field name="situation_disability" readonly="1"/>
+                                <field name="people_disabilitie"
+                                       attrs="{'invisible': [('situation_disability', '!=', 'si')]}" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="document_certificate_filename" invisible="1"/>
+                                <field name="document_certificate_file" filename="document_certificate_filename"
+                                       options="{'accepted_file_extensions': '.pdf'}"
+                                       attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}" readonly="1"/>
+                                <field name="certificate_date"
+                                       attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}" readonly="1"/>
+                                <field name="to_date" attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}"
+                                       readonly="1"/>
+                                <field name="disability_date"
+                                       attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Tiene dificultad permanente para:"
+                               attrs="{'invisible': [('situation_disability', '!=', 'si')]}" readonly="1">
+                            <group>
+                                <field name="see" widget="radio" readonly="1"/>
+                                <br/>
+                                <field name="walk" widget="radio" readonly="1"/>
+                                <br/>
+                                <field name="realize" widget="radio" readonly="1"/>
+                                <br/>
+                                <field name="interaction" widget="radio" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="hear" widget="radio" readonly="1"/>
+                                <br/>
+                                <field name="speak" widget="radio" readonly="1"/>
+                                <br/>
+                                <field name="lear" widget="radio" readonly="1"/>
+                            </group>
+                        </group>
+                        <group string="Seleccione los apoyos que desea:"
+                               attrs="{'invisible': [('situation_disability', '!=', 'si')]}">
+                            <group>
+                                <field name="type_support_ids" widget="many2many_tags" readonly="1"/>
+                            </group>
+                            <group>
+                                <field name="is_need_other_support" readonly="1"/>
+                                <field name="need_other_support"
+                                       attrs="{'invisible': [('is_need_other_support', '!=', True)]}" readonly="1"/>
+                            </group>
+                        </group>
+                    </page>
+                    <page name="datos_legajo" string="Datos del legajo">
+                        <group>
+                            <group string="Información personal:">
+                                <field name="institutional_email" readonly="1"/>
+                                <field name="digitized_document_file" filename="digitized_document_filename"
+                                       options="{'accepted_file_extensions': '.pdf'}" readonly="1"/>
+                                <field name="digitized_document_filename" invisible="1"/>
+                            </group>
+                            <group string="Información de salud:">
+                                <separator string="Servicio de Salud/Emergencia" style="font-size: 12px"/>
+                                <br/>
+                                <label for="emergency_service_telephone"/>
+                                <div class="content-group row" style="padding: 15px">
+                                    <field name="prefix_emergency_phone_id"
+                                           style="max-width: 70px !important; padding:1px !important;" class="oe_inline"
+                                           readonly="1"/>
+                                    <field name="emergency_service_telephone" class="oe_inline" readonly="1"/>
+                                </div>
+                                <field name="department_id" readonly="1"/>
+                                <field name="company_id" invisible="1" readonly="1"/>
+                                <separator string="Otros datos" style="font-size: 12px"/>
+                                <field name="blood_type" readonly="1"/>
+                            </group>
+                            <group string="Información de contacto">
+                                <field name="information_contact_ids" nolabel="1" readonly="1">
+                                    <tree>
+                                        <field name="name_contact"/>
+                                        <field name="phone_full"/>
+                                        <field name="contact_person_telephone" invisible="1"/>
+                                        <field name="remark_contact_person"/>
+                                    </tree>
+                                    <form>
+                                        <sheet>
+                                            <group>
+                                                <group>
+                                                    <field name="name_contact"/>
+                                                    <label for="contact_person_telephone"/>
+                                                    <div class="content-group row" style="margin-left:5px">
+                                                        <field name="prefix_phone_id"
+                                                               style="max-width:75px !important; padding:1px !important;"
+                                                               class="oe_inline"/>
+                                                        <field name="contact_person_telephone" class="oe_inline"
+                                                               style="padding:1px !important;"/>
+                                                    </div>
+                                                </group>
+                                                <group>
+                                                    <field name="remark_contact_person"/>
+                                                </group>
+                                            </group>
+                                        </sheet>
+                                    </form>
+                                </field>
+                            </group>
+                            <group string="Otra información">
+                                <field name="other_information_official" nolabel="1" readonly="1"/>
                             </group>
                         </group>
                     </page>

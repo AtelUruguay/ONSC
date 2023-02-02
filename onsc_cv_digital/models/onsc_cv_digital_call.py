@@ -9,9 +9,9 @@ from os.path import join
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
+from .abstracts.onsc_cv_abstract_common import SELECTION_RADIO
 from .abstracts.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
-from .onsc_cv_digital import SELECTION_RADIO
 from ..soap import soap_error_codes
 
 _logger = logging.getLogger(__name__)

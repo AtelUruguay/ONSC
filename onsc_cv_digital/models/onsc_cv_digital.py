@@ -16,10 +16,7 @@ _logger = logging.getLogger(__name__)
 HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace a la ayuda"
                             href="%s">
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
-SELECTION_RADIO = [('1', 'Si, no puede hacerlo'), ('2', 'Si, mucha dificultad'),
-                   ('3', 'Si, alguna dificultad '), ('4', 'No tiene dificultad')]
-SITUATION = u'¿Está en situación de discapacidad y/o requiere algún apoyo para cumplir con sus actividades laborales?'
-DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
+
 
 
 def diff_month(d1, d2):
@@ -143,13 +140,14 @@ class ONSCCVDigital(models.Model):
                                             string="Fecha de información")
 
     # DOMICILIO----<Page>
+    #Campos en el partner pero con otro nombre
     country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
     cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
     cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False, store=True)
-    cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle")
-    cv_address_street2_id = fields.Many2one('onsc.cv.street', string="Entre calle")
-    cv_address_street3_id = fields.Many2one('onsc.cv.street', string=u'Y calle')
+    # cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle")
+    # cv_address_street2_id = fields.Many2one('onsc.cv.street', string="Entre calle")
+    # cv_address_street3_id = fields.Many2one('onsc.cv.street', string=u'Y calle')
     cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
     cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
     cv_address_street = fields.Char(related='partner_id.street', readonly=False)
@@ -201,12 +199,12 @@ class ONSCCVDigital(models.Model):
     #     string="Documento digitalizado del certificado de aptitud médico-deportiva")
     # medical_aptitude_certificate_filename = fields.Char('Nombre del documento digital')
 
-    is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)", )
-    relationship_victim_violent_file = fields.Binary(
-        string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
-    relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
-    is_public_information_victim_violent = fields.Boolean(
-        string="¿Desea que esta información se incluya en la versión impresa de su CV?", )
+    # is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)", )
+    # relationship_victim_violent_file = fields.Binary(
+    #     string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
+    # relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
+    # is_public_information_victim_violent = fields.Boolean(
+    #     string="¿Desea que esta información se incluya en la versión impresa de su CV?", )
 
     # Formación----<Page>
     basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica',
@@ -245,26 +243,26 @@ class ONSCCVDigital(models.Model):
                                                            inverse_name="cv_digital_id",
                                                            string="Tutorías, Orientaciones, Supervisiones", copy=True)
     # Discapacidad ----<Page>
-    allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
-                                            string=u'¿Permite que el contenido de esta sección se visualice en su CV?')
-    situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
-    people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
-    document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')
-    document_certificate_filename = fields.Char('Nombre del documento Digitalizado')
-    certificate_date = fields.Date(string=u'Fecha de certificado')
-    to_date = fields.Date(string=u'Fecha hasta')
-    see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes')
-    hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, aún si usa audífono')
-    walk = fields.Selection(selection=SELECTION_RADIO, string=u'Caminar o subir escalones')
-    speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas')
-    realize = fields.Selection(selection=SELECTION_RADIO,
-                               string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo')
-    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender')
-    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas')
+    # allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
+    #                                         string=u'¿Permite que el contenido de esta sección se visualice en su CV?')
+    # situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
+    # people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
+    # document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')
+    # document_certificate_filename = fields.Char('Nombre del documento Digitalizado')
+    # certificate_date = fields.Date(string=u'Fecha de certificado')
+    # to_date = fields.Date(string=u'Fecha hasta')
+    # see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes')
+    # hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, aún si usa audífono')
+    # walk = fields.Selection(selection=SELECTION_RADIO, string=u'Caminar o subir escalones')
+    # speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas')
+    # realize = fields.Selection(selection=SELECTION_RADIO,
+    #                            string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo')
+    # lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender')
+    # interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas')
     type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo', copy=True)
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
                                                compute='_compute_cv_type_support_domain', copy=True)
-    need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
+    # need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")
     is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain')
 
     # Participación en Eventos ----<Page>
