@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Legajo',
-    'version': '15.0.1.0.0',
+    'version': '15.0.2.0.0',
     'summary': 'ONSC - Legajo',
     'sequence': 11,
     'description': """
@@ -14,9 +14,11 @@ ONSC - Legajo
         'security/onsc_legajo_security.xml',
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',
+        'data/ir_config_parameters_data.xml',
         'data/onsc_legajo_state_square_data.xml',
         'data/onsc_legajo_reason_extinction_commission_data.xml',
         'data/onsc_legajo_commission_regime_data.xml',
+        'data/onsc_legajo_integration_error_data.xml',
         'views/catalogs/onsc_legajo_emergency_views.xml',
         'views/catalogs/onsc_legajo_health_provider_views.xml',
         'views/catalogs/onsc_legajo_document_type_views.xml',

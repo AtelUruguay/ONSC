@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_log_view_tree" model="ir.ui.view">
+        <field name="name">onsc.log.tree</field>
+        <field name="model">onsc.log</field>
+        <field name="arch" type="xml">
+            <tree string="Logs" decoration-danger="type == 'error'" decoration-info="type == 'info'" decoration-warning="type == 'warning'">
+                <field name="process" invisible="1"/>
+                <field name="origin"/>
+                <field name="create_date"/>
+                <field name="type"/>
+                <field name="ref"/>
+                <field name="code"/>
+                <field name="description"/>
+                <field name="long_description"/>
+            </tree>
+        </field>
+    </record>
+    <record id="onsc_log_view_form" model="ir.ui.view">
+        <field name="name">onsc.log.form</field>
+        <field name="model">onsc.log</field>
+        <field name="arch" type="xml">
+            <form string="Logs">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="process" invisible="1"/>
+                            <field name="origin"/>
+                            <field name="create_date"/>
+                            <field name="type"/>
+                        </group>
+                        <group>
+                            <field name="ref"/>
+                            <field name="code"/>
+                            <field name="description"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Detalle">
+                            <field name="long_description"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="onsc_log_view_search" model="ir.ui.view">
+        <field name="name">onsc.log.search</field>
+        <field name="model">onsc.log</field>
+        <field name="arch" type="xml">
+            <search string="Logs">
+                <field name="origin"/>
+                <field name="create_date"/>
+                <field name="type"/>
+                <field name="ref"/>
+                <field name="code"/>
+                <group string="Agrupar por">
+                    <filter name="group_type" string="Tipo" context="{'group_by': 'type'}"/>
+                    <filter name="group_ref" string="Referencia" context="{'group_by': 'ref'}"/>
+                    <filter name="group_code" string="Codigo" context="{'group_by': 'code'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+</odoo>

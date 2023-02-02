@@ -14,5 +14,5 @@ class ONSCLegajoIntegrationError(models.Model):
     active = fields.Boolean('Activo', default=True)
 
     _sql_constraints = [
-        ('integration_code_uniq', 'unique(integration_code)', u'El código de integración debe ser único')
+        ('integration_code_uniq', 'unique(integration_code,code_error)', u'El código de error debe ser único por integración')
     ]
