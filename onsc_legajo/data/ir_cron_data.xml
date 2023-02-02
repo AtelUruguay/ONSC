@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<odoo>
+<odoo noupdate="1">
     <record id="sync_legajo_regime" model="ir.cron">
         <field name="name">Legajo: Sincronizar régimen</field>
         <field name="model_id" ref="model_onsc_legajo_regime"/>

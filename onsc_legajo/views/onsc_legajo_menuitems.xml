@@ -1,5 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <record id="onsc_legajo_log_action" model="ir.actions.act_window">
+        <field name="name">Logs</field>
+        <field name="res_model">onsc.log</field>
+        <field name="view_mode">tree,form</field>
+        <field name="domain">[('process','=','legajo')]</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Logs
+            </p>
+        </field>
+    </record>
+
     <menuitem id="onsc_legajo_root_menu"
               name="Legajos"
               web_icon="onsc_catalog,static/description/icon.png"
@@ -92,4 +104,10 @@
               parent="onsc_legajo_config_menu"
               groups="onsc_legajo.group_legajo_configurador"
               sequence="14"/>
+    <menuitem id="onsc_legajo_logs_menu"
+              name="Logs"
+              groups="onsc_legajo.group_legajo_configurador_integracion"
+              action="onsc_legajo_log_action"
+              parent="onsc_legajo_root_menu"
+              sequence="150"/>
 </odoo>
