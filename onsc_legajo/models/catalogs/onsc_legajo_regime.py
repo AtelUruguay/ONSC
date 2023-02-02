@@ -40,7 +40,7 @@ class ONSCLegajoRegime(models.Model):
         cron = self.env.ref("onsc_legajo.sync_legajo_regime")
         integration_error_WS14_9005 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS14_9005")
         try:
-            response = ONSCLegajoClient.get_response(parameter, {})
+            response = ONSCLegajoClient.get_response(cron.name, parameter, {})
         except Exception as e:
             self.env.cr.rollback()
             self._create_log(
