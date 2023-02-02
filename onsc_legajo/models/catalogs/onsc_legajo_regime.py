@@ -43,7 +43,7 @@ class ONSCLegajoRegime(models.Model):
             response = ONSCLegajoClient.get_response(parameter, {})
         except Exception as e:
             self.env.cr.rollback()
-            self._set_log(
+            self._create_log(
                 origin=cron.name,
                 type='error',
                 integration_log=integration_error_WS14_9005,
@@ -54,7 +54,7 @@ class ONSCLegajoRegime(models.Model):
             if response.servicioResultado.codigo == 0:
                 self._populate_from_syncronization(response)
             else:
-                self._set_log(
+                self._create_log(
                     origin=cron.name,
                     type='error',
                     integration_log=integration_error_WS14_9005,
@@ -63,6 +63,7 @@ class ONSCLegajoRegime(models.Model):
         return True
 
     def _populate_from_syncronization(self, response):
+        # pylint: disable=invalid-commit
         all_odoo_regime = self.search([('active', 'in', [False, True])])
         all_odoo_regime_codeRegimen_list = all_odoo_regime.mapped('codRegimen')
 
@@ -78,14 +79,14 @@ class ONSCLegajoRegime(models.Model):
             # CREANDO NUEVO ELEMENTO
             if codRegimen_str not in all_odoo_regime_codeRegimen_list:
                 try:
-                    new_recordset = self.create({
+                    self.create({
                         'codRegimen': codRegimen_str,
                         'descripcionRegimen': external_record.descripcionRegimen,
                         'indVencimiento': external_record.indVencimiento,
                         'presupuesto': external_record.presupuesto == 'S',
                         'vigente': external_record.vigente == 'S',
                     })
-                    self._set_log(
+                    self._create_log(
                         origin=cron.name,
                         type='info',
                         integration_log=integration_error_WS14_9000,
@@ -95,7 +96,7 @@ class ONSCLegajoRegime(models.Model):
                 except Exception as e:
                     self.env.cr.commit()
                     _logger.warning(tools.ustr(e))
-                    self._set_log(
+                    self._create_log(
                         origin=cron.name,
                         type='error',
                         integration_log=integration_error_WS14_9001,
@@ -111,7 +112,7 @@ class ONSCLegajoRegime(models.Model):
                         'vigente': external_record.vigente,
                         'active': True,
                     })
-                    self._set_log(
+                    self._create_log(
                         origin=cron.name,
                         type='info',
                         integration_log=integration_error_WS14_9000,
@@ -121,7 +122,7 @@ class ONSCLegajoRegime(models.Model):
                 except Exception as e:
                     self.env.cr.commit()
                     _logger.warning(tools.ustr(e))
-                    self._set_log(
+                    self._create_log(
                         origin=cron.name,
                         type='error',
                         integration_log=integration_error_WS14_9002,
@@ -132,7 +133,7 @@ class ONSCLegajoRegime(models.Model):
             'active': False
         })
 
-    def _set_log(self, origin, type, integration_log, ws_tuple=False, long_description=False):
+    def _create_log(self, origin, type, integration_log, ws_tuple=False, long_description=False):
         if long_description and ws_tuple:
             _long_description = _('%s Tupla: %s') % (long_description, str(ws_tuple))
         elif not ws_tuple:
