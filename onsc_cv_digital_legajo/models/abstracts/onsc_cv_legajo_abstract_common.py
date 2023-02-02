@@ -39,7 +39,7 @@ class ONSCCVLegajoAbstractCommon(models.AbstractModel):
     other_information_official = fields.Text(string="Otra información del funcionario/a")
 
     # Datos del Legajo
-    institutional_email = fields.Char(string=u'Correo electrónico institucional', readonly=True)
+    institutional_email = fields.Char(string=u'Correo electrónico institucional')
     digitized_document_file = fields.Binary(string=digitized_document_full_name)
     digitized_document_filename = fields.Char('Nombre del documento Digitalizado')
     gender_date = fields.Date(string="Fecha de información género")
