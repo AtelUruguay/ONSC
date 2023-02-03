@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
     <record id="sync_legajo_regime" model="ir.cron">
-        <field name="name">Legajo: Sincronizar régimen</field>
+        <field name="name">Legajo: WS14 Sincronizar régimen</field>
         <field name="model_id" ref="model_onsc_legajo_regime"/>
         <field name="state">code</field>
         <field name="code">model.syncronize()</field>
@@ -11,7 +11,7 @@
     </record>
 
     <record id="sync_legajo_budget_item" model="ir.cron">
-        <field name="name">Legajo: Sincronizar partidas</field>
+        <field name="name">Legajo: WS2 Sincronizar partidas</field>
         <field name="model_id" ref="model_onsc_legajo_budget_item"/>
         <field name="state">code</field>
         <field name="code">model.syncronize()</field>
@@ -21,7 +21,7 @@
     </record>
 
     <record id="sync_legajo_norm" model="ir.cron">
-        <field name="name">Legajo: Sincronizar normas</field>
+        <field name="name">Legajo: WS3 Sincronizar normas</field>
         <field name="model_id" ref="model_onsc_legajo_norm"/>
         <field name="state">code</field>
         <field name="code">model.syncronize()</field>
@@ -31,7 +31,7 @@
     </record>
 
     <record id="sync_legajo_office" model="ir.cron">
-        <field name="name">Legajo: Sincronizar oficinas</field>
+        <field name="name">Legajo: WS13 Sincronizar oficinas</field>
         <field name="model_id" ref="model_onsc_legajo_office"/>
         <field name="state">code</field>
         <field name="code">model.syncronize()</field>
