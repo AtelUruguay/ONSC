@@ -68,7 +68,7 @@ class ONSCLegajoRegime(models.Model):
                         long_description='Evento: Creación'
                     )
                 except Exception as e:
-                    self.env.cr.commit()
+                    self.env.cr.rollback()
                     _logger.warning(tools.ustr(e))
                     self._create_log(
                         origin=cron.name,
@@ -88,7 +88,7 @@ class ONSCLegajoRegime(models.Model):
                         long_description='Evento: Actualización'
                     )
                 except Exception as e:
-                    self.env.cr.commit()
+                    self.env.cr.rollback()
                     _logger.warning(tools.ustr(e))
                     self._create_log(
                         origin=cron.name,
