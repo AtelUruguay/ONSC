@@ -58,17 +58,18 @@ class ONSCLegajoRegime(models.Model):
             # CREANDO NUEVO ELEMENTO
             if key_str not in all_odoo_recordsets_key_list:
                 try:
-                    vals['codRegimen'] = key_str
-                    self.create(vals)
-                    self._create_log(
-                        origin=cron.name,
-                        type='info',
-                        integration_log=integration_error_WS14_9000,
-                        ws_tuple=external_record,
-                        long_description='Evento: Creación'
-                    )
+                    with self._cr.savepoint():
+                        vals['codRegimen'] = key_str
+                        self.create(vals)
+                        self._create_log(
+                            origin=cron.name,
+                            type='info',
+                            integration_log=integration_error_WS14_9000,
+                            ws_tuple=external_record,
+                            long_description='Evento: Creación'
+                        )
                 except Exception as e:
-                    self.env.cr.rollback()
+                    # self.env.cr.rollback()
                     _logger.warning(tools.ustr(e))
                     self._create_log(
                         origin=cron.name,
@@ -79,16 +80,17 @@ class ONSCLegajoRegime(models.Model):
             # MODIFICANDO ELEMENTO EXISTENTE
             else:
                 try:
-                    all_odoo_recordsets.filtered(lambda x: x.codRegimen == key_str).write(vals)
-                    self._create_log(
-                        origin=cron.name,
-                        type='info',
-                        integration_log=integration_error_WS14_9000,
-                        ws_tuple=external_record,
-                        long_description='Evento: Actualización'
-                    )
+                    with self._cr.savepoint():
+                        all_odoo_recordsets.filtered(lambda x: x.codRegimen == key_str).write(vals)
+                        self._create_log(
+                            origin=cron.name,
+                            type='info',
+                            integration_log=integration_error_WS14_9000,
+                            ws_tuple=external_record,
+                            long_description='Evento: Actualización'
+                        )
                 except Exception as e:
-                    self.env.cr.rollback()
+                    # self.env.cr.rollback()
                     _logger.warning(tools.ustr(e))
                     self._create_log(
                         origin=cron.name,

@@ -20,7 +20,7 @@
         <field name="name">onsc.log.form</field>
         <field name="model">onsc.log</field>
         <field name="arch" type="xml">
-            <form string="Logs">
+            <form string="Logs" edit="0">
                 <sheet>
                     <group>
                         <group>
@@ -58,6 +58,7 @@
                     <filter name="group_type" string="Tipo" context="{'group_by': 'type'}"/>
                     <filter name="group_ref" string="Referencia" context="{'group_by': 'ref'}"/>
                     <filter name="group_code" string="Codigo" context="{'group_by': 'code'}"/>
+                    <filter name="group_date" string="Fecha" context="{'group_by': 'create_date'}"/>
                 </group>
             </search>
         </field>
