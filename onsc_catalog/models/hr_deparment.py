@@ -208,6 +208,11 @@ class Department(models.Model):
             vals['context'] = _context
         return vals
 
+    @api.model
+    def get_history_record_action(self, history_id, res_id):
+        return super(Department, self.with_context(model_view_form_id=self.env.ref(
+            'onsc_catalog.onsc_catalog_department_form').id)).get_history_record_action(history_id, res_id)
+
 
 class DepartmentResponsability(models.Model):
     _name = "hr.department.responsability"
