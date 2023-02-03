@@ -314,6 +314,7 @@ class ONSCCVDigitalCall(models.Model):
         if self.filtered(lambda x: x.call_conditional_state != 'validated'):
             self.send_notification_conditional(call_number)
             return False
+        call_number = call_number.replace('/', '_')
         filename = '%s_%s.json' % (call_number, str(fields.Datetime.now()))
         json_file = open(join(call_server_json_url, filename), 'w')
         for record in self:
