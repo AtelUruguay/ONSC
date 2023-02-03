@@ -10,6 +10,13 @@
               parent="onsc_legajo.onsc_legajo_root_menu"
               groups="onsc_legajo.group_legajo_configurador_empleado"
               sequence="1"/>
+    <menuitem
+            id="onsc_hr_contract_menu"
+            name="Contratos"
+            parent="onsc_legajo.onsc_legajo_root_menu"
+            action="onsc_legajo_hr_contract_action"
+            groups="onsc_legajo.group_legajo_configurador_contrato"
+            sequence="3"/>
     <menuitem id="onsc_legajo_hr_job_menu"
               name="Puestos de trabajo"
               parent="onsc_legajo_root_menu"
