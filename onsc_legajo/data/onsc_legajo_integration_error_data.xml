@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo noupdate="1">
-<!--    WS14-->
+    <!--    WS14 Regimen-->
     <record id="onsc_legajo_integration_error_WS14_9000" model="onsc.legajo.integration.error">
         <field name="integration_code">WS14</field>
         <field name="code_error">9000</field>
@@ -18,6 +18,51 @@
     </record>
     <record id="onsc_legajo_integration_error_WS14_9005" model="onsc.legajo.integration.error">
         <field name="integration_code">WS14</field>
+        <field name="code_error">9005</field>
+        <field name="description">Error de comunicación</field>
+    </record>
+    
+    
+    <!--    WS2 Partida-->
+    <record id="onsc_legajo_integration_error_WS2_9000" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS2</field>
+        <field name="code_error">9000</field>
+        <field name="description">Ok</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS2_9001" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS2</field>
+        <field name="code_error">9001</field>
+        <field name="description">Error en creación</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS2_9002" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS2</field>
+        <field name="code_error">9002</field>
+        <field name="description">Error en actualización</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS2_9005" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS2</field>
+        <field name="code_error">9005</field>
+        <field name="description">Error de comunicación</field>
+    </record>
+
+    <!--    WS3 Norma-->
+    <record id="onsc_legajo_integration_error_WS3_9000" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS3</field>
+        <field name="code_error">9000</field>
+        <field name="description">Ok</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS3_9001" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS3</field>
+        <field name="code_error">9001</field>
+        <field name="description">Error en creación</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS3_9002" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS3</field>
+        <field name="code_error">9002</field>
+        <field name="description">Error en actualización</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS3_9005" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS3</field>
         <field name="code_error">9005</field>
         <field name="description">Error de comunicación</field>
     </record>
