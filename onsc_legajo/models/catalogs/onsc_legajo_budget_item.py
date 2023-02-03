@@ -143,10 +143,10 @@ class ONSCLegajoBudgetItem(models.Model):
                 return vals
         except Exception as e:
             _logger.warning(tools.ustr(e))
-            integration_error_WS2_9002 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS2_9004")
+            integration_error_WS2_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS2_9004")
             self._create_log(
                 origin=cron.name,
                 type='error',
-                integration_log=integration_error_WS2_9002,
+                integration_log=integration_error_WS2_9004,
                 ws_tuple=external_record,
                 long_description=tools.ustr(e))
