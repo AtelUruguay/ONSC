@@ -39,6 +39,11 @@
         <field name="code_error">9002</field>
         <field name="description">Error en actualización</field>
     </record>
+    <record id="onsc_legajo_integration_error_WS2_9004" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS2</field>
+        <field name="code_error">9004</field>
+        <field name="description">Error de lógica</field>
+    </record>
     <record id="onsc_legajo_integration_error_WS2_9005" model="onsc.legajo.integration.error">
         <field name="integration_code">WS2</field>
         <field name="code_error">9005</field>
