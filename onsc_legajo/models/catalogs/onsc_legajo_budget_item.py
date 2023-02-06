@@ -108,36 +108,36 @@ class ONSCLegajoBudgetItem(models.Model):
                 }
                 if external_record.dsc1Id:
                     descriptor1 = Descriptor1.suspend_security().search([
-                        ('code', '=', external_record.dsc1Id)], limit=1)
-                    if descriptor1 is False:
+                        ('code', '=', str(external_record.dsc1Id))], limit=1)
+                    if descriptor1.id is False:
                         raise ValidationError(
                             _('El descriptor 1 con código %s no ha sido identificado') % external_record.dsc1Id)
                     vals['dsc1Id'] = descriptor1.id
                 if external_record.dsc2Id:
                     descriptor2 = Descriptor2.suspend_security().search([
-                        ('code', '=', external_record.dsc2Id)], limit=1)
-                    if descriptor2 is False:
+                        ('code', '=', str(external_record.dsc2Id))], limit=1)
+                    if descriptor2.id is False:
                         raise ValidationError(
                             _('El descriptor 2 con código %s no ha sido identificado') % external_record.dsc2Id)
                     vals['dsc2Id'] = descriptor2.id
                 if external_record.dsc3Id:
                     descriptor3 = Descriptor3.suspend_security().search([
-                        ('code', '=', external_record.dsc3Id)], limit=1)
-                    if descriptor3:
+                        ('code', '=', str(external_record.dsc3Id))], limit=1)
+                    if descriptor3.id:
                         vals['dsc3Id'] = descriptor3.id
                     else:
                         vals['dsc3Id'] = Descriptor3.suspend_security().create({
-                            'code': external_record.dsc3Id,
+                            'code': str(external_record.dsc3Id),
                             'name': external_record.dsc3Descripcion
                         }).id
                 if external_record.dsc4Id:
                     descriptor4 = Descriptor4.suspend_security().search([
-                        ('code', '=', external_record.dsc4Id)], limit=1)
-                    if descriptor4:
+                        ('code', '=', str(external_record.dsc4Id))], limit=1)
+                    if descriptor4.id:
                         vals['dsc4Id'] = descriptor4.id
                     else:
                         vals['dsc4Id'] = Descriptor4.suspend_security().create({
-                            'code': external_record.dsc4Id,
+                            'code': str(external_record.dsc4Id),
                             'name': external_record.dsc4Descripcion
                         }).id
                 return vals
