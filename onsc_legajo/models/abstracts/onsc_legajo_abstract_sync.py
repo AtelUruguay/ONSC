@@ -9,10 +9,10 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
     _name = 'onsc.legajo.abstract.sync'
     _description = 'Modelo abstracto para la sincronización de legajo con WS externos'
 
-    def _syncronize(self, parameter, origin_name, integration_error):
+    def _syncronize(self, parameter, origin_name, integration_error, values = {}):
         ONSCLegajoClient = soap_client.ONSCLegajoClient()
         try:
-            response = ONSCLegajoClient.get_response(origin_name, parameter, {})
+            response = ONSCLegajoClient.get_response(origin_name, parameter, values)
         except Exception as e:
             self.env.cr.rollback()
             self._create_log(
@@ -41,7 +41,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             _long_description = long_description
         else:
             _long_description = _('Tupla: %s') % (str(ws_tuple))
-        return self.env['onsc.log'].create({
+        log = self.env['onsc.log'].create({
             'process': 'legajo',
             'origin': origin,
             'type': type,
@@ -50,3 +50,4 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             'description': integration_log.description,
             'long_description': _long_description
         })
+        return log
