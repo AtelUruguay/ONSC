@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_hr_contract_view_form" model="ir.ui.view">
+        <field name="name">hr.contract.form</field>
+        <field name="model">hr.contract</field>
+        <field name="arch" type="xml">
+            <form string="Current Contract">
+
+                <sheet>
+                    <div class="oe_title pr-0" name="title">
+                        <h1 class="d-flex flex-row justify-content-between">
+                            <field name="employee_id"/>
+                        </h1>
+                        <h2>
+                            <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                        </h2>
+                    </div>
+                    <group name="top_info">
+                        <group name="top_info_left">
+                            <field name="active" invisible="1"/>
+                            <field name="name" invisible="1"/>
+                            <field name="date_start" string="Fecha de alta"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="date_end" string="Fecha de baja"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="sec_position" string="Sec plaza"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="inciso_id"
+                                   required="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="operating_unit_id" domain="operating_unit_id_domain"
+                                   required="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="operating_unit_id_domain" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="wage" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Contract Details" name="other">
+                            <group>
+                                <group name="contract_details"/>
+                            </group>
+                            <group name="notes_group" string="Notes">
+                                <field name="notes" nolabel="1"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_hr_contract_view_tree" model="ir.ui.view">
+        <field name="name">hr.contract.tree</field>
+        <field name="model">hr.contract</field>
+        <field name="arch" type="xml">
+            <tree string="Contracts" default_order='date_start ASC'>
+                <field name="name"/>
+                <field name="employee_id" widget="many2one_avatar_employee"/>
+                <field name="job_id"/>
+                <field name="date_start" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                <field name="date_end" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_hr_contract_action" model="ir.actions.act_window">
+        <field name="name">Contractos</field>
+        <field name="res_model">hr.contract</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo_hr_contract_view_tree')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo_hr_contract_view_form')})]"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear un nuevo contrato
+            </p>
+        </field>
+    </record>
+</odoo>

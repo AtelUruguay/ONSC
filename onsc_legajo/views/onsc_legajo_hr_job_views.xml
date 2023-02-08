@@ -71,7 +71,7 @@
                             <field name="role_extra_ids"
                                    groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                    nolabel="1"
-                                   context="{'default_type': 'manual'}">
+                                   context="{'default_type': 'manual', 'default_start_date': start_date,'default_end_date': end_date}">
                                 <tree editable="top">
                                     <field name="user_role_id"
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
