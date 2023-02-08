@@ -134,6 +134,8 @@
                 <field name="code"/>
                 <field name="inciso" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="unidadEjecutora" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="inciso_budget_code" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="unidadEjecutora_budget_code" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="programa" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="proyecto" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
             </search>
@@ -189,6 +191,10 @@
                                     <field name="codigoJornada"/>
                                     <field name="descripcionJornada"/>
                                 </tree>
+                                <form>
+                                    <field name="codigoJornada"/>
+                                    <field name="descripcionJornada"/>
+                                </form>
                             </field>
                         </page>
                     </notebook>
