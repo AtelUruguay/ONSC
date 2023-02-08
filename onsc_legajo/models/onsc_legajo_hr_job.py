@@ -2,8 +2,8 @@
 import json
 
 from odoo import fields, models, api, _
-
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+from odoo.exceptions import ValidationError
 
 
 class HrJob(models.Model):
@@ -22,14 +22,20 @@ class HrJob(models.Model):
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')
 
+    @api.constrains("contract_id", "start_date", "end_date")
+    def _check_date_range_into_contract(self):
+        for record in self:
+            if record.start_date < record.contract_id.date_start:
+                raise ValidationError(_("La fecha desde está fuera del rango de fechas del contrato"))
+            if record.end_date and record.contract_id.date_end and record.end_date > record.contract_id.date_end:
+                raise ValidationError(_("La fecha hasta está fuera del rango de fechas del contrato"))
+
     @api.depends('contract_id')
     def _compute_department_domain(self):
-        uos = self.env['hr.department'].search([])
+        UOs = self.env['hr.department']
         for rec in self:
-            if rec.contract_id:
-                rec.department_id_domain = json.dumps([('id', 'in', uos.ids)])
-            else:
-                rec.department_id_domain = json.dumps([])
+            uos = UOs.search([('operating_unit_id', '=', rec.contract_id.operating_unit_id.id)])
+            rec.department_id_domain = json.dumps([('id', 'in', uos.ids)])
 
     def _compute_is_readonly(self):
         for record in self:
@@ -40,21 +46,31 @@ class HrJob(models.Model):
         if self.start_date and self.end_date and self.end_date < self.start_date:
             self.start_date = False
             return warning_response(_(u"La fecha desde no puede ser mayor que la fecha hasta"))
+        self.role_ids.start_date = self.start_date
+        self.role_extra_ids.filtered(
+            lambda x: x.start_date is False or x.start_date < self.start_date).start_date = self.start_date
 
     @api.onchange('end_date')
     def onchange_end_date(self):
         if self.end_date and self.start_date and self.end_date < self.start_date:
             self.end_date = False
             return warning_response(_(u"La fecha hasta no puede ser menor que la fecha desde"))
+        self.role_ids.end_date = self.end_date
+        if self.end_date:
+            self.role_extra_ids.filtered(
+                lambda x: x.end_date is False or x.end_date > self.end_date).end_date = self.end_date
 
     @api.onchange('security_job_id')
     def onchange_security_job_id(self):
         if self.security_job_id:
             _role_ids = [(5, 0)]
             _role_ids.extend([
-                (0, 0,
-                 {'user_role_id': role.id, 'type': 'system',
-                  'start_date': self.start_date if self.start_date else fields.Date.today()})
+                (0, 0, {
+                    'user_role_id': role.id,
+                    'type': 'system',
+                    'start_date': self.start_date if self.start_date else fields.Date.today(),
+                    'end_date': self.end_date
+                })
                 for role in
                 self.security_job_id.user_role_ids])
             self.role_ids = _role_ids
@@ -81,6 +97,11 @@ class HrJobRoleLine(models.Model):
     end_date = fields.Date(string="Fecha hasta")
     type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de puesto')],
                             string='Modo de creación', default='manual')
+
+    _sql_constraints = [
+        ('recordset_uniq', 'unique(job_id,user_role_id)',
+         u'No puede haber más de un rol configurado en el mismo puesto. Revisar la pestaña de Roles y Roles adicionales')
+    ]
 
     @api.onchange('start_date')
     def onchange_start_date(self):
