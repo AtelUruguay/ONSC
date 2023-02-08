@@ -155,7 +155,7 @@ class ONSCLegajoOffice(models.Model):
                         if operating_unit.id is False:
                             raise ValidationError(
                                 _('La unidad ejecutora con código %s para el inciso %s no ha sido identificada') %
-                                str(external_record.unidadEjecutora), str(external_record.inciso))
+                                (str(external_record.unidadEjecutora), str(external_record.inciso)))
                         new_office = self.create({
                             'inciso': inciso.id,
                             'unidadEjecutora': operating_unit.id,
