@@ -18,7 +18,8 @@ class ONSCLegajoOffice(models.Model):
     inciso = fields.Many2one("onsc.catalog.inciso", string="Inciso", required=True)
     inciso_budget_code = fields.Char(u"Inciso - Código presupuestal (SIIF)", related='inciso.budget_code', store=True)
     unidadEjecutora = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True)
-    unidadEjecutora_budget_code = fields.Char(u"Unidad ejecutora - Código presupuestal (SIIF)", related='unidadEjecutora.budget_code', store=True)
+    unidadEjecutora_budget_code = fields.Char(u"Unidad ejecutora - Código presupuestal (SIIF)",
+                                              related='unidadEjecutora.budget_code', store=True)
     programa = fields.Char(string="Código del programa")
     programaDescripcion = fields.Char(string="Descripción del programa")
     proyecto = fields.Char(string="Código del proyecto")
@@ -70,20 +71,21 @@ class ONSCLegajoOffice(models.Model):
 
         offices = self._get_offices(response.listaOficinasJornada, cron)
 
-        for external_record in response.listaOficinasJornada:
-            key_str = JornadaRetributiva._get_code_by_keyparams(
-                external_record.inciso,
-                external_record.unidadEjecutora,
-                external_record.codigoJornada,
-                external_record.programa,
-                external_record.proyecto)
-            all_external_ley_list.append(key_str)
+        with self._cr.savepoint():
+            for external_record in response.listaOficinasJornada:
+                key_str = JornadaRetributiva._get_code_by_keyparams(
+                    external_record.inciso,
+                    external_record.unidadEjecutora,
+                    external_record.codigoJornada,
+                    external_record.programa,
+                    external_record.proyecto)
+                all_external_ley_list.append(key_str)
 
-            vals = self._prepare_values(external_record, offices, cron)
-            # CREANDO NUEVO ELEMENTO
-            if key_str not in all_odoo_recordsets_key_list:
-                try:
-                    with self._cr.savepoint():
+                vals = self._prepare_values(external_record, offices, cron)
+                # CREANDO NUEVO ELEMENTO
+                if key_str not in all_odoo_recordsets_key_list:
+                    try:
+                        # with self._cr.savepoint():
                         JornadaRetributiva.create(vals)
                         self._create_log(
                             origin=cron.name,
@@ -92,18 +94,18 @@ class ONSCLegajoOffice(models.Model):
                             ws_tuple=external_record,
                             long_description='Evento: Creación'
                         )
-                except Exception as e:
-                    _logger.warning(tools.ustr(e))
-                    self._create_log(
-                        origin=cron.name,
-                        type='error',
-                        integration_log=integration_error_WS13_9001,
-                        ws_tuple=external_record,
-                        long_description=tools.ustr(e))
-            # MODIFICANDO ELEMENTO EXISTENTE
-            else:
-                try:
-                    with self._cr.savepoint():
+                    except Exception as e:
+                        _logger.warning(tools.ustr(e))
+                        self._create_log(
+                            origin=cron.name,
+                            type='error',
+                            integration_log=integration_error_WS13_9001,
+                            ws_tuple=external_record,
+                            long_description=tools.ustr(e))
+                # MODIFICANDO ELEMENTO EXISTENTE
+                else:
+                    try:
+                        # with self._cr.savepoint():
                         all_odoo_recordsets.filtered(lambda x: x.code == key_str).write(vals)
                         self._create_log(
                             origin=cron.name,
@@ -112,18 +114,18 @@ class ONSCLegajoOffice(models.Model):
                             ws_tuple=external_record,
                             long_description='Evento: Actualización'
                         )
-                except Exception as e:
-                    _logger.warning(tools.ustr(e))
-                    self._create_log(
-                        origin=cron.name,
-                        type='error',
-                        integration_log=integration_error_WS13_9002,
-                        ws_tuple=external_record,
-                        long_description=tools.ustr(e))
-        # DESACTIVANDO ELEMENTOS QUE NO VINIERON
-        all_odoo_recordsets.filtered(lambda x: x.code not in all_external_ley_list).write({
-            'active': False
-        })
+                    except Exception as e:
+                        _logger.warning(tools.ustr(e))
+                        self._create_log(
+                            origin=cron.name,
+                            type='error',
+                            integration_log=integration_error_WS13_9002,
+                            ws_tuple=external_record,
+                            long_description=tools.ustr(e))
+            # DESACTIVANDO ELEMENTOS QUE NO VINIERON
+            all_odoo_recordsets.filtered(lambda x: x.code not in all_external_ley_list).write({
+                'active': False
+            })
 
     def _get_offices(self, listaOficinasJornada, cron):
         Inciso = self.env['onsc.catalog.inciso']
@@ -132,16 +134,16 @@ class ONSCLegajoOffice(models.Model):
         all_odoo_recordsets_codes = all_offices.mapped('code')
         all_offices_codes2active = []
         all_external_ley_list = []
-        for external_record in listaOficinasJornada:
-            new_office_code = self._get_code_by_keyparams(
-                external_record.inciso,
-                external_record.unidadEjecutora,
-                external_record.programa,
-                external_record.proyecto)
-            all_external_ley_list.append(new_office_code)
-            if new_office_code not in all_odoo_recordsets_codes:
+        with self._cr.savepoint():
+            for external_record in listaOficinasJornada:
                 try:
-                    with self._cr.savepoint():
+                    new_office_code = self._get_code_by_keyparams(
+                        external_record.inciso,
+                        external_record.unidadEjecutora,
+                        external_record.programa,
+                        external_record.proyecto)
+                    all_external_ley_list.append(new_office_code)
+                    if new_office_code not in all_odoo_recordsets_codes:
                         inciso = Inciso.suspend_security().search([
                             ('budget_code', '=', str(external_record.inciso))], limit=1)
                         if inciso.id is False:
@@ -164,6 +166,8 @@ class ONSCLegajoOffice(models.Model):
                         })
                         all_offices |= new_office
                         all_odoo_recordsets_codes.append(new_office.code)
+                    else:
+                        all_offices_codes2active.append(new_office_code)
                 except Exception as e:
                     _logger.warning(tools.ustr(e))
                     onsc_legajo_integration_error_WS13_9004 = self.env.ref(
@@ -174,15 +178,13 @@ class ONSCLegajoOffice(models.Model):
                         integration_log=onsc_legajo_integration_error_WS13_9004,
                         ws_tuple=external_record,
                         long_description=tools.ustr(e))
-            else:
-                all_offices_codes2active.append(new_office_code)
-        # DESACTIVANDO ELEMENTOS QUE NO VINIERON
-        all_offices.filtered(lambda x: x.code not in all_external_ley_list).write({
-            'active': False
-        })
-        all_offices.filtered(lambda x: x.active is False and x.code in all_offices_codes2active).write({
-            'active': True
-        })
+            # DESACTIVANDO ELEMENTOS QUE NO VINIERON
+            all_offices.filtered(lambda x: x.code not in all_external_ley_list).write({
+                'active': False
+            })
+            all_offices.filtered(lambda x: x.active is False and x.code in all_offices_codes2active).write({
+                'active': True
+            })
         return all_offices
 
     def _prepare_values(self, external_record, offices, cron):
@@ -197,7 +199,7 @@ class ONSCLegajoOffice(models.Model):
                 if office.id is False:
                     raise ValidationError(
                         _("Al crear la jornada retributiva %s no se ha podido identificar la oficina %s") % (
-                        str(external_record.codigoJornada), office_code))
+                            str(external_record.codigoJornada), office_code))
 
                 vals = {
                     'office_id': office.id,
@@ -237,7 +239,7 @@ class ONSCLegajoJornadaRetributiva(models.Model):
     code = fields.Char(string="Código", compute='_compute_code', store=True, index=True)
     codigoJornada = fields.Char(string="Código de la jornada", required=True)
     descripcionJornada = fields.Char(string="Descripción de la Jornada", required=True)
-    active = fields.Boolean(string="Activo", related='office_id.active', store=True)
+    active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
         ('codigoJornada_uniq', 'unique("codigoJornada","office_id")',

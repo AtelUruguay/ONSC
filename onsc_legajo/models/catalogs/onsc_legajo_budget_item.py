@@ -31,7 +31,6 @@ class ONSCLegajoBudgetItem(models.Model):
         return self._syncronize(parameter, cron.name, integration_error, {'dsc1Id': -1, 'dsc2Id': -1, })
 
     def _populate_from_syncronization(self, response):
-        # pylint: disable=invalid-commit
         all_odoo_recordsets = self.search([('active', 'in', [False, True])])
         all_odoo_recordsets_key_list = all_odoo_recordsets.mapped('codPartida')
 
@@ -69,7 +68,7 @@ class ONSCLegajoBudgetItem(models.Model):
                             ws_tuple=external_record,
                             long_description=tools.ustr(e))
                 # MODIFICANDO ELEMENTO EXISTENTE
-                else:
+                elif vals is not None:
                     try:
                         # with self._cr.savepoint():
                         all_odoo_recordsets.filtered(lambda x: x.codPartida == key_str).write(vals)

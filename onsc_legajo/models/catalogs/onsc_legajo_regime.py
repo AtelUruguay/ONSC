@@ -50,15 +50,16 @@ class ONSCLegajoRegime(models.Model):
         integration_error_WS14_9001 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS14_9001")
         integration_error_WS14_9002 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS14_9002")
 
-        for external_record in response.listaRegimenPlaza:
-            key_str = str(external_record.codRegimen)
-            all_external_ley_list.append(key_str)
+        with self._cr.savepoint():
+            for external_record in response.listaRegimenPlaza:
+                key_str = str(external_record.codRegimen)
+                all_external_ley_list.append(key_str)
 
-            vals = self._prepare_values(external_record)
-            # CREANDO NUEVO ELEMENTO
-            if key_str not in all_odoo_recordsets_key_list:
-                try:
-                    with self._cr.savepoint():
+                vals = self._prepare_values(external_record)
+                # CREANDO NUEVO ELEMENTO
+                if key_str not in all_odoo_recordsets_key_list:
+                    try:
+                        # with self._cr.savepoint():
                         vals['codRegimen'] = key_str
                         self.create(vals)
                         self._create_log(
@@ -68,19 +69,19 @@ class ONSCLegajoRegime(models.Model):
                             ws_tuple=external_record,
                             long_description='Evento: Creación'
                         )
-                except Exception as e:
-                    # self.env.cr.rollback()
-                    _logger.warning(tools.ustr(e))
-                    self._create_log(
-                        origin=cron.name,
-                        type='error',
-                        integration_log=integration_error_WS14_9001,
-                        ws_tuple=external_record,
-                        long_description=tools.ustr(e))
-            # MODIFICANDO ELEMENTO EXISTENTE
-            else:
-                try:
-                    with self._cr.savepoint():
+                    except Exception as e:
+                        # self.env.cr.rollback()
+                        _logger.warning(tools.ustr(e))
+                        self._create_log(
+                            origin=cron.name,
+                            type='error',
+                            integration_log=integration_error_WS14_9001,
+                            ws_tuple=external_record,
+                            long_description=tools.ustr(e))
+                # MODIFICANDO ELEMENTO EXISTENTE
+                else:
+                    try:
+                        # with self._cr.savepoint():
                         all_odoo_recordsets.filtered(lambda x: x.codRegimen == key_str).write(vals)
                         self._create_log(
                             origin=cron.name,
@@ -89,19 +90,19 @@ class ONSCLegajoRegime(models.Model):
                             ws_tuple=external_record,
                             long_description='Evento: Actualización'
                         )
-                except Exception as e:
-                    # self.env.cr.rollback()
-                    _logger.warning(tools.ustr(e))
-                    self._create_log(
-                        origin=cron.name,
-                        type='error',
-                        integration_log=integration_error_WS14_9002,
-                        ws_tuple=external_record,
-                        long_description=tools.ustr(e))
-        # DESACTIVANDO ELEMENTOS QUE NO VINIERON
-        all_odoo_recordsets.filtered(lambda x: x.codRegimen not in all_external_ley_list).write({
-            'active': False
-        })
+                    except Exception as e:
+                        # self.env.cr.rollback()
+                        _logger.warning(tools.ustr(e))
+                        self._create_log(
+                            origin=cron.name,
+                            type='error',
+                            integration_log=integration_error_WS14_9002,
+                            ws_tuple=external_record,
+                            long_description=tools.ustr(e))
+            # DESACTIVANDO ELEMENTOS QUE NO VINIERON
+            all_odoo_recordsets.filtered(lambda x: x.codRegimen not in all_external_ley_list).write({
+                'active': False
+            })
 
     def _prepare_values(self, external_record):
         return {
