@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+<t t-name="switch_jobs_menu.SwitchJobMenu" owl="1">
+    <Dropdown class="o_switch_company_menu" position="'bottom-end'">
+        <t t-set-slot="toggler" title="Cambiar puesto de trabajo">
+            <i class="fa fa-exchange"></i>
+        </t>
+        <t t-foreach="Object.values(jobService.availablejobs).sort((c1, c2) => c1.id - c2.id)" t-as="job">
+            <t t-call="switch_jobs_menu.SwitchJobItem">
+                <t t-set="job" t-value="job" />
+            </t>
+        </t>
+    </Dropdown>
+</t>
+
+
+<t t-name="switch_jobs_menu.SwitchJobItem" owl="1">
+    <DropdownItem class="p-0 bg-white">
+        <t t-set="isCurrent" t-value="job.id === jobService.currentJob.id"/>
+        <div class="d-flex" data-menu="job" t-att-data-job-id="job.id">
+            <div
+                role="button"
+                t-att-aria-pressed="isCurrent ? 'true' : 'false'"
+                t-att-aria-label="'Switch to ' + job.name "
+                t-att-title="'Switch to ' + job.name "
+                tabindex="0"
+                class="d-flex flex-grow-1 align-items-center py-0 log_into pl-2 o_py"
+                t-att-class="isCurrent ? 'alert-primary ml-1 mr-2' : 'btn btn-light font-weight-normal border-0'"
+                t-on-click="logIntoJob(job.id)">
+
+                <span
+                    class='company_label pr-3 mb-2 mt-2'
+                    t-att-class="isCurrent ? 'text-900 font-weight-bold' : 'ml-1'">
+                    <t t-esc="job.name"/>
+                </span>
+            </div>
+        </div>
+    </DropdownItem>
+</t>
+
+</templates>
