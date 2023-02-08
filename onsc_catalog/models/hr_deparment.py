@@ -97,9 +97,7 @@ class Department(models.Model):
         HierarchicalLevel = self.env['onsc.catalog.hierarchical.level']
         for record in self:
             domain = [('is_central_administration', '=', record.inciso_id.is_central_administration)]
-            if record.function_nature == 'adviser':
-                domain.append(('order', 'in', [3, 4]))
-            elif record.function_nature in ['program', 'comite']:
+            if record.function_nature in ['program', 'comite']:
                 domain.append(('order', 'in', [1]))
             record.hierarchical_level_id_domain = json.dumps([('id', 'in', HierarchicalLevel.search(domain).ids)])
 
@@ -209,6 +207,11 @@ class Department(models.Model):
         else:
             vals['context'] = _context
         return vals
+
+    @api.model
+    def get_history_record_action(self, history_id, res_id):
+        return super(Department, self.with_context(model_view_form_id=self.env.ref(
+            'onsc_catalog.onsc_catalog_department_form').id)).get_history_record_action(history_id, res_id)
 
 
 class DepartmentResponsability(models.Model):

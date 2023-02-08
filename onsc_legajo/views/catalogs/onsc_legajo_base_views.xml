@@ -16,10 +16,10 @@
         <field name="model">onsc.legajo.regime</field>
         <field name="arch" type="xml">
             <tree string="Régimen" editable="top">
-                <field name="codigo" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
-                <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="codRegimen" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="descripcionRegimen" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="name"/>
-                <field name="ind_vencimiento" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="indVencimiento" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="presupuesto" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="vigente" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
@@ -134,6 +134,8 @@
                 <field name="code"/>
                 <field name="inciso" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="unidadEjecutora" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="inciso_budget_code" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="unidadEjecutora_budget_code" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="programa" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="proyecto" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
             </search>
@@ -189,6 +191,10 @@
                                     <field name="codigoJornada"/>
                                     <field name="descripcionJornada"/>
                                 </tree>
+                                <form>
+                                    <field name="codigoJornada"/>
+                                    <field name="descripcionJornada"/>
+                                </form>
                             </field>
                         </page>
                     </notebook>
