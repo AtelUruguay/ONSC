@@ -2,6 +2,12 @@
 
 from odoo import fields, models, api
 
+SELECTION_RADIO = [('1', 'Si, no puede hacerlo'), ('2', 'Si, mucha dificultad'),
+                   ('3', 'Si, alguna dificultad '), ('4', 'No tiene dificultad')]
+SITUATION = u'¿Está en situación de discapacidad y/o requiere algún apoyo para cumplir con sus actividades laborales?'
+DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
+
+
 
 class ONSCCVAbstractCommon(models.AbstractModel):
     _name = 'onsc.cv.abstract.common'
@@ -76,3 +82,35 @@ class ONSCCVCommonData(models.AbstractModel):
     medical_aptitude_certificate_file = fields.Binary(
         string="Documento digitalizado del certificado de aptitud médico-deportiva")
     medical_aptitude_certificate_filename = fields.Char('Nombre del documento digital')
+
+    #Víctima de delitos violentos
+    is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)", )
+    relationship_victim_violent_file = fields.Binary(
+        string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
+    relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
+    is_public_information_victim_violent = fields.Boolean(
+        string="¿Desea que esta información se incluya en la versión impresa de su CV?", )
+
+    #Domicilio
+    cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle")
+    cv_address_street2_id = fields.Many2one('onsc.cv.street', string="Entre calle")
+    cv_address_street3_id = fields.Many2one('onsc.cv.street', string=u'Y calle')
+
+    #Discapacidad
+    allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no',
+                                            string=u'¿Permite que el contenido de esta sección se visualice en su CV?')
+    situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
+    people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
+    document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')
+    document_certificate_filename = fields.Char('Nombre del documento Digitalizado')
+    certificate_date = fields.Date(string=u'Fecha de certificado')
+    to_date = fields.Date(string=u'Fecha hasta')
+    see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes')
+    hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, aún si usa audífono')
+    walk = fields.Selection(selection=SELECTION_RADIO, string=u'Caminar o subir escalones')
+    speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas')
+    realize = fields.Selection(selection=SELECTION_RADIO,
+                               string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo')
+    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender')
+    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas')
+    need_other_support = fields.Text(string=u"¿Necesita otro apoyo?")

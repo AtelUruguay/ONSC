@@ -46,10 +46,14 @@
                                        groups="onsc_legajo.group_legajo_configurador_empleado"/>
                             </group>
                             <group>
-                                <field name="cv_birthdate" readonly="1" groups="onsc_legajo.group_legajo_configurador_empleado"/>
-                                <field name="photo_updated_date" readonly="1" groups="onsc_legajo.group_legajo_configurador_empleado"/>
-                                <field name="cv_sex" readonly="1" groups="onsc_legajo.group_legajo_configurador_empleado"/>
-                                <field name="cv_sex_updated_date" readonly="1" groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                                <field name="cv_birthdate" readonly="1"
+                                       groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                                <field name="photo_updated_date" readonly="1"
+                                       groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                                <field name="cv_sex" readonly="1"
+                                       groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                                <field name="cv_sex_updated_date" readonly="1"
+                                       groups="onsc_legajo.group_legajo_configurador_empleado"/>
                             </group>
                         </group>
                         <notebook>
