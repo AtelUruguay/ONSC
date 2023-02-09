@@ -100,8 +100,15 @@ class HrJobRoleLine(models.Model):
 
     _sql_constraints = [
         ('recordset_uniq', 'unique(job_id,user_role_id)',
-         u'No puede haber más de un rol configurado en el mismo puesto. Revisar la pestaña de Roles y Roles adicionales')
+         u'El rol configurado no puede repetirse para el mismo puesto. Revisar la pestaña de Roles y Roles adicionales')
     ]
+
+    @api.constrains("end_date")
+    def _check_end_date(self):
+        for record in self:
+            if record.job_id.end_date and (record.end_date is False or record.end_date > record.job_id.end_date):
+                raise ValidationError(
+                    _("El periodo de vigencia del rol adicional %s debe estar dentro del periodo de vigencia del puesto") % record.user_role_id.name)
 
     @api.onchange('start_date')
     def onchange_start_date(self):
