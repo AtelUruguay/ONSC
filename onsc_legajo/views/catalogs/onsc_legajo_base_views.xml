@@ -89,6 +89,7 @@
         <field name="model">onsc.legajo.norm</field>
         <field name="arch" type="xml">
             <search string="Normas">
+                <field name="inciso"/>
                 <field name="pk"/>
             </search>
         </field>
@@ -99,6 +100,7 @@
         <field name="model">onsc.legajo.norm</field>
         <field name="arch" type="xml">
             <tree string="Normas" editable="top">
+                <field name="inciso"/>
                 <field name="pk"/>
                 <field name="anioNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="numeroNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
