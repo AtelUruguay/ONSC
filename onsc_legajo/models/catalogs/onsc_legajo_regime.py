@@ -37,7 +37,8 @@ class ONSCLegajoRegime(models.Model):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS14_regimen')
         cron = self.env.ref("onsc_legajo.sync_legajo_regime")
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9005")
-        return self._syncronize(parameter, cron.name, integration_error)
+        wsclient = self._get_client(parameter, cron.name, integration_error)
+        return self._syncronize(wsclient, parameter, cron.name, integration_error, {})
 
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit

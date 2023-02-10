@@ -28,7 +28,8 @@ class ONSCLegajoBudgetItem(models.Model):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS2_partidas')
         cron = self.env.ref("onsc_legajo.sync_legajo_budget_item")
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS2_9005")
-        return self._syncronize(parameter, cron.name, integration_error, {'dsc1Id': -1, 'dsc2Id': -1, })
+        wsclient = self._get_client(parameter, cron.name, integration_error)
+        return self._syncronize(wsclient, parameter, cron.name, integration_error, {'dsc1Id': -1, 'dsc2Id': -1, })
 
     def _populate_from_syncronization(self, response):
         all_odoo_recordsets = self.search([('active', 'in', [False, True])])
