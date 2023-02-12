@@ -19969,6 +19969,9 @@ SvgGraphics.prototype.polyline = function (polylineData) {
     step = Math.round(attr.lineWidth) || 1;
 
     switch (attr.lineType) {
+//      case _enums__WEBPACK_IMPORTED_MODULE_2__["LineType"].Dashed:
+//        polyline.setAttribute("stroke-dasharray", step * 5 + "," + step * 3);
+//        break;
       case _enums__WEBPACK_IMPORTED_MODULE_2__["LineType"].Solid:
         polyline.setAttribute("stroke-dasharray", "");
         break;
@@ -39725,11 +39728,13 @@ function VisualTreeBuilder() {
 
       switch (itemProps.actualItemType) {
         case _enums__WEBPACK_IMPORTED_MODULE_1__["ItemType"].SubAssistant:
-          item.connectorPlacement = _enums__WEBPACK_IMPORTED_MODULE_1__["SideFlag"].Top | _enums__WEBPACK_IMPORTED_MODULE_1__["SideFlag"].Bottom;
-          alteredItem = getNewTreeItem({
-            visibility: _enums__WEBPACK_IMPORTED_MODULE_1__["Visibility"].Invisible
-          });
-          visualTree.add(alteredItem.id, item.id, item);
+//          item.connectorPlacement = _enums__WEBPACK_IMPORTED_MODULE_1__["SideFlag"].Top | _enums__WEBPACK_IMPORTED_MODULE_1__["SideFlag"].Bottom;
+//          alteredItem = getNewTreeItem({
+//            visibility: _enums__WEBPACK_IMPORTED_MODULE_1__["Visibility"].Invisible
+//          });
+//          visualTree.add(alteredItem.id, item.id, item);
+
+          alteredItem = item;
           break;
 
         case _enums__WEBPACK_IMPORTED_MODULE_1__["ItemType"].Assistant:

@@ -52,6 +52,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
             'type': 'ir.actions.client',
             'tag': 'organization_dashboard',
             'params': {
+                'title': 'Organigrama',
                 'operating_unit_id': self.operating_unit_id.id,
                 'department_id': self.department_id.id,
                 'short_name': self.short_name,

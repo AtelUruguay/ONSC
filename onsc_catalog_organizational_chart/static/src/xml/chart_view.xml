@@ -1,6 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 
+<!--    <t t-name="web.Breadcrumbs" owl="1">-->
+<!--        <ol class="breadcrumb">-->
+<!--            <t t-foreach="env.config.breadcrumbs or []" t-as="breadcrumb" t-key="breadcrumb.jsId">-->
+<!--                <li class="breadcrumb-item"-->
+<!--                    t-att-class="{ o_back_button: breadcrumb_last}"-->
+<!--                    t-on-click.prevent="onBreadcrumbClicked(breadcrumb.jsId)"-->
+<!--                    >-->
+<!--                    <a href="#">-->
+<!--                        <t t-esc="breadcrumb.name"/>-->
+<!--                    </a>-->
+<!--                </li>-->
+<!--            </t>-->
+<!--            <li class="breadcrumb-item active">-->
+<!--                <t t-if="env.config.displayName" t-esc="env.config.displayName" />-->
+<!--                <em t-else="" class="text-warning">Unnamed</em>-->
+<!--            </li>-->
+<!--        </ol>-->
+<!--    </t>-->
+
+    <t t-inherit="web.Breadcrumbs" t-inherit-mode="extension">
+        <xpath expr="//ol[hasclass('breadcrumb')]" position="replace">
+            <ol class="breadcrumb">
+            <t t-foreach="env.config.breadcrumbs or []" t-as="breadcrumb" t-key="breadcrumb.jsId">
+                <li class="breadcrumb-item"
+                    t-att-class="{ o_back_button: breadcrumb_last}"
+                    t-on-click.prevent="onBreadcrumbClicked(breadcrumb.jsId)"
+                    >
+                    <a href="#">
+                        <t t-esc="breadcrumb.name or 'Organigrama'"/>
+                    </a>
+                </li>
+            </t>
+            <li class="breadcrumb-item active">
+                <t t-if="env.config.displayName" t-esc="env.config.displayName" />
+                <em t-else="" class="text-warning">Unnamed</em>
+            </li>
+        </ol>
+        </xpath>
+    </t>
+
     <t t-name="OrganizationalEmployeeChart">
         <div id="o_organizational_chart">
             <center>
@@ -19,15 +59,51 @@
 <!--                        <button class="btn-150 btn" data-percentage="1.5">150%</button>-->
 <!--                        <input class="btn btn-downloadpdf" type="button" value="Download PDF" />-->
                         <button type="button" class="toggle button-hamb" id="toggle">
-                           <span></span>
+                           <span/>
                         </button>
                     </div>
                 </div>
                 <div id="basicdiagram" style="width: 640px; height: 480px; border-style: dotted; border-width: 1px;"/>
-                <div class="sidebar" id='sidebar'>
-                  <h4>Leyenda</h4>
-                    <div id="org-legend">
+                <div class="sidebar" id='sidebar-legend'>
+                    <div class="sidebar-content">
+                        <div class="sidebar-content-up">
+                            <h4>Leyenda</h4>
+                            <div id="org-legend">
 
+                            </div>
+                        </div>
+                        <div class="sidebar-content-down"/>
+                    </div>
+                </div>
+                <div class="sidebar" id='sidebar-node-details'>
+                    <div class="sidebar-content">
+                        <div class="sidebar-content-header">
+                            <div class="sidebar-content-header-up">
+                                <h4 id="ue-name"/>
+                            </div>
+                            <div class="sidebar-content-header-down">
+                                <button type="button" class="btn btn-primary" title="Editar registro" id="goto-org-uo" data-hotkey="e">
+                                    <i class="fa fa-pencil" title="Editar"/>
+                                    <span class="d-none d-sm-inline">Editar</span>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row sidebar-content-sheet">
+                            <div class="col-5 pd-1 text-left"><strong>Identificador</strong></div>
+                            <div class="col-7 pd-1 text-left"><span id="ue-code"/></div>
+
+                            <div class="col-5 pd-1 text-left"><strong>Inciso</strong></div>
+                            <div class="col-7 pd-1 text-left"><span id="ue-inciso"/></div>
+
+                            <div class="col-5 pd-1 text-left"><strong>Unidad ejecutora</strong></div>
+                            <div class="col-7 pd-1 text-left"><span id="ue-OU"/></div>
+
+                            <div class="col-5 pd-1 text-left"><strong>Nivel jerárquico</strong></div>
+                            <div class="col-7 pd-1 text-left"><span id="ue-hierarchy"/></div>
+
+                            <div class="col-5 pd-1 text-left"><strong>UO de la que depende</strong></div>
+                            <div class="col-7 pd-1 text-left"><span id="ue-parentName"/></div>
+                        </div>
                     </div>
                 </div>
             </center>

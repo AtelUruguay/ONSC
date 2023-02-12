@@ -35,4 +35,105 @@
               sequence="49"
               groups="onsc_catalog_organizational_chart.group_catalog_consulta_organigrama"/>
 
+    <record id="onsc_catalog_department_form_readonly" model="ir.ui.view">
+            <field name="name">onsc.catalog.hr.department.form.readonly</field>
+            <field name="model">hr.department</field>
+            <field name="arch" type="xml">
+                <form string="Unidades organizativas" duplicate="0" edit="0">
+                    <header>
+                        <button name="action_aprobar_cgn" string="Aprobar CGN"
+                                class="oe_highlight" type="object"
+                                groups="onsc_catalog.group_catalog_aprobador_cgn"
+                                attrs="{'invisible': ['|',('is_approve_cgn', '=', True),('is_approve_onsc', '=', False)]}"
+                        />
+                        <button name="action_aprobar_onsc" string="Aprobar ONSC"
+                                class="oe_highlight" type="object"
+                                groups="onsc_catalog.group_catalog_configurador_servicio_civil"
+                                attrs="{'invisible': [('is_approve_onsc', '=', True)]}"
+                        />
+                    </header>
+                    <sheet>
+                        <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                        <group>
+                            <group>
+                                <field name="code" readonly="1" force_save="1"/>
+                                <field name="name" string="Nombre UO"/>
+                                <field name="eff_date" string="Fecha efectiva"/>
+                                <field name="inciso_id" required="1" options="{'no_create': True}"/>
+                                <field name="operating_unit_id"
+                                       required="1"
+                                       domain="[('inciso_id', '=', inciso_id)]"
+                                       options="{'no_create': True}"/>
+                                <field name="function_nature" required="1"/>
+                                <field name="hierarchical_level_id"
+                                       domain="hierarchical_level_id_domain"
+                                       attrs="{'invisible': [('function_nature_form', '=', 'form2')],'required': [('function_nature_form', '=', 'form1')]}"
+                                       options="{'no_create': True}"/>
+                                <field name="start_date" required="1"/>
+                                <field name="end_date"/>
+                                <field name="short_name"
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                <field name="parent_id"
+                                       domain="parent_id_domain"
+                                       attrs="{'required': ['|',('hierarchical_level_order','>',1),('function_nature','!=','operative')]}"
+                                       string="UO de la que depende"
+                                       options="{'no_create': True}"/>
+                                <field name="category"
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+
+                                <field name="company_id" invisible="1" force_save="1"/>
+                                <field name="active" invisible="1"/>
+                                <field name="function_nature_form" invisible="1"/>
+                                <field name="hierarchical_level_order" invisible="1"/>
+                                <field name="parent_id_domain" invisible="1"/>
+                                <field name="hierarchical_level_id_domain" invisible="1"/>
+                            </group>
+                            <group>
+                                <field name="mission"
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                <field name="key_functional_habilities"/>
+                                <field name="process_contributor"
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                <field name="regulatory" widget="url"/>
+                                <field name="is_approve_onsc" readonly="1" force_save="1"/>
+                                <field name="approve_onsc_date" readonly="1" force_save="1"/>
+                                <field name="is_approve_cgn" readonly="1" force_save="1"/>
+                                <field name="approve_cgn_date" readonly="1" force_save="1"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Lista de responsabilidades" attrs="{'invisible': [('function_nature_form', '=', 'form2')]}">
+                                <field name="reponsability_ids">
+                                    <tree editable="bottom">
+                                        <field name="process"/>
+                                        <field name="product"/>
+                                        <field name="target"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Otra información">
+                                <group>
+                                    <group>
+                                        <field name="create_date"/>
+                                        <field name="create_uid"/>
+                                    </group>
+                                    <group>
+                                        <field name="write_date"/>
+                                        <field name="write_uid"/>
+                                    </group>
+                                </group>
+                            </page>
+                            <page string="Observaciones">
+                                <field name="note" nolabel="1"/>
+                            </page>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
 </odoo>
