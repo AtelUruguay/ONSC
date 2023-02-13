@@ -127,7 +127,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
     },
     DownloadPDF: function() {
       // create a document and pipe to a blob
-        var doc = new pdfkitsamples.PDFDocument({size: 'LEGAL'});
+        var doc = new pdfkitsamples.PDFDocument({size: 'LEGAL', layout : 'landscape'});
         var blobStream = pdfkitsamples.blobStream;
         var saveAs = pdfkitsamples.saveAs;
         var stream = doc.pipe(blobStream());
@@ -409,6 +409,19 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                     item.itemType = primitives.ItemType.SubAssistant;
                     item.adviserPlacementType = item.adviserPlacementType === 'right' ? primitives.AdviserPlacementType.Right : primitives.AdviserPlacementType.Left;
                 }
+                else if(item.itemType === 'SubAdviser'){
+                    item.itemType = primitives.ItemType.Comite;
+                    item.adviserPlacementType = item.adviserPlacementType === 'right' ? primitives.AdviserPlacementType.Right : primitives.AdviserPlacementType.Left;
+                    annotations.push({
+						annotationType: primitives.AnnotationType.HighlightPath,
+						items: [item.parent, item.id],
+						color: primitives.Colors.Black,
+						lineWidth: 2,
+						lineType: primitives.LineType.Solid,
+						opacity: 1,
+						showArrows: false
+					});
+                }
                 else if(item.title === 'Aggregator'){
                     item.childrenPlacementType = item.childrenPlacementType === 'Horizontal' ? primitives.ChildrenPlacementType.Horizontal : primitives.ChildrenPlacementType.Auto;
                     annotations.push({
@@ -482,9 +495,11 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                         document.querySelector('#ue-inciso').innerHTML = result.inciso;
                         document.querySelector('#ue-OU').innerHTML = result.OU;
                         document.querySelector('#ue-hierarchy').innerHTML = result.hierarchy;
+                        document.querySelector('#ue-responsible').innerHTML = result.responsible;
+                        document.querySelector('#ue-function_nature').innerHTML = result.function_nature;
                         document.querySelector('#ue-name').innerHTML = data.context.title;
-                        document.querySelector('#goto-org-uo').setAttribute("data-id", itemId);
-                        document.querySelector('#goto-org-uo').setAttribute("data-form", data.context.form_id);
+//                        document.querySelector('#goto-org-uo').setAttribute("data-id", itemId);
+//                        document.querySelector('#goto-org-uo').setAttribute("data-form", data.context.form_id);
                     });
 //                    var id = data.context.id;
 //                    self.do_action({
@@ -493,7 +508,6 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
 //                        res_model: 'hr.department',
 //                        res_id: id,
 //                        view_mode: 'form',
-//                        target: 'new',
 //                        views: [[data.context.form_id, 'form']],
 ////                        context: {edit: false, form_view_initial_mode: 'view'},
 //                    })
