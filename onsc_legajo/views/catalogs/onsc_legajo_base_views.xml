@@ -98,7 +98,7 @@
         <field name="name">onsc.legajo.norm.tree</field>
         <field name="model">onsc.legajo.norm</field>
         <field name="arch" type="xml">
-            <tree string="Normas" editable="top">
+            <tree string="Normas">
                 <field name="inciso_ids" widget="many2many_tags"/>
                 <field name="pk"/>
                 <field name="anioNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
@@ -112,6 +112,35 @@
                 <field name="fechaVencimiento" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>
+        </field>
+    </record>
+    
+    <record id="onsc_legajo_norm_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.norm.form</field>
+        <field name="model">onsc.legajo.norm</field>
+        <field name="arch" type="xml">
+            <form string="Normas">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="pk"/>
+                            <field name="anioNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="numeroNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="articuloNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="numeroLiteral" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="tipoNormaSigla" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="tipoNorma" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="descripcion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="fechaDerogacion" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="fechaVencimiento" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="inciso_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
         </field>
     </record>
 
