@@ -42,7 +42,10 @@ class ONSCLegajoNorm(models.Model):
             all_odoo_recordsets = self.search([('active', 'in', [False, True])])
             all_external_key_list = []
             for inciso in self.env['onsc.catalog.inciso'].suspend_security().search([]):
-                all_external_key_list.extend(self.with_context(inciso = inciso).suspend_security()._syncronize(wsclient, parameter, cron.name, integration_error, inciso.budget_code))
+                result = self.with_context(inciso=inciso).suspend_security()._syncronize(wsclient, parameter, cron.name,
+                                                                                integration_error, inciso.budget_code)
+                if isinstance(result, list):
+                    all_external_key_list.extend(result)
             all_odoo_recordsets.filtered(lambda x: x.pk not in all_external_key_list).write({
                 'active': False
             })
