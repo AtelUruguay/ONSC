@@ -25,17 +25,12 @@ class ONSCLegajoNorm(models.Model):
     fechaDerogacion = fields.Date(string=u"Fecha derogación")
     fechaVencimiento = fields.Date(string="Fecha vencimiento")
     active = fields.Boolean(string="Activo", default=True)
-    inciso = fields.Char(string="Inciso")
-    inciso_pk = fields.Char(string="Codigo presupuestal Inciso-pk", compute='_compute_inciso_pk', store=True, index=True)
+    inciso_ids = fields.Many2many('onsc.catalog.inciso', string="Incisos")
+
 
     _sql_constraints = [
-        ('pk_uniq', 'unique(pk, inciso)', u'El código de la norma debe ser único')
+        ('pk_uniq', 'unique(pk)', u'El código de la norma debe ser único')
     ]
-
-    @api.depends('pk','inciso')
-    def _compute_inciso_pk(self):
-        for record in self:
-            record.inciso_pk = 'Inciso: %s - pk: %s' % (record.inciso, record.pk)
 
     @api.model
     def syncronize(self):
@@ -43,75 +38,86 @@ class ONSCLegajoNorm(models.Model):
         cron = self.env.ref("onsc_legajo.sync_legajo_norm")
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9005")
         wsclient = self._get_client(parameter, cron.name, integration_error)
-        for inciso in self.env['onsc.catalog.inciso'].suspend_security().search([]):
-            self.suspend_security()._syncronize(wsclient, parameter, cron.name, integration_error, int(inciso.budget_code))
+        with self._cr.savepoint():
+            all_odoo_recordsets = self.search([('active', 'in', [False, True])])
+            all_external_key_list = []
+            for inciso in self.env['onsc.catalog.inciso'].suspend_security().search([]):
+                all_external_key_list.extend(self.with_context(inciso = inciso).suspend_security()._syncronize(wsclient, parameter, cron.name, integration_error, inciso.budget_code))
+            all_odoo_recordsets.filtered(lambda x: x.pk not in all_external_key_list).write({
+                'active': False
+            })
         return True
 
     def _populate_from_syncronization(self, response, inciso=False):
         # pylint: disable=invalid-commit
+        all_external_key_list = []
         if hasattr(response, 'listaClasificador') is False:
-            return
+            return []
         all_odoo_recordsets = self.search([('active', 'in', [False, True])])
-        all_odoo_recordsets_key_list = all_odoo_recordsets.mapped('inciso_pk')
+        all_odoo_recordsets_key_list = all_odoo_recordsets.mapped('pk')
 
-        all_external_ley_list = []
         cron = self.env.ref("onsc_legajo.sync_legajo_norm")
         integration_error_WS3_9000 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9000")
         integration_error_WS3_9001 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9001")
         integration_error_WS3_9002 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9002")
 
-        with self._cr.savepoint():
-            for external_record in response.listaClasificador:
-                key_str = 'Inciso: %s - pk: %s' % (inciso, str(external_record.pk))
-                all_external_ley_list.append(key_str)
-                vals = self._prepare_values(external_record, inciso)
-                # CREANDO NUEVO ELEMENTO
-                if key_str not in all_odoo_recordsets_key_list:
-                    try:
-                        vals['pk'] = external_record.pk
-                        self.suspend_security().create(vals)
-                        self._create_log(
-                            origin=cron.name,
-                            type='info',
-                            integration_log=integration_error_WS3_9000,
-                            ws_tuple=external_record,
-                            long_description='Evento: Creación'
-                        )
-                    except Exception as e:
-                        self.env.cr.commit()
-                        _logger.warning(tools.ustr(e))
-                        self._create_log(
-                            origin=cron.name,
-                            type='error',
-                            integration_log=integration_error_WS3_9001,
-                            ws_tuple=external_record,
-                            long_description=tools.ustr(e))
-                # MODIFICANDO ELEMENTO EXISTENTE
-                else:
-                    try:
-                        all_odoo_recordsets.filtered(lambda x: x.inciso_pk == key_str).suspend_security().write(vals)
-                        self._create_log(
-                            origin=cron.name,
-                            type='info',
-                            integration_log=integration_error_WS3_9000,
-                            ws_tuple=external_record,
-                            long_description='Evento: Actualización'
-                        )
-                    except Exception as e:
-                        self.env.cr.commit()
-                        _logger.warning(tools.ustr(e))
-                        self._create_log(
-                            origin=cron.name,
-                            type='error',
-                            integration_log=integration_error_WS3_9002,
-                            ws_tuple=external_record,
-                            long_description=tools.ustr(e))
-            # DESACTIVANDO ELEMENTOS QUE NO VINIERON
-            all_odoo_recordsets.filtered(lambda x: x.inciso == str(inciso) and x.inciso_pk not in all_external_ley_list).write({
-                'active': False
-            })
+        inciso = self._context.get('inciso')
+        for external_record in response.listaClasificador:
+            key_str = str(external_record.pk)
+            all_external_key_list.append(key_str)
 
-    def _prepare_values(self, external_record, inciso):
+            # CREANDO NUEVO ELEMENTO
+            if key_str not in all_odoo_recordsets_key_list:
+                try:
+                    vals = self._prepare_create_values(external_record, inciso)
+                    vals['pk'] = external_record.pk
+                    self.suspend_security().create(vals)
+                    self._create_log(
+                        origin=cron.name,
+                        type='info',
+                        integration_log=integration_error_WS3_9000,
+                        ws_tuple=external_record,
+                        long_description='Evento: Creación'
+                    )
+                except Exception as e:
+                    self.env.cr.commit()
+                    _logger.warning(tools.ustr(e))
+                    self._create_log(
+                        origin=cron.name,
+                        type='error',
+                        integration_log=integration_error_WS3_9001,
+                        ws_tuple=external_record,
+                        long_description=tools.ustr(e))
+            # MODIFICANDO ELEMENTO EXISTENTE
+            else:
+                try:
+                    recordsets = all_odoo_recordsets.filtered(lambda x: x.pk == key_str)
+                    for recordset in recordsets:
+                        vals = self._prepare_update_values(external_record, recordset, inciso)
+                        recordset.suspend_security().write(vals)
+                    self._create_log(
+                        origin=cron.name,
+                        type='info',
+                        integration_log=integration_error_WS3_9000,
+                        ws_tuple=external_record,
+                        long_description='Evento: Actualización'
+                    )
+                except Exception as e:
+                    self.env.cr.commit()
+                    _logger.warning(tools.ustr(e))
+                    self._create_log(
+                        origin=cron.name,
+                        type='error',
+                        integration_log=integration_error_WS3_9002,
+                        ws_tuple=external_record,
+                        long_description=tools.ustr(e))
+        return all_external_key_list
+        # DESACTIVANDO ELEMENTOS QUE NO VINIERON
+        # all_odoo_recordsets.filtered(lambda x: x.pk not in all_external_key_list).write({
+        #     'active': False
+        # })
+
+    def _prepare_create_values(self, external_record, inciso):
         return {
             'anioNorma': external_record.anioNorma,
             'numeroNorma': external_record.numeroNorma,
@@ -121,5 +127,18 @@ class ONSCLegajoNorm(models.Model):
             'tipoNorma': external_record.tipoNorma,
             'descripcion': external_record.descripcion,
             'active': True,
-            'inciso': inciso
+            'inciso_ids': [(6, 0, [inciso.id])]
+        }
+
+    def _prepare_update_values(self, external_record, recordset, inciso):
+        return {
+            'anioNorma': external_record.anioNorma,
+            'numeroNorma': external_record.numeroNorma,
+            'articuloNorma': external_record.articuloNorma,
+            'numeroLiteral': external_record.numeroLiteral,
+            'tipoNormaSigla': external_record.tipoNormaSigla,
+            'tipoNorma': external_record.tipoNorma,
+            'descripcion': external_record.descripcion,
+            'active': True,
+            'inciso_ids': [(4, inciso.id)]
         }
