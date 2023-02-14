@@ -53,9 +53,9 @@ class EmployeeChart(http.Controller):
             itemType = 'Assistant'
             if assistant.function_nature == 'comite':
                 template = 'contactTemplateDashed' if not responsible or not assistant.manager_id else 'contactTemplateDashedResponsible'
-                itemType = 'SubAdviser'
-            elif assistant.function_nature == 'program':
                 itemType = 'SubAssistant'
+            elif assistant.function_nature == 'program':
+                itemType = 'SubAdviser'
             item = {
                 'id': assistant.id,
                 'parent': root_node.id,
