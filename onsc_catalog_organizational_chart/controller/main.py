@@ -9,6 +9,86 @@ class EmployeeChart(http.Controller):
     def get_hierarchy_trees(self, root_node, nodes_by_level, form_id, responsible):
 
         items = []
+        right_left = 'left'
+        assistances = nodes_by_level.filtered(
+            lambda node: not root_node.parent_id and node.function_nature in (
+                'comite', 'adviser', 'program'))
+        levelOffset = 0
+        itemType = 'Assistant'
+        for index, assistant in enumerate(assistances.filtered(
+                lambda node: node.function_nature == 'adviser')):
+            template = 'contactTemplate' if not responsible or not assistant.manager_id else 'contactTemplateResponsible'
+            if index > 0:
+                levelOffset = levelOffset + 1 if index % 2 == 0 else levelOffset
+            item = {
+                'id': assistant.id,
+                'parent': root_node.id,
+                'isVisible': True,
+                'form_id': form_id,
+                'short_name': assistant.name,
+                'responsible': assistant.manager_id.name or '',
+                'responsibleEmpty': '',
+                'show_responsible': responsible,
+                'title': assistant.name,
+                'itemType': itemType,
+                'adviserPlacementType': right_left,
+                'templateName': template,
+                'levelOffset': levelOffset,
+                'showShortName': assistant.show_short_name,
+            }
+            items.append(item)
+            right_left = 'left' if right_left == 'right' else 'right'
+        itemType = 'SubAdviser'
+        levelOffset = levelOffset + 1
+        for index, assistant in enumerate(assistances.filtered(
+                lambda node: node.function_nature == 'program')):
+            template = 'contactTemplateDashed' if not responsible or not assistant.manager_id else 'contactTemplateDashedResponsible'
+            if index > 0:
+                levelOffset = levelOffset + 1 if index % 2 == 0 else levelOffset
+            item = {
+                'id': assistant.id,
+                'parent': root_node.id,
+                'isVisible': True,
+                'form_id': form_id,
+                'short_name': assistant.name,
+                'responsible': assistant.manager_id.name or '',
+                'responsibleEmpty': '',
+                'show_responsible': responsible,
+                'title': assistant.name,
+                'itemType': itemType,
+                'adviserPlacementType': right_left,
+                'templateName': template,
+                'levelOffset': levelOffset,
+                'showShortName': assistant.show_short_name,
+            }
+
+            items.append(item)
+            right_left = 'left' if right_left == 'right' else 'right'
+        itemType = 'SubAssistant'
+        levelOffset = levelOffset + 1
+        for index, assistant in enumerate(assistances.filtered(lambda node: node.function_nature == 'comite')):
+            template = 'contactTemplate' if not responsible or not assistant.manager_id else 'contactTemplateResponsible'
+            if index > 0:
+                levelOffset = levelOffset + 1 if index % 2 == 0 else levelOffset
+            item = {
+                'id': assistant.id,
+                'parent': root_node.id,
+                'isVisible': True,
+                'form_id': form_id,
+                'short_name': assistant.name,
+                'responsible': assistant.manager_id.name or '',
+                'responsibleEmpty': '',
+                'show_responsible': responsible,
+                'title': assistant.name,
+                'itemType': itemType,
+                'adviserPlacementType': right_left,
+                'templateName': template,
+                'levelOffset': levelOffset,
+                'showShortName': assistant.show_short_name,
+            }
+            items.append(item)
+            right_left = 'left' if right_left == 'right' else 'right'
+
         for node in nodes_by_level.filtered(
                 lambda node: node.function_nature not in (
                 'comite', 'commission_project', 'adviser', 'program')):
@@ -43,38 +123,6 @@ class EmployeeChart(http.Controller):
                 'showShortName': node.show_short_name,
             }
             items.append(item)
-        right_left = 'right'
-        assistances = nodes_by_level.filtered(
-            lambda node: not root_node.parent_id and node.function_nature in (
-                'comite', 'adviser', 'program'))
-        levelOffset = 0
-        for assistant in assistances:
-            template = 'contactTemplate' if not responsible or not assistant.manager_id else 'contactTemplateResponsible'
-            itemType = 'Assistant'
-            if assistant.function_nature == 'comite':
-                template = 'contactTemplateDashed' if not responsible or not assistant.manager_id else 'contactTemplateDashedResponsible'
-                itemType = 'SubAssistant'
-            elif assistant.function_nature == 'program':
-                itemType = 'SubAdviser'
-            item = {
-                'id': assistant.id,
-                'parent': root_node.id,
-                'isVisible': True,
-                'form_id': form_id,
-                'short_name': assistant.name,
-                'responsible': assistant.manager_id.name or '',
-                'responsibleEmpty': '',
-                'show_responsible': responsible,
-                'title': assistant.name,
-                'itemType': itemType,
-                'adviserPlacementType': right_left,
-                'templateName': template,
-                'levelOffset': levelOffset,
-                'showShortName': assistant.show_short_name,
-            }
-            levelOffset = levelOffset + 1 if levelOffset // 2 == 0 else levelOffset
-            items.append(item)
-            right_left = 'left' if right_left == 'right' else 'right'
         return items, responsible
 
     @http.route('/get/organizational/operating_unit', type='json', auth='user',
