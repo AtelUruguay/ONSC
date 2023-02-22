@@ -1,9 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models, api, tools, _
-
-from ...soap import soap_client
+from odoo import fields, models, api, tools
 
 _logger = logging.getLogger(__name__)
 
@@ -27,13 +25,12 @@ class ONSCLegajoNorm(models.Model):
     active = fields.Boolean(string="Activo", default=True)
     inciso_ids = fields.Many2many('onsc.catalog.inciso', string="Incisos")
 
-
     _sql_constraints = [
         ('pk_uniq', 'unique(pk)', u'El código de la norma debe ser único')
     ]
 
     @api.model
-    def syncronize(self):
+    def syncronize(self, log_info=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS3_normas')
         cron = self.env.ref("onsc_legajo.sync_legajo_norm")
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9005")
@@ -42,8 +39,13 @@ class ONSCLegajoNorm(models.Model):
             all_odoo_recordsets = self.search([('active', 'in', [False, True])])
             all_external_key_list = []
             for inciso in self.env['onsc.catalog.inciso'].suspend_security().search([]):
-                result = self.with_context(inciso=inciso).suspend_security()._syncronize(wsclient, parameter, cron.name,
-                                                                                integration_error, inciso.budget_code)
+                result = self.with_context(
+                    inciso=inciso,
+                    log_info=log_info).suspend_security()._syncronize(wsclient,
+                                                                      parameter,
+                                                                      cron.name,
+                                                                      integration_error,
+                                                                      inciso.budget_code)
                 if isinstance(result, list):
                     all_external_key_list.extend(result)
             all_odoo_recordsets.filtered(lambda x: x.pk not in all_external_key_list).write({
@@ -51,7 +53,7 @@ class ONSCLegajoNorm(models.Model):
             })
         return True
 
-    def _populate_from_syncronization(self, response, inciso=False):
+    def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
         all_external_key_list = []
         if hasattr(response, 'listaClasificador') is False:
@@ -75,17 +77,18 @@ class ONSCLegajoNorm(models.Model):
                     vals = self._prepare_create_values(external_record, inciso)
                     vals['pk'] = external_record.pk
                     self.suspend_security().create(vals)
-                    self._create_log(
-                        origin=cron.name,
-                        type='info',
-                        integration_log=integration_error_WS3_9000,
-                        ws_tuple=external_record,
-                        long_description='Evento: Creación'
-                    )
+                    if self._context.get('log_info'):
+                        self._set_new_log(
+                            origin=cron.name,
+                            type='info',
+                            integration_log=integration_error_WS3_9000,
+                            ws_tuple=external_record,
+                            long_description='Evento: Creación'
+                        )
                 except Exception as e:
                     self.env.cr.commit()
                     _logger.warning(tools.ustr(e))
-                    self._create_log(
+                    self._set_new_log(
                         origin=cron.name,
                         type='error',
                         integration_log=integration_error_WS3_9001,
@@ -98,27 +101,24 @@ class ONSCLegajoNorm(models.Model):
                     for recordset in recordsets:
                         vals = self._prepare_update_values(external_record, recordset, inciso)
                         recordset.suspend_security().write(vals)
-                    self._create_log(
-                        origin=cron.name,
-                        type='info',
-                        integration_log=integration_error_WS3_9000,
-                        ws_tuple=external_record,
-                        long_description='Evento: Actualización'
-                    )
+                    if self._context.get('log_info'):
+                        self._set_new_log(
+                            origin=cron.name,
+                            type='info',
+                            integration_log=integration_error_WS3_9000,
+                            ws_tuple=external_record,
+                            long_description='Evento: Actualización'
+                        )
                 except Exception as e:
                     self.env.cr.commit()
                     _logger.warning(tools.ustr(e))
-                    self._create_log(
+                    self._set_new_log(
                         origin=cron.name,
                         type='error',
                         integration_log=integration_error_WS3_9002,
                         ws_tuple=external_record,
                         long_description=tools.ustr(e))
         return all_external_key_list
-        # DESACTIVANDO ELEMENTOS QUE NO VINIERON
-        # all_odoo_recordsets.filtered(lambda x: x.pk not in all_external_key_list).write({
-        #     'active': False
-        # })
 
     def _prepare_create_values(self, external_record, inciso):
         return {
