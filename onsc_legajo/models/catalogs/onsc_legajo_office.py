@@ -107,7 +107,6 @@ class ONSCLegajoOffice(models.Model):
                 # MODIFICANDO ELEMENTO EXISTENTE
                 else:
                     try:
-                        # with self._cr.savepoint():
                         all_odoo_recordsets.filtered(lambda x: x.code == key_str).write(vals)
                         if self._context.get('log_info'):
                             self.create_new_log(

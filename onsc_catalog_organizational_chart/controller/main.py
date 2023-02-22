@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import http
+from odoo import http, _
 from odoo.exceptions import UserError
 from odoo.http import request
 
@@ -172,7 +172,7 @@ class EmployeeChart(http.Controller):
         ) or (len(nodes_by_level) and nodes_by_level[0] or [])
         if not root_nodes:
             raise UserError(
-                "No tiene datos para mostrar"
+                _("No tiene datos para mostrar")
             )
         levels_result = []
         items_joined = []

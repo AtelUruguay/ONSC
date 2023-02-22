@@ -58,6 +58,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                         tools.ustr(response.mensajeResultado), str(response.codigoResultado)))
         return True
 
+    # pylint: disable=redefined-builtin
     def create_new_log(self, origin, type, integration_log, ws_tuple=False, long_description=False):
         if long_description and ws_tuple:
             _long_description = _('%s Tupla: %s') % (long_description, str(ws_tuple))
