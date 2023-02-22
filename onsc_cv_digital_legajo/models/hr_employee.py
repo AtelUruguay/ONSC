@@ -17,6 +17,7 @@ class HrEmployee(models.Model):
                                           copy=True)
 
     # RAZA
+
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial",
                                    domain="[('race_type','in',['race','both'])]")
     is_cv_race_option_other_enable = fields.Boolean(
@@ -45,12 +46,14 @@ class HrEmployee(models.Model):
 
     # Discapacidad
     type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo')
-    is_need_other_support = fields.Boolean(u'¿Necesita otro tipo de apoyo?')
+    is_need_other_support = fields.Boolean(u'¿Necesita otro apoyo?')
 
     # Datos del legajo
     information_contact_ids = fields.One2many('onsc.cv.legajo.information.contact', 'employee_id',
                                               string=u'Información de Contacto')
     last_modification_date = fields.Date(string=u'Fecha última modificación')
+    department_health_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
+                                           ondelete='restrict', tracking=True)
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):
@@ -91,10 +94,17 @@ class HrEmployee(models.Model):
             }))
         return information_contact_orm
 
+    def _get_type_support_orm(self):
+        type_support_orm = [(5,)]
+        for type_support in self.cv_digital_id.type_support_ids:
+            type_support_orm.append((4, type_support.id))
+        return type_support_orm
+
     def button_get_info_fromcv(self):
 
         for record in self.suspend_security():
             vals = {
+                'image_1920': record.cv_digital_id.partner_id.image_1920,
                 'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
                 'cv_second_name': record.cv_digital_id.partner_id.cv_second_name,
                 'cv_last_name_1': record.cv_digital_id.partner_id.cv_last_name_1,
@@ -123,12 +133,15 @@ class HrEmployee(models.Model):
                 'user_linkedIn': record.cv_digital_id.user_linkedIn,
                 'is_driver_license': record.cv_digital_id.is_driver_license,
                 'drivers_license_ids': record._get_driver_licences_orm(),
+                'cv_expiration_date': record.cv_digital_id.cv_expiration_date,
+                'status_civil_date': record.cv_digital_id.status_civil_date,
                 # GENERO
                 'cv_gender_id': record.cv_digital_id.cv_gender_id.id,
                 'cv_gender2': record.cv_digital_id.cv_gender2,
                 'cv_gender_record_file': record.cv_digital_id.cv_gender_record_file,
                 'cv_gender_record_filename': record.cv_digital_id.cv_gender_record_filename,
                 'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
+                'gender_date': record.cv_digital_id.gender_date,
                 # RAZA
                 'cv_race2': record.cv_digital_id.cv_race2,
                 'cv_race_ids': record.cv_digital_id.cv_race_ids,
@@ -137,6 +150,18 @@ class HrEmployee(models.Model):
                 'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
                 'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
                 'is_cv_race_public': record.cv_digital_id.is_cv_race_public,
+                'afro_descendant_date': record.cv_digital_id.afro_descendant_date,
+
+                # SALUD LABORAL
+                'is_occupational_health_card': record.cv_digital_id.is_occupational_health_card,
+                'occupational_health_card_date': record.cv_digital_id.occupational_health_card_date,
+                'occupational_health_card_file': record.cv_digital_id.occupational_health_card_file,
+                'occupational_health_card_filename': record.cv_digital_id.occupational_health_card_filename,
+                # APTITUD MEDICA DEPORTIVA
+                'is_medical_aptitude_certificate_status': record.cv_digital_id.is_medical_aptitude_certificate_status,
+                'medical_aptitude_certificate_date': record.cv_digital_id.medical_aptitude_certificate_date,
+                'medical_aptitude_certificate_file': record.cv_digital_id.medical_aptitude_certificate_file,
+                'medical_aptitude_certificate_filename': record.cv_digital_id.medical_aptitude_certificate_filename,
                 # Victima de Delitos violentos
                 'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
                 'is_victim_violent': record.cv_digital_id.is_victim_violent,
@@ -173,18 +198,22 @@ class HrEmployee(models.Model):
                 'realize': record.cv_digital_id.realize,
                 'lear': record.cv_digital_id.lear,
                 'interaction': record.cv_digital_id.interaction,
+                'is_need_other_support': record.cv_digital_id.is_need_other_support,
                 'need_other_support': record.cv_digital_id.need_other_support,
+                'disability_date': record.cv_digital_id.disability_date,
+                'type_support_ids': self._get_type_support_orm(),
                 # Datos del legajo
-                'mergency_service_id': record.cv_digital_id.mergency_service_id.id,
+                'emergency_service_id': record.cv_digital_id.emergency_service_id.id,
                 'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
                 'emergency_service_telephone': record.cv_digital_id.emergency_service_telephone,
-                # 'department_id': record.cv_digital_id.department_id.id,
                 'blood_type': record.cv_digital_id.blood_type,
                 'other_information_official': record.cv_digital_id.other_information_official,
                 'institutional_email': record.cv_digital_id.institutional_email,
                 'digitized_document_file': record.cv_digital_id.digitized_document_file,
                 'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
                 'information_contact_ids': self._get_information_contact_orm(),
+                'department_health_id': record.cv_digital_id.department_id.id,
+                'health_provider_id': record.cv_digital_id.health_provider_id.id,
                 # Extras
                 'last_modification_date': record.cv_digital_id.last_modification_date,
 

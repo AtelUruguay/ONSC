@@ -8,7 +8,6 @@ SITUATION = u'¿Está en situación de discapacidad y/o requiere algún apoyo pa
 DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
 
 
-
 class ONSCCVAbstractCommon(models.AbstractModel):
     _name = 'onsc.cv.abstract.common'
     _description = 'Modelo abstracto común para todas las entidades de CV(NO CV)'
@@ -83,7 +82,7 @@ class ONSCCVCommonData(models.AbstractModel):
         string="Documento digitalizado del certificado de aptitud médico-deportiva")
     medical_aptitude_certificate_filename = fields.Char('Nombre del documento digital')
 
-    #Víctima de delitos violentos
+    # Víctima de delitos violentos
     is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)", )
     relationship_victim_violent_file = fields.Binary(
         string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
@@ -91,12 +90,12 @@ class ONSCCVCommonData(models.AbstractModel):
     is_public_information_victim_violent = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?", )
 
-    #Domicilio
+    # Domicilio
     cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle")
     cv_address_street2_id = fields.Many2one('onsc.cv.street', string="Entre calle")
     cv_address_street3_id = fields.Many2one('onsc.cv.street', string=u'Y calle')
 
-    #Discapacidad
+    # Discapacidad
     allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no',
                                             string=u'¿Permite que el contenido de esta sección se visualice en su CV?')
     situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
