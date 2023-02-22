@@ -89,7 +89,7 @@ class ONSCLegajoOffice(models.Model):
                     try:
                         JornadaRetributiva.create(vals)
                         if self._context.get('log_info'):
-                            self._set_new_log(
+                            self.create_new_log(
                                 origin=cron.name,
                                 type='info',
                                 integration_log=integration_error_WS13_9000,
@@ -98,7 +98,7 @@ class ONSCLegajoOffice(models.Model):
                             )
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self._set_new_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS13_9001,
@@ -107,10 +107,9 @@ class ONSCLegajoOffice(models.Model):
                 # MODIFICANDO ELEMENTO EXISTENTE
                 else:
                     try:
-                        # with self._cr.savepoint():
                         all_odoo_recordsets.filtered(lambda x: x.code == key_str).write(vals)
                         if self._context.get('log_info'):
-                            self._set_new_log(
+                            self.create_new_log(
                                 origin=cron.name,
                                 type='info',
                                 integration_log=integration_error_WS13_9000,
@@ -119,7 +118,7 @@ class ONSCLegajoOffice(models.Model):
                             )
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self._set_new_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS13_9002,
@@ -176,7 +175,7 @@ class ONSCLegajoOffice(models.Model):
                     _logger.warning(tools.ustr(e))
                     onsc_legajo_integration_error_WS13_9004 = self.env.ref(
                         "onsc_legajo.onsc_legajo_integration_error_WS13_9004")
-                    self._set_new_log(
+                    self.create_new_log(
                         origin=cron.name,
                         type='error',
                         integration_log=onsc_legajo_integration_error_WS13_9004,
@@ -214,7 +213,7 @@ class ONSCLegajoOffice(models.Model):
         except Exception as e:
             _logger.warning(tools.ustr(e))
             integration_error_WS13_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS13_9004")
-            self._set_new_log(
+            self.create_new_log(
                 origin=cron.name,
                 type='error',
                 integration_log=integration_error_WS13_9004,

@@ -56,7 +56,7 @@ class ONSCLegajoBudgetItem(models.Model):
                         vals['codPartida'] = key_str
                         self.create(vals)
                         if self._context.get('log_info'):
-                            self._set_new_log(
+                            self.create_new_log(
                                 origin=cron.name,
                                 type='info',
                                 integration_log=integration_error_WS2_9000,
@@ -65,7 +65,7 @@ class ONSCLegajoBudgetItem(models.Model):
                             )
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self._set_new_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS2_9001,
@@ -76,7 +76,7 @@ class ONSCLegajoBudgetItem(models.Model):
                     try:
                         all_odoo_recordsets.filtered(lambda x: x.codPartida == key_str).write(vals)
                         if self._context.get('log_info'):
-                            self._set_new_log(
+                            self.create_new_log(
                                 origin=cron.name,
                                 type='info',
                                 integration_log=integration_error_WS2_9000,
@@ -85,7 +85,7 @@ class ONSCLegajoBudgetItem(models.Model):
                             )
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self._set_new_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS2_9002,
@@ -147,7 +147,7 @@ class ONSCLegajoBudgetItem(models.Model):
         except Exception as e:
             _logger.warning(tools.ustr(e))
             integration_error_WS2_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS2_9004")
-            self._set_new_log(
+            self.create_new_log(
                 origin=cron.name,
                 type='error',
                 integration_log=integration_error_WS2_9004,
