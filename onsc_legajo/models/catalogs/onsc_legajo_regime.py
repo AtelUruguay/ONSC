@@ -33,12 +33,13 @@ class ONSCLegajoRegime(models.Model):
                 record.name = ''
 
     @api.model
-    def syncronize(self):
+    def syncronize(self, log_info=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS14_regimen')
         cron = self.env.ref("onsc_legajo.sync_legajo_regime")
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9005")
         wsclient = self._get_client(parameter, cron.name, integration_error)
-        return self._syncronize(wsclient, parameter, cron.name, integration_error, {})
+        return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, cron.name,
+                                                                                   integration_error, {})
 
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
@@ -63,17 +64,17 @@ class ONSCLegajoRegime(models.Model):
                         # with self._cr.savepoint():
                         vals['codRegimen'] = key_str
                         self.create(vals)
-                        self._create_log(
-                            origin=cron.name,
-                            type='info',
-                            integration_log=integration_error_WS14_9000,
-                            ws_tuple=external_record,
-                            long_description='Evento: Creación'
-                        )
+                        if self._context.get('log_info'):
+                            self._set_new_log(
+                                origin=cron.name,
+                                type='info',
+                                integration_log=integration_error_WS14_9000,
+                                ws_tuple=external_record,
+                                long_description='Evento: Creación'
+                            )
                     except Exception as e:
-                        # self.env.cr.rollback()
                         _logger.warning(tools.ustr(e))
-                        self._create_log(
+                        self._set_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS14_9001,
@@ -82,19 +83,18 @@ class ONSCLegajoRegime(models.Model):
                 # MODIFICANDO ELEMENTO EXISTENTE
                 else:
                     try:
-                        # with self._cr.savepoint():
                         all_odoo_recordsets.filtered(lambda x: x.codRegimen == key_str).write(vals)
-                        self._create_log(
-                            origin=cron.name,
-                            type='info',
-                            integration_log=integration_error_WS14_9000,
-                            ws_tuple=external_record,
-                            long_description='Evento: Actualización'
-                        )
+                        if self._context.get('log_info'):
+                            self._set_new_log(
+                                origin=cron.name,
+                                type='info',
+                                integration_log=integration_error_WS14_9000,
+                                ws_tuple=external_record,
+                                long_description='Evento: Actualización'
+                            )
                     except Exception as e:
-                        # self.env.cr.rollback()
                         _logger.warning(tools.ustr(e))
-                        self._create_log(
+                        self._set_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS14_9002,
