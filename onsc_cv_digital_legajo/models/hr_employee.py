@@ -52,8 +52,6 @@ class HrEmployee(models.Model):
     information_contact_ids = fields.One2many('onsc.cv.legajo.information.contact', 'employee_id',
                                               string=u'Información de Contacto')
     last_modification_date = fields.Date(string=u'Fecha última modificación')
-    department_health_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
-                                           ondelete='restrict', tracking=True)
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):
@@ -212,7 +210,7 @@ class HrEmployee(models.Model):
                 'digitized_document_file': record.cv_digital_id.digitized_document_file,
                 'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
                 'information_contact_ids': self._get_information_contact_orm(),
-                'department_health_id': record.cv_digital_id.department_id.id,
+                'department_health_id': record.cv_digital_id.department_health_id.id,
                 'health_provider_id': record.cv_digital_id.health_provider_id.id,
                 # Extras
                 'last_modification_date': record.cv_digital_id.last_modification_date,

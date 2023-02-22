@@ -44,8 +44,6 @@ class ONSCCVDigital(models.Model):
     #                                             default=lambda self: self.env['res.country.phone'].search(
     #                                                 [('country_id.code', '=', 'UY')]))
     # emergency_service_telephone = fields.Char(related=mergency_service_id.phone,string=u'Teléfono del servicio de emergencia')
-    department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
-                                    ondelete='restrict', tracking=True)
     # # TO-DO: Revisar este campo, No esta en catalogo
     # # health_provider_id = fields.Many2one("model", u"Prestador de Salud")
     # blood_type = fields.Selection(BLOOD_TYPE, string=u'Tipo de sangre')
