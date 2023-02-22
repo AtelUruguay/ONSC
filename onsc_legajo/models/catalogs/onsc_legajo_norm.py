@@ -78,7 +78,7 @@ class ONSCLegajoNorm(models.Model):
                     vals['pk'] = external_record.pk
                     self.suspend_security().create(vals)
                     if self._context.get('log_info'):
-                        self._set_new_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='info',
                             integration_log=integration_error_WS3_9000,
@@ -88,7 +88,7 @@ class ONSCLegajoNorm(models.Model):
                 except Exception as e:
                     self.env.cr.commit()
                     _logger.warning(tools.ustr(e))
-                    self._set_new_log(
+                    self.create_new_log(
                         origin=cron.name,
                         type='error',
                         integration_log=integration_error_WS3_9001,
@@ -102,7 +102,7 @@ class ONSCLegajoNorm(models.Model):
                         vals = self._prepare_update_values(external_record, recordset, inciso)
                         recordset.suspend_security().write(vals)
                     if self._context.get('log_info'):
-                        self._set_new_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='info',
                             integration_log=integration_error_WS3_9000,
@@ -112,7 +112,7 @@ class ONSCLegajoNorm(models.Model):
                 except Exception as e:
                     self.env.cr.commit()
                     _logger.warning(tools.ustr(e))
-                    self._set_new_log(
+                    self.create_new_log(
                         origin=cron.name,
                         type='error',
                         integration_log=integration_error_WS3_9002,

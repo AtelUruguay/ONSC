@@ -65,7 +65,7 @@ class ONSCLegajoRegime(models.Model):
                         vals['codRegimen'] = key_str
                         self.create(vals)
                         if self._context.get('log_info'):
-                            self._set_new_log(
+                            self.create_new_log(
                                 origin=cron.name,
                                 type='info',
                                 integration_log=integration_error_WS14_9000,
@@ -74,7 +74,7 @@ class ONSCLegajoRegime(models.Model):
                             )
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self._set_new_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS14_9001,
@@ -85,7 +85,7 @@ class ONSCLegajoRegime(models.Model):
                     try:
                         all_odoo_recordsets.filtered(lambda x: x.codRegimen == key_str).write(vals)
                         if self._context.get('log_info'):
-                            self._set_new_log(
+                            self.create_new_log(
                                 origin=cron.name,
                                 type='info',
                                 integration_log=integration_error_WS14_9000,
@@ -94,7 +94,7 @@ class ONSCLegajoRegime(models.Model):
                             )
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self._set_new_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS14_9002,
