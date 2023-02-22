@@ -8,7 +8,6 @@ class ONSCLog(models.Model):
     _description = 'Bandeja de logs ONSC'
     _order = "create_date DESC"
 
-
     process = fields.Char(string="Proceso", required=True, index=True)
     origin = fields.Char(string='Origen', required=True, index=True)
     type = fields.Selection(
