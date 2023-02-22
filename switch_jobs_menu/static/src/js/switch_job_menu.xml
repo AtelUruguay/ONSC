@@ -2,9 +2,14 @@
 <templates xml:space="preserve">
 
 <t t-name="switch_jobs_menu.SwitchJobMenu" owl="1">
-    <Dropdown class="o_switch_company_menu" position="'bottom-end'">
+    <Dropdown class="o_switch_company_menu" position="'bottom-end'" title="'Puesto de trabajo'">
         <t t-set-slot="toggler" title="Cambiar puesto de trabajo">
-            <i class="fa fa-exchange"></i>
+             <t t-if="jobService.currentJob">
+                 <i class="fa fa-users" ></i>
+            </t>
+            <t  t-else="">
+                 <i class="fa fa-users" style="opacity: 0.5;"></i>
+            </t>
         </t>
         <t t-foreach="Object.values(jobService.availablejobs).sort((c1, c2) => c1.id - c2.id)" t-as="job">
             <t t-call="switch_jobs_menu.SwitchJobItem">
@@ -17,7 +22,7 @@
 
 <t t-name="switch_jobs_menu.SwitchJobItem" owl="1">
     <DropdownItem class="p-0 bg-white">
-        <t t-set="isCurrent" t-value="job.id === jobService.currentJob.id"/>
+        <t t-set="isCurrent" t-value="jobService.currentJob &amp;&amp; job.id === jobService.currentJob.id || False"/>
         <div class="d-flex" data-menu="job" t-att-data-job-id="job.id">
             <div
                 role="button"

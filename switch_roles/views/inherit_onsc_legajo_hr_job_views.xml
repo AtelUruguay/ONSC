@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="switch_roles_onsc_legajo_hr_job_form_view" model="ir.ui.view">
+        <field name="name">switch_roles_onsc.legajo.hr.job.form</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="onsc_legajo.onsc_legajo_hr_job_form_view"/>
+        <field name="arch" type="xml">
+             <xpath expr="//notebook/page[2]/field[@name='role_extra_ids']/tree/field[@name='user_role_id']" position="attributes">
+                 <attribute name="domain">[('rol_type', '=', 'config_onsc')]</attribute>
+             </xpath>
+        </field>
+    </record>
+</odoo>
