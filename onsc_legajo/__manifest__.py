@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Legajo',
-    'version': '15.0.2.0.0',
+    'version': '15.0.3.0.0',
     'summary': 'ONSC - Legajo',
     'sequence': 11,
     'description': """
@@ -33,6 +33,7 @@ ONSC - Legajo
         'views/catalogs/onsc_legajo_base_views.xml',
         'views/hr_employee_views.xml',
         'views/onsc_legajo_hr_job_views.xml',
+        'views/onsc_legajo_hr_contract_views.xml',
         'views/onsc_legajo_menuitems.xml',
     ],
     'demo': [],

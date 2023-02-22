@@ -21,3 +21,4 @@ class ONSCPartnerCommonData(models.AbstractModel):
     cv_emissor_country_id = fields.Many2one('res.country', u'País emisor del documento')
     cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento')
     cv_nro_doc = fields.Char(u'Número de documento', history=True)
+

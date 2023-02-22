@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import http
+from odoo import http, _
 from odoo.exceptions import UserError
 from odoo.http import request
 
@@ -9,21 +9,103 @@ class EmployeeChart(http.Controller):
     def get_hierarchy_trees(self, root_node, nodes_by_level, form_id, responsible):
 
         items = []
+        right_left = 'left'
+        assistances = nodes_by_level.filtered(
+            lambda node: not root_node.parent_id and node.function_nature in (
+                'comite', 'adviser', 'program'))
+        levelOffset = 0
+        itemType = 'Assistant'
+        for index, assistant in enumerate(assistances.filtered(
+                lambda node: node.function_nature == 'adviser')):
+            template = 'contactTemplate' if not responsible or not assistant.manager_id else 'contactTemplateResponsible'
+            if index > 0:
+                levelOffset = levelOffset + 1 if index % 2 == 0 else levelOffset
+            item = {
+                'id': assistant.id,
+                'parent': root_node.id,
+                'isVisible': True,
+                'form_id': form_id,
+                'short_name': assistant.name,
+                'responsible': assistant.manager_id.name or '',
+                'responsibleEmpty': '',
+                'show_responsible': responsible,
+                'title': assistant.name,
+                'itemType': itemType,
+                'adviserPlacementType': right_left,
+                'templateName': template,
+                'levelOffset': levelOffset,
+                'showShortName': assistant.show_short_name,
+            }
+            items.append(item)
+            right_left = 'left' if right_left == 'right' else 'right'
+        itemType = 'SubAdviser'
+        levelOffset = levelOffset + 1
+        for index, assistant in enumerate(assistances.filtered(
+                lambda node: node.function_nature == 'program')):
+            template = 'contactTemplateDashed' if not responsible or not assistant.manager_id else 'contactTemplateDashedResponsible'
+            if index > 0:
+                levelOffset = levelOffset + 1 if index % 2 == 0 else levelOffset
+            item = {
+                'id': assistant.id,
+                'parent': root_node.id,
+                'isVisible': True,
+                'form_id': form_id,
+                'short_name': assistant.name,
+                'responsible': assistant.manager_id.name or '',
+                'responsibleEmpty': '',
+                'show_responsible': responsible,
+                'title': assistant.name,
+                'itemType': itemType,
+                'adviserPlacementType': right_left,
+                'templateName': template,
+                'levelOffset': levelOffset,
+                'showShortName': assistant.show_short_name,
+            }
+
+            items.append(item)
+            right_left = 'left' if right_left == 'right' else 'right'
+        itemType = 'SubAssistant'
+        levelOffset = levelOffset + 1
+        for index, assistant in enumerate(assistances.filtered(lambda node: node.function_nature == 'comite')):
+            template = 'contactTemplate' if not responsible or not assistant.manager_id else 'contactTemplateResponsible'
+            if index > 0:
+                levelOffset = levelOffset + 1 if index % 2 == 0 else levelOffset
+            item = {
+                'id': assistant.id,
+                'parent': root_node.id,
+                'isVisible': True,
+                'form_id': form_id,
+                'short_name': assistant.name,
+                'responsible': assistant.manager_id.name or '',
+                'responsibleEmpty': '',
+                'show_responsible': responsible,
+                'title': assistant.name,
+                'itemType': itemType,
+                'adviserPlacementType': right_left,
+                'templateName': template,
+                'levelOffset': levelOffset,
+                'showShortName': assistant.show_short_name,
+            }
+            items.append(item)
+            right_left = 'left' if right_left == 'right' else 'right'
+
         for node in nodes_by_level.filtered(
                 lambda node: node.function_nature not in (
-                'comite', 'commission_project', 'adviser')):
+                'comite', 'commission_project', 'adviser', 'program')):
             last_parent = node.parent_id.id
-            if not root_node.parent_id and node.parent_id and node.hierarchical_level_order - node.parent_id.hierarchical_level_order != 1:
+            if node.hierarchical_level_order - node.parent_id.hierarchical_level_order != 1:
                 for level_order in range(
                         node.hierarchical_level_order - node.parent_id.hierarchical_level_order - 1):
                     dummy_item = {
                         'id': f'dummy-{level_order}-{node.id}',
                         'parent': last_parent,
-                        'isVisible': False,
+                        'isVisible': True,
+                        'isActive': False,
                         'short_name': node.short_name,
                         'responsible': node.manager_id.name or '',
                         'responsibleEmpty': '',
-                        'title': node.name
+                        'title': node.name,
+                        'templateName': 'dummyTemplateItem'
                     }
                     items.append(dummy_item)
                     last_parent = dummy_item['id']
@@ -32,7 +114,7 @@ class EmployeeChart(http.Controller):
                 'parent': last_parent,
                 'form_id': form_id,
                 'isVisible': True,
-                'short_name': node.short_name,
+                'short_name': node.name,
                 'responsible': node.manager_id.name or '',
                 'responsibleEmpty': '',
                 'title': node.name,
@@ -41,32 +123,24 @@ class EmployeeChart(http.Controller):
                 'showShortName': node.show_short_name,
             }
             items.append(item)
-        right_left = 'right'
-        assistances = nodes_by_level.filtered(
-            lambda node: not root_node.parent_id and node.function_nature in (
-                'comite', 'commission_project', 'adviser'))
-        levelOffset = 0
-        for assistant in assistances:
-            item = {
-                'id': assistant.id,
-                'parent': root_node.id,
-                'isVisible': True,
-                'form_id': form_id,
-                'short_name': assistant.short_name,
-                'responsible': assistant.manager_id.name or '',
-                'responsibleEmpty': '',
-                'show_responsible': responsible,
-                'title': assistant.name,
-                'itemType': 'Assistant' if assistant.function_nature == 'adviser' else 'SubAssistant',
-                'adviserPlacementType': right_left,
-                'templateName': 'contactTemplate' if not responsible or not assistant.manager_id else 'contactTemplateResponsible',
-                'levelOffset': levelOffset,
-                'showShortName': assistant.show_short_name,
-            }
-            levelOffset = levelOffset + 1 if levelOffset // 2 == 0 else levelOffset
-            items.append(item)
-            right_left = 'left' if right_left == 'right' else 'right'
         return items, responsible
+
+    @http.route('/get/organizational/operating_unit', type='json', auth='user',
+                method=['POST'], csrf=False)
+    def get_operating_unit(self, **post):
+        operating_unit_id = post.get('id', False)
+        ou_id = request.env['hr.department'].browse(operating_unit_id)
+        if not ou_id:
+            return {}
+        return {
+            'code': ou_id.code or '',
+            'parentName': ou_id.parent_id.name or '',
+            'inciso': ou_id.inciso_id.name or '',
+            'OU': ou_id.operating_unit_id.name or '',
+            'hierarchy': ou_id.hierarchical_level_id.name or '',
+            'responsible': ou_id.manager_id.name or '',
+            'function_nature': dict(ou_id._fields['function_nature'].selection).get(ou_id.function_nature) or '',
+        }
 
     @http.route('/get/organizational/level', type='json', auth='user', method=['POST'], csrf=False)
     def get_parent_child(self, **post):
@@ -98,27 +172,28 @@ class EmployeeChart(http.Controller):
         ) or (len(nodes_by_level) and nodes_by_level[0] or [])
         if not root_nodes:
             raise UserError(
-                "No tiene datos para mostrar"
+                _("No tiene datos para mostrar")
             )
         levels_result = []
         items_joined = []
 
         for root_node in root_nodes:
+            parents = list(map(lambda r: int(r), filter(lambda c: c != '', root_node.parent_path.split('/'))))
             nodes_parent = request.env['hr.department'].sudo().with_context(
                 as_of_date=end_date).search(
-                ['|', ('id', 'child_of', root_node.id), ('id', '=', root_node.id)]
+                ['|', ('id', 'child_of', root_node.id), ('id', 'in', parents)], order='id asc, parent_id asc'
             )
             # if not root_node.parent_id:
-            if root_node.hierarchical_level_order != 1:
-                level_ids = [level.order - 1 for level in levels if level.order < root_node.hierarchical_level_order]
-
-                levels_result = [('', level_ids)]
-                levels_result.extend(
-                    (level.name, [level.order - 1]) for level in levels if
-                    level.order >= root_node.hierarchical_level_order)
-            else:
-                levels_result.extend(
-                    (level.name, [level.order - 1]) for level in levels)
+            # if root_node.hierarchical_level_order != 1:
+            #     level_ids = [level.order - 1 for level in levels if level.order < root_node.hierarchical_level_order]
+            #
+            #     levels_result = [('', level_ids)]
+            #     levels_result.extend(
+            #         (level.name, [level.order - 1]) for level in levels if
+            #         level.order >= root_node.hierarchical_level_order)
+            # else:
+            levels_result.extend(
+                (level.name, [level.order - 1]) for level in levels if (level.name, [level.order - 1]) not in levels_result)
             items, responsible = self.get_hierarchy_trees(root_node, nodes_parent, form_id, responsible)
             items_joined.extend(items)
         return {'levels': levels_result, 'items': items_joined,

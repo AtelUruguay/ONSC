@@ -18089,6 +18089,7 @@ var ItemType = {
    * line going from the top of the node.
    */
   SubAssistant: 4,
+  Comite: 9,
 
   /**
    * The adviser type places node on the right or left side of the parent
@@ -19969,6 +19970,9 @@ SvgGraphics.prototype.polyline = function (polylineData) {
     step = Math.round(attr.lineWidth) || 1;
 
     switch (attr.lineType) {
+//      case _enums__WEBPACK_IMPORTED_MODULE_2__["LineType"].Dashed:
+//        polyline.setAttribute("stroke-dasharray", step * 5 + "," + step * 3);
+//        break;
       case _enums__WEBPACK_IMPORTED_MODULE_2__["LineType"].Solid:
         polyline.setAttribute("stroke-dasharray", "");
         break;
@@ -38949,6 +38953,7 @@ function NodeGroupSorter() {
         break;
 
       case _enums__WEBPACK_IMPORTED_MODULE_0__["ItemType"].SubAssistant:
+      case _enums__WEBPACK_IMPORTED_MODULE_0__["ItemType"].Comite:
       case _enums__WEBPACK_IMPORTED_MODULE_0__["ItemType"].Assistant:
         index = index < 0 || index == null ? 0 : index;
 
@@ -39008,6 +39013,7 @@ function NodeTypeSorter() {
   function addChild(itemType, levelOffset, orgItem) {
     switch (itemType) {
       case _enums__WEBPACK_IMPORTED_MODULE_0__["ItemType"].SubAssistant:
+      case _enums__WEBPACK_IMPORTED_MODULE_0__["ItemType"].Comite:
       case _enums__WEBPACK_IMPORTED_MODULE_0__["ItemType"].Assistant:
         levelOffset = levelOffset < 0 || levelOffset == null ? 0 : levelOffset;
         break;
@@ -39309,6 +39315,34 @@ function VisualTreeBuilder() {
             branchAligner.mergeToChild(parentOrgItemId, nodes, _enums__WEBPACK_IMPORTED_MODULE_3__["RowType"].SubAssistants, index, 1, extendChildren);
           } else {
             branchAligner.addChild(parentOrgItemId, nodes, _enums__WEBPACK_IMPORTED_MODULE_3__["RowType"].SubAssistants, index, 1, extendChildren);
+          }
+        });
+      }
+
+      var Comites = parentProps.typeSorter.getRows(_enums__WEBPACK_IMPORTED_MODULE_1__["ItemType"].Comite);
+      /* create assistants levels */
+
+      if (Comites.length > 0) {
+        /* extend assistants levels */
+        var extendChildren = partners.length > 0;
+
+        if (!extendChildren) {
+          switch (parentOrgItem.placeAssistantsAboveChildren) {
+            case _enums__WEBPACK_IMPORTED_MODULE_1__["Enabled"].Auto:
+              extendChildren = options.placeAssistantsAboveChildren;
+              break;
+
+            case _enums__WEBPACK_IMPORTED_MODULE_1__["Enabled"].True:
+              extendChildren = true;
+              break;
+          }
+        }
+
+        Comites.forEach(function (nodes, index) {
+          if (options.alignBranches) {
+            branchAligner.mergeToChild(parentOrgItemId, nodes, _enums__WEBPACK_IMPORTED_MODULE_3__["RowType"].Comites, index, 1, extendChildren);
+          } else {
+            branchAligner.addChild(parentOrgItemId, nodes, _enums__WEBPACK_IMPORTED_MODULE_3__["RowType"].Comites, index, 1, extendChildren);
           }
         });
       }
@@ -39725,11 +39759,21 @@ function VisualTreeBuilder() {
 
       switch (itemProps.actualItemType) {
         case _enums__WEBPACK_IMPORTED_MODULE_1__["ItemType"].SubAssistant:
+//          item.connectorPlacement = _enums__WEBPACK_IMPORTED_MODULE_1__["SideFlag"].Top | _enums__WEBPACK_IMPORTED_MODULE_1__["SideFlag"].Bottom;
+//          alteredItem = getNewTreeItem({
+//            visibility: _enums__WEBPACK_IMPORTED_MODULE_1__["Visibility"].Invisible
+//          });
+//          visualTree.add(alteredItem.id, item.id, item);
+
+          alteredItem = item;
+          break;
+         case _enums__WEBPACK_IMPORTED_MODULE_1__["ItemType"].Comite:
           item.connectorPlacement = _enums__WEBPACK_IMPORTED_MODULE_1__["SideFlag"].Top | _enums__WEBPACK_IMPORTED_MODULE_1__["SideFlag"].Bottom;
           alteredItem = getNewTreeItem({
             visibility: _enums__WEBPACK_IMPORTED_MODULE_1__["Visibility"].Invisible
           });
           visualTree.add(alteredItem.id, item.id, item);
+
           break;
 
         case _enums__WEBPACK_IMPORTED_MODULE_1__["ItemType"].Assistant:
@@ -40081,6 +40125,7 @@ var RowType = {
   SubAdvisers: 2,
   Assistants: 3,
   SubAssistants: 4,
+  Comites: 7,
   RowChildren: 5,
   Children: 6
 };
@@ -40090,6 +40135,7 @@ RowTypeToGroupTypeMap[RowType.Advisers] = GroupType.Items;
 RowTypeToGroupTypeMap[RowType.SubAdvisers] = GroupType.Items;
 RowTypeToGroupTypeMap[RowType.Assistants] = GroupType.Assistants;
 RowTypeToGroupTypeMap[RowType.SubAssistants] = GroupType.Assistants;
+RowTypeToGroupTypeMap[RowType.Comites] = GroupType.Assistants;
 RowTypeToGroupTypeMap[RowType.RowChildren] = GroupType.RowChildren;
 RowTypeToGroupTypeMap[RowType.Children] = GroupType.Children;
 
