@@ -95,7 +95,7 @@
                                 <field name="emergency_service_telephone" class="oe_inline"
                                        attrs="{'required': [('is_docket_active', '=', True)]}"/>
                             </div>
-                            <field name="health_provider_id" attrs="{'required': [('is_docket_active', '=', True)]}"
+                            <field name="health_department_id" attrs="{'required': [('is_docket_active', '=', True)]}"
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                    domain="[('country_id.code','=','UY')]"/>
                             <field name="health_provider_id"

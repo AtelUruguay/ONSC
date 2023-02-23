@@ -210,7 +210,7 @@ class HrEmployee(models.Model):
                 'digitized_document_file': record.cv_digital_id.digitized_document_file,
                 'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
                 'information_contact_ids': self._get_information_contact_orm(),
-                'department_health_id': record.cv_digital_id.department_health_id.id,
+                'health_department_id': record.cv_digital_id.health_department_id.id,
                 'health_provider_id': record.cv_digital_id.health_provider_id.id,
                 # Extras
                 'last_modification_date': record.cv_digital_id.last_modification_date,

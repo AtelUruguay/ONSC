@@ -34,7 +34,7 @@ class ONSCCVLegajoAbstractCommon(models.AbstractModel):
     # TO-DO: Revisar este campo, No esta en catalogo
     health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud", ondelete='restrict',
                                          tracking=True)
-    department_health_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
+    health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
                                            ondelete='restrict', tracking=True)
 
     blood_type = fields.Selection(BLOOD_TYPE, string=u'Tipo de sangre')

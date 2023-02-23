@@ -58,7 +58,7 @@
                                            style='max-width:75px !important; padding:1px !important;'
                                            class="oe_inline" readonly="1"/>
                                     <field name="mobile_phone" class="oe_inline" style="padding:1px !important;"
-                                           readonly="1" string="Teléfono celular"/>
+                                           readonly="1"/>
                                 </div>
                                 <field name="email" widget="email" readonly="1"/>
                                 <field name="user_linkedIn" readonly="1"/>
@@ -269,7 +269,7 @@
                                            readonly="1"/>
                                     <field name="emergency_service_telephone" class="oe_inline" readonly="1"/>
                                 </div>
-                                <field name="department_health_id" readonly="1"/>
+                                <field name="health_department_id" readonly="1"/>
                                 <field name="health_provider_id" readonly="1"/>
                                 <field name="company_id" invisible="1" readonly="1"/>
                                 <separator string="Otros datos" style="font-size: 12px"/>
