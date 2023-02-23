@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import odoo
-from odoo import api, http, models
+from odoo import api, http, models, fields
 from odoo.http import request
 
 
@@ -8,7 +8,12 @@ class Http(models.AbstractModel):
     _inherit = 'ir.http'
 
     def get_domain(self, user):
-        domain = ['|', ('employee_id', '=', False), ('employee_id', '=', user.employee_id.id)]
+        today = fields.Date.today()
+        domain = [
+            ('start_date', '<=', fields.Date.to_string(today)),
+            ('end_date', '>=', fields.Date.to_string(today)),
+            '|', ('employee_id', '=', False),
+            ('employee_id', '=', user.employee_id.id)]
         return domain
 
     def session_info(self):
@@ -16,14 +21,15 @@ class Http(models.AbstractModel):
         session_info = super(Http, self).session_info()
         domain = self.get_domain(user)
         jobs = self.env['hr.job'].sudo().search(domain)
+        current_job = jobs[0].id if len(jobs) == 1 else user.employee_id.job_id.id
         session_info.update({
             "jobs": {
-                'current_job': user.employee_id.job_id.id,
+                'current_job': current_job,
                 'jobs': {
                     job.id: {
                         'id': job.id,
                         'name': job.name,
-                    } for job in jobs
+                    } for job in jobs if len(jobs) >= 1
                 },
             }
         })
