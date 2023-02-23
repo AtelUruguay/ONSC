@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import odoo
-from odoo import api, http, models, fields
+from odoo import api, http, models
 from odoo.http import request
 
 
@@ -8,12 +8,7 @@ class Http(models.AbstractModel):
     _inherit = 'ir.http'
 
     def get_domain(self, user):
-        today = fields.Date.today()
-        domain = [
-            ('start_date', '<=', fields.Date.to_string(today)),
-            ('end_date', '>=', fields.Date.to_string(today)),
-            '|', ('employee_id', '=', False),
-            ('employee_id', '=', user.employee_id.id)]
+        domain = []
         return domain
 
     def session_info(self):
@@ -28,7 +23,7 @@ class Http(models.AbstractModel):
                     job.id: {
                         'id': job.id,
                         'name': job.name,
-                    } for job in jobs if len(jobs) > 1
+                    } for job in jobs
                 },
             }
         })
