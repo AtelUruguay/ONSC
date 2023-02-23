@@ -18,7 +18,6 @@ HTML_HELP = """<a     class="btn btn-outline-dark" target="_blank" title="Enlace
                             <i class="fa fa-question-circle-o" role="img" aria-label="Info"/>Ayuda</a>"""
 
 
-
 def diff_month(d1, d2):
     return (d1.year - d2.year) * 12 + d1.month - d2.month
 
@@ -140,7 +139,7 @@ class ONSCCVDigital(models.Model):
                                             string="Fecha de información")
 
     # DOMICILIO----<Page>
-    #Campos en el partner pero con otro nombre
+    # Campos en el partner pero con otro nombre
     country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
     cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
@@ -840,19 +839,23 @@ class ONSCCVDigital(models.Model):
             cv_call_id = self.env['onsc.cv.digital.call'].search([('cv_digital_id', '=', self.id)], limit=1)
             is_call_documentary_validation = self._context.get('is_call_documentary_validation', False)
             is_cv_copy = self._context.get('is_cv_copy', False)
-            if cv_call_id.allow_content_public == 'si' or is_cv_copy or (is_call_documentary_validation and (cv_call_id.allow_content_public == 'si' or cv_call_id.is_disabilitie)):
+            if cv_call_id.allow_content_public == 'si' or is_cv_copy or (is_call_documentary_validation and (
+                    cv_call_id.allow_content_public == 'si' or cv_call_id.is_disabilitie)):
                 show_disabilitie = True
             else:
                 show_disabilitie = False
-            if cv_call_id.is_cv_race_public or is_cv_copy or (is_call_documentary_validation and (cv_call_id.is_cv_race_public or cv_call_id.is_afro)):
+            if cv_call_id.is_cv_race_public or is_cv_copy or (
+                    is_call_documentary_validation and (cv_call_id.is_cv_race_public or cv_call_id.is_afro)):
                 show_afro = True
             else:
                 show_afro = False
-            if cv_call_id.is_cv_gender_public or is_cv_copy or (is_call_documentary_validation and (cv_call_id.is_cv_gender_public or cv_call_id.is_trans)):
+            if cv_call_id.is_cv_gender_public or is_cv_copy or (
+                    is_call_documentary_validation and (cv_call_id.is_cv_gender_public or cv_call_id.is_trans)):
                 show_gender_info = True
             else:
                 show_gender_info = False
-            if cv_call_id.is_public_information_victim_violent or is_cv_copy or (is_call_documentary_validation and (cv_call_id.is_public_information_victim_violent or cv_call_id.is_victim)):
+            if cv_call_id.is_public_information_victim_violent or is_cv_copy or (is_call_documentary_validation and (
+                    cv_call_id.is_public_information_victim_violent or cv_call_id.is_victim)):
                 show_victim = True
             else:
                 show_victim = False

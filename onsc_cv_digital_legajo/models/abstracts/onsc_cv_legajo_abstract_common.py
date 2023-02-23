@@ -24,16 +24,19 @@ class ONSCCVLegajoAbstractCommon(models.AbstractModel):
 
         return [('country_id', 'in', country_id.ids)]
 
-    mergency_service_id = fields.Many2one("onsc.legajo.emergency", u"Servicio de emergencia móvil")
+    emergency_service_id = fields.Many2one("onsc.legajo.emergency", u"Servicio de emergencia móvil")
     prefix_emergency_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
                                                 domain=domain_prefix_emergency_phone_id,
                                                 default=lambda self: self.env['res.country.phone'].search(
                                                     [('country_id.code', '=', 'UY')]))
     emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia')
-    department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
-                                    ondelete='restrict', tracking=True)
+
     # TO-DO: Revisar este campo, No esta en catalogo
-    # health_provider_id = fields.Many2one("model", u"Prestador de Salud")
+    health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud", ondelete='restrict',
+                                         tracking=True)
+    health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
+                                           ondelete='restrict', tracking=True)
+
     blood_type = fields.Selection(BLOOD_TYPE, string=u'Tipo de sangre')
 
     other_information_official = fields.Text(string="Otra información del funcionario/a")
@@ -45,3 +48,6 @@ class ONSCCVLegajoAbstractCommon(models.AbstractModel):
     gender_date = fields.Date(string="Fecha de información género")
     status_civil_date = fields.Date(string="Fecha de información estado civil")
     disability_date = fields.Date(string="Fecha de información discapacidad")
+
+    # Datos de afrodescendencia
+    afro_descendant_date = fields.Date(string="Fecha de información afrodescendencia")
