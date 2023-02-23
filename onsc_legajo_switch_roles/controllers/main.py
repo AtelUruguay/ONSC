@@ -10,10 +10,9 @@ class Http(models.AbstractModel):
     def get_domain(self, user):
         today = fields.Date.today()
         domain = [
-            ('start_date', '<=', fields.Date.to_string(today)),
-            ('end_date', '>=', fields.Date.to_string(today)),
-            '|', ('employee_id', '=', False),
-            ('employee_id', '=', user.employee_id.id)]
+            '&', '&', ('start_date', '<=', fields.Date.to_string(today)),
+            '|', ('end_date', '>=', fields.Date.to_string(today)), ('end_date', '=', False),
+            '|', ('employee_id', '=', False), ('employee_id', '=', user.employee_id.id)]
         return domain
 
     def session_info(self):
