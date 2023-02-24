@@ -21,6 +21,7 @@ class Http(models.AbstractModel):
         domain = self.get_domain(user)
         jobs = self.env['hr.job'].sudo().search(domain)
         current_job = jobs[0].id if len(jobs) == 1 else user.employee_id.job_id.id
+        user.change_job(current_job)
         session_info.update({
             "jobs": {
                 'current_job': current_job,
