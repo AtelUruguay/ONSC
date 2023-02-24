@@ -47,7 +47,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                         tools.ustr(response.servicioResultado.mensaje), str(response.servicioResultado.codigo)))
         elif hasattr(response, 'codigoResultado'):
             if response.codigoResultado == 0:
-                return self._populate_from_syncronization(response, values)
+                return self._populate_from_syncronization(response)
             else:
                 self.create_new_log(
                     origin=origin_name,
