@@ -10,7 +10,7 @@ class ResUsersRole(models.Model):
     rol_type = fields.Selection(
         [
             ('default', 'Rol por defecto'),
-            ('adding_job', 'Rol de adición de puesto'),
+            ('config_onsc', 'Rol de configurador ONSC'),
         ],
         string="Tipo de Rol"
     )
