@@ -7,3 +7,7 @@ class ResUser(models.Model):
 
     def change_job(self, jobId):
         self.env.user.employee_id.write(dict(job_id=jobId))
+
+    def get_jobs_domain(self):
+        domain = []
+        return domain
