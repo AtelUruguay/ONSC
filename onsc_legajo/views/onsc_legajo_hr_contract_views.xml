@@ -39,12 +39,16 @@
                             <field name="operating_unit_id_domain" invisible="1"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="wage" invisible="1"/>
-                            <field name="income_mechanism" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="income_mechanism_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                         </group>
                         <group>
                             <field name="call_number" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="state" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="cs_contract" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="cs_contract_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="program" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
                             <field name="project" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
                             <field name="regime_id" groups="onsc_legajo.group_legajo_configurador_contrato"
@@ -65,7 +69,9 @@
                                    required="1"/>
                             <field name="reason_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"
                                    required="1"/>
-                            <field name="norm_code_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="norm_code_discharge_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="norm_number_discharge"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="norm_year_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
@@ -93,7 +99,8 @@
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="reason_deregistration"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="norm_code_deregistration"
+                            <field name="norm_code_deregistration_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="norm_number_deregistration"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
@@ -127,8 +134,9 @@
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
-                                    <field name="document" required="1"/>
+                                    <field name="document_file" required="1" filename="document_file_name"/>
                                     <field name="type" invisible="1"/>
+                                    <field name="document_file_name" invisible="1"/>
                                 </tree>
                             </field>
                         </page>
@@ -139,8 +147,9 @@
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
-                                    <field name="document" required="1"/>
+                                    <field name="document_file" required="1" filename="document_file_name"/>
                                     <field name="type" invisible="1"/>
+                                    <field name="document_file_name" invisible="1"/>
                                 </tree>
                             </field>
                         </page>
