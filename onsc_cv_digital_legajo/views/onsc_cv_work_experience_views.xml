@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="onsc_cv_work_experience_form_view" model="ir.ui.view">
+        <field name="name">onsc.cv.work.experience.form</field>
+        <field name="model">onsc.cv.work.experience</field>
+        <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_work_experience_form_view"/>
+        <field name="arch" type="xml">
+            <field name="currently_working">
+                <field name="causes_discharge_id"
+                       attrs="{'invisible': [('currently_working','!=','no')],'required': [('currently_working','=','no')]}"/>
+            </field>
+        </field>
+    </record>
+</odoo>
