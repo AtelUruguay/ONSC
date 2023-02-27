@@ -97,6 +97,7 @@ class HrJobRoleLine(models.Model):
     end_date = fields.Date(string="Fecha hasta")
     type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de puesto')],
                             string='Modo de creación', default='manual')
+    user_role_id_domain = fields.Char(compute='_compute_user_role_id_domain')
 
     _sql_constraints = [
         ('recordset_uniq', 'unique(job_id,user_role_id)',
@@ -133,3 +134,8 @@ class HrJobRoleLine(models.Model):
         if self.job_id.end_date and self.end_date and self.job_id.end_date < self.end_date:
             self.end_date = False
             return warning_response(_(u"La fecha hasta no puede ser mayor que la fecha hasta del puesto"))
+
+    def _compute_user_role_id_domain(self):
+        roles = self.env['res.users.role'].search([('rol_type', '=', False)])
+        for rec in self:
+            rec.user_role_id_domain = json.dumps([('id', 'in', roles.ids)])
