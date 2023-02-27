@@ -36,7 +36,7 @@ class HrContract(models.Model):
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4')
     graduation_date = fields.Date(string='Fecha de graduación')
     position = fields.Char(string='Puesto')
-    plaza = fields.Char(string='Plaza')
+    workplace = fields.Char(string='Plaza')
     reason_discharge = fields.Char(string='Descripción del motivo alta')
     norm_code_discharge = fields.Many2one('onsc.legajo.norm', string='Código de norma alta')
     norm_number_discharge = fields.Char(string='Número de norma alta')

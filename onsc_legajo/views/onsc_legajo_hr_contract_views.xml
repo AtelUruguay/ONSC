@@ -47,8 +47,9 @@
                             <field name="cs_contract" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="program" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
                             <field name="project" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
-                            <field name="regime_id" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
-                            <field name="occupation_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="regime_id" groups="onsc_legajo.group_legajo_configurador_contrato"
+                                   required="1"/>
+                            <field name="occupation_id" groups="onsc_legajo.group_legajo_editar_ocupacion_contrato"/>
                             <field name="descriptor1_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="descriptor2_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="descriptor3_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
@@ -56,36 +57,58 @@
                         </group>
                         <group>
                             <field name="graduation_date" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="position" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
-                            <field name="plaza" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
-                            <field name="sec_position" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
-                            <field name="reason_discharge" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
+                            <field name="position" groups="onsc_legajo.group_legajo_configurador_contrato"
+                                   required="1"/>
+                            <field name="workplace" groups="onsc_legajo.group_legajo_configurador_contrato"
+                                   required="1"/>
+                            <field name="sec_position" groups="onsc_legajo.group_legajo_configurador_contrato"
+                                   required="1"/>
+                            <field name="reason_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"
+                                   required="1"/>
                             <field name="norm_code_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="norm_number_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="norm_number_discharge"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="norm_year_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="norm_article_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="resolution_description_discharge" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
-                            <field name="resolution_date_discharge" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
-                            <field name="resolution_type_discharge" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
-                            <field name="contract_expiration_date" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
-                            <field name="additional_information_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="norm_article_discharge"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="resolution_description_discharge"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
+                            <field name="resolution_date_discharge"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
+                            <field name="resolution_type_discharge"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
+                            <field name="contract_expiration_date"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
+                            <field name="additional_information_discharge"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="code_day" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                         </group>
                         <group>
                             <field name="description_day" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="retributive_day_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="id_registration_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="id_registration_discharge"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="discharge_date" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="id_deregistration_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="reason_deregistration" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="norm_code_deregistration" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="norm_number_deregistration" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="norm_year_deregistration" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="norm_article_deregistration" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="resolution_description_deregistration" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="resolution_date_deregistration" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="resolution_type_deregistration" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="additional_information_deregistration" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="id_deregistration_discharge"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="reason_deregistration"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="norm_code_deregistration"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="norm_number_deregistration"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="norm_year_deregistration"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="norm_article_deregistration"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="resolution_description_deregistration"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="resolution_date_deregistration"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="resolution_type_deregistration"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="additional_information_deregistration"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                         </group>
                     </group>
                     <notebook>
@@ -98,7 +121,9 @@
                             </group>
                         </page>
                         <page string="Documentos Adjuntos Alta" name="documents_alta">
-                            <field name="attached_document_discharge_ids" nolabel="1"  context="{'default_type': 'discharge'}">
+                            <field name="attached_document_discharge_ids" nolabel="1"
+                                   context="{'default_type': 'discharge'}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato">
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
@@ -108,7 +133,9 @@
                             </field>
                         </page>
                         <page string="Documentos Adjuntos Baja" name="documents_baja">
-                            <field name="attached_document_deregistration_ids"  nolabel="1"  context="{'default_type': 'deregistration'}">
+                            <field name="attached_document_deregistration_ids" nolabel="1"
+                                   context="{'default_type': 'deregistration'}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato">
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
@@ -118,7 +145,8 @@
                             </field>
                         </page>
                         <page string="Puestos" name="puestos">
-                            <field name="hr_job_ids" nolabel="1"/>
+                            <field name="hr_job_ids" nolabel="1"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                         </page>
                     </notebook>
                 </sheet>
