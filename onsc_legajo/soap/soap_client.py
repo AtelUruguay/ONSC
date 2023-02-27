@@ -10,6 +10,8 @@ from suds.client import Client
 
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
+_logger = logging.getLogger(__name__)
+
 
 class ONSCLegajoClient():
 
@@ -53,5 +55,11 @@ class ONSCLegajoClient():
         """
         ws_url_splitted = ws_url.split(';')
         method = ws_url_splitted[1]
-        result = eval('client.service.%s(values)' % method)
+        if len(values):
+            url = 'client.service.%s(values)' % method
+        else:
+            url = 'client.service.%s()' % method
+        _logger.warning('*********WS Request**********')
+        _logger.warning(url)
+        result = eval(url)
         return result
