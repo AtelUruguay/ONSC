@@ -15,6 +15,7 @@ ONSC CV Digital - Legajo
         'views/res_partner_views.xml',
         'views/onsc_cv_digital_views.xml',
         'views/onsc_cv_hr_employee_views.xml',
+        'views/catalogs/onsc_cv_work_experience_views.xml',
     ],
     'demo': [],
     'installable': True,
