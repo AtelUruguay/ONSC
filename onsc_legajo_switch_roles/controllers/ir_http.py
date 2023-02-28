@@ -11,6 +11,10 @@ class Http(Home):
     def web_login(self, *args, **kw):
         if 'login' in kw:
             obj_user = request.env['res.users'].sudo().search([('login', '=', kw['login'])])
-            obj_user.reset_roles()
+            if obj_user:
+                domain = [('employee_id', '=', obj_user.employee_id.id)]
+                jobs = request.env['hr.job'].sudo().search(domain)
+                if jobs:
+                    obj_user.reset_roles()
         res = super(Http, self).web_login(*args, **kw)
         return res
