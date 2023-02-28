@@ -154,7 +154,7 @@
                             </field>
                         </page>
                         <page string="Puestos" name="puestos">
-                            <field name="hr_job_ids" nolabel="1"
+                            <field name="job_ids" nolabel="1"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                         </page>
                     </notebook>
@@ -184,7 +184,7 @@
     </record>
 
     <record id="onsc_legajo_hr_contract_action" model="ir.actions.act_window">
-        <field name="name">Contractos</field>
+        <field name="name">Contratos</field>
         <field name="res_model">hr.contract</field>
         <field name="view_mode">tree,form</field>
         <field name="view_ids" eval="[(5, 0, 0),
