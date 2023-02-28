@@ -76,7 +76,7 @@ class HrContract(models.Model):
                                                            'contract_id',
                                                            string='Documentos adjuntos baja',
                                                            domain=[('type', '=', 'deregistration')])
-    hr_job_ids = fields.One2many('hr.job', 'contract_id', string='Puestos')
+    job_ids = fields.One2many('hr.job', 'contract_id', string='Puestos')
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
