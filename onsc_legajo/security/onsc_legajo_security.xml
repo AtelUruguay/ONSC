@@ -21,6 +21,7 @@
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
+        <!--PUESTO-->
         <record id="group_legajo_configurador_puesto" model="res.groups">
             <field name="name">Configurador Puesto</field>
             <field name="comment">Configurador Puesto</field>
@@ -45,6 +46,7 @@
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
+        <!--EMPLEADO-->
         <record id="group_legajo_configurador_empleado" model="res.groups">
             <field name="name">Configurador Empleado</field>
             <field name="comment">Configurador Empleado</field>

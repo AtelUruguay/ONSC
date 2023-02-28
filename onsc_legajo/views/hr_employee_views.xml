@@ -7,13 +7,9 @@
             <field name="arch" type="xml">
                 <tree string="Empleados">
                     <field name="full_name"/>
-                    <field name="photo_updated_date" groups="onsc_legajo.group_legajo_configurador_empleado"/>
                     <field name="cv_emissor_country_id" groups="onsc_legajo.group_legajo_configurador_empleado"/>
                     <field name="cv_document_type_id" groups="onsc_legajo.group_legajo_configurador_empleado"/>
                     <field name="cv_nro_doc" groups="onsc_legajo.group_legajo_configurador_empleado"/>
-                    <field name="cv_expiration_date"
-                           groups="onsc_legajo.group_legajo_configurador_empleado"/>
-                    <field name="cv_birthdate" groups="onsc_legajo.group_legajo_configurador_empleado"/>
                 </tree>
             </field>
         </record>
@@ -48,11 +44,11 @@
                             <group>
                                 <field name="cv_birthdate" readonly="1"
                                        groups="onsc_legajo.group_legajo_configurador_empleado"/>
-                                <field name="photo_updated_date" readonly="1"
-                                       groups="onsc_legajo.group_legajo_configurador_empleado"/>
                                 <field name="cv_sex" readonly="1"
                                        groups="onsc_legajo.group_legajo_configurador_empleado"/>
                                 <field name="cv_sex_updated_date" readonly="1"
+                                       groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                                <field name="photo_updated_date" readonly="1"
                                        groups="onsc_legajo.group_legajo_configurador_empleado"/>
                             </group>
                         </group>

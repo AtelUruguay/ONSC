@@ -20,8 +20,10 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         'click .node': '_onClickNodeText',
         'click .btn-downloadpdf': 'DownloadPDF',
         'click .button-hamb': 'toogleSideBar',
+        'click #basicdiagram': 'closeSideBar',
         'click #slide-zoomout': 'onClickZoomOut',
         'click #slide-zoomin': 'onClickZoomIn',
+        'click #goto-org-uo': 'onClickGotoUO',
         'change #myRange': 'onScale',
     },
 
@@ -38,6 +40,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         this.control = null;
         this.scale = 1;
         this.btnst = true;
+        this.contentBtns = true;
         this.renderEmployeeDetails(
         operating_unit_id,
         department_id,
@@ -48,16 +51,59 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         ue
         );
     },
+    onClickGotoUO: function(event) {
+        var id = parseInt(event.currentTarget?.dataset?.id);
+        var formId = parseInt(event.currentTarget?.dataset?.form);
+        this.do_action({
+            name: _t("Organigrama"),
+            type: 'ir.actions.act_window',
+            res_model: 'hr.department',
+            res_id: id,
+            view_mode: 'form',
+            target: 'new',
+            views: [[formId, 'form']],
+            context: {edit: false, form_view_initial_mode: 'view'},
+        });
+    },
+    closeSideBar: function(ev){
+//        if(ev.target.nodeName !== 'svg'){
+//            this.btnst = false;
+//            this.contentBtns = false;
+//            this.toogleSideBar();
+//            this.toogleSideBarDetail();
+//        }
+//        else{
+//            this.btnst = false;
+//            this.contentBtns = false;
+//            this.toogleSideBar();
+//            this.toogleSideBarDetail();
+//        }
+    },
+    toogleSideBarDetail: function(ev){
+        if(this.contentBtns === true) {
+            document.querySelector('.toggle span').classList.add('toggle');
+            document.getElementById('sidebar-node-details').classList.add('sidebarshow');
+            this.contentBtns = false;
+            this.btnst = false;
+        }else if(this.contentBtns === false) {
+            document.querySelector('.toggle span').classList.remove('toggle');
+            document.getElementById('sidebar-node-details').classList.remove('sidebarshow');
+            this.contentBtns = true;
+            this.btnst = false;
+          }
+    },
     toogleSideBar: function(ev){
-    if(this.btnst === true) {
-        document.querySelector('.toggle span').classList.add('toggle');
-        document.getElementById('sidebar').classList.add('sidebarshow');
-        this.btnst = false;
-    }else if(this.btnst === false) {
-        document.querySelector('.toggle span').classList.remove('toggle');
-        document.getElementById('sidebar').classList.remove('sidebarshow');
-        this.btnst = true;
-      }
+        if(this.btnst === true) {
+            document.querySelector('.toggle span').classList.add('toggle');
+            document.getElementById('sidebar-legend').classList.add('sidebarshow');
+            this.btnst = false;
+        }else if(this.btnst === false) {
+            document.querySelector('.toggle span').classList.remove('toggle');
+            document.getElementById('sidebar-legend').classList.remove('sidebarshow');
+            document.getElementById('sidebar-node-details').classList.remove('sidebarshow');
+            this.contentBtns = true;
+            this.btnst = true;
+          }
     },
     onClickZoomOut: function(ev) {
         let slide = document.querySelector('#myRange');
@@ -81,7 +127,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
     },
     DownloadPDF: function() {
       // create a document and pipe to a blob
-        var doc = new pdfkitsamples.PDFDocument({size: 'LEGAL'});
+        var doc = new pdfkitsamples.PDFDocument({size: 'LEGAL', layout : 'landscape'});
         var blobStream = pdfkitsamples.blobStream;
         var saveAs = pdfkitsamples.saveAs;
         var stream = doc.pipe(blobStream());
@@ -123,6 +169,24 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
       } else {
         alert('Error: Failed to create file stream.');
       }
+    },
+    getDummyTemplate: function(responsible) {
+        var result = new primitives.TemplateConfig();
+        result.name = "dummyTemplateItem";
+        result.itemSize = new primitives.Size(0, 0);
+
+        result.itemTemplate =[
+        "div",
+            {
+                "style": {
+                    "width": result.itemSize.width + "px",
+                    "height": result.itemSize.height + "px"
+                },
+                "class": ["dummyTemplateItem"]
+            }
+
+        ];
+        return result;
     },
     getContactTemplate: function(responsible) {
         var result = new primitives.TemplateConfig();
@@ -201,7 +265,8 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         result.itemSize = new primitives.Size(150, 75);
         result.minimizedItemSize = new primitives.Size(3, 3);
 
-        result.itemTemplate = ["div",
+        result.itemTemplate =[
+        "div",
             {
                 "style": {
                     "width": result.itemSize.width + "px",
@@ -215,6 +280,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                         "class": ["ContactTitle"],
                     }
             ],
+
         ];
         return result;
     },
@@ -275,9 +341,6 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
         if (data.templateName === "contactTemplateDashed") {
             var title = data.element.firstChild;
             title.textContent = itemConfig.title;
-
-            var responsible = data.element.childNodes[1];
-            responsible.textContent = itemConfig.responsible;
         } else if (data.templateName === "contactTemplate") {
 
             var title = data.element.firstChild;
@@ -325,19 +388,62 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
             if(orgRoute.length){
                 document.querySelector('.org-route').innerHTML = `<span>${orgRoute}</span>`;
             }
+            let annotations = []
             const {levels, items, responsible} = result;
             let allShortNames = [];
             items.map((item) => {
                 if(item.itemType === 'Assistant'){
                     item.itemType = primitives.ItemType.Assistant;
                     item.adviserPlacementType = item.adviserPlacementType === 'right' ? primitives.AdviserPlacementType.Right : primitives.AdviserPlacementType.Left;
+                    annotations.push({
+						annotationType: primitives.AnnotationType.HighlightPath,
+						items: [item.parent, item.id],
+						color: primitives.Colors.Black,
+						lineWidth: 2,
+						lineType: primitives.LineType.Solid,
+						opacity: 1,
+						showArrows: false
+					});
                 }
                 else if(item.itemType === 'SubAssistant'){
                     item.itemType = primitives.ItemType.SubAssistant;
                     item.adviserPlacementType = item.adviserPlacementType === 'right' ? primitives.AdviserPlacementType.Right : primitives.AdviserPlacementType.Left;
                 }
+                else if(item.itemType === 'SubAdviser'){
+                    item.itemType = primitives.ItemType.Comite;
+                    item.adviserPlacementType = item.adviserPlacementType === 'right' ? primitives.AdviserPlacementType.Right : primitives.AdviserPlacementType.Left;
+                    annotations.push({
+						annotationType: primitives.AnnotationType.HighlightPath,
+						items: [item.parent, item.id],
+						color: primitives.Colors.Black,
+						lineWidth: 2,
+						lineType: primitives.LineType.Solid,
+						opacity: 1,
+						showArrows: false
+					});
+                }
                 else if(item.title === 'Aggregator'){
                     item.childrenPlacementType = item.childrenPlacementType === 'Horizontal' ? primitives.ChildrenPlacementType.Horizontal : primitives.ChildrenPlacementType.Auto;
+                    annotations.push({
+						annotationType: primitives.AnnotationType.HighlightPath,
+						items: [item.parent, item.id],
+						color: primitives.Colors.Black,
+						lineWidth: 2,
+						lineType: primitives.LineType.Solid,
+						opacity: 1,
+						showArrows: false
+					});
+                }
+                else{
+                    annotations.push({
+						annotationType: primitives.AnnotationType.HighlightPath,
+						items: [item.parent, item.id],
+						color: primitives.Colors.Black,
+						lineWidth: 2,
+						lineType: primitives.LineType.Solid,
+						opacity: 1,
+						showArrows: false
+					});
                 }
                 if(item.showShortName === true){
                     allShortNames.push({name: item.title, short_name: item.short_name});
@@ -350,7 +456,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                     item.title = item.short_name;
                 }
             });
-            let annotations = []
+
             levels.map((level) => {
                 annotations.push(new primitives.LevelAnnotationConfig({
                   levels: level[1],
@@ -375,15 +481,36 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                 linesColor: primitives.Colors.Black,
                 lineLevelShift: 40,
                 onMouseClick: function (e, data) {
-                    var id = data.context.id;
-                    self.do_action({
-                        name: _t("UO"),
-                        type: 'ir.actions.act_window',
-                        res_model: 'hr.department',
-                        res_id: id,
-                        view_mode: 'form',
-                        views: [[data.context.form_id, 'form']],
-                    })
+//                    console.log( data);
+                    self.contentBtns = true;
+                    self.toogleSideBarDetail();
+                    const itemId = data.context.id;
+                    self._rpc({
+                    route: '/get/organizational/operating_unit',
+                        params: {'id': itemId}
+                    }).then(function (result) {
+                        document.querySelector('#ue-code').innerHTML = result.code;
+                        document.querySelector('#ue-code').innerHTML = result.code;
+                        document.querySelector('#ue-parentName').innerHTML = result.parentName;
+                        document.querySelector('#ue-inciso').innerHTML = result.inciso;
+                        document.querySelector('#ue-OU').innerHTML = result.OU;
+                        document.querySelector('#ue-hierarchy').innerHTML = result.hierarchy;
+                        document.querySelector('#ue-responsible').innerHTML = result.responsible;
+                        document.querySelector('#ue-function_nature').innerHTML = result.function_nature;
+                        document.querySelector('#ue-name').innerHTML = data.context.title;
+//                        document.querySelector('#goto-org-uo').setAttribute("data-id", itemId);
+//                        document.querySelector('#goto-org-uo').setAttribute("data-form", data.context.form_id);
+                    });
+//                    var id = data.context.id;
+//                    self.do_action({
+//                        name: _t("Organigrama"),
+//                        type: 'ir.actions.act_window',
+//                        res_model: 'hr.department',
+//                        res_id: id,
+//                        view_mode: 'form',
+//                        views: [[data.context.form_id, 'form']],
+////                        context: {edit: false, form_view_initial_mode: 'view'},
+//                    })
                 },
                 alignBranches: true,
                 lineItemsInterval: 20,
@@ -393,12 +520,14 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                 defaultTemplateName: "contactTemplate",
                 templates: [
                     self.getContactTemplate(responsible),
+                    self.getDummyTemplate(responsible),
                     self.getcontactTemplateDashed(responsible),
                     self.getContactTemplateResponsible(responsible),
                     self.getcontactTemplateDashedResponsible(responsible)
                   ],
                 onItemRender: self.onTemplateRender,
                 items: items,
+                linesType: primitives.LineType.Dashed,
                 annotations: annotations,
                 onLevelTitleRender: function(data) {
                   var title = data.context.title;

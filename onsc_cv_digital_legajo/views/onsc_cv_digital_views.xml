@@ -9,7 +9,8 @@
                 <attribute name="attrs">{'invisible': [('is_docket','=',True)]}</attribute>
             </button>
             <button name="toggle_active" position="attributes">
-                <attribute name="attrs">{'invisible': ['|',('active', '=', False),('is_docket_active','=',True)]}</attribute>
+                <attribute name="attrs">{'invisible': ['|',('active', '=', False),('is_docket_active','=',True)]}
+                </attribute>
             </button>
             <field name="image_1920" position="attributes">
                 <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
@@ -52,10 +53,14 @@
                 <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
             </field>
             <field name="cv_address_street_id" position="attributes">
-                <attribute name="attrs">{'required': [('is_docket', '=', True),('country_code', '=', 'UY')],'invisible': [('country_code', '!=', 'UY')]}</attribute>
+                <attribute name="attrs">{'required': [('is_docket', '=', True),('country_code', '=', 'UY')],'invisible':
+                    [('country_code', '!=', 'UY')]}
+                </attribute>
             </field>
             <field name="cv_address_street" position="attributes">
-                <attribute name="attrs">{'required': [('is_docket', '=', True),('country_code', '!=', 'UY')],'invisible': [('country_code', '=', 'UY')]}</attribute>
+                <attribute name="attrs">{'required': [('is_docket', '=', True),('country_code', '!=',
+                    'UY')],'invisible': [('country_code', '=', 'UY')]}
+                </attribute>
             </field>
             <field name="cv_address_nro_door" position="attributes">
                 <attribute name="attrs">{'required': [('is_docket', '=', True)]}</attribute>
@@ -78,6 +83,9 @@
                         <group string="Información de salud:">
                             <separator string="Servicio de Salud/Emergencia" style="font-size: 12px"></separator>
                             <br/>
+                            <field name="emergency_service_id"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>
                             <label for="emergency_service_telephone"/>
                             <div class="content-group row" style="padding: 15px">
                                 <field name="prefix_emergency_phone_id" options="{'no_open': True, 'no_create': True}"
@@ -87,9 +95,12 @@
                                 <field name="emergency_service_telephone" class="oe_inline"
                                        attrs="{'required': [('is_docket_active', '=', True)]}"/>
                             </div>
-                            <field name="department_id" attrs="{'required': [('is_docket_active', '=', True)]}"
+                            <field name="health_department_id" attrs="{'required': [('is_docket_active', '=', True)]}"
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                    domain="[('country_id.code','=','UY')]"/>
+                            <field name="health_provider_id"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>
                             <separator string="Otros datos" style="font-size: 12px"></separator>
                             <field name="blood_type"
                                    attrs="{'required': [('is_docket_active', '=', True)]}"/>
