@@ -61,6 +61,7 @@ class HrEmployee(models.Model):
                 ('cv_emissor_country_id', '=', record.cv_emissor_country_id.id),
                 ('cv_document_type_id', '=', record.cv_document_type_id.id),
                 ('cv_nro_doc', '=', record.cv_nro_doc),
+                ('type', '=', 'cv')
             ], limit=1)
 
     @api.depends('cv_race_ids')
@@ -99,7 +100,6 @@ class HrEmployee(models.Model):
         return type_support_orm
 
     def button_get_info_fromcv(self):
-
         for record in self.suspend_security():
             vals = {
                 'image_1920': record.cv_digital_id.partner_id.image_1920,
