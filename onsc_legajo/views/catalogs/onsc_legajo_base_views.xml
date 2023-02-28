@@ -78,7 +78,7 @@
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nueva Partida
+                Crear una nueva partida
             </p>
         </field>
     </record>
@@ -239,7 +239,7 @@
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Crear una nueva officea
+                Crear una nueva oficina
             </p>
         </field>
     </record>
