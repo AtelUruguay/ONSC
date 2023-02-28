@@ -51,12 +51,13 @@ class ONSCLegajoOffice(models.Model):
         self.unidadEjecutora = False
 
     @api.model
-    def syncronize(self):
+    def syncronize(self, log_info=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS13_oficinas')
         cron = self.env.ref("onsc_legajo.sync_legajo_office")
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS13_9005")
         wsclient = self._get_client(parameter, cron.name, integration_error)
-        return self._syncronize(wsclient, parameter, cron.name, integration_error, {})
+        return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, cron.name,
+                                                                                   integration_error, {})
 
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
@@ -86,18 +87,18 @@ class ONSCLegajoOffice(models.Model):
                 # CREANDO NUEVO ELEMENTO
                 if key_str not in all_odoo_recordsets_key_list:
                     try:
-                        # with self._cr.savepoint():
                         JornadaRetributiva.create(vals)
-                        self._create_log(
-                            origin=cron.name,
-                            type='info',
-                            integration_log=integration_error_WS13_9000,
-                            ws_tuple=external_record,
-                            long_description='Evento: Creación'
-                        )
+                        if self._context.get('log_info'):
+                            self.create_new_log(
+                                origin=cron.name,
+                                type='info',
+                                integration_log=integration_error_WS13_9000,
+                                ws_tuple=external_record,
+                                long_description='Evento: Creación'
+                            )
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self._create_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS13_9001,
@@ -106,18 +107,18 @@ class ONSCLegajoOffice(models.Model):
                 # MODIFICANDO ELEMENTO EXISTENTE
                 else:
                     try:
-                        # with self._cr.savepoint():
                         all_odoo_recordsets.filtered(lambda x: x.code == key_str).write(vals)
-                        self._create_log(
-                            origin=cron.name,
-                            type='info',
-                            integration_log=integration_error_WS13_9000,
-                            ws_tuple=external_record,
-                            long_description='Evento: Actualización'
-                        )
+                        if self._context.get('log_info'):
+                            self.create_new_log(
+                                origin=cron.name,
+                                type='info',
+                                integration_log=integration_error_WS13_9000,
+                                ws_tuple=external_record,
+                                long_description='Evento: Actualización'
+                            )
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self._create_log(
+                        self.create_new_log(
                             origin=cron.name,
                             type='error',
                             integration_log=integration_error_WS13_9002,
@@ -143,16 +144,17 @@ class ONSCLegajoOffice(models.Model):
                         external_record.unidadEjecutora,
                         external_record.programa,
                         external_record.proyecto)
-                    all_external_ley_list.append(new_office_code)
+                    inciso = Inciso.suspend_security().search([
+                        ('budget_code', '=', str(external_record.inciso))], limit=1)
+                    operating_unit = OperatingUnit.suspend_security().search([
+                        ('inciso_id', '=', inciso.id),
+                        ('budget_code', '=', str(external_record.unidadEjecutora))], limit=1)
+                    if inciso.id and operating_unit.id:
+                        all_external_ley_list.append(new_office_code)
                     if new_office_code not in all_odoo_recordsets_codes:
-                        inciso = Inciso.suspend_security().search([
-                            ('budget_code', '=', str(external_record.inciso))], limit=1)
                         if inciso.id is False:
                             raise ValidationError(
                                 _('El inciso con código %s no ha sido identificado') % str(external_record.inciso))
-                        operating_unit = OperatingUnit.suspend_security().search([
-                            ('inciso_id', '=', inciso.id),
-                            ('budget_code', '=', str(external_record.unidadEjecutora))], limit=1)
                         if operating_unit.id is False:
                             raise ValidationError(
                                 _('La unidad ejecutora con código %s para el inciso %s no ha sido identificada') %
@@ -167,13 +169,13 @@ class ONSCLegajoOffice(models.Model):
                         })
                         all_offices |= new_office
                         all_odoo_recordsets_codes.append(new_office.code)
-                    else:
+                    elif inciso.id and operating_unit.id:
                         all_offices_codes2active.append(new_office_code)
                 except Exception as e:
                     _logger.warning(tools.ustr(e))
                     onsc_legajo_integration_error_WS13_9004 = self.env.ref(
                         "onsc_legajo.onsc_legajo_integration_error_WS13_9004")
-                    self._create_log(
+                    self.create_new_log(
                         origin=cron.name,
                         type='error',
                         integration_log=onsc_legajo_integration_error_WS13_9004,
@@ -211,7 +213,7 @@ class ONSCLegajoOffice(models.Model):
         except Exception as e:
             _logger.warning(tools.ustr(e))
             integration_error_WS13_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS13_9004")
-            self._create_log(
+            self.create_new_log(
                 origin=cron.name,
                 type='error',
                 integration_log=integration_error_WS13_9004,

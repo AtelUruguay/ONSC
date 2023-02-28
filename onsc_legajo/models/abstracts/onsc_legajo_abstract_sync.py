@@ -14,7 +14,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
         try:
             return ONSCLegajoClient.get_client(origin_name, parameter)
         except Exception as e:
-            self._create_log(
+            self.create_new_log(
                 origin=origin_name,
                 type='error',
                 integration_log=integration_error,
@@ -27,7 +27,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
         try:
             response = ONSCLegajoClient.get_response(client, parameter, values)
         except Exception as e:
-            self._create_log(
+            self.create_new_log(
                 origin=origin_name,
                 type='error',
                 integration_log=integration_error,
@@ -38,18 +38,18 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             if response.servicioResultado.codigo == 0:
                 return self._populate_from_syncronization(response)
             else:
-                self._create_log(
+                self.create_new_log(
                     origin=origin_name,
                     type='error',
                     integration_log=integration_error,
                     ws_tuple=False,
                     long_description='%s - Código: %s' % (
-                    tools.ustr(response.servicioResultado.mensaje), str(response.servicioResultado.codigo)))
+                        tools.ustr(response.servicioResultado.mensaje), str(response.servicioResultado.codigo)))
         elif hasattr(response, 'codigoResultado'):
             if response.codigoResultado == 0:
                 return self._populate_from_syncronization(response, values)
             else:
-                self._create_log(
+                self.create_new_log(
                     origin=origin_name,
                     type='error',
                     integration_log=integration_error,
@@ -58,7 +58,8 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                         tools.ustr(response.mensajeResultado), str(response.codigoResultado)))
         return True
 
-    def _create_log(self, origin, type, integration_log, ws_tuple=False, long_description=False):
+    # pylint: disable=redefined-builtin
+    def create_new_log(self, origin, type, integration_log, ws_tuple=False, long_description=False):
         if long_description and ws_tuple:
             _long_description = _('%s Tupla: %s') % (long_description, str(ws_tuple))
         elif not ws_tuple:

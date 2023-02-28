@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from odoo.exceptions import ValidationError
 from odoo import fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class ONSCLegajoIntegrationError(models.Model):
@@ -16,11 +16,12 @@ class ONSCLegajoIntegrationError(models.Model):
     active = fields.Boolean('Activo', default=True)
 
     _sql_constraints = [
-        ('integration_code_uniq', 'unique(integration_code,code_error)', u'El código de error debe ser único por integración')
+        ('integration_code_uniq', 'unique(integration_code,code_error)',
+         u'El código de error debe ser único por integración')
     ]
 
     def unlink(self):
-        if self.filtered(lambda x:x.is_system_required):
+        if self.filtered(lambda x: x.is_system_required):
             raise ValidationError(_("No se pueden eliminar códigos de integración imprescindibles "
                                     "para el correcto funcionamiento del sistema"))
         return super(ONSCLegajoIntegrationError, self).unlink()
