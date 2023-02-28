@@ -27,7 +27,6 @@
                             <group>
                                 <field name="country_of_birth_id" readonly="1"/>
                                 <field name="marital_status_id" readonly="1"/>
-                                <field name="status_civil_date" readonly="1"/>
                                 <field name="uy_citizenship" readonly="1"/>
                                 <field name="crendencial_serie"
                                        attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"

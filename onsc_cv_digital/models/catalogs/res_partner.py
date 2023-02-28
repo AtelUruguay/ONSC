@@ -42,7 +42,8 @@ class ResPartner(models.Model):
 
     cv_full_name_updated_date = fields.Date(u'Fecha de información nombre completo', default=fields.Date.context_today)
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo', compute='_compute_cv_sex_updated_date', store=True)
-    cv_photo_updated_date = fields.Date(u'Fecha de foto del/de la funcionario/a', compute='_compute_photo_updated_date')
+    cv_photo_updated_date = fields.Date(u'Fecha de foto del/de la funcionario/a', compute='_compute_photo_updated_date',
+                                        store=True)
     is_partner_cv = fields.Boolean(u'¿Es un contacto de CV?')
     is_cv_uruguay = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay')
     cv_full_name = fields.Char('Nombre', compute='_compute_cv_full_name', store=True)

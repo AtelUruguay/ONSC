@@ -7,7 +7,6 @@ class ONSCCVDigitalWorkExperience(models.Model):
 
     causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string=u"Causal de egreso")
 
-
     def _get_json_dict(self):
         json_dict = super(ONSCCVDigitalWorkExperience, self)._get_json_dict()
         json_dict.extend([
