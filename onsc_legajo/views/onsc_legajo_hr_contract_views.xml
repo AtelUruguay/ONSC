@@ -45,7 +45,7 @@
                         </group>
                         <group>
                             <field name="call_number" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="state" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="legajo_state" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="cs_contract_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
