@@ -12,7 +12,7 @@ ONSC - Legajo
     'depends': ['onsc_base',
                 'onsc_catalog',
                 'base_user_role',
-                'base_user_role_hide_admin'
+                'base_user_role_hide_admin',
                 'hr_contract',
                 'model_history',
                 'switch_jobs_security'
