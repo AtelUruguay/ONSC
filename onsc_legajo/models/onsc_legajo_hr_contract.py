@@ -14,7 +14,7 @@ class HrContract(models.Model):
 
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso')
     call_number = fields.Char(string='Número de llamado')
-    state = fields.Selection([('active', 'Activo'), ('baja', 'baja'), ('outgoing_commission', 'Comisión saliente'),
+    legajo_state = fields.Selection([('active', 'Activo'), ('baja', 'Baja'), ('outgoing_commission', 'Comisión saliente'),
                               ('incoming_commission', 'Comisión entrante')], string='Estado')
     cs_contract_id = fields.Many2one('hr.contract', string='Contrato cs')
     first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name')
