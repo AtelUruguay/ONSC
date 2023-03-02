@@ -129,6 +129,6 @@ class HrJobRoleLine(models.Model):
                 'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc'):
             args = []
         else:
-            args = [('is_config_onsc_role', '=', True)]
+            args = [('is_byinciso', '=', True)]
         roles = self.env['res.users.role'].search(args)
         return json.dumps([('id', 'in', roles.ids)])
