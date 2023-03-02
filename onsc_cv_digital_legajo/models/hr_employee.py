@@ -31,6 +31,8 @@ class HrEmployee(models.Model):
 
     # Domicilio
 
+    country_id = fields.Many2one(
+        'res.country', 'Nationality (Country)', groups="hr.group_hr_user,onsc_legajo.group_legajo_configurador_empleado", tracking=True)
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
     cv_address_state_id = fields.Many2one('res.country.state', string='Departamento')
     cv_address_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad')
@@ -100,7 +102,8 @@ class HrEmployee(models.Model):
         return type_support_orm
 
     def button_get_info_fromcv(self):
-        for record in self.suspend_security():
+        for record in self:
+            record = record.sudo()
             vals = {
                 'image_1920': record.cv_digital_id.partner_id.image_1920,
                 'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
@@ -199,7 +202,7 @@ class HrEmployee(models.Model):
                 'is_need_other_support': record.cv_digital_id.is_need_other_support,
                 'need_other_support': record.cv_digital_id.need_other_support,
                 'disability_date': record.cv_digital_id.disability_date,
-                'type_support_ids': self._get_type_support_orm(),
+                'type_support_ids': record._get_type_support_orm(),
                 # Datos del legajo
                 'emergency_service_id': record.cv_digital_id.emergency_service_id.id,
                 'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
@@ -209,15 +212,14 @@ class HrEmployee(models.Model):
                 'institutional_email': record.cv_digital_id.institutional_email,
                 'digitized_document_file': record.cv_digital_id.digitized_document_file,
                 'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
-                'information_contact_ids': self._get_information_contact_orm(),
+                'information_contact_ids': record._get_information_contact_orm(),
                 'health_department_id': record.cv_digital_id.health_department_id.id,
                 'health_provider_id': record.cv_digital_id.health_provider_id.id,
                 # Extras
                 'last_modification_date': record.cv_digital_id.last_modification_date,
 
             }
-
-            record.write(vals)
+            record.suspend_security().write(vals)
 
 
 class ONSCLegajoDriverLicense(models.Model):

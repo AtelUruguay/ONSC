@@ -11,9 +11,7 @@ Assigns to the logged user the roles of the selected job position.
     """,
     'category': 'Tools',
     'depends': ['web', 'auth_oauth', 'website', 'switch_jobs_menu', 'base_user_role'],
-    'data': [
-        'views/res_user_role_views.xml',
-    ],
+    'data': [],
     'demo': [],
     'installable': True,
     'application': False,

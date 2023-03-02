@@ -89,6 +89,13 @@ class HrJobRoleLine(models.Model):
          u'El rol configurado no puede repetirse para el mismo puesto. Revisar la pestaña de Roles y Roles adicionales')
     ]
 
+    def unlink(self):
+        if not self.user_has_groups(
+                'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc') and self.filtered(
+                lambda x: x.user_role_id.is_byinciso and x.type == 'manual'):
+            raise ValidationError(_("ERROR DE ELIMINAR LINEAS: VER QUE MENSAJE PONER"))
+        return super().unlink()
+
     @api.constrains("end_date")
     def _check_end_date(self):
         for record in self:
