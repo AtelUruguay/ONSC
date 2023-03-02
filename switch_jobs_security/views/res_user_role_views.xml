@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base_user_role.view_res_users_role_form"/>
         <field name="arch" type="xml">
             <field name="group_id" position="after">
-                <field name="is_config_onsc_role"/>
+                <field name="is_byinciso"/>
             </field>
         </field>
     </record>
@@ -19,8 +19,8 @@
              <field name="implied_ids" position="after">
                 <filter
                     name="config"
-                    domain="[('is_config_onsc_role','=',True)]"
-                    string="Configurador ONSC"
+                    domain="[('is_byinciso','=',True)]"
+                    string="Habilitado por inciso"
                 />
              </field>
         </field>
