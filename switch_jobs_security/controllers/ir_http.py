@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo.http import request
-from odoo.addons.web.controllers.main import Home
 from odoo import http
+from odoo.addons.web.controllers.main import Home
+from odoo.http import request
 
 
 class Http(Home):

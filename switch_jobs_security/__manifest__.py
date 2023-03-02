@@ -10,12 +10,9 @@ Switch roles
 Assigns to the logged user the roles of the selected job position.
     """,
     'category': 'Tools',
-    'depends': ['web', 'auth_oauth', 'website', 'switch_jobs_menu', 'base_user_role', 'onsc_legajo'],
+    'depends': ['web', 'auth_oauth', 'website', 'switch_jobs_menu', 'base_user_role'],
     'data': [
         'views/res_user_role_views.xml',
-        'views/res_user_role_views.xml',
-        'views/onsc_legajo_security_job_views.xml',
-        'views/hr_job_views.xml',
     ],
     'demo': [],
     'installable': True,
