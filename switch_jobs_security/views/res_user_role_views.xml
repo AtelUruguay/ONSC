@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="base_user_role.view_res_users_role_form"/>
         <field name="arch" type="xml">
             <field name="group_id" position="after">
-                <field name="rol_type"/>
+                <field name="is_config_onsc_role"/>
             </field>
         </field>
     </record>
@@ -17,14 +17,9 @@
         <field name="inherit_id" ref="base_user_role.view_res_users_role_search"/>
         <field name="arch" type="xml">
              <field name="implied_ids" position="after">
-                 <filter
-                    name="default"
-                    domain="[('rol_type','=','default')]"
-                    string="Por defecto"
-                />
                 <filter
                     name="config"
-                    domain="[('rol_type','=','config_onsc')]"
+                    domain="[('is_config_onsc_role','=',True)]"
                     string="Configurador ONSC"
                 />
              </field>

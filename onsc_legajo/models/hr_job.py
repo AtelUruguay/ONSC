@@ -9,16 +9,7 @@ from odoo.exceptions import ValidationError
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
-    start_date = fields.Date(string="Fecha desde", default=fields.Date.today())
-    end_date = fields.Date(string="Fecha hasta")
-    role_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles", tracking=True,
-                               domain=[('type', '=', 'system')], )
-    role_extra_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles adicionales",
-                                     tracking=True, domain=[('type', '=', 'manual')])
-    active = fields.Boolean('Activo', default=True)
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict')
-    contract_id = fields.Many2one('hr.contract', string="Contrato", ondelete='restrict')
-    employee_id = fields.Many2one('hr.employee', string="Empleado", ondelete='restrict')
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')
 
@@ -88,16 +79,10 @@ class HrJob(models.Model):
 
 
 class HrJobRoleLine(models.Model):
-    _name = 'hr.job.role.line'
-    _description = 'Línea de roles de puesto'
+    _inherit = 'hr.job.role.line'
 
-    job_id = fields.Many2one('hr.job', string='Puesto', ondelete='cascade')
-    user_role_id = fields.Many2one('res.users.role', string='Rol', required=True, ondelete='restrict')
-    start_date = fields.Date(string="Fecha desde")
-    end_date = fields.Date(string="Fecha hasta")
-    type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de puesto')],
-                            string='Modo de creación', default='manual')
-    user_role_id_domain = fields.Char(compute='_compute_user_role_id_domain')
+    user_role_id_domain = fields.Char(default=lambda self: self._user_role_id_domain(),
+                                      compute='_compute_user_role_id_domain')
 
     _sql_constraints = [
         ('recordset_uniq', 'unique(job_id,user_role_id)',
@@ -136,6 +121,14 @@ class HrJobRoleLine(models.Model):
             return warning_response(_(u"La fecha hasta no puede ser mayor que la fecha hasta del puesto"))
 
     def _compute_user_role_id_domain(self):
-        roles = self.env['res.users.role'].search([('rol_type', '=', False)])
         for rec in self:
-            rec.user_role_id_domain = json.dumps([('id', 'in', roles.ids)])
+            rec.user_role_id_domain = self._user_role_id_domain()
+
+    def _user_role_id_domain(self):
+        if self.user_has_groups(
+                'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc'):
+            args = []
+        else:
+            args = [('is_config_onsc_role', '=', True)]
+        roles = self.env['res.users.role'].search(args)
+        return json.dumps([('id', 'in', roles.ids)])
