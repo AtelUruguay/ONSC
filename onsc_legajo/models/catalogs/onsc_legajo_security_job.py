@@ -12,7 +12,7 @@ class ONSCLegajoSecurityJob(models.Model):
     is_uo_manager = fields.Boolean(string='Es responsable UO')
     user_role_ids = fields.Many2many('res.users.role', string='Roles', required=True)
     active = fields.Boolean('Activo', default=True)
-    user_role_ids_domain = fields.Char(default=lambda self: self._user_role_is_domain(),
+    user_role_ids_domain = fields.Char(default=lambda self: self._user_role_ids_domain(),
                                        compute='_compute_user_role_ids_domain')
 
     _sql_constraints = [
@@ -24,4 +24,4 @@ class ONSCLegajoSecurityJob(models.Model):
             rec.user_role_ids_domain = self._user_role_id_domain()
 
     def _user_role_ids_domain(self):
-        return json.dumps([('id', 'in', self.env.ref('base.default_user').role_line_ids.mapped('role_id').ids)])
+        return json.dumps([('id', 'not in', self.env.ref('base.default_user').with_context(active_test=False).role_line_ids.mapped('role_id').ids)])
