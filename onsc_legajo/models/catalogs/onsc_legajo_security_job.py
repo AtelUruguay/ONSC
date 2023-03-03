@@ -21,7 +21,7 @@ class ONSCLegajoSecurityJob(models.Model):
 
     def _compute_user_role_ids_domain(self):
         for rec in self:
-            rec.user_role_ids_domain = self._user_role_id_domain()
+            rec.user_role_ids_domain = self._user_role_ids_domain()
 
     def _user_role_ids_domain(self):
         return json.dumps([('id', 'not in', self.env.ref('base.default_user').with_context(active_test=False).role_line_ids.mapped('role_id').ids)])
