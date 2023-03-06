@@ -32,7 +32,8 @@ class HrEmployee(models.Model):
     # Domicilio
 
     country_id = fields.Many2one(
-        'res.country', 'Nationality (Country)', groups="hr.group_hr_user,onsc_legajo.group_legajo_configurador_empleado", tracking=True)
+        'res.country', 'Nationality (Country)',
+        groups="hr.group_hr_user,onsc_legajo.group_legajo_configurador_empleado", tracking=True)
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
     cv_address_state_id = fields.Many2one('res.country.state', string='Departamento')
     cv_address_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad')
@@ -48,7 +49,7 @@ class HrEmployee(models.Model):
     address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
     address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
-# Discapacidad
+    # Discapacidad
     type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo')
     is_need_other_support = fields.Boolean(u'¿Necesita otro apoyo?')
 
@@ -189,7 +190,7 @@ class HrEmployee(models.Model):
                 'address_receipt_file': record.cv_digital_id.partner_id.address_receipt_file,
                 'address_receipt_file_name': record.cv_digital_id.partner_id.address_receipt_file_name,
 
-            # Discapacidad
+                # Discapacidad
                 'allow_content_public': record.cv_digital_id.allow_content_public,
                 'situation_disability': record.cv_digital_id.situation_disability,
                 'people_disabilitie': record.cv_digital_id.people_disabilitie,
