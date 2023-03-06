@@ -21,6 +21,13 @@ class HrJob(models.Model):
             if record.end_date and record.contract_id.date_end and record.end_date > record.contract_id.date_end:
                 raise ValidationError(_("La fecha hasta está fuera del rango de fechas del contrato"))
 
+    @api.constrains("role_ids", "role_extra_ids")
+    def _check_roles_duplicated(self):
+        for record in self:
+            if record.is_roles_duplicated():
+                raise ValidationError(
+                    _("El rol configurado no puede repetirse para el mismo puesto. Revisar la pestaña de Roles y Roles adicionales"))
+
     @api.depends('contract_id')
     def _compute_department_domain(self):
         UOs = self.env['hr.department']
@@ -77,6 +84,13 @@ class HrJob(models.Model):
     def onchange_contract_id(self):
         self.department_id = False
 
+    def is_roles_duplicated(self, user_role_ids=[]):
+        role_ids = self.role_ids.mapped('user_role_id')
+        roles_extra_ids = self.with_context(active_test=True).role_extra_ids.mapped('user_role_id')
+        if list(set(role_ids) & set(roles_extra_ids)) or list(set(roles_extra_ids) & set(user_role_ids)):
+            return True
+        return False
+
 
 class HrJobRoleLine(models.Model):
     _inherit = 'hr.job.role.line'
@@ -84,17 +98,25 @@ class HrJobRoleLine(models.Model):
     user_role_id_domain = fields.Char(default=lambda self: self._user_role_id_domain(),
                                       compute='_compute_user_role_id_domain')
 
-    _sql_constraints = [
-        ('recordset_uniq', 'unique(job_id,user_role_id)',
-         u'El rol configurado no puede repetirse para el mismo puesto. Revisar la pestaña de Roles y Roles adicionales')
-    ]
-
-    def unlink(self):
+    def _check_write(self):
         if not self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc') and self.filtered(
-                lambda x: x.user_role_id.is_byinciso and x.type == 'manual'):
-            raise ValidationError(_("ERROR DE ELIMINAR LINEAS: VER QUE MENSAJE PONER"))
-        return super().unlink()
+            lambda x: x.user_role_id.is_byinciso and x.type == 'manual'):
+            raise ValidationError(_("No esta habilitado para modificar las líneas de roles adicionales"))
+
+    def write(self, vals):
+        self._check_write()
+        fields = ['start_date', 'end_date', 'user_role_id', 'active']
+        ref_tracked_fields = self.fields_get(fields)
+        initial_values = {}
+        for rec in self:
+            for field in fields:
+                initial_values[field] = eval('rec.%s' % (field))
+            super(HrJobRoleLine, rec).write(vals)
+            dummy, tracking_value_ids = rec._mail_track(ref_tracked_fields, initial_values)
+            rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
+                                    tracking_value_ids=tracking_value_ids)
+        return True
 
     @api.constrains("end_date")
     def _check_end_date(self):
