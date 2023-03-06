@@ -45,8 +45,10 @@ class HrEmployee(models.Model):
     cv_address_place = fields.Text(string="Paraje", size=200, )
     cv_address_block = fields.Char(string="Manzana", size=5, )
     cv_address_sandlot = fields.Char(string="Solar", size=5, )
+    address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
+    address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
-    # Discapacidad
+# Discapacidad
     type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo')
     is_need_other_support = fields.Boolean(u'¿Necesita otro apoyo?')
 
@@ -184,7 +186,10 @@ class HrEmployee(models.Model):
                 'cv_address_place': record.cv_digital_id.cv_address_place,
                 'cv_address_block': record.cv_digital_id.cv_address_block,
                 'cv_address_sandlot': record.cv_digital_id.cv_address_sandlot,
-                # Discapacidad
+                'address_receipt_file': record.cv_digital_id.partner_id.address_receipt_file,
+                'address_receipt_file_name': record.cv_digital_id.partner_id.address_receipt_file_name,
+
+            # Discapacidad
                 'allow_content_public': record.cv_digital_id.allow_content_public,
                 'situation_disability': record.cv_digital_id.situation_disability,
                 'people_disabilitie': record.cv_digital_id.people_disabilitie,
