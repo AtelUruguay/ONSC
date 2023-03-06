@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form string="Current Contract">
                 <header>
-                    <field name="state" widget="statusbar" options="{'clickable': '1'}"
+                    <field name="legajo_state" widget="statusbar"
                            groups="onsc_legajo.group_legajo_configurador_contrato"/>
                 </header>
                 <sheet>
@@ -45,8 +45,7 @@
                             <field name="income_mechanism_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                        </group>
-                        <group>
+
                             <field name="call_number" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="cs_contract_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
@@ -54,14 +53,23 @@
                             <field name="program" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
                             <field name="project" groups="onsc_legajo.group_legajo_configurador_contrato" required="1"/>
                             <field name="regime_id" groups="onsc_legajo.group_legajo_configurador_contrato"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    required="1"/>
-                            <field name="occupation_id" groups="onsc_legajo.group_legajo_editar_ocupacion_contrato"/>
-                            <field name="descriptor1_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="descriptor2_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="descriptor3_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="descriptor4_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                        </group>
-                        <group>
+                            <field name="occupation_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_editar_ocupacion_contrato"/>
+                            <field name="descriptor1_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="descriptor2_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="descriptor3_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="descriptor4_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="graduation_date" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="position" groups="onsc_legajo.group_legajo_configurador_contrato"
                                    required="1"/>
@@ -74,6 +82,9 @@
                             <field name="norm_code_discharge_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                        </group>
+                        <group>
+
                             <field name="norm_number_discharge"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="norm_year_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
@@ -90,13 +101,10 @@
                             <field name="additional_information_discharge"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="code_day" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                        </group>
-                        <group>
                             <field name="description_day" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="retributive_day_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="id_registration_discharge"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="discharge_date" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="id_deregistration_discharge"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="reason_deregistration"
@@ -116,19 +124,18 @@
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="resolution_type_deregistration"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="causes_discharge_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="code_cgn" invisible="1"/>
+                            <field name="causes_discharge_extended"
+                                   attrs="{'invisible': [('code_cgn', '!=', '78')]}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="additional_information_deregistration"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Contract Details" name="other">
-                            <group>
-                                <group name="contract_details"/>
-                            </group>
-                            <group name="notes_group" string="Notes">
-                                <field name="notes" nolabel="1"/>
-                            </group>
-                        </page>
                         <page string="Documentos Adjuntos Alta" name="documents_alta">
                             <field name="attached_document_discharge_ids" nolabel="1"
                                    context="{'default_type': 'discharge'}"
@@ -136,7 +143,8 @@
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
-                                    <field name="document_file" required="1" filename="document_file_name"/>
+                                    <field name="document_file" required="1" filename="document_file_name"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="type" invisible="1"/>
                                     <field name="document_file_name" invisible="1"/>
                                 </tree>
@@ -149,15 +157,25 @@
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
-                                    <field name="document_file" required="1" filename="document_file_name"/>
+                                    <field name="document_file" required="1" filename="document_file_name"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="type" invisible="1"/>
                                     <field name="document_file_name" invisible="1"/>
                                 </tree>
                             </field>
                         </page>
                         <page string="Puestos" name="puestos">
-                            <field name="job_ids" nolabel="1"
-                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="job_ids" nolabel="1" readonly="1"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"
+                                   context="{'form_view_ref' : 'onsc_legajo.onsc_legajo_hr_job_form_view'}">
+                                <tree>
+                                    <field name="name"/>
+                                    <field name="department_id"/>
+                                    <field name="security_job_id"/>
+                                    <field name="start_date"/>
+                                    <field name="end_date"/>
+                                </tree>
+                            </field>
                         </page>
                     </notebook>
                 </sheet>
@@ -177,10 +195,11 @@
             <tree string="Contracts" default_order='date_start ASC'>
                 <field name="name"/>
                 <field name="employee_id" widget="many2one_avatar_employee"/>
-                <field name="job_id"/>
+                <field name="job_ids" widget="many2many_tags"/>
                 <field name="date_start" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                 <field name="date_end" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                 <field name="company_id" groups="base.group_multi_company" readonly="1" optional="show"/>
+                <field name="legajo_state" groups="onsc_legajo.group_legajo_configurador_contrato"/>
             </tree>
         </field>
     </record>
