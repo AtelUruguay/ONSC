@@ -59,9 +59,12 @@ class HrContract(models.Model):
     id_deregistration_discharge = fields.Char(string='Id de baja')
     reason_deregistration = fields.Char(string='Descripción del motivo baja')
     norm_code_deregistration_id = fields.Many2one('onsc.legajo.norm', string='Código de la norma de baja')
-    norm_number_deregistration = fields.Integer(string='Número de norma baja',related='norm_code_deregistration_id.numeroNorma')
-    norm_year_deregistration = fields.Integer(string='Año de norma baja',related='norm_code_deregistration_id.anioNorma')
-    norm_article_deregistration = fields.Integer(string='Artículo de norma baja',related='norm_code_deregistration_id.articuloNorma')
+    norm_number_deregistration = fields.Integer(string='Número de norma baja',
+                                                related='norm_code_deregistration_id.numeroNorma')
+    norm_year_deregistration = fields.Integer(string='Año de norma baja',
+                                              related='norm_code_deregistration_id.anioNorma')
+    norm_article_deregistration = fields.Integer(string='Artículo de norma baja',
+                                                 related='norm_code_deregistration_id.articuloNorma')
     resolution_description_deregistration = fields.Char(string='Descripción de la resolución baja')
     resolution_date_deregistration = fields.Date(string='Fecha de la resolución baja')
     resolution_type_deregistration = fields.Selection(

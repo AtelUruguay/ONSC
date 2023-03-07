@@ -103,7 +103,8 @@ class HrJobRoleLine(models.Model):
             'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc')
         if not is_informatica_onsc and self.filtered(
                 lambda x: x.user_role_id.is_byinciso is False and x.type == 'manual'):
-            raise ValidationError(_("CARTEL A ARREGLAR: No esta habilitado para modificar las líneas de roles adicionales"))
+            raise ValidationError(
+                _("Solo puede modificar las lineas de roles adicionales para las que está habilitado por inciso"))
 
     def write(self, vals):
         self._check_write()
