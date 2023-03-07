@@ -20,8 +20,6 @@ class HrJob(models.Model):
                 raise ValidationError(_("La fecha desde está fuera del rango de fechas del contrato"))
             if record.end_date and record.contract_id.date_end and record.end_date > record.contract_id.date_end:
                 raise ValidationError(_("La fecha hasta está fuera del rango de fechas del contrato"))
-            if record.end_date and record.end_date < fields.Date.today():
-                raise ValidationError(_("La fecha hasta no puede ser menor que la fecha actual"))
 
     @api.constrains("role_ids", "role_extra_ids")
     def _check_roles_duplicated(self):
@@ -105,8 +103,7 @@ class HrJobRoleLine(models.Model):
             'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc')
         if not is_informatica_onsc and self.filtered(
                 lambda x: x.user_role_id.is_byinciso is False and x.type == 'manual'):
-            raise ValidationError(
-                _("Solo puede modificar las lineas de roles adicionales para las que está habilitado por inciso"))
+            raise ValidationError(_("CARTEL A ARREGLAR: No esta habilitado para modificar las líneas de roles adicionales"))
 
     def write(self, vals):
         self._check_write()
@@ -128,8 +125,6 @@ class HrJobRoleLine(models.Model):
             if record.job_id.end_date and (record.end_date is False or record.end_date > record.job_id.end_date):
                 raise ValidationError(
                     _("El periodo de vigencia del rol adicional %s debe estar dentro del periodo de vigencia del puesto") % record.user_role_id.name)
-            if record.end_date and record.end_date < fields.Date.today():
-                raise ValidationError(_("La fecha hasta no puede ser menor que la fecha actual"))
 
     @api.onchange('start_date')
     def onchange_start_date(self):
