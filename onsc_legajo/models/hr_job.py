@@ -20,8 +20,6 @@ class HrJob(models.Model):
                 raise ValidationError(_("La fecha desde está fuera del rango de fechas del contrato"))
             if record.end_date and record.contract_id.date_end and record.end_date > record.contract_id.date_end:
                 raise ValidationError(_("La fecha hasta está fuera del rango de fechas del contrato"))
-            if record.end_date and record.end_date < fields.Date.today():
-                raise ValidationError(_("La fecha hasta no puede ser menor que la fecha actual"))
 
     @api.constrains("role_ids", "role_extra_ids")
     def _check_roles_duplicated(self):
@@ -128,8 +126,6 @@ class HrJobRoleLine(models.Model):
             if record.job_id.end_date and (record.end_date is False or record.end_date > record.job_id.end_date):
                 raise ValidationError(
                     _("El periodo de vigencia del rol adicional %s debe estar dentro del periodo de vigencia del puesto") % record.user_role_id.name)
-            if record.end_date and record.end_date < fields.Date.today():
-                raise ValidationError(_("La fecha hasta no puede ser menor que la fecha actual"))
 
     @api.onchange('start_date')
     def onchange_start_date(self):
