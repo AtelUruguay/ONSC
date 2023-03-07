@@ -99,18 +99,19 @@ class HrJobRoleLine(models.Model):
                                       compute='_compute_user_role_id_domain')
 
     def _check_write(self):
-        if not self.user_has_groups(
-                'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc') and self.filtered(
-            lambda x: x.user_role_id.is_byinciso and x.type == 'manual'):
-            raise ValidationError(_("No esta habilitado para modificar las líneas de roles adicionales"))
+        is_informatica_onsc = self.user_has_groups(
+            'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc')
+        if not is_informatica_onsc and self.filtered(
+                lambda x: x.user_role_id.is_byinciso is False and x.type == 'manual'):
+            raise ValidationError(_("CARTEL A ARREGLAR: No esta habilitado para modificar las líneas de roles adicionales"))
 
     def write(self, vals):
         self._check_write()
-        fields = ['start_date', 'end_date', 'user_role_id', 'active']
-        ref_tracked_fields = self.fields_get(fields)
+        _fields = ['start_date', 'end_date', 'user_role_id', 'active']
+        ref_tracked_fields = self.fields_get(_fields)
         initial_values = {}
         for rec in self:
-            for field in fields:
+            for field in _fields:
                 initial_values[field] = eval('rec.%s' % (field))
             super(HrJobRoleLine, rec).write(vals)
             dummy, tracking_value_ids = rec._mail_track(ref_tracked_fields, initial_values)
