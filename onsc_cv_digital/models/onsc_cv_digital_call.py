@@ -334,10 +334,11 @@ class ONSCCVDigitalCall(models.Model):
             raise ValidationError(_("No se puede generar ZIP de CVs de diferentes llamados"))
         try:
             wizard = self.env['onsc.cv.report.wizard'].create({})
+            call_number = self[0].call_number.replace('/', '_')
             for record in self:
                 report = self.env.ref('onsc_cv_digital.action_report_onsc_cv_digital').with_context(
                     seccions=wizard.get_seccions())._render_qweb_pdf(record.cv_digital_id.id)
-                pdfname = '%s_%s_%s.pdf' % (record.call_number,
+                pdfname = '%s_%s_%s.pdf' % (call_number,
                                             record.postulation_number,
                                             str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
                 pdf_url = join(cv_zip_url, pdfname)
@@ -345,7 +346,7 @@ class ONSCCVDigitalCall(models.Model):
                 thePdf.write(report[0])
                 pdf_list[pdfname] = pdf_url
                 thePdf.close()
-            filename = '%s_%s.zip' % (self[0].call_number, str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
+            filename = '%s_%s.zip' % (call_number, str(fields.Datetime.now().strftime('%Y-%m-%d %H-%M-%S')))
             cv_zip_url = join(cv_zip_url, filename)
             zip_archive = zipfile.ZipFile(cv_zip_url, "w")
             try:
