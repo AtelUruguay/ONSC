@@ -77,14 +77,13 @@
                                    required="1"/>
                             <field name="sec_position" groups="onsc_legajo.group_legajo_configurador_contrato"
                                    required="1"/>
+                        </group>
+                        <group>
                             <field name="reason_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"
                                    required="1"/>
                             <field name="norm_code_discharge_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                        </group>
-                        <group>
-
                             <field name="norm_number_discharge"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="norm_year_discharge" groups="onsc_legajo.group_legajo_configurador_contrato"/>
@@ -102,7 +101,9 @@
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="code_day" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="description_day" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="retributive_day_id" groups="onsc_legajo.group_legajo_configurador_contrato"/>
+                            <field name="retributive_day_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="id_registration_discharge"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="id_deregistration_discharge"
@@ -127,9 +128,9 @@
                             <field name="causes_discharge_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                            <field name="code_cgn" invisible="1"/>
+                            <field name="is_require_extended" invisible="1"/>
                             <field name="causes_discharge_extended"
-                                   attrs="{'invisible': [('code_cgn', '!=', '78')]}"
+                                   attrs="{'invisible': [('is_require_extended', '!=', True)]}"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
                             <field name="additional_information_deregistration"
                                    groups="onsc_legajo.group_legajo_configurador_contrato"/>
@@ -170,8 +171,7 @@
                                    context="{'form_view_ref' : 'onsc_legajo.onsc_legajo_hr_job_form_view'}">
                                 <tree>
                                     <field name="name"/>
-                                    <field name="department_id"/>
-                                    <field name="security_job_id"/>
+                                    <field name="department_id" string="Unidad organizativa"/>
                                     <field name="start_date"/>
                                     <field name="end_date"/>
                                 </tree>
