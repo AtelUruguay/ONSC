@@ -16,6 +16,13 @@
               name="Legajos"
               web_icon="onsc_catalog,static/description/icon.png"
               sequence="4"/>
+
+    <menuitem id="onsc_hr_legajo_menu"
+              name="Legajos"
+              action="onsc_legajo_action"
+              parent="onsc_legajo.onsc_legajo_root_menu"
+              sequence="1"/>
+
     <menuitem id="onsc_hr_employee_menu"
               name="Empleados"
               action="onsc_legajo_hr_employee_action"

@@ -71,5 +71,35 @@
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view')),(4, ref('onsc_legajo.group_legajo_configurador_contrato'))]"/>
         </record>
+
+        <!--LEGAJO-->
+        <record id="group_legajo_hr_inciso" model="res.groups">
+            <field name="name">Legajo - Recursos Humanos Inciso</field>
+            <field name="comment">Legajo - Recursos Humanos Inciso</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_hr_ue" model="res.groups">
+            <field name="name">Legajo - Recursos Humanos UE</field>
+            <field name="comment">Legajo - Recursos Humanos UE</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_consulta_legajos" model="res.groups">
+            <field name="name">Legajo - Consulta de legajos</field>
+            <field name="comment">Legajo - Consulta de legajos</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_consulta_milegajos" model="res.groups">
+            <field name="name">Legajo - Consultar mi legajo</field>
+            <field name="comment">Legajo - Consultar mi legajo</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
     </data>
 </odoo>

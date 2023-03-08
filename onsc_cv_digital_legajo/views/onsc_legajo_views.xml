@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="onsc_legajo_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.form</field>
+            <field name="model">onsc.legajo</field>
+            <field name="inherit_id" ref="onsc_legajo.onsc_legajo_form"/>
+            <field name="arch" type="xml">
+                <field name="employee_id" position="after">
+                    <field name="cv_digital_id"/>
+                </field>
+            </field>
+    </record>
+</odoo>
