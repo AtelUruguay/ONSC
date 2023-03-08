@@ -62,7 +62,8 @@ export const jobService = {
             async setJobs(mode, ...jobIds) {
                 const jobId = jobIds[0];
                 await orm.call("res.users", "change_job",  [user], {'jobId': jobId});
-                browser.setTimeout(() => browser.location.reload()); // history.pushState is a little async
+                var href = browser.location.origin;
+                browser.setTimeout(() => browser.location.assign(href + '/web')); // history.pushState is a little async
             },
         };
     },
