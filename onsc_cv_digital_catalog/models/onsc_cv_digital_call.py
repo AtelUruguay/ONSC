@@ -31,12 +31,11 @@ class ONSCCVDigitalCall(models.Model):
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         if self._context.get('is_call_documentary_validation') and self.user_has_groups(
                 'onsc_cv_digital.group_validador_documental_cv'):
-            company_ids = self.env.user.company_ids.ids
-            operating_unit_ids = self.env.user.operating_unit_ids.ids
+            configs = self.env['onsc.catalog.validators.inciso.ue'].search([('user_id', '=', self.env.user.id)])
             domain = expression.AND([[
                 ('preselected', '=', 'yes'),
-                ('inciso_id.company_id', 'in', company_ids),
-                ('operating_unit_id', 'in', operating_unit_ids)], domain])
+                ('inciso_id.company_id', 'in', configs.mapped('inciso_id').ids),
+                ('operating_unit_id', 'in', configs.mapped('operating_unit_id').ids)], domain])
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
