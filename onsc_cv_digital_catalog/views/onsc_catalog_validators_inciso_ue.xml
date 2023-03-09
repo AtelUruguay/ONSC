@@ -21,11 +21,11 @@
                     <header/>
                     <sheet>
                         <group>
-<!--                            <field name="inciso_id"-->
-<!--                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>-->
-<!--                            <field name="operating_unit_id"-->
-<!--                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"-->
-<!--                                   domain="[('inciso_id', '=', inciso_id)]"/>-->
+                            <field name="inciso_id"
+                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   domain="[('inciso_id', '=', inciso_id)]"/>
                             <field name="user_id"
                                    domain="[('share', '=', False)]"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
@@ -48,8 +48,8 @@
             <field name="model">onsc.catalog.validators.inciso.ue</field>
             <field name="arch" type="xml">
                 <tree string="Validador de Inciso y UE">
-<!--                    <field name="inciso_id"/>-->
-<!--                    <field name="operating_unit_id"/>-->
+                    <field name="inciso_id"/>
+                    <field name="operating_unit_id"/>
                     <field name="user_id"/>
                     <field name="role_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                 </tree>
