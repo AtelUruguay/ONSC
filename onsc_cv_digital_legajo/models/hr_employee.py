@@ -14,7 +14,7 @@ class HrEmployee(models.Model):
     drivers_license_ids = fields.One2many("onsc.legajo.driver.license",
                                           inverse_name="employee_id",
                                           string="Licencias de conducir",
-                                          copy=True)
+                                          copy=True, history=True)
 
     # RAZA
 
@@ -32,19 +32,22 @@ class HrEmployee(models.Model):
     # Domicilio
 
     country_id = fields.Many2one(
-        'res.country', 'Nationality (Country)', groups="hr.group_hr_user,onsc_legajo.group_legajo_configurador_empleado", tracking=True)
+        'res.country', 'Nationality (Country)',
+        groups="hr.group_hr_user,onsc_legajo.group_legajo_configurador_empleado", tracking=True, history=True)
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
-    cv_address_state_id = fields.Many2one('res.country.state', string='Departamento')
-    cv_address_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad')
-    cv_address_nro_door = fields.Char(u'Número')
-    cv_address_apto = fields.Char(u'Apto')
-    cv_address_street = fields.Char(u'Calle')
-    cv_address_zip = fields.Char(u'Código postal')
-    cv_address_is_cv_bis = fields.Boolean(u'BIS')
-    cv_address_amplification = fields.Text(u"Aclaraciones")
-    cv_address_place = fields.Text(string="Paraje", size=200, )
-    cv_address_block = fields.Char(string="Manzana", size=5, )
-    cv_address_sandlot = fields.Char(string="Solar", size=5, )
+    cv_address_state_id = fields.Many2one('res.country.state', string='Departamento', history=True)
+    cv_address_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad', history=True)
+    cv_address_nro_door = fields.Char(u'Número', history=True)
+    cv_address_apto = fields.Char(u'Apto', history=True)
+    cv_address_street = fields.Char(u'Calle', history=True)
+    cv_address_zip = fields.Char(u'Código postal', history=True)
+    cv_address_is_cv_bis = fields.Boolean(u'BIS', history=True)
+    cv_address_amplification = fields.Text(u"Aclaraciones", history=True)
+    cv_address_place = fields.Text(string="Paraje", size=200, history=True)
+    cv_address_block = fields.Char(string="Manzana", size=5, history=True)
+    cv_address_sandlot = fields.Char(string="Solar", size=5, history=True)
+    address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"', history=True)
+    address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
     # Discapacidad
     type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo')
@@ -184,6 +187,9 @@ class HrEmployee(models.Model):
                 'cv_address_place': record.cv_digital_id.cv_address_place,
                 'cv_address_block': record.cv_digital_id.cv_address_block,
                 'cv_address_sandlot': record.cv_digital_id.cv_address_sandlot,
+                'address_receipt_file': record.cv_digital_id.partner_id.address_receipt_file,
+                'address_receipt_file_name': record.cv_digital_id.partner_id.address_receipt_file_name,
+
                 # Discapacidad
                 'allow_content_public': record.cv_digital_id.allow_content_public,
                 'situation_disability': record.cv_digital_id.situation_disability,
