@@ -16,7 +16,8 @@ class ONSCCatalogInciso(models.Model):
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         """
         """
-        if self.user_has_groups('onsc_catalog.group_catalog_configurador_servicio_civil'):
+        onsc_allcompanies_rule = self.env.ref('onsc_base.onsc_base_rule_full_compannies')
+        if onsc_allcompanies_rule not in self.env.user.groups_id.rule_groups:
             args += [('company_id', 'in', self._context.get('allowed_company_ids'))]
         return super(ONSCCatalogInciso, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                       access_rights_uid=access_rights_uid)
