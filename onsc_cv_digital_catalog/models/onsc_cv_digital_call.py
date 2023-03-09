@@ -34,7 +34,7 @@ class ONSCCVDigitalCall(models.Model):
             configs = self.env['onsc.catalog.validators.inciso.ue'].search([('user_id', '=', self.env.user.id)])
             domain = expression.AND([[
                 ('preselected', '=', 'yes'),
-                ('inciso_id.company_id', 'in', configs.mapped('inciso_id').ids),
+                ('inciso_id', 'in', configs.mapped('inciso_id').ids),
                 ('operating_unit_id', 'in', configs.mapped('operating_unit_id').ids)], domain])
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
