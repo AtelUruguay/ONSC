@@ -8,6 +8,15 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     _description = 'Validadores por Inciso y UE'
     _rec_name = 'user_id'
 
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True, ondelete='restrict')
+    company_id = fields.Many2one('res.company',
+                                 related='inciso_id.company_id',
+                                 store=True,
+                                 ondelete='restrict')
+    operating_unit_id = fields.Many2one("operating.unit",
+                                        string="Unidad ejecutora",
+                                        required=True,
+                                        ondelete='restrict')
     user_id = fields.Many2one('res.users',
                               string='Usuario',
                               required=True, )
@@ -24,6 +33,10 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
     def _get_default_role_id(self):
         security_param = self.env['ir.config_parameter'].sudo().get_param("group_documentary_validator", "")
         return self.env['res.users.role'].sudo().search([('name', '=', security_param)]).id
+
+    @api.onchange('inciso_id')
+    def onchange_inciso_id(self):
+        self.operating_unit_id = False
 
     @api.model
     def create(self, values):

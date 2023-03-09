@@ -19,12 +19,11 @@ class ONSCCVDigitalCall(models.Model):
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_call_documentary_validation') and self.user_has_groups(
                 'onsc_cv_digital.group_validador_documental_cv'):
-            company_ids = self.env.user.company_ids.ids
-            operating_unit_ids = self.env.user.operating_unit_ids.ids
+            configs = self.env['onsc.catalog.validators.inciso.ue'].search([('user_id', '=', self.env.user.id)])
             args = expression.AND([[
                 ('preselected', '=', 'yes'),
-                ('inciso_id.company_id', 'in', company_ids),
-                ('operating_unit_id', 'in', operating_unit_ids)], args])
+                ('inciso_id', 'in', configs.mapped('inciso_id').ids),
+                ('operating_unit_id', 'in', configs.mapped('operating_unit_id').ids)], args])
         return super(ONSCCVDigitalCall, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                       access_rights_uid=access_rights_uid)
 
@@ -69,10 +68,8 @@ class ONSCCVDigitalCall(models.Model):
         if len(self) == 0:
             return
         self = self[0]
-        validador_group = self.env.ref("onsc_cv_digital.group_validador_documental_cv")
-        users = self.env['res.users'].sudo().search([
-            ('groups_id', 'in', [validador_group.id]),
-            ('company_ids', 'in', [self.inciso_id.company_id.id]),
-            ('operating_unit_ids', 'in', [self.operating_unit_id.id])])
+        users = self.env['onsc.catalog.validators.inciso.ue'].search([
+            ('operating_unit_id', '=', self.operating_unit_id.id),
+        ]).user_id
         emailto = ','.join(users.filtered(lambda x: x.partner_id.email).mapped('partner_id.email'))
         return {'email_to': emailto}
