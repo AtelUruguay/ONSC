@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - HR Organizational Chart',
-    'version': '15.0.3.1.0',
+    'version': '15.0.3.2.0',
     'summary': 'ONSC - HR Organizational Chart',
     'description': 'ONSC - HR Organizational Chart',
     'category': 'ONSC',
