@@ -198,7 +198,7 @@
                 <field name="job_ids" widget="many2many_tags"/>
                 <field name="date_start" groups="onsc_legajo.group_legajo_configurador_contrato"/>
                 <field name="date_end" groups="onsc_legajo.group_legajo_configurador_contrato"/>
-                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" invisible="1"/>
                 <field name="legajo_state" groups="onsc_legajo.group_legajo_configurador_contrato"/>
             </tree>
         </field>
