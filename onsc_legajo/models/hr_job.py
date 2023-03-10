@@ -9,7 +9,8 @@ from odoo.exceptions import ValidationError
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
-    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict')
+    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict',
+                                      tracking=True)
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')
 
