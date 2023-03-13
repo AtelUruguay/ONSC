@@ -139,6 +139,11 @@ class HrContract(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
+    @api.model
+    def get_history_record_action(self, history_id, res_id):
+        return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
+            'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
+
 
 class HrContractHistory(models.Model):
     _inherit = ['model.history.data']

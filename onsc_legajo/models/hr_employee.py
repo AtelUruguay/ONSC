@@ -85,6 +85,11 @@ class HrEmployee(models.Model):
         else:
             return super(HrEmployee, self).unlink()
 
+    @api.model
+    def get_history_record_action(self, history_id, res_id):
+        return super(HrEmployee, self.with_context(model_view_form_id=self.env.ref(
+            'onsc_legajo.onsc_legajo_hr_employee_form').id)).get_history_record_action(history_id, res_id)
+
 
 class HrEmployeeHistory(models.Model):
     _inherit = ['model.history.data']
