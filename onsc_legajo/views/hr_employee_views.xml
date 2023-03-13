@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
+        <record id="onsc_legajo_hr_employee_search" model="ir.ui.view">
+            <field name="name">onsc.legajo.hr.employee.search</field>
+            <field name="model">hr.employee</field>
+            <field name="arch" type="xml">
+                <search string="Empleados">
+                    <field name="name" string="Empleado"/>
+                </search>
+             </field>
+        </record>
+
         <record id="onsc_legajo_hr_employee_tree" model="ir.ui.view">
             <field name="name">onsc.legajo.hr.employee.tree</field>
             <field name="model">hr.employee</field>
@@ -69,6 +79,7 @@
                     Crear un nuevo empleado
                 </p>
             </field>
+            <field name="search_view_id" ref="onsc_legajo.onsc_legajo_hr_employee_search"/>
             <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_hr_employee_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_hr_employee_form')})]"/>
