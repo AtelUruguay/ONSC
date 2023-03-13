@@ -14,3 +14,7 @@
 	path = SUBMODULOS/OCA/server-backend
 	url = https://github.com/OCA/server-backend.git
 	branch = 15.0
+[submodule "SUBMODULOS/OCA/server-auth"]
+	path = SUBMODULOS/OCA/server-auth
+	url = git@github.com:OCA/server-auth.git
+	branch = 15.0
