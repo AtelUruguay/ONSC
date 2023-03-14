@@ -13,7 +13,7 @@ def calc_full_name(first_name, second_name, last_name_1, last_name_2):
 
 class HrEmployee(models.Model):
     _name = "hr.employee"
-    _inherit = ['hr.employee', 'onsc.partner.common.data', 'model.history']
+    _inherit = ['hr.employee', 'onsc.partner.common.data', 'model.history', 'mail.thread', 'mail.activity.mixin']
     _history_model = 'hr.employee.history'
     _history_columns = ['cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
                         'document_identity_file', 'status_civil_date', 'uy_citizenship', 'civical_credential_file',
@@ -71,6 +71,57 @@ class HrEmployee(models.Model):
             return super(HrEmployee, self).create(values)
 
     def write(self, values):
+        today = fields.Date.today()
+        Attachment = self.env['ir.attachment']
+        if values.get('document_identity_file'):
+            Attachment.create({'name': self.document_identity_filename + " " + str(today),
+                               'datas': self.document_identity_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+        if values.get('civical_credential_file'):
+            Attachment.create({'name': self.civical_credential_filename + " " + str(today),
+                               'datas': self.civical_credential_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+
+        if values.get('cv_gender_record_file'):
+            Attachment.create({'name': self.cv_gender_record_filename + " " + str(today),
+                               'datas': self.cv_gender_record_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+
+        if values.get('afro_descendants_file'):
+            Attachment.create({'name': self.afro_descendants_filename + " " + str(today),
+                               'datas': self.afro_descendants_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+
+        if values.get('occupational_health_card_file'):
+            Attachment.create({'name': self.occupational_health_card_filename + " " + str(today),
+                               'datas': self.occupational_health_card_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+
+        if values.get('medical_aptitude_certificate_file'):
+            Attachment.create({'name': self.medical_aptitude_certificate_filename + " " + str(today),
+                               'datas': self.medical_aptitude_certificate_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+
+        if values.get('relationship_victim_violent_file'):
+            Attachment.create({'name': self.relationship_victim_violent_filename + " " + str(today),
+                               'datas': self.relationship_victim_violent_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+
+        if values.get('address_receipt_file'):
+            Attachment.create({'name': self.address_receipt_filename + " " + str(today),
+                               'datas': self.address_receipt_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+
+        if values.get('document_certificate_file'):
+            Attachment.create({'name': self.document_certificate_filename + " " + str(today),
+                               'datas': self.document_certificate_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+
+        if values.get('digitized_document_file'):
+            Attachment.create({'name': self.digitized_document_filename + " " + str(today),
+                               'datas': self.digitized_document_file, 'res_model': 'hr.employee',
+                               'res_id': self.id, 'type': 'binary'})
+
         if self.env.context.get('is_legajo'):
             res = super(HrEmployee, self.suspend_security()).write(values)
         else:
