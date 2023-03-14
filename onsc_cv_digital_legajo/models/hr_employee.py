@@ -46,7 +46,7 @@ class HrEmployee(models.Model):
     cv_address_place = fields.Text(string="Paraje", size=200, history=True)
     cv_address_block = fields.Char(string="Manzana", size=5, history=True)
     cv_address_sandlot = fields.Char(string="Solar", size=5, history=True)
-    address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"', history=True)
+    address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
     address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
     # Discapacidad
