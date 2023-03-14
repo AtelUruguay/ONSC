@@ -11,14 +11,14 @@
             <field name="comment">Configurador Legajo</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
-                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
         <record id="group_legajo_configurador_integracion" model="res.groups">
             <field name="name">Configurador Legajo - Integraciones</field>
             <field name="comment">Configurador Legajo - Integraciones</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
-                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
         <!--PUESTO-->
@@ -27,23 +27,23 @@
             <field name="comment">Configurador Puesto</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
-                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
         <record id="group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso" model="res.groups">
-            <field name="name">Configurador Puesto - Ajuste de Seguridad Manual Inciso</field>
-            <field name="comment">Configurador Puesto - Ajuste de Seguridad Manual Inciso</field>
+            <field name="name">Ajuste de Seguridad Manual RRHH</field>
+            <field name="comment">Ajuste de Seguridad Manual RRHH</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
-                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
         <record id="group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc" model="res.groups">
-            <field name="name">Configurador Puesto - Ajuste de Seguridad Manual Informática ONSC</field>
-            <field name="comment">Configurador Puesto - Ajuste de Seguridad Manual Informática ONSC</field>
+            <field name="name">Ajuste de Seguridad Manual Informática ONSC</field>
+            <field name="comment">Ajuste de Seguridad Manual Informática ONSC</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
-                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
         <!--EMPLEADO-->
@@ -52,7 +52,7 @@
             <field name="comment">Configurador Empleado</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
-                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
         <!--CONTRATO-->
@@ -61,7 +61,7 @@
             <field name="comment">Configurador Contrato</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
-                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
         <record id="group_legajo_editar_ocupacion_contrato" model="res.groups">
@@ -69,7 +69,7 @@
             <field name="comment">Editar Ocupación Contrato</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
-                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view')),(4, ref('onsc_legajo.group_legajo_configurador_contrato'))]"/>
+                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view')),(4, ref('onsc_legajo.group_legajo_configurador_contrato'))]"/>
         </record>
 
         <!--LEGAJO-->

@@ -23,4 +23,8 @@ class ResUsers(models.Model):
 
     @api.depends("groups_id", "assigned_operating_unit_ids")
     def _compute_operating_unit_ids(self):
-        super(ResUsers, self.with_context(active_test=False))._compute_operating_unit_ids()
+        onsc_users = self.filtered(lambda x: x.has_group("onsc_base.group_base_onsc"))
+        for record in onsc_users:
+            record.operating_unit_ids = [(5,)]
+        return super(ResUsers, self.filtered(lambda x: x.id not in onsc_users.ids).with_context(
+            active_test=False))._compute_operating_unit_ids()

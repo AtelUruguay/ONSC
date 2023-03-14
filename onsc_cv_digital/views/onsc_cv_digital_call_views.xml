@@ -22,6 +22,10 @@
                     <filter name="group_by_country_id" string="País" context="{'group_by':'cv_emissor_country_id'}"/>
                     <filter name="group_by_call_number" string="Número de llamado" context="{'group_by':'call_number'}"/>
                     <filter name="group_by_partner_id" string="Nombre" context="{'group_by':'partner_id'}"/>
+                    <filter name="group_by_gral_info_documentary_validation_state"
+                            groups="onsc_cv_digital.group_validador_documental_cv"
+                            string="Estado de validación documental"
+                            context="{'group_by':'gral_info_documentary_validation_state'}"/>
                 </group>
             </search>
         </field>

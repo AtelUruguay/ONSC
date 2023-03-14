@@ -102,7 +102,7 @@
         <field name="arch" type="xml">
             <tree string="Puestos de trabajo">
                 <field name="name"/>
-                <field name="department_id"
+                <field name="department_id" string="Unidad organizativa"
                        groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
                 <field name="security_job_id"
                        groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>

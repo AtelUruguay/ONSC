@@ -30,8 +30,6 @@ class ONSCCVLegajoAbstractCommon(models.AbstractModel):
                                                 default=lambda self: self.env['res.country.phone'].search(
                                                     [('country_id.code', '=', 'UY')]))
     emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia')
-
-    # TO-DO: Revisar este campo, No esta en catalogo
     health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud", ondelete='restrict',
                                          tracking=True)
     health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',

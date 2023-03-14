@@ -35,16 +35,18 @@ class ONSCLegajoSecurityJob(models.Model):
     def update_jobs_security(self):
         Job = self.env['hr.job']
         for record in self:
-            jobs = Job.search([('security_job_id', '=',record.id)])
-            for job in jobs.filtered(lambda x: x.is_roles_duplicated(record.user_role_ids) is False):
-                new_lines = [(5,)]
-                for user_role_id in record.user_role_ids:
-                    new_lines.append((0, 0, {
-                        'user_role_id': user_role_id.id,
-                        'type': 'system',
-                        'start_date': job.start_date if job.start_date else fields.Date.today(),
-                        'end_date': job.end_date
-                    }))
-                job.write({
-                    'role_ids': new_lines
-                })
+            for job in Job.search([('security_job_id', '=',record.id)]):
+                try:
+                    new_lines = [(5,)]
+                    for user_role_id in record.user_role_ids:
+                        new_lines.append((0, 0, {
+                            'user_role_id': user_role_id.id,
+                            'type': 'system',
+                            'start_date': job.start_date if job.start_date else fields.Date.today(),
+                            'end_date': job.end_date
+                        }))
+                    job.write({
+                        'role_ids': new_lines
+                    })
+                except Exception:
+                    pass

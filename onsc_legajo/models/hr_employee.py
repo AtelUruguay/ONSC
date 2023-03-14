@@ -8,6 +8,18 @@ class HrEmployee(models.Model):
     _name = "hr.employee"
     _inherit = ['hr.employee', 'onsc.partner.common.data', 'model.history']
     _history_model = 'hr.employee.history'
+    _history_columns = ['cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2', 'status_civil_date',
+                        'uy_citizenship', 'cv_gender_id', 'gender_date', 'is_cv_gender_public', 'is_afro_descendants',
+                        'afro_descendant_date', 'is_occupational_health_card', 'occupational_health_card_date',
+                        'medical_aptitude_certificate_date', 'is_public_information_victim_violent',
+                        'allow_content_public', 'situation_disability', 'people_disabilitie', 'certificate_date',
+                        'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction',
+                        'need_other_support', 'emergency_service_id', 'emergency_service_telephone',
+                        'health_department_id', 'health_provider_id', 'blood_type', 'name_contact',
+                        'contact_person_telephone', 'remark_contact_person', 'other_information_official'
+                        ]
+    # 'digitized_document_file', 'afro_descendants_file', 'cv_gender_record_file', 'document_identity_file', 'civical_credential_file', 'occupational_health_card_file'
+    # 'relationship_victim_violent_file', 'document_certificate_file'
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
@@ -21,7 +33,7 @@ class HrEmployee(models.Model):
                                              default=lambda self: self.env['res.country.phone'].search(
                                                  [('country_id.code', '=', 'UY')]))
     mobile_phone = fields.Char(string="Teléfono celular")
-    email = fields.Char(string="Email")
+    email = fields.Char(string="Email", history=True)
 
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
@@ -61,6 +73,11 @@ class HrEmployee(models.Model):
             return super(HrEmployee, self.suspend_security()).unlink()
         else:
             return super(HrEmployee, self).unlink()
+
+    @api.model
+    def get_history_record_action(self, history_id, res_id):
+        return super(HrEmployee, self.with_context(model_view_form_id=self.env.ref(
+            'onsc_legajo.onsc_legajo_hr_employee_form').id)).get_history_record_action(history_id, res_id)
 
 
 class HrEmployeeHistory(models.Model):
