@@ -74,52 +74,52 @@ class HrEmployee(models.Model):
         for rec in self:
             today = fields.Date.today()
             Attachment = self.env['ir.attachment']
-            if values.get('document_identity_file'):
+            if values.get('document_identity_file') and rec.document_identity_file:
                 Attachment.create({'name': rec.document_identity_filename + " " + str(today),
                                    'datas': rec.document_identity_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
-            if values.get('civical_credential_file'):
+            if values.get('civical_credential_file') and rec.civical_credential_file:
                 Attachment.create({'name': rec.civical_credential_filename + " " + str(today),
                                    'datas': rec.civical_credential_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
-            if values.get('cv_gender_record_file'):
+            if values.get('cv_gender_record_file') and rec.cv_gender_record_file:
                 Attachment.create({'name': rec.cv_gender_record_filename + " " + str(today),
                                    'datas': rec.cv_gender_record_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
-            if values.get('afro_descendants_file'):
+            if values.get('afro_descendants_file') and rec.afro_descendants_file:
                 Attachment.create({'name': rec.afro_descendants_filename + " " + str(today),
                                    'datas': rec.afro_descendants_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
-            if values.get('occupational_health_card_file'):
+            if values.get('occupational_health_card_file') and rec.occupational_health_card_file:
                 Attachment.create({'name': rec.occupational_health_card_filename + " " + str(today),
                                    'datas': rec.occupational_health_card_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
-            if values.get('medical_aptitude_certificate_file'):
+            if values.get('medical_aptitude_certificate_file') and rec.medical_aptitude_certificate_file:
                 Attachment.create({'name': rec.medical_aptitude_certificate_filename + " " + str(today),
                                    'datas': rec.medical_aptitude_certificate_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
-            if values.get('relationship_victim_violent_file'):
+            if values.get('relationship_victim_violent_file') and rec.relationship_victim_violent_file:
                 Attachment.create({'name': rec.relationship_victim_violent_filename + " " + str(today),
                                    'datas': rec.relationship_victim_violent_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
-            if values.get('address_receipt_file'):
+            if values.get('address_receipt_file') and rec.address_receipt_file:
                 Attachment.create({'name': rec.address_receipt_filename + " " + str(today),
                                    'datas': rec.address_receipt_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
-            if values.get('document_certificate_file'):
+            if values.get('document_certificate_file') and rec.document_certificate_file:
                 Attachment.create({'name': rec.document_certificate_filename + " " + str(today),
                                    'datas': rec.document_certificate_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
-            if values.get('digitized_document_file'):
+            if values.get('digitized_document_file') and rec.digitized_document_file:
                 Attachment.create({'name': rec.digitized_document_filename + " " + str(today),
                                    'datas': rec.digitized_document_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
