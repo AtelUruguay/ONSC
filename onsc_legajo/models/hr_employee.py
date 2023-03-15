@@ -24,12 +24,9 @@ class HrEmployee(models.Model):
                         'allow_content_public', 'situation_disability',
                         'people_disabilitie', 'certificate_date',
                         'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction',
-                        'need_other_support',
-                        'emergency_service_id', 'emergency_service_telephone',
-                        'health_department_id',
-                        'health_provider_id', 'name_contact', 'contact_person_telephone',
-                        'remark_contact_person',
-                        'other_information_official', 'disability_date',
+                        'need_other_support', 'emergency_service_id', 'emergency_service_telephone',
+                        'health_department_id', 'health_provider_id', 'name_contact', 'contact_person_telephone',
+                        'remark_contact_person', 'other_information_official', 'disability_date',
                         'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
                         'type_support_ids', 'remark_contact_person', 'cv_nro_doc'
                         ]
