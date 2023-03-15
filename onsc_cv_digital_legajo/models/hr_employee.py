@@ -42,7 +42,7 @@ class HrEmployee(models.Model):
     cv_address_street = fields.Char(u'Calle', history=True)
     cv_address_zip = fields.Char(u'Código postal', history=True)
     cv_address_is_cv_bis = fields.Boolean(u'BIS', history=True)
-    cv_address_amplification = fields.Text(u"Aclaraciones", history=True)
+    cv_address_amplification = fields.Text(u"Aclaraciones")
     cv_address_place = fields.Text(string="Paraje", size=200, history=True)
     cv_address_block = fields.Char(string="Manzana", size=5, history=True)
     cv_address_sandlot = fields.Char(string="Solar", size=5, history=True)
