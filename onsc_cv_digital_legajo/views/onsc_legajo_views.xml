@@ -8,6 +8,19 @@
                 <field name="employee_id" position="after">
                     <field name="cv_digital_id"/>
                 </field>
+                <xpath expr="//notebook" position="inside">
+                    <page name="formation" string="Formación personal">
+                        <div>
+                            <h4>Formación básica</h4>
+                        </div>
+                        <field name="basic_formation_ids"/>
+                        <br/>
+                        <div>
+                            <h4>Formación avanzada</h4>
+                        </div>
+                        <field name="advanced_formation_ids"/>
+                    </page>
+                </xpath>
             </field>
     </record>
 </odoo>

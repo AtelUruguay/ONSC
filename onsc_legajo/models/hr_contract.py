@@ -10,6 +10,29 @@ class HrContract(models.Model):
     _inherit = ['hr.contract', 'model.history']
     _history_model = 'hr.contract.model.history'
 
+    @api.model
+    def fields_view_get(self, view_id=None, view_type="form", toolbar=False, submenu=False):
+        res = super().fields_view_get(
+            view_id=view_id,
+            view_type=view_type,
+            toolbar=toolbar,
+            submenu=submenu,
+        )
+        doc = etree.fromstring(res['arch'])
+        is_group_security = self.env.user.has_group('onsc_legajo.group_legajo_editar_ocupacion_contrato')
+        if is_group_security:
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('create', '0')
+        if view_type == 'form':
+            for t in doc.xpath("//field"):
+                if t.get('name') != 'occupation_id' and is_group_security:
+                    t.set('readonly', '1')
+                    modifiers = json.loads(t.get("modifiers") or "{}")
+                    modifiers['readonly'] = True
+                    t.set("modifiers", json.dumps(modifiers))
+        res['arch'] = etree.tostring(doc)
+        return res
+
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
@@ -115,29 +138,6 @@ class HrContract(models.Model):
                     domain = ['&'] + domain + ['|', ('end_date', '>=', fields.Date.to_string(rec.date_end)),
                                                ('end_date', '=', False)]
                 self.operating_unit_id_domain = json.dumps(domain)
-
-    @api.model
-    def fields_view_get(self, view_id=None, view_type="form", toolbar=False, submenu=False):
-        res = super().fields_view_get(
-            view_id=view_id,
-            view_type=view_type,
-            toolbar=toolbar,
-            submenu=submenu,
-        )
-        doc = etree.fromstring(res['arch'])
-        is_group_security = self.env.user.has_group('onsc_legajo.group_legajo_editar_ocupacion_contrato')
-        if is_group_security:
-            for node_form in doc.xpath("//%s" % (view_type)):
-                node_form.set('create', '0')
-        if view_type == 'form':
-            for t in doc.xpath("//field"):
-                if t.get('name') != 'occupation_id' and is_group_security:
-                    t.set('readonly', '1')
-                    modifiers = json.loads(t.get("modifiers") or "{}")
-                    modifiers['readonly'] = True
-                    t.set("modifiers", json.dumps(modifiers))
-        res['arch'] = etree.tostring(doc)
-        return res
 
     @api.model
     def get_history_record_action(self, history_id, res_id):

@@ -21,6 +21,7 @@
               name="Legajos"
               action="onsc_legajo_action"
               parent="onsc_legajo.onsc_legajo_root_menu"
+              groups="onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_hr_ue,onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_consulta_milegajos,"
               sequence="1"/>
 
     <menuitem id="onsc_hr_employee_menu"

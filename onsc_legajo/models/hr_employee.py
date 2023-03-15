@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from lxml import etree
 
 from odoo import models, fields, api
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
@@ -18,8 +19,6 @@ class HrEmployee(models.Model):
                         'health_department_id', 'health_provider_id', 'blood_type', 'name_contact',
                         'contact_person_telephone', 'remark_contact_person', 'other_information_official'
                         ]
-    # 'digitized_document_file', 'afro_descendants_file', 'cv_gender_record_file', 'document_identity_file', 'civical_credential_file', 'occupational_health_card_file'
-    # 'relationship_victim_violent_file', 'document_certificate_file'
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
