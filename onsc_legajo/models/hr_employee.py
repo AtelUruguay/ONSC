@@ -15,18 +15,21 @@ class HrEmployee(models.Model):
     _name = "hr.employee"
     _inherit = ['hr.employee', 'onsc.partner.common.data', 'model.history', 'mail.thread', 'mail.activity.mixin']
     _history_model = 'hr.employee.history'
-    _history_columns = ['cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2', 'status_civil_date',
-                        'uy_citizenship', 'cv_gender_id', 'gender_date', 'is_cv_gender_public', 'is_afro_descendants',
-                        'afro_descendant_date', 'is_occupational_health_card', 'occupational_health_card_date',
+    _history_columns = ['cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
+                        'status_civil_date', 'uy_citizenship',
+                        'cv_gender_id', 'gender_date', 'is_cv_gender_public',
+                        'is_afro_descendants', 'afro_descendant_date',
+                        'is_occupational_health_card', 'occupational_health_card_date',
                         'medical_aptitude_certificate_date', 'is_public_information_victim_violent',
-                        'allow_content_public', 'situation_disability', 'people_disabilitie', 'certificate_date',
+                        'allow_content_public', 'situation_disability',
+                        'people_disabilitie', 'certificate_date',
                         'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction',
                         'need_other_support', 'emergency_service_id', 'emergency_service_telephone',
-                        'health_department_id', 'health_provider_id', 'blood_type', 'name_contact',
-                        'contact_person_telephone', 'remark_contact_person', 'other_information_official'
+                        'health_department_id', 'health_provider_id', 'name_contact', 'contact_person_telephone',
+                        'remark_contact_person', 'other_information_official', 'disability_date',
+                        'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
+                        'type_support_ids', 'remark_contact_person', 'cv_nro_doc'
                         ]
-    # 'digitized_document_file', 'afro_descendants_file', 'cv_gender_record_file', 'document_identity_file', 'civical_credential_file', 'occupational_health_card_file'
-    # 'relationship_victim_violent_file', 'document_certificate_file'
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
@@ -40,7 +43,7 @@ class HrEmployee(models.Model):
                                              default=lambda self: self.env['res.country.phone'].search(
                                                  [('country_id.code', '=', 'UY')]))
     mobile_phone = fields.Char(string="Teléfono celular")
-    email = fields.Char(string="Email", history=True)
+    email = fields.Char(string="Email")
 
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
@@ -88,16 +91,6 @@ class HrEmployee(models.Model):
             if values.get('afro_descendants_file') and rec.afro_descendants_file:
                 Attachment.create({'name': rec.afro_descendants_filename + " " + str(today),
                                    'datas': rec.afro_descendants_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
-
-            if values.get('occupational_health_card_file') and rec.occupational_health_card_file:
-                Attachment.create({'name': rec.occupational_health_card_filename + " " + str(today),
-                                   'datas': rec.occupational_health_card_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
-
-            if values.get('medical_aptitude_certificate_file') and rec.medical_aptitude_certificate_file:
-                Attachment.create({'name': rec.medical_aptitude_certificate_filename + " " + str(today),
-                                   'datas': rec.medical_aptitude_certificate_file, 'res_model': 'hr.employee',
                                    'res_id': rec.id, 'type': 'binary'})
 
             if values.get('relationship_victim_violent_file') and rec.relationship_victim_violent_file:
