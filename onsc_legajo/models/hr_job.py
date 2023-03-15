@@ -22,13 +22,6 @@ class HrJob(models.Model):
             if record.end_date and record.contract_id.date_end and record.end_date > record.contract_id.date_end:
                 raise ValidationError(_("La fecha hasta está fuera del rango de fechas del contrato"))
 
-    @api.constrains("role_ids", "role_extra_ids")
-    def _check_roles_duplicated(self):
-        for record in self:
-            if record.is_roles_duplicated():
-                raise ValidationError(
-                    _("El rol configurado no puede repetirse para el mismo puesto. Revisar la pestaña de Roles y Roles adicionales"))
-
     @api.depends('contract_id')
     def _compute_department_domain(self):
         UOs = self.env['hr.department']
@@ -85,13 +78,6 @@ class HrJob(models.Model):
     def onchange_contract_id(self):
         self.department_id = False
 
-    def is_roles_duplicated(self, user_role_ids=[]):
-        role_ids = self.role_ids.mapped('user_role_id')
-        roles_extra_ids = self.with_context(active_test=True).role_extra_ids.mapped('user_role_id')
-        if list(set(role_ids) & set(roles_extra_ids)) or list(set(roles_extra_ids) & set(user_role_ids)):
-            return True
-        return False
-
 
 class HrJobRoleLine(models.Model):
     _inherit = 'hr.job.role.line'
@@ -99,27 +85,15 @@ class HrJobRoleLine(models.Model):
     user_role_id_domain = fields.Char(default=lambda self: self._user_role_id_domain(),
                                       compute='_compute_user_role_id_domain')
 
-    def _check_write(self):
-        is_informatica_onsc = self.user_has_groups(
-            'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc')
-        if not is_informatica_onsc and self.filtered(
-                lambda x: x.user_role_id.is_byinciso is False and x.type == 'manual'):
-            raise ValidationError(
-                _("Solo puede modificar las lineas de roles adicionales para las que está habilitado por inciso"))
-
-    def write(self, vals):
-        self._check_write()
-        _fields = ['start_date', 'end_date', 'user_role_id', 'active']
-        ref_tracked_fields = self.fields_get(_fields)
-        initial_values = {}
-        for rec in self:
-            for field in _fields:
-                initial_values[field] = eval('rec.%s' % (field))
-            super(HrJobRoleLine, rec).write(vals)
-            dummy, tracking_value_ids = rec._mail_track(ref_tracked_fields, initial_values)
-            rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
-                                    tracking_value_ids=tracking_value_ids)
-        return True
+    @api.constrains("start_date", "end_date", "job_id", "active", "user_role_id")
+    def _check_roles_duplicated(self):
+        for record in self:
+            job_roles = record.job_id.role_ids
+            job_roles |= record.job_id.role_extra_ids
+            job_roles = job_roles.filtered(lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
+            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date)) or (x.end_date and x.end_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date))):
+                raise ValidationError(
+                    _("El rol configurado no puede repetirse para el mismo puesto en el mismo periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
 
     @api.constrains("end_date")
     def _check_end_date(self):
@@ -164,3 +138,25 @@ class HrJobRoleLine(models.Model):
             args = [('is_byinciso', '=', True)]
         roles = self.env['res.users.role'].search(args)
         return json.dumps([('id', 'in', roles.ids)])
+
+    def _check_write(self):
+        is_informatica_onsc = self.user_has_groups(
+            'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc')
+        if not is_informatica_onsc and self.filtered(
+                lambda x: x.user_role_id.is_byinciso is False and x.type == 'manual'):
+            raise ValidationError(
+                _("Solo puede modificar las lineas de roles adicionales para las que está habilitado por inciso"))
+
+    def write(self, vals):
+        self._check_write()
+        _fields = ['start_date', 'end_date', 'user_role_id', 'active']
+        ref_tracked_fields = self.fields_get(_fields)
+        initial_values = {}
+        for rec in self:
+            for field in _fields:
+                initial_values[field] = eval('rec.%s' % (field))
+            super(HrJobRoleLine, rec).write(vals)
+            dummy, tracking_value_ids = rec._mail_track(ref_tracked_fields, initial_values)
+            rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
+                                    tracking_value_ids=tracking_value_ids)
+        return True

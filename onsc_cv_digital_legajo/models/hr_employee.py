@@ -14,7 +14,7 @@ class HrEmployee(models.Model):
     drivers_license_ids = fields.One2many("onsc.legajo.driver.license",
                                           inverse_name="employee_id",
                                           string="Licencias de conducir",
-                                          copy=True, history=True)
+                                          copy=True, history=True, history_fields="validation_date,category_id")
 
     # RAZA
 
@@ -237,11 +237,6 @@ class ONSCLegajoDriverLicense(models.Model):
     category_id = fields.Many2one("onsc.cv.drivers.license.categories", "Categoría", required=True)
     license_file = fields.Binary("Documento digitalizado licencia de conducir")
     license_filename = fields.Char('Nombre del documento digital')
-
-    @api.model
-    def create(self, values):
-        record = super(ONSCLegajoDriverLicense, self).create(values)
-        return record
 
 
 class ONSCCVLegajoInformationContact(models.Model):

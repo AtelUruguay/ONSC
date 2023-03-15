@@ -43,7 +43,8 @@ class ONSCCVDigital(models.Model):
                     [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True])]):
                 for node_form in doc.xpath("//%s" % (view_type)):
                     node_form.set('create', '0')
-            if self.env.user.has_group('onsc_cv_digital.group_manager_cv'):
+            if self.env.user.has_group('onsc_cv_digital.group_manager_cv') and not (
+                    self.env.user.has_group('onsc_cv_digital.group_user_cv') and self.env.context.get('user_cv')):
                 for node_form in doc.xpath("//%s" % (view_type)):
                     node_form.set('edit', '0')
         res['arch'] = etree.tostring(doc)
@@ -622,12 +623,14 @@ class ONSCCVDigital(models.Model):
         return action
 
     def _action_open_user_cv(self):
+        ctx = self.env.context.copy()
+        ctx['user_cv'] = True
         vals = {
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': self._name,
             'name': 'Curriculum vitae',
-            'context': self.env.context,
+            'context': ctx,
             "target": "main",
         }
         if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
