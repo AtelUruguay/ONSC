@@ -26,7 +26,7 @@ class HrEmployee(models.Model):
                         'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction',
                         'need_other_support', 'emergency_service_id', 'emergency_service_telephone',
                         'health_department_id', 'health_provider_id', 'name_contact', 'contact_person_telephone',
-                        'remark_contact_person', 'other_information_official', 'disability_date',
+                        'remark_contact_person', 'other_information_official', 'disability_date', 'cv_first_race_id',
                         'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
                         'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2', 'is_cv_race_public'
                         ]
