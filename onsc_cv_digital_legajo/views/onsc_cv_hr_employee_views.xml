@@ -102,19 +102,19 @@
                                 <field name="cv_gender_record_filename" invisible="1"/>
                             </group>
                             <group string="Identidad étnico-racial">
-                                <field name="cv_race_ids" widget="many2many_tags"/>
+                                <field name="cv_race_ids" widget="many2many_tags" readonly="1"/>
                                 <field name="cv_race2"
-                                       attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)]}"/>
+                                       attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)]}" readonly="1"/>
                                 <field name="cv_first_race_id"
-                                       attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)]}"/>
-                                <field name="is_cv_race_public"/>
+                                       attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)]}" readonly="1"/>
+                                <field name="is_cv_race_public" readonly="1"/>
                                 <field name="is_cv_race_option_other_enable" invisible="1"/>
                                 <field name="is_multiple_cv_race_selected" invisible="1"/>
-                                <field name="is_afro_descendants"/>
+                                <field name="is_afro_descendants" readonly="1"/>
                                 <field name="afro_descendants_file"
                                        filename="afro_descendants_filename"
-                                       options="{'accepted_file_extensions': '.pdf'}"/>
-                                <field name="afro_descendants_filename" invisible="1"/>
+                                       options="{'accepted_file_extensions': '.pdf'}" readonly="1"/>
+                                <field name="afro_descendants_filename" invisible="1" readonly="1"/>
                                 <field name="afro_descendant_date" readonly="1"/>
                             </group>
                         </group>

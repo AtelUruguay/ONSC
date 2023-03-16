@@ -28,7 +28,7 @@ class HrEmployee(models.Model):
                         'health_department_id', 'health_provider_id', 'name_contact', 'contact_person_telephone',
                         'remark_contact_person', 'other_information_official', 'disability_date',
                         'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
-                        'type_support_ids', 'remark_contact_person', 'cv_nro_doc'
+                        'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2', 'is_cv_race_public'
                         ]
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
@@ -74,44 +74,52 @@ class HrEmployee(models.Model):
             today = fields.Date.today()
             Attachment = self.env['ir.attachment']
             if values.get('document_identity_file') and rec.document_identity_file:
-                Attachment.create({'name': rec.document_identity_filename + " " + str(today),
-                                   'datas': rec.document_identity_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
+                Attachment.create(
+                    {'name': rec.document_identity_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.document_identity_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
 
             if values.get('civical_credential_file') and rec.civical_credential_file:
-                Attachment.create({'name': rec.civical_credential_filename + " " + str(today),
-                                   'datas': rec.civical_credential_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
+                Attachment.create(
+                    {'name': rec.civical_credential_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.civical_credential_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
 
             if values.get('cv_gender_record_file') and rec.cv_gender_record_file:
-                Attachment.create({'name': rec.cv_gender_record_filename + " " + str(today),
-                                   'datas': rec.cv_gender_record_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
+                Attachment.create(
+                    {'name': rec.cv_gender_record_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.cv_gender_record_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
 
             if values.get('afro_descendants_file') and rec.afro_descendants_file:
-                Attachment.create({'name': rec.afro_descendants_filename + " " + str(today),
-                                   'datas': rec.afro_descendants_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
+                Attachment.create(
+                    {'name': rec.afro_descendants_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.afro_descendants_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
 
             if values.get('relationship_victim_violent_file') and rec.relationship_victim_violent_file:
-                Attachment.create({'name': rec.relationship_victim_violent_filename + " " + str(today),
-                                   'datas': rec.relationship_victim_violent_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
+                Attachment.create(
+                    {'name': rec.relationship_victim_violent_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.relationship_victim_violent_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
 
             if values.get('address_receipt_file') and rec.address_receipt_file:
-                Attachment.create({'name': rec.address_receipt_filename + " " + str(today),
-                                   'datas': rec.address_receipt_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
+                Attachment.create(
+                    {'name': rec.address_receipt_file_name.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.address_receipt_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
 
             if values.get('document_certificate_file') and rec.document_certificate_file:
-                Attachment.create({'name': rec.document_certificate_filename + " " + str(today),
-                                   'datas': rec.document_certificate_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
+                Attachment.create(
+                    {'name': rec.document_certificate_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.document_certificate_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
 
             if values.get('digitized_document_file') and rec.digitized_document_file:
-                Attachment.create({'name': rec.digitized_document_filename + " " + str(today),
-                                   'datas': rec.digitized_document_file, 'res_model': 'hr.employee',
-                                   'res_id': rec.id, 'type': 'binary'})
+                Attachment.create(
+                    {'name': rec.digitized_document_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.digitized_document_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
 
     def write(self, values):
         self._set_binary_history(values)
