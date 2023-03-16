@@ -2,7 +2,7 @@
 import json
 
 from lxml import etree
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 
 class HrContract(models.Model):
@@ -143,6 +143,17 @@ class HrContract(models.Model):
     def get_history_record_action(self, history_id, res_id):
         return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
             'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
+
+    def button_update_occupation(self):
+        return {
+            'name': _('Actualizar ocupación'),
+            'view_mode': 'form',
+            'res_model': 'onsc.legajo.update.occupation.wizard',
+            'target': 'new',
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'context': self._context,
+        }
 
 
 class HrContractHistory(models.Model):

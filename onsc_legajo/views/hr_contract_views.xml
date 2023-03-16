@@ -6,8 +6,8 @@
         <field name="arch" type="xml">
             <form string="Current Contract">
                 <header>
-                    <field name="legajo_state" widget="statusbar"
-                           />
+                    <button name="button_update_occupation" string="Actualizar ocupación" class="oe_highlight"/>
+                    <field name="legajo_state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <div class="oe_title pr-0" name="title">
@@ -203,6 +203,7 @@
         <field name="name">Contratos</field>
         <field name="res_model">hr.contract</field>
         <field name="view_mode">tree,form</field>
+        <field name="context">{'is_legajo': True, 'create': False, 'edit': False}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_hr_contract_view_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_hr_contract_view_form')})]"/>
@@ -217,6 +218,7 @@
         <field name="name">Contrato</field>
         <field name="res_model">hr.contract</field>
         <field name="view_mode">form</field>
+        <field name="context">{'is_legajo': True, 'create': False, 'edit': False}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_hr_contract_view_form')})]"/>
     </record>
