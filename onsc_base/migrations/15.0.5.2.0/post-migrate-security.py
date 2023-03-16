@@ -5,8 +5,8 @@ from odoo import api, SUPERUSER_ID
 def migrate(cr, version):
     env = api.Environment(cr, SUPERUSER_ID, {})
     try:
-        role_base = env.ref('__import__.ONSC_Rol_Base')
-        role_user_cv = env.ref('__import__.ONSC_Usuario_CV')
+        role_base = env.ref('onsc_base.res_user_role_base_user')
+        role_user_cv = env.ref('onsc_cv_digital.res_user_role_user_cv')
         list_users = env.ref('base.user_admin')
         list_users |= env.ref('base.public_user')
         list_users |= env.ref('base.user_root')

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="res_user_role_base_user" model="res.users.role">
+        <field name="name">Rol Base</field>
+        <field name="implied_ids" eval="[(4, ref('onsc_base.group_base_onsc'))]"/>
+    </record>
+</odoo>
