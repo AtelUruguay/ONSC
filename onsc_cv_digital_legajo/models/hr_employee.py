@@ -55,7 +55,8 @@ class HrEmployee(models.Model):
 
     # Datos del legajo
     information_contact_ids = fields.One2many('onsc.cv.legajo.information.contact', 'employee_id',
-                                              string=u'Información de Contacto')
+                                              string=u'Información de Contacto', history=True,
+                                              history_fields="contact_person_telephone,remark_contact_person")
     last_modification_date = fields.Date(string=u'Fecha última modificación')
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
