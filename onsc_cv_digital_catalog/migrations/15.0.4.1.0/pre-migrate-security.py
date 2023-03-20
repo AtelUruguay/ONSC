@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import api, SUPERUSER_ID
 
+
 def migrate(cr, version):
     env = api.Environment(cr, SUPERUSER_ID, {})
     env.ref('onsc_cv_digital.group_user_cv').write({

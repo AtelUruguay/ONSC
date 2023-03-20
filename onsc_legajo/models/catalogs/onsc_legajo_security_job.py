@@ -30,12 +30,14 @@ class ONSCLegajoSecurityJob(models.Model):
         return res
 
     def _user_role_ids_domain(self):
-        return json.dumps([('id', 'not in', self.env.ref('base.default_user').with_context(active_test=False).role_line_ids.mapped('role_id').ids)])
+        return json.dumps([('id', 'not in',
+                            self.env.ref('base.default_user').with_context(active_test=False).role_line_ids.mapped(
+                                'role_id').ids)])
 
     def update_jobs_security(self):
         Job = self.env['hr.job']
         for record in self:
-            for job in Job.search([('security_job_id', '=',record.id)]):
+            for job in Job.search([('security_job_id', '=', record.id)]):
                 try:
                     new_lines = [(5,)]
                     for user_role_id in record.user_role_ids:
