@@ -9,8 +9,8 @@ from odoo.exceptions import ValidationError
 _logger = logging.getLogger(__name__)
 
 
-class ONSCCVDigitalVacantes(models.Model):
-    _name = 'onsc.cv.digital.vacantes'
+class ONSCCVDigitalVacante(models.Model):
+    _name = 'onsc.cv.digital.vacante'
     _description = 'Vacantes'
     _rec_name = 'nroPuesto'
 

@@ -30,7 +30,7 @@ class ONSCLegajoAltaVL(models.Model):
     cv_address_block = fields.Char(related='partner_id.cv_address_block', string="Manzana")
     cv_address_sandlot = fields.Char(related='partner_id.cv_address_sandlot', string="Solar")
     employee_id = fields.Many2one('hr.employee', 'Employee', compute="_compute_employee_id", store=True)
-    vacante_ids = fields.One2many('onsc.cv.digital.vacantes', 'alta_vl_id', string="Vacantes")
+    vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
     error_message_synchronization = fields.Char(string="Mensaje de Error")
     has_error_synchronization = fields.Boolean()
     see_more = fields.Boolean()
@@ -43,7 +43,6 @@ class ONSCLegajoAltaVL(models.Model):
             pass
 
     @api.depends('cv_nro_doc')
-    @api.onchange('cv_nro_doc')
     def _compute_cv_digital_id(self):
         CVDigital = self.env['onsc.cv.digital'].sudo()
         for record in self:
@@ -56,10 +55,33 @@ class ONSCLegajoAltaVL(models.Model):
                 ('cv_emissor_country_id', '=', country_id.id),
                 ('cv_document_type_id', '=', document_type_id.id),
             ], limit=1)
-            record.button_get_info_fromcv()
+            vals = {
+                'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
+                'cv_second_name': record.cv_digital_id.partner_id.cv_second_name,
+                'cv_last_name_1': record.cv_digital_id.partner_id.cv_last_name_1,
+                'cv_last_name_2': record.cv_digital_id.partner_id.cv_last_name_2,
+                'cv_birthdate': record.cv_digital_id.partner_id.cv_birthdate,
+                'cv_sex': record.cv_digital_id.cv_sex,
+                'cv_emissor_country_id': record.cv_digital_id.partner_id.cv_emissor_country_id.id,
+                'cv_document_type_id': record.cv_digital_id.partner_id.cv_document_type_id.id,
+                'country_of_birth_id': record.cv_digital_id.country_of_birth_id.id,
+                'marital_status_id': record.cv_digital_id.marital_status_id.id,
+                'uy_citizenship': record.cv_digital_id.uy_citizenship,
+                'crendencial_serie': record.cv_digital_id.crendencial_serie,
+                'credential_number': record.cv_digital_id.credential_number,
+                'personal_phone': record.cv_digital_id.personal_phone,
+                'mobile_phone': record.cv_digital_id.mobile_phone,
+                'email': record.cv_digital_id.email,
+                'cv_address_street_id': record.cv_digital_id.cv_address_street_id.id,
+                'cv_address_nro_door': record.cv_digital_id.cv_address_nro_door,
+                'cv_address_apto': record.cv_digital_id.cv_address_apto,
+                'cv_address_zip': record.cv_digital_id.cv_address_zip,
+                'cv_address_is_cv_bis': record.cv_digital_id.cv_address_is_cv_bis,
+                'cv_address_place': record.cv_digital_id.cv_address_place,
+            }
+            record.suspend_security().write(vals)
 
     @api.depends('cv_nro_doc')
-    @api.onchange('cv_nro_doc')
     def _compute_employee_id(self):
         Employee = self.env['hr.employee'].sudo()
         for record in self:

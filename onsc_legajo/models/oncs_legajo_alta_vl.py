@@ -4,6 +4,7 @@ import json
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+from odoo.addons.onsc_legajo.models.hr_employee import calc_full_name
 
 STATES = [
     ('borrador', 'Borrador'),
@@ -14,14 +15,6 @@ STATES = [
     ('gafi_ok', 'GAFI OK'),
     ('gafi_error', 'GAFI Error'),
 ]
-
-
-def calc_full_name(cv_first_name, cv_second_name, cv_last_name_1, cv_last_name_2):
-    name_values = [cv_first_name,
-                   cv_second_name,
-                   cv_last_name_1,
-                   cv_last_name_2]
-    return ' '.join([x for x in name_values if x])
 
 
 class ONSCLegajoAltaVL(models.Model):
@@ -150,11 +143,11 @@ class ONSCLegajoAltaVL(models.Model):
             if not record.attached_document_discharge_ids:
                 raise ValidationError(_("Debe haber al menos un documento adjunto"))
 
-    # @api.constrains("office_id")
-    # def _check_office(self):
-    #     for record in self:
-    #         if not record.office_id:
-    #             raise ValidationError(_("Para esta combinación de Inciso-UE-Programa-Proyecto no hay oficinas"))
+    @api.constrains("office_id")
+    def _check_office(self):
+        for record in self:
+            if not record.office_id:
+                raise ValidationError(_("Para esta combinación de Inciso-UE-Programa-Proyecto no hay oficinas"))
 
     @api.constrains("date_start")
     def _check_date(self):
