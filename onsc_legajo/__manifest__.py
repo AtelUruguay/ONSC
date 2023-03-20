@@ -39,6 +39,7 @@ ONSC - Legajo
         'views/catalogs/onsc_legajo_security_job_views.xml',
         'views/catalogs/onsc_legajo_base_views.xml',
         'views/hr_employee_views.xml',
+        'views/onsc_legajo_alta_vl_views.xml',
         'views/res_user_role_views.xml',
         'views/hr_job_views.xml',
         'views/hr_contract_views.xml',

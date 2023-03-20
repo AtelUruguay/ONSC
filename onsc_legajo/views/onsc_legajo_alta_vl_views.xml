@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="onsc_legajo_alta_vl_search" model="ir.ui.view">
+            <field name="name">onsc.legajo.alta.vl.search</field>
+            <field name="model">onsc.legajo.alta.vl</field>
+            <field name="arch" type="xml">
+                <search string="Altas VL">
+                    <filter string="Borrador" name="filter_altas_draft"
+                            domain="[('state','=','borrador')]"/>
+                    <filter string="Error SGH" name="filter_altas_error_sgh"
+                            domain="[('state','=','error_sgh')]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_alta_vl_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.alta.vl.tree</field>
+            <field name="model">onsc.legajo.alta.vl</field>
+            <field name="arch" type="xml">
+                <tree string="Alta VL">
+                    <field name="full_name"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_alta_vl_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.alta.vl.form</field>
+            <field name="model">onsc.legajo.alta.vl</field>
+            <field name="arch" type="xml">
+                <form string="Alta VL">
+                    <header>
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <div name="first_div" class="oe_title">
+                            <h1>
+                                <field name="full_name"/>
+                            </h1>
+                        </div>
+                        <group>
+                            <group>
+                                <field name="cv_nro_doc" string="C.I." required="1" />
+                            </group>
+                            <group>
+                                <field name="cv_emissor_country_id" string="País" readonly="1"/>
+                                <field name="cv_document_type_id" readonly="1" />
+                            </group>
+                        </group>
+                        <group name="personal">
+                            <group name="personal_left">
+                                <field name="cv_last_name_1" readonly="1" string="Apellido 1"/>
+                                <field name="cv_first_name" readonly="1" string="Nombre 1"/>
+                            </group>
+                            <group name="personal_right">
+                                <field name="cv_last_name_2" readonly="1" string="Apellido 2"/>
+                                <field name="cv_second_name" readonly="1" string="Nombre 2"/>
+                            </group>
+                        </group>
+                        <group name="group2">
+                            <group name="group2_left">
+                                <field name="date_start" required="1"/>
+                                <field name="inciso_readonly" invisible="1"/>
+                                <field name="inciso_id" attrs="{'readonly': [('inciso_readonly', '=', True)]}" required="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+
+                                <field name="operating_unit_readonly" invisible="1"/>
+                                <field name="operating_unit_id_domain" invisible="1"/>
+                                <field name="operating_unit_id" attrs="{'readonly': [('operating_unit_readonly', '=', True)]}" domain="operating_unit_id_domain" required="1"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="reserva_sgh"/>
+                            </group>
+                            <group name="group2_right">
+                                <field name="income_mechanism_id" required="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="is_call_number_required" invisible="1"/>
+                                <field name="call_number"  attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
+                                <field name="programa" attrs="{'invisible': [('reserva_sgh', '=', True)], 'required':  [('reserva_sgh', '=', False)]}"/>
+                                <field name="proyecto" attrs="{'invisible': [('reserva_sgh', '=', True)], 'required':  [('reserva_sgh', '=', False)]}"/>
+                            </group>
+                        </group>
+                        <field name="es_presupuestado" invisible="1"/>
+                        <field name="indVencimiento" invisible="1"/>
+                        <group name="group3">
+                            <group name="group3_left">
+                                <field name="regime_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}" attrs="{'invisible': [('reserva_sgh', '=', True)], 'required':  [('reserva_sgh', '=', False)]}" />
+                                <field name="descriptor1_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}" attrs="{'invisible': [('reserva_sgh', '=', True)], 'required':  [('reserva_sgh', '=', False)]}"/>
+                                <field name="descriptor2_id"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}" attrs="{'invisible': [('reserva_sgh', '=', True)], 'required':  [('reserva_sgh', '=', False)]}"/>
+                                <field name="nroPuesto" attrs="{'invisible': [('reserva_sgh', '=', False)], 'required':  [('reserva_sgh', '=', True)]}"/>
+                                <field name="nroPlaza" attrs="{'invisible': [('reserva_sgh', '=', False)], 'required':  [('reserva_sgh', '=', True)]}"/>
+                            </group>
+                            <group name="group3_right">
+                                <field name="descriptor3_id" attrs="{'invisible': ['|', ('es_presupuestado', '=', True), ('reserva_sgh', '=', True)]}"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor4_id" attrs="{'invisible': ['|', ('es_presupuestado', '=', True), ('reserva_sgh', '=', True)]}"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            </group>
+                        </group>
+                         <group name="group4">
+                            <group name="group4_left">
+                            </group>
+                            <group name="group4_right">
+                            </group>
+                        </group>
+                        <group name="group5" attrs="{'invisible': [('es_presupuestado', '=', False)]}">
+
+                        </group>
+                        <group name="group6">
+                            <group name="group6_left">
+                                <field name="department_id_domain" invisible="1"/>
+                                <field name="department_id" domain="department_id_domain" required="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="occupation_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            </group>
+                            <group name="group6_right">
+                                <field name="security_job_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}" />
+                                <field name="responsable_uo"/>
+                            </group>
+                        </group>
+                        <group name="group7">
+                            <group name="group7_left">
+                                <field name="date_income_public_administration" required="1"/>
+                                <field name="inactivity_years" />
+                            </group>
+                            <group name="group7_right">
+                                <field name="contract_expiration_date" attrs="{'required': [('indVencimiento', '=', True)]}"/>
+                                <field name="graduation_date"/>
+                            </group>
+                        </group>
+                        <group name="motivo" string="Ingreso de motivo">
+                             <group name="motivo_left">
+                                <field name="reason_discharge" colspan="4"/>
+                                <field name="norm_code_discharge_id" colspan="3" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="norm_number_discharge" colspan="2"/>
+                                <field name="norm_year_discharge" colspan="1"/>
+                                <field name="norm_article_discharge" colspan="2"/>
+                                <div class="alert alert-info" colspan="6"
+                                     role="alert"
+                                     style="margin-bottom:0px;">
+                                     <p><i class="fa fa-info-circle" role="alert"/>
+                                         En caso de no encontrar la norma de referencia para el movimiento, comunicarse con el
+                                         área de puesto de trabajos de CGN al siguiente correo  <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
+                                     </p>
+                                </div>
+                             </group>
+                            <group name="motivo_right">
+                                <field name="resolution_description_discharge" colspan="4" required="1"/>
+                                <field name="resolution_date_discharge" colspan="4"/>
+                                <field name="resolution_type_discharge" colspan="4"/>
+                            </group>
+                        </group>
+                        <group name="documentacion" string="Documentación">
+                            <field name="attached_document_discharge_ids" nolabel="1">
+                                <tree editable="top">
+                                    <field name="name" required="1"/>
+                                    <field name="document_type_id" required="1"/>
+                                    <field name="document_file" required="1" filename="document_file_name"/>
+                                    <field name="document_file_name" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group name="adicional" string="Información Adicional">
+                            <field name="additional_information_discharge" nolabel="1" placeholder="Información Adicional"/>
+                        </group>
+                        <notebook>
+                        </notebook>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id='onsc_legajo_alta_vl_action' model='ir.actions.act_window'>
+            <field name="name">Altas Vínculo Laboral</field>
+            <field name="res_model">onsc.legajo.alta.vl</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'is_from_menu': True}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear una nueva Alta de VL
+                </p>
+            </field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_alta_vl_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_alta_vl_form')})]"/>
+        </record>
+    </data>
+</odoo>
