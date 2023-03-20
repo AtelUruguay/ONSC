@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Base',
-    'version': '15.0.5.1.0',
+    'version': '15.0.5.2.1',
     'summary': 'ONSC - Base',
     'sequence': 11,
     'description': """
@@ -9,10 +9,11 @@ ONSC - Base
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['base', 'web_responsive', 'website', 'auth_iduy_primary_login'],
+    'depends': ['base', 'web_responsive', 'website', 'auth_iduy_primary_login', 'base_user_role'],
     'data': [
         'security/onsc_base_security.xml',
         'security/ir.model.access.csv',
+        'data/res_user_role_data.xml',
         'views/onsc_log_views.xml'
     ],
     'demo': [],

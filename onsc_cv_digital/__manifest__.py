@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital',
-    'version': '15.0.8.3.2',
+    'version': '15.0.8.3.3',
     'summary': 'ONSC CV Digital',
     'sequence': 10,
     'description': """
@@ -37,6 +37,7 @@ ONSC CV Digital
         'data/onsc_cv_roll_event_data.xml',
         'data/onsc_cv_report_config_data.xml',
         'data/report_paperformat_data.xml',
+        'data/res_user_role_data.xml',
         'wizard/views/onsc_cv_reject_wizard_views.xml',
         'wizard/views/onsc_cv_report_wizard_views.xml',
         'views/auth_oauth_templates.xml',

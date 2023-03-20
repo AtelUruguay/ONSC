@@ -7,17 +7,22 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 class HrEmployee(models.Model):
     _name = "hr.employee"
-    _inherit = ['hr.employee', 'onsc.partner.common.data', 'model.history']
+    _inherit = ['hr.employee', 'onsc.partner.common.data', 'model.history', 'mail.thread', 'mail.activity.mixin']
     _history_model = 'hr.employee.history'
-    _history_columns = ['cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2', 'status_civil_date',
-                        'uy_citizenship', 'cv_gender_id', 'gender_date', 'is_cv_gender_public', 'is_afro_descendants',
-                        'afro_descendant_date', 'is_occupational_health_card', 'occupational_health_card_date',
+    _history_columns = ['cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
+                        'status_civil_date', 'uy_citizenship',
+                        'cv_gender_id', 'gender_date', 'is_cv_gender_public',
+                        'is_afro_descendants', 'afro_descendant_date',
+                        'is_occupational_health_card', 'occupational_health_card_date',
                         'medical_aptitude_certificate_date', 'is_public_information_victim_violent',
-                        'allow_content_public', 'situation_disability', 'people_disabilitie', 'certificate_date',
+                        'allow_content_public', 'situation_disability',
+                        'people_disabilitie', 'certificate_date',
                         'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction',
                         'need_other_support', 'emergency_service_id', 'emergency_service_telephone',
-                        'health_department_id', 'health_provider_id', 'blood_type', 'name_contact',
-                        'contact_person_telephone', 'remark_contact_person', 'other_information_official'
+                        'health_department_id', 'health_provider_id', 'name_contact', 'contact_person_telephone',
+                        'remark_contact_person', 'other_information_official', 'disability_date', 'cv_first_race_id',
+                        'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
+                        'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2', 'is_cv_race_public'
                         ]
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
@@ -32,7 +37,7 @@ class HrEmployee(models.Model):
                                              default=lambda self: self.env['res.country.phone'].search(
                                                  [('country_id.code', '=', 'UY')]))
     mobile_phone = fields.Char(string="Teléfono celular")
-    email = fields.Char(string="Email", history=True)
+    email = fields.Char(string="Email")
 
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
@@ -58,7 +63,60 @@ class HrEmployee(models.Model):
         else:
             return super(HrEmployee, self).create(values)
 
+    def _set_binary_history(self, values):
+        for rec in self:
+            today = fields.Date.today()
+            Attachment = self.env['ir.attachment']
+            if values.get('document_identity_file') and rec.document_identity_file:
+                Attachment.create(
+                    {'name': rec.document_identity_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.document_identity_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
+
+            if values.get('civical_credential_file') and rec.civical_credential_file:
+                Attachment.create(
+                    {'name': rec.civical_credential_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.civical_credential_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
+
+            if values.get('cv_gender_record_file') and rec.cv_gender_record_file:
+                Attachment.create(
+                    {'name': rec.cv_gender_record_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.cv_gender_record_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
+
+            if values.get('afro_descendants_file') and rec.afro_descendants_file:
+                Attachment.create(
+                    {'name': rec.afro_descendants_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.afro_descendants_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
+
+            if values.get('relationship_victim_violent_file') and rec.relationship_victim_violent_file:
+                Attachment.create(
+                    {'name': rec.relationship_victim_violent_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.relationship_victim_violent_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
+
+            if values.get('address_receipt_file') and rec.address_receipt_file:
+                Attachment.create(
+                    {'name': rec.address_receipt_file_name.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.address_receipt_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
+
+            if values.get('document_certificate_file') and rec.document_certificate_file:
+                Attachment.create(
+                    {'name': rec.document_certificate_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.document_certificate_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
+
+            if values.get('digitized_document_file') and rec.digitized_document_file:
+                Attachment.create(
+                    {'name': rec.digitized_document_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
+                     'datas': rec.digitized_document_file, 'res_model': 'hr.employee',
+                     'res_id': rec.id, 'type': 'binary'})
+
     def write(self, values):
+        self._set_binary_history(values)
         if self.env.context.get('is_legajo'):
             res = super(HrEmployee, self.suspend_security()).write(values)
         else:

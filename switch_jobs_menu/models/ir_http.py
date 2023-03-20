@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import api, http, models
+from odoo import models
 from odoo.http import request
 
 
