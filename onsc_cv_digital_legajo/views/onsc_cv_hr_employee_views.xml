@@ -6,9 +6,9 @@
             <field name="model">hr.employee</field>
             <field name="inherit_id" ref="onsc_legajo.onsc_legajo_hr_employee_form"/>
             <field name="arch" type="xml">
-                <header position="inside">
-                    <button name="button_get_info_fromcv" type="object" string="Sincronizar con CV"/>
-                </header>
+<!--                <header position="inside">-->
+<!--                    <button name="button_get_info_fromcv" type="object" string="Sincronizar con CV"/>-->
+<!--                </header>-->
                 <field name="photo_updated_date" position="after">
                     <field name="last_modification_date" readonly="1"/>
                     <field name="cv_digital_id" invisible="1"/>

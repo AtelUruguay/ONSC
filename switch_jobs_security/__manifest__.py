@@ -10,7 +10,7 @@ Switch roles
 Assigns to the logged user the roles of the selected job position.
     """,
     'category': 'Tools',
-    'depends': ['web', 'auth_oauth', 'website', 'switch_jobs_menu', 'base_user_role'],
+    'depends': ['web', 'auth_oauth', 'website', 'switch_jobs_menu', 'base_user_role', 'hr_contract'],
     'data': [],
     'demo': [],
     'installable': True,
