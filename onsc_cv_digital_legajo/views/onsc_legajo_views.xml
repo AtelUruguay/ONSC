@@ -20,6 +20,19 @@
                         </div>
                         <field name="advanced_formation_ids"/>
                     </page>
+                    <page name="formation" string="Cursos y certificados">
+                        <div>
+                            <h4>Cursos, talleres y otras capacitaciones</h4>
+                        </div>
+                        <field name="course_ids"
+                               context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
+                        <br/>
+                        <div>
+                            <h4>Certificados</h4>
+                        </div>
+                        <field name="certificate_ids"
+                               context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
+                    </page>
                 </xpath>
             </field>
     </record>

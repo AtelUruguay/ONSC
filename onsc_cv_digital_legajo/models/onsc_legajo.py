@@ -13,9 +13,27 @@ class ONSCLegajo(models.Model):
     # FORMACION
     basic_formation_ids = fields.One2many(
         'onsc.cv.basic.formation', string=u'Formación básica',
-        domain="[('documentary_validation_state','=','validated')]",
-        related='cv_digital_id.basic_formation_ids')
+        compute='_compute_formations'
+    )
     advanced_formation_ids = fields.One2many(
         'onsc.cv.advanced.formation', string=u'Formación avanzada',
-        domain="[('documentary_validation_state','=','validated')]",
-        related='cv_digital_id.advanced_formation_ids')
+        compute='_compute_formations')
+
+    # CURSOS Y CERTIFICADOS
+    course_ids = fields.One2many(
+        'onsc.cv.course.certificate', string="Cursos",
+        compute='_compute_formations')
+    certificate_ids = fields.One2many(
+        'onsc.cv.course.certificate', string="Certificados",
+        compute='_compute_formations')
+
+    def _compute_formations(self):
+        for record in self:
+            record.advanced_formation_ids = record.cv_digital_id.advanced_formation_ids.filtered(
+                lambda x: x.documentary_validation_state == 'validated')
+            record.basic_formation_ids = record.cv_digital_id.basic_formation_ids.filtered(
+                lambda x: x.documentary_validation_state == 'validated')
+            record.course_ids = record.cv_digital_id.course_ids.filtered(
+                lambda x: x.documentary_validation_state == 'validated')
+            record.certificate_ids = record.cv_digital_id.certificate_ids.filtered(
+                lambda x: x.documentary_validation_state == 'validated')
