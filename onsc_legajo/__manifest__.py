@@ -43,6 +43,7 @@ ONSC - Legajo
         'views/hr_job_views.xml',
         'views/hr_contract_views.xml',
         'views/onsc_legajo_menuitems.xml',
+        'views/ir_attachment_view.xml',
     ],
     'demo': [],
     'installable': True,
