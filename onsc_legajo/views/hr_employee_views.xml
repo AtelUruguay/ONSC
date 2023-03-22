@@ -35,7 +35,7 @@
                         <div class="oe_button_box" name="button_box">
                             <button name="action_view_attachment" type="object" class="oe_stat_button"
                                     icon="fa-folder-open-o">
-                                <field name="attachment_count" widget="statinfo" string="Historicos de Archivos"/>
+                                <field name="attachment_count" widget="statinfo" string="Históricos de archivos"/>
                             </button>
                         </div>
                         <field name="avatar_128" invisible="1"/>
