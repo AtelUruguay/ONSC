@@ -6,7 +6,8 @@
         <field name="arch" type="xml">
             <form string="Current Contract">
                 <header>
-                    <button name="button_update_occupation" string="Actualizar ocupación" class="oe_highlight"/>
+                    <button name="button_update_occupation" string="Actualizar ocupación" class="oe_highlight"
+                        groups="onsc_legajo.group_legajo_editar_ocupacion_contrato"/>
                     <field name="legajo_state" widget="statusbar"/>
                 </header>
                 <sheet>
