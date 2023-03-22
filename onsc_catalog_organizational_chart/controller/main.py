@@ -91,7 +91,7 @@ class EmployeeChart(http.Controller):
 
         for node in nodes_by_level.filtered(
                 lambda node: node.function_nature not in (
-                'comite', 'commission_project', 'adviser', 'program')):
+                        'comite', 'commission_project', 'adviser', 'program')):
             last_parent = node.parent_id.id
             if node.hierarchical_level_order - node.parent_id.hierarchical_level_order != 1:
                 for level_order in range(
@@ -140,6 +140,7 @@ class EmployeeChart(http.Controller):
             'hierarchy': ou_id.hierarchical_level_id.name or '',
             'responsible': ou_id.manager_id.name or '',
             'function_nature': dict(ou_id._fields['function_nature'].selection).get(ou_id.function_nature) or '',
+            'observations': ou_id.note or ''
         }
 
     @http.route('/get/organizational/level', type='json', auth='user', method=['POST'], csrf=False)
@@ -193,7 +194,8 @@ class EmployeeChart(http.Controller):
             #         level.order >= root_node.hierarchical_level_order)
             # else:
             levels_result.extend(
-                (level.name, [level.order - 1]) for level in levels if (level.name, [level.order - 1]) not in levels_result)
+                (level.name, [level.order - 1]) for level in levels if
+                (level.name, [level.order - 1]) not in levels_result)
             items, responsible = self.get_hierarchy_trees(root_node, nodes_parent, form_id, responsible)
             items_joined.extend(items)
         return {'levels': levels_result, 'items': items_joined,
