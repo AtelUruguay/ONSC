@@ -7,7 +7,7 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 class HrEmployee(models.Model):
     _name = "hr.employee"
-    _inherit = ['hr.employee', 'onsc.partner.common.data', 'model.history', 'mail.thread', 'mail.activity.mixin']
+    _inherit = ['hr.employee', 'onsc.partner.common.data', 'model.history']
     _history_model = 'hr.employee.history'
     _history_columns = ['cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
                         'status_civil_date', 'uy_citizenship',
@@ -39,6 +39,9 @@ class HrEmployee(models.Model):
     mobile_phone = fields.Char(string="Teléfono celular")
     email = fields.Char(string="Email")
 
+    attachment_ids = fields.One2many('ir.attachment', compute='_compute_attachment_ids', string="Archivos adjuntos")
+    attachment_count = fields.Integer(compute='_compute_attachment_ids', string="Cantidad de archivos adjuntos")
+
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
         for record in self:
@@ -48,6 +51,13 @@ class HrEmployee(models.Model):
                 record.full_name = full_name
             else:
                 record.full_name = record.name
+
+    def _compute_attachment_ids(self):
+        for rec in self:
+            attachment_ids = self.env['ir.attachment'].sudo().search(
+                [('res_id', '=', rec.id), ('res_model', '=', 'hr.employee')])
+            rec.attachment_ids = attachment_ids
+            rec.attachment_count = len(attachment_ids)
 
     @api.model
     def create(self, values):
@@ -71,48 +81,56 @@ class HrEmployee(models.Model):
                 Attachment.create(
                     {'name': rec.document_identity_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
                      'datas': rec.document_identity_file, 'res_model': 'hr.employee',
+                     'name_field': self._fields['document_identity_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
 
             if values.get('civical_credential_file') and rec.civical_credential_file:
                 Attachment.create(
                     {'name': rec.civical_credential_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
                      'datas': rec.civical_credential_file, 'res_model': 'hr.employee',
+                     'name_field': self._fields['civical_credential_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
 
             if values.get('cv_gender_record_file') and rec.cv_gender_record_file:
                 Attachment.create(
                     {'name': rec.cv_gender_record_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
                      'datas': rec.cv_gender_record_file, 'res_model': 'hr.employee',
+                     'name_field': self._fields['cv_gender_record_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
 
             if values.get('afro_descendants_file') and rec.afro_descendants_file:
                 Attachment.create(
                     {'name': rec.afro_descendants_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
                      'datas': rec.afro_descendants_file, 'res_model': 'hr.employee',
+                     'name_field': self._fields['afro_descendants_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
 
             if values.get('relationship_victim_violent_file') and rec.relationship_victim_violent_file:
                 Attachment.create(
                     {'name': rec.relationship_victim_violent_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
                      'datas': rec.relationship_victim_violent_file, 'res_model': 'hr.employee',
+                     'name_field': self._fields['relationship_victim_violent_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
 
             if values.get('address_receipt_file') and rec.address_receipt_file:
                 Attachment.create(
                     {'name': rec.address_receipt_file_name.replace(".pdf", '') + " " + str(today) + ".pdf",
                      'datas': rec.address_receipt_file, 'res_model': 'hr.employee',
+                     'name_field': self._fields['address_receipt_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
 
             if values.get('document_certificate_file') and rec.document_certificate_file:
                 Attachment.create(
                     {'name': rec.document_certificate_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
                      'datas': rec.document_certificate_file, 'res_model': 'hr.employee',
+                     'name_field': self._fields['document_certificate_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
 
             if values.get('digitized_document_file') and rec.digitized_document_file:
                 Attachment.create(
                     {'name': rec.digitized_document_filename.replace(".pdf", '') + " " + str(today) + ".pdf",
                      'datas': rec.digitized_document_file, 'res_model': 'hr.employee',
+                     'name_field': self._fields['digitized_document_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
 
     def write(self, values):
@@ -135,6 +153,21 @@ class HrEmployee(models.Model):
     def get_history_record_action(self, history_id, res_id):
         return super(HrEmployee, self.with_context(model_view_form_id=self.env.ref(
             'onsc_legajo.onsc_legajo_hr_employee_form').id)).get_history_record_action(history_id, res_id)
+
+    def action_view_attachment(self):
+        self.ensure_one()
+        vals = {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'res_model': 'ir.attachment',
+            'domain': [('res_model', '=', 'hr.employee'), ('res_id', '=', self.id)],
+            'name': 'Histórico de archivos',
+            'views': [
+                [self.env.ref('onsc_legajo.view_attachment_history_tree').id, 'tree'],
+                [self.env.ref('onsc_legajo.view_attachment_history_form').id, 'form'],
+            ]
+        }
+        return vals
 
 
 class HrEmployeeHistory(models.Model):
