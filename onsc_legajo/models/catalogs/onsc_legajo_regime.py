@@ -108,7 +108,7 @@ class ONSCLegajoRegime(models.Model):
     def _prepare_values(self, external_record):
         return {
             'descripcionRegimen': external_record.descripcionRegimen,
-            'indVencimiento': external_record.indVencimiento,
+            'indVencimiento': external_record.indVencimiento == 'S',
             'presupuesto': external_record.presupuesto == 'S',
             'vigente': external_record.vigente == 'S',
             'active': True
