@@ -16,17 +16,15 @@
                 <field name="cv_expiration_date" position="after">
                     <field name="document_identity_file" readonly="1"
                            filename="document_identity_filename"
-                           options="{'accepted_file_extensions': '.pdf'}"
-                           groups="onsc_legajo.group_legajo_configurador_empleado"/>
-                    <field name="document_identity_filename" invisible="1"
-                           groups="onsc_legajo.group_legajo_configurador_empleado"/>
+                           options="{'accepted_file_extensions': '.pdf'}"/>
+                    <field name="document_identity_filename" invisible="1"/>
                 </field>
                 <notebook position="inside">
                     <page string="Información general">
                         <group string="Datos personales">
                             <group>
-                                <field name="country_of_birth_id" readonly="1"/>
-                                <field name="marital_status_id" readonly="1"/>
+                                <field name="country_of_birth_id" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="marital_status_id" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="uy_citizenship" readonly="1"/>
                                 <field name="crendencial_serie"
                                        attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"
@@ -83,7 +81,7 @@
                         </group>
                         <group>
                             <group string="Género">
-                                <field name="cv_gender_id" readonly="1"/>
+                                <field name="cv_gender_id" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="gender_date" readonly="1"/>
 
                                 <field name="cv_gender2"
@@ -106,6 +104,7 @@
                                 <field name="cv_race2"
                                        attrs="{'invisible': [('is_cv_race_option_other_enable', '=', False)]}" readonly="1"/>
                                 <field name="cv_first_race_id"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                        attrs="{'invisible': [('is_multiple_cv_race_selected', '=', False)]}" readonly="1"/>
                                 <field name="is_cv_race_public" readonly="1"/>
                                 <field name="is_cv_race_option_other_enable" invisible="1"/>
@@ -160,15 +159,14 @@
                     </page>
 
                     <page name="address" string="Domicilio">
-
                         <group>
                             <group>
                                 <field name="address_receipt_file" filename="address_receipt_file_name" readonly="1"
                                        options="{'accepted_file_extensions': '.pdf'}"/>
                                 <field name="address_receipt_file_name" invisible="1"/>
-                                <field name="country_id" string="País" readonly="1"/>
-                                <field name="cv_address_state_id" string="Departamento" readonly="1"/>
-                                <field name="cv_address_location_id" readonly="1"/>
+                                <field name="country_id" string="País" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="cv_address_state_id" string="Departamento" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="cv_address_location_id" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             </group>
                             <group>
                             </group>
@@ -177,10 +175,13 @@
                             <group>
                                 <field name="country_code" invisible="1"/>
                                 <field name="cv_address_street_id"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                        attrs="{'invisible': [('country_code', '!=', 'UY')]}" readonly="1"/>
                                 <field name="cv_address_street2_id"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                        attrs="{'invisible': [('country_code', '!=', 'UY')]}" readonly="1"/>
                                 <field name="cv_address_street3_id"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                        attrs="{'invisible': [('country_code', '!=', 'UY')]}" readonly="1"/>
                                 <field name="cv_address_street" string="Calle"
                                        attrs="{'invisible': [('country_code', '=', 'UY')]}" readonly="1"/>
