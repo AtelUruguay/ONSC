@@ -13,19 +13,24 @@ class ONSCLegajo(models.Model):
     # FORMACION
     basic_formation_ids = fields.One2many(
         'onsc.cv.basic.formation', string=u'Formación básica',
-        compute='_compute_formations'
-    )
+        compute='_compute_formations',
+        compute_sudo=True)
     advanced_formation_ids = fields.One2many(
         'onsc.cv.advanced.formation', string=u'Formación avanzada',
-        compute='_compute_formations')
+        compute='_compute_formations',
+        compute_sudo=True)
 
     # CURSOS Y CERTIFICADOS
     course_ids = fields.One2many(
-        'onsc.cv.course.certificate', string="Cursos",
-        compute='_compute_formations')
+        'onsc.cv.course.certificate',
+        string="Cursos",
+        compute='_compute_formations',
+        compute_sudo=True)
     certificate_ids = fields.One2many(
-        'onsc.cv.course.certificate', string="Certificados",
-        compute='_compute_formations')
+        'onsc.cv.course.certificate',
+        string="Certificados",
+        compute='_compute_formations',
+        compute_sudo=True)
 
     def _compute_formations(self):
         for record in self:

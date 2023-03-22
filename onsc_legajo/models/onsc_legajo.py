@@ -37,7 +37,7 @@ class ONSCLegajo(models.Model):
         elif self.user_has_groups(
                 'onsc_legajo.group_legajo_hr_inciso'):
             contract_id = self.env.user.employee_id.job_id.contract_id
-            inciso_id = contract_id.inciso_id.id or 233
+            inciso_id = contract_id.inciso_id.id
             if inciso_id:
                 available_contracts = self.env['hr.contract'].search([
                     ('inciso_id', '=', inciso_id),
@@ -161,7 +161,7 @@ class ONSCLegajo(models.Model):
         elif self.user_has_groups(
                 'onsc_legajo.group_legajo_hr_inciso'):
             contract = self.env.user.employee_id.job_id.contract_id
-            inciso_id = contract.inciso_id.id or 233
+            inciso_id = contract.inciso_id.id
             if inciso_id:
                 available_contracts = self.employee_id.contract_ids.filtered(
                     lambda x: x.inciso_id.id == inciso_id and x.legajo_state in ['active', 'outgoing_commission',
