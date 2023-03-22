@@ -24,6 +24,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
 
     def _syncronize(self, client, parameter, origin_name, integration_error, values=False):
         ONSCLegajoClient = soap_client.ONSCLegajoClient()
+        IntegrationError = self.env['onsc.legajo.integration.error']
         try:
             response = ONSCLegajoClient.get_response(client, parameter, values)
         except Exception as e:
@@ -38,10 +39,15 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             if response.servicioResultado.codigo == 0:
                 return self._populate_from_syncronization(response)
             else:
+                result_error_code = response.servicioResultado.codigo
+                error = IntegrationError.search([
+                    ('integration_code','=',integration_error.integration_code),
+                    ('code_error','=',str(result_error_code))
+                ], limit=1)
                 self.create_new_log(
                     origin=origin_name,
                     type='error',
-                    integration_log=integration_error,
+                    integration_log=error or integration_error,
                     ws_tuple=False,
                     long_description='%s - Código: %s' % (
                         tools.ustr(response.servicioResultado.mensaje), str(response.servicioResultado.codigo)))
@@ -49,10 +55,15 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             if response.codigoResultado == 0:
                 return self._populate_from_syncronization(response)
             else:
+                result_error_code = response.servicioResultado.codigo
+                error = IntegrationError.search([
+                    ('integration_code', '=', integration_error.integration_code),
+                    ('code_error', '=', str(result_error_code))
+                ], limit=1)
                 self.create_new_log(
                     origin=origin_name,
                     type='error',
-                    integration_log=integration_error,
+                    integration_log=error or integration_error,
                     ws_tuple=False,
                     long_description='%s - Código: %s' % (
                         tools.ustr(response.mensajeResultado), str(response.codigoResultado)))
