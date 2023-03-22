@@ -94,7 +94,7 @@
                                 <field name="key_functional_habilities"/>
                                 <field name="process_contributor"
                                     attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
-                                <field name="regulatory" widget="url"/>
+                                <field name="regulatory" widget="html"/>
                                 <field name="is_approve_onsc" readonly="1" force_save="1"/>
                                 <field name="approve_onsc_date" readonly="1" force_save="1"/>
                                 <field name="is_approve_cgn" readonly="1" force_save="1"/>
