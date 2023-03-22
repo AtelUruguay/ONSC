@@ -219,7 +219,7 @@
         <field name="name">Contrato</field>
         <field name="res_model">hr.contract</field>
         <field name="view_mode">form</field>
-        <field name="context">{'is_legajo': True, 'create': False, 'edit': False}</field>
+        <field name="context">{'is_legajo': True}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_hr_contract_view_form')})]"/>
     </record>
