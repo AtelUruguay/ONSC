@@ -42,3 +42,9 @@ class ONSCLegajo(models.Model):
                 lambda x: x.documentary_validation_state == 'validated')
             record.certificate_ids = record.cv_digital_id.certificate_ids.filtered(
                 lambda x: x.documentary_validation_state == 'validated')
+
+    def button_open_cv2validate(self):
+        self.ensure_one()
+        action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_one_hr_contract_action')
+        action['res_id'] = self.cv_digital_id.id
+        return action
