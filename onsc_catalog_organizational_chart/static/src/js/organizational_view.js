@@ -498,6 +498,7 @@ var EmployeeOrganizationalChart =  AbstractAction.extend({
                         document.querySelector('#ue-responsible').innerHTML = result.responsible;
                         document.querySelector('#ue-function_nature').innerHTML = result.function_nature;
                         document.querySelector('#ue-name').innerHTML = data.context.title;
+                        document.querySelector('#ue-observations').innerHTML = result.observations;
 //                        document.querySelector('#goto-org-uo').setAttribute("data-id", itemId);
 //                        document.querySelector('#goto-org-uo').setAttribute("data-form", data.context.form_id);
                     });

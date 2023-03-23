@@ -8,15 +8,15 @@
                 <li class="breadcrumb-item"
                     t-att-class="{ o_back_button: breadcrumb_last}"
                     t-on-click.prevent="onBreadcrumbClicked(breadcrumb.jsId)"
-                    >
+                >
                     <a href="#">
                         <t t-esc="breadcrumb.name or 'Organigrama'"/>
                     </a>
                 </li>
             </t>
-            <li class="breadcrumb-item active">
-                <t t-if="env.config.displayName" t-esc="env.config.displayName" />
-                <em t-else="" class="text-warning">Unnamed</em>
+                <li class="breadcrumb-item active">
+                <t t-if="env.config.displayName" t-esc="env.config.displayName"/>
+                    <em t-else="" class="text-warning">Unnamed</em>
             </li>
         </ol>
         </xpath>
@@ -30,14 +30,16 @@
                     <div class="org-route"/>
                     <div class="right-buttons">
                         <div class="slidecontainer">
-                            <img src="/onsc_catalog_organizational_chart/static/src/img/zoomout.png" alt="Out" id="slide-zoomout" style="width: 25px; height: 25px; cursor: pointer;"/>
+                            <img src="/onsc_catalog_organizational_chart/static/src/img/zoomout.png" alt="Out"
+                                 id="slide-zoomout" style="width: 25px; height: 25px; cursor: pointer;"/>
                             <input type="range" min="1" max="30" value="10" class="slider" id="myRange"/>
-                            <img src="/onsc_catalog_organizational_chart/static/src/img/zoomin.png" alt="In" id="slide-zoomin" style="width: 25px; height: 25px; cursor: pointer;"/>
-<!--                            <i class="btn btn-downloadpdf fa fa-print" style="cursor: pointer;"/>-->
+                            <img src="/onsc_catalog_organizational_chart/static/src/img/zoomin.png" alt="In"
+                                 id="slide-zoomin" style="width: 25px; height: 25px; cursor: pointer;"/>
+                            <!--                            <i class="btn btn-downloadpdf fa fa-print" style="cursor: pointer;"/>-->
                         </div>
-<!--                        <button class="btn-50 btn" data-percentage="0.5">50%</button>-->
-<!--                        <button class="btn-100 btn" data-percentage="1">100%</button>-->
-<!--                        <button class="btn-150 btn" data-percentage="1.5">150%</button>-->
+                        <!--                        <button class="btn-50 btn" data-percentage="0.5">50%</button>-->
+                        <!--                        <button class="btn-100 btn" data-percentage="1">100%</button>-->
+                        <!--                        <button class="btn-150 btn" data-percentage="1.5">150%</button>-->
                         <button type="button" class="toggle button-hamb" id="toggle">
                            <span/>
                         </button>
@@ -61,12 +63,12 @@
                             <div class="sidebar-content-header-up">
                                 <h4 id="ue-name"/>
                             </div>
-<!--                            <div class="sidebar-content-header-down">-->
-<!--                                <button type="button" class="btn btn-primary" title="Editar registro" id="goto-org-uo" data-hotkey="e">-->
-<!--                                    <i class="fa fa-pencil" title="Editar"/>-->
-<!--                                    <span class="d-none d-sm-inline">Editar</span>-->
-<!--                                </button>-->
-<!--                            </div>-->
+                            <!--                            <div class="sidebar-content-header-down">-->
+                            <!--                                <button type="button" class="btn btn-primary" title="Editar registro" id="goto-org-uo" data-hotkey="e">-->
+                            <!--                                    <i class="fa fa-pencil" title="Editar"/>-->
+                            <!--                                    <span class="d-none d-sm-inline">Editar</span>-->
+                            <!--                                </button>-->
+                            <!--                            </div>-->
                         </div>
                         <div class="row sidebar-content-sheet">
                             <div class="col-5 pd-1 text-left"><strong>Identificador</strong></div>
@@ -89,6 +91,9 @@
 
                             <div class="col-5 pd-1 text-left"><strong>Responsable</strong></div>
                             <div class="col-7 pd-1 text-left"><span id="ue-responsible"/></div>
+
+                            <div class="col-5 pd-1 text-left"><strong>Observaciones</strong></div>
+                            <div class="col-7 pd-1 text-left"><span id="ue-observations"/></div>
                         </div>
                     </div>
                 </div>
