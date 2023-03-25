@@ -86,6 +86,7 @@ class ONSCCatalogDescriptor1(models.Model):
 
     occupational_family_id = fields.Many2one("onsc.catalog.occupational.family", string="Mapeo familia ocupacional",
                                              ondelete='restrict')
+    is_graduation_date_required = fields.Boolean(string=u"¿Fecha de graduación requerida?")
 
 
 class ONSCCatalogDescriptor2(models.Model):

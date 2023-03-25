@@ -10,10 +10,10 @@
                     <button name="action_call_ws4" type="object" string="WS4" states="borrador,error_sgh"/>
                 </header>
                 <xpath expr="//div[@name='first_div']" position="before">
-                    <field name="has_error_synchronization" invisible="1"/>
+                    <field name="is_error_synchronization" invisible="1"/>
                     <div class="alert alert-danger"
                          role="alert"
-                         attrs="{'invisible': [('has_error_synchronization', '=', False)]}"
+                         attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
                          style="margin-bottom:0px;">
                          <p><i class="fa fa-info-circle" role="alert" aria-label="Warning" title="Warning"/>
                             <field name="error_message_synchronization" readonly="1"/>
@@ -21,31 +21,31 @@
                     </div>
                 </xpath>
                 <xpath expr="//group[@name='personal_left']" position="inside">
-                     <field name="cv_birthdate" readonly="0" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                     <field name="cv_sex" readonly="0" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                     <field name="country_of_birth_id" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                     <field name="marital_status_id" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                     <field name="crendencial_serie" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                     <field name="uy_citizenship" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                     <field name="credential_number" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                     <field name="personal_phone" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                     <field name="mobile_phone" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                     <field name="mobile_phone" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
+                     <field name="cv_birthdate" readonly="0" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                     <field name="cv_sex" readonly="0" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                     <field name="country_of_birth_id" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                     <field name="marital_status_id" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                     <field name="crendencial_serie" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                     <field name="uy_citizenship" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                     <field name="credential_number" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                     <field name="personal_phone" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                     <field name="mobile_phone" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                     <field name="mobile_phone" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//group[@name='personal_right']" position="inside">
-                    <field name="email" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                    <field name="cv_address_location_id" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                    <field name="cv_address_nro_door" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                    <field name="cv_address_apto" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                    <field name="cv_address_zip" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                    <field name="cv_address_state_id" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                    <field name="cv_address_street_id" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                    <field name="cv_address_is_cv_bis" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
-                    <field name="cv_address_place" readonly="1" attrs="{'invisible': [('see_more', '=', False)]}"/>
+                    <field name="email" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                    <field name="cv_address_location_id" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                    <field name="cv_address_nro_door" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                    <field name="cv_address_apto" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                    <field name="cv_address_zip" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                    <field name="cv_address_state_id" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                    <field name="cv_address_street_id" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                    <field name="cv_address_is_cv_bis" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
+                    <field name="cv_address_place" readonly="1" attrs="{'invisible': [('is_see_more', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//group[@name='personal_right']" position="after">
                     <group>
-                        <field name="see_more" string="Ver más" widget="boolean_toggle"/>
+                        <field name="is_see_more" string="Ver más" widget="boolean_toggle"/>
                     </group>
                 </xpath>
                 <xpath expr="//group[@name='group4_right']" position="inside">

@@ -15,8 +15,8 @@ class ONSCLegajoAltaVL(models.Model):
                                     compute='_compute_cv_digital_id',
                                     store=True)
     partner_id = fields.Many2one("res.partner", related="cv_digital_id.partner_id", string="Contacto")
-    cv_birthdate = fields.Date(string=u'Fecha de nacimiento')
-    cv_sex = fields.Selection(string=u'Sexo')
+    cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
+    cv_sex = fields.Selection(string=u'Sexo', copy=False)
     personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone')
     mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile')
     email = fields.Char(string="e-mail", related='partner_id.email')
@@ -31,9 +31,9 @@ class ONSCLegajoAltaVL(models.Model):
     cv_address_sandlot = fields.Char(related='partner_id.cv_address_sandlot', string="Solar")
     employee_id = fields.Many2one('hr.employee', 'Employee', compute="_compute_employee_id", store=True)
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
-    error_message_synchronization = fields.Char(string="Mensaje de Error")
-    has_error_synchronization = fields.Boolean()
-    see_more = fields.Boolean()
+    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
+    is_error_synchronization = fields.Boolean(copy=False)
+    is_see_more = fields.Boolean(copy=False)
 
     def action_call_ws1(self):
         pass

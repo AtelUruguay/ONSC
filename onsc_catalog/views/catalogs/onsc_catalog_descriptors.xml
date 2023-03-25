@@ -24,6 +24,7 @@
                             <field name="name"/>
                             <field name="code"/>
                             <field name="description"/>
+                            <field name="is_graduation_date_required"/>
                             <field name="occupational_family_id"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -40,6 +41,7 @@
                     <field name="name"/>
                     <field name="code"/>
                     <field name="description"/>
+                    <field name="is_graduation_date_required"/>
                     <field name="occupational_family_id"/>
                 </tree>
             </field>
