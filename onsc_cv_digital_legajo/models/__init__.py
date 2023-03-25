@@ -5,5 +5,6 @@ from . import onsc_cv_documentary_validation
 from . import onsc_cv_digital
 from . import hr_employee
 from . import onsc_cv_work_experience
+from . import onsc_legajo
 from . import oncs_legajo_alta_vl
 from . import onsc_cv_digital_vacante

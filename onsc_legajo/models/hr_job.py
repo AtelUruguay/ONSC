@@ -78,6 +78,15 @@ class HrJob(models.Model):
     def onchange_contract_id(self):
         self.department_id = False
 
+    def get_available_jobs(self, user=False):
+        today = fields.Date.today()
+        user = user or self.env.user
+        employee_ids = user.employee_ids.ids
+        return self.search([
+            '&', ('employee_id', 'in', employee_ids.ids),
+            '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False)])
+
+
 
 class HrJobRoleLine(models.Model):
     _inherit = 'hr.job.role.line'

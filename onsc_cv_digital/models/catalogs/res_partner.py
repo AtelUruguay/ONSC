@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import SUPERUSER_ID, models, fields, api, _
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 from odoo.exceptions import ValidationError
 
 # TODO female otherwhise feminine
@@ -26,14 +27,6 @@ COLUMNS_FROZEN = [
     'is_cv_bis',
     'cv_amplification',
 ]
-
-
-def calc_full_name(cv_first_name, cv_second_name, cv_last_name_1, cv_last_name_2):
-    name_values = [cv_first_name,
-                   cv_second_name,
-                   cv_last_name_1,
-                   cv_last_name_2]
-    return ' '.join([x for x in name_values if x])
 
 
 class ResPartner(models.Model):
