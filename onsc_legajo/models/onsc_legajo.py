@@ -110,14 +110,19 @@ class ONSCLegajo(models.Model):
     def _action_milegajo(self):
         ctx = self.env.context.copy()
         ctx['mi_legajo'] = True
+        mi_legajo = self.sudo().with_context(mi_legajo=True).search([('employee_id', '=', self.env.user.employee_id.id)], limit=1).id
+        if mi_legajo:
+            view_mode = 'form'
+        else:
+            view_mode = 'kanban'
         return {
             'type': 'ir.actions.act_window',
-            'view_mode': 'form',
+            'view_mode': view_mode,
             'res_model': self._name,
             'name': 'Mi legajo',
             'context': ctx,
             "target": "main",
-            "res_id": self.sudo().search([('employee_id', '=', self.env.user.employee_id.id)], limit=1).id,
+            "res_id": mi_legajo,
         }
 
     @api.model
@@ -127,8 +132,9 @@ class ONSCLegajo(models.Model):
             employees = self.env.user.employee_id
         else:
             employees = self.employee_id or self.env['hr.employee'].search([])
-        if self._context.get('mi_legajo') or self.user_has_groups(
-                'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo'):
+        if self._context.get('mi_legajo'):
+            available_contracts = employees.mapped('contract_ids').filtered(lambda x: x.legajo_state in ['active', 'outgoing_commission','incoming_commission'])
+        elif self.user_has_groups('onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo'):
             available_contracts = employees.mapped('contract_ids')
         elif self.user_has_groups(
                 'onsc_legajo.group_legajo_hr_inciso'):
