@@ -103,7 +103,10 @@
                     </div>
                     <group>
                         <group>
-                            <field name="employee_id" required="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="employee_id"
+                                   groups="onsc_legajo.group_legajo_configurador_legajo"
+                                   required="1"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="emissor_country_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="document_type_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="nro_doc"/>
@@ -130,15 +133,14 @@
             </p>
         </field>
     </record>
-    <record id='onsc_milegajo_action' model='ir.actions.act_window'>
+
+    <record id="onsc_milegajo_action_server" model="ir.actions.server">
         <field name="name">Mi legajo</field>
-        <field name="res_model">onsc.legajo</field>
-        <field name="view_mode">kanban,tree,form</field>
-        <field name="context">{'mi_legajo':True}</field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Crear un nuevo legajo
-            </p>
+        <field name="type">ir.actions.server</field>
+        <field name="state">code</field>
+        <field name="model_id" ref="model_onsc_legajo"/>
+        <field name="code">
+            action = model._action_milegajo()
         </field>
     </record>
     </data>

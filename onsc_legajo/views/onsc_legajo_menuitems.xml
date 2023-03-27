@@ -19,7 +19,7 @@
 
     <menuitem id="onsc_hr_milegajo_menu"
               name="Mi legajo"
-              action="onsc_milegajo_action"
+              action="onsc_milegajo_action_server"
               parent="onsc_legajo.onsc_legajo_root_menu"
               groups="onsc_legajo.group_legajo_consulta_milegajos"
               sequence="1"/>
