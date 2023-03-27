@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 
 class ONSCCVDigital(models.Model):
@@ -68,6 +68,29 @@ class ONSCCVDigital(models.Model):
 
     def _check_todisable_dynamic_fields(self):
         return super(ONSCCVDigital, self)._check_todisable_dynamic_fields() or self.is_docket
+
+
+    #   VALIDACION DOCUMENTAL DE LEGAJO
+    def button_documentary_approve(self):
+        if self._context.get('documentary_validation'):
+            self._update_documentary(self._context.get('documentary_validation'), 'validated', '')
+
+    def button_documentary_reject(self):
+        ctx = self._context.copy()
+        ctx.update({
+            'default_model_name': self._name,
+            'default_res_id': len(self.ids) == 1 and self.id or 0,
+            'is_documentary_reject': True
+        })
+        return {
+            'name': _('Rechazo de %s' % self._description),
+            'view_mode': 'form',
+            'res_model': 'onsc.cv.reject.wizard',
+            'target': 'new',
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'context': ctx,
+        }
 
 
 class ONSCCVInformationContact(models.Model):

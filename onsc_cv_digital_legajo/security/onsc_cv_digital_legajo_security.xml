@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!--VALIDADOR DOCUMENTAL DEL FUNCIONARIO-->
+        <record id="group_legajo_consulta_validacion_documental" model="res.groups">
+            <field name="name">Legajo - Consulta de Validación Documental</field>
+            <field name="comment">Legajo - Consulta de Validación Documental</field>
+            <field name="category_id" ref="onsc_legajo.module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+    </data>
+</odoo>

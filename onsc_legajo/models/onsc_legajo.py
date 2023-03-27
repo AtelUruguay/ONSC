@@ -26,52 +26,10 @@ class ONSCLegajo(models.Model):
 
     @api.model
     def _get_expression_domain(self, args):
-        if self._context.get('mi_legajo'):
-            employee_id = self.env.user.employee_id
-            args = expression.AND([[
-                ('employee_id', '=', employee_id.id)
-            ], args])
-        elif self.user_has_groups(
-                'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo'):
-            pass
-        elif self.user_has_groups(
-                'onsc_legajo.group_legajo_hr_inciso'):
-            contract_id = self.env.user.employee_id.job_id.contract_id
-            inciso_id = contract_id.inciso_id.id
-            if inciso_id:
-                available_contracts = self.env['hr.contract'].search([
-                    ('inciso_id', '=', inciso_id),
-                    ('legajo_state', 'in', ['active', 'outgoing_commission', 'incoming_commission'])
-                ])
-                args = expression.AND([[
-                    ('contract_ids', 'in', available_contracts.ids)
-                ], args])
-            else:
-                args = expression.AND([[
-                    ('id', '=', 0)
-                ], args])
-        elif self.user_has_groups(
-                'onsc_legajo.group_legajo_hr_ue'):
-            contract_id = self.env.user.employee_id.job_id.contract_id
-            operating_unit_id = contract_id.operating_unit_id.id
-            if operating_unit_id:
-                available_contracts = self.env['hr.contract'].search([
-                    ('operating_unit_id', '=', operating_unit_id),
-                    ('legajo_state', 'in', ['active', 'outgoing_commission', 'incoming_commission'])
-                ])
-                args = expression.AND([[
-                    ('contract_ids', 'in', available_contracts.ids)
-                ], args])
-            else:
-                args = expression.AND([[
-                    ('id', '=', 0)
-                ], args])
-        elif self.user_has_groups(
-                'onsc_legajo.group_legajo_consulta_milegajos'):
-            employee_id = self.env.user.employee_id
-            args = expression.AND([[
-                ('employee_id', '=', employee_id.id)
-            ], args])
+        available_contracts = self._get_user_available_contract()
+        args = expression.AND([[
+            ('employee_id', 'in', available_contracts.mapped('employee_id').ids)
+        ], args])
         return args
 
     @api.model
@@ -115,9 +73,6 @@ class ONSCLegajo(models.Model):
     contract_ids = fields.One2many('hr.contract', related='employee_id.contract_ids')
     contracts_count = fields.Integer(string='Contract Count', related='employee_id.contracts_count')
 
-    contract_ids = fields.One2many('hr.contract', compute='_compute_contract_info')
-    contracts_count = fields.Integer(string='Contract Count', compute='_compute_contract_info')
-
     def _compute_contract_info(self):
         for record in self:
             available_contracts = record._get_user_available_contract()
@@ -152,18 +107,35 @@ class ONSCLegajo(models.Model):
         action['res_id'] = self.employee_id.id
         return action
 
+    def _action_milegajo(self):
+        ctx = self.env.context.copy()
+        ctx['mi_legajo'] = True
+        return {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': self._name,
+            'name': 'Mi legajo',
+            'context': ctx,
+            "target": "main",
+            "res_id": self.sudo().search([('employee_id', '=', self.env.user.employee_id.id)], limit=1).id,
+        }
+
     @api.model
     def _get_user_available_contract(self):
         available_contracts = self.env['hr.contract']
+        if self._context.get('mi_legajo'):
+            employees = self.env.user.employee_id
+        else:
+            employees = self.employee_id or self.env['hr.employee'].search([])
         if self._context.get('mi_legajo') or self.user_has_groups(
                 'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo'):
-            available_contracts = self.employee_id.contract_ids
+            available_contracts = employees.mapped('contract_ids')
         elif self.user_has_groups(
                 'onsc_legajo.group_legajo_hr_inciso'):
             contract = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract.inciso_id.id
             if inciso_id:
-                available_contracts = self.employee_id.contract_ids.filtered(
+                available_contracts = employees.mapped('contract_ids').filtered(
                     lambda x: x.inciso_id.id == inciso_id and x.legajo_state in ['active', 'outgoing_commission',
                                                                                  'incoming_commission'])
         elif self.user_has_groups(
@@ -171,7 +143,7 @@ class ONSCLegajo(models.Model):
             contract = self.env.user.employee_id.job_id.contract_id
             operating_unit_id = contract.operating_unit_id.id
             if operating_unit_id:
-                available_contracts = self.employee_id.contract_ids.filtered(
+                available_contracts = employees.mapped('contract_ids').filtered(
                     lambda x: x.operating_unit_id.id == operating_unit_id and x.legajo_state in ['active',
                                                                                                  'outgoing_commission',
                                                                                                  'incoming_commission'])
