@@ -86,6 +86,19 @@ class HrJob(models.Model):
             '&', ('employee_id', 'in', employee_ids.ids),
             '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False)])
 
+    def button_open_current_job(self):
+        ctx = self.env.context.copy()
+        ctx.update({'edit':True})
+        return {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': self._name,
+            'name': 'Editar puesto',
+            'context': ctx,
+            "target": "current",
+            "res_id": self.id,
+        }
+
 
 
 class HrJobRoleLine(models.Model):
@@ -169,3 +182,4 @@ class HrJobRoleLine(models.Model):
             rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
                                     tracking_value_ids=tracking_value_ids)
         return True
+

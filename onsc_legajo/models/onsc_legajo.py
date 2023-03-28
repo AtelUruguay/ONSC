@@ -91,7 +91,7 @@ class ONSCLegajo(models.Model):
         ctx = self.env.context.copy()
         ctx['mi_legajo'] = True
         ctx['is_legajo'] = True
-        mi_legajo = self.sudo().with_context(mi_legajo=True).search(
+        mi_legajo = self.sudo().with_context(mi_legajo=True, is_legajo=True).search(
             [('employee_id', '=', self.env.user.employee_id.id)], limit=1).id
         if mi_legajo:
             view_mode = 'form'

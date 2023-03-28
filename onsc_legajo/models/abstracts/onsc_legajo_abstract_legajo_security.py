@@ -34,13 +34,13 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
                                                                         lazy=lazy)
 
     def _get_abstract_config_security(self):
-        return True
+        return False
 
     def _get_abstract_inciso_security(self):
-        return True
+        return False
 
     def _get_abstract_ue_security(self):
-        return True
+        return False
 
     def _get_user_available_contract(self, employee_id=False):
         available_contracts = self.env['hr.contract']
