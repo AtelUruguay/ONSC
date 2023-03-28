@@ -117,6 +117,16 @@ class ONSCCVDigital(models.Model):
     def documentary_reject(self, reject_reason):
         self._update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)
 
+    def _get_abstract_config_security(self):
+        return self.user_has_groups(
+            'onsc_cv_digital_legajo.group_legajo_validador_doc_consulta')
+
+    def _get_abstract_inciso_security(self):
+        return self.user_has_groups('onsc_cv_digital_legajo.group_legajo_validador_doc_inciso')
+
+    def group_legajo_validador_doc_ue(self):
+        return self.user_has_groups('onsc_cv_digital_legajo.group_legajo_hr_ue')
+
 
 class ONSCCVInformationContact(models.Model):
     _name = 'onsc.cv.information.contact'
