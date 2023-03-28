@@ -145,6 +145,8 @@ class HrContract(models.Model):
             'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
 
     def button_update_occupation(self):
+        ctx = self._context.copy()
+        ctx['default_contract_id'] = self.id
         return {
             'name': _('Actualizar ocupación'),
             'view_mode': 'form',
@@ -152,7 +154,7 @@ class HrContract(models.Model):
             'target': 'new',
             'view_id': False,
             'type': 'ir.actions.act_window',
-            'context': self._context,
+            'context': ctx,
         }
 
 
