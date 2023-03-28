@@ -6,7 +6,7 @@ from odoo import fields, models, api, _
 
 class ONSCCVDigital(models.Model):
     _name = 'onsc.cv.digital'
-    _inherit = ['onsc.cv.digital', 'onsc.cv.legajo.abstract.common']
+    _inherit = ['onsc.cv.digital', 'onsc.cv.legajo.abstract.common', 'onsc.legajo.abstract.legajo.security']
 
     @property
     def prefix_by_phones(self):
@@ -16,9 +16,9 @@ class ONSCCVDigital(models.Model):
     @api.model
     def domain_prefix_emergency_phone_id(self):
         country_id = self.env['res.country'].search([('code', '=', 'UY')])
-
         return [('country_id', 'in', country_id.ids)]
 
+    employee_id = fields.Many2one("hr.employee", string="Empleado", compute='_compute_employee_id', store=True)
     is_docket = fields.Boolean(string="Tiene legajo")
     is_docket_active = fields.Boolean(string="Tiene legajo activo")
     # gender_date = fields.Date(string="Fecha de información género")
@@ -57,6 +57,16 @@ class ONSCCVDigital(models.Model):
         for record in self:
             record.gender_public_visualization_date = fields.Date.today()
 
+    @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc', 'is_docket')
+    def _compute_employee_id(self):
+        Employee = self.env['hr.employee'].sudo()
+        for record in self:
+            record.employee_id = Employee.search([
+                ('cv_emissor_country_id', '=', record.cv_emissor_country_id.id),
+                ('cv_document_type_id', '=', record.cv_document_type_id.id),
+                ('cv_nro_doc', '=', record.cv_nro_doc),
+            ], limit=1)
+
     @api.onchange('is_docket')
     def onchange_is_docket(self):
         if self.is_docket is False:
@@ -69,8 +79,11 @@ class ONSCCVDigital(models.Model):
     def _check_todisable_dynamic_fields(self):
         return super(ONSCCVDigital, self)._check_todisable_dynamic_fields() or self.is_docket
 
-
     #   VALIDACION DOCUMENTAL DE LEGAJO
+    def button_documentary_tovalidate(self):
+        if self._context.get('documentary_validation'):
+            self._update_documentary(self._context.get('documentary_validation'), 'to_validate', '')
+
     def button_documentary_approve(self):
         if self._context.get('documentary_validation'):
             self._update_documentary(self._context.get('documentary_validation'), 'validated', '')
@@ -91,6 +104,18 @@ class ONSCCVDigital(models.Model):
             'type': 'ir.actions.act_window',
             'context': ctx,
         }
+
+    def _update_documentary(self, documentary_field, state, reject_reason):
+        vals = {
+            '%s_documentary_validation_state' % documentary_field: state,
+            '%s_documentary_reject_reason' % documentary_field: reject_reason,
+            '%s_documentary_validation_date' % documentary_field: fields.Date.today(),
+            '%s_documentary_user_id' % documentary_field: self.env.user.id,
+        }
+        self.write(vals)
+
+    def documentary_reject(self, reject_reason):
+        self._update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)
 
 
 class ONSCCVInformationContact(models.Model):
