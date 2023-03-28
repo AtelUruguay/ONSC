@@ -42,20 +42,28 @@
                                     <field name="cv_nro_doc"/>
                                     <span>
                                         <button name="button_documentary_approve"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 context="{'documentary_validation':'nro_doc'}" type="object"
                                                 string="Validar"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'validated')]}"
                                                 icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                         <button name="button_documentary_reject"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 context="{'documentary_validation':'nro_doc'}"
                                                 type="object"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'rejected')]}"
                                                 string="Rechazar"
                                                 icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
+                                        <button name="button_documentary_tovalidate"
+                                                groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
+                                                context="{'documentary_validation':'nro_doc'}"
+                                                type="object"
+                                                invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
+                                                attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'to_validate')]}"
+                                                string="Para validar"
+                                                icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                     </span>
                                 </div>
                             </div>
@@ -114,7 +122,7 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
                                         <span>
                                             <button name="button_documentary_approve"
-                                                    groups="onsc_cv_digital.group_validador_documental_cv"
+                                                    groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                     context="{'documentary_validation':'civical_credential'}"
                                                     type="object"
                                                     string="Validar"
@@ -123,7 +131,7 @@
                                                     attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'validated')]}"
                                                     class="btn btn-sm btn-outline-success"/>
                                             <button name="button_documentary_reject"
-                                                    groups="onsc_cv_digital.group_validador_documental_cv"
+                                                    groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                     context="{'documentary_validation':'civical_credential'}"
                                                     type="object"
                                                     string="Rechazar"
@@ -364,13 +372,13 @@
                                     <field name="disabilitie_documentary_validation_state" invisible="1"/>
                                     <div>
                                         <button name="button_documentary_approve"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'validated')]}"
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                         <button name="button_documentary_reject"
-                                                groups="onsc_cv_digital.group_validador_documental_cv"
+                                                groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
                                                 attrs="{'invisible': [('disabilitie_documentary_validation_state', '=', 'rejected')]}"
                                                 context="{'documentary_validation':'disabilitie'}"
@@ -448,11 +456,11 @@
     </record>
     
     <record id="onsc_legajo_cv_digital_validation" model="ir.actions.act_window">
-        <field name="name">CV Digital</field>
+        <field name="name">Validar documentación de funcionarios</field>
         <field name="res_model">onsc.cv.digital</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="domain">[('type','=','cv'),('active','in',[False,True])]</field>
-        <field name="context">{'is_call_documentary_validation': True, 'create': False, 'edit': False, 'delete': False, 'copy':False}</field>
+        <field name="context">{'is_call_documentary_validation': True,'is_legajo':True, 'create': False, 'edit': False, 'delete': False, 'copy':False}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'kanban', 'view_id': ref('onsc_cv_digital.kanban_digital_cv')}),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_cv_digital.onsc_cv_digital_tree')}),
@@ -460,9 +468,9 @@
     </record>
 
     <menuitem id="onsc_hr_legajo_cv_validation_menu"
-              name="CVs"
+              name="Validar documentación de funcionarios"
               action="onsc_legajo_cv_digital_validation"
               parent="onsc_legajo.onsc_legajo_root_menu"
-              groups="onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_hr_ue,onsc_cv_digital_legajo.group_legajo_consulta_validacion_documental"
+              groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue,onsc_cv_digital_legajo.group_legajo_validador_doc_consulta"
               sequence="3"/>
 </odoo>

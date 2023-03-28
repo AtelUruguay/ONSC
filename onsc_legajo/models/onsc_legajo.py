@@ -2,11 +2,11 @@
 from lxml import etree
 
 from odoo import api, models, fields
-from odoo.osv import expression
 
 
 class ONSCLegajo(models.Model):
     _name = "onsc.legajo"
+    _inherit = "onsc.legajo.abstract.legajo.security"
     _rec_name = "employee_id"
 
     @api.model
@@ -23,26 +23,6 @@ class ONSCLegajo(models.Model):
                 node_form.set('delete', '0')
         res['arch'] = etree.tostring(doc)
         return res
-
-    @api.model
-    def _get_expression_domain(self, args):
-        available_contracts = self._get_user_available_contract()
-        args = expression.AND([[
-            ('employee_id', 'in', available_contracts.mapped('employee_id').ids)
-        ], args])
-        return args
-
-    @api.model
-    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        args = self._get_expression_domain(args)
-        return super(ONSCLegajo, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-                                               access_rights_uid=access_rights_uid)
-
-    @api.model
-    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        domain = self._get_expression_domain(domain)
-        return super(ONSCLegajo, self).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby,
-                                                  lazy=lazy)
 
     employee_id = fields.Many2one(
         comodel_name="hr.employee",
@@ -75,7 +55,7 @@ class ONSCLegajo(models.Model):
 
     def _compute_contract_info(self):
         for record in self:
-            available_contracts = record._get_user_available_contract()
+            available_contracts = record._get_user_available_contract(record.employee_id)
             record.contract_ids = available_contracts
             record.contracts_count = len(available_contracts)
 
@@ -110,41 +90,29 @@ class ONSCLegajo(models.Model):
     def _action_milegajo(self):
         ctx = self.env.context.copy()
         ctx['mi_legajo'] = True
+        ctx['is_legajo'] = True
+        mi_legajo = self.sudo().with_context(mi_legajo=True).search(
+            [('employee_id', '=', self.env.user.employee_id.id)], limit=1).id
+        if mi_legajo:
+            view_mode = 'form'
+        else:
+            view_mode = 'kanban'
         return {
             'type': 'ir.actions.act_window',
-            'view_mode': 'form',
+            'view_mode': view_mode,
             'res_model': self._name,
             'name': 'Mi legajo',
             'context': ctx,
             "target": "main",
-            "res_id": self.sudo().search([('employee_id', '=', self.env.user.employee_id.id)], limit=1).id,
+            "res_id": mi_legajo,
         }
 
-    @api.model
-    def _get_user_available_contract(self):
-        available_contracts = self.env['hr.contract']
-        if self._context.get('mi_legajo'):
-            employees = self.env.user.employee_id
-        else:
-            employees = self.employee_id or self.env['hr.employee'].search([])
-        if self._context.get('mi_legajo') or self.user_has_groups(
-                'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo'):
-            available_contracts = employees.mapped('contract_ids')
-        elif self.user_has_groups(
-                'onsc_legajo.group_legajo_hr_inciso'):
-            contract = self.env.user.employee_id.job_id.contract_id
-            inciso_id = contract.inciso_id.id
-            if inciso_id:
-                available_contracts = employees.mapped('contract_ids').filtered(
-                    lambda x: x.inciso_id.id == inciso_id and x.legajo_state in ['active', 'outgoing_commission',
-                                                                                 'incoming_commission'])
-        elif self.user_has_groups(
-                'onsc_legajo.group_legajo_hr_ue'):
-            contract = self.env.user.employee_id.job_id.contract_id
-            operating_unit_id = contract.operating_unit_id.id
-            if operating_unit_id:
-                available_contracts = employees.mapped('contract_ids').filtered(
-                    lambda x: x.operating_unit_id.id == operating_unit_id and x.legajo_state in ['active',
-                                                                                                 'outgoing_commission',
-                                                                                                 'incoming_commission'])
-        return available_contracts
+    def _get_abstract_config_security(self):
+        return self.user_has_groups(
+            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo')
+
+    def _get_abstract_inciso_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
+
+    def _get_abstract_ue_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_hr_ue')

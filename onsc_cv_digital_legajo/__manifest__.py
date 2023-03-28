@@ -11,8 +11,9 @@ ONSC CV Digital - Legajo
     'category': 'ONSC',
     'depends': ['onsc_cv_digital', 'hr', 'onsc_legajo'],
     'data': [
-        'security/ir.model.access.csv',
         'security/onsc_cv_digital_legajo_security.xml',
+        'security/onsc_cv_digital_legajo_rules.xml',
+        'security/ir.model.access.csv',
         'views/res_partner_views.xml',
         'views/onsc_cv_digital_views.xml',
         'views/onsc_cv_hr_employee_views.xml',
