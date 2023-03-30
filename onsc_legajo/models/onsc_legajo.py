@@ -50,8 +50,8 @@ class ONSCLegajo(models.Model):
     public_admin_entry_date = fields.Date(string=u'Fecha de ingreso a la administración pública')
     public_admin_inactivity_years_qty = fields.Integer(string=u'Años de inactividad')
 
-    contract_ids = fields.One2many('hr.contract', related='employee_id.contract_ids')
-    contracts_count = fields.Integer(string='Contract Count', related='employee_id.contracts_count')
+    contract_ids = fields.One2many('hr.contract', compute='_compute_contract_info')
+    contracts_count = fields.Integer(string='Cantidad de contratos', compute='_compute_contract_info')
 
     def _compute_contract_info(self):
         for record in self:
@@ -78,7 +78,7 @@ class ONSCLegajo(models.Model):
             action['res_id'] = self.contract_ids[0].id
         else:
             action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_hr_contract_action')
-            action['domain'] = [('employee_id', '=', self.employee_id.id)]
+            action['domain'] = [('id', 'in', self.contract_ids.ids)]
         return action
 
     def button_open_employee(self):

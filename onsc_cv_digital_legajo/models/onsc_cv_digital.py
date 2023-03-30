@@ -124,8 +124,8 @@ class ONSCCVDigital(models.Model):
     def _get_abstract_inciso_security(self):
         return self.user_has_groups('onsc_cv_digital_legajo.group_legajo_validador_doc_inciso')
 
-    def group_legajo_validador_doc_ue(self):
-        return self.user_has_groups('onsc_cv_digital_legajo.group_legajo_hr_ue')
+    def _get_abstract_ue_security(self):
+        return self.user_has_groups('onsc_cv_digital_legajo.group_legajo_validador_doc_ue')
 
 
 class ONSCCVInformationContact(models.Model):

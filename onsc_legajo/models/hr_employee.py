@@ -25,6 +25,21 @@ class HrEmployee(models.Model):
                         'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2', 'is_cv_race_public'
                         ]
 
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super(HrEmployee, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+                                                      submenu=submenu)
+        doc = etree.XML(res['arch'])
+        if view_type in ['form', 'tree', 'kanban'] and not self.env.user.has_group(
+                'onsc_legajo.group_legajo_configurador_empleado'):
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('create', '0')
+                node_form.set('edit', '0')
+                node_form.set('copy', '0')
+                node_form.set('delete', '0')
+        res['arch'] = etree.tostring(doc)
+        return res
+
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo')
