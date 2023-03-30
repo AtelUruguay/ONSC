@@ -5,8 +5,21 @@
             <field name="model">onsc.legajo</field>
             <field name="inherit_id" ref="onsc_legajo.onsc_legajo_form"/>
             <field name="arch" type="xml">
+                <div name="button_box" position="inside">
+<!--                    <button name="button_open_cv2validate"-->
+<!--                            groups="onsc_legajo.group_legajo_configurador_legajo,onsc_legajo.group_legajo_configurador_empleado"-->
+<!--                            class="oe_stat_button" icon="fa-book" type="object">-->
+<!--                        <div class="o_stat_info">-->
+<!--                            <span class="o_stat_text">-->
+<!--                                Validación de CV-->
+<!--                            </span>-->
+<!--                        </div>-->
+<!--                    </button>-->
+                </div>
                 <field name="employee_id" position="after">
-                    <field name="cv_digital_id"/>
+                    <field name="cv_digital_id"
+                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                           groups="onsc_legajo.group_legajo_configurador_legajo"/>
                 </field>
                 <xpath expr="//notebook" position="inside">
                     <page name="formation" string="Formación personal">

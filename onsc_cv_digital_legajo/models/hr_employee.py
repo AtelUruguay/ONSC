@@ -63,7 +63,7 @@ class HrEmployee(models.Model):
     def _compute_cv_digital_id(self):
         CVDigital = self.env['onsc.cv.digital']
         for record in self:
-            self.cv_digital_id = CVDigital.search([
+            record.cv_digital_id = CVDigital.search([
                 ('cv_emissor_country_id', '=', record.cv_emissor_country_id.id),
                 ('cv_document_type_id', '=', record.cv_document_type_id.id),
                 ('cv_nro_doc', '=', record.cv_nro_doc),

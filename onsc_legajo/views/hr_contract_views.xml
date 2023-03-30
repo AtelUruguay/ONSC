@@ -4,10 +4,12 @@
         <field name="name">hr.contract.form</field>
         <field name="model">hr.contract</field>
         <field name="arch" type="xml">
-            <form string="Current Contract">
+            <form string="Contrato">
                 <header>
-                    <button name="button_update_occupation" string="Actualizar ocupación" class="oe_highlight"
-                        groups="onsc_legajo.group_legajo_editar_ocupacion_contrato"/>
+                    <button name="button_update_occupation"
+                            type="object"
+                            string="Actualizar ocupación" class="oe_highlight"
+                            groups="onsc_legajo.group_legajo_editar_ocupacion_contrato"/>
                     <field name="legajo_state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -163,13 +165,17 @@
                         </page>
                         <page string="Puestos" name="puestos">
                             <field name="job_ids" nolabel="1" readonly="1"
-                                   
                                    context="{'form_view_ref' : 'onsc_legajo.onsc_legajo_hr_job_form_view'}">
-                                <tree>
+                                <tree editable="top">
                                     <field name="name"/>
                                     <field name="department_id" string="Unidad organizativa"/>
                                     <field name="start_date"/>
                                     <field name="end_date"/>
+                                    <button type="object"
+                                            string=" Ver puesto"
+                                            name="button_open_current_job"
+                                            groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                                            icon="fa-edit"/>
                                 </tree>
                             </field>
                         </page>

@@ -19,7 +19,7 @@
 
     <menuitem id="onsc_hr_milegajo_menu"
               name="Mi legajo"
-              action="onsc_milegajo_action"
+              action="onsc_milegajo_action_server"
               parent="onsc_legajo.onsc_legajo_root_menu"
               groups="onsc_legajo.group_legajo_consulta_milegajos"
               sequence="1"/>
@@ -55,7 +55,7 @@
               name="Puestos de trabajo"
               parent="onsc_legajo_root_menu"
               action="onsc_legajo_hr_job_action"
-              groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+              groups="onsc_legajo.group_legajo_configurador_puesto"
               sequence="7"/>
     <menuitem id="onsc_legajo_config_menu"
               name="Catálogos"
