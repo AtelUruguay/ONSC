@@ -8,3 +8,4 @@ from . import hr_job
 from . import hr_contract
 from . import onsc_legajo
 from . import ir_attachment
+from . import oncs_legajo_alta_vl
