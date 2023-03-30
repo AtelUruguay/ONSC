@@ -23,7 +23,7 @@ class ONSCLegajoAltaVL(models.Model):
     _description = 'Alta de vínculo laboral'
     _rec_name = 'full_name'
 
-    def get_domain(self, args):
+    def _get_domain(self, args):
         if self._context.get('is_from_menu') and self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
@@ -46,13 +46,13 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        args = self.get_domain(args)
+        args = self._get_domain(args)
         return super(ONSCLegajoAltaVL, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                       access_rights_uid=access_rights_uid)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        domain = self.get_domain(domain)
+        domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     @api.model
