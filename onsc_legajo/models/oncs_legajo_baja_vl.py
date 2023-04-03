@@ -78,14 +78,14 @@ class ONSCLegajoBajaVL(models.Model):
 
     @api.model
     def _get_default_inciso_id(self):
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or \
-                self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
+        if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso') or \
+                self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue'):
             return self.env.user.employee_id.job_id.contract_id.inciso_id
         return False
 
     @api.model
     def _get_default_ue_id(self):
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
+        if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue'):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
     def button_get_contract(self):
