@@ -35,9 +35,12 @@
                         <group>
                             <group>
                                 <field name="res_partner_id"/>
-                                <button name="button_get_contract"
-                                    type="object"
-                                    string="Buscar" class="oe_highlight"/>
+<!--                                <button name="button_get_contract"-->
+<!--                                    type="object"-->
+<!--                                    string="Buscar" class="oe_highlight"/>-->
+                            </group>
+                            <group >
+
                             </group>
 
                         </group>
@@ -67,17 +70,22 @@
 <!--                            -->
 <!--                        </group>-->
                          <group name="group4">
-                            <field name="reason_discharge"/>
-                            <field name="norm_code_discharge_id"/>
-                            <field name="norm_number_discharge" readonly="1"/>
-                            <field name="norm_year_discharge" readonly="1"/>
-                            <field name="norm_article_discharge" readonly="1"/>
+                              <group >
+                                <field name="reason_discharge"/>
+                                <field name="norm_code_discharge_id"/>
+                                <field name="norm_number_discharge" readonly="1"/>
+                                <field name="norm_year_discharge" readonly="1"/>
+                                <field name="norm_article_discharge" readonly="1"/>
+
+                            </group>
 
                         </group>
                         <group name="group5">
-                            <field name="resolution_description_discharge" />
-                            <field name="resolution_date_discharge"  />
-                            <field name="resolution_type_discharge" />
+                            <group>
+                                <field name="resolution_description_discharge" />
+                                <field name="resolution_date_discharge"  />
+                                <field name="resolution_type_discharge" />
+                            </group>
                         </group>
                         <group name="documentacion" string="Documentación">
                             <field name="attached_document_discharge_ids" nolabel="1">
@@ -90,14 +98,21 @@
                             </field>
                         </group>
                         <group name="group6">
-                            <field name="causes_discharge_id" />
-                            <field name="end_date"  />
-
+                            <group>
+                                <field name="causes_discharge_id" />
+                                <field name="end_date"  />
+                            </group>
                         </group>
                          <group name="group7">
-                             <field name="is_require_extended" invisible="1"/>
-                            <field name="attached_document_discharge_ids"  attrs="{'invsible': [('is_require_extended', '=', False)]}" />
-
+                            <group>
+                                <field name="is_require_extended" invisible="1"/>
+                                <field name="causes_discharge_line_ids"  attrs="{'invsible': [('is_require_extended', '=', False)]}" >
+                                    <tree string="Motivo de causal de egreso extendido" editable="top">
+                                        <field name="name"/>
+                                        <field name="description"/>
+                                    </tree>
+                                </field>
+                            </group>
 
                         </group>
 
@@ -113,7 +128,7 @@
 
         <record id='onsc_legajo_baja_vl_action' model='ir.actions.act_window'>
             <field name="name">Baja Vínculo Laboral</field>
-            <field name="res_model">onsc.legajo.alta.vl</field>
+            <field name="res_model">onsc.legajo.baja.vl</field>
             <field name="view_mode">tree,form</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">

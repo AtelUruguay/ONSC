@@ -3,8 +3,6 @@ import json
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-from odoo.osv import expression
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 STATES = [
     ('borrador', 'Borrador'),
@@ -41,11 +39,13 @@ class ONSCLegajoBajaVL(models.Model):
     _description = 'Baja de vínculo laboral'
 
     def _get_domain_partner_ids(self):
-        partner_ids = self.env['hr.contract'].search([('active','=',True)]).mapped('employee_id.user_id.partner_id')
+        partner_ids = self.env['hr.contract'].search([('legajo_state','=','active'),
+                                                      ('incisio_id','=',self.env.user.employee_id.job_id.contract_id.inciso_id),
+                                                      ('operating_unit_id','=','active')]).mapped('employee_id.user_id.partner_id')
         return [('id', 'in', partner_ids.ids)]
 
     end_date = fields.Date(string="Fecha de Baja",  default=fields.Date.today(), required = True,copy=False)
-    res_partner_id = fields.Many2one('res.partner', string='Causal de Egreso', copy=False)
+    res_partner_id = fields.Many2one('res.partner', string='Contacto', copy=False)
     full_name = fields.Char("Nombre",related="res_partner_id.cv_full_name")
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
@@ -89,10 +89,22 @@ class ONSCLegajoBajaVL(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
     def button_get_contract(self):
-        employee_id = self.env['hr.employee'].sudo().search([('cv_emissor_country_id', '=', self.cv_document_type_id.id),
-                                                             ('cv_document_type_id', '=', self.cv_document_type_id.id),
+        employee_id = self.env['hr.employee'].sudo().search([('cv_emissor_country_id.code', '=', "UY"),
+                                                             ('cv_document_type_id.code', '=', 'ci'),
                                                              ('cv_nro_doc', '=',self.cv_nro_doc)])
 
         contract_ids = self.env['hr.contract'].sudo().search([('employee_id', '=', employee_id.id)])
 
         self.cv_birthdate = employee_id.cv_birthdate
+        # for  contract_id in contract_ids:
+        #      nroPuesto
+        #      nroPlaza
+        #      descriptor1_id
+        #      descriptor2_id
+        #      descriptor3_id
+        #      descriptor4_id
+        #      inciso_id
+        #      operating_unit_id
+        #      programa
+        #      proyecto
+        #      regime_id

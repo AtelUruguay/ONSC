@@ -16,11 +16,11 @@
               name="Legajos"
               web_icon="onsc_catalog,static/description/icon.png"
               sequence="4"/>
-
-      <menuitem id="onsc_legajo_acciones_root_menu"
+    <menuitem id="onsc_legajo_acciones_menu"
               name="Acciones de funcionarios"
-              parent="onsc_legajo.onsc_legajo_root_menu"
+              parent="onsc_legajo_root_menu"
               sequence="60"/>
+
 
     <menuitem id="onsc_hr_milegajo_menu"
               name="Mi legajo"
@@ -160,7 +160,7 @@
     <menuitem
             id="onsc_baja_vl_menu"
             name="Baja vínculo laboral"
-            parent="onsc_legajo.onsc_legajo_acciones_root_menu"
+            parent="onsc_legajo.onsc_legajo_acciones_menu"
             action="onsc_legajo.onsc_legajo_baja_vl_action"
             groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue"
             sequence="5"/>
