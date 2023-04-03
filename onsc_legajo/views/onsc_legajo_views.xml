@@ -75,7 +75,9 @@
                 </header>
                 <sheet>
                     <div name="button_box" class="oe_button_box">
-                        <button name="button_open_employee" class="oe_stat_button" icon="fa-book" type="object">
+                        <button name="button_open_employee" class="oe_stat_button"
+                                context="{'create': False, 'edit': False, 'delete':False, 'copy':False}"
+                                icon="fa-book" type="object">
                             <div class="o_stat_info">
                                 <span class="o_stat_text">
                                     Datos personales
