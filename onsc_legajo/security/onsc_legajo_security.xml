@@ -135,5 +135,23 @@
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
+
+
+        <!--BAJA VL-->
+        <record id="group_legajo_baja_vl_recursos_humanos_inciso" model="res.groups">
+            <field name="name">Baja VL - Recursos Humanos Inciso</field>
+            <field name="comment">Baja VL - Recursos Humanos Inciso</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+
+        <record id="group_legajo_baja_vl_recursos_humanos_ue" model="res.groups">
+            <field name="name">Baja VL - Recursos Humanos UE</field>
+            <field name="comment">Baja VL - Recursos Humanos UE</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
     </data>
 </odoo>
