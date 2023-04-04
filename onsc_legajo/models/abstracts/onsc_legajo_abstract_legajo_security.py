@@ -49,8 +49,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         else:
             employees = employee_id or self.env['hr.employee'].search([])
         if self._context.get('mi_legajo'):
-            available_contracts = employees.mapped('contract_ids').filtered(
-                lambda x: x.legajo_state in ['active', 'outgoing_commission', 'incoming_commission'])
+            available_contracts = employees.mapped('contract_ids')
         elif self._get_abstract_config_security():
             available_contracts = employees.mapped('contract_ids')
         elif self._get_abstract_inciso_security():
@@ -65,23 +64,32 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         return available_contracts
 
     def _get_available_contracts(self, employees, security_hierarchy_value, security_hierarchy_level):
-        base_args = [
-            (security_hierarchy_level, '=', security_hierarchy_value),
-            ('employee_id', 'in', employees.ids),
-            '|','|',
-            ('legajo_state', 'in', ['active']),
-            '&', ('legajo_state', '=', 'incoming_commission'),'|',('date_end', '=', False),('date_end', '>', fields.Date.today()),
-            '&', ('legajo_state', '=', 'outgoing_commission'),('inciso_id.is_central_administration', '=', True)
-        ]
+        # LEGAJOS VIGENTES
+        if self._context.get('only_active_contracts'):
+            base_args = [
+                (security_hierarchy_level, '=', security_hierarchy_value),
+                ('employee_id', 'in', employees.ids),
+                ('legajo_state', 'in', ['active']),
+            ]
+        else:
+            base_args = [
+                (security_hierarchy_level, '=', security_hierarchy_value),
+                ('employee_id', 'in', employees.ids),
+                '|',
+                ('legajo_state', 'in', ['active','outgoing_commission']),
+                '&', ('legajo_state', '=', 'incoming_commission'),'|',('date_end', '=', False),('date_end', '>', fields.Date.today()),
+            ]
         available_contracts = self.env['hr.contract'].search(base_args)
         available_contracts_employees = available_contracts.mapped('employee_id')
+        # NO VIGENTES
+        # TODO: filtrar partner is_legajo activado
         for employee in employees.filtered(
                 lambda x: x.id not in available_contracts_employees.ids and len(x.contract_ids)):
-            last_baja_contract = employee.contract_ids.filtered(lambda x: x.legajo_state == 'baja')
+            last_baja_contract = employee.contract_ids.filtered(lambda x: x.legajo_state in ['baja','incoming_commission'])
             if last_baja_contract:
-                last_baja_contract = last_baja_contract.sorted(key=lambda x: x.date_end, reverse=True)[0]
+                last_baja_contract = last_baja_contract.sorted(key=lambda x: x.date_end is False and x.date_end, reverse=True)[0]
             is_any_active_contract = len(employee.contract_ids.filtered(
-                lambda x: x.legajo_state in ['active', 'outgoing_commission', 'incoming_commission'])) > 0
+                lambda x: x.legajo_state in ['active', 'outgoing_commission'])) > 0
             if not is_any_active_contract and eval('last_baja_contract.%s.id == %s' % (security_hierarchy_level, security_hierarchy_value)):
                 available_contracts |= last_baja_contract
         return available_contracts

@@ -7,9 +7,10 @@
             <form string="Contrato">
                 <header>
                     <button name="button_update_occupation"
+                            attrs="{'invisible': [('show_button_update_occupation', '!=', True)]}"
                             type="object"
                             string="Actualizar ocupación" class="oe_highlight"
-                            groups="onsc_legajo.group_legajo_editar_ocupacion_contrato"/>
+                            />
                     <field name="legajo_state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -19,6 +20,7 @@
                         </h1>
                         <h2>
                             <field name="company_id" groups="base.group_multi_company" invisible="1"/>
+                            <field name="show_button_update_occupation" invisible="1"/>
                         </h2>
                     </div>
                     <group name="top_info">
