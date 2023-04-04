@@ -40,8 +40,8 @@ class ONSCLegajoBajaVL(models.Model):
 
     def _get_domain_partner_ids(self):
         partner_ids = self.env['hr.contract'].search([('legajo_state','=','active'),
-                                                      ('incisio_id','=',self.env.user.employee_id.job_id.contract_id.inciso_id),
-                                                      ('operating_unit_id','=','active')]).mapped('employee_id.user_id.partner_id')
+                                                      ('incisio_id','=',self.env.user.employee_id.job_id.contract_id.inciso_id.id),
+                                                      ('operating_unit_id','=',self.env.user.employee_id.job_id.contract_id.operating_unit_id.id)]).mapped('employee_id.user_id.partner_id')
         return [('id', 'in', partner_ids.ids)]
 
     end_date = fields.Date(string="Fecha de Baja",  default=fields.Date.today(), required = True,copy=False)
