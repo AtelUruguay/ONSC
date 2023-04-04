@@ -14,6 +14,7 @@ STATES = [
     ('gafi_error', 'GAFI Error'),
 ]
 
+
 class ONSCEmploymentRelationship(models.Model):
     _name = 'onsc.legajo.employment.relationship'
     _description = 'Vínculo laboral'
@@ -32,30 +33,34 @@ class ONSCEmploymentRelationship(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False)
 
 
-
 class ONSCLegajoBajaVL(models.Model):
     _name = 'onsc.legajo.baja.vl'
     _inherit = ['onsc.legajo.actions.common.data', 'mail.thread', 'mail.activity.mixin']
     _description = 'Baja de vínculo laboral'
 
     def _get_domain_partner_ids(self):
-        partner_ids = self.env['hr.contract'].search([('legajo_state','=','active'),
-                                                      ('incisio_id','=',self.env.user.employee_id.job_id.contract_id.inciso_id.id),
-                                                      ('operating_unit_id','=',self.env.user.employee_id.job_id.contract_id.operating_unit_id.id)]).mapped('employee_id.user_id.partner_id')
+        partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
+                                                      ('incisio_id', '=',
+                                                       self.env.user.employee_id.job_id.contract_id.inciso_id.id),
+                                                      ('operating_unit_id', '=',
+                                                       self.env.user.employee_id.job_id.contract_id.operating_unit_id.id)]).mapped(
+            'employee_id.user_id.partner_id')
         return [('id', 'in', partner_ids.ids)]
 
-    end_date = fields.Date(string="Fecha de Baja",  default=fields.Date.today(), required = True,copy=False)
+    end_date = fields.Date(string="Fecha de Baja", default=fields.Date.today(), required=True, copy=False)
     res_partner_id = fields.Many2one('res.partner', string='Contacto', copy=False)
-    full_name = fields.Char("Nombre",related="res_partner_id.cv_full_name")
+    full_name = fields.Char("Nombre", related="res_partner_id.cv_full_name")
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
-    causes_discharge_line_ids = fields.One2many('onsc.legajo.causes.discharge.line',related='causes_discharge_id.causes_discharge_line_ids',
+    causes_discharge_line_ids = fields.One2many('onsc.legajo.causes.discharge.line',
+                                                related='causes_discharge_id.causes_discharge_line_ids',
                                                 string="Motivos de causal de egreso extendido")
-    employment_relationship_ids = fields.One2many('onsc.legajo.employment.relationship','baja_vl_id',
-                                                string="Vínculo laboral")
+    employment_relationship_ids = fields.One2many('onsc.legajo.employment.relationship', 'baja_vl_id',
+                                                  string="Vínculo laboral")
     attached_document_discharge_ids = fields.One2many('onsc.legajo.alta.vl.attached.document', 'baja_vl_id',
                                                       string='Documentos adjuntos')
-    integration_error_id = fields.Many2one('onsc.legajo.integration.error', string=u'Error reportado integración', copy=False)
+    integration_error_id = fields.Many2one('onsc.legajo.integration.error', string=u'Error reportado integración',
+                                           copy=False)
     contract_id = fields.Many2one('hr.contract', 'Contrato')
     id_baja = fields.Char(string="Id Baja")
     is_require_extended = fields.Boolean("¿Requiere extendido?", related="causes_discharge_id.is_require_extended")
@@ -88,10 +93,11 @@ class ONSCLegajoBajaVL(models.Model):
         if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue'):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
+
     def button_get_contract(self):
         employee_id = self.env['hr.employee'].sudo().search([('cv_emissor_country_id.code', '=', "UY"),
                                                              ('cv_document_type_id.code', '=', 'ci'),
-                                                             ('cv_nro_doc', '=',self.cv_nro_doc)])
+                                                             ('cv_nro_doc', '=', self.cv_nro_doc)])
 
         contract_ids = self.env['hr.contract'].sudo().search([('employee_id', '=', employee_id.id)])
 
