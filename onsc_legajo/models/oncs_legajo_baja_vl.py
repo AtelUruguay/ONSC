@@ -44,7 +44,7 @@ class ONSCLegajoBajaVL(models.Model):
                                                        self.env.user.employee_id.job_id.contract_id.inciso_id.id),
                                                       ('operating_unit_id', '=',
                                                        self.env.user.employee_id.job_id.contract_id.operating_unit_id.id)]).mapped(
-            'employee_id.user_id.partner_id')
+            'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
         return [('id', 'in', partner_ids.ids)]
 
     end_date = fields.Date(string="Fecha de Baja", default=fields.Date.today(), required=True, copy=False)
