@@ -65,6 +65,7 @@ class HrContract(models.Model):
     workplace = fields.Char(string='Plaza', history=True)
     reason_discharge = fields.Char(string='Descripción del motivo alta', history=True)
     norm_code_discharge_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
+    type_norm_discharge = fields.Char(string='Tipo de norma alta', related='norm_code_discharge_id.tipoNorma')
     norm_number_discharge = fields.Integer(string='Número de norma alta',
                                            related='norm_code_discharge_id.numeroNorma')
     norm_year_discharge = fields.Integer(string='Año de norma alta', related='norm_code_discharge_id.anioNorma')
@@ -84,6 +85,7 @@ class HrContract(models.Model):
     id_deregistration_discharge = fields.Char(string='Id de baja', history=True)
     reason_deregistration = fields.Char(string='Descripción del motivo baja', history=True)
     norm_code_deregistration_id = fields.Many2one('onsc.legajo.norm', string='Código de la norma de baja', history=True)
+    type_norm_deregistration = fields.Char(string='Tipo de norma baja', related='norm_code_deregistration_id.tipoNorma')
     norm_number_deregistration = fields.Integer(string='Número de norma baja',
                                                 related='norm_code_deregistration_id.numeroNorma')
     norm_year_deregistration = fields.Integer(string='Año de norma baja',

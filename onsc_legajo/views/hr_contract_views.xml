@@ -10,7 +10,7 @@
                             attrs="{'invisible': [('show_button_update_occupation', '!=', True)]}"
                             type="object"
                             string="Actualizar ocupación" class="oe_highlight"
-                            />
+                    />
                     <field name="legajo_state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -27,37 +27,37 @@
                         <group name="top_info_left">
                             <field name="active" invisible="1"/>
                             <field name="name" invisible="1"/>
-                            <field name="nro_doc" />
-                            <field name="first_name" />
-                            <field name="second_name" />
-                            <field name="last_name_1" />
-                            <field name="last_name_2" />
+                            <field name="nro_doc"/>
+                            <field name="first_name"/>
+                            <field name="second_name"/>
+                            <field name="last_name_1"/>
+                            <field name="last_name_2"/>
                             <field name="date_start" string="Fecha de alta"
-                                   />
+                            />
                             <field name="date_end" string="Fecha de baja"
-                                   />
+                            />
                             <field name="inciso_id"
                                    required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   />
+                            />
                             <field name="operating_unit_id" domain="operating_unit_id_domain"
                                    required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   />
+                            />
                             <field name="operating_unit_id_domain" invisible="1"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="wage" invisible="1"/>
                             <field name="income_mechanism_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   />
+                            />
 
-                            <field name="call_number" />
+                            <field name="call_number"/>
                             <field name="cs_contract_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   />
-                            <field name="program"  required="1"/>
-                            <field name="project"  required="1"/>
-                            <field name="regime_id" 
+                            />
+                            <field name="program" required="1"/>
+                            <field name="project" required="1"/>
+                            <field name="regime_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    required="1"/>
                             <field name="occupation_id"
@@ -70,77 +70,78 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="descriptor4_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="graduation_date" />
-                            <field name="position" 
+                            <field name="graduation_date"/>
+                            <field name="position"
                                    required="1"/>
-                            <field name="workplace" 
+                            <field name="workplace"
                                    required="1"/>
-                            <field name="sec_position" 
+                            <field name="sec_position"
                                    required="1"/>
                         </group>
                         <group>
-                            <field name="reason_discharge" 
+                            <field name="reason_discharge"
                                    required="1"/>
                             <field name="norm_code_discharge_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   />
-                            <field name="norm_number_discharge"
-                                   />
-                            <field name="norm_year_discharge" />
+                            />
+
+                            <field name="type_norm_discharge"/>
+                            <field name="norm_year_discharge"/>
                             <field name="norm_article_discharge"
-                                   />
+                            />
                             <field name="resolution_description_discharge"
-                                    required="1"/>
+                                   required="1"/>
                             <field name="resolution_date_discharge"
-                                    required="1"/>
+                                   required="1"/>
                             <field name="resolution_type_discharge"
-                                    required="1"/>
+                                   required="1"/>
                             <field name="contract_expiration_date"
-                                    required="1"/>
+                                   required="1"/>
                             <field name="additional_information_discharge"
-                                   />
-                            <field name="code_day" />
-                            <field name="description_day" />
+                            />
+                            <field name="code_day"/>
+                            <field name="description_day"/>
                             <field name="retributive_day_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   />
+                            />
                             <field name="id_registration_discharge"
-                                   />
+                            />
                             <field name="id_deregistration_discharge"
-                                   />
+                            />
                             <field name="reason_deregistration"
-                                   />
+                            />
                             <field name="norm_code_deregistration_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   />
+                            />
+                            <field name="type_norm_deregistration"/>
                             <field name="norm_number_deregistration"
-                                   />
+                            />
                             <field name="norm_year_deregistration"
-                                   />
+                            />
                             <field name="norm_article_deregistration"
-                                   />
+                            />
                             <field name="resolution_description_deregistration"
-                                   />
+                            />
                             <field name="resolution_date_deregistration"
-                                   />
+                            />
                             <field name="resolution_type_deregistration"
-                                   />
+                            />
                             <field name="causes_discharge_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   />
+                            />
                             <field name="is_require_extended" invisible="1"/>
                             <field name="causes_discharge_extended"
                                    attrs="{'invisible': [('is_require_extended', '!=', True)]}"
-                                   />
+                            />
                             <field name="additional_information_deregistration"
-                                   />
+                            />
                         </group>
                     </group>
                     <notebook>
                         <page string="Documentos Adjuntos Alta" name="documents_alta">
                             <field name="attached_document_discharge_ids" nolabel="1"
                                    context="{'default_type': 'discharge'}"
-                                   >
+                            >
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
@@ -154,7 +155,7 @@
                         <page string="Documentos Adjuntos Baja" name="documents_baja">
                             <field name="attached_document_deregistration_ids" nolabel="1"
                                    context="{'default_type': 'deregistration'}"
-                                   >
+                            >
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
@@ -200,10 +201,10 @@
                 <field name="name"/>
                 <field name="employee_id" widget="many2one_avatar_employee"/>
                 <field name="job_ids" widget="many2many_tags"/>
-                <field name="date_start" />
-                <field name="date_end" />
+                <field name="date_start"/>
+                <field name="date_end"/>
                 <field name="company_id" groups="base.group_multi_company" invisible="1"/>
-                <field name="legajo_state" />
+                <field name="legajo_state"/>
             </tree>
         </field>
     </record>
