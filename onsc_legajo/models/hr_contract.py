@@ -110,6 +110,8 @@ class HrContract(models.Model):
                                                            domain=[('type', '=', 'deregistration')])
     job_ids = fields.One2many('hr.job', 'contract_id', string='Puestos')
 
+    show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
+
     @api.onchange('inciso_id')
     def onchange_inciso(self):
         self.operating_unit_id = False
@@ -140,6 +142,14 @@ class HrContract(models.Model):
                                                ('end_date', '=', False)]
                 self.operating_unit_id_domain = json.dumps(domain)
 
+    def _compute_show_button_update_occupation(self):
+        for rec in self:
+            is_valid_group = self.env.user.has_group(
+                'onsc_legajo.group_legajo_editar_ocupacion_contrato')
+            is_valid_incoming = rec.legajo_state == 'incoming_commission' and (
+                        rec.date_end is False or rec.date_end > fields.Date.today())
+            is_valid_state = rec.legajo_state == 'active'
+            rec.show_button_update_occupation = is_valid_group and (is_valid_state or is_valid_incoming)
     @api.model
     def get_history_record_action(self, history_id, res_id):
         return super(HrContract, self.with_context(model_view_form_id=self.env.ref(

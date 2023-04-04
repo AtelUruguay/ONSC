@@ -127,6 +127,66 @@ class ONSCCVDigital(models.Model):
                                                string="Usuario validación documental",
                                                tracking=True)
 
+    # Carné de salud laboral
+    occupational_health_card_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    occupational_health_card_write_date = fields.Datetime('Fecha de última modificación',
+                                         index=True,
+                                         default=lambda *a: fields.Datetime.now())
+    occupational_health_card_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
+                                                    tracking=True)
+    occupational_health_card_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+    occupational_health_card_documentary_user_id = fields.Many2one(comodel_name="res.users",
+                                                  string="Usuario validación documental",
+                                                  tracking=True)
+
+    # Certificado de aptitud médico-deportiva
+    medical_aptitude_certificate_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    medical_aptitude_certificate_write_date = fields.Datetime('Fecha de última modificación',
+                                         index=True,
+                                         default=lambda *a: fields.Datetime.now())
+    medical_aptitude_certificate_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
+                                                    tracking=True)
+    medical_aptitude_certificate_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+    medical_aptitude_certificate_documentary_user_id = fields.Many2one(comodel_name="res.users",
+                                                  string="Usuario validación documental",
+                                                  tracking=True)
+    
+    # Víctima de delitos violentos
+    victim_violent_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    victim_violent_write_date = fields.Datetime('Fecha de última modificación',
+                                         index=True,
+                                         default=lambda *a: fields.Datetime.now())
+    victim_violent_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
+                                                    tracking=True)
+    victim_violent_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+    victim_violent_documentary_user_id = fields.Many2one(comodel_name="res.users",
+                                                  string="Usuario validación documental",
+                                                  tracking=True)
+
+    # Domicilio
+    cv_address_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    cv_address_write_date = fields.Datetime('Fecha de última modificación',
+                                                index=True,
+                                                default=lambda *a: fields.Datetime.now())
+    cv_address_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
+                                                           tracking=True)
+    cv_address_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+    cv_address_documentary_user_id = fields.Many2one(comodel_name="res.users",
+                                                         string="Usuario validación documental",
+                                                         tracking=True)
+
     @api.depends('is_cv_gender_public')
     def _compute_gender_public_visualization_date(self):
         for record in self:
