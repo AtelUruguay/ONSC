@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import SUPERUSER_ID, models, fields, api, _
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 from odoo.exceptions import ValidationError
+
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 # TODO female otherwhise feminine
 CV_SEX = [('male', 'Masculino'), ('feminine', 'Femenino')]
@@ -128,3 +129,12 @@ class ResPartner(models.Model):
         if self.check_can_update():
             return super(ResPartner, self).unlink()
         raise ValidationError(_('No puede eliminar un Contacto de ONSC'))
+
+    def name_get(self):
+        res = []
+        for record in self:
+            name = record.cv_full_name
+            if self._context.get('show_cv_nro_doc', False) and record.cv_nro_doc:
+                name = record.cv_nro_doc
+            res.append((record.id, name))
+        return res
