@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="onsc_legajo_alta_cs_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.alta.cs.search</field>
+        <field name="model">onsc.legajo.alta.cs</field>
+        <field name="arch" type="xml">
+            <search string="Altas de Comisión">
+                <filter string="Para procesar" name="filter_altas_draft"
+                        domain="[('state','in',['borrador','to_process','returned'])]"/>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="view_onsc_legajo_alta_cs_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.alta.cs.form</field>
+        <field name="model">onsc.legajo.alta.cs</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Alta de Comisión Saliente">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+
+                    <group string="Datos del puesto seleccionado">
+                        <group>
+                            <field name="inciso_origin_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_origin_id" domain="operating_unit_origin_id_domain"/>
+                            <field name="operating_unit_origin_id_domain" invisible="1"/>
+                            <field name="is_inciso_origin_ac" invisible="1"/>
+
+                        </group>
+                        <group>
+                            <field name="partner_id" domain="partner_id_domain" context="{'show_cv_nro_doc':True}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="partner_id_domain" invisible="1"/>
+                            <field name="full_name" readonly="1"/>
+                        </group>
+                    </group>
+                    <br></br>
+                    <group string="Origen">
+                        <field name="line_ids" readonly="1" force_save="1">
+                            <tree string="Origen" editable="top">
+                                <field name="position" force_save="1"/>
+                                <field name="workplace" force_save="1"/>
+                                <field name="workplace_state" force_save="1"/>
+                                <field name="is_selected" widget="boolean_toggle" force_save="1"/>
+                                <field name="contract_id" invisible="1"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <br></br>
+
+                    <group string="Datos del puesto seleccionado"
+                           attrs="{'invisible': [('is_inciso_origin_ac', '!=', True)]}">
+                        <group>
+                            <field name="program_origin"/>
+                            <field name="project_origin"/>
+                            <field name="regime_origin_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </group>
+                        <group>
+                            <field name="descriptor1_id" readonly="1"/>
+                            <field name="descriptor2_id" readonly="1"/>
+                            <field name="descriptor3_id" readonly="1"/>
+                            <field name="descriptor4_id" readonly="1"/>
+                        </group>
+                    </group>
+
+                    <group string="Destino">
+                        <group>
+                            <field name="inciso_destination_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   domain="inciso_destination_id_domain"/>
+                            <field name="inciso_destination_id_domain" invisible="1"/>
+                            <field name="type_move_selection"/>
+                            <field name="operating_unit_destination_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_destination_id_domain" invisible="1"/>
+                            <field name="office_id"
+                                   domain="office_id_domain"
+                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="office_id_domain" invisible="1"/>
+                            <field name="program_destination" readonly="1"
+                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                            <field name="project_destination" readonly="1"
+                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                            <field name="date_start_commission"
+                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                        </group>
+                        <group>
+                            <field name="department_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                            <field name="security_job_id"
+                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                            <field name="occupation_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                            <field name="regime_commission_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                        </group>
+                    </group>
+                    <group string="Ingreso Motivo"
+                           attrs="{'invisible': [('type_move_selection', '=', 'ac2ac')]}">
+                        <group>
+                            <field name="description_reason"/>
+                            <field name="norm_code_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="norm_number"/>
+                            <field name="norm_year"/>
+                            <field name="norm_article"/>
+                        </group>
+                        <group>
+                            <field name="tag_norm_not_found"/>
+                            <field name="description_resolution"/>
+                            <field name="date_resolution"/>
+                            <field name="resolution_type"/>
+                        </group>
+                    </group>
+
+                    <group name="documentacion" string="Documentación">
+                        <field name="attached_documen_ids" nolabel="1">
+                            <tree editable="top">
+                                <field name="name" required="1"/>
+                                <field name="document_type_id" required="1"/>
+                                <field name="document_file" required="1" filename="document_file_name"/>
+                                <field name="document_file_name" invisible="1"/>
+                            </tree>
+                        </field>
+                        <group name="adicional" string="Información Adicional">
+                            <field name="additional_information" nolabel="1" placeholder="Información Adicional"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_onsc_legajo_alta_cs_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.alta.cs.tree</field>
+        <field name="model">onsc.legajo.alta.cs</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Alta de Comisión Saliente">
+                <field name="full_name"/>
+                <field name="state"/>
+                <field name="inciso_origin_id"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

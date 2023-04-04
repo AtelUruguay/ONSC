@@ -46,6 +46,7 @@ ONSC - Legajo
         'views/onsc_legajo_views.xml',
         'views/onsc_legajo_menuitems.xml',
         'views/ir_attachment_view.xml',
+        'views/onsc_legajo_alta_cs_view.xml',
     ],
     'demo': [],
     'installable': True,

@@ -16,7 +16,7 @@ _logger = logging.getLogger(__name__)
 class ONSCLegajoClient():
 
     def __init__(self):
-        self.timeout = 20
+        self.timeout = 100020
 
     def _create_unverified_https_context(self):
         try:
@@ -45,7 +45,7 @@ class ONSCLegajoClient():
                   "El formato esperado es: wsdl;método") % (
                     ws_url, name))
         wsdl = ws_url_splitted[0]
-        client = Client(wsdl, timeout=self.timeout)
+        client = Client(wsdl, timeout=1000)
         if not client:
             raise ValidationError(_("No se pudo establecer la conexión con el servicio"))
         return client

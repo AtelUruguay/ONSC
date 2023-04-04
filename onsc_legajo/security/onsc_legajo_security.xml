@@ -108,5 +108,27 @@
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
+
+        <record id="group_legajo_consulta_altas_cs" model="res.groups">
+            <field name="name">Consulta de Altas CS</field>
+            <field name="comment">Consulta de Altas CS</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_hr_inciso_alta_cs" model="res.groups">
+            <field name="name">Altas CS - Recursos Humanos Inciso</field>
+            <field name="comment">Altas CS - Recursos Humanos Inciso</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_hr_ue_alta_cs" model="res.groups">
+            <field name="name">Altas CS - Recursos Humanos UE</field>
+            <field name="comment">Altas CS - Recursos Humanos UE</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
     </data>
 </odoo>

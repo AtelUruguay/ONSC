@@ -63,6 +63,7 @@ class HrContract(models.Model):
     graduation_date = fields.Date(string='Fecha de graduación', history=True)
     position = fields.Char(string='Puesto', history=True)
     workplace = fields.Char(string='Plaza', history=True)
+    workplace_state = fields.Char( string='Estado de la plaza' ,history=True)
     reason_discharge = fields.Char(string='Descripción del motivo alta', history=True)
     norm_code_discharge_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
     norm_number_discharge = fields.Integer(string='Número de norma alta',

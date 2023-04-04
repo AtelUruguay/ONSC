@@ -75,6 +75,7 @@
                                    required="1"/>
                             <field name="sec_position" 
                                    required="1"/>
+                            <field name="workplace_state"/>
                         </group>
                         <group>
                             <field name="reason_discharge" 
