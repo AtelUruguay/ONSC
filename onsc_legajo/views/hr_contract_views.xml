@@ -172,6 +172,7 @@
                                     <field name="start_date"/>
                                     <field name="end_date"/>
                                     <button type="object"
+                                            string=" Ver puesto"
                                             name="button_open_current_job"
                                             groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                             icon="fa-edit"/>

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, api
+from odoo import models, api, fields
 
 from odoo.osv import expression
 
@@ -56,16 +56,39 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         elif self._get_abstract_inciso_security():
             contract = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract.inciso_id.id
-            if inciso_id:
-                available_contracts = employees.mapped('contract_ids').filtered(
-                    lambda x: x.inciso_id.id == inciso_id and x.legajo_state in ['active', 'outgoing_commission',
-                                                                                 'incoming_commission'])
+            available_contracts = self._get_available_contracts(employees, inciso_id, 'inciso_id')
         elif self._get_abstract_ue_security():
             contract = self.env.user.employee_id.job_id.contract_id
             operating_unit_id = contract.operating_unit_id.id
             if operating_unit_id:
-                available_contracts = employees.mapped('contract_ids').filtered(
-                    lambda x: x.operating_unit_id.id == operating_unit_id and x.legajo_state in ['active',
-                                                                                                 'outgoing_commission',
-                                                                                                 'incoming_commission'])
+                available_contracts = self._get_available_contracts(employees, operating_unit_id, 'operating_unit_id')
+        return available_contracts
+
+    def _get_available_contracts(self, employees, security_hierarchy_value, security_hierarchy_level):
+        if self._context.get('only_active_contracts'):
+            base_args = [
+                (security_hierarchy_level, '=', security_hierarchy_value),
+                ('employee_id', 'in', employees.ids),
+                ('legajo_state', 'in', ['active']),
+            ]
+        else:
+            base_args = [
+                (security_hierarchy_level, '=', security_hierarchy_value),
+                ('employee_id', 'in', employees.ids),
+                '|','|',
+                ('legajo_state', 'in', ['active']),
+                '&', ('legajo_state', '=', 'incoming_commission'),'|',('date_end', '=', False),('date_end', '>', fields.Date.today()),
+                '&', ('legajo_state', '=', 'outgoing_commission'),('inciso_id.is_central_administration', '=', True)
+            ]
+        available_contracts = self.env['hr.contract'].search(base_args)
+        available_contracts_employees = available_contracts.mapped('employee_id')
+        for employee in employees.filtered(
+                lambda x: x.id not in available_contracts_employees.ids and len(x.contract_ids)):
+            last_baja_contract = employee.contract_ids.filtered(lambda x: x.legajo_state == 'baja')
+            if last_baja_contract:
+                last_baja_contract = last_baja_contract.sorted(key=lambda x: x.date_end, reverse=True)[0]
+            is_any_active_contract = len(employee.contract_ids.filtered(
+                lambda x: x.legajo_state in ['active', 'outgoing_commission', 'incoming_commission'])) > 0
+            if not is_any_active_contract and eval('last_baja_contract.%s.id == %s' % (security_hierarchy_level, security_hierarchy_value)):
+                available_contracts |= last_baja_contract
         return available_contracts
