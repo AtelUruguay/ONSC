@@ -55,18 +55,6 @@ class ONSCCVDigital(models.Model):
     # other_information_official = fields.Text(string="Otra información del funcionario/a")
 
     # LEGAJO VALIDACION DOCUMENTAL
-    # Foto
-    photo_documentary_validation_state = fields.Selection(
-        string="Estado de validación documental",
-        selection=DOCUMENTARY_VALIDATION_STATES,
-        default='to_validate')
-    photo_write_date = fields.Datetime('Fecha de última modificación',
-                                       index=True,
-                                       default=lambda *a: fields.Datetime.now())
-    photo_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental', tracking=True)
-    photo_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
-    photo_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
-                                                tracking=True)
     # Estado civil
     marital_status_documentary_validation_state = fields.Selection(
         string="Estado de validación documental",
@@ -81,7 +69,18 @@ class ONSCCVDigital(models.Model):
     marital_status_documentary_user_id = fields.Many2one(comodel_name="res.users",
                                                          string="Usuario validación documental",
                                                          tracking=True)
-
+    # Foto
+    photo_documentary_validation_state = fields.Selection(
+        string="Estado de validación documental",
+        selection=DOCUMENTARY_VALIDATION_STATES,
+        default='to_validate')
+    photo_write_date = fields.Datetime('Fecha de última modificación',
+                                       index=True,
+                                       default=lambda *a: fields.Datetime.now())
+    photo_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental', tracking=True)
+    photo_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+    photo_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
+                                                tracking=True)
     # Genero
     is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record', store=True)
     gender_documentary_validation_state = fields.Selection(
@@ -104,28 +103,28 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     cv_race_write_date = fields.Datetime('Fecha de última modificación',
-                                        index=True,
-                                        default=lambda *a: fields.Datetime.now())
+                                         index=True,
+                                         default=lambda *a: fields.Datetime.now())
     cv_race_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
-                                                   tracking=True)
+                                                    tracking=True)
     cv_race_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
     cv_race_documentary_user_id = fields.Many2one(comodel_name="res.users",
-                                                 string="Usuario validación documental",
-                                                 tracking=True)
+                                                  string="Usuario validación documental",
+                                                  tracking=True)
 
     afro_descendant_documentary_validation_state = fields.Selection(
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     afro_descendant_write_date = fields.Datetime('Fecha de última modificación',
-                                      index=True,
-                                      default=lambda *a: fields.Datetime.now())
+                                                 index=True,
+                                                 default=lambda *a: fields.Datetime.now())
     afro_descendant_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
-                                                 tracking=True)
+                                                            tracking=True)
     afro_descendant_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
     afro_descendant_documentary_user_id = fields.Many2one(comodel_name="res.users",
-                                               string="Usuario validación documental",
-                                               tracking=True)
+                                                          string="Usuario validación documental",
+                                                          tracking=True)
 
     # Carné de salud laboral
     occupational_health_card_documentary_validation_state = fields.Selection(
@@ -133,14 +132,14 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     occupational_health_card_write_date = fields.Datetime('Fecha de última modificación',
-                                         index=True,
-                                         default=lambda *a: fields.Datetime.now())
+                                                          index=True,
+                                                          default=lambda *a: fields.Datetime.now())
     occupational_health_card_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
-                                                    tracking=True)
+                                                                     tracking=True)
     occupational_health_card_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
     occupational_health_card_documentary_user_id = fields.Many2one(comodel_name="res.users",
-                                                  string="Usuario validación documental",
-                                                  tracking=True)
+                                                                   string="Usuario validación documental",
+                                                                   tracking=True)
 
     # Certificado de aptitud médico-deportiva
     medical_aptitude_certificate_documentary_validation_state = fields.Selection(
@@ -148,29 +147,31 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     medical_aptitude_certificate_write_date = fields.Datetime('Fecha de última modificación',
-                                         index=True,
-                                         default=lambda *a: fields.Datetime.now())
-    medical_aptitude_certificate_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
-                                                    tracking=True)
-    medical_aptitude_certificate_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
+                                                              index=True,
+                                                              default=lambda *a: fields.Datetime.now())
+    medical_aptitude_certificate_documentary_reject_reason = fields.Text(
+        string=u'Motivo de rechazo validación documental',
+        tracking=True)
+    medical_aptitude_certificate_documentary_validation_date = fields.Date(u'Fecha validación documental',
+                                                                           tracking=True)
     medical_aptitude_certificate_documentary_user_id = fields.Many2one(comodel_name="res.users",
-                                                  string="Usuario validación documental",
-                                                  tracking=True)
-    
+                                                                       string="Usuario validación documental",
+                                                                       tracking=True)
+
     # Víctima de delitos violentos
     victim_violent_documentary_validation_state = fields.Selection(
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     victim_violent_write_date = fields.Datetime('Fecha de última modificación',
-                                         index=True,
-                                         default=lambda *a: fields.Datetime.now())
+                                                index=True,
+                                                default=lambda *a: fields.Datetime.now())
     victim_violent_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
-                                                    tracking=True)
+                                                           tracking=True)
     victim_violent_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
     victim_violent_documentary_user_id = fields.Many2one(comodel_name="res.users",
-                                                  string="Usuario validación documental",
-                                                  tracking=True)
+                                                         string="Usuario validación documental",
+                                                         tracking=True)
 
     # Domicilio
     cv_address_documentary_validation_state = fields.Selection(
@@ -178,14 +179,14 @@ class ONSCCVDigital(models.Model):
         selection=DOCUMENTARY_VALIDATION_STATES,
         default='to_validate')
     cv_address_write_date = fields.Datetime('Fecha de última modificación',
-                                                index=True,
-                                                default=lambda *a: fields.Datetime.now())
+                                            index=True,
+                                            default=lambda *a: fields.Datetime.now())
     cv_address_documentary_reject_reason = fields.Text(string=u'Motivo de rechazo validación documental',
-                                                           tracking=True)
+                                                       tracking=True)
     cv_address_documentary_validation_date = fields.Date(u'Fecha validación documental', tracking=True)
     cv_address_documentary_user_id = fields.Many2one(comodel_name="res.users",
-                                                         string="Usuario validación documental",
-                                                         tracking=True)
+                                                     string="Usuario validación documental",
+                                                     tracking=True)
 
     @api.depends('is_cv_gender_public')
     def _compute_gender_public_visualization_date(self):
@@ -211,17 +212,78 @@ class ONSCCVDigital(models.Model):
             self.address_info_date = False
             self.disability_date = False
 
+    @api.onchange('image_1920')
+    def onchange_photo(self):
+        self._onchange_legajo_update_documentary('photo', 'to_validate', '')
+
+    @api.onchange('cv_expiration_date', 'document_identity_file')
+    def onchange_nro_doc(self):
+        self._onchange_legajo_update_documentary('nro_doc', 'to_validate', '')
+
+    @api.onchange('cv_gender_id', 'cv_gender_record_file', 'gender_date')
+    def onchange_gender(self):
+        if self.cv_gender_id.record is False:
+            self._onchange_legajo_update_documentary('gender', 'validated', '')
+        else:
+            self._onchange_legajo_update_documentary('gender', 'to_validate', '')
+
+    @api.onchange('cv_race_ids', 'cv_race2')
+    def onchange_cv_race(self):
+        self._onchange_legajo_update_documentary('cv_race', 'to_validate', '')
+
+    @api.onchange('is_afro_descendants', 'afro_descendants_date', 'afro_descendants_file')
+    def onchange_afro_descendant(self):
+        if self.is_afro_descendants is False:
+            self._onchange_legajo_update_documentary('afro_descendant', 'validated', '')
+        else:
+            self._onchange_legajo_update_documentary('afro_descendant', 'to_validate', '')
+
+    @api.onchange('is_occupational_health_card', 'occupational_health_card_date', 'occupational_health_card_file')
+    def onchange_occupational_health_card(self):
+        if self.is_occupational_health_card is False:
+            self._onchange_legajo_update_documentary('occupational_health_card', 'validated', '')
+        else:
+            self._onchange_legajo_update_documentary('occupational_health_card', 'to_validate', '')
+
+    @api.onchange('is_medical_aptitude_certificate_status', 'medical_aptitude_certificate_date',
+                  'medical_aptitude_certificate_file')
+    def onchange_medical_aptitude_certificate(self):
+        if self.is_medical_aptitude_certificate_status is False:
+            self._onchange_legajo_update_documentary('medical_aptitude_certificate', 'validated', '')
+        else:
+            self._onchange_legajo_update_documentary('medical_aptitude_certificate', 'to_validate', '')
+
+    @api.onchange('is_victim_violent', 'relationship_victim_violent_file')
+    def onchange_victim_violent(self):
+        if self.is_victim_violent is False:
+            self._onchange_legajo_update_documentary('victim_violent', 'validated', '')
+        else:
+            self._onchange_legajo_update_documentary('victim_violent', 'to_validate', '')
+
+    @api.onchange('country_id', 'cv_address_state_id', 'cv_address_location_id', 'cv_address_street_id',
+                  'cv_address_street2_id', 'cv_address_street3_id', 'cv_address_nro_dor', 'cv_addres_apto',
+                  'cv_address_zip', 'cv_address_place', 'cv_address_block', 'cv_address_sandlot')
+    def onchange_cv_address(self):
+        self._onchange_legajo_update_documentary('cv_address', 'to_validate', '')
+
+    @api.onchange('is_victim_violent', 'relationship_victim_violent_file')
+    def onchange_disabilitie(self):
+        if self.is_victim_violent is False:
+            self._onchange_legajo_update_documentary('victim_violent', 'validated', '')
+        else:
+            self._onchange_legajo_update_documentary('victim_violent', 'to_validate', '')
+
     def _check_todisable_dynamic_fields(self):
         return super(ONSCCVDigital, self)._check_todisable_dynamic_fields() or self.is_docket
 
     #   VALIDACION DOCUMENTAL DE LEGAJO
     def button_documentary_tovalidate(self):
         if self._context.get('documentary_validation'):
-            self._update_documentary(self._context.get('documentary_validation'), 'to_validate', '')
+            self._legajo_update_documentary(self._context.get('documentary_validation'), 'to_validate', '')
 
     def button_documentary_approve(self):
         if self._context.get('documentary_validation'):
-            self._update_documentary(self._context.get('documentary_validation'), 'validated', '')
+            self._legajo_update_documentary(self._context.get('documentary_validation'), 'validated', '')
 
     def button_documentary_reject(self):
         ctx = self._context.copy()
@@ -240,7 +302,13 @@ class ONSCCVDigital(models.Model):
             'context': ctx,
         }
 
-    def _update_documentary(self, documentary_field, state, reject_reason):
+    def _onchange_legajo_update_documentary(self, documentary_field, state, reject_reason):
+        setattr(self, '%s_documentary_validation_state' % documentary_field, state)
+        setattr(self, '%s_documentary_reject_reason' % documentary_field, reject_reason)
+        setattr(self, '%s_documentary_validation_date' % documentary_field, fields.Date.today())
+        setattr(self, '%s_documentary_user_id' % documentary_field, self.env.user.id)
+
+    def _legajo_update_documentary(self, documentary_field, state, reject_reason):
         vals = {
             '%s_documentary_validation_state' % documentary_field: state,
             '%s_documentary_reject_reason' % documentary_field: reject_reason,
@@ -250,7 +318,7 @@ class ONSCCVDigital(models.Model):
         self.write(vals)
 
     def documentary_reject(self, reject_reason):
-        self._update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)
+        self._legajo_update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)
 
     def _get_abstract_config_security(self):
         return self.user_has_groups(
