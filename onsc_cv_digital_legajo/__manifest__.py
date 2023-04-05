@@ -20,6 +20,7 @@ ONSC CV Digital - Legajo
         'views/onsc_cv_work_experience_views.xml',
         'views/onsc_cv_digital_validation_views.xml',
         'views/onsc_legajo_views.xml',
+        'views/onsc_legajo_alta_vl_views.xml',
     ],
     'demo': [],
     'installable': True,
