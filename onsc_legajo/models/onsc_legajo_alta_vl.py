@@ -199,6 +199,12 @@ class ONSCLegajoAltaVL(models.Model):
             rec.contract_expiration_date = False
             rec.vacante_ids = False
 
+    @api.onchange('descriptor1_id', 'descriptor2_id', 'regime_id', 'is_reserva_sgh', 'programa', 'proyecto',
+                  'nroPuesto', 'nroPlaza')
+    def onchange_clear_vacante_id(self):
+        for rec in self:
+            rec.vacante_ids = False
+
     @api.onchange('inciso_id')
     def onchange_inciso(self):
         # TODO: terminar los demas campos a setear
