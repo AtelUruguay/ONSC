@@ -23,7 +23,7 @@ STATES = [
 
 class ONSCLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.alta.vl'
-    _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin', 'onsc.legajo.abstract.sync']
+    _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
     _description = 'Alta de vínculo laboral'
     _rec_name = 'full_name'
 
@@ -197,6 +197,7 @@ class ONSCLegajoAltaVL(models.Model):
             rec.descriptor3_id = False
             rec.descriptor4_id = False
             rec.contract_expiration_date = False
+            rec.vacante_ids = False
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
