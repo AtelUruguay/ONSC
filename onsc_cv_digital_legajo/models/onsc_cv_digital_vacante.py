@@ -2,9 +2,7 @@
 
 import logging
 
-from lxml import etree
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo import fields, models, api
 
 _logger = logging.getLogger(__name__)
 
@@ -41,26 +39,29 @@ class ONSCCVDigitalVacante(models.Model):
     @api.depends('codRegimen')
     def _compute_regime(self):
         for rec in self:
-            regime_id = False
             if rec.codRegimen:
-                regime_id = self.env['onsc.legajo.regime'].search([('codRegimen', '=', rec.codRegimen)], limit=1)
-            rec.regime_id = regime_id.id and regime_id or False
+                rec.regime_id = self.env['onsc.legajo.regime'].search([('codRegimen', '=', rec.codRegimen)], limit=1)
+            else:
+                rec.regime_id = False
 
     @api.depends('Dsc3Id')
     def _compute_descriptor3(self):
         for rec in self:
-            descriptor3_id = False
             if rec.Dsc3Id:
-                descriptor3_id = self.env['onsc.catalog.descriptor3'].search([('code', '=', rec.Dsc3Id)], limit=1).id
-            rec.descriptor3_id = descriptor3_id
+                descriptor3_id = self.env['onsc.catalog.descriptor3'].search([('code', '=', rec.Dsc3Id)], limit=1)
+                rec.descriptor3_id = descriptor3_id.id if descriptor3_id else False
+
+            else:
+                rec.descriptor3_id = False
 
     @api.depends('Dsc4Id')
     def _compute_descriptor4(self):
         for rec in self:
-            descriptor4_id = False
             if rec.Dsc4Id:
-                descriptor4_id = self.env['onsc.catalog.descriptor4'].search([('code', '=', rec.Ds4Id)], limit=1).id
-            rec.descriptor4_id = descriptor4_id
+                descriptor4_id = self.env['onsc.catalog.descriptor4'].search([('code', '=', rec.Dsc4Id)], limit=1)
+                rec.descriptor4_id = descriptor4_id.id if descriptor4_id else False
+            else:
+                rec.descriptor4_id = False
 
     def search_vacantes(self):
         #TODO: Función para llamar al WS1

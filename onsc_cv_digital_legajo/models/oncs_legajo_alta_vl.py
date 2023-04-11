@@ -1,8 +1,6 @@
 # -*- coding:utf-8 -*-
-import json
 
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo import fields, models, api
 
 
 class ONSCLegajoAltaVL(models.Model):
@@ -21,10 +19,11 @@ class ONSCLegajoAltaVL(models.Model):
     mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile')
     email = fields.Char(string="e-mail", related='partner_id.email')
     cv_address_state_id = fields.Many2one('res.country.state', related='partner_id.state_id', string='Departamento')
-    cv_address_location_id = fields.Many2one('onsc.cv.location', related='partner_id.cv_location_id', string="Localidad")
+    cv_address_location_id = fields.Many2one('onsc.cv.location', related='partner_id.cv_location_id',
+                                             string="Localidad")
     cv_address_nro_door = fields.Char(string="Número de puerta", related='partner_id.cv_nro_door')
     cv_address_is_cv_bis = fields.Boolean(string="Bis", related='partner_id.is_cv_bis')
-    cv_address_apto = fields.Char(string="Apartamento", related='partner_id.cv_apto',)
+    cv_address_apto = fields.Char(string="Apartamento", related='partner_id.cv_apto', )
     cv_address_place = fields.Text(string="Paraje", related='partner_id.cv_address_place')
     cv_address_zip = fields.Char(related='partner_id.zip', string="Código Postal")
     cv_address_block = fields.Char(related='partner_id.cv_address_block', string="Manzana")
@@ -36,7 +35,7 @@ class ONSCLegajoAltaVL(models.Model):
     is_see_more = fields.Boolean(copy=False)
 
     def action_call_ws1(self):
-        pass
+        self.syncronize(log_info=True)
 
     def action_call_ws4(self):
         for rec in self.filtered(lambda x: x.state in ['borrador', 'error_sgh']):
