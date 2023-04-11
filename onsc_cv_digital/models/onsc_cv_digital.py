@@ -810,18 +810,33 @@ class ONSCCVDigital(models.Model):
         civical_credential_file_value = values.get('civical_credential_file')
         crendencial_serie_value = values.get('crendencial_serie')
         credential_number_value = values.get('credential_number')
-        document_certificate_file_value = values.get('document_certificate_file')
-        certificate_date_file_value = values.get('certificate_date')
-        to_date_file_value = values.get('to_date')
         if cv_expiration_date_value or document_identity_file_value:
             self.nro_doc_write_date = fields.Datetime.now()
             self.nro_doc_documentary_validation_state = 'to_validate'
         if civical_credential_file_value or crendencial_serie_value or credential_number_value:
             self.civical_credential_write_date = fields.Datetime.now()
             self.civical_credential_documentary_validation_state = 'to_validate'
-        if document_certificate_file_value or certificate_date_file_value or to_date_file_value:
+        self.update_disabilitie_documentary_validation(values)
+        self.update_license_documentary_validation(values)
+
+    def update_disabilitie_documentary_validation(self, values):
+        document_certificate_file_value = values.get('document_certificate_file')
+        certificate_date_file_value = values.get('certificate_date')
+        to_date_file_value = values.get('to_date')
+        people_disabilitie = values.get('people_disabilitie')
+        if people_disabilitie or document_certificate_file_value or certificate_date_file_value or to_date_file_value:
+            for record in self:
+                if record.people_disabilitie == 'no':
+                    record.disabilitie_documentary_validation_state = 'validated'
+                else:
+                    record.disabilitie_documentary_validation_state = 'to_validate'
             self.disabilitie_write_date = fields.Datetime.now()
-            self.disabilitie_documentary_validation_state = 'to_validate'
+
+    def update_license_documentary_validation(self, values):
+        if 'is_driver_license' in values:
+            for record in self:
+                if record.is_driver_license is False:
+                    record.drivers_license_ids.button_documentary_approve()
 
     # REPORTE DE CV: UTILITIES
     def _get_report_cv_formation_seccion(self):

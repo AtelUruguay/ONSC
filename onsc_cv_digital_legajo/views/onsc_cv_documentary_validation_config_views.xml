@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_documentary_validation_config_search" model="ir.ui.view">
+        <field name="name">onsc.cv.legajodocumentary.validation.config.search</field>
+        <field name="model">onsc.cv.documentary.validation.config</field>
+        <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_documentary_validation_config_search"/>
+        <field name="arch" type="xml">
+            <field name="model_id" position="after">
+                <field name="type"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="onsc_cv_documentary_validation_config_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.legajo.documentary.validation.config.tree</field>
+        <field name="model">onsc.cv.documentary.validation.config</field>
+        <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_documentary_validation_config_tree"/>
+        <field name="arch" type="xml">
+            <field name="model_id" position="after">
+                <field name="type"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="onsc_cv_ir_model_fields_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.ir.model.fields.tree</field>
+        <field name="model">ir.model.fields</field>
+        <field name="arch" type="xml">
+            <tree edit="0">
+                <field name="field_description"/>
+            </tree>
+        </field>
+    </record>
+    <record id="onsc_cv_ir_model_fields_form" model="ir.ui.view">
+        <field name="name">onsc.cv.ir.model.fields.form</field>
+        <field name="model">ir.model.fields</field>
+        <field name="arch" type="xml">
+            <form edit="0">
+                <field name="field_description" readonly="True"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_cv_documentary_validation_config_form" model="ir.ui.view">
+        <field name="name">onsc.cv.legajo.documentary.validation.config.form</field>
+        <field name="model">onsc.cv.documentary.validation.config</field>
+        <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_documentary_validation_config_form"/>
+        <field name="arch" type="xml">
+            <field name="model_id" position="after">
+                <field name="type"/>
+            </field>
+        </field>
+    </record>
+</odoo>
