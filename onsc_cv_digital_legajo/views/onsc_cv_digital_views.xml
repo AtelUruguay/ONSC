@@ -141,6 +141,23 @@
                         </group>
                     </group>
                 </page>
+                <page string="TEMPORAL PARA VER ESTADOS DE VALIDACION">
+                      <group>
+                          <field name="nro_doc_documentary_validation_state" invisible="0" string="Nro doc"/>
+                          <field name="marital_status_documentary_validation_state" invisible="0" string="Estado civil"/>
+                          <field name="photo_documentary_validation_state" invisible="0" string="Foto"/>
+                          <field name="gender_documentary_validation_state" invisible="0" string="Género"/>
+                          <field name="civical_credential_documentary_validation_state" invisible="0" string="Credencial civica"/>
+                          <field name="cv_race_documentary_validation_state" invisible="0" string="Identidad étnico-racial"/>
+                          <field name="afro_descendant_documentary_validation_state" invisible="0" string="Afrodescendientes"/>
+                          <field name="occupational_health_card_documentary_validation_state" invisible="0" string="Carne de salud"/>
+                          <field name="medical_aptitude_certificate_documentary_validation_state" invisible="0" string="Certificado de aptitud médico-deportiva "/>
+                          <field name="victim_violent_documentary_validation_state" invisible="0" string="Víctima de delitos violentos"/>
+                          <field name="cv_address_documentary_validation_state" invisible="0" string="Domicilio"/>
+
+                          <field name="disabilitie_documentary_validation_state" invisible="0" string="Discapacidad"/>
+                    </group>
+                </page>
             </xpath>
         </field>
     </record>

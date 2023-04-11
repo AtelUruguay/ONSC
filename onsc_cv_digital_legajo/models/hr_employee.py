@@ -6,18 +6,38 @@ from odoo import models, fields, api
 class HrEmployee(models.Model):
     _name = "hr.employee"
     _inherit = ['hr.employee', 'onsc.cv.common.data', 'onsc.cv.legajo.abstract.common']
+    _history_columns = [
+        'image_1920', 'avatar_128', 'photo_updated_date', 'cv_nro_doc', 'cv_expiration_date', 'document_identity_file',
+        'document_identity_filename', 'marital_status_id', 'digitized_document_file', 'digitized_document_filename',
+        'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
+        'status_civil_date', 'uy_citizenship',
+        'cv_gender_id', 'gender_date', 'is_cv_gender_public',
+        'is_afro_descendants', 'afro_descendant_date',
+        'is_occupational_health_card', 'occupational_health_card_date',
+        'medical_aptitude_certificate_date', 'is_public_information_victim_violent',
+        'allow_content_public', 'situation_disability',
+        'people_disabilitie', 'certificate_date',
+        'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction',
+        'need_other_support', 'emergency_service_id', 'emergency_service_telephone',
+        'health_department_id', 'health_provider_id', 'name_contact', 'contact_person_telephone',
+        'remark_contact_person', 'other_information_official', 'disability_date', 'cv_first_race_id',
+        'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
+        'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2', 'is_cv_race_public'
+    ]
 
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital",
                                     string="CV Digital",
                                     compute='_compute_cv_digital_id',
                                     store=True)
+
+    # cv_first_name = fields.Char(u'Primer nombre', related='cv_digital_id.cv_first_name', store=True, history=True)
+
     drivers_license_ids = fields.One2many("onsc.legajo.driver.license",
                                           inverse_name="employee_id",
                                           string="Licencias de conducir",
                                           copy=True, history=True, history_fields="validation_date,category_id")
 
     # RAZA
-
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial",
                                    domain="[('race_type','in',['race','both'])]")
     is_cv_race_option_other_enable = fields.Boolean(
@@ -30,10 +50,11 @@ class HrEmployee(models.Model):
                                        domain="[('id','in',cv_race_ids)]")
 
     # Domicilio
-
     country_id = fields.Many2one(
         'res.country', 'Nationality (Country)',
-        groups="hr.group_hr_user,onsc_legajo.group_legajo_configurador_empleado", tracking=True, history=True)
+        groups="hr.group_hr_user,onsc_legajo.group_legajo_configurador_empleado,onsc_base.group_base_onsc",
+        tracking=True,
+        history=True)
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
     cv_address_state_id = fields.Many2one('res.country.state', string='Departamento', history=True)
     cv_address_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad', history=True)
