@@ -50,6 +50,11 @@ class ONSCCVFileValidationConfig(models.Model):
         for rec in self:
             rec.model_id_domain = model_id_domain
 
+    def get_config(self, name=False):
+        if name is False:
+            return self.search([])
+        return self.search([('model_id.model', '=', self._name)], limit=1)
+
 
 class ONSCCVFileValidationConfigHistory(models.Model):
     _inherit = ['model.history.data']
