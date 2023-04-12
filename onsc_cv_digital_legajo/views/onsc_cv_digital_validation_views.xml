@@ -11,21 +11,12 @@
                     <div class="oe_button_box" name="button_box">
                     </div>
                     <field name="avatar_128" invisible="1"/>
-                    <field name="image_1920" widget='image' class="oe_avatar"
-                           options='{"preview_image": "avatar_128"}'/>
                     <div class="oe_avatar" style="padding-right:20px">
-                        <label for="legajo_gral_info_documentary_validation_state" string="Estado de validación documental"/>
-                        <h4><field name="legajo_gral_info_documentary_validation_state"
-                                   align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
-                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
-                    </div>
-                    <div class="request-partner-author-field o_row" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}">
                         <span>
                             <button name="button_documentary_approve"
                                     groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                     context="{'documentary_validation':'photo'}"
                                     type="object"
-                                    string="Validar"
                                     icon="fa-thumbs-o-up"
                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
                                     attrs="{'invisible': [('photo_documentary_validation_state', '=', 'validated')]}"
@@ -34,7 +25,6 @@
                                     groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                     context="{'documentary_validation':'photo'}"
                                     type="object"
-                                    string="Rechazar"
                                     icon="fa-thumbs-o-down"
                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
                                     attrs="{'invisible': [('photo_documentary_validation_state', '=', 'rejected')]}"
@@ -45,9 +35,18 @@
                                     type="object"
                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
                                     attrs="{'invisible': [('photo_documentary_validation_state', '=', 'to_validate')]}"
-                                    string="Para validar"
                                     icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                         </span>
+                    </div>
+                    <field name="image_1920" widget='image' class="oe_avatar"
+                           options='{"preview_image": "avatar_128"}'/>
+                    <div class="oe_avatar" style="padding-right:20px">
+                        <label for="legajo_gral_info_documentary_validation_state" string="Estado de validación documental"/>
+                        <h4><field name="legajo_gral_info_documentary_validation_state"
+                                   align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
+                                   options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
+                    </div>
+                    <div class="request-partner-author-field o_row" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}">
                     </div>
                     <div class="row" nolabel="1" colspan="2">
                         <div class="alert alert-danger" role="alert" style="width:70%"
