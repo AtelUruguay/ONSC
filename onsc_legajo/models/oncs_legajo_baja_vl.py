@@ -38,17 +38,9 @@ class ONSCLegajoBajaVL(models.Model):
     _inherit = ['onsc.legajo.actions.common.data', 'mail.thread', 'mail.activity.mixin']
     _description = 'Baja de vínculo laboral'
 
-    def _get_domain_partner_ids(self):
-        partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
-                                                      ('incisio_id', '=',
-                                                       self.env.user.employee_id.job_id.contract_id.inciso_id.id),
-                                                      ('operating_unit_id', '=',
-                                                       self.env.user.employee_id.job_id.contract_id.operating_unit_id.id)]).mapped(
-            'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
-        return [('id', 'in', partner_ids.ids)]
 
     end_date = fields.Date(string="Fecha de Baja", default=fields.Date.today(), required=True, copy=False)
-    res_partner_id = fields.Many2one('res.partner', string='Contacto', copy=False)
+    res_partner_id = fields.Many2one('res.partner', string='Contacto',  copy=False)
     full_name = fields.Char("Nombre", related="res_partner_id.cv_full_name")
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
@@ -68,6 +60,27 @@ class ONSCLegajoBajaVL(models.Model):
                                 default=lambda self: self._get_default_inciso_id(), copy=False)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
                                         default=lambda self: self._get_default_ue_id(), copy=False)
+    partner_ids_domain = fields.Char(compute='_compute_partner_ids')
+    @api.depends('state')
+    def _compute_partner_ids(self):
+        for rec in self:
+            rec.partner_ids_domain = self._get_domain_partner_ids()
+
+    def _get_domain_partner_ids(self):
+        contract_id = self.env['hr.contract'].search(
+            [('legajo_state', '=', 'active'), ('employee_id', '=', self.env.user.employee_id.id)])
+        if contract_id:
+            iniciso_id = contract_id.inciso_id.id
+            operating_unit_id = contract_id.operating_unit_id.id
+            partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
+                                                          ('inciso_id', '=', iniciso_id),
+                                                          ('operating_unit_id', '=', operating_unit_id),
+                                                          ('employee_id', '!=',
+                                                           self.env.user.employee_id.id)]).mapped(
+                'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
+            return json.dumps([('id', 'in', partner_ids.ids)])
+        else:
+            return False
 
     @api.constrains("end_date")
     def _check_date(self):
