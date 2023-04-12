@@ -161,7 +161,7 @@ class ONSCCVDigitalCall(models.Model):
             return ['civical_credential_documentary_validation_state',
                     'nro_doc_documentary_validation_state',
                     'disabilitie_documentary_validation_state']
-        configs = self.env['onsc.cv.documentary.validation.config'].search([])
+        configs = self.env['onsc.cv.documentary.validation.config'].get_config()
         if only_fields:
             validation_models = []
             for config in configs.filtered(lambda x: x.field_id):
