@@ -411,12 +411,12 @@ class ONSCCVDigital(models.Model):
     #   VALIDACION DOCUMENTAL DE LEGAJO
     def button_documentary_tovalidate(self):
         if self._context.get('documentary_validation'):
-            self._legajo_update_documentary(self._context.get('documentary_validation'), 'to_validate', '')
+            self.suspend_security()._legajo_update_documentary(self._context.get('documentary_validation'), 'to_validate', '')
 
     def button_documentary_approve(self):
         if self._context.get('documentary_validation'):
-            self._legajo_update_documentary(self._context.get('documentary_validation'), 'validated', '')
-            self._update_legajo_atdocumentary_validation()
+            self.suspend_security()._legajo_update_documentary(self._context.get('documentary_validation'), 'validated', '')
+            self.suspend_security()._update_legajo_atdocumentary_validation()
 
     def button_documentary_reject(self):
         ctx = self._context.copy()
