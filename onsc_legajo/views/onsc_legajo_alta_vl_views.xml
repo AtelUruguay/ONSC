@@ -72,8 +72,8 @@
                                 <field name="income_mechanism_id" required="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="is_call_number_required" invisible="1"/>
                                 <field name="call_number"  attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
-                                <field name="programa" attrs="{'invisible': [('is_reserva_sgh', '=', True)], 'required':  [('is_reserva_sgh', '=', False)]}"/>
-                                <field name="proyecto" attrs="{'invisible': [('is_reserva_sgh', '=', True)], 'required':  [('is_reserva_sgh', '=', False)]}"/>
+                                <field name="programa" attrs="{'required':  [('is_reserva_sgh', '=', False)]}"/>
+                                <field name="proyecto" attrs="{'required':  [('is_reserva_sgh', '=', False)]}"/>
                                 <field name="office_id" invisible="1"/>
                                 <field name="retributive_day_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             </group>
