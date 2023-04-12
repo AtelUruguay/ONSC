@@ -180,7 +180,7 @@
         </record>
 
         <record id='onsc_legajo_alta_vl_action' model='ir.actions.act_window'>
-            <field name="name">Altas Vínculo Laboral</field>
+            <field name="name">Altas de vínculo laboral</field>
             <field name="res_model">onsc.legajo.alta.vl</field>
             <field name="view_mode">tree,form</field>
             <field name="context">{'is_from_menu': True}</field>
