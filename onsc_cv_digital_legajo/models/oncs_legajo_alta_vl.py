@@ -12,7 +12,6 @@ class ONSCLegajoAltaVL(models.Model):
                                     string="CV Digital",
                                     compute='_compute_cv_digital_id',
                                     store=True)
-    partner_id = fields.Many2one("res.partner", related="cv_digital_id.partner_id", string="Contacto")
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
     cv_sex = fields.Selection(string=u'Sexo', copy=False)
     personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone')
@@ -41,7 +40,7 @@ class ONSCLegajoAltaVL(models.Model):
         for rec in self.filtered(lambda x: x.state in ['borrador', 'error_sgh']):
             pass
 
-    @api.depends('cv_nro_doc')
+    @api.onchange('partner_id')
     def _compute_cv_digital_id(self):
         CVDigital = self.env['onsc.cv.digital'].sudo()
         for record in self:
@@ -49,20 +48,20 @@ class ONSCLegajoAltaVL(models.Model):
             country_id = self.env['res.country'].sudo().search([('code', '=', 'UY')], limit=1)
             document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')])
             record.cv_digital_id = CVDigital.search([
-                ('cv_nro_doc', '=', record.cv_nro_doc),
+                ('partner_id', '=', record.partner_id.id),
                 ('type', '=', 'cv'),
                 ('cv_emissor_country_id', '=', country_id.id),
                 ('cv_document_type_id', '=', document_type_id.id),
             ], limit=1)
             vals = {
-                'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
-                'cv_second_name': record.cv_digital_id.partner_id.cv_second_name,
-                'cv_last_name_1': record.cv_digital_id.partner_id.cv_last_name_1,
-                'cv_last_name_2': record.cv_digital_id.partner_id.cv_last_name_2,
-                'cv_birthdate': record.cv_digital_id.partner_id.cv_birthdate,
+                'cv_first_name': record.partner_id.cv_first_name,
+                'cv_second_name': record.partner_id.cv_second_name,
+                'cv_last_name_1': record.partner_id.cv_last_name_1,
+                'cv_last_name_2': record.partner_id.cv_last_name_2,
+                'cv_birthdate': record.partner_id.cv_birthdate,
                 'cv_sex': record.cv_digital_id.cv_sex,
-                'cv_emissor_country_id': record.cv_digital_id.partner_id.cv_emissor_country_id.id,
-                'cv_document_type_id': record.cv_digital_id.partner_id.cv_document_type_id.id,
+                'cv_emissor_country_id': record.partner_id.cv_emissor_country_id.id,
+                'cv_document_type_id': record.partner_id.cv_document_type_id.id,
                 'country_of_birth_id': record.cv_digital_id.country_of_birth_id.id,
                 'marital_status_id': record.cv_digital_id.marital_status_id.id,
                 'uy_citizenship': record.cv_digital_id.uy_citizenship,
@@ -80,7 +79,7 @@ class ONSCLegajoAltaVL(models.Model):
             }
             record.suspend_security().write(vals)
 
-    @api.depends('cv_nro_doc')
+    @api.onchange('partner_id')
     def _compute_employee_id(self):
         Employee = self.env['hr.employee'].sudo()
         for record in self:
@@ -88,7 +87,7 @@ class ONSCLegajoAltaVL(models.Model):
             country_id = self.env['res.country'].sudo().search([('code', '=', 'UY')], limit=1)
             document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')])
             record.employee_id = Employee.search([
-                ('cv_nro_doc', '=', record.cv_nro_doc),
+                ('user_partner_id', '=', record.partner_id.id),
                 ('cv_emissor_country_id', '=', country_id.id),
                 ('cv_document_type_id', '=', document_type_id.id),
             ], limit=1)

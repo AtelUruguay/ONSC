@@ -75,6 +75,7 @@ class ONSCLegajoAltaVL(models.Model):
         return False
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
+    partner_id = fields.Many2one("res.partner", string="Contacto")
     date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False)
     call_number = fields.Char(string='Número de llamado', copy=False)
