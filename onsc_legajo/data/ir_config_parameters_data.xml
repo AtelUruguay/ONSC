@@ -17,5 +17,9 @@
             <field name="key">onsc_legajo_WS13_oficinas</field>
             <field name="value"></field>
         </record>
+        <record id="parameter_onsc_legajo_WS1" model="ir.config_parameter">
+            <field name="key">onsc_legajo_WS1_plazasVacantesCedula</field>
+            <field name="value"></field>
+        </record>
     </data>
 </odoo>

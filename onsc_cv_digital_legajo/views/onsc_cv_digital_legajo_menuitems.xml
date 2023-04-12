@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <menuitem id="onsc_hr_legajo_cv_validation_menu"
+              name="Validar documentación de funcionarios"
+              action="onsc_legajo_cv_digital_validation"
+              parent="onsc_legajo.onsc_legajo_capital_humano_menu"
+              groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue,onsc_cv_digital_legajo.group_legajo_validador_doc_consulta"
+              sequence="3"/>
+
+    <menuitem id="onsc_legajo_documentary_validation_config_menu"
+              name="Configuración de validaciones"
+              groups="onsc_cv_digital_legajo.group_legajo_validador_doc_config"
+              action="onsc_cv_digital.onsc_cv_documentary_validation_config_action"
+              parent="onsc_legajo.onsc_legajo_settings_menu"
+              sequence="1"/>
+</odoo>
