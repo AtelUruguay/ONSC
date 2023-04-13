@@ -46,8 +46,6 @@
                                    align="left" style="font-size: 100%; width: 110px;" widget="label_selection"
                                    options="{'classes': {'to_validate': 'info', 'validated': 'success'}}"/></h4>
                     </div>
-                    <div class="request-partner-author-field o_row" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}">
-                    </div>
                     <div class="row" nolabel="1" colspan="2">
                         <div class="alert alert-danger" role="alert" style="width:70%"
                             attrs="{'invisible': [('photo_documentary_validation_state', '!=', 'rejected')]}">
@@ -194,6 +192,30 @@
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="digitized_document_filename" invisible="1"/>
 
+                                    <div class="row" nolabel="1" colspan="2">
+                                        <div class="alert alert-danger" role="alert" style="width:70%"
+                                            attrs="{'invisible': [('marital_status_documentary_validation_state', '!=', 'rejected')]}">
+                                            <p class="mb-0">
+                                                <strong>
+                                                    La sección estado civil ha sido rechazada. Motivo del rechazo: <field name="marital_status_documentary_reject_reason" class="oe_inline"/>
+                                                    <p/>
+                                                    Fecha: <field name="marital_status_documentary_validation_date" class="oe_inline"/> Usuario: <field name="marital_status_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                        <div class="alert alert-success" role="alert" style="width:70%"
+                                             invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
+                                             attrs="{'invisible': [('marital_status_documentary_validation_state', '!=', 'validated')]}">
+                                            <p class="mb-0">
+                                                <strong>
+                                                    La sección estado civil ha sido validada
+                                                    <p/>
+                                                    Fecha: <field name="marital_status_documentary_validation_date" class="oe_inline"/> Usuario: <field name="marital_status_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
+
                                     <field name="uy_citizenship" required="True"/>
                                     <field name="crendencial_serie"
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
@@ -252,29 +274,6 @@
                                                     La sección credencial cívica ha sido validada
                                                     <p/>
                                                     Fecha: <field name="civical_credential_documentary_validation_date" class="oe_inline"/> Usuario: <field name="civical_credential_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                </strong>
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <div class="row" nolabel="1" colspan="2">
-                                        <div class="alert alert-danger" role="alert" style="width:70%"
-                                            attrs="{'invisible': [('marital_status_documentary_validation_state', '!=', 'rejected')]}">
-                                            <p class="mb-0">
-                                                <strong>
-                                                    La sección estado civil ha sido rechazada. Motivo del rechazo: <field name="marital_status_documentary_reject_reason" class="oe_inline"/>
-                                                    <p/>
-                                                    Fecha: <field name="marital_status_documentary_validation_date" class="oe_inline"/> Usuario: <field name="marital_status_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                </strong>
-                                            </p>
-                                        </div>
-                                        <div class="alert alert-success" role="alert" style="width:70%"
-                                             invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                             attrs="{'invisible': [('marital_status_documentary_validation_state', '!=', 'validated')]}">
-                                            <p class="mb-0">
-                                                <strong>
-                                                    La sección estado civil ha sido validada
-                                                    <p/>
-                                                    Fecha: <field name="marital_status_documentary_validation_date" class="oe_inline"/> Usuario: <field name="marital_status_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                                 </strong>
                                             </p>
                                         </div>
@@ -402,6 +401,29 @@
                                     <field name="is_cv_race_public"/>
                                     <field name="is_cv_race_option_other_enable" invisible="1"/>
                                     <field name="is_multiple_cv_race_selected" invisible="1"/>
+                                    <div class="row" nolabel="1" colspan="2">
+                                        <div class="alert alert-danger" role="alert" style="width:70%"
+                                            attrs="{'invisible': [('cv_race_documentary_validation_state', '!=', 'rejected')]}">
+                                            <p class="mb-0">
+                                                <strong>
+                                                    La sección identidad étnico racial ha sido rechazada. Motivo del rechazo: <field name="cv_race_documentary_reject_reason" class="oe_inline"/>
+                                                    <p/>
+                                                    Fecha: <field name="cv_race_documentary_validation_date" class="oe_inline"/> Usuario: <field name="cv_race_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                        <div class="alert alert-success" role="alert" style="width:70%"
+                                             invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
+                                             attrs="{'invisible': [('cv_race_documentary_validation_state', '!=', 'validated')]}">
+                                            <p class="mb-0">
+                                                <strong>
+                                                    La sección identidad étnico racial ha sido validada
+                                                    <p/>
+                                                    Fecha: <field name="cv_race_documentary_validation_date" class="oe_inline"/> Usuario: <field name="cv_race_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                </strong>
+                                            </p>
+                                        </div>
+                                    </div>
                                     <label for="is_afro_descendants"/>
                                     <div>
                                         <field name="is_afro_descendants"/>
@@ -431,29 +453,6 @@
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="afro_descendant_date"/>
                                     <field name="afro_descendants_filename" invisible="1"/>
-                                    <div class="row" nolabel="1" colspan="2">
-                                        <div class="alert alert-danger" role="alert" style="width:70%"
-                                            attrs="{'invisible': [('cv_race_documentary_validation_state', '!=', 'rejected')]}">
-                                            <p class="mb-0">
-                                                <strong>
-                                                    La sección identidad étnico racial ha sido rechazada. Motivo del rechazo: <field name="cv_race_documentary_reject_reason" class="oe_inline"/>
-                                                    <p/>
-                                                    Fecha: <field name="cv_race_documentary_validation_date" class="oe_inline"/> Usuario: <field name="cv_race_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                </strong>
-                                            </p>
-                                        </div>
-                                        <div class="alert alert-success" role="alert" style="width:70%"
-                                             invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                             attrs="{'invisible': [('cv_race_documentary_validation_state', '!=', 'validated')]}">
-                                            <p class="mb-0">
-                                                <strong>
-                                                    La sección identidad étnico racial ha sido validada
-                                                    <p/>
-                                                    Fecha: <field name="cv_race_documentary_validation_date" class="oe_inline"/> Usuario: <field name="cv_race_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                </strong>
-                                            </p>
-                                        </div>
-                                    </div>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
                                             attrs="{'invisible': [('afro_descendant_documentary_validation_state', '!=', 'rejected')]}">
@@ -642,7 +641,7 @@
                                              attrs="{'invisible': [('victim_violent_documentary_validation_state', '!=', 'validated')]}">
                                             <p class="mb-0">
                                                 <strong>
-                                                    La sección cíctima de delitos violentos ha sido validada
+                                                    La sección víctima de delitos violentos ha sido validada
                                                     <p/>
                                                     Fecha: <field name="victim_violent_documentary_validation_date" class="oe_inline"/> Usuario: <field name="victim_violent_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                                 </strong>
@@ -887,13 +886,31 @@
             </form>
         </field>
     </record>
+
+    <record id="onsc_legajo_cv_digital_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.cv.digital.search</field>
+        <field name="model">onsc.cv.digital</field>
+        <field name="arch" type="xml">
+            <search string="Currículums digitales">
+                <field name="partner_id"/>
+                <separator/>
+                <filter string="A validar" name="filter_tovalidate" icon="terp-personal"
+                        domain="[('legajo_gral_info_documentary_validation_state','=','to_validate')]"/>
+                <separator/>
+                <group expand="1" string="Group By">
+                    <filter name="filter_country_id" string="País" context="{'group_by':'cv_emissor_country_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
     
     <record id="onsc_legajo_cv_digital_validation" model="ir.actions.act_window">
         <field name="name">Validar documentación de funcionarios</field>
         <field name="res_model">onsc.cv.digital</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="domain">[('type','=','cv'),('is_docket_active','=',True),('active','in',[False,True])]</field>
-        <field name="context">{'is_call_documentary_validation': True,'is_legajo':True, 'create': False, 'edit': False, 'delete': False, 'copy':False}</field>
+        <field name="context">{'search_default_filter_tovalidate':True, 'is_call_documentary_validation': True,'is_legajo':True, 'create': False, 'edit': False, 'delete': False, 'copy':False}</field>
+        <field name="search_view_id" ref="onsc_cv_digital_legajo.onsc_legajo_cv_digital_search" />
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'kanban', 'view_id': ref('onsc_cv_digital.kanban_digital_cv')}),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_cv_digital.onsc_cv_digital_tree')}),

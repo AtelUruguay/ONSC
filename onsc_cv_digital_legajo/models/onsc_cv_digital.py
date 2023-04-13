@@ -241,13 +241,13 @@ class ONSCCVDigital(models.Model):
                     elif documentary_validation_model == 'gender_documentary_validation_state':
                         sections_tovalidate.append(_('Género'))
                     elif documentary_validation_model == 'cv_race_documentary_validation_state':
-                        sections_tovalidate.append(_('Raza'))
+                        sections_tovalidate.append(_('Identidad étnico racial'))
                     elif documentary_validation_model == 'afro_descendant_documentary_validation_state':
                         sections_tovalidate.append(_('Afrodescendiente'))
                     elif documentary_validation_model == 'occupational_health_card_documentary_validation_state':
-                        sections_tovalidate.append(_('Certificado de aptitud médico-deportiva'))
-                    elif documentary_validation_model == 'medical_aptitude_certificate_documentary_validation_state':
                         sections_tovalidate.append(_('Carné de salud laboral'))
+                    elif documentary_validation_model == 'medical_aptitude_certificate_documentary_validation_state':
+                        sections_tovalidate.append(_('Certificado de aptitud médico-deportiva'))
                     elif documentary_validation_model == 'victim_violent_documentary_validation_state':
                         sections_tovalidate.append(_('Víctima de delitos violentos'))
                     elif documentary_validation_model == 'cv_address_documentary_validation_state':
@@ -349,41 +349,45 @@ class ONSCCVDigital(models.Model):
             self.cv_race_documentary_validation_state = 'to_validate'
 
         # Afrodescendientes
-        is_afro_descendants = 'is_afro_descendants' in values
-        afro_descendant_date = values.get('afro_descendant_date')
-        afro_descendant_file = values.get('afro_descendant_file')
-        if is_afro_descendants or afro_descendant_date or afro_descendant_file:
+        is_afro_descendants_in_values = 'is_afro_descendants' in values
+        afro_descendant_date = values.get('afro_descendants_date')
+        afro_descendant_file = values.get('afro_descendants_file')
+        if is_afro_descendants_in_values or afro_descendant_date or afro_descendant_file:
             for record in self:
-                if record.is_afro_descendants is False:
+                is_afro_descendants = is_afro_descendants_in_values and values.get('is_afro_descendants') or record.is_afro_descendants
+                if is_afro_descendants is False:
                     self.afro_descendant_documentary_validation_state = 'validated'
                 else:
                     self.afro_descendant_documentary_validation_state = 'to_validate'
 
-        is_occupational_health_card = 'is_occupational_health_card' in values
+        is_occupational_health_card_in_values = 'is_occupational_health_card' in values
         occupational_health_card_date = values.get('occupational_health_card_date')
         occupational_health_card_file = values.get('occupational_health_card_file')
-        if is_occupational_health_card or occupational_health_card_date or occupational_health_card_file:
+        if is_occupational_health_card_in_values or occupational_health_card_date or occupational_health_card_file:
             for record in self:
-                if record.is_occupational_health_card is False:
+                is_occupational_health_card = is_occupational_health_card_in_values and values.get('is_occupational_health_card') or record.is_occupational_health_card
+                if is_occupational_health_card is False:
                     self.occupational_health_card_documentary_validation_state = 'validated'
                 else:
                     self.occupational_health_card_documentary_validation_state = 'to_validate'
 
-        is_medical_aptitude_certificate_status = 'is_medical_aptitude_certificate_status' in values
+        is_medical_aptitude_certificate_status_in_values = 'is_medical_aptitude_certificate_status' in values
         medical_aptitude_certificate_date = values.get('medical_aptitude_certificate_date')
         medical_aptitude_certificate_file = values.get('medical_aptitude_certificate_file')
-        if is_medical_aptitude_certificate_status or medical_aptitude_certificate_date or medical_aptitude_certificate_file:
+        if is_medical_aptitude_certificate_status_in_values or medical_aptitude_certificate_date or medical_aptitude_certificate_file:
             for record in self:
-                if record.is_medical_aptitude_certificate_status is False:
+                is_medical_aptitude_certificate_status = is_medical_aptitude_certificate_status_in_values and values.get('is_medical_aptitude_certificate_status') or record.is_medical_aptitude_certificate_status
+                if is_medical_aptitude_certificate_status is False:
                     self.medical_aptitude_certificate_documentary_validation_state = 'validated'
                 else:
                     self.medical_aptitude_certificate_documentary_validation_state = 'to_validate'
 
-        is_victim_violent = 'is_victim_violent' in values
+        is_victim_violent_in_values = 'is_victim_violent' in values
         relationship_victim_violent_file = values.get('relationship_victim_violent_file')
-        if is_victim_violent or relationship_victim_violent_file:
+        if is_victim_violent_in_values or relationship_victim_violent_file:
             for record in self:
-                if record.is_victim_violent is False:
+                is_victim_violent = is_victim_violent_in_values and values.get('is_victim_violent') or record.is_victim_violent
+                if is_victim_violent is False:
                     self.victim_violent_documentary_validation_state = 'validated'
                 else:
                     self.victim_violent_documentary_validation_state = 'to_validate'
@@ -481,7 +485,7 @@ class ONSCCVDigital(models.Model):
             elif seccion == 'gender':
                 vals.update({
                     'cv_gender_id': record.cv_gender_id.id,
-                    'cv_gender2': record.cv_gender2.id,
+                    'cv_gender2': record.cv_gender2,
                     'cv_gender_record_file': record.cv_gender_record_file,
                     'cv_gender_record_filename': record.cv_gender_record_filename,
                     'is_cv_gender_public': record.is_cv_gender_public,
