@@ -95,8 +95,7 @@
                                     required="1"/>
                             <field name="resolution_type_discharge"
                                     required="1"/>
-                            <field name="contract_expiration_date"
-                                    required="1"/>
+                            <field name="contract_expiration_date"/>
                             <field name="additional_information_discharge"
                                    />
                             <field name="code_day" />
