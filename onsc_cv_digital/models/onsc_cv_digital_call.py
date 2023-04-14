@@ -333,6 +333,7 @@ class ONSCCVDigitalCall(models.Model):
         if len(list(dict.fromkeys(self.mapped('call_number')))) > 1:
             raise ValidationError(_("No se puede generar ZIP de CVs de diferentes llamados"))
         try:
+            self = self.with_context(is_call_documentary_validation=True, cv_digital_call=True)
             wizard = self.env['onsc.cv.report.wizard'].create({})
             call_number = self[0].call_number.replace('/', '_')
             for record in self:
