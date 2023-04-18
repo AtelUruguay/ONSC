@@ -790,7 +790,8 @@ class ONSCCVDigital(models.Model):
 
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
-        self.update_header_documentary_validation(values)
+        if not self._context.get('no_update_header_documentary_validation'):
+            self.update_header_documentary_validation(values)
         if values.get('country_code') == 'UY' or values.get('cv_address_street_id') or values.get(
                 'cv_address_street2_id') or values.get('cv_address_street3_id'):
             for record in self:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
 
-from odoo import models, fields
+from odoo import models, fields, api
 
 DOCUMENTARY_VALIDATION_STATES = [('to_validate', 'Para validar'),
                                  ('validated', 'Validado'),
@@ -54,6 +54,20 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                     </div>
                 </div>""")
 
+    @api.model
+    def create(self, values):
+        result = super(ONSCCVAbstractFileValidation, self).create(values)
+        if hasattr(self, 'cv_digital_id'):
+            result.cv_digital_id.button_legajo_update_documentary_validation_sections_tovalidate()
+        return result
+
+    def write(self, vals):
+        result = super(ONSCCVAbstractFileValidation, self).write(vals)
+        if hasattr(self, 'cv_digital_id'):
+            self.mapped('cv_digital_id').button_legajo_update_documentary_validation_sections_tovalidate()
+        return result
+
+
     def button_documentary_tovalidate(self):
         args = {
             'documentary_validation_state': 'to_validate',
@@ -82,7 +96,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'documentary_user_id': self.env.user.id,
         }
         self.update_call_instances(args)
-        return super(ONSCCVAbstractFileValidation, self).documentary_reject()
+        return super(ONSCCVAbstractFileValidation, self).documentary_reject(reject_reason)
 
     def update_call_instances(self, args):
         if hasattr(self, 'cv_digital_id'):
