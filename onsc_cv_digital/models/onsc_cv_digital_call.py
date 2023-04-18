@@ -298,6 +298,9 @@ class ONSCCVDigitalCall(models.Model):
             '%s_documentary_user_id' % documentary_field: self.env.user.id,
         }
         self.write(vals)
+        self._update_cv_digital_origin_documentary_values(documentary_field, vals)
+
+    def _update_cv_digital_origin_documentary_values(self, documentary_field, vals):
         for record in self:
             cv_digital_origin_id = record.cv_digital_origin_id
             if cv_digital_origin_id and eval(

@@ -3,6 +3,7 @@ from . import abstracts
 from . import res_partner
 from . import onsc_cv_documentary_validation_config
 from . import onsc_cv_digital
+from . import onsc_cv_digital_call
 from . import hr_employee
 from . import onsc_cv_work_experience
 from . import onsc_legajo

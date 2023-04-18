@@ -336,6 +336,7 @@
                                                 string="Para validar"
                                                 icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                     </div>
+                                    <field name="gender_date"/>
                                     <field name="cv_gender2"
                                            attrs="{'invisible': [('is_cv_gender_option_other_enable', '=', False)], 'required': [('is_cv_gender_option_other_enable', '=', True)]}"/>
                                     <field name="cv_gender_record_file"
@@ -679,6 +680,10 @@
                                                 string="Para validar"
                                                 icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                     </div>
+                                    <field name="address_receipt_file" filename="address_receipt_file_name"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="address_receipt_file_name" invisible="1"/>
+                                    <field name="address_info_date"/>
 
                                     <field name="cv_address_state_id" string="Departamento"
                                            domain="[('country_id', '=?', country_id)]"
