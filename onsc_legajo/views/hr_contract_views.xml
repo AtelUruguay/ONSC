@@ -84,6 +84,7 @@
                             <field name="norm_code_discharge_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    />
+                            <field name="type_norm_discharge"/>
                             <field name="norm_number_discharge"
                                    />
                             <field name="norm_year_discharge" />
@@ -112,6 +113,7 @@
                             <field name="norm_code_deregistration_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    />
+                            <field name="type_norm_deregistration"/>
                             <field name="norm_number_deregistration"
                                    />
                             <field name="norm_year_deregistration"
