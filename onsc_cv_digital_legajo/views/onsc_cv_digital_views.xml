@@ -42,10 +42,6 @@
                 <field name="afro_descendant_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
             </field>
-<!--            <field name="marital_status_id" position="after">-->
-<!--                <field name="status_civil_date"-->
-<!--                       attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>-->
-<!--            </field>-->
             <field name="country_id" position="before">
                 <field name="address_receipt_file" filename="address_receipt_file_name"
                        attrs="{'invisible': [('is_docket_active', '=', False)], 'required': [('is_docket_active', '=', True)]}"
