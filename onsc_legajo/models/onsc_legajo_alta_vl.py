@@ -74,8 +74,12 @@ class ONSCLegajoAltaVL(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
+    @api.model
+    def _get_domain_partner(self):
+        return [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True)]
+
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
-    partner_id = fields.Many2one("res.partner", string="Contacto")
+    partner_id = fields.Many2one("res.partner", string="Contacto", domain=_get_domain_partner)
     date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False)
     call_number = fields.Char(string='Número de llamado', copy=False)

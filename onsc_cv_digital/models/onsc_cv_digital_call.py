@@ -622,6 +622,7 @@ class ONSCCVDigitalCall(models.Model):
             'call_number': call_number,
             'postulation_date': postulation_date,
             'postulation_number': postulation_number,
+            'identity_document_expiration_date': cv_digital_id.cv_expiration_date,
         })
         return cv_call
 
