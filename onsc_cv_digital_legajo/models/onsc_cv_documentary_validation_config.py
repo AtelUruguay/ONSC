@@ -20,4 +20,4 @@ class ONSCCVFileValidationConfig(models.Model):
 
         if name:
             args = expression.AND([[('model_id.model', '=', name)], args])
-        return self.search(args, limit=1)
+        return self.search(args)

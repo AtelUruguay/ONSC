@@ -307,7 +307,7 @@ class ONSCCVDigital(models.Model):
             self.gender_date = False
             self.afro_descendant_date = False
             self.status_civil_date = False
-            self.address_info_date = False
+            # self.address_info_date = False
             self.disability_date = False
 
     def button_legajo_update_documentary_validation_sections_tovalidate(self):
@@ -419,7 +419,6 @@ class ONSCCVDigital(models.Model):
 
         country_id = values.get('country_id')
         address_receipt_file = values.get('address_receipt_file')
-        address_info_date = values.get('address_info_date')
         cv_address_state_id = values.get('cv_address_state_id')
         cv_address_location_id = values.get('cv_address_location_id')
         cv_address_street_id = values.get('cv_address_street_id')
@@ -434,7 +433,7 @@ class ONSCCVDigital(models.Model):
         cv_address_place = values.get('cv_address_place')
         cv_address_block = values.get('cv_address_block')
         cv_address_sandlot = values.get('cv_address_sandlot')
-        if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or  address_info_date or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot:
+        if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot:
             self.cv_address_documentary_validation_state = 'to_validate'
 
         super(ONSCCVDigital, self).update_header_documentary_validation(values)
@@ -585,7 +584,6 @@ class ONSCCVDigital(models.Model):
                     'cv_address_sandlot': record.cv_address_sandlot,
                     'address_receipt_file': record.address_receipt_file,
                     'address_receipt_file_name': record.address_receipt_file_name,
-                    'address_info_date': record.address_info_date,
                     'cv_address_nro_door': record.cv_address_nro_door,
                     'cv_address_is_cv_bis': record.cv_address_is_cv_bis,
                     'cv_address_apto': record.cv_address_apto,
