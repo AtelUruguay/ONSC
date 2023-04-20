@@ -115,6 +115,20 @@
         </field>
     </record>
 
+    <record id="view_job_filter" model="ir.ui.view">
+        <field name="name">hr.job.search</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_job_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='in_position']" position="replace">
+            </xpath>
+            <xpath expr="//filter[@name='in_recruitment']" position="replace">
+            </xpath>
+            <xpath expr="//filter[@name='message_needaction']" position="replace">
+            </xpath>
+        </field>
+    </record>
+
     <record id="onsc_legajo_hr_job_action" model="ir.actions.act_window">
         <field name="name">Puestos de trabajo</field>
         <field name="res_model">hr.job</field>
