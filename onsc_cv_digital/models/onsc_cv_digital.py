@@ -101,6 +101,7 @@ class ONSCCVDigital(models.Model):
     cv_expiration_date = fields.Date(
         string=u'Fecha de vencimiento documento de identidad',
         related='partner_id.cv_expiration_date', store=True, readonly=False)
+    identity_document_expiration_date = fields.Date(string=u'Fecha de vencimiento documento de identidad')
     email = fields.Char(
         string="Email",
         related='partner_id.email', store=True)

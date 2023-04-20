@@ -222,7 +222,14 @@
             <xpath expr="//filter[@name='group_by_state']" position="replace">
                 <filter string="Estado" name="group_by_state" domain="[]" context="{'group_by': 'legajo_state'}"/>
             </xpath>
-
+            <xpath expr="//filter[@name='current_employee']" position="replace">
+            </xpath>
+            <xpath expr="//filter[@name='activities_overdue']" position="replace">
+            </xpath>
+            <xpath expr="//filter[@name='activities_today']" position="replace">
+            </xpath>
+            <xpath expr="//filter[@name='activities_upcoming_all']" position="replace">
+            </xpath>
         </field>
     </record>
 
