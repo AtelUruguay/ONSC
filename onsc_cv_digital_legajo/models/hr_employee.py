@@ -5,6 +5,8 @@ from odoo.addons.onsc_base.models.onsc_abstract_contact_common_data import CV_SE
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SELECTION_RADIO as SELECTION_RADIO
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SITUATION as SITUATION
 
+DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
+
 
 class HrEmployee(models.Model):
     _name = "hr.employee"
@@ -68,6 +70,10 @@ class HrEmployee(models.Model):
     mobile_phone = fields.Char(string="Teléfono celular", related='cv_digital_id.partner_id.mobile', store=True,
                                history=True)
     email = fields.Char(string="Email", related='cv_digital_id.partner_id.email', store=True, history=True)
+    uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
+                                      related='cv_digital_id.uy_citizenship', store=True, history=True,
+                                      selection=[('legal', 'Legal'), ('natural', 'Natural'),
+                                                 ('extranjero', 'Extranjero')])
 
     cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU",
                                             related='cv_digital_id.cjppu_affiliate_number', store=True, history=True)
@@ -98,10 +104,12 @@ class HrEmployee(models.Model):
                                    related='cv_digital_id.interaction', store=True, history=True)
     need_other_support = fields.Text(string=u"¿Necesita otro apoyo?", related='cv_digital_id.need_other_support',
                                      store=True, history=True)
-    is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain', related='cv_digital_id.is_need_other_support')
+    is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain',
+                                           related='cv_digital_id.is_need_other_support')
     type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo',
                                         related='cv_digital_id.type_support_ids')
-    last_modification_date = fields.Date(string=u'Fecha última modificación', related='cv_digital_id.last_modification_date')
+    last_modification_date = fields.Date(string=u'Fecha última modificación',
+                                         related='cv_digital_id.last_modification_date')
     # -------- INFO DE CV QUE PASA DIRECTO AL LEGAJO SIN VALIDACION
 
     drivers_license_ids = fields.One2many("onsc.legajo.driver.license",
@@ -141,6 +149,9 @@ class HrEmployee(models.Model):
     cv_address_sandlot = fields.Char(string="Solar", size=5, history=True)
     address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
     address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
+    address_info_date = fields.Date(string="Fecha de información domicilio",
+                                    readonly=False,
+                                    store=True)
 
     # Datos del legajo
     information_contact_ids = fields.One2many('onsc.cv.legajo.information.contact', 'employee_id',
@@ -277,6 +288,8 @@ class HrEmployee(models.Model):
                 'cv_address_block': record.cv_digital_id.cv_address_block,
                 'cv_address_sandlot': record.cv_digital_id.cv_address_sandlot,
                 'address_receipt_file': record.cv_digital_id.partner_id.address_receipt_file,
+
+                'address_info_date': record.cv_digital_id.partner_id.address_info_date,
                 'address_receipt_file_name': record.cv_digital_id.partner_id.address_receipt_file_name,
 
                 # Discapacidad
