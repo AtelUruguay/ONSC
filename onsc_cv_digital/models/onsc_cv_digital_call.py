@@ -48,7 +48,6 @@ class ONSCCVDigitalCall(models.Model):
     is_disabilitie = fields.Boolean(string=u"Persona con Discapacidad (Art. 49 Ley N° 18.651)")
     is_victim = fields.Boolean(string=u"Personas víctimas de delitos violentos (Art. 105 Ley N° 19.889)")
     preselected = fields.Selection(string="Preseleccionado", selection=[('yes', 'Si'), ('no', 'No')])
-    identity_document_expiration_date = fields.Date(string=u'Fecha de vencimiento documento de identidad')
 
     call_conditional_state = fields.Selection(
         string="Estado de valores condicionales",
