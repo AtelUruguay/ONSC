@@ -81,6 +81,8 @@ class HrEmployee(models.Model):
                                       store=True, history=True)
     user_linkedIn = fields.Char(string="Usuario en LinkedIn", related='cv_digital_id.user_linkedIn', store=True,
                                 history=True)
+    is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir?", related='cv_digital_id.is_driver_license',
+                                       store=True, history=True)
     is_cv_gender_public = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?",
         related='cv_digital_id.is_cv_gender_public', store=True, history=True)
@@ -244,7 +246,7 @@ class HrEmployee(models.Model):
                 # 'cjppu_affiliate_number': record.cv_digital_id.cjppu_affiliate_number,
                 # 'professional_resume': record.cv_digital_id.professional_resume,
                 # 'user_linkedIn': record.cv_digital_id.user_linkedIn,
-                'is_driver_license': record.cv_digital_id.is_driver_license,
+                # 'is_driver_license': record.cv_digital_id.is_driver_license,
                 'drivers_license_ids': record._get_driver_licences_orm(),
                 'cv_expiration_date': record.cv_digital_id.cv_expiration_date,
                 'status_civil_date': record.cv_digital_id.status_civil_date,
