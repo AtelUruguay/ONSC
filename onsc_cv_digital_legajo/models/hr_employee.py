@@ -349,6 +349,16 @@ class ONSCLegajoDriverLicense(models.Model):
     license_file = fields.Binary("Documento digitalizado licencia de conducir")
     license_filename = fields.Char('Nombre del documento digital')
 
+class ONSCCVDigitalDriverLicense(models.Model):
+    _inherit = 'onsc.cv.driver.license'
+
+    def button_documentary_approve(self):
+        result = super(ONSCCVDigitalDriverLicense, self).button_documentary_approve()
+        for record in self:
+        self.env['onsc.legajo.driver.license'].create({
+            'cv_driver_license_id': self.id,
+        })
+
 
 class ONSCCVLegajoInformationContact(models.Model):
     _name = 'onsc.cv.legajo.information.contact'
