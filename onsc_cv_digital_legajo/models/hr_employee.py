@@ -186,7 +186,8 @@ class HrEmployee(models.Model):
 
     def _get_driver_licences_orm(self):
         driver_licences_orm = [(5,)]
-        for drivers_license in self.cv_digital_id.drivers_license_ids:
+        for drivers_license in self.cv_digital_id.drivers_license_ids.filtered(
+                lambda x: x.documentary_validation_state == 'validated'):
             driver_licences_orm.append((0, 0, {
                 'validation_date': drivers_license.validation_date,
                 'category_id': drivers_license.category_id.id,
@@ -341,7 +342,7 @@ class ONSCLegajoDriverLicense(models.Model):
     _name = 'onsc.legajo.driver.license'
     _description = 'Licencia de conducir'
 
-    cv_driver_license_id = fields.Many2one("onsc.cv.driver.license", string="Licencia del CV", required=True,
+    cv_driver_license_id = fields.Many2one("onsc.cv.driver.license", string="Licencia de conducir del CV", required=True,
                                            index=True, ondelete='cascade')
     employee_id = fields.Many2one("hr.employee", string="Legajo", required=True, index=True, ondelete='cascade')
     validation_date = fields.Date("Fecha de vencimiento", required=True)
@@ -352,12 +353,37 @@ class ONSCLegajoDriverLicense(models.Model):
 class ONSCCVDigitalDriverLicense(models.Model):
     _inherit = 'onsc.cv.driver.license'
 
+    legajo_driver_license_id = fields.Many2one("onsc.legajo.driver.license", string="Licencia de conducir del Legajo")
+
     def button_documentary_approve(self):
+        Employee = self.env['hr.employee'].suspend_security()
         result = super(ONSCCVDigitalDriverLicense, self).button_documentary_approve()
         for record in self:
-        self.env['onsc.legajo.driver.license'].create({
-            'cv_driver_license_id': self.id,
-        })
+            employee_id = Employee.search([('cv_digital_id', '=', record.cv_digital_id.id)], limit=1)
+            if employee_id:
+                record.sync_driver_license(employee_id)
+        return result
+
+    def sync_driver_license(self, employee_id):
+        DriverLicense = self.env['onsc.legajo.driver.license'].suspend_security()
+        if self.legajo_driver_license_id:
+            self.legajo_driver_license_id.suspend_security().write({
+                'validation_date': self.validation_date,
+                'category_id': self.category_id.id,
+                'license_file': self.license_file,
+                'license_filename': self.license_filename
+            })
+        else:
+            legajo_driver_license_id = DriverLicense.create({
+                'cv_driver_license_id': self.id,
+                'employee_id': employee_id.id,
+                'validation_date': self.validation_date,
+                'category_id': self.category_id.id,
+                'license_file': self.license_file,
+                'license_filename': self.license_filename
+            })
+            self.write({'legajo_driver_license_id': legajo_driver_license_id.id})
+
 
 
 class ONSCCVLegajoInformationContact(models.Model):
