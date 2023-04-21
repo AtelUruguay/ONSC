@@ -33,7 +33,7 @@ class HrJob(models.Model):
     def _compute_is_readonly(self):
         for record in self:
             # readonly si la fecha end_date es mayor a la fecha actual
-            record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto') or (
+            record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto') and (
                 record.end_date < fields.Date.today() if record.end_date else False)
 
     @api.onchange('start_date')
