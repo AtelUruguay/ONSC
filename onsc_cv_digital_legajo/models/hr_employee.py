@@ -81,6 +81,14 @@ class HrEmployee(models.Model):
                                       store=True, history=True)
     user_linkedIn = fields.Char(string="Usuario en LinkedIn", related='cv_digital_id.user_linkedIn', store=True,
                                 history=True)
+    is_cv_gender_public = fields.Boolean(
+        string="¿Desea que esta información se incluya en la versión impresa de su CV?",
+        related='cv_digital_id.is_cv_gender_public', store=True, history=True)
+    is_public_information_victim_violent = fields.Boolean(
+        string="¿Desea que esta información se incluya en la versión impresa de su CV?",
+        related='cv_digital_id.is_public_information_victim_violent', store=True, history=True)
+    is_cv_race_public = fields.Boolean(string="¿Permite que su identidad étnico-racial se visualice en su CV?",
+                                       related='cv_digital_id.is_cv_race_public', store=True, history=True)
 
     allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')],
                                             string=u'¿Permite que el contenido de esta sección se visualice en su CV?',
@@ -178,7 +186,8 @@ class HrEmployee(models.Model):
 
     def _get_driver_licences_orm(self):
         driver_licences_orm = [(5,)]
-        for drivers_license in self.cv_digital_id.drivers_license_ids:
+        for drivers_license in self.cv_digital_id.drivers_license_ids.filtered(
+                lambda x: x.documentary_validation_state == 'validated'):
             driver_licences_orm.append((0, 0, {
                 'validation_date': drivers_license.validation_date,
                 'category_id': drivers_license.category_id.id,
@@ -209,32 +218,32 @@ class HrEmployee(models.Model):
             record = record.sudo()
             vals = {
                 'image_1920': record.cv_digital_id.partner_id.image_1920,
-                'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
-                'cv_second_name': record.cv_digital_id.partner_id.cv_second_name,
-                'cv_last_name_1': record.cv_digital_id.partner_id.cv_last_name_1,
-                'cv_last_name_2': record.cv_digital_id.partner_id.cv_last_name_2,
+                # 'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
+                # 'cv_second_name': record.cv_digital_id.partner_id.cv_second_name,
+                # 'cv_last_name_1': record.cv_digital_id.partner_id.cv_last_name_1,
+                # 'cv_last_name_2': record.cv_digital_id.partner_id.cv_last_name_2,
                 'photo_updated_date': record.cv_digital_id.partner_id.cv_photo_updated_date,
-                'cv_birthdate': record.cv_digital_id.partner_id.cv_birthdate,
+                # 'cv_birthdate': record.cv_digital_id.partner_id.cv_birthdate,
                 'document_identity_file': record.cv_digital_id.document_identity_file,
                 'document_identity_filename': record.cv_digital_id.document_identity_filename,
-                'cv_sex': record.cv_digital_id.cv_sex,
+                # 'cv_sex': record.cv_digital_id.cv_sex,
                 'cv_sex_updated_date': record.cv_digital_id.cv_sex_updated_date,
                 # Datos personales
                 'country_of_birth_id': record.cv_digital_id.country_of_birth_id.id,
                 'marital_status_id': record.cv_digital_id.marital_status_id.id,
-                'uy_citizenship': record.cv_digital_id.uy_citizenship,
+                # 'uy_citizenship': record.cv_digital_id.uy_citizenship,
                 'crendencial_serie': record.cv_digital_id.crendencial_serie,
                 'credential_number': record.cv_digital_id.credential_number,
                 'civical_credential_file': record.cv_digital_id.civical_credential_file,
                 'civical_credential_filename': record.cv_digital_id.civical_credential_filename,
-                'prefix_phone_id': record.cv_digital_id.prefix_phone_id.id,
-                'personal_phone': record.cv_digital_id.personal_phone,
-                'prefix_mobile_phone_id': record.cv_digital_id.prefix_mobile_phone_id.id,
-                'mobile_phone': record.cv_digital_id.mobile_phone,
-                'email': record.cv_digital_id.email,
-                'cjppu_affiliate_number': record.cv_digital_id.cjppu_affiliate_number,
-                'professional_resume': record.cv_digital_id.professional_resume,
-                'user_linkedIn': record.cv_digital_id.user_linkedIn,
+                # 'prefix_phone_id': record.cv_digital_id.prefix_phone_id.id,
+                # 'personal_phone': record.cv_digital_id.personal_phone,
+                # 'prefix_mobile_phone_id': record.cv_digital_id.prefix_mobile_phone_id.id,
+                # 'mobile_phone': record.cv_digital_id.mobile_phone,
+                # 'email': record.cv_digital_id.email,
+                # 'cjppu_affiliate_number': record.cv_digital_id.cjppu_affiliate_number,
+                # 'professional_resume': record.cv_digital_id.professional_resume,
+                # 'user_linkedIn': record.cv_digital_id.user_linkedIn,
                 'is_driver_license': record.cv_digital_id.is_driver_license,
                 'drivers_license_ids': record._get_driver_licences_orm(),
                 'cv_expiration_date': record.cv_digital_id.cv_expiration_date,
@@ -244,7 +253,7 @@ class HrEmployee(models.Model):
                 'cv_gender2': record.cv_digital_id.cv_gender2,
                 'cv_gender_record_file': record.cv_digital_id.cv_gender_record_file,
                 'cv_gender_record_filename': record.cv_digital_id.cv_gender_record_filename,
-                'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
+                # 'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
                 'gender_date': record.cv_digital_id.gender_date,
                 # RAZA
                 'cv_race2': record.cv_digital_id.cv_race2,
@@ -253,7 +262,6 @@ class HrEmployee(models.Model):
                 'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
                 'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
                 'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
-                'is_cv_race_public': record.cv_digital_id.is_cv_race_public,
                 'afro_descendant_date': record.cv_digital_id.afro_descendant_date,
 
                 # SALUD LABORAL
@@ -269,7 +277,7 @@ class HrEmployee(models.Model):
                 # Victima de Delitos violentos
                 'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
                 'is_victim_violent': record.cv_digital_id.is_victim_violent,
-                'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
+                # 'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
                 'relationship_victim_violent_filename': record.cv_digital_id.relationship_victim_violent_filename,
                 # Domicilio
                 'country_id': record.cv_digital_id.country_id.id,
@@ -293,22 +301,22 @@ class HrEmployee(models.Model):
                 'address_receipt_file_name': record.cv_digital_id.partner_id.address_receipt_file_name,
 
                 # Discapacidad
-                'allow_content_public': record.cv_digital_id.allow_content_public,
-                'situation_disability': record.cv_digital_id.situation_disability,
+                # 'allow_content_public': record.cv_digital_id.allow_content_public,
+                # 'situation_disability': record.cv_digital_id.situation_disability,
                 'people_disabilitie': record.cv_digital_id.people_disabilitie,
                 'document_certificate_file': record.cv_digital_id.document_certificate_file,
                 'document_certificate_filename': record.cv_digital_id.document_certificate_filename,
                 'certificate_date': record.cv_digital_id.certificate_date,
                 'to_date': record.cv_digital_id.to_date,
-                'see': record.cv_digital_id.see,
-                'hear': record.cv_digital_id.hear,
-                'walk': record.cv_digital_id.walk,
-                'speak': record.cv_digital_id.speak,
-                'realize': record.cv_digital_id.realize,
-                'lear': record.cv_digital_id.lear,
-                'interaction': record.cv_digital_id.interaction,
-                'is_need_other_support': record.cv_digital_id.is_need_other_support,
-                'need_other_support': record.cv_digital_id.need_other_support,
+                # 'see': record.cv_digital_id.see,
+                # 'hear': record.cv_digital_id.hear,
+                # 'walk': record.cv_digital_id.walk,
+                # 'speak': record.cv_digital_id.speak,
+                # 'realize': record.cv_digital_id.realize,
+                # 'lear': record.cv_digital_id.lear,
+                # 'interaction': record.cv_digital_id.interaction,
+                # 'is_need_other_support': record.cv_digital_id.is_need_other_support,
+                # 'need_other_support': record.cv_digital_id.need_other_support,
                 'disability_date': record.cv_digital_id.disability_date,
                 'type_support_ids': record._get_type_support_orm(),
                 # Datos del legajo
@@ -324,7 +332,7 @@ class HrEmployee(models.Model):
                 'health_department_id': record.cv_digital_id.health_department_id.id,
                 'health_provider_id': record.cv_digital_id.health_provider_id.id,
                 # Extras
-                'last_modification_date': record.cv_digital_id.last_modification_date,
+                # 'last_modification_date': record.cv_digital_id.last_modification_date,
 
             }
             record.suspend_security().write(vals)
@@ -334,11 +342,48 @@ class ONSCLegajoDriverLicense(models.Model):
     _name = 'onsc.legajo.driver.license'
     _description = 'Licencia de conducir'
 
+    cv_driver_license_id = fields.Many2one("onsc.cv.driver.license", string="Licencia de conducir del CV", required=True,
+                                           index=True, ondelete='cascade')
     employee_id = fields.Many2one("hr.employee", string="Legajo", required=True, index=True, ondelete='cascade')
     validation_date = fields.Date("Fecha de vencimiento", required=True)
     category_id = fields.Many2one("onsc.cv.drivers.license.categories", "Categoría", required=True)
     license_file = fields.Binary("Documento digitalizado licencia de conducir")
     license_filename = fields.Char('Nombre del documento digital')
+
+class ONSCCVDigitalDriverLicense(models.Model):
+    _inherit = 'onsc.cv.driver.license'
+
+    legajo_driver_license_id = fields.Many2one("onsc.legajo.driver.license", string="Licencia de conducir del Legajo")
+
+    def button_documentary_approve(self):
+        Employee = self.env['hr.employee'].suspend_security()
+        result = super(ONSCCVDigitalDriverLicense, self).button_documentary_approve()
+        for record in self:
+            employee_id = Employee.search([('cv_digital_id', '=', record.cv_digital_id.id)], limit=1)
+            if employee_id:
+                record.sync_driver_license(employee_id)
+        return result
+
+    def sync_driver_license(self, employee_id):
+        DriverLicense = self.env['onsc.legajo.driver.license'].suspend_security()
+        if self.legajo_driver_license_id:
+            self.legajo_driver_license_id.suspend_security().write({
+                'validation_date': self.validation_date,
+                'category_id': self.category_id.id,
+                'license_file': self.license_file,
+                'license_filename': self.license_filename
+            })
+        else:
+            legajo_driver_license_id = DriverLicense.create({
+                'cv_driver_license_id': self.id,
+                'employee_id': employee_id.id,
+                'validation_date': self.validation_date,
+                'category_id': self.category_id.id,
+                'license_file': self.license_file,
+                'license_filename': self.license_filename
+            })
+            self.write({'legajo_driver_license_id': legajo_driver_license_id.id})
+
 
 
 class ONSCCVLegajoInformationContact(models.Model):
