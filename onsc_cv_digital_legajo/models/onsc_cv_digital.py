@@ -446,7 +446,7 @@ class ONSCCVDigital(models.Model):
         address_info_date = values.get('address_info_date')
         cv_address_state_id = values.get('cv_address_state_id')
         cv_address_location_id = values.get('cv_address_location_id')
-        cv_adress_street = values.get('cv_adress_street')
+        cv_address_street = values.get('cv_address_street')
         cv_address_street_id = values.get('cv_address_street_id')
         cv_address_street2_id = values.get('cv_address_street2_id')
         cv_address_street3_id = values.get('cv_address_street3_id')
@@ -459,7 +459,7 @@ class ONSCCVDigital(models.Model):
         cv_address_place = values.get('cv_address_place')
         cv_address_block = values.get('cv_address_block')
         cv_address_sandlot = values.get('cv_address_sandlot')
-        if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or address_info_date or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot or cv_adress_street:
+        if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or address_info_date or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot or cv_address_street:
             self.cv_address_documentary_validation_state = 'to_validate'
 
         super(ONSCCVDigital, self).update_header_documentary_validation(values)
