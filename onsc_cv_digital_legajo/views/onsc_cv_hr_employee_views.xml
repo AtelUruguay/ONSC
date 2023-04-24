@@ -96,6 +96,7 @@
                                 <field name="is_cv_gender_public"
                                        readonly="1"
                                        help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
+                                <field name="gender_public_visualization_date"/>
                                 <field name="is_cv_gender_option_other_enable" invisible="1"/>
                                 <field name="is_cv_gender_record" invisible="1"/>
                                 <field name="cv_gender_record_filename" invisible="1"/>

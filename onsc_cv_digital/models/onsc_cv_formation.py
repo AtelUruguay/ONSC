@@ -19,6 +19,10 @@ class ONSCCVFormationBasic(models.Model):
     study_certificate_file = fields.Binary(string="Certificado de estudio")
     study_certificate_filename = fields.Char('Nombre del documento digital')
 
+    @api.onchange('state')
+    def onchange_state(self):
+        self.end_date = False
+
     @api.model
     def create(self, values):
         result = super(ONSCCVFormationBasic, self).create(values)
