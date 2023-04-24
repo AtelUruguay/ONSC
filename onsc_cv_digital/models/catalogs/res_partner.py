@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
 from odoo import SUPERUSER_ID, models, fields, api, _
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 from odoo.exceptions import ValidationError
+
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 # TODO female otherwhise feminine
 CV_SEX = [('male', 'Masculino'), ('feminine', 'Femenino')]
@@ -134,6 +135,17 @@ class ResPartner(models.Model):
         for record in self:
             name = record.cv_full_name or record.name
             if self._context.get('show_cv_nro_doc', False) and record.cv_nro_doc:
-                name = record.cv_nro_doc
+                name = "[" + record.cv_nro_doc + "] " + record.cv_full_name or record.name
             res.append((record.id, name))
         return res
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        by_name = super(ResPartner, self).name_search(name, args=args, operator=operator, limit=limit)
+        if self._context.get('show_cv_nro_doc', False):
+            by_cv_nro_doc_domain = [('cv_nro_doc', operator, name)]
+            by_cv_nro_doc_domain += args
+            by_cv_nro_doc = self.search(by_cv_nro_doc_domain, limit=limit)
+        return list(set(by_name + by_cv_nro_doc.name_get()))

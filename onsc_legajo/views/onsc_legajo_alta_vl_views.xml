@@ -33,141 +33,175 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <div name="first_div" class="oe_title">
+                        <div class="oe_title" name="first_div">
                             <h1>
-                                <field name="full_name"/>
+                                <field name="full_name" modifiers="{&quot;readonly&quot;: true}"/>
                             </h1>
                         </div>
                         <group>
                             <group>
-                                <field name="partner_id" string="C.I." required="1" context="{'show_cv_nro_doc':True}" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="partner_id" string="C.I." required="1" context="{'show_cv_nro_doc':True}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             </group>
                             <group>
-                                <field name="cv_emissor_country_id" string="País" readonly="1"/>
-                                <field name="cv_document_type_id" readonly="1" />
                             </group>
                         </group>
-                        <group name="personal">
-                            <group name="personal_left">
-                                <field name="cv_last_name_1" readonly="1" string="Apellido 1"/>
-                                <field name="cv_first_name" readonly="1" string="Nombre 1"/>
-                            </group>
-                            <group name="personal_right">
-                                <field name="cv_last_name_2" readonly="1" string="Apellido 2"/>
-                                <field name="cv_second_name" readonly="1" string="Nombre 2"/>
-                            </group>
-                        </group>
-                        <group name="group2">
-                            <group name="group2_left">
-                                <field name="date_start" required="1"/>
-                                <field name="is_inciso_readonly" invisible="1"/>
-                                <field name="inciso_id" readonly="1" required="1" force_save="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
 
-                                <field name="is_operating_unit_readonly" invisible="1"/>
-                                <field name="operating_unit_id_domain" invisible="1"/>
-                                <field name="operating_unit_id" attrs="{'readonly': [('is_operating_unit_readonly', '=', True)]}" domain="operating_unit_id_domain" required="1"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="is_reserva_sgh"/>
-                            </group>
-                            <group name="group2_right">
-                                <field name="income_mechanism_id" required="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="is_call_number_required" invisible="1"/>
-                                <field name="call_number"  attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
-                                <field name="programa" attrs="{'required':  [('is_reserva_sgh', '=', False)]}"/>
-                                <field name="proyecto" attrs="{'required':  [('is_reserva_sgh', '=', False)]}"/>
-                                <field name="office_id" invisible="1"/>
-                                <field name="retributive_day_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            </group>
-                        </group>
-                        <field name="is_presupuestado" invisible="1"/>
-                        <field name="is_indVencimiento" invisible="1"/>
 
-                        <group name="group3">
-                            <group name="group3_left">
-                                <field name="regime_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}" attrs="{'invisible': [('is_reserva_sgh', '=', True)], 'required':  [('is_reserva_sgh', '=', False)]}" />
-                                <field name="descriptor1_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}" attrs="{'invisible': [('is_reserva_sgh', '=', True)], 'required':  [('is_reserva_sgh', '=', False)]}"/>
-                                <field name="descriptor2_id"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}" attrs="{'invisible': [('is_reserva_sgh', '=', True)], 'required':  [('is_reserva_sgh', '=', False)]}"/>
-                                <field name="nroPuesto" attrs="{'invisible': [('is_reserva_sgh', '=', False)], 'required':  [('is_reserva_sgh', '=', True)]}"/>
-                                <field name="nroPlaza" attrs="{'invisible': [('is_reserva_sgh', '=', False)], 'required':  [('is_reserva_sgh', '=', True)]}"/>
-                            </group>
-                            <group name="group3_right">
-                                <field name="descriptor3_id" attrs="{'invisible': ['|', ('is_presupuestado', '=', True), ('is_reserva_sgh', '=', True)]}"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="descriptor4_id" attrs="{'invisible': ['|', ('is_presupuestado', '=', True), ('is_reserva_sgh', '=', True)]}"  options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            </group>
-                        </group>
-                         <group name="group4">
-                            <group name="group4_left">
-                            </group>
-                            <group name="group4_right">
-                            </group>
-                        </group>
-                        <group name="group5" attrs="{'invisible': [('is_presupuestado', '=', False)]}">
-
-                        </group>
-                        <group name="group6">
-                            <group name="group6_left">
-                                <field name="department_id_domain" invisible="1"/>
-                                <field name="department_id" domain="department_id_domain" required="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="occupation_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            </group>
-                            <group name="group6_right">
-                                <field name="security_job_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}" />
-                                <field name="is_responsable_uo"/>
-                            </group>
-                        </group>
-                        <group name="group7">
-                            <group name="group7_left">
-                                <field name="date_income_public_administration" required="1"/>
-                                <field name="inactivity_years" />
-                            </group>
-                            <group name="group7_right">
-                                <field name="contract_expiration_date" attrs="{'required': [('is_indVencimiento', '=', True)]}"/>
-                                <field name="is_graduation_date_required" invisible="1"/>
-                                <field name="graduation_date" attrs="{'required': [('is_graduation_date_required', '=', True)]}"/>
-                                <div class="alert alert-info" colspan="6"
-                                     role="alert"
-                                     style="margin-bottom:0px;">
-                                     <p><i class="fa fa-info-circle" role="alert"/>
-                                         Debe ingresar o verificar la Fecha de vigencia de Estado Civil en el SGH para este escalafón.
-                                     </p>
-                                </div>
-                            </group>
-                        </group>
-                        <group name="motivo" string="Ingreso de motivo">
-                             <group name="motivo_left">
-                                <field name="reason_discharge" colspan="4"/>
-                                <field name="norm_code_discharge_id" colspan="3" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="norm_number_discharge" colspan="2"/>
-                                <field name="norm_year_discharge" colspan="1"/>
-                                <field name="norm_article_discharge" colspan="2"/>
-                                <div class="alert alert-info" colspan="6"
-                                     role="alert"
-                                     style="margin-bottom:0px;">
-                                     <p><i class="fa fa-info-circle" role="alert"/>
-                                         En caso de no encontrar la norma de referencia para el movimiento, comunicarse con el
-                                         área de puesto de trabajos de CGN al siguiente correo  <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
-                                     </p>
-                                </div>
-                             </group>
-                            <group name="motivo_right">
-                                <field name="resolution_description_discharge" colspan="4" required="1"/>
-                                <field name="resolution_date_discharge" colspan="4"/>
-                                <field name="resolution_type_discharge" colspan="4"/>
-                            </group>
-                        </group>
-                        <group name="documentacion" string="Documentación">
-                            <field name="attached_document_discharge_ids" nolabel="1">
-                                <tree editable="top">
-                                    <field name="name" required="1"/>
-                                    <field name="document_type_id" required="1"/>
-                                    <field name="document_file" required="1" filename="document_file_name"/>
-                                    <field name="document_file_name" invisible="1"/>
-                                </tree>
-                            </field>
-                        </group>
-                        <group name="adicional" string="Información Adicional">
-                            <field name="additional_information_discharge" nolabel="1" placeholder="Información Adicional"/>
-                        </group>
                         <notebook>
+                            <page name="datos_relevantes" string="Datos Relevantes">
+                                <group name="group2">
+                                    <group name="group2_left">
+                                        <field name="date_start"/>
+                                        <field name="is_inciso_readonly" invisible="1"/>
+                                        <field name="inciso_id" readonly="1" force_save="1"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                    </group>
+                                    <group name="group2_right">
+                                        <field name="operating_unit_id_domain" invisible="1"/>
+                                        <field name="operating_unit_id"
+                                               attrs="{'readonly': [('is_operating_unit_readonly', '=', True)]}"
+                                               domain="operating_unit_id_domain"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="is_call_number_required" invisible="1"/>
+                                        <field name="call_number"
+                                               attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
+                                        <field name="is_presupuestado" invisible="1"/>
+                                        <field name="is_indVencimiento" invisible="1"/>
+                                        <field name="is_reserva_sgh"/>
+                                        <field name="is_operating_unit_readonly" invisible="1"/>
+                                    </group>
+                                </group>
+
+                                <group name="group3">
+                                    <group name="group3_left">
+                                        <field name="program_id" context="{'show_only_program':True}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="project_id" domain="project_domain_id"
+                                               context="{'show_only_project':True}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="project_domain_id" invisible="1"/>
+
+                                    </group>
+                                    <group name="group3_right">
+                                        <field name="nroPuesto"
+                                               attrs="{'invisible': [('is_reserva_sgh', '=', False)]}"/>
+                                        <field name="nroPlaza"
+                                               attrs="{'invisible': [('is_reserva_sgh', '=', False)]}"/>
+                                        <field name="regime_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                               attrs="{'invisible': [('is_reserva_sgh', '=', True)]}"/>
+                                        <field name="descriptor1_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                               attrs="{'invisible': [('is_reserva_sgh', '=', True)]}"/>
+                                        <field name="descriptor2_id" domain="descriptor2_domain_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                               attrs="{'invisible': [('is_reserva_sgh', '=', True)]}"/>
+                                        <field name="descriptor3_id" domain="descriptor3_domain_id"
+                                               attrs="{'invisible': ['|', ('is_presupuestado', '=', True), ('is_reserva_sgh', '=', True)]}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="descriptor4_id" domain="descriptor4_domain_id"
+                                               attrs="{'invisible': ['|', ('is_presupuestado', '=', True), ('is_reserva_sgh', '=', True)]}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="descriptor2_domain_id" invisible="1"/>
+                                        <field name="descriptor3_domain_id" invisible="1"/>
+                                        <field name="descriptor4_domain_id" invisible="1"/>
+
+                                    </group>
+                                </group>
+                                <group name="group4">
+                                    <group name="group4_left">
+                                        <field name="income_mechanism_id"
+                                               attrs="{'required': [('state', '!=', 'borrador')]}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="retributive_day_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                    </group>
+                                    <group name="group4_right">
+                                    </group>
+                                </group>
+                                <group name="group5" attrs="{'invisible': [('is_presupuestado', '=', False)]}">
+
+                                </group>
+                                <group name="group6">
+                                    <group name="group6_left">
+                                        <field name="department_id_domain" invisible="1"/>
+                                        <field name="department_id" domain="department_id_domain"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="occupation_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                    </group>
+                                    <group name="group6_right">
+                                        <field name="security_job_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="is_responsable_uo"/>
+                                    </group>
+                                </group>
+                                <group name="group7">
+                                    <group name="group7_left">
+                                        <field name="date_income_public_administration"
+                                               attrs="{'required': [('state', '!=', 'borrador')]}"/>
+                                        <field name="inactivity_years"/>
+                                    </group>
+                                    <group name="group7_right">
+                                        <field name="contract_expiration_date"
+                                               attrs="{'required': [('is_indVencimiento', '=', True),('state', '!=', 'borrador')]}"/>
+                                        <field name="is_graduation_date_required" invisible="1"/>
+                                        <field name="graduation_date"
+                                               attrs="{'required': [('is_graduation_date_required', '=', True),('state', '!=', 'borrador')]}"/>
+                                        <div class="alert alert-info" colspan="6"
+                                             role="alert"
+                                             style="margin-bottom:0px;">
+                                            <p>
+                                                <i class="fa fa-info-circle" role="alert"/>
+                                                Debe ingresar o verificar la Fecha de vigencia de Estado Civil en el SGH
+                                                para este escalafón.
+                                            </p>
+                                        </div>
+                                    </group>
+                                </group>
+                                <group name="motivo" string="Ingreso de motivo">
+                                    <group name="motivo_left">
+                                        <field name="reason_discharge" colspan="4"/>
+                                        <field name="norm_code_discharge_id" colspan="3"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="norm_number_discharge" colspan="2"/>
+                                        <field name="norm_year_discharge" colspan="1"/>
+                                        <field name="norm_article_discharge" colspan="2"/>
+                                        <div class="alert alert-info" colspan="6"
+                                             role="alert"
+                                             style="margin-bottom:0px;">
+                                            <p>
+                                                <i class="fa fa-info-circle" role="alert"/>
+                                                En caso de no encontrar la norma de referencia para el movimiento,
+                                                comunicarse con el
+                                                área de puesto de trabajos de CGN al siguiente correo
+                                                <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
+                                            </p>
+                                        </div>
+                                    </group>
+                                    <group name="motivo_right">
+                                        <field name="resolution_description_discharge" colspan="4"
+                                               attrs="{'required': [('state', '!=', 'borrador')]}"/>
+                                        <field name="resolution_date_discharge" colspan="4"/>
+                                        <field name="resolution_type_discharge" colspan="4"/>
+                                    </group>
+                                </group>
+                                <group name="documentacion" string="Documentación">
+                                    <field name="attached_document_discharge_ids" nolabel="1">
+                                        <tree editable="top">
+                                            <field name="name" required="1"/>
+                                            <field name="document_type_id" required="1"/>
+                                            <field name="document_file" required="1" filename="document_file_name"/>
+                                            <field name="document_file_name" invisible="1"/>
+                                        </tree>
+                                    </field>
+                                </group>
+                                <group name="adicional" string="Información Adicional">
+                                    <field name="additional_information_discharge" nolabel="1"
+                                           placeholder="Información Adicional"/>
+                                </group>
+                            </page>
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">

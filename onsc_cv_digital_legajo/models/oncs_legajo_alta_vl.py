@@ -28,10 +28,11 @@ class ONSCLegajoAltaVL(models.Model):
     cv_address_block = fields.Char(related='partner_id.cv_address_block', string="Manzana")
     cv_address_sandlot = fields.Char(related='partner_id.cv_address_sandlot', string="Solar")
     employee_id = fields.Many2one('hr.employee', 'Employee', compute="_compute_employee_id", store=True)
+    cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", related='employee_id.cv_digital_id', store=True)
+    is_docket = fields.Boolean(string="Tiene legajo", related='cv_digital_id.is_docket')
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
     is_error_synchronization = fields.Boolean(copy=False)
-    is_see_more = fields.Boolean(copy=False)
 
     def action_call_ws1(self):
         self.syncronize(log_info=True)

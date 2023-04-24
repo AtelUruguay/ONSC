@@ -35,6 +35,32 @@ class ONSCLegajoOffice(models.Model):
         ('code_uniq', 'unique(code)', u'El código de la oficina debe ser único')
     ]
 
+    def name_get(self):
+        res = []
+        for record in self:
+            name = record.code
+            if self._context.get('show_only_program', False) and (record.programa or record.programaDescripcion):
+                name = "[" + (record.programa or '0') + "] " + record.programaDescripcion
+            elif self._context.get('show_only_project', False) and (record.proyecto or record.proyectoDescripcion):
+                name = "[" + (record.proyecto or '0') + "] " + record.proyectoDescripcion
+            res.append((record.id, name))
+        return res
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        by_name = super(ONSCLegajoOffice, self).name_search(name, args=args, operator=operator, limit=limit)
+        if self._context.get('show_only_program', False):
+            by_programaDescripcion_domain = [('programaDescripcion', operator, name)]
+            by_programaDescripcion_domain += args
+            by_programaDescripcion = self.search(by_programaDescripcion_domain, limit=limit)
+        elif self._context.get('show_only_project', False):
+            by_proyectoDescripcion_domain = [('proyectoDescripcion', operator, name)]
+            by_proyectoDescripcion_domain += args
+            by_programaDescripcion = self.search(by_proyectoDescripcion_domain, limit=limit)
+        return list(set(by_name + by_programaDescripcion.name_get()))
+
     @api.depends('inciso', 'unidadEjecutora', 'programa', 'proyecto')
     def _compute_code(self):
         for record in self:

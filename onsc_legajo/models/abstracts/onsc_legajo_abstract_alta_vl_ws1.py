@@ -2,7 +2,7 @@
 
 import logging
 
-from odoo import models, tools, api
+from odoo import models, tools, api, fields
 
 _logger = logging.getLogger(__name__)
 
@@ -21,28 +21,43 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
         wsclient = self._get_client(parameter, '', integration_error)
         # TODO: cuando intente hacer un update a data no me funciono, por eso lo hice asi
 
+        data = {
+            'fechaAlta': record.date_start.strftime('%d/%m/%Y'),
+        }
+
         if record.is_reserva_sgh:
-            data = {
-                'fechaAlta': record.date_start.strftime('%d/%m/%Y'),
-                'nroPuesto': record.nroPuesto or '0',
-                'nroPlaza': record.nroPlaza or '0',
-                'cedula': record.cv_nro_doc or '',
-                'inciso': record.inciso_id.budget_code or '0',
-                'ue': record.operating_unit_id.budget_code or '0',
-                'programa': record.programa or '0',
-                'proyecto': record.proyecto or '0',
-            }
+            if record.nroPuesto:
+                data.update({
+                    'nroPuesto': record.nroPuesto,
+                })
+            if record.nroPlaza:
+                data.update({
+                    'nroPlaza': record.nroPlaza,
+                })
+            if record.partner_id:
+                data.update({
+                    'cedula': record.partner_id.cv_nro_doc,
+                })
         else:
-            data = {
-                'fechaAlta': record.date_start.strftime('%d/%m/%Y'),
-                'codigoRegimen': record.regime_id.codRegimen if record.regime_id else '',
-                'dsc1Id': '900',
-                'dsc2Id': '1',
-                'inciso': record.inciso_id.budget_code or '0',
-                'ue': record.operating_unit_id.budget_code or '0',
-                'programa': record.programa or '0',
-                'proyecto': record.proyecto or '0',
-            }
+            if record.regime_id:
+                data.update({
+                    'codigoRegimen': record.regime_id.codRegimen,
+                })
+            if record.descriptor1_id:
+                data.update({
+                    'dsc1Id': record.descriptor1_id.code,
+                })
+            if record.descriptor2_id:
+                data.update({
+                    'dsc2Id': record.descriptor2_id.code,
+                })
+
+        data.update({
+            'inciso': record.inciso_id.budget_code or '0',
+            'ue': record.operating_unit_id.budget_code or '0',
+            'programa': record.program_id.programa or '0',
+            'proyecto': record.project_id.proyecto or '0',
+        })
 
         return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, '',
                                                                                    integration_error, data)
@@ -58,42 +73,56 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             if not hasattr(response, 'listaPlazas'):
                 return False
             vacante_ids = [(5,)]
-            for external_record in response.listaPlazas:
-                try:
-                    regimen_id = self.env['onsc.legajo.regime'].search(
-                        [('codRegimen', '=', external_record.Regimen.codRegimen)], limit=1)
+            if response.listaPlazas:
+                for external_record in response.listaPlazas:
+                    # TODO la fecha de reserva y vacante no se esta sincronizando.Revisar como convertir el string a date
+                    try:
+                        data = {
+                            'nroPuesto': external_record.nroPuesto,
+                            'nroPlaza': external_record.nroPlaza,
+                            'codPartida': external_record.partida.codPartida if hasattr(external_record.partida,
+                                                                                        'codPartida') else '',
+                            'Dsc3Id': external_record.partida.dsc3Id if hasattr(external_record.partida,
+                                                                                'dsc3Id') else '',
+                            'Dsc3Descripcion': external_record.partida.dsc3Descripcion if hasattr(
+                                external_record.partida,
+                                'dsc3Descripcion') else '',
+                            'Dsc4Id': external_record.partida.dsc4Id if hasattr(external_record.partida,
+                                                                                'dsc4Id') else '',
+                            'Dsc4Descripcion': external_record.partida.dsc4Descripcion if hasattr(
+                                external_record.partida,
+                                'dsc4Descripcion') else '',
+                            'descripcionJornadaFormal': external_record.descripcionJornadaFormal,
+                            'codRegimen': external_record.Regimen.codRegimen,
+                            'estado': external_record.estado if hasattr(external_record, 'estado') else '',
+                            'estadoDescripcion': external_record.estadoDescripcion if hasattr(external_record,
+                                                                                              'estadoDescripcion') else '',
+                            # 'fechaVacantePLaza': datetime.strptime(external_record.fechaVacantePLaza,'%d/%m/%Y').date() if hasattr(external_record,'fechaVacantePLaza') else '',
+                            # 'fechaReserva': datetime.strptime(external_record.fechaReserva,'%d/%m/%Y').date() if hasattr(external_record,'fechaReserva') else '',
+                            'fechaVacantePLaza': fields.Datetime.now(),
+                            'fechaReserva': fields.Datetime.now(),
 
-                    data = {
-                        'nroPuesto': external_record.nroPuesto,
-                        'nroPlaza': external_record.nroPlaza,
-                        'codPartida': external_record.partida.codPartida if hasattr(external_record.partida,
-                                                                                    'codPartida') else '',
-                        # 'fechaReserva': external_record.fechaReserva,
-                        'Dsc3Id': external_record.partida.dsc3Id if hasattr(external_record.partida, 'dsc3Id') else '',
-                        'Dsc3Descripcion': external_record.partida.dsc3Descripcion if hasattr(external_record.partida,
-                                                                                              'dsc3Descripcion') else '',
-                        'Dsc4Id': external_record.partida.dsc4Id if hasattr(external_record.partida, 'dsc4Id') else '',
-                        'Dsc4Descripcion': external_record.partida.dsc4Descripcion if hasattr(external_record.partida,
-                                                                                              'dsc4Descripcion') else '',
-                        'regime_id': regimen_id.id,
-                        'descripcionJornadaFormal': external_record.descripcionJornadaFormal,
-                    }
+                        }
 
-                    vacante_ids.append((0, 0, data))
-                    if self._context.get('log_info'):
+                        vacante_ids.append((0, 0, data))
+                        if self._context.get('log_info'):
+                            self.create_new_log(
+                                origin='',
+                                type='info',
+                                integration_log=integration_error_WS14_9000,
+                                ws_tuple=external_record,
+                                long_description='Evento: Creación'
+                            )
+                    except Exception as e:
+                        _logger.warning(tools.ustr(e))
                         self.create_new_log(
                             origin='',
-                            type='info',
-                            integration_log=integration_error_WS14_9000,
+                            type='error',
+                            integration_log=integration_error_WS14_9001,
                             ws_tuple=external_record,
-                            long_description='Evento: Creación'
-                        )
-                except Exception as e:
-                    _logger.warning(tools.ustr(e))
-                    self.create_new_log(
-                        origin='',
-                        type='error',
-                        integration_log=integration_error_WS14_9001,
-                        ws_tuple=external_record,
-                        long_description=tools.ustr(e))
+                            long_description=tools.ustr(e))
+                        return "Error al sincronizar vacantes"
+
+            else:
+                return "No se encontraron vacantes"
             return vacante_ids
