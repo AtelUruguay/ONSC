@@ -343,6 +343,7 @@
                                            filename="cv_gender_record_filename"
                                            attrs="{'invisible': [('is_cv_gender_record', '=', False)]}"/>
                                     <field name="is_cv_gender_public"/>
+                                    <field name="gender_public_visualization_date"/>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
                                             attrs="{'invisible': [('gender_documentary_validation_state', '!=', 'rejected')]}">
@@ -810,6 +811,7 @@
                                     <field name="certificate_date"
                                            attrs="{'invisible': [('people_disabilitie', '!=', 'si')],'required': [('people_disabilitie', '=', 'si')]}"/>
                                     <field name="to_date" attrs="{'invisible': [('people_disabilitie', '!=', 'si')]}"/>
+                                    <field name="disability_date"/>
                                     <div>
 <!--                                        <field name="show_disabilitie_info" invisible="1"/>-->
                                         <div class="alert alert-danger" role="alert"

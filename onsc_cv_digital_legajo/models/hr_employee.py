@@ -4,6 +4,7 @@ from odoo import models, fields, api
 from odoo.addons.onsc_base.models.onsc_abstract_contact_common_data import CV_SEX as CV_SEX
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SELECTION_RADIO as SELECTION_RADIO
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SITUATION as SITUATION
+from .abstracts.onsc_cv_legajo_abstract_common import BLOOD_TYPE as BLOOD_TYPE
 
 DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
 
@@ -25,7 +26,7 @@ class HrEmployee(models.Model):
         'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction',
         'need_other_support', 'emergency_service_id', 'emergency_service_telephone',
         'health_department_id', 'health_provider_id', 'name_contact', 'contact_person_telephone',
-        'remark_contact_person', 'other_information_official', 'disability_date', 'cv_first_race_id',
+        'remark_contact_person', 'disability_date', 'cv_first_race_id',
         'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
         'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2', 'is_cv_race_public'
     ]
@@ -86,6 +87,10 @@ class HrEmployee(models.Model):
     is_cv_gender_public = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?",
         related='cv_digital_id.is_cv_gender_public', store=True, history=True)
+    gender_public_visualization_date = fields.Date(
+        string="Fecha información visualización pública de género",
+        related='cv_digital_id.gender_public_visualization_date', store=True,
+        history=True)
     is_public_information_victim_violent = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?",
         related='cv_digital_id.is_public_information_victim_violent', store=True, history=True)
@@ -115,11 +120,23 @@ class HrEmployee(models.Model):
     need_other_support = fields.Text(string=u"¿Necesita otro apoyo?", related='cv_digital_id.need_other_support',
                                      store=True, history=True)
     is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain',
-                                           related='cv_digital_id.is_need_other_support')
+                                           related='cv_digital_id.is_need_other_support', store=True, history=True)
     type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo',
                                         related='cv_digital_id.type_support_ids')
     last_modification_date = fields.Date(string=u'Fecha última modificación',
-                                         related='cv_digital_id.last_modification_date')
+                                         related='cv_digital_id.last_modification_date', store=True, history=True)
+    institutional_email = fields.Char(string=u'Correo electrónico institucional',
+                                      related='cv_digital_id.institutional_email', store=True, history=True)
+    emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia',
+                                              related='cv_digital_id.emergency_service_telephone', store=True, history=True)
+    health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
+                                           related='cv_digital_id.health_department_id', store=True, history=True)
+    blood_type = fields.Selection(BLOOD_TYPE,
+                                  string=u'Tipo de sangre',
+                                  related='cv_digital_id.blood_type', store=True, history=True)
+    other_information_official = fields.Text(
+        string="Otra información del funcionario/a",
+        related='cv_digital_id.other_information_official', store=True, history=True)
     # -------- INFO DE CV QUE PASA DIRECTO AL LEGAJO SIN VALIDACION
 
     drivers_license_ids = fields.One2many("onsc.legajo.driver.license",
@@ -167,6 +184,7 @@ class HrEmployee(models.Model):
     information_contact_ids = fields.One2many('onsc.cv.legajo.information.contact', 'employee_id',
                                               string=u'Información de Contacto', history=True,
                                               history_fields="contact_person_telephone,remark_contact_person")
+
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):
@@ -325,8 +343,7 @@ class HrEmployee(models.Model):
                 'emergency_service_id': record.cv_digital_id.emergency_service_id.id,
                 'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
                 'emergency_service_telephone': record.cv_digital_id.emergency_service_telephone,
-                'blood_type': record.cv_digital_id.blood_type,
-                'other_information_official': record.cv_digital_id.other_information_official,
+                # 'other_information_official': record.cv_digital_id.other_information_official,
                 'institutional_email': record.cv_digital_id.institutional_email,
                 'digitized_document_file': record.cv_digital_id.digitized_document_file,
                 'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
