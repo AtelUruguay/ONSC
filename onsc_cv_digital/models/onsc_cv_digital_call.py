@@ -440,7 +440,7 @@ class ONSCCVDigitalCall(models.Model):
             ("cv_emissor_country_id", ["id", "name"]),
             ("cv_document_type_id", ["id", "name"]),
             'cv_nro_doc',
-            'cv_expiration_date',
+            'identity_document_expiration_date',
             'email',
             'cv_birthdate',
             # 'image_1920',
@@ -622,6 +622,7 @@ class ONSCCVDigitalCall(models.Model):
             'call_number': call_number,
             'postulation_date': postulation_date,
             'postulation_number': postulation_number,
+            'identity_document_expiration_date': cv_digital_id.cv_expiration_date,
         })
         return cv_call
 

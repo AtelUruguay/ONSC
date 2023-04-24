@@ -101,6 +101,7 @@ class ONSCCVDigital(models.Model):
     cv_expiration_date = fields.Date(
         string=u'Fecha de vencimiento documento de identidad',
         related='partner_id.cv_expiration_date', store=True, readonly=False)
+    identity_document_expiration_date = fields.Date(string=u'Fecha de vencimiento documento de identidad')
     email = fields.Char(
         string="Email",
         related='partner_id.email', store=True)
@@ -533,6 +534,7 @@ class ONSCCVDigital(models.Model):
         self.cv_address_place = False
         self.cv_address_block = False
         self.cv_address_sandlot = False
+        self.cv_address_amplification = False
 
     @api.onchange('is_occupational_health_card')
     def onchange_is_occupational_health_card(self):
@@ -571,6 +573,7 @@ class ONSCCVDigital(models.Model):
             self.realize = False
             self.lear = False
             self.interaction = False
+            self.people_disabilitie = 'no'
             self.type_support_ids = [(5,)]
 
     @api.onchange('people_disabilitie')

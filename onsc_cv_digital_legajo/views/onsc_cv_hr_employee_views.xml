@@ -96,6 +96,7 @@
                                 <field name="is_cv_gender_public"
                                        readonly="1"
                                        help="Esta información podrá ser utilizada con fines estadísticos, y por el Tribunal de Concurso o la unidad de Gestión Humana del organismo contratante cuando corresponda, independientemente de que usted decida incluirla o no en la versión impresa de su CV"/>
+                                <field name="gender_public_visualization_date"/>
                                 <field name="is_cv_gender_option_other_enable" invisible="1"/>
                                 <field name="is_cv_gender_record" invisible="1"/>
                                 <field name="cv_gender_record_filename" invisible="1"/>
@@ -165,6 +166,7 @@
                                 <field name="address_receipt_file" filename="address_receipt_file_name" readonly="1"
                                        options="{'accepted_file_extensions': '.pdf'}"/>
                                 <field name="address_receipt_file_name" invisible="1"/>
+                                <field name="address_info_date"/>
                                 <field name="country_id" string="País" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="cv_address_state_id" string="Departamento" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="cv_address_location_id" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>

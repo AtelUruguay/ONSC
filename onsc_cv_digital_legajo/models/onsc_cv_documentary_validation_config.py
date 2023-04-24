@@ -9,7 +9,7 @@ class ONSCCVFileValidationConfig(models.Model):
 
     type = fields.Selection(string="Tipo",
                             required=True,
-                            default='both',
+                            default='cv_call',
                             selection=[('cv_call', 'Llamado'), ('legajo', 'Legajo'), ('both', 'Ambos')])
 
     def get_config(self, name=False):

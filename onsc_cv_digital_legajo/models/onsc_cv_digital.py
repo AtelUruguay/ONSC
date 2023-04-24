@@ -350,7 +350,8 @@ class ONSCCVDigital(models.Model):
         # Identidad étnico racial
         cv_race_ids = values.get('cv_race_ids')
         cv_first_race_id = values.get('cv_first_race_id')
-        if cv_race_ids or cv_first_race_id:
+        cv_race2 = values.get('cv_race2')
+        if cv_race_ids or cv_first_race_id or cv_race2:
             self.cv_race_documentary_validation_state = 'to_validate'
 
         # Afrodescendientes
@@ -379,11 +380,12 @@ class ONSCCVDigital(models.Model):
                 is_occupational_health_card = is_occupational_health_card_in_values and values.get(
                     'is_occupational_health_card') or record.is_occupational_health_card
                 if is_occupational_health_card is False:
-                    record.occupational_health_card_documentary_validation_state = 'validated'
+                    # record.occupational_health_card_documentary_validation_state = 'validated'
                     record.is_occupational_health_card = False
                     record.occupational_health_card_date = False
                     record.occupational_health_card_file = False
                     record.occupational_health_card_filename = False
+                    record.with_context(documentary_validation='occupational_health_card').button_documentary_approve()
                 else:
                     record.occupational_health_card_documentary_validation_state = 'to_validate'
 
@@ -395,11 +397,13 @@ class ONSCCVDigital(models.Model):
                 is_medical_aptitude_certificate_status = is_medical_aptitude_certificate_status_in_values and values.get(
                     'is_medical_aptitude_certificate_status') or record.is_medical_aptitude_certificate_status
                 if is_medical_aptitude_certificate_status is False:
-                    record.medical_aptitude_certificate_documentary_validation_state = 'validated'
+                    # record.medical_aptitude_certificate_documentary_validation_state = 'validated'
                     record.is_medical_aptitude_certificate_status = False
                     record.medical_aptitude_certificate_date = False
                     record.medical_aptitude_certificate_file = False
                     record.medical_aptitude_certificate_filename = False
+                    record.with_context(
+                        documentary_validation='medical_aptitude_certificate').button_documentary_approve()
                 else:
                     record.medical_aptitude_certificate_documentary_validation_state = 'to_validate'
 
@@ -410,22 +414,44 @@ class ONSCCVDigital(models.Model):
                 is_victim_violent = is_victim_violent_in_values and values.get(
                     'is_victim_violent') or record.is_victim_violent
                 if is_victim_violent is False:
-                    record.victim_violent_documentary_validation_state = 'validated'
+                    # record.victim_violent_documentary_validation_state = 'validated'
                     record.is_victim_violent = False
                     record.relationship_victim_violent_file = False
                     record.relationship_victim_violent_filename = False
+                    record.with_context(documentary_validation='victim_violent').button_documentary_approve()
                 else:
                     record.victim_violent_documentary_validation_state = 'to_validate'
 
+        is_situation_disability_in_values = 'people_disabilitie' in values
+        document_certificate_file = values.get('document_certificate_file')
+        certificate_date = values.get('certificate_date')
+        to_date = values.get('to_date')
+        disability_date = values.get('disability_date')
+        if is_situation_disability_in_values or document_certificate_file or certificate_date or to_date or disability_date:
+            for record in self.with_context(no_update_header_documentary_validation=True):
+                is_situation_disability = is_situation_disability_in_values and values.get(
+                    'people_disabilitie') == 'si' or record.people_disabilitie == 'si'
+                if is_situation_disability is False:
+                    # record.victim_violent_documentary_validation_state = 'validated'
+                    record.document_certificate_file = False
+                    record.document_certificate_filename = False
+                    record.certificate_date = False
+                    record.to_date = False
+                    record.with_context(documentary_validation='disabilitie').button_documentary_approve()
+                else:
+                    record.disabilitie_documentary_validation_state = 'to_validate'
+
         country_id = values.get('country_id')
         address_receipt_file = values.get('address_receipt_file')
+        address_info_date = values.get('address_info_date')
         cv_address_state_id = values.get('cv_address_state_id')
         cv_address_location_id = values.get('cv_address_location_id')
+        cv_address_street = values.get('cv_address_street')
         cv_address_street_id = values.get('cv_address_street_id')
         cv_address_street2_id = values.get('cv_address_street2_id')
         cv_address_street3_id = values.get('cv_address_street3_id')
         cv_address_nro_door = values.get('cv_address_nro_door')
-        cv_address_is_cv_bis = values.get('cv_address_is_cv_bis')
+        cv_address_is_cv_bis = 'cv_address_is_cv_bis' in values
         cv_address_apto = values.get('cv_address_apto')
         cv_address_amplification = values.get('cv_address_amplification')
         cv_addres_apto = values.get('cv_addres_apto')
@@ -433,7 +459,7 @@ class ONSCCVDigital(models.Model):
         cv_address_place = values.get('cv_address_place')
         cv_address_block = values.get('cv_address_block')
         cv_address_sandlot = values.get('cv_address_sandlot')
-        if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot:
+        if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or address_info_date or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot or cv_address_street:
             self.cv_address_documentary_validation_state = 'to_validate'
 
         super(ONSCCVDigital, self).update_header_documentary_validation(values)
@@ -530,6 +556,7 @@ class ONSCCVDigital(models.Model):
                     cv_race_ids.append((4, cv_race_id.id))
                 vals.update({
                     'cv_race_ids': cv_race_ids,
+                    'cv_race2': record.cv_race2,
                     'cv_first_race_id': record.cv_first_race_id.id,
                     'is_cv_race_public': record.is_cv_race_public,
                 })
@@ -568,6 +595,7 @@ class ONSCCVDigital(models.Model):
             elif seccion == 'cv_address':
                 vals.update({
                     'country_id': record.country_id.id,
+                    'address_info_date': record.address_info_date,
                     'cv_address_state_id': record.cv_address_state_id.id,
                     'cv_address_location_id': record.cv_address_location_id.id,
                     'cv_address_street_id': record.cv_address_street_id.id,
@@ -599,6 +627,7 @@ class ONSCCVDigital(models.Model):
                     'document_certificate_file': record.document_certificate_file,
                     'certificate_date': record.certificate_date,
                     'to_date': record.to_date,
+                    'disability_date': record.disability_date,
                 })
             employee_id.suspend_security().write(vals)
 
