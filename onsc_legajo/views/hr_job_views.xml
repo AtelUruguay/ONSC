@@ -79,7 +79,7 @@
                                     <field name="start_date" required="True"
                                            attrs="{'readonly': [('id', '!=', False)]}"/>
                                     <field name="end_date"/>
-                                    <field name="active" widget="toggle_button"/>
+                                    <field name="active" widget="toggle_button"  attrs="{'column_invisible': [('parent.role_extra_is_readonly', '=', True)]}"/>
                                     <field name="type" invisible="1"/>
                                     <field name="user_role_id_domain" invisible="1"/>
                                 </tree>
