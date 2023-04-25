@@ -149,9 +149,10 @@
                                                attrs="{'required': [('is_indVencimiento', '=', True),('state', '!=', 'borrador')]}"/>
                                         <field name="is_graduation_date_required" invisible="1"/>
                                         <field name="graduation_date"
-                                               attrs="{'required': [('is_graduation_date_required', '=', True),('state', '!=', 'borrador')]}"/>
+                                               attrs="{'invisible': [('is_graduation_date_required', '=', False)] ,'required': [('is_graduation_date_required', '=', True),('state', '!=', 'borrador')]}"/>
                                         <div class="alert alert-info" colspan="6"
                                              role="alert"
+                                             attrs="{'invisible': [('is_graduation_date_required', '=', False)]}"
                                              style="margin-bottom:0px;">
                                             <p>
                                                 <i class="fa fa-info-circle" role="alert"/>
