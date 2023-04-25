@@ -71,7 +71,6 @@
                                    attrs="{'readonly': [('role_extra_is_readonly', '=', True)]}"
                                    groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                    nolabel="1"
-                                   attrs="{'readonly': [('is_readonly', '=', True)]}"
                                    context="{'default_type': 'manual','default_end_date': end_date}">
                                 <tree editable="top" delete="0">
                                     <field name="user_role_id"
