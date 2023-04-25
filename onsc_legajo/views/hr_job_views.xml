@@ -48,6 +48,7 @@
                                attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="company_id" invisible="1"/>
                         <field name="is_readonly" invisible="1"/>
+                        <field name="role_extra_is_readonly" invisible="1"/>
                     </group>
                     <notebook>
                         <page string="Roles">
@@ -67,6 +68,7 @@
                         </page>
                         <page string="Roles adicionales">
                             <field name="role_extra_ids"
+                                   attrs="{'readonly': [('role_extra_is_readonly', '=', True)]}"
                                    groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                    nolabel="1"
                                    attrs="{'readonly': [('is_readonly', '=', True)]}"
