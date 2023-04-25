@@ -380,10 +380,11 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.model
     def syncronize(self, log_info=False):
-        if self.is_reserva_sgh and not self.date_start and not self.program_id and self.project_id and not self.nroPuesto and not self.nroPlaza:
+        if self.is_reserva_sgh and not (self.date_start and self.program_id and self.project_id and self.nroPuesto and self.nroPlaza):
             raise ValidationError(
                 _("Los campos Fecha de Inicio, Programa, Proyecto, Nro. de Puesto y Nro. de Plaza son obligatorios para Buscar Vacantes"))
-        if not self.is_reserva_sgh and self.date_start and not self.program_id and self.project_id and not self.regime_id and not self.descriptor1_id and not self.descriptor2_id and not self.partner_id:
+        if not self.is_reserva_sgh and not (
+                self.date_start and self.program_id and self.project_id and self.regime_id and self.descriptor1_id and self.descriptor2_id and self.partner_id):
             raise ValidationError(
                 _("Los campos Fecha de Inicio, Programa, Proyecto, Régimen, Descriptor 1 ,Descriptor 2 y CI son obligatorios para Buscar Vacantes"))
 
