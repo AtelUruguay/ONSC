@@ -64,7 +64,7 @@
                     <button type="object" name="action_call_ws1" icon="fa-search"
                             class="btn btn-secondary o_group_col_8" string="Buscar"
                             style="margin-left: 25%; width: 10%;"
-                            attrs="{'invisible': [('is_presupuestado', '=', True)]}"/>
+                            attrs="{'invisible': [('is_presupuestado', '=', False)]}"/>
                 </xpath>
                 <xpath expr="//group[@name='group5']" position="inside">
                     <field name="vacante_ids" nolabel="1">
