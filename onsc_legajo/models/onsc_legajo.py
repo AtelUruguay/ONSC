@@ -75,10 +75,15 @@ class ONSCLegajo(models.Model):
             return True
         elif self.contracts_count == 1:
             action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_one_hr_contract_action')
-            action['res_id'] = self.contract_ids[0].id
+            action.update({
+                'res_id': self.contract_ids[0].id
+            })
         else:
             action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_hr_contract_readonly_action')
-            action['domain'] = [('id', 'in', self.contract_ids.ids)]
+            action.update({
+                'domain': [('id', 'in', self.contract_ids.ids)]
+            })
+            # action['domain'] = [('id', 'in', self.contract_ids.ids)]
         return action
 
     def button_open_employee(self):

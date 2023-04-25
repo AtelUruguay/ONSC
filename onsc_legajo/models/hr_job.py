@@ -13,6 +13,7 @@ class HrJob(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict',
                                       tracking=True)
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
+    role_extra_is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')
 
     @api.constrains("contract_id", "start_date", "end_date")
@@ -32,9 +33,10 @@ class HrJob(models.Model):
 
     def _compute_is_readonly(self):
         for record in self:
-            # readonly si la fecha end_date es mayor a la fecha actual
-            record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto') and (
-                record.end_date < fields.Date.today() if record.end_date else False)
+            # readonly si la fecha end_date es menor a la fecha actual
+            record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto')
+            record.role_extra_is_readonly = not self.user_has_groups(
+                'onsc_legajo.group_legajo_configurador_puesto') and record.end_date and record.end_date <= fields.Date.today()
 
     @api.onchange('start_date')
     def onchange_start_date(self):

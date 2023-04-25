@@ -15,20 +15,17 @@ class HrEmployee(models.Model):
     _history_columns = [
         'image_1920', 'avatar_128', 'photo_updated_date', 'cv_nro_doc', 'cv_expiration_date', 'document_identity_file',
         'document_identity_filename', 'marital_status_id', 'digitized_document_file', 'digitized_document_filename',
-        'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
-        'status_civil_date', 'uy_citizenship',
-        'cv_gender_id', 'gender_date', 'is_cv_gender_public',
+        'status_civil_date',
+        'cv_gender_id', 'gender_date',
         'is_afro_descendants', 'afro_descendant_date',
         'is_occupational_health_card', 'occupational_health_card_date',
-        'medical_aptitude_certificate_date', 'is_public_information_victim_violent',
-        'allow_content_public', 'situation_disability',
+        'medical_aptitude_certificate_date',
         'people_disabilitie', 'certificate_date',
-        'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction',
-        'need_other_support', 'emergency_service_id', 'emergency_service_telephone',
-        'health_department_id', 'health_provider_id', 'name_contact', 'contact_person_telephone',
+        'to_date',
+        'health_department_id', 'name_contact', 'contact_person_telephone',
         'remark_contact_person', 'disability_date', 'cv_first_race_id',
         'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
-        'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2', 'is_cv_race_public'
+        'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2'
     ]
 
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital",
@@ -131,6 +128,10 @@ class HrEmployee(models.Model):
                                               related='cv_digital_id.emergency_service_telephone', store=True, history=True)
     health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
                                            related='cv_digital_id.health_department_id', store=True, history=True)
+    health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud",
+                                         related='cv_digital_id.health_provider_id', store=True, history=True)
+    emergency_service_id = fields.Many2one("onsc.legajo.emergency", u"Servicio de emergencia móvil",
+                                           related='cv_digital_id.emergency_service_id', store=True, history=True)
     blood_type = fields.Selection(BLOOD_TYPE,
                                   string=u'Tipo de sangre',
                                   related='cv_digital_id.blood_type', store=True, history=True)
@@ -142,7 +143,8 @@ class HrEmployee(models.Model):
     drivers_license_ids = fields.One2many("onsc.legajo.driver.license",
                                           inverse_name="employee_id",
                                           string="Licencias de conducir",
-                                          copy=True, history=True, history_fields="validation_date,category_id")
+                                          copy=True, history=True,
+                                          history_fields="validation_date,category_id,license_file,license_filename")
 
     # RAZA
     cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial",
@@ -183,7 +185,7 @@ class HrEmployee(models.Model):
     # Datos del legajo
     information_contact_ids = fields.One2many('onsc.cv.legajo.information.contact', 'employee_id',
                                               string=u'Información de Contacto', history=True,
-                                              history_fields="contact_person_telephone,remark_contact_person")
+                                              history_fields="name_contact,contact_person_telephone,remark_contact_person")
 
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
@@ -383,24 +385,30 @@ class ONSCCVDigitalDriverLicense(models.Model):
                 record.sync_driver_license(employee_id)
         return result
 
+    def button_documentary_reject(self):
+        self.mapped('legajo_driver_license_id').suspend_security().unlink()
+        return super(ONSCCVDigitalDriverLicense, self).button_documentary_reject()
+
+    def button_documentary_tovalidate(self):
+        self.mapped('legajo_driver_license_id').suspend_security().unlink()
+        return super(ONSCCVDigitalDriverLicense, self).button_documentary_tovalidate()
+
     def sync_driver_license(self, employee_id):
         DriverLicense = self.env['onsc.legajo.driver.license'].suspend_security()
+        dict_vals = {
+            'validation_date': self.validation_date,
+            'category_id': self.category_id.id,
+            'license_file': self.license_file,
+            'license_filename': self.license_filename
+        }
         if self.legajo_driver_license_id:
-            self.legajo_driver_license_id.suspend_security().write({
-                'validation_date': self.validation_date,
-                'category_id': self.category_id.id,
-                'license_file': self.license_file,
-                'license_filename': self.license_filename
-            })
+            self.legajo_driver_license_id.suspend_security().write(dict_vals)
         else:
-            legajo_driver_license_id = DriverLicense.create({
+            dict_vals.update({
                 'cv_driver_license_id': self.id,
                 'employee_id': employee_id.id,
-                'validation_date': self.validation_date,
-                'category_id': self.category_id.id,
-                'license_file': self.license_file,
-                'license_filename': self.license_filename
             })
+            legajo_driver_license_id = DriverLicense.create(dict_vals)
             self.write({'legajo_driver_license_id': legajo_driver_license_id.id})
 
 
@@ -415,6 +423,8 @@ class ONSCCVLegajoInformationContact(models.Model):
         res = super().prefix_by_phones
         return res + [('prefix_phone_id', 'contact_person_telephone')]
 
+    cv_information_contact_id = fields.Many2one("onsc.cv.information.contact", string="Información de Contacto de CV",
+                                  required=True, index=True, ondelete='cascade')
     employee_id = fields.Many2one("hr.employee", string="Legajo", required=True, index=True, ondelete='cascade')
     name_contact = fields.Char(string=u'Nombre de persona de contacto', required=True)
     # TO-DO: Revisar este campo, No esta en catalogo

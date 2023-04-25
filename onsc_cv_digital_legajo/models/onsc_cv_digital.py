@@ -691,8 +691,50 @@ class ONSCCVInformationContact(models.Model):
     contact_person_telephone = fields.Char(string=u'Teléfono de persona de contacto', required=True)
     phone_full = fields.Char(compute='_compute_phone_full', string=u'Teléfono de persona de contacto')
     remark_contact_person = fields.Text(string=u'Observación para la persona de contacto', required=True)
+    legajo_information_contact_id = fields.Many2one("onsc.cv.legajo.information.contact",
+                                                    string="Información de Contacto de Legajo")
 
     @api.depends('prefix_phone_id', 'contact_person_telephone')
     def _compute_phone_full(self):
         for rec in self:
             rec.phone_full = '+%s %s' % (rec.prefix_phone_id.prefix_code, rec.contact_person_telephone)
+
+    @api.model
+    def create(self, values):
+        record = super(ONSCCVInformationContact, self).create(values)
+        employee_id = self.env['hr.employee'].suspend_security().search([('cv_digital_id', '=', record.cv_digital_id.id)],
+                                                                        limit=1)
+        if employee_id:
+            record.sync_legajo_information_contacto(employee_id)
+        return record
+
+    def write(self, vals):
+        Employee = self.env['hr.employee'].suspend_security()
+        result = super(ONSCCVInformationContact, self).write(vals)
+        for record in self:
+            employee_id = Employee.search([('cv_digital_id', '=', record.cv_digital_id.id)], limit=1)
+            if employee_id:
+                record.sync_legajo_information_contacto(employee_id)
+        return result
+
+    def sync_legajo_information_contacto(self, employee_id):
+        LegajoInformationContact = self.env['onsc.cv.legajo.information.contact'].suspend_security()
+        if self.legajo_information_contact_id:
+            self.legajo_information_contact_id.suspend_security().write({
+                'name_contact': self.name_contact,
+                'prefix_phone_id': self.prefix_phone_id.id,
+                'contact_person_telephone': self.contact_person_telephone,
+                'phone_full': self.phone_full,
+                'remark_contact_person': self.remark_contact_person
+            })
+        else:
+            legajo_information_contact_id = LegajoInformationContact.create({
+                'cv_information_contact_id': self.id,
+                'employee_id': employee_id.id,
+                'name_contact': self.name_contact,
+                'prefix_phone_id': self.prefix_phone_id.id,
+                'contact_person_telephone': self.contact_person_telephone,
+                'phone_full': self.phone_full,
+                'remark_contact_person': self.remark_contact_person
+            })
+            self.write({'legajo_information_contact_id': legajo_information_contact_id.id})
