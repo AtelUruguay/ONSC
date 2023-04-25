@@ -71,7 +71,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
 
         with self._cr.savepoint():
             if not hasattr(response, 'listaPlazas'):
-                return False
+                return "No se obtuvieron vacantes con los datos enviados"
             vacante_ids = [(5,)]
             if response.listaPlazas:
                 for external_record in response.listaPlazas:

@@ -35,7 +35,7 @@ class ONSCLegajoAltaVL(models.Model):
     is_error_synchronization = fields.Boolean(copy=False)
 
     def action_call_ws1(self):
-        self.syncronize(log_info=True)
+        return self.syncronize(log_info=True)
 
     def action_call_ws4(self):
         for rec in self.filtered(lambda x: x.state in ['borrador', 'error_sgh']):
