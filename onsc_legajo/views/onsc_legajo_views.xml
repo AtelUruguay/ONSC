@@ -94,12 +94,6 @@
                                 </span>
                             </div>
                         </button>
-<!--                        <button name="%(onsc_legajo.onsc_legajo_view_contracts_action)d" type="action"-->
-<!--                                class="oe_stat_button"-->
-<!--                                context="{'contract_ids': contract_ids.ids}"-->
-<!--                                string="QQQ"-->
-<!--                                icon="fa-tags">-->
-<!--                        </button>-->
                     </div>
                     <field name="contract_ids" invisible="0"/>
                     <field name="avatar_128" invisible="1"/>
