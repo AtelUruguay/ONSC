@@ -91,7 +91,7 @@
                                         <field name="regime_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                                attrs="{'invisible': [('is_reserva_sgh', '=', True)]}"/>
-                                        <field name="descriptor1_id"
+                                        <field name="descriptor1_id" domain="descriptor1_domain_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                                attrs="{'invisible': [('is_reserva_sgh', '=', True)]}"/>
                                         <field name="descriptor2_id" domain="descriptor2_domain_id"
@@ -103,6 +103,7 @@
                                         <field name="descriptor4_id" domain="descriptor4_domain_id"
                                                attrs="{'invisible': ['|', ('is_presupuestado', '=', True), ('is_reserva_sgh', '=', True)]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="descriptor1_domain_id" invisible="1"/>
                                         <field name="descriptor2_domain_id" invisible="1"/>
                                         <field name="descriptor3_domain_id" invisible="1"/>
                                         <field name="descriptor4_domain_id" invisible="1"/>

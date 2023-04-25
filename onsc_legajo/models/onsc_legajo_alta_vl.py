@@ -108,6 +108,7 @@ class ONSCLegajoAltaVL(models.Model):
     is_presupuestado = fields.Boolean(related="regime_id.presupuesto", store=True)
     is_indVencimiento = fields.Boolean(related="regime_id.indVencimiento", store=True)
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor 1', copy=False)
+    descriptor1_domain_id = fields.Char(compute='_compute_descriptor1_domain_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor 2', copy=False)
     descriptor2_domain_id = fields.Char(compute='_compute_descriptor2_domain_id')
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor 3', copy=False)
@@ -150,6 +151,13 @@ class ONSCLegajoAltaVL(models.Model):
                                                       string='Documentos adjuntos')
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
     id_alta = fields.Char(string="Id Alta")
+
+    @api.model
+    def default_get(self, fields):
+        res = super(ONSCLegajoAltaVL, self).default_get(fields)
+        res['cv_emissor_country_id'] = self.env.ref('base.uy').id
+        res['cv_document_type_id'] = self.env.ref('onsc_cv_digital.onsc_cv_document_type_1').id,
+        return res
 
     @api.constrains("attached_document_discharge_ids")
     def _check_attached_document_discharge(self):
@@ -208,6 +216,16 @@ class ONSCLegajoAltaVL(models.Model):
     def onchange_clear_vacante_id(self):
         for rec in self:
             rec.vacante_ids = False
+
+    @api.onchange('is_reserva_sgh')
+    def onchange_is_reserva_sgh(self):
+        for rec in self:
+            rec.vacante_ids = False
+            rec.descriptor1_id = False
+            rec.descriptor2_id = False
+            rec.regime_id = False
+            rec.nroPuesto = False
+            rec.nroPlaza = False
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
@@ -311,10 +329,21 @@ class ONSCLegajoAltaVL(models.Model):
                 ], args])
             rec.project_domain_id = json.dumps(args)
 
+    @api.depends('inciso_id', 'operating_unit_id', 'is_reserva_sgh')
+    def _compute_descriptor1_domain_id(self):
+        domain = [('id', 'in', [])]
+        for rec in self:
+            if not rec.is_reserva_sgh:
+                dsc1Id = self.env['onsc.legajo.budget.item'].search([]).mapped(
+                    'dsc1Id')
+                if dsc1Id:
+                    domain = [('id', 'in', dsc1Id.ids)]
+            rec.descriptor1_domain_id = json.dumps(domain)
+
     @api.depends('descriptor1_id')
     def _compute_descriptor2_domain_id(self):
         for rec in self:
-            domain = []
+            domain = [('id', 'in', [])]
             if rec.descriptor1_id:
                 dsc2Id = self.env['onsc.legajo.budget.item'].search([('dsc1Id', '=', rec.descriptor1_id.id)]).mapped(
                     'dsc2Id')
@@ -325,7 +354,7 @@ class ONSCLegajoAltaVL(models.Model):
     @api.depends('descriptor2_id')
     def _compute_descriptor3_domain_id(self):
         for rec in self:
-            domain = []
+            domain = [('id', 'in', [])]
             if rec.descriptor2_id and rec.descriptor1_id:
                 dsc3Id = self.env['onsc.legajo.budget.item'].search(
                     [('dsc2Id', '=', rec.descriptor2_id.id), ('dsc1Id', '=', rec.descriptor1_id.id)]).mapped(
@@ -337,7 +366,7 @@ class ONSCLegajoAltaVL(models.Model):
     @api.depends('descriptor3_id')
     def _compute_descriptor4_domain_id(self):
         for rec in self:
-            domain = []
+            domain = [('id', 'in', [])]
             if rec.descriptor3_id and rec.descriptor2_id and rec.descriptor1_id:
                 dsc4Id = self.env['onsc.legajo.budget.item'].search(
                     [('dsc2Id', '=', rec.descriptor2_id.id), ('dsc1Id', '=', rec.descriptor1_id.id),
@@ -380,7 +409,8 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.model
     def syncronize(self, log_info=False):
-        if self.is_reserva_sgh and not (self.date_start and self.program_id and self.project_id and self.nroPuesto and self.nroPlaza):
+        if self.is_reserva_sgh and not (
+                self.date_start and self.program_id and self.project_id and self.nroPuesto and self.nroPlaza):
             raise ValidationError(
                 _("Los campos Fecha de Inicio, Programa, Proyecto, Nro. de Puesto y Nro. de Plaza son obligatorios para Buscar Vacantes"))
         if not self.is_reserva_sgh and not (

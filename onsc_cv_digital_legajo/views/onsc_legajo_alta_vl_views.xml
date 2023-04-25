@@ -9,7 +9,7 @@
                 <header position="inside">
                     <button name="action_call_ws4" type="object" string="WS4" states="borrador,error_sgh"/>
                 </header>
-                <xpath expr="//field[@name='partner_id']" position="after">
+                <xpath expr="//field[@name='partner_id']" position="before">
                     <field name="cv_emissor_country_id"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                            attrs="{'readonly': [('is_docket', '=', True)]}"
@@ -17,6 +17,8 @@
                     <field name="cv_document_type_id"
                            attrs="{'readonly': [('is_docket', '=', True)]}"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                </xpath>
+                <xpath expr="//field[@name='partner_id']" position="after">
                     <field name="cv_birthdate" attrs="{'readonly': [('is_docket', '=', True)]}"/>
                     <field name="cv_sex" attrs="{'readonly': [('is_docket', '=', True)]}"/>
                     <field name="is_docket" invisible="1"/>
@@ -36,8 +38,6 @@
                 <xpath expr="//notebook" position="inside">
                     <page string="Datos personales">
                         <group>
-                            <field name="cv_birthdate" readonly="0"/>
-                            <field name="cv_sex" readonly="0"/>
                             <field name="country_of_birth_id" readonly="1"/>
                             <field name="marital_status_id" readonly="1"/>
                             <field name="crendencial_serie" readonly="1"/>
@@ -62,7 +62,7 @@
                 </xpath>
                 <xpath expr="//group[@name='group4_right']" position="inside">
                     <button type="object" name="action_call_ws1" icon="fa-search"
-                            class="btn btn-secondary o_group_col_8" string="Buscar"
+                            class="btn btn-secondary o_group_col_8" string="Buscar vacantes"
                             style="margin-left: 25%; width: 10%;"
                             attrs="{'invisible': [('is_presupuestado', '=', False)]}"/>
                 </xpath>

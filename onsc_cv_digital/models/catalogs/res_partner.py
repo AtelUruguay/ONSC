@@ -135,7 +135,7 @@ class ResPartner(models.Model):
         for record in self:
             name = record.cv_full_name or record.name
             if self._context.get('show_cv_nro_doc', False) and record.cv_nro_doc:
-                name = "[" + record.cv_nro_doc + "] " + record.cv_full_name or record.name
+                name = record.cv_nro_doc + " - " + record.cv_full_name or record.name
             res.append((record.id, name))
         return res
 
