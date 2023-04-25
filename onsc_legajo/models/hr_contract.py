@@ -3,12 +3,18 @@ import json
 
 from lxml import etree
 from odoo import fields, models, api, _
+from odoo.osv import expression
 
 
 class HrContract(models.Model):
     _name = 'hr.contract'
     _inherit = ['hr.contract', 'model.history']
     _history_model = 'hr.contract.model.history'
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        return super(HrContract, self)._search(args, offset=offset, limit=limit, order=order, count=count,
+                                                      access_rights_uid=access_rights_uid)
 
     @api.model
     def fields_view_get(self, view_id=None, view_type="form", toolbar=False, submenu=False):
