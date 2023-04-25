@@ -84,12 +84,12 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         for employee in employees.filtered(
                 lambda x: x.id not in available_contracts_employees.ids and len(x.contract_ids)):
             is_any_active_contract = len(employee.contract_ids.filtered(
-                lambda x: x.legajo_state not in ['baja'])) > 0
+                lambda x: x.legajo_state not in ['baja'] or x.legajo_state == 'baja' and not x.date_end)) > 0
             if is_any_active_contract:
                 continue
             last_baja_contract = employee.contract_ids.sorted(key=lambda x: x.date_end, reverse=True)
             if last_baja_contract and eval('last_baja_contract[0].%s.id == %s' % (security_hierarchy_level, security_hierarchy_value)):
-                available_contracts |= last_baja_contract
+                available_contracts |= last_baja_contract[0]
 
 
             # last_baja_contract = employee.contract_ids.filtered(lambda x: x.legajo_state in ['baja','incoming_commission'])

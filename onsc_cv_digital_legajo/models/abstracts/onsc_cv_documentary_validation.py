@@ -22,15 +22,15 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                     <field name="documentary_validation_state" invisible="1"/>
                     <button name="button_documentary_approve"
                         attrs="{'invisible': [('documentary_validation_state', '=', 'validated')]}"
-                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue,onsc_cv_digital_legajo.group_legajo_validador_doc_consulta"
+                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                         type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                     <button name="button_documentary_reject"
                         attrs="{'invisible': [('documentary_validation_state', '=', 'rejected')]}"
-                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue,onsc_cv_digital_legajo.group_legajo_validador_doc_consulta"
+                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                         type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                     <button name="button_documentary_tovalidate"
                         attrs="{'invisible': [('documentary_validation_state', '=', 'to_validate')]}"
-                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue,onsc_cv_digital_legajo.group_legajo_validador_doc_consulta"
+                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                         type="object" string="Para validar" icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                     <div class="alert alert-danger" role="alert"
                         attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
@@ -112,4 +112,10 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 self.search([
                     ('original_instance_identifier', '=', record.id),
                     ('cv_digital_id', 'in', calls.mapped('cv_digital_id').ids),
-                    ('create_date', '>=', record.custom_write_date)]).write(args)
+                    ('create_date', '>=', record.custom_write_date)]).button_documentary_approve()
+                calls.button_update_documentary_validation_sections_tovalidate()
+            self._update_call_documentary_validation_status()
+
+    def _update_call_documentary_validation_status(self):
+        if self._fields.get('cv_digital_id'):
+            self.mapped('cv_digital_id').button_legajo_update_documentary_validation_sections_tovalidate()
