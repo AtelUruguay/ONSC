@@ -30,7 +30,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                         type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                     <button name="button_documentary_tovalidate"
                         attrs="{'invisible': [('documentary_validation_state', '=', 'to_validate')]}"
-                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
+                        groups="onsc_cv_digital.group_validador_documental_cv"
                         type="object" string="Para validar" icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                     <div class="alert alert-danger" role="alert"
                         attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
