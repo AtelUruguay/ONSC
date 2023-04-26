@@ -7,7 +7,7 @@
             <form string="Contrato">
                 <header>
                     <button name="button_update_occupation"
-                            attrs="{'invisible': [('show_button_update_occupation', '!=', True), ('is_mi_legajo', '=', False)]}"
+                            attrs="{'invisible': ['|',('show_button_update_occupation', '!=', True), ('is_mi_legajo', '=', True)]}"
                             type="object"
                             string="Actualizar ocupación" class="oe_highlight"
                             />
@@ -250,11 +250,11 @@
         </field>
     </record>
 
-    <record id="onsc_legajo_hr_contract_readonly_action" model="ir.actions.act_window">
+    <record id="onsc_legajo_hr_contract_list_readonly_action" model="ir.actions.act_window">
         <field name="name">Contratos</field>
         <field name="res_model">hr.contract</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{'is_legajo': True, 'create': False, 'edit': False}</field>
+        <field name="context">{'is_legajo': True, 'filter_contracts':True, 'create': False, 'edit': False}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_hr_contract_view_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_hr_contract_view_form')})]"/>
