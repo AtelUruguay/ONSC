@@ -79,8 +79,17 @@ class ONSCLegajo(models.Model):
                 'res_id': self.contract_ids[0].id
             })
         else:
-            action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_hr_contract_readonly_action')
+            action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_hr_contract_list_readonly_action')
+            _context = self._context.copy()
+            _context.update({
+                'create': False,
+                'edit': False,
+                'is_legajo': True,
+                'filter_contracts': True,
+                'from_smart_button': True
+            })
             action.update({
+                'context': str(_context),
                 'domain': [('id', 'in', self.contract_ids.ids)]
             })
             # action['domain'] = [('id', 'in', self.contract_ids.ids)]
