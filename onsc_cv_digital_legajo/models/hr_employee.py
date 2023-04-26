@@ -17,7 +17,7 @@ class HrEmployee(models.Model):
         'document_identity_filename', 'marital_status_id', 'digitized_document_file', 'digitized_document_filename',
         'status_civil_date',
         'cv_gender_id', 'gender_date',
-        'is_afro_descendants', 'afro_descendant_date',
+        'is_afro_descendants', 'afro_descendant_date', 'afro_descendants_file', 'afro_descendants_filename'
         'is_occupational_health_card', 'occupational_health_card_date',
         'medical_aptitude_certificate_date',
         'people_disabilitie', 'certificate_date',

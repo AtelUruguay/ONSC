@@ -7,7 +7,7 @@
             <form string="Contrato">
                 <header>
                     <button name="button_update_occupation"
-                            attrs="{'invisible': [('show_button_update_occupation', '!=', True)]}"
+                            attrs="{'invisible': [('show_button_update_occupation', '!=', True), ('is_mi_legajo', '=', False)]}"
                             type="object"
                             string="Actualizar ocupación" class="oe_highlight"
                             />
@@ -175,13 +175,14 @@
                                     <field name="start_date"/>
                                     <field name="end_date"/>
                                     <button type="object"
-                                            invisible="context.get('mi_legajo', False)"
+                                            attrs="{'invisible': [('parent.is_mi_legajo', '=', True)]}"
                                             string="Ver puesto"
                                             name="button_open_current_job"
                                             groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                             icon="fa-edit"/>
                                 </tree>
                             </field>
+                            <field name="is_mi_legajo" invisible="0"/>
                         </page>
                     </notebook>
                 </sheet>
