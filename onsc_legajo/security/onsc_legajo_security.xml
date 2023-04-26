@@ -68,8 +68,7 @@
             <field name="name">Editar Ocupación Contrato</field>
             <field name="comment">Editar Ocupación Contrato</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
-            <field name="implied_ids"
-                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view')),(4, ref('onsc_legajo.group_legajo_configurador_contrato'))]"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
         <!--LEGAJO-->

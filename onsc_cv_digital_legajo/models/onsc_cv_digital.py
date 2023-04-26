@@ -356,7 +356,7 @@ class ONSCCVDigital(models.Model):
 
         # Afrodescendientes
         is_afro_descendants_in_values = 'is_afro_descendants' in values
-        afro_descendant_date = values.get('afro_descendants_date')
+        afro_descendant_date = values.get('afro_descendant_date')
         afro_descendant_file = values.get('afro_descendants_file')
         if is_afro_descendants_in_values or afro_descendant_date or afro_descendant_file:
             for record in self.with_context(no_update_header_documentary_validation=True):
@@ -380,7 +380,6 @@ class ONSCCVDigital(models.Model):
                 is_occupational_health_card = is_occupational_health_card_in_values and values.get(
                     'is_occupational_health_card') or record.is_occupational_health_card
                 if is_occupational_health_card is False:
-                    # record.occupational_health_card_documentary_validation_state = 'validated'
                     record.is_occupational_health_card = False
                     record.occupational_health_card_date = False
                     record.occupational_health_card_file = False
@@ -397,7 +396,6 @@ class ONSCCVDigital(models.Model):
                 is_medical_aptitude_certificate_status = is_medical_aptitude_certificate_status_in_values and values.get(
                     'is_medical_aptitude_certificate_status') or record.is_medical_aptitude_certificate_status
                 if is_medical_aptitude_certificate_status is False:
-                    # record.medical_aptitude_certificate_documentary_validation_state = 'validated'
                     record.is_medical_aptitude_certificate_status = False
                     record.medical_aptitude_certificate_date = False
                     record.medical_aptitude_certificate_file = False
@@ -414,7 +412,6 @@ class ONSCCVDigital(models.Model):
                 is_victim_violent = is_victim_violent_in_values and values.get(
                     'is_victim_violent') or record.is_victim_violent
                 if is_victim_violent is False:
-                    # record.victim_violent_documentary_validation_state = 'validated'
                     record.is_victim_violent = False
                     record.relationship_victim_violent_file = False
                     record.relationship_victim_violent_filename = False
@@ -432,7 +429,6 @@ class ONSCCVDigital(models.Model):
                 is_situation_disability = is_situation_disability_in_values and values.get(
                     'people_disabilitie') == 'si' or record.people_disabilitie == 'si'
                 if is_situation_disability is False:
-                    # record.victim_violent_documentary_validation_state = 'validated'
                     record.document_certificate_file = False
                     record.document_certificate_filename = False
                     record.certificate_date = False

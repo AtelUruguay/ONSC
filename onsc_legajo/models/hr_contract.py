@@ -118,6 +118,7 @@ class HrContract(models.Model):
     job_ids = fields.One2many('hr.job', 'contract_id', string='Puestos')
 
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
+    is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
@@ -157,6 +158,10 @@ class HrContract(models.Model):
                     rec.date_end is False or rec.date_end > fields.Date.today())
             is_valid_state = rec.legajo_state == 'active'
             rec.show_button_update_occupation = is_valid_group and (is_valid_state or is_valid_incoming)
+
+    def _compute_is_mi_legajo(self):
+        for rec in self:
+            rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
 
     @api.model
     def get_history_record_action(self, history_id, res_id):
