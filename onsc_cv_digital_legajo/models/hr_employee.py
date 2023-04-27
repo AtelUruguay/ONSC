@@ -4,6 +4,7 @@ from odoo import models, fields, api
 from odoo.addons.onsc_base.models.onsc_abstract_contact_common_data import CV_SEX as CV_SEX
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SELECTION_RADIO as SELECTION_RADIO
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SITUATION as SITUATION
+
 from .abstracts.onsc_cv_legajo_abstract_common import BLOOD_TYPE as BLOOD_TYPE
 
 DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
@@ -17,8 +18,9 @@ class HrEmployee(models.Model):
         'document_identity_filename', 'marital_status_id', 'digitized_document_file', 'digitized_document_filename',
         'status_civil_date',
         'cv_gender_id', 'gender_date',
-        'is_afro_descendants', 'afro_descendant_date', 'afro_descendants_file', 'afro_descendants_filename'
-        'is_occupational_health_card', 'occupational_health_card_date',
+        'is_afro_descendants', 'afro_descendant_date', 'afro_descendants_file',
+        'afro_descendants_filename', 'is_occupational_health_card',
+        'occupational_health_card_date',
         'medical_aptitude_certificate_date',
         'people_disabilitie', 'certificate_date',
         'to_date',
@@ -125,7 +127,8 @@ class HrEmployee(models.Model):
     institutional_email = fields.Char(string=u'Correo electrónico institucional',
                                       related='cv_digital_id.institutional_email', store=True, history=True)
     emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia',
-                                              related='cv_digital_id.emergency_service_telephone', store=True, history=True)
+                                              related='cv_digital_id.emergency_service_telephone', store=True,
+                                              history=True)
     health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
                                            related='cv_digital_id.health_department_id', store=True, history=True)
     health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud",
@@ -186,7 +189,6 @@ class HrEmployee(models.Model):
     information_contact_ids = fields.One2many('onsc.cv.legajo.information.contact', 'employee_id',
                                               string=u'Información de Contacto', history=True,
                                               history_fields="name_contact,contact_person_telephone,remark_contact_person")
-
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):
@@ -363,13 +365,15 @@ class ONSCLegajoDriverLicense(models.Model):
     _name = 'onsc.legajo.driver.license'
     _description = 'Licencia de conducir'
 
-    cv_driver_license_id = fields.Many2one("onsc.cv.driver.license", string="Licencia de conducir del CV", required=True,
+    cv_driver_license_id = fields.Many2one("onsc.cv.driver.license", string="Licencia de conducir del CV",
+                                           required=True,
                                            index=True, ondelete='cascade')
     employee_id = fields.Many2one("hr.employee", string="Legajo", required=True, index=True, ondelete='cascade')
     validation_date = fields.Date("Fecha de vencimiento", required=True)
     category_id = fields.Many2one("onsc.cv.drivers.license.categories", "Categoría", required=True)
     license_file = fields.Binary("Documento digitalizado licencia de conducir")
     license_filename = fields.Char('Nombre del documento digital')
+
 
 class ONSCCVDigitalDriverLicense(models.Model):
     _inherit = 'onsc.cv.driver.license'
@@ -412,7 +416,6 @@ class ONSCCVDigitalDriverLicense(models.Model):
             self.write({'legajo_driver_license_id': legajo_driver_license_id.id})
 
 
-
 class ONSCCVLegajoInformationContact(models.Model):
     _name = 'onsc.cv.legajo.information.contact'
     _description = 'Información de Contacto para el legajo'
@@ -424,7 +427,7 @@ class ONSCCVLegajoInformationContact(models.Model):
         return res + [('prefix_phone_id', 'contact_person_telephone')]
 
     cv_information_contact_id = fields.Many2one("onsc.cv.information.contact", string="Información de Contacto de CV",
-                                  required=True, index=True, ondelete='cascade')
+                                                required=True, index=True, ondelete='cascade')
     employee_id = fields.Many2one("hr.employee", string="Legajo", required=True, index=True, ondelete='cascade')
     name_contact = fields.Char(string=u'Nombre de persona de contacto', required=True)
     # TO-DO: Revisar este campo, No esta en catalogo

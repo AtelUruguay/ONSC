@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, api, fields
+from odoo import models, api
 
 from odoo.osv import expression
 
@@ -88,9 +88,9 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
             if is_any_active_contract:
                 continue
             last_baja_contract = employee.contract_ids.sorted(key=lambda x: x.date_end, reverse=True)
-            if last_baja_contract and eval('last_baja_contract[0].%s.id == %s' % (security_hierarchy_level, security_hierarchy_value)):
+            if last_baja_contract and eval(
+                    'last_baja_contract[0].%s.id == %s' % (security_hierarchy_level, security_hierarchy_value)):
                 available_contracts |= last_baja_contract[0]
-
 
             # last_baja_contract = employee.contract_ids.filtered(lambda x: x.legajo_state in ['baja','incoming_commission'])
             # if last_baja_contract:

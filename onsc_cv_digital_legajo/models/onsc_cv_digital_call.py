@@ -1,12 +1,8 @@
 # -*- coding: utf-8 -*-
 
-import json
 import logging
-import zipfile
-from os import remove
-from os.path import join
 
-from odoo import fields, models, api, _
+from odoo import models
 
 _logger = logging.getLogger(__name__)
 
@@ -24,4 +20,4 @@ class ONSCCVDigitalCall(models.Model):
                                             '%s_documentary_validation_state' % documentary_field,
                                             None)
                 if documentary_state == 'validated':
-                    cv_digital_origin_id.with_context(no_update_cv_calls = True).button_documentary_approve()
+                    cv_digital_origin_id.with_context(no_update_cv_calls=True).button_documentary_approve()
