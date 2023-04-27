@@ -6,9 +6,6 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
-
 _logger = logging.getLogger(__name__)
 
 STATES = [
@@ -26,7 +23,6 @@ class ONSCLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.alta.vl'
     _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
     _description = 'Alta de vínculo laboral'
-    _rec_name = 'full_name'
 
     def _get_domain(self, args):
         if self._context.get('is_from_menu') and self.user_has_groups(
@@ -75,12 +71,7 @@ class ONSCLegajoAltaVL(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
-    @api.model
-    def _get_domain_partner(self):
-        return [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True)]
 
-    full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
-    partner_id = fields.Many2one("res.partner", string="Contacto", domain=_get_domain_partner)
     date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False)
     call_number = fields.Char(string='Número de llamado', copy=False)
@@ -156,7 +147,8 @@ class ONSCLegajoAltaVL(models.Model):
     def default_get(self, fields):
         res = super(ONSCLegajoAltaVL, self).default_get(fields)
         res['cv_emissor_country_id'] = self.env.ref('base.uy').id
-        res['cv_document_type_id'] = self.env.ref('onsc_cv_digital.onsc_cv_document_type_1').id,
+        document_type_id= self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],limit=1)
+        res['cv_document_type_id'] =  document_type_id.id if document_type_id else False
         return res
 
     @api.constrains("attached_document_discharge_ids")
@@ -201,31 +193,7 @@ class ONSCLegajoAltaVL(models.Model):
             if record.date_start and record.graduation_date and record.graduation_date > record.date_start:
                 raise ValidationError(_("La fecha de graduación debe ser menor o igual al día de alta"))
 
-    @api.onchange('regime_id')
-    def onchange_regimen(self):
-        for rec in self:
-            rec.descriptor1_id = False
-            rec.descriptor2_id = False
-            rec.descriptor3_id = False
-            rec.descriptor4_id = False
-            rec.contract_expiration_date = False
-            rec.vacante_ids = False
 
-    @api.onchange('descriptor1_id', 'descriptor2_id', 'regime_id', 'is_reserva_sgh', 'program_id', 'project_id',
-                  'nroPuesto', 'nroPlaza')
-    def onchange_clear_vacante_id(self):
-        for rec in self:
-            rec.vacante_ids = False
-
-    @api.onchange('is_reserva_sgh')
-    def onchange_is_reserva_sgh(self):
-        for rec in self:
-            rec.vacante_ids = False
-            rec.descriptor1_id = False
-            rec.descriptor2_id = False
-            rec.regime_id = False
-            rec.nroPuesto = False
-            rec.nroPlaza = False
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
@@ -275,16 +243,6 @@ class ONSCLegajoAltaVL(models.Model):
             if rec.descriptor4_id:
                 domain = expression.AND([domain, [("dsc4Id", "=", rec.descriptor4_id.id)]])
             rec.partida_id = self.env['onsc.legajo.budget.item'].search(domain, limit=1) if domain else False
-
-    @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
-    def _compute_full_name(self):
-        for record in self:
-            full_name = calc_full_name(record.cv_first_name, record.cv_second_name,
-                                       record.cv_last_name_1, record.cv_last_name_2)
-            if full_name:
-                record.full_name = full_name
-            else:
-                record.full_name = 'New'
 
     def _compute_is_readonly(self):
         for rec in self:
@@ -407,20 +365,4 @@ class ONSCLegajoAltaVL(models.Model):
             raise ValidationError(_("No se pueden eliminar Altas VL en este estado"))
         return super(ONSCLegajoAltaVL, self).unlink()
 
-    @api.model
-    def syncronize(self, log_info=False):
-        if self.is_reserva_sgh and not (
-                self.date_start and self.program_id and self.project_id and self.nroPuesto and self.nroPlaza):
-            raise ValidationError(
-                _("Los campos Fecha de Inicio, Programa, Proyecto, Nro. de Puesto y Nro. de Plaza son obligatorios para Buscar Vacantes"))
-        if not self.is_reserva_sgh and not (
-                self.date_start and self.program_id and self.project_id and self.regime_id and self.descriptor1_id and self.descriptor2_id and self.partner_id):
-            raise ValidationError(
-                _("Los campos Fecha de Inicio, Programa, Proyecto, Régimen, Descriptor 1 ,Descriptor 2 y CI son obligatorios para Buscar Vacantes"))
 
-        response = self.env['onsc.legajo.abstract.alta.vl.ws1'].with_context(
-            log_info=log_info).suspend_security().syncronize(self)
-        if not isinstance(response, str):
-            self.vacante_ids = response
-        elif isinstance(response, str):
-            return warning_response(response)
