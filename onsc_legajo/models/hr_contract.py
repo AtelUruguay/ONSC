@@ -13,14 +13,16 @@ class HrContract(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if not self._context.get('no_scale') and self._context.get('filter_contracts') and not self._context.get('from_smart_button'):
+        if not self._context.get('no_scale') and self._context.get('filter_contracts') and not self._context.get(
+                'from_smart_button'):
             if self._context.get('active_id'):
-                contract_ids = self.env['onsc.legajo'].with_context(no_scale=True).browse(self._context.get('active_id')).contract_ids.ids
+                contract_ids = self.env['onsc.legajo'].with_context(no_scale=True).browse(
+                    self._context.get('active_id')).contract_ids.ids
             else:
                 contract_ids = []
             args = expression.AND([[('id', 'in', contract_ids)], args])
         return super(HrContract, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-                                                      access_rights_uid=access_rights_uid)
+                                               access_rights_uid=access_rights_uid)
 
     @api.model
     def fields_view_get(self, view_id=None, view_type="form", toolbar=False, submenu=False):
@@ -31,7 +33,9 @@ class HrContract(models.Model):
             submenu=submenu,
         )
         doc = etree.fromstring(res['arch'])
-        is_group_security = self.env.user.has_group('onsc_legajo.group_legajo_editar_ocupacion_contrato') and not self.env.user.has_group('onsc_legajo.group_legajo_configurador_legajo')
+        is_group_security = self.env.user.has_group(
+            'onsc_legajo.group_legajo_editar_ocupacion_contrato') and not self.env.user.has_group(
+            'onsc_legajo.group_legajo_configurador_legajo')
         if is_group_security:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('create', '0')

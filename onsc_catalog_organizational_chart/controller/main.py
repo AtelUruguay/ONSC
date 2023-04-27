@@ -89,9 +89,8 @@ class EmployeeChart(http.Controller):
             items.append(item)
             right_left = 'left' if right_left == 'right' else 'right'
 
-        for node in nodes_by_level.filtered(
-                lambda node: node.function_nature not in (
-                        'comite', 'commission_project', 'adviser', 'program')):
+        valid_function_nature = ['comite', 'commission_project', 'adviser', 'program']
+        for node in nodes_by_level.filtered(lambda x: x.function_nature not in valid_function_nature):
             last_parent = node.parent_id.id
             if node.hierarchical_level_order - node.parent_id.hierarchical_level_order != 1:
                 for level_order in range(

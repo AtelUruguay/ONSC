@@ -67,7 +67,6 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             self.mapped('cv_digital_id').button_legajo_update_documentary_validation_sections_tovalidate()
         return result
 
-
     def button_documentary_tovalidate(self):
         args = {
             'documentary_validation_state': 'to_validate',

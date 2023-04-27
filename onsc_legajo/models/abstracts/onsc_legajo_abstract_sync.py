@@ -41,8 +41,8 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             else:
                 result_error_code = response.servicioResultado.codigo
                 error = IntegrationError.search([
-                    ('integration_code','=',integration_error.integration_code),
-                    ('code_error','=',str(result_error_code))
+                    ('integration_code', '=', integration_error.integration_code),
+                    ('code_error', '=', str(result_error_code))
                 ], limit=1)
                 self.create_new_log(
                     origin=origin_name,
