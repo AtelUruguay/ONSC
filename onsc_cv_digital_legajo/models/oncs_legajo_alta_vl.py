@@ -13,11 +13,6 @@ class ONSCLegajoAltaVL(models.Model):
     _description = 'Alta de vínculo laboral'
     _rec_name = 'full_name'
 
-    # cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital",
-    #                                string="CV Digital",
-    #                                 compute='_compute_cv_digital_id',
-    #                                store=True)
-
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     partner_id = fields.Many2one("res.partner", string="Contacto",
                                  domain=[('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True)])
