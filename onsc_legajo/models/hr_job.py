@@ -117,10 +117,10 @@ class HrJobRoleLine(models.Model):
             job_roles |= record.job_id.role_extra_ids
             job_roles = job_roles.filtered(
                 lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
-            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (
-                    record.end_date is False or record.end_date >= x.start_date)) or (
-                                                    x.end_date and x.end_date >= record.start_date and (
-                                                    record.end_date is False or record.end_date >= x.start_date))):
+            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and
+                                             (record.end_date is False or record.end_date >= x.start_date)) or
+                                            (x.end_date and x.end_date >= record.start_date and
+                                             (record.end_date is False or record.end_date >= x.start_date))):
                 raise ValidationError(
                     _("El rol configurado no puede repetirse para el mismo puesto en el mismo periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
 
