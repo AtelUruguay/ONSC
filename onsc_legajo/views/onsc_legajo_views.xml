@@ -95,6 +95,7 @@
                             </div>
                         </button>
                     </div>
+                    <field name="contract_ids" invisible="1"/>
                     <field name="avatar_128" invisible="1"/>
                     <field name="image_1920" widget="image" class="oe_avatar"
                            options="{&quot;zoom&quot;: true, &quot;preview_image&quot;:&quot;avatar_128&quot;}"/>

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from lxml import etree
 
-from odoo import models, fields, api
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+from odoo import models, fields
 
 
 class ResPartner(models.Model):

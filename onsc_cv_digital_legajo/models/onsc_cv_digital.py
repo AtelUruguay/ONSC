@@ -356,7 +356,7 @@ class ONSCCVDigital(models.Model):
 
         # Afrodescendientes
         is_afro_descendants_in_values = 'is_afro_descendants' in values
-        afro_descendant_date = values.get('afro_descendants_date')
+        afro_descendant_date = values.get('afro_descendant_date')
         afro_descendant_file = values.get('afro_descendants_file')
         if is_afro_descendants_in_values or afro_descendant_date or afro_descendant_file:
             for record in self.with_context(no_update_header_documentary_validation=True):
@@ -380,7 +380,6 @@ class ONSCCVDigital(models.Model):
                 is_occupational_health_card = is_occupational_health_card_in_values and values.get(
                     'is_occupational_health_card') or record.is_occupational_health_card
                 if is_occupational_health_card is False:
-                    # record.occupational_health_card_documentary_validation_state = 'validated'
                     record.is_occupational_health_card = False
                     record.occupational_health_card_date = False
                     record.occupational_health_card_file = False
@@ -397,7 +396,6 @@ class ONSCCVDigital(models.Model):
                 is_medical_aptitude_certificate_status = is_medical_aptitude_certificate_status_in_values and values.get(
                     'is_medical_aptitude_certificate_status') or record.is_medical_aptitude_certificate_status
                 if is_medical_aptitude_certificate_status is False:
-                    # record.medical_aptitude_certificate_documentary_validation_state = 'validated'
                     record.is_medical_aptitude_certificate_status = False
                     record.medical_aptitude_certificate_date = False
                     record.medical_aptitude_certificate_file = False
@@ -414,7 +412,6 @@ class ONSCCVDigital(models.Model):
                 is_victim_violent = is_victim_violent_in_values and values.get(
                     'is_victim_violent') or record.is_victim_violent
                 if is_victim_violent is False:
-                    # record.victim_violent_documentary_validation_state = 'validated'
                     record.is_victim_violent = False
                     record.relationship_victim_violent_file = False
                     record.relationship_victim_violent_filename = False
@@ -432,7 +429,6 @@ class ONSCCVDigital(models.Model):
                 is_situation_disability = is_situation_disability_in_values and values.get(
                     'people_disabilitie') == 'si' or record.people_disabilitie == 'si'
                 if is_situation_disability is False:
-                    # record.victim_violent_documentary_validation_state = 'validated'
                     record.document_certificate_file = False
                     record.document_certificate_filename = False
                     record.certificate_date = False
@@ -602,10 +598,6 @@ class ONSCCVDigital(models.Model):
                     'cv_address_street2_id': record.cv_address_street2_id.id,
                     'cv_address_street3_id': record.cv_address_street3_id.id,
                     'cv_address_street': record.cv_address_street,
-                    'cv_address_nro_door': record.cv_address_nro_door,
-                    'cv_address_is_cv_bis': record.cv_address_is_cv_bis,
-                    'cv_address_apto': record.cv_address_apto,
-                    'cv_address_zip': record.cv_address_zip,
                     'cv_address_zip': record.cv_address_zip,
                     'cv_address_place': record.cv_address_place,
                     'cv_address_block': record.cv_address_block,
@@ -691,8 +683,50 @@ class ONSCCVInformationContact(models.Model):
     contact_person_telephone = fields.Char(string=u'Teléfono de persona de contacto', required=True)
     phone_full = fields.Char(compute='_compute_phone_full', string=u'Teléfono de persona de contacto')
     remark_contact_person = fields.Text(string=u'Observación para la persona de contacto', required=True)
+    legajo_information_contact_id = fields.Many2one("onsc.cv.legajo.information.contact",
+                                                    string="Información de Contacto de Legajo")
 
     @api.depends('prefix_phone_id', 'contact_person_telephone')
     def _compute_phone_full(self):
         for rec in self:
             rec.phone_full = '+%s %s' % (rec.prefix_phone_id.prefix_code, rec.contact_person_telephone)
+
+    @api.model
+    def create(self, values):
+        record = super(ONSCCVInformationContact, self).create(values)
+        employee_id = self.env['hr.employee'].suspend_security().search([('cv_digital_id', '=', record.cv_digital_id.id)],
+                                                                        limit=1)
+        if employee_id:
+            record.sync_legajo_information_contacto(employee_id)
+        return record
+
+    def write(self, vals):
+        Employee = self.env['hr.employee'].suspend_security()
+        result = super(ONSCCVInformationContact, self).write(vals)
+        for record in self:
+            employee_id = Employee.search([('cv_digital_id', '=', record.cv_digital_id.id)], limit=1)
+            if employee_id:
+                record.sync_legajo_information_contacto(employee_id)
+        return result
+
+    def sync_legajo_information_contacto(self, employee_id):
+        LegajoInformationContact = self.env['onsc.cv.legajo.information.contact'].suspend_security()
+        if self.legajo_information_contact_id:
+            self.legajo_information_contact_id.suspend_security().write({
+                'name_contact': self.name_contact,
+                'prefix_phone_id': self.prefix_phone_id.id,
+                'contact_person_telephone': self.contact_person_telephone,
+                'phone_full': self.phone_full,
+                'remark_contact_person': self.remark_contact_person
+            })
+        else:
+            legajo_information_contact_id = LegajoInformationContact.create({
+                'cv_information_contact_id': self.id,
+                'employee_id': employee_id.id,
+                'name_contact': self.name_contact,
+                'prefix_phone_id': self.prefix_phone_id.id,
+                'contact_person_telephone': self.contact_person_telephone,
+                'phone_full': self.phone_full,
+                'remark_contact_person': self.remark_contact_person
+            })
+            self.write({'legajo_information_contact_id': legajo_information_contact_id.id})
