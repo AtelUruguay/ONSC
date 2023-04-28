@@ -19,37 +19,8 @@
                 <header position="inside">
                     <button name="action_call_ws4" type="object" string="WS4" states="borrador,error_sgh"/>
                 </header>
-
-                <xpath expr="//notebook" position="before">
-                    <div class="oe_title" name="first_div">
-                        <h1>
-                            <field name="full_name" modifiers="{&quot;readonly&quot;: true}"/>
-                        </h1>
-                    </div>
-                    <group>
-                        <group>
-                            <field name="cv_emissor_country_id"
-                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                                   readonly="1"
-                                   force_save="1"
-                                   string="País"/>
-                            <field name="cv_document_type_id"
-                                   readonly="1"
-                                   force_save="1"
-                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="partner_id" string="C.I." required="1" context="{'show_cv_nro_doc':True}"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="cv_birthdate" attrs="{'readonly': [('is_docket', '=', True)]}" force_save="1"/>
-                            <field name="cv_sex" attrs="{'readonly': [('is_docket', '=', True)]}" force_save="1"/>
-                            <field name="is_docket" invisible="1"/>
-                            <field name="employee_id" invisible="1"/>
-                        </group>
-                        <group>
-                        </group>
-                    </group>
-                </xpath>
-
-                <xpath expr="//div[@name='first_div']" position="before">
+                <xpath expr="//div[hasclass('oe_title')]" position="inside">
+                    <field name="full_name" modifiers="{&quot;readonly&quot;: true}"/>
                     <field name="is_error_synchronization" invisible="1"/>
                     <div class="alert alert-danger"
                          role="alert"
@@ -61,6 +32,25 @@
                         </p>
                     </div>
                 </xpath>
+                <field name="inciso_id" position="before">
+                    <field name="cv_emissor_country_id"
+                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                           readonly="1"
+                           force_save="1"
+                           string="País"/>
+                    <field name="cv_document_type_id"
+                           readonly="1"
+                           force_save="1"
+                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                    <field name="partner_id" string="C.I." required="1" context="{'show_cv_nro_doc':True}"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="is_docket" invisible="1"/>
+                    <field name="employee_id" invisible="1"/>
+                </field>
+                <group name="main_group_right" position="inside">
+                    <field name="cv_birthdate" attrs="{'readonly': [('is_docket', '=', True)]}" force_save="1"/>
+                    <field name="cv_sex" attrs="{'readonly': [('is_docket', '=', True)]}" force_save="1"/>
+                </group>
                 <xpath expr="//notebook" position="inside">
                     <page string="Datos personales">
                         <group>
@@ -86,24 +76,27 @@
                         </group>
                     </page>
                 </xpath>
-                <xpath expr="//group[@name='group4_right']" position="inside">
+                <group name="group3" postion="inside">
                     <button type="object" name="action_call_ws1" icon="fa-search"
-                            class="btn btn-secondary o_group_col_8" string="Buscar vacantes"
-                            style="margin-left: 25%; width: 20%;"
-                            attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
-                </xpath>
+                        class="btn btn-secondary o_group_col_8" string="Buscar vacantes"
+                        style="margin-left: 25%; width: 20%;"
+                        attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
+                <field name="vacante_ids" nolabel="1">
+                    <tree editable="bottom" create="true" delete="false">
+                        <field name="selected" widget="boolean_toggle" force_save="1"/>
+                        <field name="Dsc3Descripcion" readonly="1"/>
+                        <field name="Dsc4Descripcion" readonly="1"/>
+                        <field name="nroPuesto" readonly="1"/>
+                        <field name="nroPlaza" readonly="1"/>
+                        <field name="fechaReserva" readonly="1" string="Fecha de creación"/>
+                        <field name="descripcionJornadaFormal" readonly="1"/>
+                    </tree>
+                </field>
+                </group>
                 <xpath expr="//group[@name='group5']" position="inside">
-                    <field name="vacante_ids" nolabel="1">
-                        <tree editable="bottom" create="true" delete="false">
-                            <field name="selected" widget="boolean_toggle" force_save="1"/>
-                            <field name="Dsc3Descripcion" readonly="1"/>
-                            <field name="Dsc4Descripcion" readonly="1"/>
-                            <field name="nroPuesto" readonly="1"/>
-                            <field name="nroPlaza" readonly="1"/>
-                            <field name="fechaReserva" readonly="1" string="Fecha de creación"/>
-                            <field name="descripcionJornadaFormal" readonly="1"/>
-                        </tree>
-                    </field>
+                    <group>
+
+                    </group>
                 </xpath>
             </field>
         </record>

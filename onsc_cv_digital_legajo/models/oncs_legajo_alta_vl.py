@@ -47,24 +47,25 @@ class ONSCLegajoAltaVL(models.Model):
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         Employee = self.env['hr.employee'].sudo()
-        for record in self:
+        for record in self.suspend_security():
             if record.partner_id:
-                record.employee_id = Employee.search([
+                employee = Employee.search([
                     ('user_partner_id', '=', record.partner_id.id),
                     ('cv_emissor_country_id', '=', record.cv_emissor_country_id.id),
                     ('cv_document_type_id', '=', record.cv_document_type_id.id),
                 ], limit=1)
-                record.cv_birthdate = record.employee_id.cv_digital_id.cv_birthdate
-                record.cv_sex = record.employee_id.cv_digital_id.cv_sex
-                record.country_of_birth_id = record.cv_digital_id.country_of_birth_id
-                record.marital_status_id = record.cv_digital_id.marital_status_id
-                record.uy_citizenship = record.cv_digital_id.uy_citizenship
-                record.crendencial_serie = record.cv_digital_id.crendencial_serie
-                record.credential_number = record.cv_digital_id.credential_number
-                record.personal_phone = record.cv_digital_id.personal_phone
-                record.mobile_phone = record.cv_digital_id.mobile_phone
-                record.email = record.cv_digital_id.email
-                record.cv_address_street_id = record.cv_digital_id.cv_address_street_id
+                record.employee_id = employee.id
+                record.cv_birthdate = employee.cv_digital_id.cv_birthdate
+                record.cv_sex = employee.cv_digital_id.cv_sex
+                record.country_of_birth_id = employee.cv_digital_id.country_of_birth_id
+                record.marital_status_id = employee.cv_digital_id.marital_status_id
+                record.uy_citizenship = employee.cv_digital_id.uy_citizenship
+                record.crendencial_serie = employee.cv_digital_id.crendencial_serie
+                record.credential_number = employee.cv_digital_id.credential_number
+                record.personal_phone = employee.cv_digital_id.personal_phone
+                record.mobile_phone = employee.cv_digital_id.mobile_phone
+                record.email = employee.cv_digital_id.email
+                record.cv_address_street_id = employee.cv_digital_id.cv_address_street_id
 
     @api.depends('partner_id')
     def _compute_full_name(self):

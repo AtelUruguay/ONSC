@@ -24,41 +24,39 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-
+                        <div name="oe_tittle" class="oe_title"></div>
+                        <group name="main_group">
+                            <group name="main_group_left">
+                                <field name="is_inciso_readonly" invisible="1"/>
+                                <field name="operating_unit_id_domain" invisible="1"/>
+                                <field name="is_call_number_required" invisible="1"/>
+                                <field name="is_presupuestado" invisible="1"/>
+                                <field name="is_indVencimiento" invisible="1"/>
+                                <field name="is_operating_unit_readonly" invisible="1"/>
+                                <field name="inciso_id" readonly="1" force_save="1"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="operating_unit_id"
+                                       attrs="{'readonly': [('is_operating_unit_readonly', '=', True)]}"
+                                       domain="operating_unit_id_domain"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            </group>
+                            <group name="main_group_right">
+                                <field name="call_number"
+                                       attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
+                                <field name="date_start"/>
+                                <field name="is_reserva_sgh"/>
+                                <field name="program_id" context="{'show_only_program':True}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="project_id" domain="project_domain_id"
+                                       context="{'show_only_project':True}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="project_domain_id" invisible="1"/>
+                            </group>
+                        </group>
                         <notebook>
                             <page name="datos_relevantes" string="Datos Relevantes">
-                                <group name="group2">
-                                    <group name="group2_left">
-                                        <field name="date_start"/>
-                                        <field name="is_inciso_readonly" invisible="1"/>
-                                        <field name="inciso_id" readonly="1" force_save="1"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                    </group>
-                                    <group name="group2_right">
-                                        <field name="operating_unit_id_domain" invisible="1"/>
-                                        <field name="operating_unit_id"
-                                               attrs="{'readonly': [('is_operating_unit_readonly', '=', True)]}"
-                                               domain="operating_unit_id_domain"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="is_call_number_required" invisible="1"/>
-                                        <field name="call_number"
-                                               attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
-                                        <field name="is_presupuestado" invisible="1"/>
-                                        <field name="is_indVencimiento" invisible="1"/>
-                                        <field name="is_reserva_sgh"/>
-                                        <field name="is_operating_unit_readonly" invisible="1"/>
-                                    </group>
-                                </group>
-
                                 <group name="group3">
                                     <group name="group3_left">
-                                        <field name="program_id" context="{'show_only_program':True}"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="project_id" domain="project_domain_id"
-                                               context="{'show_only_project':True}"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="project_domain_id" invisible="1"/>
-
                                     </group>
                                     <group name="group3_right">
                                         <field name="nroPuesto"
@@ -84,22 +82,15 @@
                                         <field name="descriptor2_domain_id" invisible="1"/>
                                         <field name="descriptor3_domain_id" invisible="1"/>
                                         <field name="descriptor4_domain_id" invisible="1"/>
-
                                     </group>
                                 </group>
                                 <group name="group4">
                                     <group name="group4_left">
-                                        <field name="income_mechanism_id"
-                                               attrs="{'required': [('state', '!=', 'borrador')]}"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="retributive_day_id"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                     </group>
                                     <group name="group4_right">
                                     </group>
                                 </group>
                                 <group name="group5" attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
-
                                 </group>
                                 <group name="group6">
                                     <group name="group6_left">
@@ -107,6 +98,11 @@
                                         <field name="department_id" domain="department_id_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="occupation_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="income_mechanism_id"
+                                               attrs="{'required': [('state', '!=', 'borrador')]}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="retributive_day_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                     </group>
                                     <group name="group6_right">
