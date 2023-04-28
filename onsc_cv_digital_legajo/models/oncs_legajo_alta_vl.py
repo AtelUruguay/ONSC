@@ -8,6 +8,7 @@ class ONSCLegajoAltaVL(models.Model):
     _inherit = ['onsc.legajo.alta.vl', 'onsc.cv.common.data']
     _description = 'Alta de vínculo laboral'
 
+    partner_id = fields.Many2one("res.partner", string="Contacto", domain="[('is_partner_cv', '=', True),('is_cv_uruguay', '=', True)]")
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital",
                                     string="CV Digital",
                                     compute='_compute_cv_digital_id',

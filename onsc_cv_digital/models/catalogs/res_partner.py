@@ -39,7 +39,7 @@ class ResPartner(models.Model):
     cv_photo_updated_date = fields.Date(u'Fecha de foto del/de la funcionario/a', compute='_compute_photo_updated_date',
                                         store=True)
     is_partner_cv = fields.Boolean(u'¿Es un contacto de CV?')
-    is_cv_uruguay = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay')
+    is_cv_uruguay = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay', store=True)
     cv_full_name = fields.Char('Nombre', compute='_compute_cv_full_name', store=True)
     cv_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad')
     cv_nro_door = fields.Char(u'Número')
