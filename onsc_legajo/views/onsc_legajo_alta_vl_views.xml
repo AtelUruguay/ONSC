@@ -33,32 +33,33 @@
                                 <field name="is_presupuestado" invisible="1"/>
                                 <field name="is_indVencimiento" invisible="1"/>
                                 <field name="is_operating_unit_readonly" invisible="1"/>
-                                <field name="inciso_id" readonly="1" force_save="1"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="operating_unit_id"
-                                       attrs="{'readonly': [('is_operating_unit_readonly', '=', True)]}"
-                                       domain="operating_unit_id_domain"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+
                             </group>
                             <group name="main_group_right">
                                 <field name="call_number"
                                        attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
-                                <field name="date_start"/>
-                                <field name="is_reserva_sgh"/>
-                                <field name="program_id" context="{'show_only_program':True}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="project_id" domain="project_domain_id"
-                                       context="{'show_only_project':True}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="project_domain_id" invisible="1"/>
                             </group>
                         </group>
                         <notebook>
-                            <page name="datos_relevantes" string="Datos Relevantes">
+                            <page name="datos_relevantes" string="Datos de la vacante">
                                 <group name="group3">
                                     <group name="group3_left">
+                                        <field name="inciso_id" readonly="1" force_save="1"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="operating_unit_id"
+                                               attrs="{'readonly': [('is_operating_unit_readonly', '=', True)]}"
+                                               domain="operating_unit_id_domain"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="date_start"/>
+                                        <field name="program_id" context="{'show_only_program':True}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="project_id" domain="project_domain_id"
+                                               context="{'show_only_project':True}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="project_domain_id" invisible="1"/>
                                     </group>
                                     <group name="group3_right">
+                                        <field name="is_reserva_sgh"/>
                                         <field name="nroPuesto"
                                                attrs="{'invisible': [('is_reserva_sgh', '=', False)]}"/>
                                         <field name="nroPlaza"

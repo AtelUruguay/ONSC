@@ -32,7 +32,7 @@
                         </p>
                     </div>
                 </xpath>
-                <field name="inciso_id" position="before">
+                <field name="is_inciso_readonly" position="before">
                     <field name="cv_emissor_country_id"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                            readonly="1"
@@ -76,23 +76,23 @@
                         </group>
                     </page>
                 </xpath>
-                <group name="group3" postion="inside">
+                <xpath expr="//group[@name='group3']" position="inside">
                     <button type="object" name="action_call_ws1" icon="fa-search"
-                        class="btn btn-secondary o_group_col_8" string="Buscar vacantes"
-                        style="margin-left: 25%; width: 20%;"
-                        attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
-                <field name="vacante_ids" nolabel="1">
-                    <tree editable="bottom" create="true" delete="false">
-                        <field name="selected" widget="boolean_toggle" force_save="1"/>
-                        <field name="Dsc3Descripcion" readonly="1"/>
-                        <field name="Dsc4Descripcion" readonly="1"/>
-                        <field name="nroPuesto" readonly="1"/>
-                        <field name="nroPlaza" readonly="1"/>
-                        <field name="fechaReserva" readonly="1" string="Fecha de creación"/>
-                        <field name="descripcionJornadaFormal" readonly="1"/>
-                    </tree>
-                </field>
-                </group>
+                            class="btn btn-secondary o_group_col_8" string="Buscar vacantes"
+                            style="margin-left: 85%; width: 15%;"
+                            attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
+                    <field name="vacante_ids" nolabel="1">
+                        <tree editable="bottom" create="true" delete="false">
+                            <field name="selected" widget="boolean_toggle" force_save="1"/>
+                            <field name="Dsc3Descripcion" readonly="1"/>
+                            <field name="Dsc4Descripcion" readonly="1"/>
+                            <field name="nroPuesto" readonly="1"/>
+                            <field name="nroPlaza" readonly="1"/>
+                            <field name="fechaReserva" readonly="1" string="Fecha de creación"/>
+                            <field name="descripcionJornadaFormal" readonly="1"/>
+                        </tree>
+                    </field>
+                </xpath>
                 <xpath expr="//group[@name='group5']" position="inside">
                     <group>
 

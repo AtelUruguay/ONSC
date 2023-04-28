@@ -39,10 +39,10 @@ class ONSCLegajoAltaVL(models.Model):
     is_error_synchronization = fields.Boolean(copy=False)
 
     def action_call_ws1(self):
-        return self.syncronize(log_info=True)
+        return self.syncronize_ws1(log_info=True)
 
     def action_call_ws4(self):
-        return warning_response("No implementado")
+        return self.syncronize_ws4(log_info=True)
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
@@ -150,7 +150,7 @@ class ONSCLegajoAltaVL(models.Model):
                         # record.update(data)
 
     @api.model
-    def syncronize(self, log_info=False):
+    def syncronize_ws1(self, log_info=False):
         if self.is_reserva_sgh and not (
                 self.date_start and self.program_id and self.project_id and self.nroPuesto and self.nroPlaza):
             raise ValidationError(
@@ -164,5 +164,14 @@ class ONSCLegajoAltaVL(models.Model):
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
             self.vacante_ids = response
+        elif isinstance(response, str):
+            return warning_response(response)
+
+    @api.model
+    def syncronize_ws4(self, log_info=False):
+        response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
+            log_info=log_info).suspend_security().syncronize(self)
+        if not isinstance(response, str):
+            print(response)
         elif isinstance(response, str):
             return warning_response(response)
