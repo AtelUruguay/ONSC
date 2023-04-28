@@ -14,15 +14,6 @@
             </field>
         </record>
 
-        <record id="onsc_legajo_alta_vl_tree" model="ir.ui.view">
-            <field name="name">onsc.legajo.alta.vl.tree</field>
-            <field name="model">onsc.legajo.alta.vl</field>
-            <field name="arch" type="xml">
-                <tree string="Alta VL">
-                    <field name="full_name"/>
-                </tree>
-            </field>
-        </record>
 
         <record id="onsc_legajo_alta_vl_form" model="ir.ui.view">
             <field name="name">onsc.legajo.alta.vl.form</field>
@@ -33,20 +24,6 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <div class="oe_title" name="first_div">
-                            <h1>
-                                <field name="full_name" modifiers="{&quot;readonly&quot;: true}"/>
-                            </h1>
-                        </div>
-                        <group>
-                            <group>
-                                <field name="partner_id" string="C.I." required="1" context="{'show_cv_nro_doc':True}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            </group>
-                            <group>
-                            </group>
-                        </group>
-
 
                         <notebook>
                             <page name="datos_relevantes" string="Datos Relevantes">
@@ -121,7 +98,7 @@
                                     <group name="group4_right">
                                     </group>
                                 </group>
-                                <group name="group5" attrs="{'invisible': [('is_presupuestado', '=', False)]}">
+                                <group name="group5" attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
 
                                 </group>
                                 <group name="group6">
@@ -225,9 +202,6 @@
                     Crear una nueva Alta de VL
                 </p>
             </field>
-            <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_alta_vl_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_alta_vl_form')})]"/>
         </record>
     </data>
 </odoo>
