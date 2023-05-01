@@ -23,6 +23,22 @@ class ONSCCVDigitalCall(models.Model):
     _description = 'Llamado'
     _rec_name = 'cv_full_name'
 
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        if self._context.get('is_call_documentary_validation'):
+            args = self._get_expression_domain(args)
+        return super(ONSCCVDigitalCall, self)._search(args, offset=offset, limit=limit, order=order,
+                                                                     count=count,
+                                                                     access_rights_uid=access_rights_uid)
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if self._context.get('is_call_documentary_validation'):
+            domain = self._get_expression_domain(domain)
+        return super(ONSCCVDigitalCall, self).read_group(domain, fields, groupby, offset=offset,
+                                                                        limit=limit, orderby=orderby,
+                                                                        lazy=lazy)
+
     cv_digital_id = fields.Many2one(
         "onsc.cv.digital",
         string="CV interno",
