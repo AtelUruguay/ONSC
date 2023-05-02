@@ -63,6 +63,14 @@ class ONSCCVDigitalVacante(models.Model):
             else:
                 rec.descriptor4_id = False
 
-    def search_vacantes(self):
-        #TODO: Función para llamar al WS1
-        pass
+    def write(self, vals):
+        result = super(ONSCCVDigitalVacante, self).write(vals)
+        for rec in self.filtered(lambda x: x.selected):
+            rec.alta_vl_id.write({
+                'nroPuesto': rec.nroPuesto,
+                'nroPlaza': rec.nroPlaza,
+                'descriptor3_id': rec.descriptor3_id.id,
+                'descriptor4_id': rec.descriptor4_id.id,
+                'regime_id': rec.regime_id.id,
+            })
+        return result

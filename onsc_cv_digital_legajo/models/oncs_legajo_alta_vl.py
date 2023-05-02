@@ -13,6 +13,25 @@ class ONSCLegajoAltaVL(models.Model):
     _description = 'Alta de vínculo laboral'
     _rec_name = 'full_name'
 
+    def read(self, fields=None, load="_classic_read"):
+        Partner = self.env['res.partner'].sudo()
+        Office = self.env['onsc.legajo.office'].sudo()
+        result = super(ONSCLegajoAltaVL, self).read(fields, load)
+        for item in result:
+            if item.get('partner_id'):
+                partner_id = item['partner_id'][0]
+                tuple = (item['partner_id'][0], Partner.browse(partner_id)._custom_display_name())
+                item['partner_id'] = tuple
+            if item.get('program_id'):
+                program_id = item['program_id'][0]
+                tuple = (item['program_id'][0], Office.browse(program_id)._custom_display_name('program'))
+                item['program_id'] = tuple
+            if item.get('project_id'):
+                program_id = item['project_id'][0]
+                tuple = (item['project_id'][0], Office.browse(program_id)._custom_display_name('project'))
+                item['project_id'] = tuple
+        return result
+
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     partner_id = fields.Many2one("res.partner", string="Contacto",
                                  domain=[('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True)])
@@ -135,19 +154,6 @@ class ONSCLegajoAltaVL(models.Model):
                 for vacante_id in record.vacante_ids:
                     if vacante_id.selected:
                         record.vacante_ids = vacante_id
-                        # TODO ver si se puede hacer con un update de los campos sin borrar las vacantes
-                        # data = {}
-                        # if vacante_id.nroPuesto and not record.nroPuesto:
-                        #     data.update({'nroPuesto': vacante_id.nroPuesto})
-                        # if vacante_id.nroPlaza and not record.nroPlaza:
-                        #     data.update({'nroPlaza': vacante_id.nroPlaza})
-                        # if vacante_id.descriptor3_id and not record.descriptor3_id:
-                        #     data.update({'descriptor3_id': vacante_id.descriptor3_id.id})
-                        # if vacante_id.descriptor4_id and not record.descriptor4_id:
-                        #     data.update({'descriptor4_id': vacante_id.descriptor4_id.id})
-                        # if vacante_id.regime_id and not record.regime_id:
-                        #     data.update({'regime_id': vacante_id.regime_id.id})
-                        # record.update(data)
 
     @api.model
     def syncronize_ws1(self, log_info=False):

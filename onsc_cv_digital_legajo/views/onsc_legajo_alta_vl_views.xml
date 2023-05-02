@@ -82,7 +82,7 @@
                             style="margin-left: 85%; width: 15%;"
                             attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
                     <field name="vacante_ids" nolabel="1">
-                        <tree editable="bottom" create="true" delete="false">
+                        <tree editable="bottom" create="false" delete="false">
                             <field name="selected" widget="boolean_toggle" force_save="1"/>
                             <field name="Dsc3Descripcion" readonly="1"/>
                             <field name="Dsc4Descripcion" readonly="1"/>

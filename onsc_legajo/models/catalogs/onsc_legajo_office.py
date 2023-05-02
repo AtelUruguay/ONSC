@@ -61,6 +61,12 @@ class ONSCLegajoOffice(models.Model):
             by_programaDescripcion = self.search(by_proyectoDescripcion_domain, limit=limit)
         return list(set(by_name + by_programaDescripcion.name_get()))
 
+    def _custom_display_name(self, field):
+        if field == 'program':
+            return (self.programa or '0') + " - " + self.programaDescripcion
+        elif field == 'project':
+            return (self.proyecto or '0') + " - " + self.proyectoDescripcion
+
     @api.depends('inciso', 'unidadEjecutora', 'programa', 'proyecto')
     def _compute_code(self):
         for record in self:

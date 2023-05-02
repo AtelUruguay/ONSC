@@ -639,7 +639,9 @@ class ONSCCVDigital(models.Model):
                     ('preselected', '!=', 'no'),
                 ])
                 last_write_date = eval('record.%s_write_date' % documentary_field)
-                calls.filtered(lambda x: x.create_date >= last_write_date and x.gral_info_documentary_validation_state != 'validated').write(vals)
+                custom_vals = vals.copy()
+                custom_vals['%s_write_date' % documentary_field] = fields.Datetime.now()
+                calls.filtered(lambda x: (eval('x.%s_write_date' % (documentary_field)) <= last_write_date or eval('x.%s_write_date' % (documentary_field)) is False) and x.gral_info_documentary_validation_state != 'validated').write(custom_vals)
         self.write(vals)
 
     def _update_cv_digital_origin_documentary_values(self, documentary_field, vals):
