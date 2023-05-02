@@ -6,8 +6,6 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-
 _logger = logging.getLogger(__name__)
 
 STATES = [
@@ -25,7 +23,6 @@ class ONSCLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.alta.vl'
     _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
     _description = 'Alta de vínculo laboral'
-    _rec_name = 'full_name'
 
     def _get_domain(self, args):
         if self._context.get('is_from_menu') and self.user_has_groups(
@@ -74,12 +71,7 @@ class ONSCLegajoAltaVL(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
-    @api.model
-    def _get_domain_partner(self):
-        return [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True)]
 
-    full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
-    partner_id = fields.Many2one("res.partner", string="Contacto", domain=_get_domain_partner)
     date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False)
     call_number = fields.Char(string='Número de llamado', copy=False)
@@ -96,19 +88,24 @@ class ONSCLegajoAltaVL(models.Model):
     department_id_domain = fields.Char(compute='_compute_department_id_domain')
     is_responsable_uo = fields.Boolean(string="¿Responsable de UO?", related="security_job_id.is_uo_manager",
                                        store=True)
-    programa = fields.Char(string='Programa', copy=False)
-    proyecto = fields.Char(string='Proyecto', copy=False)
-    office_id = fields.Many2one("onsc.legajo.office", string="Oficina", compute="_compute_office_id", store=True)
+    program_id = fields.Many2one('onsc.legajo.office', string='Programa', copy=False,
+                                 domain="[('inciso', '=', inciso_id),('unidadEjecutora', '=', operating_unit_id)]")
+    project_id = fields.Many2one('onsc.legajo.office', string='Proyecto', copy=False)
+    project_domain_id = fields.Char(compute='_compute_project_domain')
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada retributiva',
-                                         domain="[('office_id', '=', office_id)]", copy=False)
+                                         domain="[('office_id', '=', project_id)]", copy=False)
     is_reserva_sgh = fields.Boolean(string="¿Tiene reserva en SGH?", copy=False)
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False)
     is_presupuestado = fields.Boolean(related="regime_id.presupuesto", store=True)
     is_indVencimiento = fields.Boolean(related="regime_id.indVencimiento", store=True)
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor 1', copy=False)
+    descriptor1_domain_id = fields.Char(compute='_compute_descriptor1_domain_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor 2', copy=False)
+    descriptor2_domain_id = fields.Char(compute='_compute_descriptor2_domain_id')
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor 3', copy=False)
+    descriptor3_domain_id = fields.Char(compute='_compute_descriptor3_domain_id')
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor 4', copy=False)
+    descriptor4_domain_id = fields.Char(compute='_compute_descriptor4_domain_id')
     partida_id = fields.Many2one('onsc.legajo.budget.item', compute="_compute_partida", store=True)
     nroPuesto = fields.Char(string='Puesto', copy=False)
     nroPlaza = fields.Char(string='Plaza', copy=False)
@@ -146,17 +143,19 @@ class ONSCLegajoAltaVL(models.Model):
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
     id_alta = fields.Char(string="Id Alta")
 
+    @api.model
+    def default_get(self, fields):
+        res = super(ONSCLegajoAltaVL, self).default_get(fields)
+        res['cv_emissor_country_id'] = self.env.ref('base.uy').id
+        res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
+                                                                                     limit=1).id or False
+        return res
+
     @api.constrains("attached_document_discharge_ids")
     def _check_attached_document_discharge(self):
         for record in self:
-            if not record.attached_document_discharge_ids:
+            if not record.attached_document_discharge_ids and record.state != 'borrador':
                 raise ValidationError(_("Debe haber al menos un documento adjunto"))
-
-    # @api.constrains("office_id")
-    # def _check_office(self):
-    #     for record in self:
-    #         if not record.office_id:
-    #             raise ValidationError(_("Para esta combinación de Inciso-UE-Programa-Proyecto no hay oficinas"))
 
     @api.constrains("is_responsable_uo", "date_start", "department_id")
     def _check_responsable_uo(self):
@@ -194,31 +193,42 @@ class ONSCLegajoAltaVL(models.Model):
             if record.date_start and record.graduation_date and record.graduation_date > record.date_start:
                 raise ValidationError(_("La fecha de graduación debe ser menor o igual al día de alta"))
 
-    @api.onchange('regime_id')
-    def onchange_regimen(self):
-        for rec in self:
-            rec.descriptor1_id = False
-            rec.descriptor2_id = False
-            rec.descriptor3_id = False
-            rec.descriptor4_id = False
-            rec.contract_expiration_date = False
-            rec.vacante_ids = False
 
-    @api.onchange('descriptor1_id', 'descriptor2_id', 'regime_id', 'is_reserva_sgh', 'programa', 'proyecto',
-                  'nroPuesto', 'nroPlaza')
-    def onchange_clear_vacante_id(self):
-        for rec in self:
-            rec.vacante_ids = False
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
         # TODO: terminar los demas campos a setear
         self.operating_unit_id = False
         self.department_id = False
-        self.programa = False
-        self.proyecto = False
-        self.office_id = False
+        self.program_id = False
+        self.project_id = False
         self.retributive_day_id = False
+
+    @api.onchange('operating_unit_id')
+    def onchange_operating_unit(self):
+        self.department_id = False
+        self.program_id = False
+        self.project_id = False
+        self.retributive_day_id = False
+
+    @api.onchange('program_id')
+    def onchange_program(self):
+        self.project_id = False
+
+    @api.onchange('descriptor1_id')
+    def onchange_descriptor1(self):
+        self.descriptor2_id = False
+        self.descriptor3_id = False
+        self.descriptor4_id = False
+
+    @api.onchange('descriptor2_id')
+    def onchange_descriptor2(self):
+        self.descriptor3_id = False
+        self.descriptor4_id = False
+
+    @api.onchange('descriptor3_id')
+    def onchange_descriptor3(self):
+        self.descriptor4_id = False
 
     @api.depends('descriptor1_id', 'descriptor2_id', 'descriptor3_id', 'descriptor4_id')
     def _compute_partida(self):
@@ -233,16 +243,6 @@ class ONSCLegajoAltaVL(models.Model):
             if rec.descriptor4_id:
                 domain = expression.AND([domain, [("dsc4Id", "=", rec.descriptor4_id.id)]])
             rec.partida_id = self.env['onsc.legajo.budget.item'].search(domain, limit=1) if domain else False
-
-    @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
-    def _compute_full_name(self):
-        for record in self:
-            full_name = calc_full_name(record.cv_first_name, record.cv_second_name,
-                                       record.cv_last_name_1, record.cv_last_name_2)
-            if full_name:
-                record.full_name = full_name
-            else:
-                record.full_name = 'New'
 
     def _compute_is_readonly(self):
         for rec in self:
@@ -271,22 +271,70 @@ class ONSCLegajoAltaVL(models.Model):
                 domain = expression.AND([[
                     ('operating_unit_id', '=', rec.operating_unit_id.id)
                 ], domain])
-            self.department_id_domain = json.dumps(domain)
+            rec.department_id_domain = json.dumps(domain)
 
-    @api.depends('inciso_id', 'operating_unit_id', 'programa', 'proyecto')
-    def _compute_office_id(self):
+    @api.depends('inciso_id', 'operating_unit_id', 'program_id')
+    def _compute_project_domain(self):
         for rec in self:
-            Office = self.env['onsc.legajo.office'].sudo()
-            if rec.inciso_id and rec.operating_unit_id and rec.programa and rec.proyecto:
-                domain = [
-                    ('inciso', '=', rec.inciso_id.id),
-                    ('unidadEjecutora', '=', rec.operating_unit_id.id),
-                    ('programa', '=', rec.programa),
-                    ('proyecto', '=', rec.proyecto),
-                ]
-                rec.office_id = Office.search(domain, limit=1)
-            else:
-                rec.office_id = False
+            args = []
+            if rec.program_id:
+                args = [('programa', '=', rec.program_id.programa)]
+            if rec.inciso_id:
+                args = expression.AND([[('inciso', '=', rec.inciso_id.id)], args])
+            if rec.operating_unit_id:
+                args = expression.AND([[
+                    ('unidadEjecutora', '=', rec.operating_unit_id.id)
+                ], args])
+            rec.project_domain_id = json.dumps(args)
+
+    @api.depends('inciso_id', 'operating_unit_id', 'is_reserva_sgh')
+    def _compute_descriptor1_domain_id(self):
+        domain = [('id', 'in', [])]
+        for rec in self:
+            if not rec.is_reserva_sgh:
+                dsc1Id = self.env['onsc.legajo.budget.item'].search([]).mapped(
+                    'dsc1Id')
+                if dsc1Id:
+                    domain = [('id', 'in', dsc1Id.ids)]
+            rec.descriptor1_domain_id = json.dumps(domain)
+
+    @api.depends('descriptor1_id')
+    def _compute_descriptor2_domain_id(self):
+        for rec in self:
+            domain = [('id', 'in', [])]
+            if rec.descriptor1_id:
+                dsc2Id = self.env['onsc.legajo.budget.item'].search([('dsc1Id', '=', rec.descriptor1_id.id)]).mapped(
+                    'dsc2Id')
+                if dsc2Id:
+                    domain = [('id', 'in', dsc2Id.ids)]
+            rec.descriptor2_domain_id = json.dumps(domain)
+
+    @api.depends('descriptor2_id')
+    def _compute_descriptor3_domain_id(self):
+        for rec in self:
+            domain = [('id', 'in', [])]
+            if rec.descriptor2_id and rec.descriptor1_id:
+                dsc3Id = self.env['onsc.legajo.budget.item'].search(
+                    [('dsc2Id', '=', rec.descriptor2_id.id), ('dsc1Id', '=', rec.descriptor1_id.id)]).mapped(
+                    'dsc3Id')
+                if dsc3Id:
+                    domain = [('id', 'in', dsc3Id.ids)]
+            rec.descriptor3_domain_id = json.dumps(domain)
+
+    @api.depends('descriptor3_id')
+    def _compute_descriptor4_domain_id(self):
+        for rec in self:
+            domain = [('id', 'in', [])]
+            if rec.descriptor3_id and rec.descriptor2_id and rec.descriptor1_id:
+                dsc4Id = self.env['onsc.legajo.budget.item'].search(
+                    [('dsc2Id', '=', rec.descriptor2_id.id), ('dsc1Id', '=', rec.descriptor1_id.id),
+                     ('dsc3Id', '=', rec.descriptor3_id.id)]).mapped(
+                    'dsc4Id')
+                if dsc4Id:
+                    domain = [('id', 'in', dsc4Id.ids)]
+                else:
+                    domain = [('id', 'in', [])]
+            rec.descriptor4_domain_id = json.dumps(domain)
 
     def action_error_sgh(self):
         for rec in self:
@@ -317,8 +365,4 @@ class ONSCLegajoAltaVL(models.Model):
             raise ValidationError(_("No se pueden eliminar Altas VL en este estado"))
         return super(ONSCLegajoAltaVL, self).unlink()
 
-    @api.model
-    def syncronize(self, log_info=False):
-        self.vacante_ids = self.env['onsc.legajo.abstract.alta.vl.ws1'].with_context(
-            log_info=log_info).suspend_security().syncronize(self)
-        return True
+

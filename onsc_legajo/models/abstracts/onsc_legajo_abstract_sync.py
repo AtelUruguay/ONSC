@@ -34,7 +34,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 integration_log=integration_error,
                 ws_tuple=False,
                 long_description=tools.ustr(e))
-            return
+            return "Error al enviar datos al WS"
         if hasattr(response, 'servicioResultado'):
             if response.servicioResultado.codigo == 0:
                 return self._populate_from_syncronization(response)
@@ -51,6 +51,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                     ws_tuple=False,
                     long_description='%s - Código: %s' % (
                         tools.ustr(response.servicioResultado.mensaje), str(response.servicioResultado.codigo)))
+                return "Error al enviar datos al WS:" + str(response.servicioResultado.mensaje)
         elif hasattr(response, 'codigoResultado'):
             if response.codigoResultado == 0:
                 return self._populate_from_syncronization(response)
@@ -67,7 +68,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                     ws_tuple=False,
                     long_description='%s - Código: %s' % (
                         tools.ustr(response.mensajeResultado), str(response.codigoResultado)))
-        return True
+        return "No se obtuvo respuesta del WS"
 
     # pylint: disable=redefined-builtin
     def create_new_log(self, origin, type, integration_log, ws_tuple=False, long_description=False):
