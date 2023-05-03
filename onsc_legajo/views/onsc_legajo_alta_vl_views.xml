@@ -98,12 +98,12 @@
                                         <field name="department_id_domain" invisible="1"/>
                                         <field name="department_id" domain="department_id_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="occupation_id"
+                                        <field name="occupation_id" attrs="{'required': [('is_required_ws4', '=', True)]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="income_mechanism_id"
                                                attrs="{'required': [('state', '!=', 'borrador')]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="retributive_day_id"
+                                        <field name="retributive_day_id" attrs="{'required': [('is_required_ws4', '=', True)]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                     </group>
                                     <group name="group6_right">
@@ -120,7 +120,7 @@
                                     </group>
                                     <group name="group7_right">
                                         <field name="contract_expiration_date"
-                                               attrs="{'required': [('is_indVencimiento', '=', True),('state', '!=', 'borrador')]}"/>
+                                               attrs="{'required': [('is_indVencimiento', '=', True),('is_required_ws4', '=', True)]}"/>
                                         <field name="is_graduation_date_required" invisible="1"/>
                                         <field name="graduation_date"
                                                attrs="{'invisible': [('is_graduation_date_required', '=', False)] ,'required': [('is_graduation_date_required', '=', True),('state', '!=', 'borrador')]}"/>
@@ -138,12 +138,13 @@
                                 </group>
                                 <group name="motivo" string="Ingreso de motivo">
                                     <group name="motivo_left">
-                                        <field name="reason_discharge" colspan="4"/>
-                                        <field name="norm_code_discharge_id" colspan="3"
+                                        <field name="is_required_ws4" invisible="1"/>
+                                        <field name="reason_description" colspan="4" attrs="{'required': [('is_required_ws4', '=', True)]}"/>
+                                        <field name="norm_id" colspan="3" attrs="{'required': [('is_required_ws4', '=', True)]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="norm_number_discharge" colspan="2"/>
-                                        <field name="norm_year_discharge" colspan="1"/>
-                                        <field name="norm_article_discharge" colspan="2"/>
+                                        <field name="norm_number" colspan="2"/>
+                                        <field name="norm_year" colspan="1"/>
+                                        <field name="norm_article" colspan="2"/>
                                         <div class="alert alert-info" colspan="6"
                                              role="alert"
                                              style="margin-bottom:0px;">
@@ -157,14 +158,14 @@
                                         </div>
                                     </group>
                                     <group name="motivo_right">
-                                        <field name="resolution_description_discharge" colspan="4"
-                                               attrs="{'required': [('state', '!=', 'borrador')]}"/>
-                                        <field name="resolution_date_discharge" colspan="4"/>
-                                        <field name="resolution_type_discharge" colspan="4"/>
+                                        <field name="resolution_description" colspan="4"
+                                               attrs="{'required': [('is_required_ws4', '=', True)]}"/>
+                                        <field name="resolution_date" colspan="4" attrs="{'required': [('is_required_ws4', '=', True)]}"/>
+                                        <field name="resolution_type" colspan="4" attrs="{'required': [('is_required_ws4', '=', True)]}"/>
                                     </group>
                                 </group>
                                 <group name="documentacion" string="Documentación">
-                                    <field name="attached_document_discharge_ids" nolabel="1">
+                                    <field name="attached_document_ids" nolabel="1">
                                         <tree editable="top">
                                             <field name="name" required="1"/>
                                             <field name="document_type_id" required="1"/>
@@ -174,7 +175,7 @@
                                     </field>
                                 </group>
                                 <group name="adicional" string="Información Adicional">
-                                    <field name="additional_information_discharge" nolabel="1"
+                                    <field name="additional_information" nolabel="1"
                                            placeholder="Información Adicional"/>
                                 </group>
                             </page>

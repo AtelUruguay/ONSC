@@ -18,160 +18,75 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9005")
 
         wsclient = self._get_client(parameter, '', integration_error)
-        """<inciso>2</inciso>
-			 <ue>11</ue>
-			 <!--Optional:-->
-			 <descripcion>prueba WS</descripcion>
-			 <presupuestales>S</presupuestales>
-			 <!--1 or more repetitions:-->
-			 <altaDetalle>
-				 <fechaAlta>01/10/2022</fechaAlta>
-				 <cedula>4437944</cedula>
-				 <digitoVerificador>3</digitoVerificador>
-				 <!--Optional:-->
-				 <primerApellido>KLEEFELD</primerApellido>
-				 <!--Optional:-->
-				 <segundoApellido>PRIUS</segundoApellido>
-				 <!--Optional:-->
-				 <primerNombre>ALBA</primerNombre>
-				 <!--Optional:-->
-				 <segundoNombre>IRENE</segundoNombre>
-				 <!--Optional:-->
-				 <codRegimen>1007</codRegimen>
-				 <!--Optional:-->
-				 <codPartida>1221</codPartida>
-				 <!--Optional:-->
-				 <nroPuesto>74601</nroPuesto>
-				 <!--Optional:-->
-				 <nroPlaza>160</nroPlaza>
-				 <!--Optional:-->
-				 <programa>282</programa>
-				 <!--Optional:-->
-				 <proyecto>0</proyecto>
-				 <!--Optional:-->
-				 <descripcionMotivo>CGN ALTA YEYT MAYO 2022</descripcionMotivo>
-				 <numeroNorma>18719</numeroNorma>
-				 <articuloNorma>51</articuloNorma>
-				 <tipoNormaSigla>L</tipoNormaSigla>
-				 <anioNorma>2010</anioNorma>
-				 <descripcionResolucion>CGN ALTA YEYT MAYO 2022</descripcionResolucion>
-				 <fechaResolucion>27/05/2022</fechaResolucion>
-				 <tipoResolucion>P</tipoResolucion>
-				 <!--Optional:-->
-				 <codigoEstadoCivil>1</codigoEstadoCivil>
-				 <!--Optional:-->
-				 <fechaDeNacimiento>06/09/1979</fechaDeNacimiento>
-				 <sexo>M</sexo>
-				 <!--Optional:-->
-				 <lugarDeNacimiento>SAN JOSE</lugarDeNacimiento>
-				 <!--Optional:-->
-				 <tipoCiudadania>N</tipoCiudadania>
-				 <!--Optional:-->
-				 <nacionalidad>URUGUAYA</nacionalidad>
-				 <!--Optional:-->
-				 <serieCredencial>OBA</serieCredencial>
-				 <!--Optional:-->
-				 <numeroCredencial>6868</numeroCredencial>
-				 <!--Optional:-->
-				 <telefonoAlternativo>232342</telefonoAlternativo>
-				 <!--Optional:-->
-				 <telefonoMovil>099795454</telefonoMovil>
-				 <!--Optional:-->
-				 <eMail>mccampot@gmail.com</eMail>
-				 <!--Optional:-->
-				 <deptoCod>10</deptoCod>
-				 <!--Optional:-->
-				 <localidadCod>0</localidadCod>
-				 <!--Optional:-->
-				 <calleCod>842741</calleCod>
-				 <!--Optional:-->
-				 <numeroDePuerta>2803</numeroDePuerta>
-				 <!--Optional:-->
-				 <callCodEntre1>843582</callCodEntre1>
-				 <!--Optional:-->
-				 <callCodEntre2>842806</callCodEntre2>
-				 <!--Optional:-->
-				 <bis>0</bis>
-				 <!--Optional:-->
-				 <apto>204</apto>
-				 <!--Optional:-->
-				 <paraje>fdfdfdd</paraje>
-				 <!--Optional:-->
-				 <codigoPostal>1111</codigoPostal>
-				 <!--Optional:-->
-				 <manzana>1</manzana>
-				 <!--Optional:-->
-				 <solar>1</solar>
-				 <!--Optional:-->
-				 <mutuCod>3</mutuCod
-				 <!--Optional:-->
-				 <fechaDeIngresoAlaAdm>01/01/2014</fechaDeIngresoAlaAdm>
-				 <!--Optional:-->
-				 <aniosInactividad>0</aniosInactividad>
-				 <!--Optional:-->
-				 <!--Optional:-->
-				 <responsableUO>1</responsableUO>
-				 <!--Optional:-->
-				 <codigoOcupacion>1</codigoOcupacion>
-		</altaDetalle>"""
 
         data = {
             'inciso': record.inciso_id.budget_code or '0',
             'ue': record.operating_unit_id.budget_code or '0',
-            'descripcion': record.description or '',
-            'presupuestales': 'S',
+            'descripcion': 'prueba WS',
+            'presupuestales': 'S' if record.is_presupuestado else 'N',
             'altaDetalle': [
-                {'fechaAlta': '01/10/2022',
-                 'cedula': '4437944',
-                 'digitoVerificador': '3',
-                 'primerApellido': 'KLEEFELD',
-                 'segundoApellido': 'PRIUS',
-                 'primerNombre': 'ALBA',
-                 'segundoNombre': 'IRENE',
-                 'codRegimen': '1007',
-                 'codPartida': '1221',
-                 'nroPuesto': '74601',
-                 'nroPlaza': '160',
-                 'programa': '282',
-                 'proyecto': '0',
-                 'descripcionMotivo': 'CGN ALTA YEYT MAYO 2022',
-                 'numeroNorma': '18719',
-                 'articuloNorma': '51',
-                 'tipoNormaSigla': 'L',
-                 'anioNorma': '2010',
-                 'descripcionResolucion': 'CGN ALTA YEYT MAYO 2022',
-                 'fechaResolucion': '27/05/2022',
-                 'tipoResolucion': 'P',
-                 'codigoEstadoCivil': '1',
-                 'fechaDeNacimiento': '06/09/1979',
-                 'sexo': 'M',
-                 'lugarDeNacimiento': 'SAN JOSE',
-                 'tipoCiudadania': 'N',
-                 'nacionalidad': 'URUGUAYA',
-                 'serieCredencial': 'OBA',
-                 'numeroCredencial': '6868',
-                 'telefonoAlternativo': '232342',
-                 'telefonoMovil': '099795454',
-                 'eMail': 'mccampot@gmail.com',
-                 'deptoCod': '10',
-                 'localidadCod': '0',
-                 'calleCod': '842741',
-                 'numeroDePuerta': '2803',
-                 'callCodEntre1': '843582',
-                 'callCodEntre2': '842806',
-                 'bis': '0',
-                 'apto': '204',
-                 'paraje': 'fdfdfdd',
-                 'codigoPostal': '1111',
-                 'manzana': '1',
-                 'solar': '1',
-                 'mutuCod': '3',
-                 'fechaDeIngresoAlaAdm': '01/01/2014',
-                 'aniosInactividad': '0',
-                 'responsableUO': '1',
-                 'codigoOcupacion': '1',
+                {'fechaAlta': record.date_start.strftime('%d/%m/%Y') if record.date_start else '',
+                 'cedula': record.partner_id.cv_nro_doc[:-1] or '',
+                 'digitoVerificador': record.partner_id.cv_nro_doc[-1] or '',
+                 'primerApellido': record.partner_id.cv_last_name_1 or '',
+                 'segundoApellido': record.partner_id.cv_last_name_2 or '',
+                 'primerNombre': record.partner_id.cv_first_name or '',
+                 'segundoNombre':record.partner_id.cv_second_name or '',
+                 'codRegimen':record.regime_id.codRegimen or '',
+                 'codPartida': record.partida_id.codPartida or '',
                  }]
         }
+        if record.is_presupuestado:
+            data['altaDetalle'][0].update({
+                    'nroPuesto': record.nroPuesto or '0',
+                    'nroPlaza':  record.nroPlaza or '0',
+                })
+
+        data['altaDetalle'][0].update({
+                'programa': record.program_id.programa or '0',
+                'proyecto': record.project_id.proyecto or '0',
+                'descripcionMotivo': record.reason_description,
+                'numeroNorma': record.norm_number or '',
+                'articuloNorma': record.norm_article or '',
+                'tipoNormaSigla': record.norm_id.tipoNormaSigla or '',
+                'anioNorma': str(record.norm_year) or '',
+                'descripcionResolucion': record.resolution_description or '',
+                'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y') if record.resolution_date else '',
+                'tipoResolucion': record.resolution_type or '',
+                'codigoEstadoCivil': record.marital_status_id.code or '1',
+                'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y') if record.cv_birthdate else '',
+                'sexo': record.cv_sex or 'M',
+                'lugarDeNacimiento':record.country_of_birth_id.name or 'URUGUAY',
+                'tipoCiudadania': 'N',
+                'nacionalidad': 'URUGUAYA',
+                'serieCredencial': record.crendencial_serie or '',
+                'numeroCredencial': record.credential_number or '',
+                'telefonoAlternativo': record.personal_phone or '',
+                'telefonoMovil': record.mobile_phone or '',
+                'eMail': record.email or '',
+                'deptoCod':'10', #TODO record.cv_address_state_id.code or '0', Codigo de departamento  en nuestro catalogo son string
+                'localidadCod': record.cv_address_location_id.code or '0',
+                'calleCod': record.cv_address_street_id.code or '0',
+                'numeroDePuerta': record.cv_address_nro_door or '0',
+                'callCodEntre1': record.cv_address_street2_id.code or '0',
+                'callCodEntre2': record.cv_address_street3_id.code or '0',
+                'bis': '1' if record.cv_address_is_cv_bis else '0',
+                'apto':  record.cv_address_apto or '0',
+                'paraje': record.cv_address_place or '0',
+                'codigoPostal': record.cv_address_zip or '0',
+                'manzana': record.cv_address_block or '0',
+                'solar': record.cv_address_sandlot or '0',
+                'mutuCod': '3', #TODO no encontre mutualista en el catalogo
+                'fechaDeIngresoAlaAdm': record.date_income_public_administration.strftime('%d/%m/%Y') if record.date_income_public_administration else '',
+                'aniosInactividad': record.inactivity_years or '0',
+                'UO': record.department_id.code or '0',
+                'jornadaReal':'240',
+                'jornadaRetributiva':record.retributive_day_id.codigoJornada or '0',
+                'responsableUO': 'S' if record.is_responsable_uo else 'N',
+                'codigoOcupacion': record.occupation_id.code or '0',
+                'fechaGradAsig': '01/01/2025', # TODO buscar de donde sale
+            })
+
         return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, '',
                                                                                    integration_error, data)
 
@@ -185,7 +100,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         with self._cr.savepoint():
             if not hasattr(response, 'altaSGHMovimientoRespuesta'):
                 return "No se pudo conectar con el servicio web"
-            vacante_ids = [(5,)]
+
             if response.altaSGHMovimientoRespuesta:
                 for external_record in response.altaSGHMovimientoRespuesta:
                     try:
@@ -198,6 +113,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                 ws_tuple=external_record,
                                 long_description='Evento: Creación'
                             )
+                        return external_record
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
                         self.create_new_log(
@@ -206,8 +122,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                             integration_log=integration_error_WS14_9001,
                             ws_tuple=external_record,
                             long_description=tools.ustr(e))
-                        return "Error al sincronizar vacantes"
+                        return "Error al sincronizar con el servicio web"
 
             else:
-                return "No se encontraron vacantes"
-            return vacante_ids
+                return "No se obtuvo respuesta del servicio web"
+            return False

@@ -81,10 +81,12 @@ class ONSCLegajoAltaVL(models.Model):
                 record.uy_citizenship = employee.cv_digital_id.uy_citizenship
                 record.crendencial_serie = employee.cv_digital_id.crendencial_serie
                 record.credential_number = employee.cv_digital_id.credential_number
-                record.personal_phone = employee.cv_digital_id.personal_phone
-                record.mobile_phone = employee.cv_digital_id.mobile_phone
+                record.personal_phone = employee.cv_digital_id.prefix_code + employee.cv_digital_id.personal_phone
+                record.mobile_phone = employee.cv_digital_id.prefix_mobile_phone_id + employee.cv_digital_id.mobile_phone
                 record.email = employee.cv_digital_id.email
                 record.cv_address_street_id = employee.cv_digital_id.cv_address_street_id
+                record.cv_address_street2_id = employee.cv_digital_id.cv_address_street2_id
+                record.cv_address_street3_id = employee.cv_digital_id.cv_address_street3_id
 
     @api.depends('partner_id')
     def _compute_full_name(self):
@@ -130,12 +132,14 @@ class ONSCLegajoAltaVL(models.Model):
             rec.descriptor4_id = False
             rec.contract_expiration_date = False
             rec.vacante_ids = False
+            rec.is_required_ws4 = False
 
     @api.onchange('descriptor1_id', 'descriptor2_id', 'regime_id', 'is_reserva_sgh', 'program_id', 'project_id',
                   'nroPuesto', 'nroPlaza')
     def onchange_clear_vacante_id(self):
         for rec in self:
             rec.vacante_ids = False
+            rec.is_required_ws4 = False
 
     @api.onchange('is_reserva_sgh')
     def onchange_is_reserva_sgh(self):
@@ -146,6 +150,7 @@ class ONSCLegajoAltaVL(models.Model):
             rec.regime_id = False
             rec.nroPuesto = False
             rec.nroPlaza = False
+            rec.is_required_ws4 = False
 
     @api.onchange('vacante_ids')
     def onchange_vacante_ids(self):
@@ -154,6 +159,7 @@ class ONSCLegajoAltaVL(models.Model):
                 for vacante_id in record.vacante_ids:
                     if vacante_id.selected:
                         record.vacante_ids = vacante_id
+                        record.is_required_ws4 = True
 
     @api.model
     def syncronize_ws1(self, log_info=False):
@@ -171,6 +177,7 @@ class ONSCLegajoAltaVL(models.Model):
         if not isinstance(response, str):
             self.vacante_ids = response
         elif isinstance(response, str):
+            print(response)
             return warning_response(response)
 
     @api.model
@@ -179,5 +186,17 @@ class ONSCLegajoAltaVL(models.Model):
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
             print(response)
+            self.id_alta = response['pdaId']
+            self.is_error_synchronization = False
+            self.state = 'pendiente_auditoria_cgn'
         elif isinstance(response, str):
-            return warning_response(response)
+            self.is_error_synchronization = True
+            self.state = 'error_sgh'
+            self.error_message_synchronization = response
+
+
+    def _check_required_fieds_ws4(self):
+        #self.cv_birthdate and self.cv_birthdate
+        #TODO
+        return True
+

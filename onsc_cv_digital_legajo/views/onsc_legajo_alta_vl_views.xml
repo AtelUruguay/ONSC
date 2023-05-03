@@ -49,7 +49,7 @@
                 </field>
                 <group name="main_group_right" position="inside">
                     <field name="cv_birthdate" attrs="{'readonly': [('is_docket', '=', True)]}" force_save="1"/>
-                    <field name="cv_sex" attrs="{'readonly': [('is_docket', '=', True)]}" force_save="1"/>
+                    <field name="cv_sex" attrs="{'readonly': [('is_docket', '=', True)]}"  force_save="1"/>
                 </group>
                 <xpath expr="//notebook" position="inside">
                     <page string="Datos personales">
@@ -73,6 +73,8 @@
                             <field name="cv_address_street_id" readonly="1"/>
                             <field name="cv_address_is_cv_bis" readonly="1"/>
                             <field name="cv_address_place" readonly="1"/>
+                            <field name="cv_address_block" readonly="1"/>
+                            <field name="cv_address_sandlot"/>
                         </group>
                     </page>
                 </xpath>
@@ -81,8 +83,8 @@
                             class="btn btn-secondary o_group_col_8" string="Buscar vacantes"
                             style="margin-left: 85%; width: 15%;"
                             attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
-                    <field name="vacante_ids" nolabel="1">
-                        <tree editable="bottom" create="false" delete="false">
+                    <field name="vacante_ids" nolabel="1" >
+                        <tree editable="false" string="Vacantes">
                             <field name="selected" widget="boolean_toggle" force_save="1"/>
                             <field name="Dsc3Descripcion" readonly="1"/>
                             <field name="Dsc4Descripcion" readonly="1"/>
@@ -121,11 +123,10 @@
                                 <field name="fechaNotificacion"/>
                                 <field name="fechaVacantePLaza"/>
                                 <field name="descripcionJornadaFormal"/>
+                                <field name="codRegimen"/>
                                 <field name="descripcionRegimen"/>
                             </group>
-
                         </group>
-
                     </sheet>
                 </form>
             </field>
