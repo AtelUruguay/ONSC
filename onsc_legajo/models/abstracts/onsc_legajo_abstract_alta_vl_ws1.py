@@ -92,7 +92,9 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
                             'Dsc4Descripcion': external_record.partida.dsc4Descripcion if hasattr(
                                 external_record.partida,
                                 'dsc4Descripcion') else '',
+                            'codigoJornadaFormal': external_record.codigoJornadaFormal,
                             'descripcionJornadaFormal': external_record.descripcionJornadaFormal,
+                            'descripcionRegimen': external_record.Regimen.descripcionRegimen,
                             'codRegimen': external_record.Regimen.codRegimen,
                             'estado': external_record.estado if hasattr(external_record, 'estado') else '',
                             'estadoDescripcion': external_record.estadoDescripcion if hasattr(external_record,

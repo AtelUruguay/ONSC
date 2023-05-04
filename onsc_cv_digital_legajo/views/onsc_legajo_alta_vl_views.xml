@@ -57,6 +57,7 @@
                             <field name="country_of_birth_id" readonly="1" force_save="1"/>
                             <field name="marital_status_id" readonly="1" force_save="1"/>
                             <field name="crendencial_serie" readonly="1" force_save="1"/>
+                            <field name="health_provider_id" readonly="1" force_save="1"/>
                             <field name="uy_citizenship" readonly="1" force_save="1"/>
                             <field name="credential_number" readonly="1" force_save="1"/>
                             <field name="personal_phone" readonly="1" force_save="1"/>
@@ -73,6 +74,8 @@
                             <field name="cv_address_street_id" readonly="1"/>
                             <field name="cv_address_is_cv_bis" readonly="1"/>
                             <field name="cv_address_place" readonly="1"/>
+                            <field name="cv_address_block" readonly="1"/>
+                            <field name="cv_address_sandlot"/>
                         </group>
                     </page>
                 </xpath>
@@ -81,8 +84,9 @@
                             class="btn btn-primary" string="Buscar vacantes"
                             style="width: 10%;"
                             attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
-                    <field name="vacante_ids" nolabel="1">
-                        <tree editable="bottom" create="false" delete="false">
+                    <field name="vacante_ids" nolabel="1"
+                           attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
+                        <tree create="false" string="Vacantes">
                             <field name="selected" widget="boolean_toggle" force_save="1"/>
                             <field name="Dsc3Descripcion" readonly="1"/>
                             <field name="Dsc4Descripcion" readonly="1"/>
@@ -120,12 +124,12 @@
                                 <field name="fechaReserva"/>
                                 <field name="fechaNotificacion"/>
                                 <field name="fechaVacantePLaza"/>
+                                <field name="codigoJornadaFormal"/>
                                 <field name="descripcionJornadaFormal"/>
+                                <field name="codRegimen"/>
                                 <field name="descripcionRegimen"/>
                             </group>
-
                         </group>
-
                     </sheet>
                 </form>
             </field>
