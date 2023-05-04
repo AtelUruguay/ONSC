@@ -31,61 +31,72 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                  'primerApellido': record.partner_id.cv_last_name_1 or '',
                  'segundoApellido': record.partner_id.cv_last_name_2 or '',
                  'primerNombre': record.partner_id.cv_first_name or '',
-                 'segundoNombre':record.partner_id.cv_second_name or '',
-                 'codRegimen':record.regime_id.codRegimen or '',
+                 'segundoNombre': record.partner_id.cv_second_name or '',
+                 'codRegimen': record.regime_id.codRegimen or '',
                  'codPartida': record.partida_id.codPartida or '',
                  }]
         }
         if record.is_presupuestado:
             data['altaDetalle'][0].update({
-                    'nroPuesto': record.nroPuesto or '0',
-                    'nroPlaza':  record.nroPlaza or '0',
-                })
+                'nroPuesto': record.nroPuesto or '0',
+                'nroPlaza': record.nroPlaza or '0',
+            })
 
         data['altaDetalle'][0].update({
-                'programa': record.program_id.programa or '0',
-                'proyecto': record.project_id.proyecto or '0',
-                'descripcionMotivo': record.reason_description,
-                'numeroNorma': record.norm_number or '',
-                'articuloNorma': record.norm_article or '',
-                'tipoNormaSigla': record.norm_id.tipoNormaSigla or '',
-                'anioNorma': str(record.norm_year) or '',
-                'descripcionResolucion': record.resolution_description or '',
-                'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y') if record.resolution_date else '',
-                'tipoResolucion': record.resolution_type or '',
-                'codigoEstadoCivil': record.marital_status_id.code or '1',
-                'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y') if record.cv_birthdate else '',
-                'sexo': record.cv_sex or 'M',
-                'lugarDeNacimiento':record.country_of_birth_id.name or 'URUGUAY',
-                'tipoCiudadania': 'N',
-                'nacionalidad': 'URUGUAYA',
-                'serieCredencial': record.crendencial_serie or '',
-                'numeroCredencial': record.credential_number or '',
-                'telefonoAlternativo': record.personal_phone or '',
-                'telefonoMovil': record.mobile_phone or '',
-                'eMail': record.email or '',
-                'deptoCod':'10', #TODO record.cv_address_state_id.code or '0', Codigo de departamento  en nuestro catalogo son string
-                'localidadCod': record.cv_address_location_id.code or '0',
-                'calleCod': record.cv_address_street_id.code or '0',
-                'numeroDePuerta': record.cv_address_nro_door or '0',
-                'callCodEntre1': record.cv_address_street2_id.code or '0',
-                'callCodEntre2': record.cv_address_street3_id.code or '0',
-                'bis': '1' if record.cv_address_is_cv_bis else '0',
-                'apto':  record.cv_address_apto or '0',
-                'paraje': record.cv_address_place or '0',
-                'codigoPostal': record.cv_address_zip or '0',
-                'manzana': record.cv_address_block or '0',
-                'solar': record.cv_address_sandlot or '0',
-                'mutuCod': '3', #TODO no encontre mutualista en el catalogo
-                'fechaDeIngresoAlaAdm': record.date_income_public_administration.strftime('%d/%m/%Y') if record.date_income_public_administration else '',
-                'aniosInactividad': record.inactivity_years or '0',
-                'UO': record.department_id.code or '0',
-                'jornadaReal':'240',
-                'jornadaRetributiva':record.retributive_day_id.codigoJornada or '0',
-                'responsableUO': 'S' if record.is_responsable_uo else 'N',
-                'codigoOcupacion': record.occupation_id.code or '0',
-                'fechaGradAsig': '01/01/2025', # TODO buscar de donde sale
+            'programa': record.program_id.programa or '0',
+            'proyecto': record.project_id.proyecto or '0',
+            'descripcionMotivo': record.reason_description,
+            'numeroNorma': record.norm_number or '',
+            'articuloNorma': record.norm_article or '',
+            'tipoNormaSigla': record.norm_id.tipoNormaSigla or '',
+            'anioNorma': str(record.norm_year) or '',
+            'descripcionResolucion': record.resolution_description or '',
+            'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y') if record.resolution_date else '',
+            'tipoResolucion': record.resolution_type or '',
+            'codigoEstadoCivil': record.marital_status_id.code or '1',
+            'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y') if record.cv_birthdate else '',
+            'sexo': record.cv_sex or 'M',
+            'lugarDeNacimiento': record.country_of_birth_id.name or 'URUGUAY',
+            'tipoCiudadania': 'N',
+            'nacionalidad': 'URUGUAYA',
+            'serieCredencial': record.crendencial_serie or '',
+            'numeroCredencial': record.credential_number or '',
+            'telefonoAlternativo': record.personal_phone or '',
+            'telefonoMovil': record.mobile_phone or '',
+            'eMail': record.email or '',
+            'deptoCod': '10',
+            # TODO record.cv_address_state_id.code or '0', Codigo de departamento  en nuestro catalogo son string
+            'localidadCod': record.cv_address_location_id.code or '0',
+            'calleCod': record.cv_address_street_id.code or '0',
+            'numeroDePuerta': record.cv_address_nro_door or '0',
+            'callCodEntre1': record.cv_address_street2_id.code or '0',
+            'callCodEntre2': record.cv_address_street3_id.code or '0',
+            'bis': '1' if record.cv_address_is_cv_bis else '0',
+            'apto': record.cv_address_apto or '0',
+            'paraje': record.cv_address_place or '0',
+            'codigoPostal': record.cv_address_zip or '0',
+            'manzana': record.cv_address_block or '0',
+            'solar': record.cv_address_sandlot or '0',
+            'mutuCod': '3',  # TODO no encontre mutualista en el catalogo
+            'fechaDeIngresoAlaAdm': record.date_income_public_administration.strftime(
+                '%d/%m/%Y') if record.date_income_public_administration else '',
+            'aniosInactividad': record.inactivity_years or '0',
+            'UO': record.department_id.code or '0',
+        })
+
+        if record.contract_expiration_date:
+            data['altaDetalle'][0].update({
+                'fechaVencimientoDelContrato': record.contract_expiration_date.strftime(
+                    '%d/%m/%Y') if record.contract_expiration_date else '',
             })
+
+        data['altaDetalle'][0].update({
+            'jornadaReal': '240',  # TODO buscar de donde sale
+            'jornadaRetributiva': record.retributive_day_id.codigoJornada or '0',
+            'responsableUO': 'S' if record.is_responsable_uo else 'N',
+            'codigoOcupacion': record.occupation_id.code or '0',
+            'fechaGradAsig': '01/01/2025',  # TODO buscar de donde sale
+        })
 
         return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, '',
                                                                                    integration_error, data)
