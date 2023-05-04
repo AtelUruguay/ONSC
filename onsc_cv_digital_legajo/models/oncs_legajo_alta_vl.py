@@ -6,6 +6,15 @@ from odoo.exceptions import ValidationError
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response, \
     calc_full_name as calc_full_name
 
+# campos requeridos para la sincronización
+required_fields = ['inciso_id', 'operating_unit_id', 'program_id', 'project_id', 'date_start', 'partner_id',
+                   'regime_id', 'descriptor1_id', 'descriptor2_id', 'is_presupuestado', 'nroPuesto',
+                   'nroPlaza', 'partida_id', 'reason_description', 'norm_number',
+                   'norm_year', 'norm_id', 'norm_article', 'resolution_description', 'resolution_date',
+                   'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
+                   'cv_address_location_id', 'cv_address_street_id', 'retributive_day_id', 'occupation_id',
+                   'date_income_public_administration', 'department_id']
+
 
 class ONSCLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.alta.vl'
@@ -56,6 +65,7 @@ class ONSCLegajoAltaVL(models.Model):
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
     is_error_synchronization = fields.Boolean(copy=False)
+    codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
 
     def action_call_ws1(self):
         return self.syncronize_ws1(log_info=True)
@@ -85,6 +95,9 @@ class ONSCLegajoAltaVL(models.Model):
                 record.mobile_phone = employee.cv_digital_id.mobile_phone
                 record.email = employee.cv_digital_id.email
                 record.cv_address_street_id = employee.cv_digital_id.cv_address_street_id
+                record.cv_address_street2_id = employee.cv_digital_id.cv_address_street2_id
+                record.cv_address_street3_id = employee.cv_digital_id.cv_address_street3_id
+                record.health_provider_id = employee.cv_digital_id.health_provider_id
 
     @api.depends('partner_id')
     def _compute_full_name(self):
@@ -130,12 +143,14 @@ class ONSCLegajoAltaVL(models.Model):
             rec.descriptor4_id = False
             rec.contract_expiration_date = False
             rec.vacante_ids = False
+            rec.is_required_ws4 = False
 
     @api.onchange('descriptor1_id', 'descriptor2_id', 'regime_id', 'is_reserva_sgh', 'program_id', 'project_id',
                   'nroPuesto', 'nroPlaza')
     def onchange_clear_vacante_id(self):
         for rec in self:
             rec.vacante_ids = False
+            rec.is_required_ws4 = False
 
     @api.onchange('is_reserva_sgh')
     def onchange_is_reserva_sgh(self):
@@ -146,6 +161,7 @@ class ONSCLegajoAltaVL(models.Model):
             rec.regime_id = False
             rec.nroPuesto = False
             rec.nroPlaza = False
+            rec.is_required_ws4 = False
 
     @api.onchange('vacante_ids')
     def onchange_vacante_ids(self):
@@ -154,30 +170,59 @@ class ONSCLegajoAltaVL(models.Model):
                 for vacante_id in record.vacante_ids:
                     if vacante_id.selected:
                         record.vacante_ids = vacante_id
+                        record.is_required_ws4 = True
 
     @api.model
     def syncronize_ws1(self, log_info=False):
         if self.is_reserva_sgh and not (
                 self.date_start and self.program_id and self.project_id and self.nroPuesto and self.nroPlaza):
-            raise ValidationError(
-                _("Los campos Fecha de Inicio, Programa, Proyecto, Nro. de Puesto y Nro. de Plaza son obligatorios para Buscar Vacantes"))
+            self.env.user.notify_danger(message=_("Los campos Fecha de Inicio, Programa, Proyecto, Nro. de Puesto y Nro. de Plaza son obligatorios para Buscar Vacantes"))
+            return
+
         if not self.is_reserva_sgh and not (
                 self.date_start and self.program_id and self.project_id and self.regime_id and self.descriptor1_id and self.descriptor2_id and self.partner_id):
-            raise ValidationError(
-                _("Los campos Fecha de Inicio, Programa, Proyecto, Régimen, Descriptor 1 ,Descriptor 2 y CI son obligatorios para Buscar Vacantes"))
+            self.env.user.notify_danger(message=_("Los campos Fecha de Inicio, Programa, Proyecto, Régimen, Descriptor 1 ,Descriptor 2 y CI son obligatorios para Buscar Vacantes"))
+            return
 
         response = self.env['onsc.legajo.abstract.alta.vl.ws1'].with_context(
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
             self.vacante_ids = response
+            self.is_error_synchronization = False
         elif isinstance(response, str):
-            return warning_response(response)
+            self.is_error_synchronization = True
+            self.error_message_synchronization = response
 
     @api.model
     def syncronize_ws4(self, log_info=False):
-        response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
-            log_info=log_info).suspend_security().syncronize(self)
-        if not isinstance(response, str):
-            print(response)
-        elif isinstance(response, str):
-            return warning_response(response)
+        if self._check_required_fieds_ws4():
+            response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
+                log_info=log_info).suspend_security().syncronize(self)
+            if not isinstance(response, str):
+                print(response)
+                self.id_alta = response['pdaId']
+                self.is_error_synchronization = False
+                self.state = 'pendiente_auditoria_cgn'
+            elif isinstance(response, str):
+                self.is_error_synchronization = True
+                self.state = 'error_sgh'
+                self.error_message_synchronization = response
+
+    def _check_required_fieds_ws4(self):
+        for record in self:
+            message = []
+            for required_field in required_fields:
+                if not eval('record.%s' % required_field):
+                    message.append(record._fields[required_field].string)
+            if record.is_indVencimiento and not record.contract_expiration_date:
+                message.append(record._fields['contract_expiration_date'].string)
+            if not record.partner_id.cv_last_name_1:
+                message.append("Primer Apellido")
+            if not record.partner_id.cv_first_name:
+                message.append("Primer Nombre")
+            if message:
+                fields_str = '\n'.join(message)
+                message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str
+                self.env.user.notify_danger(message=_(message))
+                return False
+        return True

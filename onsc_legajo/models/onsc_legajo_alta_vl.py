@@ -25,15 +25,16 @@ class ONSCLegajoAltaVL(models.Model):
     _description = 'Alta de vínculo laboral'
 
     def _get_domain(self, args):
-        if self._context.get('is_from_menu') and self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso'):
+        args = expression.AND([[
+            ('partner_id', '!=', self.env.user.partner_id.id)
+        ], args])
+        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND([[
                     ('inciso_id', '=', inciso_id.id)
                 ], args])
-        if self._context.get('is_from_menu') and self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
+        elif self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
@@ -49,13 +50,15 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        args = self._get_domain(args)
+        if self._context.get('is_from_menu'):
+            args = self._get_domain(args)
         return super(ONSCLegajoAltaVL, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                      access_rights_uid=access_rights_uid)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        domain = self._get_domain(domain)
+        if self._context.get('is_from_menu'):
+            domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     @api.model
@@ -71,7 +74,7 @@ class ONSCLegajoAltaVL(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
-
+    partner_id = fields.Many2one("res.partner", string="Contacto")
     date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False)
     call_number = fields.Char(string='Número de llamado', copy=False)
@@ -117,31 +120,32 @@ class ONSCLegajoAltaVL(models.Model):
                                                  related="descriptor1_id.is_graduation_date_required")
     graduation_date = fields.Date(string='Fecha de graduación', copy=False)
     contract_expiration_date = fields.Date(string='Vencimiento del contrato', copy=False)
-    reason_discharge = fields.Char(string='Descripción del motivo', copy=True)
-    norm_code_discharge_id = fields.Many2one('onsc.legajo.norm', string='Tipo de norma', copy=True)
-    norm_number_discharge = fields.Integer(string='Número de norma', related="norm_code_discharge_id.numeroNorma",
-                                           store=True, readonly=True)
-    norm_year_discharge = fields.Integer(string='Año de norma', related="norm_code_discharge_id.anioNorma", store=True,
-                                         readonly=True)
-    norm_article_discharge = fields.Integer(string='Artículo de norma', related="norm_code_discharge_id.articuloNorma",
-                                            store=True, readonly=True)
-    resolution_description_discharge = fields.Char(string='Descripción de la resolución', copy=True)
-    resolution_date_discharge = fields.Date(string='Fecha de la resolución', copy=True)
-    resolution_type_discharge = fields.Selection(
+    reason_description = fields.Char(string='Descripción del motivo', copy=True)
+    norm_id = fields.Many2one('onsc.legajo.norm', string='Tipo de norma', copy=True)
+    norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
+                                 store=True, readonly=True)
+    norm_year = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
+                               readonly=True)
+    norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
+                                  store=True, readonly=True)
+    resolution_description = fields.Char(string='Descripción de la resolución', copy=True)
+    resolution_date = fields.Date(string='Fecha de la resolución', copy=True)
+    resolution_type = fields.Selection(
         [
-            ('m', 'Inciso'),
-            ('p', 'Presidencia o Poder ejecutivo'),
-            ('u', 'Unidad ejecutora')
+            ('M', 'Inciso'),
+            ('P', 'Presidencia o Poder ejecutivo'),
+            ('U', 'Unidad ejecutora')
         ],
         copy=True,
         string='Tipo de resolución'
     )
-    emergency_service_id = fields.Many2one("onsc.legajo.health.provider", u"Cobertura de salud", copy=False)
-    additional_information_discharge = fields.Text(string='Información adicional', copy=False)
-    attached_document_discharge_ids = fields.One2many('onsc.legajo.alta.vl.attached.document', 'alta_vl_id',
-                                                      string='Documentos adjuntos')
+    health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Cobertura de salud", copy=False)
+    additional_information = fields.Text(string='Información adicional', copy=False)
+    attached_document_ids = fields.One2many('onsc.legajo.alta.vl.attached.document', 'alta_vl_id',
+                                            string='Documentos adjuntos')
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
     id_alta = fields.Char(string="Id Alta")
+    is_required_ws4 = fields.Boolean(string="Es requerido para el ws4")
 
     @api.model
     def default_get(self, fields):
@@ -151,10 +155,10 @@ class ONSCLegajoAltaVL(models.Model):
                                                                                      limit=1).id or False
         return res
 
-    @api.constrains("attached_document_discharge_ids")
-    def _check_attached_document_discharge(self):
+    @api.constrains("attached_document_ids")
+    def _check_attached_document_ids(self):
         for record in self:
-            if not record.attached_document_discharge_ids and record.state != 'borrador':
+            if not record.attached_document_ids and record.state != 'borrador':
                 raise ValidationError(_("Debe haber al menos un documento adjunto"))
 
     @api.constrains("is_responsable_uo", "date_start", "department_id")
@@ -192,8 +196,6 @@ class ONSCLegajoAltaVL(models.Model):
         for record in self:
             if record.date_start and record.graduation_date and record.graduation_date > record.date_start:
                 raise ValidationError(_("La fecha de graduación debe ser menor o igual al día de alta"))
-
-
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
@@ -362,7 +364,5 @@ class ONSCLegajoAltaVL(models.Model):
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
-            raise ValidationError(_("No se pueden eliminar Altas VL en este estado"))
+            raise ValidationError(_("Solo se pueden eliminar una transacción en estado borrador"))
         return super(ONSCLegajoAltaVL, self).unlink()
-
-
