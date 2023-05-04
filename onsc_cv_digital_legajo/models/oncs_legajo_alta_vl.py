@@ -177,32 +177,36 @@ class ONSCLegajoAltaVL(models.Model):
         if self.is_reserva_sgh and not (
                 self.date_start and self.program_id and self.project_id and self.nroPuesto and self.nroPlaza):
             self.env.user.notify_danger(message=_("Los campos Fecha de Inicio, Programa, Proyecto, Nro. de Puesto y Nro. de Plaza son obligatorios para Buscar Vacantes"))
+            return
+
         if not self.is_reserva_sgh and not (
                 self.date_start and self.program_id and self.project_id and self.regime_id and self.descriptor1_id and self.descriptor2_id and self.partner_id):
             self.env.user.notify_danger(message=_("Los campos Fecha de Inicio, Programa, Proyecto, Régimen, Descriptor 1 ,Descriptor 2 y CI son obligatorios para Buscar Vacantes"))
+            return
 
         response = self.env['onsc.legajo.abstract.alta.vl.ws1'].with_context(
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
             self.vacante_ids = response
+            self.is_error_synchronization = False
         elif isinstance(response, str):
-            print(response)
-            return warning_response(response)
+            self.is_error_synchronization = True
+            self.error_message_synchronization = response
 
     @api.model
     def syncronize_ws4(self, log_info=False):
-        self._check_required_fieds_ws4()
-        response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
-            log_info=log_info).suspend_security().syncronize(self)
-        if not isinstance(response, str):
-            print(response)
-            self.id_alta = response['pdaId']
-            self.is_error_synchronization = False
-            self.state = 'pendiente_auditoria_cgn'
-        elif isinstance(response, str):
-            self.is_error_synchronization = True
-            self.state = 'error_sgh'
-            self.error_message_synchronization = response
+        if self._check_required_fieds_ws4():
+            response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
+                log_info=log_info).suspend_security().syncronize(self)
+            if not isinstance(response, str):
+                print(response)
+                self.id_alta = response['pdaId']
+                self.is_error_synchronization = False
+                self.state = 'pendiente_auditoria_cgn'
+            elif isinstance(response, str):
+                self.is_error_synchronization = True
+                self.state = 'error_sgh'
+                self.error_message_synchronization = response
 
     def _check_required_fieds_ws4(self):
         for record in self:
@@ -219,5 +223,6 @@ class ONSCLegajoAltaVL(models.Model):
             if message:
                 fields_str = '\n'.join(message)
                 message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str
-                raise ValidationError(_(message))
+                self.env.user.notify_danger(message=_(message))
+                return False
         return True
