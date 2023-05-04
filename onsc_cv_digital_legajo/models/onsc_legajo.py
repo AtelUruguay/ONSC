@@ -47,3 +47,4 @@ class ONSCLegajo(models.Model):
     def create(self, values):
         res = super(ONSCLegajo, self).create(values)
         res.cv_digital_id.write({'is_docket': True, 'is_docket_active': True})
+        return res
