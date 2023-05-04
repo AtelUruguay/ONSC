@@ -71,7 +71,6 @@ class ONSCLegajoAltaVL(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
-
     date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False)
     call_number = fields.Char(string='Número de llamado', copy=False)
@@ -120,11 +119,11 @@ class ONSCLegajoAltaVL(models.Model):
     reason_description = fields.Char(string='Descripción del motivo', copy=True)
     norm_id = fields.Many2one('onsc.legajo.norm', string='Tipo de norma', copy=True)
     norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
-                                           store=True, readonly=True)
+                                 store=True, readonly=True)
     norm_year = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
-                                         readonly=True)
+                               readonly=True)
     norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
-                                            store=True, readonly=True)
+                                  store=True, readonly=True)
     resolution_description = fields.Char(string='Descripción de la resolución', copy=True)
     resolution_date = fields.Date(string='Fecha de la resolución', copy=True)
     resolution_type = fields.Selection(
@@ -136,10 +135,10 @@ class ONSCLegajoAltaVL(models.Model):
         copy=True,
         string='Tipo de resolución'
     )
-    emergency_service_id = fields.Many2one("onsc.legajo.health.provider", u"Cobertura de salud", copy=False)
+    health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Cobertura de salud", copy=False)
     additional_information = fields.Text(string='Información adicional', copy=False)
     attached_document_ids = fields.One2many('onsc.legajo.alta.vl.attached.document', 'alta_vl_id',
-                                                      string='Documentos adjuntos')
+                                            string='Documentos adjuntos')
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
     id_alta = fields.Char(string="Id Alta")
     is_required_ws4 = fields.Boolean(string="Es requerido para el ws4")
@@ -193,8 +192,6 @@ class ONSCLegajoAltaVL(models.Model):
         for record in self:
             if record.date_start and record.graduation_date and record.graduation_date > record.date_start:
                 raise ValidationError(_("La fecha de graduación debe ser menor o igual al día de alta"))
-
-
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
@@ -363,7 +360,5 @@ class ONSCLegajoAltaVL(models.Model):
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
-            raise ValidationError(_("No se pueden eliminar Altas VL en este estado"))
+            raise ValidationError(_("Solo se pueden eliminar una transacción en estado borrador"))
         return super(ONSCLegajoAltaVL, self).unlink()
-
-

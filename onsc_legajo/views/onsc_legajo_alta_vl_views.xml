@@ -98,12 +98,11 @@
                                         <field name="department_id_domain" invisible="1"/>
                                         <field name="department_id" domain="department_id_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="occupation_id" attrs="{'required': [('is_required_ws4', '=', True)]}"
+                                        <field name="occupation_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="income_mechanism_id"
-                                               attrs="{'required': [('state', '!=', 'borrador')]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="retributive_day_id" attrs="{'required': [('is_required_ws4', '=', True)]}"
+                                        <field name="retributive_day_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                     </group>
                                     <group name="group6_right">
@@ -114,16 +113,14 @@
                                 </group>
                                 <group name="group7">
                                     <group name="group7_left">
-                                        <field name="date_income_public_administration"
-                                               attrs="{'required': [('state', '!=', 'borrador')]}"/>
+                                        <field name="date_income_public_administration" />
                                         <field name="inactivity_years"/>
                                     </group>
                                     <group name="group7_right">
-                                        <field name="contract_expiration_date"
-                                               attrs="{'required': [('is_indVencimiento', '=', True),('is_required_ws4', '=', True)]}"/>
+                                        <field name="contract_expiration_date"/>
                                         <field name="is_graduation_date_required" invisible="1"/>
                                         <field name="graduation_date"
-                                               attrs="{'invisible': [('is_graduation_date_required', '=', False)] ,'required': [('is_graduation_date_required', '=', True),('state', '!=', 'borrador')]}"/>
+                                               attrs="{'invisible': [('is_graduation_date_required', '=', False)]}"/>
                                         <div class="alert alert-info" colspan="6"
                                              role="alert"
                                              attrs="{'invisible': [('is_graduation_date_required', '=', False)]}"
@@ -138,9 +135,8 @@
                                 </group>
                                 <group name="motivo" string="Ingreso de motivo">
                                     <group name="motivo_left">
-                                        <field name="is_required_ws4" invisible="1"/>
-                                        <field name="reason_description" colspan="4" attrs="{'required': [('is_required_ws4', '=', True)]}"/>
-                                        <field name="norm_id" colspan="3" attrs="{'required': [('is_required_ws4', '=', True)]}"
+                                        <field name="reason_description" colspan="4"/>
+                                        <field name="norm_id" colspan="3"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="norm_number" colspan="2"/>
                                         <field name="norm_year" colspan="1"/>
@@ -158,10 +154,9 @@
                                         </div>
                                     </group>
                                     <group name="motivo_right">
-                                        <field name="resolution_description" colspan="4"
-                                               attrs="{'required': [('is_required_ws4', '=', True)]}"/>
-                                        <field name="resolution_date" colspan="4" attrs="{'required': [('is_required_ws4', '=', True)]}"/>
-                                        <field name="resolution_type" colspan="4" attrs="{'required': [('is_required_ws4', '=', True)]}"/>
+                                        <field name="resolution_description" colspan="4"/>
+                                        <field name="resolution_date" colspan="4"/>
+                                        <field name="resolution_type" colspan="4"/>
                                     </group>
                                 </group>
                                 <group name="documentacion" string="Documentación">

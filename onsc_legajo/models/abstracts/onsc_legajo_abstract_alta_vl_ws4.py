@@ -56,28 +56,28 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             'codigoEstadoCivil': record.marital_status_id.code or '1',
             'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y') if record.cv_birthdate else '',
             'sexo': record.cv_sex or 'M',
-            'lugarDeNacimiento': record.country_of_birth_id.name or 'URUGUAY',
-            'tipoCiudadania': 'N',
-            'nacionalidad': 'URUGUAYA',
+            'lugarDeNacimiento': record.country_of_birth_id.name if record.country_of_birth_id else '',
+            'tipoCiudadania': 'N',  # FIXME Hardcode WS4 solo permite nacionalidad uruguaya
+            'nacionalidad': 'URUGUAYA',  # FIXME Hardcode WS4 solo permite nacionalidad uruguaya
             'serieCredencial': record.crendencial_serie or '',
             'numeroCredencial': record.credential_number or '',
             'telefonoAlternativo': record.personal_phone or '',
             'telefonoMovil': record.mobile_phone or '',
             'eMail': record.email or '',
             'deptoCod': '10',
-            # TODO record.cv_address_state_id.code or '0', Codigo de departamento  en nuestro catalogo son string
-            'localidadCod': record.cv_address_location_id.code or '0',
-            'calleCod': record.cv_address_street_id.code or '0',
+            # TODO default 99 : record.cv_address_state_id.code or '99', Codigo de departamento  en nuestro catalogo son string
+            'localidadCod': record.cv_address_location_id.code if record.cv_address_location_id else '9999999999',
+            'calleCod': record.cv_address_street_id.code if record.cv_address_street_id else '9999999999',
             'numeroDePuerta': record.cv_address_nro_door or '0',
-            'callCodEntre1': record.cv_address_street2_id.code or '0',
-            'callCodEntre2': record.cv_address_street3_id.code or '0',
+            'callCodEntre1': record.cv_address_street2_id.code or '',
+            'callCodEntre2': record.cv_address_street3_id.code or '',
             'bis': '1' if record.cv_address_is_cv_bis else '0',
-            'apto': record.cv_address_apto or '0',
-            'paraje': record.cv_address_place or '0',
-            'codigoPostal': record.cv_address_zip or '0',
-            'manzana': record.cv_address_block or '0',
-            'solar': record.cv_address_sandlot or '0',
-            'mutuCod': '3',  # TODO no encontre mutualista en el catalogo
+            'apto': record.cv_address_apto or '',
+            'paraje': record.cv_address_place or '',
+            'codigoPostal': record.cv_address_zip or '',
+            'manzana': record.cv_address_block or '',
+            'solar': record.cv_address_sandlot or '',
+            'mutuCod': record.health_provider_id.code if record.health_provider_id else '0',
             'fechaDeIngresoAlaAdm': record.date_income_public_administration.strftime(
                 '%d/%m/%Y') if record.date_income_public_administration else '',
             'aniosInactividad': record.inactivity_years or '0',
@@ -91,11 +91,12 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             })
 
         data['altaDetalle'][0].update({
-            'jornadaReal': '240',  # TODO buscar de donde sale
+            'jornadaReal': record.codigoJornadaFormal or '0',
             'jornadaRetributiva': record.retributive_day_id.codigoJornada or '0',
             'responsableUO': 'S' if record.is_responsable_uo else 'N',
-            'codigoOcupacion': record.occupation_id.code or '0',
-            'fechaGradAsig': '01/01/2025',  # TODO buscar de donde sale
+            'codigoOcupacion': record.occupation_id.code if record.occupation_id else '0',
+            'fechaGradAsig': record.graduation_date.strftime(
+                '%d/%m/%Y') if record.graduation_date else '',
         })
 
         return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, '',
