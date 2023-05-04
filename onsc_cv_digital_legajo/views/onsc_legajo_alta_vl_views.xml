@@ -78,8 +78,8 @@
                 </xpath>
                 <xpath expr="//group[@name='group3']" position="inside">
                     <button type="object" name="action_call_ws1" icon="fa-search"
-                            class="btn btn-secondary o_group_col_8" string="Buscar vacantes"
-                            style="margin-left: 85%; width: 15%;"
+                            class="btn btn-primary" string="Buscar vacantes"
+                            style="width: 10%;"
                             attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
                     <field name="vacante_ids" nolabel="1">
                         <tree editable="bottom" create="false" delete="false">
