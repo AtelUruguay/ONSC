@@ -6,6 +6,15 @@ from odoo.exceptions import ValidationError
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response, \
     calc_full_name as calc_full_name
 
+# campos requeridos para la sincronización
+required_fields = ['inciso_id', 'operating_unit_id', 'program_id', 'project_id', 'date_start', 'partner_id',
+                   'regime_id', 'descriptor1_id', 'descriptor2_id', 'is_presupuestado', 'nroPuesto',
+                   'nroPlaza', 'partida_id', 'reason_description', 'norm_number',
+                   'norm_year', 'norm_id', 'norm_article', 'resolution_description', 'resolution_date',
+                   'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
+                   'cv_address_location_id', 'cv_address_street_id', 'retributive_day_id', 'occupation_id',
+                   'date_income_public_administration', 'department_id']
+
 
 class ONSCLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.alta.vl'
@@ -56,6 +65,7 @@ class ONSCLegajoAltaVL(models.Model):
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
     is_error_synchronization = fields.Boolean(copy=False)
+    codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
 
     def action_call_ws1(self):
         return self.syncronize_ws1(log_info=True)
@@ -81,12 +91,13 @@ class ONSCLegajoAltaVL(models.Model):
                 record.uy_citizenship = employee.cv_digital_id.uy_citizenship
                 record.crendencial_serie = employee.cv_digital_id.crendencial_serie
                 record.credential_number = employee.cv_digital_id.credential_number
-                record.personal_phone = employee.cv_digital_id.prefix_code + employee.cv_digital_id.personal_phone
-                record.mobile_phone = employee.cv_digital_id.prefix_mobile_phone_id + employee.cv_digital_id.mobile_phone
+                record.personal_phone = employee.cv_digital_id.personal_phone
+                record.mobile_phone = employee.cv_digital_id.mobile_phone
                 record.email = employee.cv_digital_id.email
                 record.cv_address_street_id = employee.cv_digital_id.cv_address_street_id
                 record.cv_address_street2_id = employee.cv_digital_id.cv_address_street2_id
                 record.cv_address_street3_id = employee.cv_digital_id.cv_address_street3_id
+                record.health_provider_id = employee.cv_digital_id.health_provider_id
 
     @api.depends('partner_id')
     def _compute_full_name(self):
@@ -182,6 +193,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.model
     def syncronize_ws4(self, log_info=False):
+        self._check_required_fieds_ws4()
         response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
@@ -194,9 +206,20 @@ class ONSCLegajoAltaVL(models.Model):
             self.state = 'error_sgh'
             self.error_message_synchronization = response
 
-
     def _check_required_fieds_ws4(self):
-        #self.cv_birthdate and self.cv_birthdate
-        #TODO
+        for record in self:
+            message = []
+            for required_field in required_fields:
+                if not eval('record.%s' % required_field):
+                    message.append(record._fields[required_field].string)
+            if record.is_indVencimiento and not record.contract_expiration_date:
+                message.append(record._fields['contract_expiration_date'].string)
+            if not record.partner_id.cv_last_name_1:
+                message.append("Primer Apellido")
+            if not record.partner_id.cv_first_name:
+                message.append("Primer Nombre")
+            if message:
+                fields_str = '\n'.join(message)
+                message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str
+                raise ValidationError(_(message))
         return True
-

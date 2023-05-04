@@ -25,10 +25,12 @@ class ONSCCVDigitalVacante(models.Model):
     codPartida = fields.Char(string="Código Partida")
     Dsc3Id = fields.Char(string="Código Descriptor 3")
     Dsc3Descripcion = fields.Char(string="Descriptor 3")
-    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', compute="_compute_descriptor3", store=True)
+    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', compute="_compute_descriptor3",
+                                     store=True)
     Dsc4Id = fields.Char(string="Código Descriptor 4")
     Dsc4Descripcion = fields.Char(string="Descriptor 4")
-    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4', compute="_compute_descriptor4", store=True)
+    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4', compute="_compute_descriptor4",
+                                     store=True)
     codRegimen = fields.Char(string="Código Régimen")
     descripcionRegimen = fields.Char(string="Descripción Régimen")
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', compute="_compute_regime", store=True)
@@ -72,5 +74,6 @@ class ONSCCVDigitalVacante(models.Model):
                 'descriptor3_id': rec.descriptor3_id.id,
                 'descriptor4_id': rec.descriptor4_id.id,
                 'regime_id': rec.regime_id.id,
+                'codigoJornadaFormal': rec.codigoJornadaFormal,
             })
         return result
