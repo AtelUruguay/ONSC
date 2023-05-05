@@ -354,7 +354,7 @@ class ONSCCVDigital(models.Model):
         if cv_race_ids or cv_first_race_id or cv_race2:
             self.cv_race_documentary_validation_state = 'to_validate'
 
-        # Afrodescendientes
+        # AFRODESCENDIENTES
         is_afro_descendants_in_values = 'is_afro_descendants' in values
         afro_descendant_date = values.get('afro_descendant_date')
         afro_descendant_file = values.get('afro_descendants_file')
@@ -372,6 +372,7 @@ class ONSCCVDigital(models.Model):
                 else:
                     record.afro_descendant_documentary_validation_state = 'to_validate'
 
+        # CARNE SALUD LABORAL
         is_occupational_health_card_in_values = 'is_occupational_health_card' in values
         occupational_health_card_date = values.get('occupational_health_card_date')
         occupational_health_card_file = values.get('occupational_health_card_file')
