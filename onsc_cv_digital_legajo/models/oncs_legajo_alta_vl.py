@@ -176,20 +176,20 @@ class ONSCLegajoAltaVL(models.Model):
     def syncronize_ws1(self, log_info=False):
         if self.is_reserva_sgh and not (
                 self.date_start and self.program_id and self.project_id and self.nroPuesto and self.nroPlaza):
-            raise ValidationError(
-                _("Los campos Fecha de Inicio, Programa, Proyecto, Nro. de Puesto y Nro. de Plaza son obligatorios para Buscar Vacantes"))
+            raise ValidationError(_("Los campos Fecha de Inicio, Programa, Proyecto, Nro. de Puesto y Nro. de Plaza son obligatorios para Buscar Vacantes"))
+
         if not self.is_reserva_sgh and not (
                 self.date_start and self.program_id and self.project_id and self.regime_id and self.descriptor1_id and self.descriptor2_id and self.partner_id):
-            raise ValidationError(
-                _("Los campos Fecha de Inicio, Programa, Proyecto, Régimen, Descriptor 1 ,Descriptor 2 y CI son obligatorios para Buscar Vacantes"))
+            raise ValidationError(_("Los campos Fecha de Inicio, Programa, Proyecto, Régimen, Descriptor 1 ,Descriptor 2 y CI son obligatorios para Buscar Vacantes"))
 
         response = self.env['onsc.legajo.abstract.alta.vl.ws1'].with_context(
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
             self.vacante_ids = response
+            self.is_error_synchronization = False
         elif isinstance(response, str):
-            print(response)
-            return warning_response(response)
+            self.is_error_synchronization = True
+            self.error_message_synchronization = response
 
     @api.model
     def syncronize_ws4(self, log_info=False):

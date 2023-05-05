@@ -44,6 +44,7 @@
                            force_save="1"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                     <field name="partner_id" string="C.I." required="1" context="{'show_cv_nro_doc':True}"
+                           attrs="{'readonly': [('state', '!=', 'borrador')]}"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="is_docket" invisible="1"/>
                     <field name="employee_id" invisible="1"/>
@@ -82,8 +83,8 @@
                 </xpath>
                 <xpath expr="//group[@name='group3']" position="inside">
                     <button type="object" name="action_call_ws1" icon="fa-search"
-                            class="btn btn-secondary o_group_col_8" string="Buscar vacantes"
-                            style="margin-left: 85%; width: 15%;"
+                            class="btn btn-primary" string="Buscar vacantes"
+                            style="width: 10%;"
                             attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
                     <field name="vacante_ids" nolabel="1"
                            attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
