@@ -7,6 +7,7 @@
             <field name="arch" type="xml">
                 <tree string="Alta VL">
                     <field name="full_name"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>
