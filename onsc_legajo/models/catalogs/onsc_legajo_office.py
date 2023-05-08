@@ -40,9 +40,9 @@ class ONSCLegajoOffice(models.Model):
         for record in self:
             name = record.code
             if self._context.get('show_only_program', False) and (record.programa or record.programaDescripcion):
-                name = (record.programa or '0') + " - " + record.programaDescripcion
+                name = (record.programa or '') + " - " + record.programaDescripcion
             elif self._context.get('show_only_project', False) and (record.proyecto or record.proyectoDescripcion):
-                name = (record.proyecto or '0') + " - " + record.proyectoDescripcion
+                name = (record.proyecto or '') + " - " + record.proyectoDescripcion
             res.append((record.id, name))
         return res
 
