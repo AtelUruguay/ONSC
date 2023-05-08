@@ -26,7 +26,8 @@ class ONSCCatalogValidatorsIncisoUE(models.Model):
                               required=True)
 
     _sql_constraints = [
-        ("instance_uniq", "unique (user_id)", "El usuario ya está configurado!",)
+        ("instance_uniq", "unique (inciso_id,operating_unit_id,user_id)",
+         "El usuario ya está configurado para ese Inciso y UE!",)
     ]
 
     @api.model
