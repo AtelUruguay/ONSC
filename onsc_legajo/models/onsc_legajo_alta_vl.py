@@ -1,4 +1,4 @@
-# -*- coding:utf-8 -*-
+# -*- coding: utf-8 -*-
 import json
 import logging
 
@@ -145,7 +145,6 @@ class ONSCLegajoAltaVL(models.Model):
                                             string='Documentos adjuntos')
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
     id_alta = fields.Char(string="Id Alta")
-    is_required_ws4 = fields.Boolean(string="Es requerido para el ws4")
 
     @api.model
     def default_get(self, fields):
@@ -188,7 +187,7 @@ class ONSCLegajoAltaVL(models.Model):
     @api.constrains("date_start")
     def _check_date(self):
         for record in self:
-            if record.date_start > fields.Date.today():
+            if record.date_start and record.date_start > fields.Date.today():
                 raise ValidationError(_("La fecha debe ser menor o igual al día de alta"))
 
     @api.constrains("graduation_date", "date_start")
@@ -246,12 +245,17 @@ class ONSCLegajoAltaVL(models.Model):
                 domain = expression.AND([domain, [("dsc4Id", "=", rec.descriptor4_id.id)]])
             rec.partida_id = self.env['onsc.legajo.budget.item'].search(domain, limit=1) if domain else False
 
+    @api.depends('inciso_id')
     def _compute_is_readonly(self):
         for rec in self:
-            rec.is_inciso_readonly = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or \
-                                     self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')
+            rec.is_inciso_readonly = (self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or
+                                      self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')) \
+                                     and not self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
             rec.is_operating_unit_readonly = self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')
+                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue') and not self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
 
     @api.depends('inciso_id')
     def _compute_operating_unit_id_domain(self):
