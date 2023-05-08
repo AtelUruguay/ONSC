@@ -44,6 +44,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     partner_id = fields.Many2one("res.partner", string="Contacto")
+    partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
     cv_sex = fields.Selection(string=u'Sexo', copy=False)
     personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone')
@@ -117,6 +118,13 @@ class ONSCLegajoAltaVL(models.Model):
                 record.full_name = full_name
             else:
                 record.full_name = 'New'
+
+    @api.depends('inciso_id')
+    def _compute_partner_id_domain(self):
+        for record in self:
+            domain = [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True),
+                      ('id', '!=', self.env.user.partner_id.id)]
+            self.partner_id_domain = json.dumps(domain)
 
     def action_gafi_ok(self):
         """
