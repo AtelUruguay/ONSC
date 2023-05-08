@@ -75,6 +75,7 @@ class ONSCLegajoAltaVL(models.Model):
         return False
 
     partner_id = fields.Many2one("res.partner", string="Contacto")
+    partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
     date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False)
     call_number = fields.Char(string='Número de llamado', copy=False)
@@ -341,6 +342,13 @@ class ONSCLegajoAltaVL(models.Model):
                 else:
                     domain = [('id', 'in', [])]
             rec.descriptor4_domain_id = json.dumps(domain)
+
+    @api.depends('inciso_id')
+    def _compute_partner_id_domain(self):
+        for record in self:
+            domain = [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True),
+                      ('id', '!=', self.env.user.partner_id.id)]
+            self.partner_id_domain = json.dumps(domain)
 
     def action_error_sgh(self):
         for rec in self:

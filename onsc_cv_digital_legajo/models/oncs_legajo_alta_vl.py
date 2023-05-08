@@ -1,4 +1,6 @@
 # -*- coding:utf-8 -*-
+import json
+
 from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -41,8 +43,7 @@ class ONSCLegajoAltaVL(models.Model):
         return result
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
-    partner_id = fields.Many2one("res.partner", string="Contacto",
-                                 domain=[('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True)])
+    partner_id = fields.Many2one("res.partner", string="Contacto")
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
     cv_sex = fields.Selection(string=u'Sexo', copy=False)
     personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone')

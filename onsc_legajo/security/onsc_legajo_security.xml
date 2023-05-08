@@ -140,7 +140,7 @@
             <field name="comment">Alta VL – Administrar Altas VL</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
-                   eval="[(4, ref('onsc_legajo.group_legajo_alta_vl_consulta_altas_vl'))]"/>
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
     </data>
 </odoo>
