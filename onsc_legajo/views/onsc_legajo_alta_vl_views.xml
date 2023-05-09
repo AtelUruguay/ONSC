@@ -44,7 +44,8 @@
                             <page name="datos_relevantes" string="Datos de la vacante">
                                 <group name="group3">
                                     <group name="group3_left">
-                                        <field name="inciso_id" readonly="1" force_save="1"
+                                        <field name="inciso_id"
+                                               attrs="{'readonly': [('is_inciso_readonly', '=', True)]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="operating_unit_id"
                                                attrs="{'readonly': [('is_operating_unit_readonly', '=', True)]}"
@@ -91,7 +92,8 @@
                                     <group name="group4_right">
                                     </group>
                                 </group>
-                                <group name="group5" attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
+                                <group name="group5"
+                                       attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
                                 </group>
                                 <group name="group6">
                                     <group name="group6_left">
@@ -113,7 +115,7 @@
                                 </group>
                                 <group name="group7">
                                     <group name="group7_left">
-                                        <field name="date_income_public_administration" />
+                                        <field name="date_income_public_administration"/>
                                         <field name="inactivity_years"/>
                                     </group>
                                     <group name="group7_right">

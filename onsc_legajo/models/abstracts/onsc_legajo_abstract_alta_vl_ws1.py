@@ -36,7 +36,7 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
                 })
             if record.partner_id:
                 data.update({
-                    'cedula': record.partner_id.cv_nro_doc,
+                    'cedula': record.partner_id.cv_nro_doc[:-1],
                 })
         else:
             if record.regime_id:

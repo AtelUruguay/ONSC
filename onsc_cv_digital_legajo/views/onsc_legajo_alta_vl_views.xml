@@ -7,6 +7,7 @@
             <field name="arch" type="xml">
                 <tree string="Alta VL">
                     <field name="full_name"/>
+                    <field name="state"/>
                 </tree>
             </field>
         </record>
@@ -44,7 +45,9 @@
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                     <field name="partner_id" string="C.I." required="1" context="{'show_cv_nro_doc':True}"
                            attrs="{'readonly': [('state', '!=', 'borrador')]}"
+                            domain="partner_id_domain"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="partner_id_domain" invisible="1"/>
                     <field name="is_docket" invisible="1"/>
                     <field name="employee_id" invisible="1"/>
                 </field>
