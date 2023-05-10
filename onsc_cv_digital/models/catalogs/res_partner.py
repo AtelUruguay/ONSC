@@ -148,7 +148,8 @@ class ResPartner(models.Model):
             by_cv_nro_doc_domain = [('cv_nro_doc', operator, name)]
             by_cv_nro_doc_domain += args
             by_cv_nro_doc = self.search(by_cv_nro_doc_domain, limit=limit)
-        return list(set(by_name + by_cv_nro_doc.name_get()))
+            return list(set(by_name + by_cv_nro_doc.name_get()))
+        return by_name
 
     def _custom_display_name(self):
         return self.cv_nro_doc + " - " + self.cv_full_name or self.name

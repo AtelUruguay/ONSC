@@ -101,6 +101,8 @@ class ONSCLegajoAltaVL(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False)
     is_presupuestado = fields.Boolean(related="regime_id.presupuesto", store=True)
     is_indVencimiento = fields.Boolean(related="regime_id.indVencimiento", store=True)
+
+    # Datos para los Descriptores
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor 1', copy=False)
     descriptor1_domain_id = fields.Char(compute='_compute_descriptor1_domain_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor 2', copy=False)
@@ -109,6 +111,8 @@ class ONSCLegajoAltaVL(models.Model):
     descriptor3_domain_id = fields.Char(compute='_compute_descriptor3_domain_id')
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor 4', copy=False)
     descriptor4_domain_id = fields.Char(compute='_compute_descriptor4_domain_id')
+
+    # Datos para el puesto
     partida_id = fields.Many2one('onsc.legajo.budget.item', compute="_compute_partida", store=True)
     nroPuesto = fields.Char(string='Puesto', copy=False)
     nroPlaza = fields.Char(string='Plaza', copy=False)
@@ -121,7 +125,10 @@ class ONSCLegajoAltaVL(models.Model):
     graduation_date = fields.Date(string='Fecha de graduación', copy=False)
     contract_expiration_date = fields.Date(string='Vencimiento del contrato', copy=False)
     reason_description = fields.Char(string='Descripción del motivo', copy=True)
-    norm_id = fields.Many2one('onsc.legajo.norm', string='Tipo de norma', copy=True)
+
+    # Datos de la Norma
+    norm_id = fields.Many2one('onsc.legajo.norm', string='Norma', copy=True)
+    norm_type = fields.Char(string="Tipo norma", related="norm_id.tipoNorma", store=True, readonly=True)
     norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
                                  store=True, readonly=True)
     norm_year = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
@@ -282,7 +289,7 @@ class ONSCLegajoAltaVL(models.Model):
     @api.depends('inciso_id', 'operating_unit_id', 'program_id')
     def _compute_project_domain(self):
         for rec in self:
-            args = []
+            args = [('id', 'in', [])]
             if rec.program_id:
                 args = [('programa', '=', rec.program_id.programa)]
             if rec.inciso_id:
@@ -307,39 +314,44 @@ class ONSCLegajoAltaVL(models.Model):
     @api.depends('descriptor1_id')
     def _compute_descriptor2_domain_id(self):
         for rec in self:
+            args = []
             domain = [('id', 'in', [])]
             if rec.descriptor1_id:
-                dsc2Id = self.env['onsc.legajo.budget.item'].search([('dsc1Id', '=', rec.descriptor1_id.id)]).mapped(
-                    'dsc2Id')
-                if dsc2Id:
-                    domain = [('id', 'in', dsc2Id.ids)]
+                args = [('dsc1Id', '=', rec.descriptor1_id.id)]
+            dsc2Id = self.env['onsc.legajo.budget.item'].search(args).mapped('dsc2Id')
+            if dsc2Id:
+                domain = [('id', 'in', dsc2Id.ids)]
             rec.descriptor2_domain_id = json.dumps(domain)
 
     @api.depends('descriptor2_id')
     def _compute_descriptor3_domain_id(self):
         for rec in self:
+            args = []
             domain = [('id', 'in', [])]
-            if rec.descriptor2_id and rec.descriptor1_id:
-                dsc3Id = self.env['onsc.legajo.budget.item'].search(
-                    [('dsc2Id', '=', rec.descriptor2_id.id), ('dsc1Id', '=', rec.descriptor1_id.id)]).mapped(
-                    'dsc3Id')
-                if dsc3Id:
-                    domain = [('id', 'in', dsc3Id.ids)]
+            if rec.descriptor1_id:
+                args = [('dsc1Id', '=', rec.descriptor1_id.id)]
+            if rec.descriptor2_id:
+                args = expression.AND([[('dsc2Id', '=', rec.descriptor2_id.id)], args])
+            dsc3Id = self.env['onsc.legajo.budget.item'].search(args).mapped('dsc3Id')
+            if dsc3Id:
+                domain = [('id', 'in', dsc3Id.ids)]
             rec.descriptor3_domain_id = json.dumps(domain)
 
     @api.depends('descriptor3_id')
     def _compute_descriptor4_domain_id(self):
         for rec in self:
+            args = []
             domain = [('id', 'in', [])]
-            if rec.descriptor3_id and rec.descriptor2_id and rec.descriptor1_id:
-                dsc4Id = self.env['onsc.legajo.budget.item'].search(
-                    [('dsc2Id', '=', rec.descriptor2_id.id), ('dsc1Id', '=', rec.descriptor1_id.id),
-                     ('dsc3Id', '=', rec.descriptor3_id.id)]).mapped(
-                    'dsc4Id')
-                if dsc4Id:
-                    domain = [('id', 'in', dsc4Id.ids)]
-                else:
-                    domain = [('id', 'in', [])]
+            if rec.descriptor1_id:
+                args = [('dsc1Id', '=', rec.descriptor1_id.id)]
+            if rec.descriptor2_id:
+                args = expression.AND([[('dsc2Id', '=', rec.descriptor2_id.id)], args])
+
+            if rec.descriptor3_id:
+                args = expression.AND([[('dsc3Id', '=', rec.descriptor3_id.id)], args])
+            dsc4Id = self.env['onsc.legajo.budget.item'].search(args).mapped('dsc4Id')
+            if dsc4Id:
+                domain = [('id', 'in', dsc4Id.ids)]
             rec.descriptor4_domain_id = json.dumps(domain)
 
     def action_error_sgh(self):
