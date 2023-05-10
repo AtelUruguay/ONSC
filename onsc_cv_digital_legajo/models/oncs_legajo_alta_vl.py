@@ -2,10 +2,10 @@
 import json
 
 from lxml import etree
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 # campos requeridos para la sincronización
 required_fields = ['inciso_id', 'operating_unit_id', 'program_id', 'project_id', 'date_start', 'partner_id',
@@ -21,6 +21,24 @@ class ONSCLegajoAltaVL(models.Model):
     _inherit = ['onsc.legajo.alta.vl', 'onsc.cv.common.data']
     _description = 'Alta de vínculo laboral'
     _rec_name = 'full_name'
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super(ONSCLegajoAltaVL, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+                                                            submenu=submenu)
+        doc = etree.XML(res['arch'])
+        if view_type in ['form', 'tree', 'kanban'] and self.env.user.has_group(
+                'onsc_legajo.group_legajo_alta_vl_consulta_altas_vl') and not self.env.user.has_group(
+            'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl'):
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('create', '0')
+                node_form.set('edit', '0')
+                node_form.set('copy', '0')
+                node_form.set('delete', '0')
+            for node_form in doc.xpath("//button[@name='action_call_ws1']"):
+                node_form.getparent().remove(node_form)
+        res['arch'] = etree.tostring(doc)
+        return res
 
     def read(self, fields=None, load="_classic_read"):
         Partner = self.env['res.partner'].sudo()
@@ -44,7 +62,7 @@ class ONSCLegajoAltaVL(models.Model):
             if item.get('retributive_day_id'):
                 retributive_day_id = item['retributive_day_id'][0]
                 tuple = (
-                item['retributive_day_id'][0], RetributiveDay.browse(retributive_day_id)._custom_display_name())
+                    item['retributive_day_id'][0], RetributiveDay.browse(retributive_day_id)._custom_display_name())
                 item['retributive_day_id'] = tuple
             if item.get('norm_id'):
                 norm_id = item['norm_id'][0]
@@ -123,12 +141,9 @@ class ONSCLegajoAltaVL(models.Model):
     @api.depends('partner_id')
     def _compute_full_name(self):
         for record in self:
-            full_name = calc_full_name(record.partner_id.cv_first_name, record.partner_id.cv_second_name,
-                                       record.partner_id.cv_last_name_1, record.partner_id.cv_last_name_2)
-            if full_name:
-                record.full_name = full_name
-            else:
-                record.full_name = 'New'
+            record.full_name = calc_full_name(
+                record.partner_id.cv_first_name, record.partner_id.cv_second_name,
+                record.partner_id.cv_last_name_1, record.partner_id.cv_last_name_2)
 
     @api.depends('inciso_id')
     def _compute_partner_id_domain(self):
@@ -153,17 +168,13 @@ class ONSCLegajoAltaVL(models.Model):
         for rec in self:
             vals = dict()
             if rec.employee_id.cv_birthdate != rec.cv_birthdate:
-                vals.update(
-                    {
-                        'cv_birthdate': rec.cv_birthdate,
-                    }
-                )
+                vals.update({
+                    'cv_birthdate': rec.cv_birthdate,
+                })
             if rec.employee_id.cv_sex != rec.cv_sex:
-                vals.update(
-                    {
-                        'cv_sex': rec.cv_sex
-                    }
-                )
+                vals.update({
+                    'cv_sex': rec.cv_sex
+                })
             if vals:
                 rec.employee_id.suspend_security().write(vals)
                 rec.cv_digital_id.suspend_security().write(vals)
@@ -178,8 +189,14 @@ class ONSCLegajoAltaVL(models.Model):
             rec.contract_expiration_date = False
             rec.vacante_ids = False
 
-    @api.onchange('descriptor1_id', 'descriptor2_id', 'regime_id', 'is_reserva_sgh', 'program_id', 'project_id',
-                  'nroPuesto', 'nroPlaza')
+    @api.onchange('descriptor1_id',
+                  'descriptor2_id',
+                  'regime_id',
+                  'is_reserva_sgh',
+                  'program_id',
+                  'project_id',
+                  'nroPuesto',
+                  'nroPlaza')
     def onchange_clear_vacante_id(self):
         for rec in self:
             rec.vacante_ids = False
@@ -251,7 +268,8 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append("Primer Apellido")
             if not record.partner_id.cv_first_name:
                 message.append("Primer Nombre")
-            if record.is_reserva_sgh and not record.is_presupuestado:
+            if (record.is_reserva_sgh or record.is_presupuestado) and not record.vacante_ids.filtered(
+                    lambda x: x.selected):
                 message.append("Necesita seleccionar una vacante")
             if not record.is_reserva_sgh and not record.is_presupuestado and not record.descriptor3_id:
                 message.append(record._fields['descriptor3_id'].string)
@@ -292,21 +310,6 @@ class ONSCLegajoAltaVL(models.Model):
         self.attached_document_ids = False
         self.id_alta = False
         self.income_mechanism_id = False
-
-    @api.model
-    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
-        res = super(ONSCLegajoAltaVL, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
-                                                            submenu=submenu)
-        doc = etree.XML(res['arch'])
-        if view_type in ['form', 'tree', 'kanban'] and self.env.user.has_group(
-                'onsc_legajo.group_legajo_alta_vl_consulta_altas_vl') and not self.env.user.has_group(
-            'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl'):
-            for node_form in doc.xpath("//%s" % (view_type)):
-                node_form.set('create', '0')
-                node_form.set('edit', '0')
-                node_form.set('copy', '0')
-                node_form.set('delete', '0')
-            for node_form in doc.xpath("//button[@name='action_call_ws1']"):
-                node_form.getparent().remove(node_form)
-        res['arch'] = etree.tostring(doc)
-        return res
+        self.income_mechanism_id = False
+        self.cv_sex = False
+        self.cv_birthdate = False

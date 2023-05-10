@@ -22,7 +22,6 @@
                             attrs="{'invisible': [('is_ready_send_sgh', '=', False)]}"/>
                 </header>
                 <xpath expr="//div[hasclass('oe_title')]" position="inside">
-                    <field name="full_name" modifiers="{&quot;readonly&quot;: true}"/>
                     <field name="is_error_synchronization" invisible="1"/>
                     <field name="is_ready_send_sgh" invisible="1"/>
                     <div class="alert alert-danger"
@@ -92,8 +91,8 @@
                             attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
                     <field name="vacante_ids" nolabel="1"
                            attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
-                        <tree create="false" string="Vacantes">
-                            <field name="selected" widget="boolean_toggle" force_save="1"/>
+                        <tree string="Vacantes" create="false" delete="false">
+                            <field name="selected" nolabel="1" widget="boolean_toggle" force_save="1"/>
                             <field name="Dsc3Descripcion" readonly="1"/>
                             <field name="Dsc4Descripcion" readonly="1"/>
                             <field name="nroPuesto" readonly="1"/>

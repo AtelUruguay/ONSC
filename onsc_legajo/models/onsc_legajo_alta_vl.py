@@ -62,17 +62,17 @@ class ONSCLegajoAltaVL(models.Model):
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     @api.model
-    def _get_default_inciso_id(self):
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or \
-                self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
-            return self.env.user.employee_id.job_id.contract_id.inciso_id
-        return False
-
-    @api.model
-    def _get_default_ue_id(self):
+    def default_get(self, fields):
+        res = super(ONSCLegajoAltaVL, self).default_get(fields)
+        res['cv_emissor_country_id'] = self.env.ref('base.uy').id
+        res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
+                                                                                     limit=1).id or False
+        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
+            res['inciso_id'] = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
-            return self.env.user.employee_id.job_id.contract_id.operating_unit_id
-        return False
+            res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+        return res
 
     partner_id = fields.Many2one("res.partner", string="Contacto")
     date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False)
@@ -80,11 +80,9 @@ class ONSCLegajoAltaVL(models.Model):
     call_number = fields.Char(string='Número de llamado', copy=False)
     is_call_number_required = fields.Boolean(string="¿Requiere número de llamado?",
                                              related="income_mechanism_id.is_call_number_required", store=True)
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso',
-                                default=lambda self: self._get_default_inciso_id(), copy=False)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False)
     is_inciso_readonly = fields.Boolean(compute="_compute_is_readonly")
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
-                                        default=lambda self: self._get_default_ue_id(), copy=False)
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     is_operating_unit_readonly = fields.Boolean(compute="_compute_is_readonly")
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
     department_id = fields.Many2one("hr.department", string="Unidad organizativa", copy=False)
@@ -153,14 +151,6 @@ class ONSCLegajoAltaVL(models.Model):
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
     id_alta = fields.Char(string="Id Alta")
 
-    @api.model
-    def default_get(self, fields):
-        res = super(ONSCLegajoAltaVL, self).default_get(fields)
-        res['cv_emissor_country_id'] = self.env.ref('base.uy').id
-        res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
-                                                                                     limit=1).id or False
-        return res
-
     @api.constrains("attached_document_ids")
     def _check_attached_document_ids(self):
         for record in self:
@@ -206,11 +196,12 @@ class ONSCLegajoAltaVL(models.Model):
     @api.onchange('inciso_id')
     def onchange_inciso(self):
         # TODO: terminar los demas campos a setear
-        self.operating_unit_id = False
-        self.department_id = False
-        self.program_id = False
-        self.project_id = False
-        self.retributive_day_id = False
+        if self.operating_unit_id and self.operating_unit_id.inciso_id.id != self.inciso_id.id:
+            self.operating_unit_id = False
+            self.department_id = False
+            self.program_id = False
+            self.project_id = False
+            self.retributive_day_id = False
 
     @api.onchange('operating_unit_id')
     def onchange_operating_unit(self):

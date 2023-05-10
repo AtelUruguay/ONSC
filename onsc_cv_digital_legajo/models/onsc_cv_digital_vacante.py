@@ -12,7 +12,7 @@ class ONSCCVDigitalVacante(models.Model):
     _description = 'Vacantes'
     _rec_name = 'nroPuesto'
 
-    selected = fields.Boolean()
+    selected = fields.Boolean(string="Seleccionado", help="Active para seleccionar esta Vacante")
     nroPuesto = fields.Char(string="Puesto")
     nroPlaza = fields.Char(string="Plaza")
     estado = fields.Char(string="Estado")
