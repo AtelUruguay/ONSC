@@ -9,12 +9,11 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 # campos requeridos para la sincronización
 required_fields = ['inciso_id', 'operating_unit_id', 'program_id', 'project_id', 'date_start', 'partner_id',
-                   'regime_id', 'descriptor1_id', 'descriptor2_id', 'is_presupuestado', 'nroPuesto',
-                   'nroPlaza', 'partida_id', 'reason_description', 'norm_number',
+                   'nroPuesto', 'nroPlaza', 'reason_description', 'norm_number',
                    'norm_year', 'norm_id', 'norm_article', 'resolution_description', 'resolution_date',
                    'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
                    'cv_address_location_id', 'cv_address_street_id', 'retributive_day_id', 'occupation_id',
-                   'date_income_public_administration', 'department_id']
+                   'date_income_public_administration', 'department_id', 'date_start', 'security_job_id']
 
 
 class ONSCLegajoAltaVL(models.Model):
@@ -26,6 +25,8 @@ class ONSCLegajoAltaVL(models.Model):
     def read(self, fields=None, load="_classic_read"):
         Partner = self.env['res.partner'].sudo()
         Office = self.env['onsc.legajo.office'].sudo()
+        RetributiveDay = self.env['onsc.legajo.jornada.retributiva'].sudo()
+        LegajoNorm = self.env['onsc.legajo.norm'].sudo()
         result = super(ONSCLegajoAltaVL, self).read(fields, load)
         for item in result:
             if item.get('partner_id'):
@@ -40,6 +41,15 @@ class ONSCLegajoAltaVL(models.Model):
                 program_id = item['project_id'][0]
                 tuple = (item['project_id'][0], Office.browse(program_id)._custom_display_name('project'))
                 item['project_id'] = tuple
+            if item.get('retributive_day_id'):
+                retributive_day_id = item['retributive_day_id'][0]
+                tuple = (
+                item['retributive_day_id'][0], RetributiveDay.browse(retributive_day_id)._custom_display_name())
+                item['retributive_day_id'] = tuple
+            if item.get('norm_id'):
+                norm_id = item['norm_id'][0]
+                tuple = (item['norm_id'][0], LegajoNorm.browse(norm_id)._custom_display_name())
+                item['norm_id'] = tuple
         return result
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
@@ -67,6 +77,7 @@ class ONSCLegajoAltaVL(models.Model):
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
     is_error_synchronization = fields.Boolean(copy=False)
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
+    is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
 
     def action_call_ws1(self):
         return self.syncronize_ws1(log_info=True)
@@ -125,6 +136,12 @@ class ONSCLegajoAltaVL(models.Model):
             domain = [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True),
                       ('id', '!=', self.env.user.partner_id.id)]
             self.partner_id_domain = json.dumps(domain)
+
+    @api.depends('vacante_ids')
+    def _compute_is_ready_to_send(self):
+        for record in self:
+            vacante = record.vacante_ids[:1]
+            record.is_ready_send_sgh = bool(vacante and vacante.selected)
 
     def action_gafi_ok(self):
         """
@@ -203,6 +220,7 @@ class ONSCLegajoAltaVL(models.Model):
             self.vacante_ids = response
             self.is_error_synchronization = False
         elif isinstance(response, str):
+            self.vacante_ids = False
             self.is_error_synchronization = True
             self.error_message_synchronization = response
 
@@ -233,6 +251,13 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append("Primer Apellido")
             if not record.partner_id.cv_first_name:
                 message.append("Primer Nombre")
+            if record.is_reserva_sgh and not record.is_presupuestado:
+                message.append("Necesita seleccionar una vacante")
+            if not record.is_reserva_sgh and not record.is_presupuestado and not record.descriptor3_id:
+                message.append(record._fields['descriptor3_id'].string)
+            if not record.attached_document_ids:
+                message.append(_("Debe haber al menos un documento adjunto"))
+
             if message:
                 fields_str = '\n'.join(message)
                 message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str

@@ -36,8 +36,6 @@
 
                             </group>
                             <group name="main_group_right">
-                                <field name="call_number"
-                                       attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
                             </group>
                         </group>
                         <notebook>
@@ -104,7 +102,9 @@
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="income_mechanism_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="retributive_day_id"
+                                        <field name="call_number"
+                                               attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
+                                        <field name="retributive_day_id" context="{'show_only_description':True}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                     </group>
                                     <group name="group6_right">
@@ -139,7 +139,9 @@
                                     <group name="motivo_left">
                                         <field name="reason_description" colspan="4"/>
                                         <field name="norm_id" colspan="3"
+                                               context="{'show_concatenated_description':True}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="norm_type" colspan="2"/>
                                         <field name="norm_number" colspan="2"/>
                                         <field name="norm_year" colspan="1"/>
                                         <field name="norm_article" colspan="2"/>

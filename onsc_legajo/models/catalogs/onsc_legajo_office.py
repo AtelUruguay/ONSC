@@ -63,9 +63,9 @@ class ONSCLegajoOffice(models.Model):
 
     def _custom_display_name(self, field):
         if field == 'program':
-            return (self.programa or '0') + " - " + self.programaDescripcion
+            return (self.programa or '') + " - " + self.programaDescripcion
         elif field == 'project':
-            return (self.proyecto or '0') + " - " + self.proyectoDescripcion
+            return (self.proyecto or '') + " - " + self.proyectoDescripcion
 
     @api.depends('inciso', 'unidadEjecutora', 'programa', 'proyecto')
     def _compute_code(self):
@@ -289,3 +289,27 @@ class ONSCLegajoJornadaRetributiva(models.Model):
     def _get_code_by_keyparams(self, inciso, unidadEjecutora, codigoJornada, programa=False, proyecto=False):
         office_code = self.env['onsc.legajo.office']._get_code_by_keyparams(inciso, unidadEjecutora, programa, proyecto)
         return _('%s - Jornada ret: %s') % (office_code, codigoJornada)
+
+    def name_get(self):
+        res = []
+        for record in self:
+            name = record.code
+            if self._context.get('show_only_description', False):
+                name = record.descripcionJornada
+            res.append((record.id, name))
+        return res
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        by_name = super(ONSCLegajoJornadaRetributiva, self).name_search(name, args=args, operator=operator, limit=limit)
+        if self._context.get('show_only_description', False):
+            by_descripcionJornada_domain = [('descripcionJornada', operator, name)]
+            by_descripcionJornada_domain += args
+            by_descripcionJornada = self.search(by_descripcionJornada_domain, limit=limit)
+            return list(set(by_name + by_descripcionJornada.name_get()))
+        return by_name
+
+    def _custom_display_name(self):
+        return self.descripcionJornada

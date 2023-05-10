@@ -18,11 +18,13 @@
             <field name="inherit_id" ref="onsc_legajo.onsc_legajo_alta_vl_form"/>
             <field name="arch" type="xml">
                 <header position="inside">
-                    <button name="action_call_ws4" type="object" string="WS4" states="borrador,error_sgh"/>
+                    <button name="action_call_ws4" type="object" string="Enviar a SGH" states="borrador,error_sgh"
+                            attrs="{'invisible': [('is_ready_send_sgh', '=', False)]}"/>
                 </header>
                 <xpath expr="//div[hasclass('oe_title')]" position="inside">
                     <field name="full_name" modifiers="{&quot;readonly&quot;: true}"/>
                     <field name="is_error_synchronization" invisible="1"/>
+                    <field name="is_ready_send_sgh" invisible="1"/>
                     <div class="alert alert-danger"
                          role="alert"
                          attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
@@ -43,9 +45,9 @@
                            readonly="1"
                            force_save="1"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                    <field name="partner_id" string="C.I." required="1" context="{'show_cv_nro_doc':True}"
-                           attrs="{'readonly': [('state', '!=', 'borrador')]}"
-                            domain="partner_id_domain"
+                    <field name="partner_id" string="C.I." required="1"
+                           context="{'tree_view_ref': 'onsc_cv_digital_legajo.onsc_cv_digital_legajo_tree_view','show_cv_nro_doc':True}"
+                           attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="partner_id_domain"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="partner_id_domain" invisible="1"/>
                     <field name="is_docket" invisible="1"/>
@@ -75,7 +77,7 @@
                             <field name="cv_address_apto" readonly="1"/>
                             <field name="cv_address_zip" readonly="1"/>
                             <field name="cv_address_state_id" readonly="1" force_save="1"/>
-                            <field name="cv_address_street_id" readonly="1"/>
+                            <field name="cv_address_street_id" readonly="1" force_save="1"/>
                             <field name="cv_address_is_cv_bis" readonly="1"/>
                             <field name="cv_address_place" readonly="1"/>
                             <field name="cv_address_block" readonly="1"/>

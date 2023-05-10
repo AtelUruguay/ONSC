@@ -145,3 +145,38 @@ class ONSCLegajoNorm(models.Model):
             'active': True,
             'inciso_ids': [(4, inciso.id)]
         }
+
+    def name_get(self):
+        res = []
+        for record in self:
+            name = record.pk
+            if self._context.get('show_concatenated_description', False):
+                name_parts = []
+                name_parts.append(record.tipoNorma + '-' if record.tipoNorma else '')
+                name_parts.append(str(record.numeroNorma) + '-' if record.numeroNorma else '0-')
+                name_parts.append(str(record.anioNorma) + '-' if record.anioNorma else '0-')
+                name_parts.append(str(record.articuloNorma) if record.articuloNorma else '0')
+                name = ''.join(name_parts).strip()
+            res.append((record.id, name))
+        return res
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        by_name = super(ONSCLegajoNorm, self).name_search(name, args=args, operator=operator, limit=limit)
+        if self._context.get('show_concatenated_description', False):
+            by_domain = ['|', '|', '|', ('tipoNorma', operator, name), ('numeroNorma', operator, name),
+                         ('anioNorma', operator, name), ('articuloNorma', operator, name)]
+            by_domain += args
+            by_search = self.search(by_domain, limit=limit)
+            return list(set(by_name + by_search.name_get()))
+        return by_name
+
+    def _custom_display_name(self):
+        name_parts = []
+        name_parts.append(self.tipoNorma + '-' if self.tipoNorma else '')
+        name_parts.append(str(self.numeroNorma) + '-' if self.numeroNorma else '0-')
+        name_parts.append(str(self.anioNorma) + '-' if self.anioNorma else '0-')
+        name_parts.append(str(self.articuloNorma) if self.articuloNorma else '0')
+        return ''.join(name_parts).strip()
