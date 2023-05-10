@@ -2,10 +2,10 @@
 import json
 
 from lxml import etree
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 # campos requeridos para la sincronización
 required_fields = ['inciso_id', 'operating_unit_id', 'program_id', 'project_id', 'date_start', 'partner_id',
@@ -71,10 +71,13 @@ class ONSCLegajoAltaVL(models.Model):
         return result
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
-    partner_id = fields.Many2one("res.partner", string="Contacto")
+    partner_id = fields.Many2one("res.partner", string="Contacto", readonly=True,
+                                 states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
-    cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
-    cv_sex = fields.Selection(string=u'Sexo', copy=False)
+    cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False, readonly=True,
+                               states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    cv_sex = fields.Selection(string=u'Sexo', copy=False, readonly=True,
+                              states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone')
     mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile')
     email = fields.Char(string="e-mail", related='partner_id.email')
