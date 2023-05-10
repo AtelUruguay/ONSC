@@ -9,7 +9,6 @@ from os.path import join
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-
 from .abstracts.onsc_cv_abstract_common import SELECTION_RADIO
 from .abstracts.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
@@ -26,13 +25,15 @@ class ONSCCVDigitalCall(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_call_documentary_validation') and self.env.user.has_group('onsc_cv_digital.group_validador_documental_cv'):
+        if self._context.get('is_call_documentary_validation') and self.env.user.has_group(
+                'onsc_cv_digital.group_validador_documental_cv'):
             args = expression.AND([[
                 ('partner_id', '!=', self.env.user.partner_id.id),
             ], args])
-        return super(ONSCCVDigitalCall, self)._search(args, offset=offset, limit=limit, order=order,
-                                                                     count=count,
-                                                                     access_rights_uid=access_rights_uid)
+        return super(ONSCCVDigitalCall, self)._search(
+            args, offset=offset, limit=limit, order=order,
+            count=count,
+            access_rights_uid=access_rights_uid)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -41,9 +42,10 @@ class ONSCCVDigitalCall(models.Model):
             domain = expression.AND([[
                 ('partner_id', '!=', self.env.user.partner_id.id),
             ], domain])
-        return super(ONSCCVDigitalCall, self).read_group(domain, fields, groupby, offset=offset,
-                                                                        limit=limit, orderby=orderby,
-                                                                        lazy=lazy)
+        return super(ONSCCVDigitalCall, self).read_group(
+            domain, fields, groupby, offset=offset,
+            limit=limit, orderby=orderby,
+            lazy=lazy)
 
     cv_digital_id = fields.Many2one(
         "onsc.cv.digital",
@@ -352,7 +354,8 @@ class ONSCCVDigitalCall(models.Model):
         pdf_list = {}
         cv_zip_url = self.env.user.company_id.cv_zip_url
         if len(self) == 0 or not cv_zip_url:
-            raise ValidationError(_("No se ha poidido identificar una ruta en el servidor para almacenar el ZIP. Contacte al administrador."))
+            raise ValidationError(
+                _("No se ha podido identificar una ruta en el servidor para almacenar el ZIP. Contacte al administrador."))
         if self.filtered(lambda x: x.gral_info_documentary_validation_state != 'validated'):
             raise ValidationError(_("No se puede generar ZIP si no están validados documentalmente"))
         if len(list(dict.fromkeys(self.mapped('call_number')))) > 1:
