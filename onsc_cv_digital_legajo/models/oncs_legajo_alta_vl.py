@@ -9,10 +9,9 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 # campos requeridos para la sincronización
 required_fields = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
-                   'reason_description', 'norm_number', 'income_mechanism_id',
-                   'norm_year', 'norm_id', 'norm_article', 'resolution_description', 'resolution_date',
+                   'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description', 'resolution_date',
                    'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
-                   'cv_address_location_id', 'retributive_day_id', 'occupation_id',
+                   'retributive_day_id', 'occupation_id',
                    'date_income_public_administration', 'department_id', 'date_start', 'security_job_id']
 
 
@@ -274,23 +273,21 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append("Necesita seleccionar una vacante")
             if not record.is_reserva_sgh and not record.is_presupuestado and not record.descriptor3_id:
                 message.append(record._fields['descriptor3_id'].string)
-            if record.country_code == 'UY' and not record.cv_address_street_id:
-                message.append("Calle")
+            if not record.is_reserva_sgh and not record.is_presupuestado and not record.regime_id:
+                message.append(record._fields['regime_id'].string)
             if record.is_reserva_sgh and not record.nroPuesto:
                 message.append(record._fields['nroPuesto'].string)
             if record.is_reserva_sgh and not record.nroPlaza:
                 message.append(record._fields['nroPlaza'].string)
-            if record.country_code != 'UY' and not record.cv_address_street:
-                message.append("Calle")
             if record.income_mechanism_id.is_call_number_required and not record.call_number:
                 message.append(record._fields['call_number'].string)
             if not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
 
-            if message:
-                fields_str = '\n'.join(message)
-                message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str
-                raise ValidationError(_(message))
+        if message:
+            fields_str = '\n'.join(message)
+            message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str
+            raise ValidationError(_(message))
         return True
 
     def _empty_fieldsVL(self):

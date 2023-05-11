@@ -24,6 +24,27 @@ class ONSCLegajoAltaVL(models.Model):
     _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
     _description = 'Alta de vínculo laboral'
 
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(ONSCLegajoAltaVL, self).fields_get(allfields, attributes)
+        hide = ['document_identity_file', 'document_identity_filename', 'civical_credential_file',
+                'civical_credential_filename','is_cv_race_public','cv_gender_record_filename',
+                'cjppu_affiliate_number', 'professional_resume', 'user_linkedIn', 'is_driver_license', 'cv_gender2',
+                'cv_gender_id', 'is_afro_descendants', 'is_occupational_health_card', 'occupational_health_card_date',
+                'is_medical_aptitude_certificate_status', 'medical_aptitude_certificate_date', 'is_victim_violent',
+                'is_public_information_victim_violent', 'allow_content_public', 'situation_disability',
+                'people_disabilitie', 'certificate_date', 'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear',
+                'interaction', 'need_other_support', 'afro_descendants_file', 'occupational_health_card_file',
+                'occupational_health_card_filename','relationship_victim_violent_filename','is_cv_gender_public',
+                'medical_aptitude_certificate_file', 'relationship_victim_violent_file', 'document_certificate_file',
+                'document_certificate_filename','afro_descendants_filename']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
+
     def _get_domain(self, args):
         args = expression.AND([[
             ('partner_id', '!=', self.env.user.partner_id.id)
@@ -98,9 +119,9 @@ class ONSCLegajoAltaVL(models.Model):
     is_responsable_uo = fields.Boolean(string="¿Responsable de UO?", related="security_job_id.is_uo_manager",
                                        store=True)
     program_project_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto', copy=False,
-                                 domain="[('inciso', '=', inciso_id),('unidadEjecutora', '=', operating_unit_id)]",
-                                 readonly=True,
-                                 states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+                                         domain="[('inciso', '=', inciso_id),('unidadEjecutora', '=', operating_unit_id)]",
+                                         readonly=True,
+                                         states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada retributiva',
                                          domain="[('office_id', '=', program_project_id)]", copy=False,
                                          readonly=True,
@@ -261,8 +282,6 @@ class ONSCLegajoAltaVL(models.Model):
         self.department_id = False
         self.program_project_id = False
         self.retributive_day_id = False
-
-
 
     @api.onchange('descriptor1_id')
     def onchange_descriptor1(self):
