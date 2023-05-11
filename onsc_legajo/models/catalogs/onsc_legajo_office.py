@@ -194,9 +194,9 @@ class ONSCLegajoOffice(models.Model):
                         new_office = self.create({
                             'inciso': inciso.id,
                             'unidadEjecutora': operating_unit.id,
-                            'programa': external_record.programa > 0 and str(external_record.programa) or False,
+                            'programa': str(external_record.programa) or False,
                             'programaDescripcion': external_record.programaDescripcion,
-                            'proyecto': external_record.proyecto > 0 and str(external_record.proyecto) or False,
+                            'proyecto': str(external_record.proyecto) or False,
                             'proyectoDescripcion': external_record.proyectoDescripcion,
                         })
                         all_offices |= new_office
@@ -254,10 +254,8 @@ class ONSCLegajoOffice(models.Model):
 
     def _get_code_by_keyparams(self, inciso, unidadEjecutora, programa=False, proyecto=False):
         code = _('Inciso: %s - UE: %s') % (inciso, unidadEjecutora)
-        if programa > 0:
-            code += _(' - Programa: %s') % (programa)
-        if proyecto > 0:
-            code += _(' - Proyecto: %s') % (proyecto)
+        code += _(' - Programa: %s') % (programa)
+        code += _(' - Proyecto: %s') % (proyecto)
         return code
 
     def _get_office_by_keyparams(self, inciso, unidadEjecutora, programa=False, proyecto=False):
