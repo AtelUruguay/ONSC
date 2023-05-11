@@ -43,10 +43,10 @@
                                 <group name="group3">
                                     <group name="group3_left">
                                         <field name="inciso_id"
-                                               attrs="{'readonly': [('is_inciso_readonly', '=', True)]}"
+                                               attrs="{'readonly': ['|',('state', 'not in', ['borrador', 'error_sgh']),('is_inciso_readonly', '=', True)]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="operating_unit_id"
-                                               attrs="{'readonly': [('is_operating_unit_readonly', '=', True)]}"
+                                               attrs="{'readonly': ['|',('state', 'not in', ['borrador', 'error_sgh']),('is_operating_unit_readonly', '=', True)]}"
                                                domain="operating_unit_id_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="date_start"/>

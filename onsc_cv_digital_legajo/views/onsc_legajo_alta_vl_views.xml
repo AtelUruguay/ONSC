@@ -56,8 +56,12 @@
                     <field name="employee_id" invisible="1"/>
                 </field>
                 <group name="main_group_right" position="inside">
-                    <field name="cv_birthdate" attrs="{'readonly': [('is_docket', '=', True)]}" force_save="1"/>
-                    <field name="cv_sex" attrs="{'readonly': [('is_docket', '=', True)]}" force_save="1"/>
+                    <field name="cv_birthdate"
+                           attrs="{'readonly': ['|',('state', 'not in', ['borrador', 'error_sgh']),('is_docket', '=', True)]}"
+                           force_save="1"/>
+                    <field name="cv_sex"
+                           attrs="{'readonly': ['|',('state', 'not in', ['borrador', 'error_sgh']),('is_docket', '=', True)]}"
+                           force_save="1"/>
                 </group>
                 <xpath expr="//notebook" position="inside">
                     <page string="Datos personales">
@@ -92,7 +96,8 @@
                             groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
                             class="btn btn-primary oe_edit_only" string="Buscar vacantes"
                             style="width: 10%;"
-                            attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"/>
+                            states="borrador,error_sgh"
+                            attrs="{'invisible': [('is_presupuestado', '=', False), ('is_reserva_sgh', '=', False)]}"/>
                     <field name="vacante_ids" nolabel="1"
                            attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
                         <tree string="Vacantes" create="false" delete="false">
