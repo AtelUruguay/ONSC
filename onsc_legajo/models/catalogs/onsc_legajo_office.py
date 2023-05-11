@@ -39,10 +39,8 @@ class ONSCLegajoOffice(models.Model):
         res = []
         for record in self:
             name = record.code
-            if self._context.get('show_only_program', False) and (record.programa or record.programaDescripcion):
-                name = (record.programa or '') + " - " + record.programaDescripcion
-            elif self._context.get('show_only_project', False) and (record.proyecto or record.proyectoDescripcion):
-                name = (record.proyecto or '') + " - " + record.proyectoDescripcion
+            if self._context.get('show_project_program', False) and (record.programa or record.programaDescripcion):
+                name = record.programaDescripcion+" - " + record.proyectoDescripcion
             res.append((record.id, name))
         return res
 
@@ -51,21 +49,13 @@ class ONSCLegajoOffice(models.Model):
         if args is None:
             args = []
         by_name = super(ONSCLegajoOffice, self).name_search(name, args=args, operator=operator, limit=limit)
-        if self._context.get('show_only_program', False):
-            by_programaDescripcion_domain = [('programaDescripcion', operator, name)]
-            by_programaDescripcion_domain += args
-            by_programaDescripcion = self.search(by_programaDescripcion_domain, limit=limit)
-        elif self._context.get('show_only_project', False):
-            by_proyectoDescripcion_domain = [('proyectoDescripcion', operator, name)]
-            by_proyectoDescripcion_domain += args
-            by_programaDescripcion = self.search(by_proyectoDescripcion_domain, limit=limit)
-        return list(set(by_name + by_programaDescripcion.name_get()))
+        if self._context.get('show_project_program', False):
+            by_domain = ['|', ('programaDescripcion', operator, name),('proyectoDescripcion', operator, name)] + args
+            by_search = self.search(by_domain, limit=limit)
+            return list(set(by_name + by_search.name_get()))
 
-    def _custom_display_name(self, field):
-        if field == 'program':
-            return (self.programa or '') + " - " + self.programaDescripcion
-        elif field == 'project':
-            return (self.proyecto or '') + " - " + self.proyectoDescripcion
+    def _custom_display_name(self):
+        return self.programaDescripcion + " - " + self.proyectoDescripcion
 
     @api.depends('inciso', 'unidadEjecutora', 'programa', 'proyecto')
     def _compute_code(self):

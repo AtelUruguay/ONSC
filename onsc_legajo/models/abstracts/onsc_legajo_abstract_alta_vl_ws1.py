@@ -55,8 +55,8 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
         data.update({
             'inciso': record.inciso_id.budget_code or '0',
             'ue': record.operating_unit_id.budget_code or '0',
-            'programa': record.program_id.programa or '',
-            'proyecto': record.project_id.proyecto or '',
+            'programa': record.program_project_id.programa or '',
+            'proyecto': record.program_project_id.proyecto or '',
         })
 
         return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, '',
