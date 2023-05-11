@@ -97,7 +97,7 @@
                             class="btn btn-primary oe_edit_only" string="Buscar vacantes"
                             style="width: 10%;"
                             states="borrador,error_sgh"
-                            attrs="{'invisible': [('is_presupuestado', '=', False), ('is_reserva_sgh', '=', False)]}"/>
+                            attrs="{'invisible': ['|','&amp;',('is_presupuestado', '=', False), ('is_reserva_sgh', '=', False)]}"/>
                     <field name="vacante_ids" nolabel="1"
                            attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
                         <tree string="Vacantes" create="false" delete="false">
