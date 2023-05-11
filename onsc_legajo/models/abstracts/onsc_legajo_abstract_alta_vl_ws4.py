@@ -55,7 +55,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             'tipoResolucion': record.resolution_type or '',
             'codigoEstadoCivil': record.marital_status_id.code or '1',
             'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y') if record.cv_birthdate else '',
-            'sexo': record.cv_sex or 'M',
+            'sexo': 'M' if record.cv_sex=='male' else 'F',
             'lugarDeNacimiento': record.country_of_birth_id.name if record.country_of_birth_id else '',
             'tipoCiudadania': 'N',  # FIXME Hardcode WS4 solo permite nacionalidad uruguaya
             'nacionalidad': 'URUGUAYA',  # FIXME Hardcode WS4 solo permite nacionalidad uruguaya
@@ -66,17 +66,17 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             'eMail': record.email or '',
             'deptoCod': '10',
             # TODO default 99 : record.cv_address_state_id.code or '99', Codigo de departamento  en nuestro catalogo son string
-            'localidadCod': record.cv_address_location_id.code if record.cv_address_location_id else '9999999999',
-            'calleCod': record.cv_address_street_id.code if record.cv_address_street_id else '9999999999',
+            'localidadCod': record.cv_address_location_id.code if record.cv_address_location_id and record.cv_address_location_id.code else '9999999999',
+            'calleCod': record.cv_address_street_id.code if record.cv_address_street_id and record.cv_address_street_id.code else '9999999999',
             'numeroDePuerta': record.cv_address_nro_door or '0',
-            'callCodEntre1': record.cv_address_street2_id.code or '',
-            'callCodEntre2': record.cv_address_street3_id.code or '',
+            'callCodEntre1': record.cv_address_street2_id.code or '0',
+            'callCodEntre2': record.cv_address_street3_id.code or '0',
             'bis': '1' if record.cv_address_is_cv_bis else '0',
-            'apto': record.cv_address_apto or '',
-            'paraje': record.cv_address_place or '',
-            'codigoPostal': record.cv_address_zip or '',
-            'manzana': record.cv_address_block or '',
-            'solar': record.cv_address_sandlot or '',
+            'apto': record.cv_address_apto or '0',
+            'paraje': record.cv_address_place or '0',
+            'codigoPostal': record.cv_address_zip or '0',
+            'manzana': record.cv_address_block or '0',
+            'solar': record.cv_address_sandlot or '0',
             'mutuCod': record.health_provider_id.code if record.health_provider_id else '0',
             'fechaDeIngresoAlaAdm': record.date_income_public_administration.strftime(
                 '%d/%m/%Y') if record.date_income_public_administration else '',
@@ -99,7 +99,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 '%d/%m/%Y') if record.graduation_date else '',
         })
 
-        return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, '',
+        return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, 'WS4',
                                                                                    integration_error, data)
 
     def _populate_from_syncronization(self, response):
@@ -119,7 +119,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                         print(external_record)
                         if self._context.get('log_info'):
                             self.create_new_log(
-                                origin='',
+                                origin='WS4',
                                 type='info',
                                 integration_log=integration_error_WS14_9000,
                                 ws_tuple=external_record,
@@ -129,7 +129,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
                         self.create_new_log(
-                            origin='',
+                            origin='WS4',
                             type='error',
                             integration_log=integration_error_WS14_9001,
                             ws_tuple=external_record,

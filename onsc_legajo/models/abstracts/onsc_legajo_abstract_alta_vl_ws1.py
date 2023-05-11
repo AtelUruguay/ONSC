@@ -5,6 +5,7 @@ import logging
 from odoo import models, tools, api, fields
 
 _logger = logging.getLogger(__name__)
+import datetime
 
 
 class ONSCLegajoAbstractSyncW1(models.AbstractModel):
@@ -99,11 +100,8 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
                             'estado': external_record.estado if hasattr(external_record, 'estado') else '',
                             'estadoDescripcion': external_record.estadoDescripcion if hasattr(external_record,
                                                                                               'estadoDescripcion') else '',
-                            # 'fechaVacantePLaza': datetime.strptime(external_record.fechaVacantePLaza,'%d/%m/%Y').date() if hasattr(external_record,'fechaVacantePLaza') else '',
-                            # 'fechaReserva': datetime.strptime(external_record.fechaReserva,'%d/%m/%Y').date() if hasattr(external_record,'fechaReserva') else '',
-                            'fechaVacantePLaza': fields.Datetime.now(),
-                            'fechaReserva': fields.Datetime.now(),
-
+                            'fechaVacantePLaza': datetime.datetime.strptime(external_record.fechaVacantePLaza,'%d/%m/%Y').date() if hasattr(external_record,'fechaVacantePLaza') else False,
+                            'fechaReserva': datetime.datetime.strptime(external_record.fechaReserva,'%d/%m/%Y').date() if hasattr(external_record,'fechaReserva') else False,
                         }
 
                         vacante_ids.append((0, 0, data))

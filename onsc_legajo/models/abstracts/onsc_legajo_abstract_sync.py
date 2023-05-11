@@ -44,14 +44,26 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                     ('integration_code', '=', integration_error.integration_code),
                     ('code_error', '=', str(result_error_code))
                 ], limit=1)
+                validation_error = ''
+                for v_error in response.altaSGHMovimientoRespuesta:
+                    validation_error += v_error.mensaje + '\n'
+                    self.create_new_log(
+                        origin=origin_name,
+                        type='error',
+                        integration_log=error or integration_error,
+                        ws_tuple=False,
+                        long_description=v_error.mensaje)
+
                 self.create_new_log(
                     origin=origin_name,
                     type='error',
                     integration_log=error or integration_error,
                     ws_tuple=False,
                     long_description='%s - Código: %s' % (
-                        tools.ustr(response.servicioResultado.mensaje), str(response.servicioResultado.codigo)))
-                return "Error al enviar datos al WS:" + str(response.servicioResultado.mensaje)
+                        tools.ustr(response.servicioResultado.mensaje),
+                        str(response.servicioResultado.codigo) + '\n' + validation_error))
+                return "Error al enviar datos al WS:" + str(
+                    response.servicioResultado.mensaje) + '\n' + validation_error
         elif hasattr(response, 'codigoResultado'):
             if response.codigoResultado == 0:
                 return self._populate_from_syncronization(response)
