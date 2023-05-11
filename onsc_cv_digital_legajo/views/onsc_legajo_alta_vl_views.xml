@@ -24,7 +24,7 @@
                             states="borrador,error_sgh"
                             attrs="{'invisible': [('is_ready_send_sgh', '=', False)]}"/>
                 </header>
-                <xpath expr="//div[hasclass('oe_title')]" position="inside">
+                <xpath expr="//div[hasclass('oe_title')]" position="before">
                     <field name="is_error_synchronization" invisible="1"/>
                     <field name="is_ready_send_sgh" invisible="1"/>
                     <div class="alert alert-danger"
@@ -74,7 +74,6 @@
                             <field name="credential_number" readonly="1" force_save="1"/>
                             <field name="personal_phone" readonly="1" force_save="1"/>
                             <field name="mobile_phone" readonly="1"/>
-                            <field name="personal_phone" force_save="1"/>
                         </group>
                         <group>
                             <field name="email" readonly="1"/>
