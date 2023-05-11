@@ -18,7 +18,7 @@
             <field name="inherit_id" ref="onsc_legajo.onsc_legajo_alta_vl_form"/>
             <field name="arch" type="xml">
                 <header position="inside">
-                    <button name="action_call_ws4" class="btn btn-primary oe_edit_only"
+                    <button name="action_call_ws4" class="btn btn-primary"
                             type="object" string="Enviar a SGH"
                             groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
                             states="borrador,error_sgh"
@@ -78,12 +78,16 @@
                         </group>
                         <group>
                             <field name="email" readonly="1"/>
+                            <field name="country_code" readonly="1" force_save="1"/>
                             <field name="cv_address_location_id" readonly="1"/>
                             <field name="cv_address_nro_door" readonly="1"/>
                             <field name="cv_address_apto" readonly="1"/>
                             <field name="cv_address_zip" readonly="1"/>
                             <field name="cv_address_state_id" readonly="1" force_save="1"/>
-                            <field name="cv_address_street_id" readonly="1" force_save="1"/>
+                            <field name="cv_address_street_id" readonly="1" force_save="1"
+                                   attrs="{'invisible': [('country_code', '!=', 'UY')]}"/>
+                            <field name="cv_address_street" string="Calle"
+                                   attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
                             <field name="cv_address_is_cv_bis" readonly="1"/>
                             <field name="cv_address_place" readonly="1"/>
                             <field name="cv_address_block" readonly="1"/>
@@ -97,9 +101,9 @@
                             class="btn btn-primary oe_edit_only" string="Buscar vacantes"
                             style="width: 10%;"
                             states="borrador,error_sgh"
-                            attrs="{'invisible': [('is_presupuestado', '=', False), ('is_reserva_sgh', '=', False)]}"/>
+                            attrs="{'invisible': ['|','&amp;',('is_presupuestado', '=', False), ('is_reserva_sgh', '=', False)]}"/>
                     <field name="vacante_ids" nolabel="1"
-                           attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}">
+                           attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}" readonly="1" force_save="1">
                         <tree string="Vacantes" create="false" delete="false">
                             <field name="selected" nolabel="1"
                                    groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
@@ -108,7 +112,6 @@
                             <field name="Dsc4Descripcion" readonly="1"/>
                             <field name="nroPuesto" readonly="1"/>
                             <field name="nroPlaza" readonly="1"/>
-                            <field name="fechaReserva" readonly="1" string="Fecha de creación"/>
                             <field name="descripcionJornadaFormal" readonly="1"/>
                         </tree>
                     </field>

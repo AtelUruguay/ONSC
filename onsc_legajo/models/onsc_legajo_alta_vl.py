@@ -97,16 +97,12 @@ class ONSCLegajoAltaVL(models.Model):
     department_id_domain = fields.Char(compute='_compute_department_id_domain')
     is_responsable_uo = fields.Boolean(string="¿Responsable de UO?", related="security_job_id.is_uo_manager",
                                        store=True)
-    program_id = fields.Many2one('onsc.legajo.office', string='Programa', copy=False,
+    program_project_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto', copy=False,
                                  domain="[('inciso', '=', inciso_id),('unidadEjecutora', '=', operating_unit_id)]",
                                  readonly=True,
                                  states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    project_id = fields.Many2one('onsc.legajo.office', string='Proyecto', copy=False,
-                                 readonly=True,
-                                 states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    project_domain_id = fields.Char(compute='_compute_project_domain')
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada retributiva',
-                                         domain="[('office_id', '=', project_id)]", copy=False,
+                                         domain="[('office_id', '=', program_project_id)]", copy=False,
                                          readonly=True,
                                          states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     is_reserva_sgh = fields.Boolean(string="¿Tiene reserva en SGH?", copy=False,
@@ -257,20 +253,16 @@ class ONSCLegajoAltaVL(models.Model):
         if self.operating_unit_id and self.operating_unit_id.inciso_id.id != self.inciso_id.id:
             self.operating_unit_id = False
             self.department_id = False
-            self.program_id = False
-            self.project_id = False
+            self.program_project_id = False
             self.retributive_day_id = False
 
     @api.onchange('operating_unit_id')
     def onchange_operating_unit(self):
         self.department_id = False
-        self.program_id = False
-        self.project_id = False
+        self.program_project_id = False
         self.retributive_day_id = False
 
-    @api.onchange('program_id')
-    def onchange_program(self):
-        self.project_id = False
+
 
     @api.onchange('descriptor1_id')
     def onchange_descriptor1(self):
@@ -334,20 +326,6 @@ class ONSCLegajoAltaVL(models.Model):
                     ('operating_unit_id', '=', rec.operating_unit_id.id)
                 ], domain])
             rec.department_id_domain = json.dumps(domain)
-
-    @api.depends('inciso_id', 'operating_unit_id', 'program_id')
-    def _compute_project_domain(self):
-        for rec in self:
-            args = [('id', 'in', [])]
-            if rec.program_id:
-                args = [('programa', '=', rec.program_id.programa)]
-            if rec.inciso_id:
-                args = expression.AND([[('inciso', '=', rec.inciso_id.id)], args])
-            if rec.operating_unit_id:
-                args = expression.AND([[
-                    ('unidadEjecutora', '=', rec.operating_unit_id.id)
-                ], args])
-            rec.project_domain_id = json.dumps(args)
 
     @api.depends('inciso_id', 'operating_unit_id', 'is_reserva_sgh')
     def _compute_descriptor1_domain_id(self):

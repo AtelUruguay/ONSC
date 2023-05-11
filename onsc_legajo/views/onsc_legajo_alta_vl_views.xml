@@ -50,12 +50,8 @@
                                                domain="operating_unit_id_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="date_start"/>
-                                        <field name="program_id" context="{'show_only_program':True}"
+                                        <field name="program_project_id" context="{'show_project_program':True}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="project_id" domain="project_domain_id"
-                                               context="{'show_only_project':True}"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="project_domain_id" invisible="1"/>
                                     </group>
                                     <group name="group3_right">
                                         <field name="is_reserva_sgh"/>

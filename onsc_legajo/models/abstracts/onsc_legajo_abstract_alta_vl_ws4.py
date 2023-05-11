@@ -43,8 +43,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             })
 
         data['altaDetalle'][0].update({
-            'programa': record.program_id.programa or '0',
-            'proyecto': record.project_id.proyecto or '0',
+            'programa': record.program_project_id.programa or '0',
+            'proyecto': record.program_project_id.proyecto or '0',
             'descripcionMotivo': record.reason_description,
             'numeroNorma': record.norm_number or '',
             'articuloNorma': record.norm_article or '',
