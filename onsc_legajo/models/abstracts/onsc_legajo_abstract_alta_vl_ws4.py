@@ -103,12 +103,18 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 'telefonoMovil': record.mobile_phone,
             })
 
+        if record.cv_address_street_id and record.cv_address_street_id.code:
+            calleCod = record.cv_address_street_id.code
+        elif record.cv_address_street:
+            calleCod = record.cv_address_street
+        else:
+            calleCod = '9999999999'
         data['altaDetalle'][0].update({
             'eMail': record.email,
-            'deptoCod': '10',
+            'deptoCod': record.cv_address_state_id.code or '99',
             # TODO default 99 : record.cv_address_state_id.code or '99', Codigo de departamento  en nuestro catalogo son string
             'localidadCod': record.cv_address_location_id.code if record.cv_address_location_id and record.cv_address_location_id.code else '9999999999',
-            'calleCod': record.cv_address_street_id.code if record.cv_address_street_id and record.cv_address_street_id.code else '9999999999',
+            'calleCod': calleCod,
         })
 
         if record.cv_address_nro_door:
