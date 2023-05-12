@@ -161,6 +161,10 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             data['altaDetalle'][0].update({
                 'mutuCod': record.health_provider_id.code,
             })
+        else:
+            data['altaDetalle'][0].update({
+                'mutuCod': '99',
+            })
 
         if record.date_income_public_administration:
             data['altaDetalle'][0].update({
