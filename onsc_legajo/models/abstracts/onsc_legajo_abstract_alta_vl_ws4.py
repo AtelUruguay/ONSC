@@ -189,6 +189,9 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 'fechaGradAsig': record.graduation_date.strftime('%d/%m/%Y')
             })
 
+        _logger.info('******************WS4')
+        _logger.info(data)
+        _logger.info('******************WS4')
         return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, 'WS4',
                                                                                    integration_error, data)
 
