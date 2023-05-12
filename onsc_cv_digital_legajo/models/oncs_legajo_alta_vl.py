@@ -283,6 +283,12 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append(record._fields['call_number'].string)
             if not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
+            if record.health_provider_id and record.health_provider_id.code:
+                try:
+                    if len(str(int(record.health_provider_id.code))) >= 3:
+                        message.append("El código de prestador de salud debe tener 3 dígitos")
+                except ValueError:
+                    message.append("El código de prestador de salud debe ser numérico")
 
         if message:
             fields_str = '\n'.join(message)

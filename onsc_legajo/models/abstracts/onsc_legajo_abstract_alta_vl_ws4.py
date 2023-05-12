@@ -20,84 +20,174 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         wsclient = self._get_client(parameter, '', integration_error)
 
         data = {
-            'inciso': record.inciso_id.budget_code or '0',
-            'ue': record.operating_unit_id.budget_code or '0',
+            'inciso': record.inciso_id.budget_code,
+            'ue': record.operating_unit_id.budget_code,
             'descripcion': 'prueba WS',
             'presupuestales': 'S' if record.is_presupuestado else 'N',
             'altaDetalle': [
-                {'fechaAlta': record.date_start.strftime('%d/%m/%Y') if record.date_start else '',
-                 'cedula': record.partner_id.cv_nro_doc[:-1] or '',
-                 'digitoVerificador': record.partner_id.cv_nro_doc[-1] or '',
-                 'primerApellido': record.partner_id.cv_last_name_1 or '',
-                 'segundoApellido': record.partner_id.cv_last_name_2 or '',
-                 'primerNombre': record.partner_id.cv_first_name or '',
-                 'segundoNombre': record.partner_id.cv_second_name or '',
-                 'codRegimen': record.regime_id.codRegimen or '',
-                 'codPartida': record.partida_id.codPartida or '',
+                {'fechaAlta': record.date_start.strftime('%d/%m/%Y'),
+                 'cedula': record.partner_id.cv_nro_doc[:-1],
+                 'digitoVerificador': record.partner_id.cv_nro_doc[-1],
+                 'primerApellido': record.partner_id.cv_last_name_1,
                  }]
         }
+        if record.partner_id.cv_last_name_2:
+            data['altaDetalle'][0].update({
+                'segundoApellido': record.partner_id.cv_last_name_2
+            })
+        data['altaDetalle'][0].update({
+            'primerNombre': record.partner_id.cv_first_name,
+        })
+        if record.partner_id.cv_second_name:
+            data['altaDetalle'][0].update({
+                'segundoNombre': record.partner_id.cv_second_name
+            })
+        if record.regime_id and record.regime_id.codRegimen:
+            data['altaDetalle'][0].update({
+                'codRegimen': record.regime_id.codRegimen,
+            })
+
+        if record.partida_id and record.partida_id.codPartida:
+            data['altaDetalle'][0].update({
+                'codPartida': record.partida_id.codPartida,
+            })
+
         if record.is_presupuestado:
             data['altaDetalle'][0].update({
-                'nroPuesto': record.nroPuesto or '0',
-                'nroPlaza': record.nroPlaza or '0',
+                'nroPuesto': record.nroPuesto,
+                'nroPlaza': record.nroPlaza,
             })
 
         data['altaDetalle'][0].update({
-            'programa': record.program_project_id.programa or '0',
-            'proyecto': record.program_project_id.proyecto or '0',
+            'programa': record.program_project_id.programa,
+            'proyecto': record.program_project_id.proyecto,
             'descripcionMotivo': record.reason_description,
-            'numeroNorma': record.norm_number or '',
-            'articuloNorma': record.norm_article or '',
-            'tipoNormaSigla': record.norm_id.tipoNormaSigla or '',
-            'anioNorma': str(record.norm_year) or '',
-            'descripcionResolucion': record.resolution_description or '',
-            'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y') if record.resolution_date else '',
-            'tipoResolucion': record.resolution_type or '',
-            'codigoEstadoCivil': record.marital_status_id.code or '1',
-            'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y') if record.cv_birthdate else '',
-            'sexo': 'M' if record.cv_sex=='male' else 'F',
-            'lugarDeNacimiento': record.country_of_birth_id.name if record.country_of_birth_id else '',
+            'numeroNorma': record.norm_number,
+            'articuloNorma': record.norm_article,
+            'tipoNormaSigla': record.norm_id.tipoNormaSigla,
+            'anioNorma': str(record.norm_year),
+            'descripcionResolucion': record.resolution_description,
+            'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y'),
+            'tipoResolucion': record.resolution_type,
+
+        })
+
+        if record.marital_status_id and record.marital_status_id.code:
+            data['altaDetalle'][0].update({
+                'codigoEstadoCivil': record.marital_status_id.code,
+            })
+
+        data['altaDetalle'][0].update({
+            'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y'),
+            'sexo': 'M' if record.cv_sex == 'male' else 'F',
+        })
+
+        if record.country_of_birth_id.name:
+            data['altaDetalle'][0].update({
+                'lugarDeNacimiento': record.country_of_birth_id.name,
+            })
+
+        data['altaDetalle'][0].update({
             'tipoCiudadania': 'N',  # FIXME Hardcode WS4 solo permite nacionalidad uruguaya
             'nacionalidad': 'URUGUAYA',  # FIXME Hardcode WS4 solo permite nacionalidad uruguaya
-            'serieCredencial': record.crendencial_serie or '',
-            'numeroCredencial': record.credential_number or '',
-            'telefonoAlternativo': record.personal_phone or '',
-            'telefonoMovil': record.mobile_phone or '',
-            'eMail': record.email or '',
+            'serieCredencial': record.crendencial_serie,
+            'numeroCredencial': record.credential_number,
+        })
+
+        if record.personal_phone:
+            data['altaDetalle'][0].update({
+                'telefonoAlternativo': record.personal_phone,
+            })
+        if record.mobile_phone:
+            data['altaDetalle'][0].update({
+                'telefonoMovil': record.mobile_phone,
+            })
+
+        data['altaDetalle'][0].update({
+            'eMail': record.email,
             'deptoCod': '10',
             # TODO default 99 : record.cv_address_state_id.code or '99', Codigo de departamento  en nuestro catalogo son string
             'localidadCod': record.cv_address_location_id.code if record.cv_address_location_id and record.cv_address_location_id.code else '9999999999',
             'calleCod': record.cv_address_street_id.code if record.cv_address_street_id and record.cv_address_street_id.code else '9999999999',
-            'numeroDePuerta': record.cv_address_nro_door or '0',
-            'callCodEntre1': record.cv_address_street2_id.code or '0',
-            'callCodEntre2': record.cv_address_street3_id.code or '0',
-            'bis': '1' if record.cv_address_is_cv_bis else '0',
-            'apto': record.cv_address_apto or '0',
-            'paraje': record.cv_address_place or '0',
-            'codigoPostal': record.cv_address_zip or '0',
-            'manzana': record.cv_address_block or '0',
-            'solar': record.cv_address_sandlot or '0',
-            'mutuCod': record.health_provider_id.code if record.health_provider_id else '0',
-            'fechaDeIngresoAlaAdm': record.date_income_public_administration.strftime(
-                '%d/%m/%Y') if record.date_income_public_administration else '',
-            'aniosInactividad': record.inactivity_years or '0',
-            'UO': record.department_id.code or '0',
         })
 
-        if record.contract_expiration_date:
+        if record.cv_address_nro_door:
             data['altaDetalle'][0].update({
-                'fechaVencimientoDelContrato': record.contract_expiration_date.strftime(
-                    '%d/%m/%Y') if record.contract_expiration_date else '',
+                'numeroDePuerta': record.cv_address_nro_door,
+            })
+        if record.cv_address_street2_id and record.cv_address_street2_id.code:
+            data['altaDetalle'][0].update({
+                'callCodEntre1': record.cv_address_street2_id.code,
+            })
+        if record.cv_address_street3_id and record.cv_address_street3_id.code:
+            data['altaDetalle'][0].update({
+                'callCodEntre2': record.cv_address_street3_id.code,
             })
 
         data['altaDetalle'][0].update({
-            'jornadaReal': record.codigoJornadaFormal or '0',
-            'jornadaRetributiva': record.retributive_day_id.codigoJornada or '0',
-            'responsableUO': 'S' if record.is_responsable_uo else 'N',
-            'codigoOcupacion': record.occupation_id.code if record.occupation_id else '0',
-            'fechaGradAsig': record.graduation_date.strftime(
-                '%d/%m/%Y') if record.graduation_date else '',
+            'bis': '1' if record.cv_address_is_cv_bis else '0',
         })
+
+        if record.cv_address_apto:
+            data['altaDetalle'][0].update({
+                'apto': record.cv_address_apto,
+            })
+        if record.cv_address_place:
+            data['altaDetalle'][0].update({
+                'paraje': record.cv_address_place,
+            })
+        if record.cv_address_zip:
+            data['altaDetalle'][0].update({
+                'codigoPostal': record.cv_address_zip,
+            })
+
+        if record.cv_address_block:
+            data['altaDetalle'][0].update({
+                'manzana': record.cv_address_block,
+            })
+
+        if record.cv_address_sandlot:
+            data['altaDetalle'][0].update({
+                'solar': record.cv_address_sandlot,
+            })
+
+        if record.health_provider_id and record.health_provider_id.code:
+            data['altaDetalle'][0].update({
+                'mutuCod': record.health_provider_id.code,
+            })
+
+        if record.date_income_public_administration:
+            data['altaDetalle'][0].update({
+                'fechaDeIngresoAlaAdm': record.date_income_public_administration.strftime('%d/%m/%Y')
+            })
+
+        if record.inactivity_years:
+            data['altaDetalle'][0].update({
+                'aniosInactividad': record.inactivity_years,
+            })
+
+        if record.department_id and record.department_id.code:
+            data['altaDetalle'][0].update({
+                'UO': record.department_id.code,
+            })
+
+        if record.contract_expiration_date:
+            data['altaDetalle'][0].update({
+                'fechaVencimientoDelContrato': record.contract_expiration_date.strftime('%d/%m/%Y'),
+            })
+        if record.codigoJornadaFormal:
+            data['altaDetalle'][0].update({
+                'jornadaReal': record.codigoJornadaFormal,
+            })
+        data['altaDetalle'][0].update({
+            'jornadaRetributiva': record.retributive_day_id.codigoJornada,
+            'responsableUO': 'S' if record.is_responsable_uo else 'N',
+            'codigoOcupacion': record.occupation_id.code,
+        })
+        if record.graduation_date:
+            data['altaDetalle'][0].update({
+                'fechaGradAsig': record.graduation_date.strftime('%d/%m/%Y')
+            })
 
         return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, 'WS4',
                                                                                    integration_error, data)
