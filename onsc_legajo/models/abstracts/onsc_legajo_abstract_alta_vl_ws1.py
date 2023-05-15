@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import datetime
 import logging
 
 from odoo import models, tools, api
 
 _logger = logging.getLogger(__name__)
-import datetime
 
 
 class ONSCLegajoAbstractSyncW1(models.AbstractModel):

@@ -306,9 +306,8 @@ class ONSCLegajoAltaVL(models.Model):
     def _compute_is_readonly(self):
         for rec in self:
             rec.is_inciso_readonly = (self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or
-                                      self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')) \
-                                     and not self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')) and not self.user_has_groups(
                 'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
             rec.is_operating_unit_readonly = self.user_has_groups(
                 'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue') and not self.user_has_groups(
