@@ -214,7 +214,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
 
         with self._cr.savepoint():
             if not hasattr(response, 'altaSGHMovimientoRespuesta'):
-                return "No se pudo conectar con el servicio web"
+                return "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
 
             if response.altaSGHMovimientoRespuesta:
                 for external_record in response.altaSGHMovimientoRespuesta:
@@ -237,7 +237,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                             integration_log=integration_error_WS14_9001,
                             ws_tuple=external_record,
                             long_description=tools.ustr(e))
-                        return "Error al sincronizar con el servicio web"
+                        return "Se ha procudido un error al procesar la respuesta del servicio web, por favor consulte con el administrador del sistema"
 
             else:
                 return "No se obtuvo respuesta del servicio web"
