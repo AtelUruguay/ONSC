@@ -5,7 +5,7 @@
             <field name="name">onsc.legajo.hr.employee.search</field>
             <field name="model">hr.employee</field>
             <field name="arch" type="xml">
-                <search string="Empleados">
+                <search string="Funcionarios">
                     <field name="name" string="Empleado"/>
                 </search>
             </field>
@@ -15,7 +15,7 @@
             <field name="name">onsc.legajo.hr.employee.tree</field>
             <field name="model">hr.employee</field>
             <field name="arch" type="xml">
-                <tree string="Empleados">
+                <tree string="Funcionarios">
                     <field name="full_name"/>
                     <field name="cv_emissor_country_id"/>
                     <field name="cv_document_type_id"/>
@@ -28,7 +28,7 @@
             <field name="name">onsc.legajo.hr.employee.form</field>
             <field name="model">hr.employee</field>
             <field name="arch" type="xml">
-                <form string="Empleados">
+                <form string="Funcionarios">
                     <header>
                     </header>
                     <sheet>
@@ -72,13 +72,13 @@
         </record>
 
         <record id='onsc_legajo_hr_employee_action' model='ir.actions.act_window'>
-            <field name="name">Empleados</field>
+            <field name="name">Funcionarios</field>
             <field name="res_model">hr.employee</field>
             <field name="view_mode">tree,form</field>
             <field name="context">{'is_legajo': True}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Crear un nuevo empleado
+                    Crear un nuevo funcionario
                 </p>
             </field>
             <field name="search_view_id" ref="onsc_legajo.onsc_legajo_hr_employee_search"/>
@@ -88,7 +88,7 @@
         </record>
 
         <record id='onsc_legajo_one_employee_action' model='ir.actions.act_window'>
-            <field name="name">Empleados</field>
+            <field name="name">Funcionarios</field>
             <field name="res_model">hr.employee</field>
             <field name="view_mode">form</field>
             <field name="context">{'is_legajo': True}</field>
