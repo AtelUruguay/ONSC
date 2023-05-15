@@ -26,9 +26,9 @@ class ONSCLegajoAltaVL(models.Model):
         res = super(ONSCLegajoAltaVL, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                             submenu=submenu)
         doc = etree.XML(res['arch'])
-        if view_type in ['form', 'tree', 'kanban'] and self.env.user.has_group(
-                'onsc_legajo.group_legajo_alta_vl_consulta_altas_vl') and not self.env.user.has_group(
-            'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl'):
+        is_user_alta_vl = self.env.user.has_group('onsc_legajo.group_legajo_alta_vl_consulta_altas_vl')
+        is_user_administrar_altas_vl = self.env.user.has_group('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
+        if view_type in ['form', 'tree', 'kanban'] and is_user_alta_vl and not is_user_administrar_altas_vl:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('create', '0')
                 node_form.set('edit', '0')
