@@ -12,7 +12,7 @@ required_fields = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date
                    'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description', 'resolution_date',
                    'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
                    'retributive_day_id', 'occupation_id',
-                   'date_income_public_administration', 'department_id', 'date_start', 'security_job_id']
+                   'date_income_public_administration', 'department_id','security_job_id']
 
 
 class ONSCLegajoAltaVL(models.Model):
@@ -290,6 +290,17 @@ class ONSCLegajoAltaVL(models.Model):
                 except ValueError:
                     message.append("El código de prestador de salud debe ser numérico")
 
+            if record.is_responsable_uo and record.department_id:
+                domain_alta = [
+                    ('state', '=', 'pendiente_auditoria_cgn'),
+                    ('department_id', '=', record.department_id.id),
+                ]
+                count = self.search_count(domain_alta)
+                if count:
+                    message.append(
+                        "Ya existe un alta de vínvulo laboral pendiente de auditoría para el departamento seleccionado")
+                if not count and record.department_id.manager_id:
+                    message.append("El departamento ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
             message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str

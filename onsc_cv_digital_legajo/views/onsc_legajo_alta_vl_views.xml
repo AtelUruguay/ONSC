@@ -106,12 +106,13 @@
                         <tree string="Vacantes" create="false" delete="false">
                             <field name="selected" nolabel="1"
                                    groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
-                                   widget="boolean_toggle" force_save="1" class="oe_edit_only"/>
+                                   widget="boolean_toggle" force_save="1" class="oe_edit_only" attrs="{'invisible': [('state', 'not in', ['borrador','error_sgh'])]}"/>
                             <field name="Dsc3Descripcion" readonly="1"/>
                             <field name="Dsc4Descripcion" readonly="1"/>
                             <field name="nroPuesto" readonly="1"/>
                             <field name="nroPlaza" readonly="1"/>
                             <field name="descripcionJornadaFormal" readonly="1"/>
+                            <field name="state" invisible="1"/>
                         </tree>
                     </field>
                 </xpath>

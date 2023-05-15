@@ -135,7 +135,7 @@
                                     <group name="motivo_left">
                                         <field name="reason_description" colspan="4"/>
                                         <field name="norm_id" colspan="3"
-                                               context="{'show_concatenated_description':True}"
+                                               context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="norm_type" colspan="2"/>
                                         <field name="norm_number" colspan="2"/>
