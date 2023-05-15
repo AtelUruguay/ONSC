@@ -327,3 +327,8 @@ class ONSCLegajoAltaVL(models.Model):
         self.cv_sex = False
         self.cv_birthdate = False
         self.cv_address_street_id = False
+
+    def _get_legajo_employee(self):
+        employee = super(ONSCLegajoAltaVL, self)._get_legajo_employee()
+        employee.button_get_info_fromcv()
+        return employee

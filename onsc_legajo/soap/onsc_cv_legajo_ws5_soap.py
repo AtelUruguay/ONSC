@@ -3,19 +3,19 @@
 
 import logging
 
-import odoo
-from odoo import api, SUPERUSER_ID
-from odoo.addons.ws_int_base.utils.service_registration import register_service
-from odoo.modules.registry import Registry
-from spyne import ServiceBase, ComplexModel
-from spyne import Unicode, Boolean
-from spyne import rpc
-from spyne.model.fault import Fault
-
-from . import soap_error_codes as cv_error_codes
 from odoo.addons.onsc_base.soap import soap_error_codes as onsc_error_codes
 from odoo.addons.onsc_base.soap.check_user_db import CheckUserDBName
 from odoo.addons.onsc_base.soap.onsc_base_soap import ErrorHandler, WsResponse
+from odoo.addons.ws_int_base.utils.service_registration import register_service
+from spyne import ServiceBase, ComplexModel
+from spyne import Unicode
+from spyne import rpc
+from spyne.model.fault import Fault
+
+import odoo
+from odoo import api, SUPERUSER_ID
+from odoo.modules.registry import Registry
+from . import soap_error_codes as legajo_error_codes
 
 _logger = logging.getLogger(__name__)
 
@@ -23,28 +23,24 @@ NAMESPACE_BASE = "http://quanam.com/encuestas/abc/"
 NAMESPACE_BASE_V1 = NAMESPACE_BASE
 
 
-class WsCVCierreLlamadoRequest(ComplexModel):
+class WsLegajoWS5Request(ComplexModel):
     __type_name__ = 'service_request'
     __namespace__ = NAMESPACE_BASE_V1
 
     _type_info = [
-        ('nroLlamado', Unicode(min_occurs=1)),
-        ('unidadEjecutora', Unicode(min_occurs=1)),
-        ('trans', Boolean(min_occurs=1)),
-        ('afro', Boolean(min_occurs=1)),
-        ('discapacidad', Boolean(min_occurs=1)),
-        ('victimaDelitos', Boolean(min_occurs=1)),
+        ('pdaId', Unicode(min_occurs=1)),
+        ('codResult', Unicode(min_occurs=1)),
     ]
 
 
-class WsCVCierreLlamado(ServiceBase):
-    __service_url_path__ = 'cierreLLamado'
+class WsCVPostulacion(ServiceBase):
+    __service_url_path__ = 'legajo_ws5'
     __target_namespace__ = NAMESPACE_BASE_V1
 
-    @rpc(WsCVCierreLlamadoRequest.customize(nullable=False, min_occurs=1),
+    @rpc(WsLegajoWS5Request.customize(nullable=False, min_occurs=1),
          _body_style='bare',
          _returns=WsResponse)
-    def cierreLLamado(self, request):
+    def legajo_ws5(self, request):
         # pylint: disable=invalid-commit
         try:
             cr = False
@@ -54,10 +50,9 @@ class WsCVCierreLlamado(ServiceBase):
             registry = odoo.registry(dbname)
             cr = registry.cursor()
             env = api.Environment(cr, uid, {})
-            parameter = env['ir.config_parameter'].sudo().get_param('parameter_ws_postulation_user')
+            parameter = env['ir.config_parameter'].sudo().get_param('parameter_ws5_user')
             if env['res.users'].sudo().browse(integration_uid).login != parameter:
                 onsc_error_codes._raise_fault(onsc_error_codes.AUTH_51)
-
         except Fault as e:
             if cr:
                 cr.rollback()
@@ -76,13 +71,12 @@ class WsCVCierreLlamado(ServiceBase):
             return response
 
         try:
-            env['onsc.cv.digital.call'].call_close(
-                request.nroLlamado,
-                request.unidadEjecutora,
-                request.trans,
-                request.afro,
-                request.discapacidad,
-                request.victimaDelitos)
+            alta_vl = env['onsc.legajo.alta.vl'].search([
+                ('pda_id', '=', request.pdaId),
+                ('state', '=', 'pendiente_auditoria_cgn')], limit=1)
+            if not alta_vl:
+                onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_151)
+            alta_vl._create_legajo()
             cr.commit()
             return WsResponse(result='ok', errors=[])
         except Fault as e:
@@ -93,7 +87,7 @@ class WsCVCierreLlamado(ServiceBase):
             return response
         except Exception as e:
             cr.rollback()
-            logic_150_extended = cv_error_codes.LOGIC_150
+            logic_150_extended = onsc_error_codes.LOGIC_150
             if hasattr(e, 'name') and isinstance(e.name, str):
                 logic_150_extended['long_desc'] = e.name
             error_item = ErrorHandler(code=logic_150_extended.get('code'),
@@ -107,4 +101,4 @@ class WsCVCierreLlamado(ServiceBase):
             cr.close()
 
 
-register_service(WsCVCierreLlamado)
+register_service(WsCVPostulacion)

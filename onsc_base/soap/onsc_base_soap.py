@@ -28,7 +28,7 @@ class ErrorHandler(ComplexModel):
     _type_info_alt = []
 
 
-class WsCVResponse(BaseComplexType):
+class WsResponse(BaseComplexType):
     __type_name__ = 'service_response'
     _type_info = {
         'result': Unicode(min_occurs=1),

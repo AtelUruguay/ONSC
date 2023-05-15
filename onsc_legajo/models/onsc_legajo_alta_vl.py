@@ -28,16 +28,16 @@ class ONSCLegajoAltaVL(models.Model):
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoAltaVL, self).fields_get(allfields, attributes)
         hide = ['document_identity_file', 'document_identity_filename', 'civical_credential_file',
-                'civical_credential_filename','is_cv_race_public','cv_gender_record_filename',
+                'civical_credential_filename', 'is_cv_race_public', 'cv_gender_record_filename',
                 'cjppu_affiliate_number', 'professional_resume', 'user_linkedIn', 'is_driver_license', 'cv_gender2',
                 'cv_gender_id', 'is_afro_descendants', 'is_occupational_health_card', 'occupational_health_card_date',
                 'is_medical_aptitude_certificate_status', 'medical_aptitude_certificate_date', 'is_victim_violent',
                 'is_public_information_victim_violent', 'allow_content_public', 'situation_disability',
                 'people_disabilitie', 'certificate_date', 'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear',
                 'interaction', 'need_other_support', 'afro_descendants_file', 'occupational_health_card_file',
-                'occupational_health_card_filename','relationship_victim_violent_filename','is_cv_gender_public',
+                'occupational_health_card_filename', 'relationship_victim_violent_filename', 'is_cv_gender_public',
                 'medical_aptitude_certificate_file', 'relationship_victim_violent_file', 'document_certificate_file',
-                'document_certificate_filename','afro_descendants_filename']
+                'document_certificate_filename', 'afro_descendants_filename']
         for field in hide:
             if field in res:
                 res[field]['selectable'] = False
@@ -423,6 +423,34 @@ class ONSCLegajoAltaVL(models.Model):
     def action_gafi_error(self):
         for rec in self:
             rec.state = 'gafi_error'
+
+    def _create_legajo(self):
+        Legajo = self.env['onsc.legajo']
+        return Legajo.create(self._prepare_legajo_value())
+
+
+    def _prepare_legajo_value(self):
+        return {
+            'employee_id': self._get_legajo_employee().id,
+            'public_admin_entry_date': self.date_income_public_administration,
+            'public_admin_inactivity_years_qty': self.inactivity_years
+        }
+
+    def _get_legajo_employee(self):
+        Employee = self.env['hr.employee']
+        employee = Employee.search([
+            ('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
+            ('cv_document_type_id', '=', self.cv_document_type_id.id),
+            ('cv_nro_doc', '=', self.cv_nro_doc),
+        ], limit=1)
+        if not employee:
+            employee = Employee.create({
+                'cv_emissor_country_id': self.cv_emissor_country_id.id,
+                'cv_document_type_id': self.cv_document_type_id.id,
+                'cv_nro_doc': self.partner_id.cv_nro_doc
+            })
+        return employee
+
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):

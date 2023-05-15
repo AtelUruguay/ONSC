@@ -25,5 +25,9 @@
             <field name="key">onsc_legajo_WS4_altaSGH</field>
             <field name="value"></field>
         </record>
+        <record id="parameter_ws5_user" model="ir.config_parameter">
+            <field name="key">parameter_ws5_user</field>
+            <field name="value"></field>
+        </record>
     </data>
 </odoo>
