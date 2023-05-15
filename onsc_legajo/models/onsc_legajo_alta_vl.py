@@ -281,13 +281,13 @@ class ONSCLegajoAltaVL(models.Model):
     def onchange_nroPuesto(self):
         if self.nroPuesto and not self.nroPuesto.isnumeric():
             self.nroPuesto = ''
-            return warning_response(_("El campo puesto debe ser numérico"))
+            return warning_response(_("El campo Puesto debe ser numérico"))
 
     @api.onchange('nroPlaza')
     def onchange_nroPlaza(self):
         if self.nroPlaza and not self.nroPlaza.isnumeric():
             self.nroPlaza = ''
-            return warning_response(_("El campo plaza debe ser numérico"))
+            return warning_response(_("El campo Plaza debe ser numérico"))
 
     @api.depends('descriptor1_id', 'descriptor2_id', 'descriptor3_id', 'descriptor4_id')
     def _compute_partida(self):
