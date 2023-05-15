@@ -295,11 +295,11 @@ class ONSCLegajoAltaVL(models.Model):
                     ('state', '=', 'pendiente_auditoria_cgn'),
                     ('department_id', '=', record.department_id.id),
                 ]
-                altas = self.search_count(domain_alta)
-                if altas:
+                count = self.search_count(domain_alta)
+                if count:
                     message.append(
                         "Ya existe un alta de vínvulo laboral pendiente de auditoría para el departamento seleccionado")
-                if not altas and record.department_id.manager_id:
+                if not count and record.department_id.manager_id:
                     message.append("El departamento ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
