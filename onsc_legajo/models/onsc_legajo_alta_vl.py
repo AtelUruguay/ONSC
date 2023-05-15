@@ -303,7 +303,7 @@ class ONSCLegajoAltaVL(models.Model):
     @api.onchange('nroPuesto')
     def onchange_nroPuesto(self):
         if self.nroPuesto and not self.nroPuesto.isnumeric():
-            self.self.nroPuesto = ''
+            self.nroPuesto = ''
         return warning_response(_("El número de puesto debe ser un número"))
 
     @api.onchange('nroPlaza')
