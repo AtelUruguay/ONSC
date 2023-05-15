@@ -90,6 +90,14 @@
         <field name="arch" type="xml">
             <search string="Normas">
                 <field name="pk"/>
+                <field name="tipoNorma"/>
+                <field name="numeroNorma"/>
+                <field name="anioNorma"/>
+                <field name="articuloNorma"/>
+                <filter string="Tipo de Norma" name="group_by_tipoNorma" context="{'group_by':'tipoNorma'}"/>
+                <filter string="Número" name="group_by_numeroNorma" context="{'group_by':'numeroNorma'}"/>
+                <filter string="Año" name="group_by_anioNorma" context="{'group_by':'anioNorma'}"/>
+                <filter string="Artículo" name="group_by_articuloNorma" context="{'group_by':'articuloNorma'}"/>
             </search>
         </field>
     </record>
@@ -120,10 +128,10 @@
         <field name="model">onsc.legajo.norm</field>
         <field name="arch" type="xml">
             <tree string="Normas">
-                <field name="anioNorma"/>
-                <field name="numeroNorma"/>
-                <field name="articuloNorma"/>
                 <field name="tipoNorma"/>
+                <field name="numeroNorma"/>
+                <field name="anioNorma"/>
+                <field name="articuloNorma"/>
             </tree>
         </field>
     </record>
