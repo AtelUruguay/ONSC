@@ -237,7 +237,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                             integration_log=integration_error_WS14_9001,
                             ws_tuple=external_record,
                             long_description=tools.ustr(e))
-                        return "Se ha procudido un error al procesar la respuesta del servicio web, por favor consulte con el administrador del sistema"
+                        return "Error devuelto por SGH: %s" % tools.ustr(e)
 
             else:
                 return "No se obtuvo respuesta del servicio web"
