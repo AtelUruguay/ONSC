@@ -234,23 +234,6 @@ class ONSCLegajoAltaVL(models.Model):
             if not record.attached_document_ids and record.state != 'borrador':
                 raise ValidationError(_("Debe haber al menos un documento adjunto"))
 
-    @api.constrains("is_responsable_uo", "date_start", "department_id")
-    def _check_responsable_uo(self):
-        for rec in self:
-            if rec.is_responsable_uo and rec.date_start and rec.department_id:
-                domain = [
-                    '&', '&', ('start_date', '<=', rec.date_start),
-                    '|', ('end_date', '>=', rec.date_start), ('end_date', '=', False),
-                    ('department_id', '=', False)]
-                jobs = self.env['hr.job'].search(domain).filtered(lambda x: x.security_job_id.is_uo_manager)
-                domain_alta = [
-                    ('state', '=', 'pendiente_auditoria_cgn'),
-                    ('date_start', '=', rec.date_start),
-                    ('department_id', '=', rec.department_id.id),
-                ]
-                altas = self.search(domain_alta)
-                if jobs or altas:
-                    raise ValidationError("Ya existe un puesto responsable de UO")
 
     @api.constrains("date_start")
     def _check_date(self):
@@ -304,13 +287,13 @@ class ONSCLegajoAltaVL(models.Model):
     def onchange_nroPuesto(self):
         if self.nroPuesto and not self.nroPuesto.isnumeric():
             self.nroPuesto = ''
-            return warning_response(_("El número de puesto debe ser un número"))
+            return warning_response(_("El campo puesto debe ser numérico"))
 
     @api.onchange('nroPlaza')
     def onchange_nroPlaza(self):
         if self.nroPlaza and not self.nroPlaza.isnumeric():
             self.nroPlaza = ''
-            return warning_response(_("El número de plaza debe ser un número"))
+            return warning_response(_("El campo plaza debe ser numérico"))
 
     @api.depends('descriptor1_id', 'descriptor2_id', 'descriptor3_id', 'descriptor4_id')
     def _compute_partida(self):

@@ -290,6 +290,17 @@ class ONSCLegajoAltaVL(models.Model):
                 except ValueError:
                     message.append("El código de prestador de salud debe ser numérico")
 
+            if record.is_responsable_uo and record.department_id:
+                domain_alta = [
+                    ('state', '=', 'pendiente_auditoria_cgn'),
+                    ('department_id', '=', record.department_id.id),
+                ]
+                altas = self.search(domain_alta)
+                if altas:
+                    message.append(
+                        "Ya existe un alta de vínvulo laboral pendiente de auditoría para el departamento seleccionado")
+                if not altas and record.department_id.manager_id:
+                    message.append("El departamento ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
             message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str
