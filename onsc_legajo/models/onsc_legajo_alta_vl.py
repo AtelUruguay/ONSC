@@ -6,6 +6,8 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
 _logger = logging.getLogger(__name__)
 
 STATES = [
@@ -28,16 +30,16 @@ class ONSCLegajoAltaVL(models.Model):
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoAltaVL, self).fields_get(allfields, attributes)
         hide = ['document_identity_file', 'document_identity_filename', 'civical_credential_file',
-                'civical_credential_filename','is_cv_race_public','cv_gender_record_filename',
+                'civical_credential_filename', 'is_cv_race_public', 'cv_gender_record_filename',
                 'cjppu_affiliate_number', 'professional_resume', 'user_linkedIn', 'is_driver_license', 'cv_gender2',
                 'cv_gender_id', 'is_afro_descendants', 'is_occupational_health_card', 'occupational_health_card_date',
                 'is_medical_aptitude_certificate_status', 'medical_aptitude_certificate_date', 'is_victim_violent',
                 'is_public_information_victim_violent', 'allow_content_public', 'situation_disability',
                 'people_disabilitie', 'certificate_date', 'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear',
                 'interaction', 'need_other_support', 'afro_descendants_file', 'occupational_health_card_file',
-                'occupational_health_card_filename','relationship_victim_violent_filename','is_cv_gender_public',
+                'occupational_health_card_filename', 'relationship_victim_violent_filename', 'is_cv_gender_public',
                 'medical_aptitude_certificate_file', 'relationship_victim_violent_file', 'document_certificate_file',
-                'document_certificate_filename','afro_descendants_filename']
+                'document_certificate_filename', 'afro_descendants_filename']
         for field in hide:
             if field in res:
                 res[field]['selectable'] = False
@@ -298,6 +300,17 @@ class ONSCLegajoAltaVL(models.Model):
     def onchange_descriptor3(self):
         self.descriptor4_id = False
 
+    @api.onchange('nroPuesto')
+    def onchange_nroPuesto(self):
+        if self.nroPuesto and not self.nroPuesto.isnumeric():
+            self.self.nroPuesto = ''
+        return warning_response(_("El número de puesto debe ser un número"))
+
+    @api.onchange('nroPlaza')
+    def onchange_nroPlaza(self):
+        if self.nroPlaza and not self.nroPlaza.isnumeric():
+            self.nroPlaza = ''
+        return warning_response(_("El número de plaza debe ser un número"))
 
     @api.depends('descriptor1_id', 'descriptor2_id', 'descriptor3_id', 'descriptor4_id')
     def _compute_partida(self):
