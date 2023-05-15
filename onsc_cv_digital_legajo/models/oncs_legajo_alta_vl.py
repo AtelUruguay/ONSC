@@ -12,7 +12,7 @@ required_fields = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date
                    'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description', 'resolution_date',
                    'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
                    'retributive_day_id', 'occupation_id',
-                   'date_income_public_administration', 'department_id', 'date_start', 'security_job_id']
+                   'date_income_public_administration', 'department_id','security_job_id']
 
 
 class ONSCLegajoAltaVL(models.Model):

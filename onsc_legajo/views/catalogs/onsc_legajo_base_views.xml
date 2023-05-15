@@ -114,7 +114,20 @@
             </tree>
         </field>
     </record>
-    
+
+    <record id="onsc_legajo_norm_min_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.norm.min.tree</field>
+        <field name="model">onsc.legajo.norm</field>
+        <field name="arch" type="xml">
+            <tree string="Normas">
+                <field name="anioNorma"/>
+                <field name="numeroNorma"/>
+                <field name="articuloNorma"/>
+                <field name="tipoNorma"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="onsc_legajo_norm_form" model="ir.ui.view">
         <field name="name">onsc.legajo.norm.form</field>
         <field name="model">onsc.legajo.norm</field>
@@ -154,7 +167,7 @@
             </p>
         </field>
     </record>
-    
+
     <!--OFICINA-->
     <record id="onsc_legajo_office_search" model="ir.ui.view">
         <field name="name">onsc.legajo.office.search</field>
