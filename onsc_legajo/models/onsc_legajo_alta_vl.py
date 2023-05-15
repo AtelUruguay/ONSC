@@ -255,12 +255,6 @@ class ONSCLegajoAltaVL(models.Model):
     @api.constrains("date_start")
     def _check_date(self):
         for record in self:
-            if record.date_start > fields.Date.today():
-                raise ValidationError(_("La fecha debe ser menor o igual al día de alta"))
-
-    @api.constrains("date_start")
-    def _check_date(self):
-        for record in self:
             if record.date_start and record.date_start > fields.Date.today():
                 raise ValidationError(_("La fecha debe ser menor o igual al día de alta"))
 
