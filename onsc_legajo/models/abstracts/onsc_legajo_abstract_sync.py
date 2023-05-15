@@ -34,7 +34,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 integration_log=integration_error,
                 ws_tuple=False,
                 long_description=tools.ustr(e))
-            return "Error al enviar datos al WS"
+            return "Error devuelto por SGH: " + tools.ustr(e)
         if hasattr(response, 'servicioResultado'):
             if response.servicioResultado.codigo == 0:
                 return self._populate_from_syncronization(response)

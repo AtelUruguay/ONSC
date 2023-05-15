@@ -298,6 +298,22 @@ class ONSCLegajoAltaVL(models.Model):
     def onchange_descriptor3(self):
         self.descriptor4_id = False
 
+    @api.onchange('nroPuesto')
+    def onchange_nroPuesto(self):
+        if self.nroPuesto:
+            try:
+                float(self.nroPuesto)
+            except ValueError:
+                return ValidationError(_("El número de puesto debe ser un número"))
+
+    @api.onchange('nroPlaza')
+    def onchange_nroPlaza(self):
+        if self.nroPlaza:
+            try:
+                float(self.nroPlaza)
+            except ValueError:
+                return ValidationError(_("El número de plaza debe ser un número"))
+
     @api.depends('descriptor1_id', 'descriptor2_id', 'descriptor3_id', 'descriptor4_id')
     def _compute_partida(self):
         for rec in self:
