@@ -17,4 +17,3 @@ class ONSCLegajoAltaVLAttachedDocument(models.Model):
     def _check_file(self):
         if str(self.document_file_name.split(".")[1]) != 'pdf':
             raise ValidationError("No puede adjuntar archivos diferentes de .pdf")
-

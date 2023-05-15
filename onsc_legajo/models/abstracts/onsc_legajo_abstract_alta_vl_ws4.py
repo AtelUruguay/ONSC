@@ -207,11 +207,6 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
 
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
-
-        integration_error_WS14_9000 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS14_9000")
-        integration_error_WS14_9001 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS14_9001")
-        integration_error_WS14_9002 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS14_9002")
-
         with self._cr.savepoint():
             if not hasattr(response, 'altaSGHMovimientoRespuesta'):
                 return "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
@@ -219,24 +214,9 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             if response.altaSGHMovimientoRespuesta:
                 for external_record in response.altaSGHMovimientoRespuesta:
                     try:
-                        print(external_record)
-                        if self._context.get('log_info'):
-                            self.create_new_log(
-                                origin='WS4',
-                                type='info',
-                                integration_log=integration_error_WS14_9000,
-                                ws_tuple=external_record,
-                                long_description='Evento: Creación'
-                            )
                         return external_record
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self.create_new_log(
-                            origin='WS4',
-                            type='error',
-                            integration_log=integration_error_WS14_9001,
-                            ws_tuple=external_record,
-                            long_description=tools.ustr(e))
                         return "Error devuelto por SGH: %s" % tools.ustr(e)
 
             else:

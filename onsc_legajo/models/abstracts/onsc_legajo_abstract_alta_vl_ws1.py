@@ -2,7 +2,7 @@
 
 import logging
 
-from odoo import models, tools, api, fields
+from odoo import models, tools, api
 
 _logger = logging.getLogger(__name__)
 import datetime
@@ -16,7 +16,6 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
     @api.model
     def syncronize(self, record, log_info=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS1_plazasVacantesCedula')
-        # cron = self.env.ref("onsc_legajo.sync_legajo_regime")
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9005")
 
         wsclient = self._get_client(parameter, '', integration_error)
@@ -65,11 +64,6 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
 
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
-
-        integration_error_WS14_9000 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS14_9000")
-        integration_error_WS14_9001 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS14_9001")
-        integration_error_WS14_9002 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS14_9002")
-
         with self._cr.savepoint():
             if not hasattr(response, 'listaPlazas'):
                 return "No se obtuvieron vacantes con los datos enviados"
@@ -100,27 +94,17 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
                             'estado': external_record.estado if hasattr(external_record, 'estado') else '',
                             'estadoDescripcion': external_record.estadoDescripcion if hasattr(external_record,
                                                                                               'estadoDescripcion') else '',
-                            'fechaVacantePLaza': datetime.datetime.strptime(external_record.fechaVacantePLaza,'%d/%m/%Y').date() if hasattr(external_record,'fechaVacantePLaza') else False,
-                            'fechaReserva': datetime.datetime.strptime(external_record.fechaReserva,'%d/%m/%Y').date() if hasattr(external_record,'fechaReserva') else False,
+                            'fechaVacantePLaza': datetime.datetime.strptime(external_record.fechaVacantePLaza,
+                                                                            '%d/%m/%Y').date() if hasattr(
+                                external_record, 'fechaVacantePLaza') else False,
+                            'fechaReserva': datetime.datetime.strptime(external_record.fechaReserva,
+                                                                       '%d/%m/%Y').date() if hasattr(external_record,
+                                                                                                     'fechaReserva') else False,
                         }
 
                         vacante_ids.append((0, 0, data))
-                        if self._context.get('log_info'):
-                            self.create_new_log(
-                                origin='',
-                                type='info',
-                                integration_log=integration_error_WS14_9000,
-                                ws_tuple=external_record,
-                                long_description='Evento: Creación'
-                            )
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
-                        self.create_new_log(
-                            origin='',
-                            type='error',
-                            integration_log=integration_error_WS14_9001,
-                            ws_tuple=external_record,
-                            long_description=tools.ustr(e))
                         return "Error al sincronizar vacantes"
 
             else:

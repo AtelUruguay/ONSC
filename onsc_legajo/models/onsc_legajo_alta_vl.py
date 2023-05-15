@@ -2,11 +2,11 @@
 import json
 import logging
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 _logger = logging.getLogger(__name__)
 
@@ -233,7 +233,6 @@ class ONSCLegajoAltaVL(models.Model):
         for record in self:
             if not record.attached_document_ids and record.state != 'borrador':
                 raise ValidationError(_("Debe haber al menos un documento adjunto"))
-
 
     @api.constrains("date_start")
     def _check_date(self):
