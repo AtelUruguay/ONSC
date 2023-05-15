@@ -308,7 +308,7 @@ class ONSCLegajoAltaVL(models.Model):
         return True
 
     def _empty_fieldsVL(self):
-        self.date_start = False
+        self.date_start = fields.Date.today()
         self.program_project_id = False
         self.nroPuesto = False
         self.nroPlaza = False
@@ -325,11 +325,11 @@ class ONSCLegajoAltaVL(models.Model):
         self.inactivity_years = False
         self.graduation_date = False
         self.contract_expiration_date = False
-        self.reason_description = False
-        self.norm_id = False
-        self.resolution_description = False
-        self.resolution_date = False
-        self.resolution_type = False
+        # self.reason_description = False
+        # self.norm_id = False
+        # self.resolution_description = False
+        # self.resolution_date = False
+        # self.resolution_type = False
         self.health_provider_id = False
         self.additional_information = False
         self.attached_document_ids = False
