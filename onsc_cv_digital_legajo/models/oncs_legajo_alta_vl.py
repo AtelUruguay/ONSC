@@ -249,6 +249,11 @@ class ONSCLegajoAltaVL(models.Model):
         if not isinstance(response, str):
             print(response)
             self.id_alta = response['pdaId']
+            self.secPlaza = response['secPlaza']
+            self.nroPuesto = response['idPuesto']
+            self.nroPlaza = response['nroPlaza']
+            self.codigoJornadaFormal = response['codigoJornadaFormal']
+            self.descripcionJornadaFormal = response['descripcionJornadaFormal']
             self.is_error_synchronization = False
             self.state = 'pendiente_auditoria_cgn'
         elif isinstance(response, str):
