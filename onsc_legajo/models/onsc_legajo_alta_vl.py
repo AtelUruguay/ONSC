@@ -228,6 +228,13 @@ class ONSCLegajoAltaVL(models.Model):
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
     id_alta = fields.Char(string="Id Alta")
 
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar", compute='_compute_should_disable_form_edit')
+
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.state not in ['borrador','error_sgh']
+
     @api.constrains("attached_document_ids")
     def _check_attached_document_ids(self):
         for record in self:
