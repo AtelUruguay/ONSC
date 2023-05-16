@@ -48,7 +48,7 @@
                       sequence="4"/>
 
     <menuitem id="onsc_hr_employee_menu"
-              name="Empleados"
+              name="Funcionarios"
               action="onsc_legajo_hr_employee_action"
               parent="onsc_legajo.onsc_legajo_root_menu"
               groups="onsc_legajo.group_legajo_configurador_empleado"

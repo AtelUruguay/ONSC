@@ -37,6 +37,7 @@ class ONSCCVDigitalVacante(models.Model):
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
     descripcionJornadaFormal = fields.Char(string="Jornada Formal")
     alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'vacante_id')
+    state = fields.Selection(related='alta_vl_id.state', string='Estado', readonly=True)
 
     @api.depends('codRegimen')
     def _compute_regime(self):

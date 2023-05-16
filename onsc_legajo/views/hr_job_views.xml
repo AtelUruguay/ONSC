@@ -1,5 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <record id="onsc_legajo_hr_job_search_view" model="ir.ui.view">
+        <field name="name">onsc.legajo.hr.job.search</field>
+        <field name="model">hr.job</field>
+        <field name="arch" type="xml">
+            <search string="Puestos de trabajo">
+                <field name="name" string="Nombre"/>
+                <field name="department_id" operator="child_of" string="Unidad organizativa"/>
+                <field name="employee_id" operator="child_of" string="Funcionario"/>
+                <field name="security_job_id" string="Seguridad de puesto"/>
+                <group expand="0" string="Group By">
+                    <filter string="Unidad organizativa" name="groupby_department" domain="[]" context="{'group_by': 'department_id'}"/>
+                    <filter string="Funcionario" name="groupby_employee" domain="[]" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="onsc_legajo_hr_job_form_view" model="ir.ui.view">
         <field name="name">onsc.legajo.hr.job.form</field>
         <field name="model">hr.job</field>
@@ -17,6 +34,7 @@
                     </div>
                     <group>
                         <field name="employee_id"
+                               string="Funcionario"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_readonly', '=', True)]}"
@@ -105,6 +123,7 @@
         <field name="arch" type="xml">
             <tree string="Puestos de trabajo">
                 <field name="name"/>
+                <field name="employee_id" string="Funcionario"/>
                 <field name="department_id" string="Unidad organizativa"
                        groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
                 <field name="security_job_id"
@@ -117,25 +136,12 @@
         </field>
     </record>
 
-    <record id="view_job_filter" model="ir.ui.view">
-        <field name="name">hr.job.search</field>
-        <field name="model">hr.job</field>
-        <field name="inherit_id" ref="hr.view_job_filter"/>
-        <field name="arch" type="xml">
-            <xpath expr="//filter[@name='in_position']" position="replace">
-            </xpath>
-            <xpath expr="//filter[@name='in_recruitment']" position="replace">
-            </xpath>
-            <xpath expr="//filter[@name='message_needaction']" position="replace">
-            </xpath>
-        </field>
-    </record>
-
     <record id="onsc_legajo_hr_job_action" model="ir.actions.act_window">
         <field name="name">Puestos de trabajo</field>
         <field name="res_model">hr.job</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'active_test':False}</field>
+        <field name="search_view_id" ref="onsc_legajo.onsc_legajo_hr_job_search_view" />
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo_hr_job_tree_view')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo_hr_job_form_view')})]"/>
