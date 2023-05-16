@@ -164,7 +164,8 @@
                                         <tree editable="top">
                                             <field name="name" required="1"/>
                                             <field name="document_type_id" required="1"/>
-                                            <field name="document_file" required="1" filename="document_file_name"  options="{'accepted_file_extensions': '.pdf'}"/>
+                                            <field name="document_file" required="1" filename="document_file_name"
+                                                   options="{'accepted_file_extensions': '.pdf'}"/>
                                             <field name="document_file_name" invisible="1"/>
                                         </tree>
                                     </field>
