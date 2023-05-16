@@ -77,6 +77,8 @@
                             <field name="is_basic_formation" readonly="context.get('is_readonly')"/>
                             <field name="is_advanced_formation"
                                    readonly="context.get('is_readonly')"/>
+                            <field name="is_unformal_education"
+                                   readonly="context.get('is_readonly')"/>
                         </group>
                         <group>
                             <field name="reject_reason" states="rejected"/>

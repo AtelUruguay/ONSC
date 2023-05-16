@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital',
-    'version': '15.0.8.3.6',
+    'version': '15.0.8.3.7',
     'summary': 'ONSC CV Digital',
     'sequence': 10,
     'description': """
