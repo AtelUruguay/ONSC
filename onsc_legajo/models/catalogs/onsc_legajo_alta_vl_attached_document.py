@@ -12,8 +12,3 @@ class ONSCLegajoAltaVLAttachedDocument(models.Model):
     document_file = fields.Binary('Archivo')
     document_file_name = fields.Char('Nombre del archivo')
     alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'Alta VL')
-
-    @api.constrains('document_file_name')
-    def _check_file(self):
-        if str(self.document_file_name.split(".")[1]) != 'pdf':
-            raise ValidationError(_("No puede adjuntar archivos diferentes de .pdf"))
