@@ -226,7 +226,7 @@ class ONSCLegajoAltaVL(models.Model):
                                             readonly=True, states={'borrador': [('readonly', False)],
                                                                    'error_sgh': [('readonly', False)]})
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
-    #Response WS4
+    # Response WS4
     id_alta = fields.Char(string="Id Alta")
     secPlaza = fields.Char(string="Sec Plaza")
     codigoJornadaFormal = fields.Char(string="Código Jornada Formal")
@@ -237,7 +237,6 @@ class ONSCLegajoAltaVL(models.Model):
         for record in self:
             if not record.attached_document_ids and record.state != 'borrador':
                 raise ValidationError(_("Debe haber al menos un documento adjunto"))
-
 
     @api.constrains("date_start")
     def _check_date(self):
