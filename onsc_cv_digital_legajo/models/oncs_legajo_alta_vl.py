@@ -2,10 +2,10 @@
 import json
 
 from lxml import etree
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 # campos requeridos para la sincronización
 required_fields = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
@@ -26,9 +26,9 @@ class ONSCLegajoAltaVL(models.Model):
         res = super(ONSCLegajoAltaVL, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                             submenu=submenu)
         doc = etree.XML(res['arch'])
-        if view_type in ['form', 'tree', 'kanban'] and self.env.user.has_group(
-                'onsc_legajo.group_legajo_alta_vl_consulta_altas_vl') and not self.env.user.has_group(
-            'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl'):
+        is_user_alta_vl = self.env.user.has_group('onsc_legajo.group_legajo_alta_vl_consulta_altas_vl')
+        is_user_administrar_altas_vl = self.env.user.has_group('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
+        if view_type in ['form', 'tree', 'kanban'] and is_user_alta_vl and not is_user_administrar_altas_vl:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('create', '0')
                 node_form.set('edit', '0')
@@ -48,21 +48,18 @@ class ONSCLegajoAltaVL(models.Model):
         for item in result:
             if item.get('partner_id'):
                 partner_id = item['partner_id'][0]
-                tuple = (item['partner_id'][0], Partner.browse(partner_id)._custom_display_name())
-                item['partner_id'] = tuple
+                item['partner_id'] = (item['partner_id'][0], Partner.browse(partner_id)._custom_display_name())
             if item.get('program_project_id'):
                 program_project_id = item['program_project_id'][0]
-                tuple = (item['program_project_id'][0], Office.browse(program_project_id)._custom_display_name())
-                item['program_project_id'] = tuple
+                item['program_project_id'] = (
+                    item['program_project_id'][0], Office.browse(program_project_id)._custom_display_name())
             if item.get('retributive_day_id'):
                 retributive_day_id = item['retributive_day_id'][0]
-                tuple = (
+                item['retributive_day_id'] = (
                     item['retributive_day_id'][0], RetributiveDay.browse(retributive_day_id)._custom_display_name())
-                item['retributive_day_id'] = tuple
             if item.get('norm_id'):
                 norm_id = item['norm_id'][0]
-                tuple = (item['norm_id'][0], LegajoNorm.browse(norm_id)._custom_display_name())
-                item['norm_id'] = tuple
+                item['norm_id'] = (item['norm_id'][0], LegajoNorm.browse(norm_id)._custom_display_name())
         return result
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
@@ -247,7 +244,6 @@ class ONSCLegajoAltaVL(models.Model):
         response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
-            print(response)
             self.id_alta = response['pdaId']
             self.secPlaza = response['secPlaza']
             self.nroPuesto = response['idPuesto']

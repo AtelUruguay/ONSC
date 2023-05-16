@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -16,5 +16,4 @@ class ONSCLegajoAltaVLAttachedDocument(models.Model):
     @api.constrains('document_file_name')
     def _check_file(self):
         if str(self.document_file_name.split(".")[1]) != 'pdf':
-            raise ValidationError("No puede adjuntar archivos diferentes de .pdf")
-
+            raise ValidationError(_("No puede adjuntar archivos diferentes de .pdf"))

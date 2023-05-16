@@ -2,11 +2,11 @@
 import json
 import logging
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 _logger = logging.getLogger(__name__)
 
@@ -310,9 +310,8 @@ class ONSCLegajoAltaVL(models.Model):
     def _compute_is_readonly(self):
         for rec in self:
             rec.is_inciso_readonly = (self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or
-                                      self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')) \
-                                     and not self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')) and not self.user_has_groups(
                 'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
             rec.is_operating_unit_readonly = self.user_has_groups(
                 'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue') and not self.user_has_groups(
