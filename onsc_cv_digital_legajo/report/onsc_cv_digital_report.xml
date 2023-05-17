@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="cv_digital_section_work" inherit_id="onsc_cv_digital.cv_digital_section_work">
+        <ul name="ul_work_experience_header" position="inside">
+            <h4 t-if="object.currently_working=='no'">Casual de egreso:
+                <span t-field="object.causes_discharge"/>
+            </h4>
+        </ul>
+    </template>
+</odoo>

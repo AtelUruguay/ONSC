@@ -2,10 +2,10 @@
 import json
 
 from lxml import etree
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 # campos requeridos para la sincronización
 required_fields = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
@@ -104,7 +104,7 @@ class ONSCLegajoAltaVL(models.Model):
     def onchange_partner_id(self):
         self._empty_fieldsVL()
         Employee = self.env['hr.employee'].sudo()
-        for record in self.suspend_security():
+        for record in self.sudo():
             if record.partner_id:
                 employee = Employee.search([
                     ('user_partner_id', '=', record.partner_id.id),
@@ -115,7 +115,7 @@ class ONSCLegajoAltaVL(models.Model):
                 record.cv_birthdate = employee.cv_digital_id.cv_birthdate
                 record.cv_sex = employee.cv_digital_id.cv_sex
                 CVDigital = self.env['onsc.cv.digital']
-                cv_digital_id = CVDigital.search([
+                cv_digital_id = CVDigital.sudo().search([
                     ('cv_emissor_country_id', '=', record.partner_id.cv_emissor_country_id.id),
                     ('cv_document_type_id', '=', record.partner_id.cv_document_type_id.id),
                     ('cv_nro_doc', '=', record.partner_id.cv_nro_doc),
@@ -245,6 +245,11 @@ class ONSCLegajoAltaVL(models.Model):
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
             self.id_alta = response['pdaId']
+            self.secPlaza = response['secPlaza']
+            self.nroPuesto = response['idPuesto']
+            self.nroPlaza = response['nroPlaza']
+            self.codigoJornadaFormal = response['codigoJornadaFormal']
+            self.descripcionJornadaFormal = response['descripcionJornadaFormal']
             self.is_error_synchronization = False
             self.state = 'pendiente_auditoria_cgn'
         elif isinstance(response, str):
@@ -290,16 +295,17 @@ class ONSCLegajoAltaVL(models.Model):
                 domain_alta = [
                     ('state', '=', 'pendiente_auditoria_cgn'),
                     ('department_id', '=', record.department_id.id),
+                    ('is_responsable_uo', '=', True),
                 ]
-                count = self.search_count(domain_alta)
+                count = self.sudo().search_count(domain_alta)
                 if count:
                     message.append(
                         "Ya existe un alta de vínvulo laboral pendiente de auditoría para el departamento seleccionado")
                 if not count and record.department_id.manager_id:
-                    message.append("El departamento ya tiene un responsable")
+                    message.append("El UO ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
-            message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str
+            message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
         return True
 

@@ -2,11 +2,11 @@
 import json
 import logging
 
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 _logger = logging.getLogger(__name__)
 
@@ -226,7 +226,11 @@ class ONSCLegajoAltaVL(models.Model):
                                             readonly=True, states={'borrador': [('readonly', False)],
                                                                    'error_sgh': [('readonly', False)]})
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
+    # Response WS4
     id_alta = fields.Char(string="Id Alta")
+    secPlaza = fields.Char(string="Sec Plaza")
+    codigoJornadaFormal = fields.Char(string="Código Jornada Formal")
+    descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal")
 
     @api.constrains("attached_document_ids")
     def _check_attached_document_ids(self):
