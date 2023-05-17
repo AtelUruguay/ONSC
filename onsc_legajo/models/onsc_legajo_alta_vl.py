@@ -2,11 +2,11 @@
 import json
 import logging
 
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 _logger = logging.getLogger(__name__)
 
