@@ -590,6 +590,21 @@ class ONSCCVDigital(models.Model):
                 })
             # DIRECCION
             elif seccion == 'cv_address':
+                partner_vals = {
+                    'country_id': record.country_id.id,
+                    'state_id': record.cv_address_state_id.id,
+                    'cv_location_id': record.cv_address_location_id.id,
+                    'street': record.cv_address_street_id.display_name or record.cv_address_street,
+                    'zip': record.cv_address_zip,
+                    'cv_address_place': record.cv_address_place,
+                    'cv_address_block': record.cv_address_block,
+                    'cv_address_sandlot': record.cv_address_sandlot,
+                    'cv_nro_door': record.cv_address_nro_door,
+                    'is_cv_bis': record.cv_address_is_cv_bis,
+                    'cv_apto': record.cv_address_apto,
+                    'cv_amplification': record.cv_address_amplification,
+                }
+                record.suspend_security().partner_id.write(partner_vals)
                 vals.update({
                     'country_id': record.country_id.id,
                     'address_info_date': record.address_info_date,
