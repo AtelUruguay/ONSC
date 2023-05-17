@@ -19,7 +19,7 @@
                             <field name="institution_id"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"
                                    domain="institution_id_domain"
-                                   context="{'default_country_id': country_id, 'is_readonly': True}"/>
+                                   context="{'default_is_unformal_education': True,'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="subinstitution_id"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': [('institution_id', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
