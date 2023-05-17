@@ -150,7 +150,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <field name="cv_expiration_date" required="1"/>
+                            <field name="identity_document_expiration_date" required="1"/>
                             <field name="document_identity_file"
                                            filename="document_identity_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
@@ -240,9 +240,9 @@
                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
                                             <p class="mb-0">
                                                 <strong>
-                                                    La sección credencial cívica ha sido rechazada. Motivo del rechazo: <field name="nro_doc_documentary_reject_reason" class="oe_inline"/>
+                                                    La sección credencial cívica ha sido rechazada. Motivo del rechazo: <field name="civical_credential_documentary_reject_reason" class="oe_inline"/>
                                                     <p/>
-                                                    Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                    Fecha: <field name="civical_credential_documentary_validation_date" class="oe_inline"/> Usuario: <field name="civical_credential_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                                 </strong>
                                             </p>
                                         </div>
@@ -253,7 +253,7 @@
                                                 <strong>
                                                     La sección credencial cívica ha sido validada
                                                     <p/>
-                                                    Fecha: <field name="nro_doc_documentary_validation_date" class="oe_inline"/> Usuario: <field name="nro_doc_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                    Fecha: <field name="civical_credential_documentary_validation_date" class="oe_inline"/> Usuario: <field name="civical_credential_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                                 </strong>
                                             </p>
                                         </div>

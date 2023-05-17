@@ -205,7 +205,6 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             calls.button_update_documentary_validation_sections_tovalidate()
 
     def _check_todisable(self):
-        _name = self._name
         if not self._fields.get('cv_digital_id', False) or len(self._get_validation_config()) == 0:
             return True
         for record in self:

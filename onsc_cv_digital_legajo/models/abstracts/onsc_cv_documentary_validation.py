@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
 
-from odoo import models, fields
+from odoo import models, fields, api
 
 DOCUMENTARY_VALIDATION_STATES = [('to_validate', 'Para validar'),
                                  ('validated', 'Validado'),
@@ -22,15 +22,15 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                     <field name="documentary_validation_state" invisible="1"/>
                     <button name="button_documentary_approve"
                         attrs="{'invisible': [('documentary_validation_state', '=', 'validated')]}"
-                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue,onsc_cv_digital_legajo.group_legajo_validador_doc_consulta"
+                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                         type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                     <button name="button_documentary_reject"
                         attrs="{'invisible': [('documentary_validation_state', '=', 'rejected')]}"
-                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue,onsc_cv_digital_legajo.group_legajo_validador_doc_consulta"
+                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                         type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                     <button name="button_documentary_tovalidate"
                         attrs="{'invisible': [('documentary_validation_state', '=', 'to_validate')]}"
-                        groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue,onsc_cv_digital_legajo.group_legajo_validador_doc_consulta"
+                        groups="onsc_cv_digital.group_validador_documental_cv"
                         type="object" string="Para validar" icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                     <div class="alert alert-danger" role="alert"
                         attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
@@ -53,6 +53,19 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                         </p>
                     </div>
                 </div>""")
+
+    @api.model
+    def create(self, values):
+        result = super(ONSCCVAbstractFileValidation, self).create(values)
+        if hasattr(self, 'cv_digital_id'):
+            result.cv_digital_id.button_legajo_update_documentary_validation_sections_tovalidate()
+        return result
+
+    def write(self, vals):
+        result = super(ONSCCVAbstractFileValidation, self).write(vals)
+        if hasattr(self, 'cv_digital_id'):
+            self.mapped('cv_digital_id').button_legajo_update_documentary_validation_sections_tovalidate()
+        return result
 
     def button_documentary_tovalidate(self):
         args = {
@@ -82,7 +95,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'documentary_user_id': self.env.user.id,
         }
         self.update_call_instances(args)
-        return super(ONSCCVAbstractFileValidation, self).documentary_reject()
+        return super(ONSCCVAbstractFileValidation, self).documentary_reject(reject_reason)
 
     def update_call_instances(self, args):
         if hasattr(self, 'cv_digital_id'):
@@ -98,4 +111,10 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 self.search([
                     ('original_instance_identifier', '=', record.id),
                     ('cv_digital_id', 'in', calls.mapped('cv_digital_id').ids),
-                    ('create_date', '>=', record.custom_write_date)]).write(args)
+                    ('create_date', '>=', record.custom_write_date)]).button_documentary_approve()
+                calls.button_update_documentary_validation_sections_tovalidate()
+            self._update_call_documentary_validation_status()
+
+    def _update_call_documentary_validation_status(self):
+        if self._fields.get('cv_digital_id'):
+            self.mapped('cv_digital_id').button_legajo_update_documentary_validation_sections_tovalidate()

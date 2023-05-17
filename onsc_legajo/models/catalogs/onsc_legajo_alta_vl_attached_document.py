@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
-from odoo.exceptions import ValidationError
+from odoo import fields, models
 
 
 class ONSCLegajoAltaVLAttachedDocument(models.Model):
@@ -13,9 +12,3 @@ class ONSCLegajoAltaVLAttachedDocument(models.Model):
     document_file_name = fields.Char('Nombre del archivo')
     alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'Alta VL')
     baja_vl_id = fields.Many2one("onsc.legajo.baja.vl", string="Baja de vínculo laboral")
-
-    @api.constrains('document_file_name')
-    def _check_file(self):
-        if str(self.document_file_name.split(".")[1]) != 'pdf':
-            raise ValidationError("No puede adjuntar archivos diferentes de .pdf")
-

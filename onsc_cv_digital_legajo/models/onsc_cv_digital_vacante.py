@@ -12,7 +12,7 @@ class ONSCCVDigitalVacante(models.Model):
     _description = 'Vacantes'
     _rec_name = 'nroPuesto'
 
-    selected = fields.Boolean()
+    selected = fields.Boolean(string="Seleccionado", help="Active para seleccionar esta Vacante")
     nroPuesto = fields.Char(string="Puesto")
     nroPlaza = fields.Char(string="Plaza")
     estado = fields.Char(string="Estado")
@@ -25,16 +25,19 @@ class ONSCCVDigitalVacante(models.Model):
     codPartida = fields.Char(string="Código Partida")
     Dsc3Id = fields.Char(string="Código Descriptor 3")
     Dsc3Descripcion = fields.Char(string="Descriptor 3")
-    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', compute="_compute_descriptor3", store=True)
+    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', compute="_compute_descriptor3",
+                                     store=True)
     Dsc4Id = fields.Char(string="Código Descriptor 4")
     Dsc4Descripcion = fields.Char(string="Descriptor 4")
-    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4', compute="_compute_descriptor4", store=True)
+    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4', compute="_compute_descriptor4",
+                                     store=True)
     codRegimen = fields.Char(string="Código Régimen")
     descripcionRegimen = fields.Char(string="Descripción Régimen")
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', compute="_compute_regime", store=True)
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
     descripcionJornadaFormal = fields.Char(string="Jornada Formal")
     alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'vacante_id')
+    state = fields.Selection(related='alta_vl_id.state', string='Estado', readonly=True)
 
     @api.depends('codRegimen')
     def _compute_regime(self):
@@ -63,6 +66,15 @@ class ONSCCVDigitalVacante(models.Model):
             else:
                 rec.descriptor4_id = False
 
-    def search_vacantes(self):
-        #TODO: Función para llamar al WS1
-        pass
+    def write(self, vals):
+        result = super(ONSCCVDigitalVacante, self).write(vals)
+        for rec in self.filtered(lambda x: x.selected):
+            rec.alta_vl_id.write({
+                'nroPuesto': rec.nroPuesto,
+                'nroPlaza': rec.nroPlaza,
+                'descriptor3_id': rec.descriptor3_id.id,
+                'descriptor4_id': rec.descriptor4_id.id,
+                'regime_id': rec.regime_id.id,
+                'codigoJornadaFormal': rec.codigoJornadaFormal,
+            })
+        return result

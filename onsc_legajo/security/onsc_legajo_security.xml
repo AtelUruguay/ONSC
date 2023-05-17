@@ -68,8 +68,7 @@
             <field name="name">Editar Ocupación Contrato</field>
             <field name="comment">Editar Ocupación Contrato</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
-            <field name="implied_ids"
-                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view')),(4, ref('onsc_legajo.group_legajo_configurador_contrato'))]"/>
+            <field name="implied_ids" eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
         <!--LEGAJO-->
@@ -131,6 +130,14 @@
         <record id="group_legajo_alta_vl_consulta_altas_vl" model="res.groups">
             <field name="name">Alta VL - Consulta de Altas VL</field>
             <field name="comment">Alta VL - Consulta de Altas VL</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+
+        <record id="group_legajo_alta_vl_administrar_altas_vl" model="res.groups">
+            <field name="name">Alta VL – Administrar Altas VL</field>
+            <field name="comment">Alta VL – Administrar Altas VL</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>

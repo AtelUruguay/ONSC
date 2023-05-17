@@ -21,5 +21,9 @@
             <field name="key">onsc_legajo_WS1_plazasVacantesCedula</field>
             <field name="value"></field>
         </record>
+        <record id="parameter_onsc_legajo_WS4" model="ir.config_parameter">
+            <field name="key">onsc_legajo_WS4_altaSGH</field>
+            <field name="value"></field>
+        </record>
     </data>
 </odoo>

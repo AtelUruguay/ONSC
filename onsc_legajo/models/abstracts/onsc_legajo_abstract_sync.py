@@ -34,23 +34,36 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 integration_log=integration_error,
                 ws_tuple=False,
                 long_description=tools.ustr(e))
-            return
+            return "Error devuelto por SGH: " + tools.ustr(e)
         if hasattr(response, 'servicioResultado'):
             if response.servicioResultado.codigo == 0:
                 return self._populate_from_syncronization(response)
             else:
                 result_error_code = response.servicioResultado.codigo
                 error = IntegrationError.search([
-                    ('integration_code','=',integration_error.integration_code),
-                    ('code_error','=',str(result_error_code))
+                    ('integration_code', '=', integration_error.integration_code),
+                    ('code_error', '=', str(result_error_code))
                 ], limit=1)
+                validation_error = ''
+                for v_error in response.altaSGHMovimientoRespuesta:
+                    validation_error += v_error.mensaje + '\n'
+                    self.create_new_log(
+                        origin=origin_name,
+                        type='error',
+                        integration_log=error or integration_error,
+                        ws_tuple=False,
+                        long_description=v_error.mensaje)
+
                 self.create_new_log(
                     origin=origin_name,
                     type='error',
                     integration_log=error or integration_error,
                     ws_tuple=False,
                     long_description='%s - Código: %s' % (
-                        tools.ustr(response.servicioResultado.mensaje), str(response.servicioResultado.codigo)))
+                        tools.ustr(response.servicioResultado.mensaje),
+                        str(response.servicioResultado.codigo) + '\n' + validation_error))
+                return "Error al enviar datos al WS:" + str(
+                    response.servicioResultado.mensaje) + '\n' + validation_error
         elif hasattr(response, 'codigoResultado'):
             if response.codigoResultado == 0:
                 return self._populate_from_syncronization(response)
@@ -67,7 +80,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                     ws_tuple=False,
                     long_description='%s - Código: %s' % (
                         tools.ustr(response.mensajeResultado), str(response.codigoResultado)))
-        return True
+        return "No se obtuvo respuesta del WS"
 
     # pylint: disable=redefined-builtin
     def create_new_log(self, origin, type, integration_log, ws_tuple=False, long_description=False):

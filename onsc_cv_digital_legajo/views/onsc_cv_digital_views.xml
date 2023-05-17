@@ -22,16 +22,24 @@
             <field name="is_cv_gender_public" position="after">
                 <field name="gender_public_visualization_date"
                        attrs="{'invisible': [('is_docket', '=', False)]}"/>
+                <div class="row" nolabel="1" colspan="2">
+                    <div class="alert alert-danger" role="alert" style="width:70%"
+                        attrs="{'invisible': [('gender_documentary_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección género ha sido rechazada. Motivo del rechazo: <field name="gender_documentary_reject_reason" readonly="1" class="oe_inline"/>
+                                <p/>
+                                Fecha: <field name="gender_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="gender_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                </div>
                 <!--TODO-->
                 <field name="is_docket" invisible="1"/>
                 <field name="is_docket_active" invisible="1"/>
             </field>
             <field name="afro_descendants_file" position="after">
                 <field name="afro_descendant_date"
-                       attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
-            </field>
-            <field name="marital_status_id" position="after">
-                <field name="status_civil_date"
                        attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
             </field>
             <field name="country_id" position="before">
@@ -141,7 +149,7 @@
                         </group>
                     </group>
                 </page>
-                <page string="TEMPORAL PARA VER ESTADOS DE VALIDACION">
+                <page string="TEMPORAL PARA VER ESTADOS DE VALIDACION" invisible="1">
                       <group>
                           <field name="nro_doc_documentary_validation_state" invisible="0" string="Nro doc"/>
                           <field name="marital_status_documentary_validation_state" invisible="0" string="Estado civil"/>
@@ -159,6 +167,119 @@
                     </group>
                 </page>
             </xpath>
+            <!--VALIDACION DOCUMENTAL-->
+            <field name="image_1920" position="after">
+                <div class="row" nolabel="1" colspan="2">
+                    <div class="alert alert-danger" role="alert" style="width:70%"
+                        attrs="{'invisible': [('photo_documentary_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección foto ha sido rechazada. Motivo del rechazo: <field name="photo_documentary_reject_reason" readonly="1" class="oe_inline" />
+                                <p/>
+                                Fecha: <field name="photo_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="photo_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </field>
+            <field name="marital_status_id" position="after">
+                <div class="row" nolabel="1" colspan="2">
+                    <div class="alert alert-danger" role="alert" style="width:70%"
+                        attrs="{'invisible': [('marital_status_documentary_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección estado civil ha sido rechazada. Motivo del rechazo: <field name="marital_status_documentary_reject_reason" readonly="1" class="oe_inline"/>
+                                <p/>
+                                Fecha: <field name="marital_status_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="marital_status_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </field>
+            <field name="is_multiple_cv_race_selected" position="after">
+                <div class="row" nolabel="1" colspan="2">
+                    <div class="alert alert-danger" role="alert" style="width:70%"
+                        attrs="{'invisible': [('cv_race_documentary_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección identidad étnico racial ha sido rechazada. Motivo del rechazo: <field name="cv_race_documentary_reject_reason" readonly="1" class="oe_inline"/>
+                                <p/>
+                                Fecha: <field name="cv_race_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="cv_race_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </field>
+            <field name="afro_descendants_filename" position="after">
+                <div class="row" nolabel="1" colspan="2">
+                    <div class="alert alert-danger" role="alert" style="width:70%"
+                        attrs="{'invisible': [('afro_descendant_documentary_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección afrodescendientes ha sido rechazada. Motivo del rechazo: <field name="afro_descendant_documentary_reject_reason" readonly="1" class="oe_inline"/>
+                                <p/>
+                                Fecha: <field name="afro_descendant_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="afro_descendant_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </field>
+            <field name="occupational_health_card_filename" position="after">
+                <div class="row" nolabel="1" colspan="2">
+                    <div class="alert alert-danger" role="alert" style="width:70%"
+                        attrs="{'invisible': [('occupational_health_card_documentary_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección carné de salud laboral ha sido rechazada. Motivo del rechazo: <field name="occupational_health_card_documentary_reject_reason" readonly="1" class="oe_inline"/>
+                                <p/>
+                                Fecha: <field name="occupational_health_card_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="occupational_health_card_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </field>
+            <field name="medical_aptitude_certificate_filename" position="after">
+                <div class="row" nolabel="1" colspan="2">
+                    <div class="alert alert-danger" role="alert" style="width:70%"
+                        attrs="{'invisible': [('medical_aptitude_certificate_documentary_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección certificado de aptitud médico-deportiva ha sido rechazada. Motivo del rechazo: <field name="medical_aptitude_certificate_documentary_reject_reason" readonly="1" class="oe_inline"/>
+                                <p/>
+                                Fecha: <field name="medical_aptitude_certificate_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="medical_aptitude_certificate_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </field>
+            <field name="relationship_victim_violent_filename" position="after">
+                <div class="row" nolabel="1" colspan="2">
+                    <div class="alert alert-danger" role="alert" style="width:70%"
+                        attrs="{'invisible': [('victim_violent_documentary_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección víctima de delitos violentos ha sido rechazada. Motivo del rechazo: <field name="victim_violent_documentary_reject_reason" readonly="1" class="oe_inline"/>
+                                <p/>
+                                Fecha: <field name="victim_violent_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="victim_violent_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </field>
+            <page name="address" position="inside">
+                <div class="row" nolabel="1" colspan="2">
+                    <div class="alert alert-danger" role="alert" style="width:70%"
+                        attrs="{'invisible': [('cv_address_documentary_validation_state', '!=', 'rejected')]}">
+                        <p class="mb-0">
+                            <strong>
+                                La sección domicilio ha sido rechazada. Motivo del rechazo: <field name="cv_address_documentary_reject_reason" readonly="1" class="oe_inline"/>
+                                <p/>
+                                Fecha: <field name="cv_address_documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="cv_address_documentary_user_id" readonly="1" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </strong>
+                        </p>
+                    </div>
+                </div>
+            </page>
         </field>
     </record>
 </odoo>

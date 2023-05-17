@@ -135,6 +135,11 @@ class HrEmployee(models.Model):
                      'res_id': rec.id, 'type': 'binary'})
 
     def write(self, values):
+        history_fields = self.get_history_fields()
+        if not values.get('eff_date') and set(list(values)).intersection(set(history_fields)):
+            values.update({
+                'eff_date': fields.Date.today()
+            })
         self._set_binary_history(values)
         if self.env.context.get('is_legajo'):
             res = super(HrEmployee, self.suspend_security()).write(values)
@@ -175,3 +180,8 @@ class HrEmployeeHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.employee.history'
     _parent_model = 'hr.employee'
+
+    @api.model
+    def create(self, values):
+        record = super(HrEmployeeHistory, self).create(values)
+        return record

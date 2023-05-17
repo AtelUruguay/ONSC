@@ -19,6 +19,7 @@ def filter_str2float(original_str, float_separator=','):
             result += letter
     return result
 
+
 def calc_full_name(first_name, second_name, last_name_1, last_name_2):
     name_values = [first_name,
                    second_name,

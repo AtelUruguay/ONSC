@@ -8,7 +8,7 @@ from os.path import join
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-
+from odoo.osv import expression
 from .abstracts.onsc_cv_abstract_common import SELECTION_RADIO
 from .abstracts.onsc_cv_abstract_config import STATES as CONDITIONAL_VALIDATION_STATES
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
@@ -22,6 +22,30 @@ class ONSCCVDigitalCall(models.Model):
     _inherits = {'onsc.cv.digital': 'cv_digital_id'}
     _description = 'Llamado'
     _rec_name = 'cv_full_name'
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        if self._context.get('is_call_documentary_validation') and self.env.user.has_group(
+                'onsc_cv_digital.group_validador_documental_cv'):
+            args = expression.AND([[
+                ('partner_id', '!=', self.env.user.partner_id.id),
+            ], args])
+        return super(ONSCCVDigitalCall, self)._search(
+            args, offset=offset, limit=limit, order=order,
+            count=count,
+            access_rights_uid=access_rights_uid)
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if self._context.get('is_call_documentary_validation') and self.env.user.has_group(
+                'onsc_cv_digital.group_validador_documental_cv'):
+            domain = expression.AND([[
+                ('partner_id', '!=', self.env.user.partner_id.id),
+            ], domain])
+        return super(ONSCCVDigitalCall, self).read_group(
+            domain, fields, groupby, offset=offset,
+            limit=limit, orderby=orderby,
+            lazy=lazy)
 
     cv_digital_id = fields.Many2one(
         "onsc.cv.digital",
@@ -298,6 +322,9 @@ class ONSCCVDigitalCall(models.Model):
             '%s_documentary_user_id' % documentary_field: self.env.user.id,
         }
         self.write(vals)
+        self._update_cv_digital_origin_documentary_values(documentary_field, vals)
+
+    def _update_cv_digital_origin_documentary_values(self, documentary_field, vals):
         for record in self:
             cv_digital_origin_id = record.cv_digital_origin_id
             if cv_digital_origin_id and eval(
@@ -327,12 +354,14 @@ class ONSCCVDigitalCall(models.Model):
         pdf_list = {}
         cv_zip_url = self.env.user.company_id.cv_zip_url
         if len(self) == 0 or not cv_zip_url:
-            return
+            raise ValidationError(
+                _("No se ha podido identificar una ruta en el servidor para almacenar el ZIP. Contacte al administrador."))
         if self.filtered(lambda x: x.gral_info_documentary_validation_state != 'validated'):
             raise ValidationError(_("No se puede generar ZIP si no están validados documentalmente"))
         if len(list(dict.fromkeys(self.mapped('call_number')))) > 1:
             raise ValidationError(_("No se puede generar ZIP de CVs de diferentes llamados"))
         try:
+            self = self.with_context(is_call_documentary_validation=True, cv_digital_call=True)
             wizard = self.env['onsc.cv.report.wizard'].create({})
             call_number = self[0].call_number.replace('/', '_')
             for record in self:
@@ -436,7 +465,7 @@ class ONSCCVDigitalCall(models.Model):
             ("cv_emissor_country_id", ["id", "name"]),
             ("cv_document_type_id", ["id", "name"]),
             'cv_nro_doc',
-            'cv_expiration_date',
+            'identity_document_expiration_date',
             'email',
             'cv_birthdate',
             # 'image_1920',
@@ -618,6 +647,7 @@ class ONSCCVDigitalCall(models.Model):
             'call_number': call_number,
             'postulation_date': postulation_date,
             'postulation_number': postulation_number,
+            'identity_document_expiration_date': cv_digital_id.cv_expiration_date,
         })
         return cv_call
 

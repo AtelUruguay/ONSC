@@ -241,13 +241,13 @@ class ONSCCVDigital(models.Model):
                     elif documentary_validation_model == 'gender_documentary_validation_state':
                         sections_tovalidate.append(_('Género'))
                     elif documentary_validation_model == 'cv_race_documentary_validation_state':
-                        sections_tovalidate.append(_('Raza'))
+                        sections_tovalidate.append(_('Identidad étnico racial'))
                     elif documentary_validation_model == 'afro_descendant_documentary_validation_state':
                         sections_tovalidate.append(_('Afrodescendiente'))
                     elif documentary_validation_model == 'occupational_health_card_documentary_validation_state':
-                        sections_tovalidate.append(_('Certificado de aptitud médico-deportiva'))
-                    elif documentary_validation_model == 'medical_aptitude_certificate_documentary_validation_state':
                         sections_tovalidate.append(_('Carné de salud laboral'))
+                    elif documentary_validation_model == 'medical_aptitude_certificate_documentary_validation_state':
+                        sections_tovalidate.append(_('Certificado de aptitud médico-deportiva'))
                     elif documentary_validation_model == 'victim_violent_documentary_validation_state':
                         sections_tovalidate.append(_('Víctima de delitos violentos'))
                     elif documentary_validation_model == 'cv_address_documentary_validation_state':
@@ -307,7 +307,7 @@ class ONSCCVDigital(models.Model):
             self.gender_date = False
             self.afro_descendant_date = False
             self.status_civil_date = False
-            self.address_info_date = False
+            # self.address_info_date = False
             self.disability_date = False
 
     def button_legajo_update_documentary_validation_sections_tovalidate(self):
@@ -336,71 +336,127 @@ class ONSCCVDigital(models.Model):
         cv_gender_record_file = values.get('cv_gender_record_file')
         gender_date = values.get('gender_date')
         if cv_gender_id or cv_gender_record_file or gender_date:
-            for record in self:
+            for record in self.with_context(no_update_header_documentary_validation=True):
+                employee_id = record.employee_id.suspend_security()
                 if record.cv_gender_id.record is False:
-                    self.gender_documentary_validation_state = 'validated'
+                    record.gender_documentary_validation_state = 'validated'
+                    employee_id.cv_gender_id = record.cv_gender_id.id
+                    employee_id.cv_gender_record_file = record.cv_gender_record_file
+                    employee_id.cv_gender_record_filename = record.cv_gender_record_filename
+                    employee_id.gender_date = record.gender_date
                 else:
-                    self.gender_documentary_validation_state = 'to_validate'
+                    record.gender_documentary_validation_state = 'to_validate'
 
         # Identidad étnico racial
         cv_race_ids = values.get('cv_race_ids')
         cv_first_race_id = values.get('cv_first_race_id')
-        if cv_race_ids or cv_first_race_id:
+        cv_race2 = values.get('cv_race2')
+        if cv_race_ids or cv_first_race_id or cv_race2:
             self.cv_race_documentary_validation_state = 'to_validate'
 
-        # Afrodescendientes
-        is_afro_descendants = 'is_afro_descendants' in values
+        # AFRODESCENDIENTES
+        is_afro_descendants_in_values = 'is_afro_descendants' in values
         afro_descendant_date = values.get('afro_descendant_date')
-        afro_descendant_file = values.get('afro_descendant_file')
-        if is_afro_descendants or afro_descendant_date or afro_descendant_file:
-            for record in self:
-                if record.is_afro_descendants is False:
-                    self.afro_descendant_documentary_validation_state = 'validated'
+        afro_descendant_file = values.get('afro_descendants_file')
+        if is_afro_descendants_in_values or afro_descendant_date or afro_descendant_file:
+            for record in self.with_context(no_update_header_documentary_validation=True):
+                employee_id = record.employee_id.suspend_security()
+                is_afro_descendants = is_afro_descendants_in_values and values.get(
+                    'is_afro_descendants') or record.is_afro_descendants
+                if is_afro_descendants is False:
+                    record.afro_descendant_documentary_validation_state = 'validated'
+                    employee_id.is_afro_descendants = False
+                    employee_id.afro_descendants_file = False
+                    employee_id.afro_descendants_filename = False
+                    employee_id.afro_descendant_date = record.afro_descendant_date
                 else:
-                    self.afro_descendant_documentary_validation_state = 'to_validate'
+                    record.afro_descendant_documentary_validation_state = 'to_validate'
 
-        is_occupational_health_card = 'is_occupational_health_card' in values
+        # CARNE SALUD LABORAL
+        is_occupational_health_card_in_values = 'is_occupational_health_card' in values
         occupational_health_card_date = values.get('occupational_health_card_date')
         occupational_health_card_file = values.get('occupational_health_card_file')
-        if is_occupational_health_card or occupational_health_card_date or occupational_health_card_file:
-            for record in self:
-                if record.is_occupational_health_card is False:
-                    self.occupational_health_card_documentary_validation_state = 'validated'
+        if is_occupational_health_card_in_values or occupational_health_card_date or occupational_health_card_file:
+            for record in self.with_context(no_update_header_documentary_validation=True):
+                is_occupational_health_card = is_occupational_health_card_in_values and values.get(
+                    'is_occupational_health_card') or record.is_occupational_health_card
+                if is_occupational_health_card is False:
+                    record.is_occupational_health_card = False
+                    record.occupational_health_card_date = False
+                    record.occupational_health_card_file = False
+                    record.occupational_health_card_filename = False
+                    record.with_context(documentary_validation='occupational_health_card').button_documentary_approve()
                 else:
-                    self.occupational_health_card_documentary_validation_state = 'to_validate'
+                    record.occupational_health_card_documentary_validation_state = 'to_validate'
 
-        is_medical_aptitude_certificate_status = 'is_medical_aptitude_certificate_status' in values
+        is_medical_aptitude_certificate_status_in_values = 'is_medical_aptitude_certificate_status' in values
         medical_aptitude_certificate_date = values.get('medical_aptitude_certificate_date')
         medical_aptitude_certificate_file = values.get('medical_aptitude_certificate_file')
-        if is_medical_aptitude_certificate_status or medical_aptitude_certificate_date or medical_aptitude_certificate_file:
-            for record in self:
-                if record.is_medical_aptitude_certificate_status is False:
-                    self.medical_aptitude_certificate_documentary_validation_state = 'validated'
+        if is_medical_aptitude_certificate_status_in_values or medical_aptitude_certificate_date or medical_aptitude_certificate_file:
+            for record in self.with_context(no_update_header_documentary_validation=True):
+                is_medical_aptitude_certificate_status = is_medical_aptitude_certificate_status_in_values and values.get(
+                    'is_medical_aptitude_certificate_status') or record.is_medical_aptitude_certificate_status
+                if is_medical_aptitude_certificate_status is False:
+                    record.is_medical_aptitude_certificate_status = False
+                    record.medical_aptitude_certificate_date = False
+                    record.medical_aptitude_certificate_file = False
+                    record.medical_aptitude_certificate_filename = False
+                    record.with_context(
+                        documentary_validation='medical_aptitude_certificate').button_documentary_approve()
                 else:
-                    self.medical_aptitude_certificate_documentary_validation_state = 'to_validate'
+                    record.medical_aptitude_certificate_documentary_validation_state = 'to_validate'
 
-        is_victim_violent = 'is_victim_violent' in values
+        is_victim_violent_in_values = 'is_victim_violent' in values
         relationship_victim_violent_file = values.get('relationship_victim_violent_file')
-        if is_victim_violent or relationship_victim_violent_file:
-            for record in self:
-                if record.is_victim_violent is False:
-                    self.victim_violent_documentary_validation_state = 'validated'
+        if is_victim_violent_in_values or relationship_victim_violent_file:
+            for record in self.with_context(no_update_header_documentary_validation=True):
+                is_victim_violent = is_victim_violent_in_values and values.get(
+                    'is_victim_violent') or record.is_victim_violent
+                if is_victim_violent is False:
+                    record.is_victim_violent = False
+                    record.relationship_victim_violent_file = False
+                    record.relationship_victim_violent_filename = False
+                    record.with_context(documentary_validation='victim_violent').button_documentary_approve()
                 else:
-                    self.victim_violent_documentary_validation_state = 'to_validate'
+                    record.victim_violent_documentary_validation_state = 'to_validate'
+
+        is_situation_disability_in_values = 'people_disabilitie' in values
+        document_certificate_file = values.get('document_certificate_file')
+        certificate_date = values.get('certificate_date')
+        to_date = values.get('to_date')
+        disability_date = values.get('disability_date')
+        if is_situation_disability_in_values or document_certificate_file or certificate_date or to_date or disability_date:
+            for record in self.with_context(no_update_header_documentary_validation=True):
+                is_situation_disability = is_situation_disability_in_values and values.get(
+                    'people_disabilitie') == 'si' or record.people_disabilitie == 'si'
+                if is_situation_disability is False:
+                    record.document_certificate_file = False
+                    record.document_certificate_filename = False
+                    record.certificate_date = False
+                    record.to_date = False
+                    record.with_context(documentary_validation='disabilitie').button_documentary_approve()
+                else:
+                    record.disabilitie_documentary_validation_state = 'to_validate'
 
         country_id = values.get('country_id')
+        address_receipt_file = values.get('address_receipt_file')
+        address_info_date = values.get('address_info_date')
         cv_address_state_id = values.get('cv_address_state_id')
         cv_address_location_id = values.get('cv_address_location_id')
+        cv_address_street = values.get('cv_address_street')
         cv_address_street_id = values.get('cv_address_street_id')
         cv_address_street2_id = values.get('cv_address_street2_id')
         cv_address_street3_id = values.get('cv_address_street3_id')
-        cv_address_nro_dor = values.get('cv_address_nro_dor')
+        cv_address_nro_door = values.get('cv_address_nro_door')
+        cv_address_is_cv_bis = 'cv_address_is_cv_bis' in values
+        cv_address_apto = values.get('cv_address_apto')
+        cv_address_amplification = values.get('cv_address_amplification')
         cv_addres_apto = values.get('cv_addres_apto')
         cv_address_zip = values.get('cv_address_zip')
         cv_address_place = values.get('cv_address_place')
         cv_address_block = values.get('cv_address_block')
         cv_address_sandlot = values.get('cv_address_sandlot')
-        if country_id or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_address_nro_dor or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot:
+        if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or address_info_date or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot or cv_address_street:
             self.cv_address_documentary_validation_state = 'to_validate'
 
         super(ONSCCVDigital, self).update_header_documentary_validation(values)
@@ -411,11 +467,16 @@ class ONSCCVDigital(models.Model):
     #   VALIDACION DOCUMENTAL DE LEGAJO
     def button_documentary_tovalidate(self):
         if self._context.get('documentary_validation'):
-            self.suspend_security()._legajo_update_documentary(self._context.get('documentary_validation'), 'to_validate', '')
+            self.suspend_security()._legajo_update_documentary(
+                self._context.get('documentary_validation'),
+                'to_validate', '')
 
     def button_documentary_approve(self):
         if self._context.get('documentary_validation'):
-            self.suspend_security()._legajo_update_documentary(self._context.get('documentary_validation'), 'validated', '')
+            self.suspend_security()._legajo_update_documentary(
+                self._context.get('documentary_validation'),
+                'validated',
+                '')
             self.suspend_security()._update_legajo_atdocumentary_validation()
 
     def button_documentary_reject(self):
@@ -426,7 +487,7 @@ class ONSCCVDigital(models.Model):
             'is_documentary_reject': True
         })
         return {
-            'name': _('Rechazo de %s' % self._description),
+            'name': _('Rechazo de validación documental'),
             'view_mode': 'form',
             'res_model': 'onsc.cv.reject.wizard',
             'target': 'new',
@@ -436,13 +497,11 @@ class ONSCCVDigital(models.Model):
         }
 
     def _update_legajo_atdocumentary_validation(self):
-        Legajo = self.env['onsc.legajo']
         seccion = self._context.get('documentary_validation', '')
         for record in self.filtered(lambda x: x.is_docket_active):
             employee_id = record.employee_id
             record = record.sudo()
             vals = {}
-            legajo = Legajo.search([('cv_digital_id', '=', record.id)], limit=1)
             # FOTO
             if seccion == 'photo':
                 # no genera historico
@@ -481,7 +540,8 @@ class ONSCCVDigital(models.Model):
             elif seccion == 'gender':
                 vals.update({
                     'cv_gender_id': record.cv_gender_id.id,
-                    'cv_gender2': record.cv_gender2.id,
+                    'cv_gender2': record.cv_gender2,
+                    'gender_date': record.gender_date,
                     'cv_gender_record_file': record.cv_gender_record_file,
                     'cv_gender_record_filename': record.cv_gender_record_filename,
                     'is_cv_gender_public': record.is_cv_gender_public,
@@ -493,6 +553,7 @@ class ONSCCVDigital(models.Model):
                     cv_race_ids.append((4, cv_race_id.id))
                 vals.update({
                     'cv_race_ids': cv_race_ids,
+                    'cv_race2': record.cv_race2,
                     'cv_first_race_id': record.cv_first_race_id.id,
                     'is_cv_race_public': record.is_cv_race_public,
                 })
@@ -531,20 +592,23 @@ class ONSCCVDigital(models.Model):
             elif seccion == 'cv_address':
                 vals.update({
                     'country_id': record.country_id.id,
+                    'address_info_date': record.address_info_date,
                     'cv_address_state_id': record.cv_address_state_id.id,
                     'cv_address_location_id': record.cv_address_location_id.id,
                     'cv_address_street_id': record.cv_address_street_id.id,
                     'cv_address_street2_id': record.cv_address_street2_id.id,
                     'cv_address_street3_id': record.cv_address_street3_id.id,
                     'cv_address_street': record.cv_address_street,
-                    'cv_address_nro_door': record.cv_address_nro_door,
-                    'cv_address_is_cv_bis': record.cv_address_is_cv_bis,
-                    'cv_address_apto': record.cv_address_apto,
-                    'cv_address_zip': record.cv_address_zip,
                     'cv_address_zip': record.cv_address_zip,
                     'cv_address_place': record.cv_address_place,
                     'cv_address_block': record.cv_address_block,
                     'cv_address_sandlot': record.cv_address_sandlot,
+                    'address_receipt_file': record.address_receipt_file,
+                    'address_receipt_file_name': record.address_receipt_file_name,
+                    'cv_address_nro_door': record.cv_address_nro_door,
+                    'cv_address_is_cv_bis': record.cv_address_is_cv_bis,
+                    'cv_address_apto': record.cv_address_apto,
+                    'cv_address_amplification': record.cv_address_amplification,
                 })
             # DISCAPACIDAD
             elif seccion == 'disabilitie':
@@ -556,6 +620,7 @@ class ONSCCVDigital(models.Model):
                     'document_certificate_file': record.document_certificate_file,
                     'certificate_date': record.certificate_date,
                     'to_date': record.to_date,
+                    'disability_date': record.disability_date,
                 })
             employee_id.suspend_security().write(vals)
 
@@ -567,16 +632,25 @@ class ONSCCVDigital(models.Model):
             '%s_documentary_validation_date' % documentary_field: fields.Date.today(),
             '%s_documentary_user_id' % documentary_field: self.env.user.id,
         }
-        for record in self:
-            calls = Calls.search([
-                ('cv_digital_origin_id', '=', record.id),
-                ('is_zip', '=', False),
-                ('preselected', '!=', 'no'),
-            ])
-            last_write_date = eval('record.%s_write_date' % documentary_field)
-            calls.filtered(lambda x: x.create_date >= last_write_date).write(vals)
-            calls.filtered(lambda x: x.gral_info_documentary_validation_state != 'validated').write(vals)
+        if not self._context.get('no_update_cv_calls'):
+            for record in self:
+                calls = Calls.search([
+                    ('cv_digital_origin_id', '=', record.id),
+                    ('is_zip', '=', False),
+                    ('preselected', '!=', 'no'),
+                ])
+                last_write_date = eval('record.%s_write_date' % documentary_field)
+                custom_vals = vals.copy()
+                custom_vals['%s_write_date' % documentary_field] = fields.Datetime.now()
+                calls.filtered(lambda x: (eval('x.%s_write_date' % (documentary_field)) <= last_write_date or eval('x.%s_write_date' % (documentary_field)) is False) and x.gral_info_documentary_validation_state != 'validated').write(custom_vals)
         self.write(vals)
+
+    def _update_cv_digital_origin_documentary_values(self, documentary_field, vals):
+        for record in self:
+            cv_digital_origin_id = record.cv_digital_origin_id
+            if cv_digital_origin_id and eval(
+                    'cv_digital_origin_id.%s_write_date' % documentary_field) < record.create_date:
+                cv_digital_origin_id.write(vals)
 
     def documentary_reject(self, reject_reason):
         self._legajo_update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)
@@ -612,8 +686,50 @@ class ONSCCVInformationContact(models.Model):
     contact_person_telephone = fields.Char(string=u'Teléfono de persona de contacto', required=True)
     phone_full = fields.Char(compute='_compute_phone_full', string=u'Teléfono de persona de contacto')
     remark_contact_person = fields.Text(string=u'Observación para la persona de contacto', required=True)
+    legajo_information_contact_id = fields.Many2one("onsc.cv.legajo.information.contact",
+                                                    string="Información de Contacto de Legajo")
 
     @api.depends('prefix_phone_id', 'contact_person_telephone')
     def _compute_phone_full(self):
         for rec in self:
             rec.phone_full = '+%s %s' % (rec.prefix_phone_id.prefix_code, rec.contact_person_telephone)
+
+    @api.model
+    def create(self, values):
+        record = super(ONSCCVInformationContact, self).create(values)
+        employee_id = self.env['hr.employee'].suspend_security().search([('cv_digital_id', '=', record.cv_digital_id.id)],
+                                                                        limit=1)
+        if employee_id:
+            record.sync_legajo_information_contacto(employee_id)
+        return record
+
+    def write(self, vals):
+        Employee = self.env['hr.employee'].suspend_security()
+        result = super(ONSCCVInformationContact, self).write(vals)
+        for record in self:
+            employee_id = Employee.search([('cv_digital_id', '=', record.cv_digital_id.id)], limit=1)
+            if employee_id:
+                record.sync_legajo_information_contacto(employee_id)
+        return result
+
+    def sync_legajo_information_contacto(self, employee_id):
+        LegajoInformationContact = self.env['onsc.cv.legajo.information.contact'].suspend_security()
+        if self.legajo_information_contact_id:
+            self.legajo_information_contact_id.suspend_security().write({
+                'name_contact': self.name_contact,
+                'prefix_phone_id': self.prefix_phone_id.id,
+                'contact_person_telephone': self.contact_person_telephone,
+                'phone_full': self.phone_full,
+                'remark_contact_person': self.remark_contact_person
+            })
+        else:
+            legajo_information_contact_id = LegajoInformationContact.create({
+                'cv_information_contact_id': self.id,
+                'employee_id': employee_id.id,
+                'name_contact': self.name_contact,
+                'prefix_phone_id': self.prefix_phone_id.id,
+                'contact_person_telephone': self.contact_person_telephone,
+                'phone_full': self.phone_full,
+                'remark_contact_person': self.remark_contact_person
+            })
+            self.write({'legajo_information_contact_id': legajo_information_contact_id.id})

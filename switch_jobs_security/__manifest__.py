@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Switch roles',
-    'version': '15.0.1.0.0.',
+    'version': '15.0.1.0.1',
     'summary': 'Assigns to the logged user the roles of the selected job position.',
     'sequence': 11,
     'description': """

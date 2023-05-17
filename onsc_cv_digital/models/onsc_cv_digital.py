@@ -101,6 +101,7 @@ class ONSCCVDigital(models.Model):
     cv_expiration_date = fields.Date(
         string=u'Fecha de vencimiento documento de identidad',
         related='partner_id.cv_expiration_date', store=True, readonly=False)
+    identity_document_expiration_date = fields.Date(string=u'Fecha de vencimiento documento de identidad')
     email = fields.Char(
         string="Email",
         related='partner_id.email', store=True)
@@ -533,6 +534,7 @@ class ONSCCVDigital(models.Model):
         self.cv_address_place = False
         self.cv_address_block = False
         self.cv_address_sandlot = False
+        self.cv_address_amplification = False
 
     @api.onchange('is_occupational_health_card')
     def onchange_is_occupational_health_card(self):
@@ -571,6 +573,7 @@ class ONSCCVDigital(models.Model):
             self.realize = False
             self.lear = False
             self.interaction = False
+            self.people_disabilitie = 'no'
             self.type_support_ids = [(5,)]
 
     @api.onchange('people_disabilitie')
@@ -790,7 +793,8 @@ class ONSCCVDigital(models.Model):
 
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
-        self.update_header_documentary_validation(values)
+        if not self._context.get('no_update_header_documentary_validation'):
+            self.update_header_documentary_validation(values)
         if values.get('country_code') == 'UY' or values.get('cv_address_street_id') or values.get(
                 'cv_address_street2_id') or values.get('cv_address_street3_id'):
             for record in self:

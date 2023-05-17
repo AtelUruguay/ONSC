@@ -33,7 +33,7 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     is_divulgation_option_other_enable = fields.Boolean(related='divulgation_media_id.is_option_other_enable')
     other_divulgation_media = fields.Char('Otro medio de divulgación')
     website = fields.Char('Sitio web')
-    is_tutoring_finished = fields.Boolean('Tutoría conluida')
+    is_tutoring_finished = fields.Boolean('Tutoría concluida')
     orientation_type_id = fields.Many2one('onsc.cv.type.orientation', 'Tipo de orientación', required=True)
     co_tutor_name = fields.Char('Nombre del co-tutor')
     is_paid_activity = fields.Selection(string="¿Actividad remunerada?", selection=PAID_ACTIVITY_TYPES, required=True)

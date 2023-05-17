@@ -16,4 +16,3 @@ class ONSCLegajoUpdateOccupationWizard(models.TransientModel):
             'eff_date': self.date,
             'occupation_id': self.occupation_id.id
         })
-

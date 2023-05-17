@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class ONSCLegajo(models.Model):
@@ -43,8 +43,8 @@ class ONSCLegajo(models.Model):
             record.certificate_ids = record.cv_digital_id.certificate_ids.filtered(
                 lambda x: x.documentary_validation_state == 'validated')
 
-    def button_open_cv2validate(self):
-        self.ensure_one()
-        action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_one_hr_contract_action')
-        action['res_id'] = self.cv_digital_id.id
-        return action
+    @api.model
+    def create(self, values):
+        res = super(ONSCLegajo, self).create(values)
+        res.cv_digital_id.write({'is_docket': True, 'is_docket_active': True})
+        return res

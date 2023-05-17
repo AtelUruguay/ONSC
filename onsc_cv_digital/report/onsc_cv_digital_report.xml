@@ -152,9 +152,14 @@
                                             <span t-field="o.marital_status_id.name"/>
                                         </h4>
                                     </li>
-                                    <li>
+                                    <li t-if="not env.context.get('cv_digital_call', False)">
                                         <h4 t-if="o.cv_expiration_date">Fecha de vencimiento del documento de identidad:
                                             <span t-field="o.cv_expiration_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                                        </h4>
+                                    </li>
+                                    <li t-if="env.context.get('cv_digital_call', False)">
+                                        <h4 t-if="o.identity_document_expiration_date">Fecha de vencimiento del documento de identidad:
+                                            <span t-field="o.identity_document_expiration_date" t-options='{"format": "dd/MM/yyyy"}'/>
                                         </h4>
                                     </li>
                                     <li>
