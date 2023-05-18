@@ -447,7 +447,25 @@ class ONSCLegajoAltaVL(models.Model):
             employee = Employee.create({
                 'cv_emissor_country_id': self.cv_emissor_country_id.id,
                 'cv_document_type_id': self.cv_document_type_id.id,
-                'cv_nro_doc': self.partner_id.cv_nro_doc
+                'cv_nro_doc': self.partner_id.cv_nro_doc,
+
+                'country_of_birth_id': self.country_of_birth_id.id,
+                'marital_status_id': self.marital_status_id.id,
+                'uy_citizenship': self.uy_citizenship,
+
+
+                'address_info_date': self.date_start,
+                'country_id': self.cv_address_location_id.country_id.id,
+                'cv_address_state_id': self.cv_address_location_id.state_id.id,
+                'cv_address_location_id': self.cv_address_location_id.id,
+                'cv_address_street': self.cv_address_street,
+                'cv_address_nro_door': self.cv_address_nro_door,
+                'cv_address_is_cv_bis': self.cv_address_is_cv_bis,
+                'cv_address_apto': self.cv_address_apto,
+                'cv_address_zip': self.cv_address_zip,
+                'cv_address_place': self.cv_address_place,
+                'cv_address_block': self.cv_address_block,
+                'cv_address_sandlot': self.cv_address_sandlot,
             })
         return employee
 
