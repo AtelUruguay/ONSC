@@ -2,12 +2,12 @@
 import json
 import logging
 
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 _logger = logging.getLogger(__name__)
 
@@ -233,12 +233,13 @@ class ONSCLegajoAltaVL(models.Model):
     codigoJornadaFormal = fields.Char(string="Código Jornada Formal")
     descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal")
 
-    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar", compute='_compute_should_disable_form_edit')
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state not in ['borrador','error_sgh']
+            record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
 
     @api.constrains("attached_document_ids")
     def _check_attached_document_ids(self):
@@ -429,23 +430,23 @@ class ONSCLegajoAltaVL(models.Model):
         Legajo = self.env['onsc.legajo']
         return Legajo.create(self._prepare_legajo_value())
 
-
     def _prepare_legajo_value(self):
+        employee = self._get_legajo_employee()
         return {
-            'employee_id': self._get_legajo_employee().id,
+            'employee_id': employee.id,
             'public_admin_entry_date': self.date_income_public_administration,
             'public_admin_inactivity_years_qty': self.inactivity_years
         }
 
     def _get_legajo_employee(self):
         Employee = self.env['hr.employee']
-        employee = Employee.search([
+        employee = Employee.suspend_security().search([
             ('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
             ('cv_document_type_id', '=', self.cv_document_type_id.id),
             ('cv_nro_doc', '=', self.cv_nro_doc),
         ], limit=1)
         if not employee:
-            employee = Employee.create({
+            employee = Employee.suspend_security().create({
                 'name': calc_full_name(self.partner_id.cv_first_name,
                                        self.partner_id.cv_second_name,
                                        self.partner_id.cv_last_name_1,
@@ -458,7 +459,6 @@ class ONSCLegajoAltaVL(models.Model):
                 'marital_status_id': self.marital_status_id.id,
                 'uy_citizenship': self.uy_citizenship,
 
-
                 'address_info_date': self.date_start,
                 'cv_birthdate': self.cv_birthdate,
                 'cv_sex': self.cv_sex,
@@ -466,6 +466,7 @@ class ONSCLegajoAltaVL(models.Model):
                 'cv_address_state_id': self.cv_address_location_id.state_id.id,
                 'cv_address_location_id': self.cv_address_location_id.id,
                 'cv_address_street': self.cv_address_street,
+                'cv_address_street_id': self.cv_address_street_id.id,
                 'cv_address_nro_door': self.cv_address_nro_door,
                 'cv_address_is_cv_bis': self.cv_address_is_cv_bis,
                 'cv_address_apto': self.cv_address_apto,
@@ -476,6 +477,16 @@ class ONSCLegajoAltaVL(models.Model):
             })
         return employee
 
+    def _get_legajo_contract(self, employee):
+        Contract = self.env['hr.contract']
+        Contract.create({
+            'employee_id': employee.id,
+            'date_start': self.date_start or fields.Date.today(),
+            'inciso_id': self.inciso_id.id,
+            'operating_unit_id': self.operating_unit_id.id,
+            'income_mechanism_id': self.income_mechanism_id.id,
+            'income_mechanism_id': self.program_project_id.id,
+        })
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
