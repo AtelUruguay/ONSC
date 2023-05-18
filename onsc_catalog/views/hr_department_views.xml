@@ -19,8 +19,7 @@
                         />
                     </header>
                     <sheet>
-                        <widget name="web_ribbon" title="Archivado" bg_color="bg-danger"
-                                attrs="{'invisible': [('active', '=', True)]}"/>
+                        <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                         <group>
                             <group>
                                 <field name="code" readonly="1" force_save="1"/>
@@ -39,14 +38,15 @@
                                 <field name="start_date" required="1"/>
                                 <field name="end_date"/>
                                 <field name="short_name"
-                                       attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
                                 <field name="parent_id"
                                        domain="parent_id_domain"
                                        attrs="{'required': ['|',('hierarchical_level_order','>',1),('function_nature','!=','operative')]}"
                                        string="UO de la que depende"
                                        options="{'no_create': True}"/>
                                 <field name="category"
-                                       attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+
                                 <field name="company_id" invisible="1" force_save="1"/>
                                 <field name="active" invisible="1"/>
                                 <field name="function_nature_form" invisible="1"/>
@@ -56,10 +56,10 @@
                             </group>
                             <group>
                                 <field name="mission"
-                                       attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
                                 <field name="key_functional_habilities"/>
                                 <field name="process_contributor"
-                                       attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
+                                    attrs="{'invisible': [('function_nature_form', '=', 'form2')]}"/>
                                 <field name="regulatory" widget="html"/>
                                 <field name="is_approve_onsc" readonly="1" force_save="1"/>
                                 <field name="approve_onsc_date" readonly="1" force_save="1"/>
@@ -68,8 +68,7 @@
                             </group>
                         </group>
                         <notebook>
-                            <page string="Lista de responsabilidades"
-                                  attrs="{'invisible': [('function_nature_form', '=', 'form2')]}">
+                            <page string="Lista de responsabilidades" attrs="{'invisible': [('function_nature_form', '=', 'form2')]}">
                                 <field name="reponsability_ids">
                                     <tree editable="bottom">
                                         <field name="process"/>
@@ -124,12 +123,10 @@
                 <search string="Unidades organizativas">
                     <field name="name" string="Department"/>
                     <field name="code"/>
-                    <field name="parent_id"/>
+                    <field name="parent_id" />
                     <separator/>
-                    <filter string="Para aprobar CGN" name="filter_inactive_cgn"
-                            domain="[('active','=',False),('is_approve_cgn','=',False),('is_approve_onsc','=',True)]"/>
-                    <filter string="Para aprobar ONSC" name="filter_inactive_onsc"
-                            domain="[('active','=',False),('is_approve_onsc','=',False)]"/>
+                    <filter string="Para aprobar CGN" name="filter_inactive_cgn" domain="[('active','=',False),('is_approve_cgn','=',False),('is_approve_onsc','=',True)]"/>
+                    <filter string="Para aprobar ONSC" name="filter_inactive_onsc" domain="[('active','=',False),('is_approve_onsc','=',False)]"/>
                     <filter string="Archivados" name="filter_inactive" domain="[('active','=',False)]"/>
                     <filter string="No Archivados" name="filter_active" domain="[('active','=',True)]"/>
                     <searchpanel>
@@ -138,7 +135,7 @@
                         <field name="parent_id" string="UNIDAD ORGANIZATIVA" icon="fa-users" enable_counters="1"/>
                     </searchpanel>
                 </search>
-            </field>
+             </field>
         </record>
 
         <record id="onsc_catalog_department_server_action" model="ir.actions.server">
