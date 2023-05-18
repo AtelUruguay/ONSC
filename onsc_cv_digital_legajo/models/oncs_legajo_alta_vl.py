@@ -302,7 +302,7 @@ class ONSCLegajoAltaVL(models.Model):
                     message.append(
                         "Ya existe un alta de vínvulo laboral pendiente de auditoría para el departamento seleccionado")
                 if not count and record.department_id.manager_id:
-                    message.append("El UO ya tiene un responsable")
+                    message.append("La UO ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
