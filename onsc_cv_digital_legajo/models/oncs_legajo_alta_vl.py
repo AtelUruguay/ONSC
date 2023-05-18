@@ -300,7 +300,7 @@ class ONSCLegajoAltaVL(models.Model):
                 count = self.sudo().search_count(domain_alta)
                 if count:
                     message.append(
-                        "Ya existe un alta de vínvulo laboral pendiente de auditoría para el departamento seleccionado")
+                        "Ya existe un alta de vínvulo laboral pendiente de auditoría para la UO seleccionada")
                 if not count and record.department_id.manager_id:
                     message.append("La UO ya tiene un responsable")
         if message:
