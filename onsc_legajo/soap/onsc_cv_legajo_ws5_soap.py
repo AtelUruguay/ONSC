@@ -72,8 +72,10 @@ class WsCVPostulacion(ServiceBase):
 
         try:
             alta_vl = env['onsc.legajo.alta.vl'].search([
-                ('pda_id', '=', request.pdaId),
+                ('id_alta', '=', request.pdaId),
                 ('state', '=', 'pendiente_auditoria_cgn')], limit=1)
+            alta_vl = env['onsc.legajo.alta.vl'].search([
+                ('id', '=', 60)], limit=1)
             if not alta_vl:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_151)
             alta_vl._create_legajo()

@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 _logger = logging.getLogger(__name__)
 
@@ -445,6 +446,10 @@ class ONSCLegajoAltaVL(models.Model):
         ], limit=1)
         if not employee:
             employee = Employee.create({
+                'name': calc_full_name(self.partner_id.cv_first_name,
+                                       self.partner_id.cv_second_name,
+                                       self.partner_id.cv_last_name_1,
+                                       self.partner_id.cv_last_name_2),
                 'cv_emissor_country_id': self.cv_emissor_country_id.id,
                 'cv_document_type_id': self.cv_document_type_id.id,
                 'cv_nro_doc': self.partner_id.cv_nro_doc,
@@ -455,6 +460,8 @@ class ONSCLegajoAltaVL(models.Model):
 
 
                 'address_info_date': self.date_start,
+                'cv_birthdate': self.cv_birthdate,
+                'cv_sex': self.cv_sex,
                 'country_id': self.cv_address_location_id.country_id.id,
                 'cv_address_state_id': self.cv_address_location_id.state_id.id,
                 'cv_address_location_id': self.cv_address_location_id.id,
