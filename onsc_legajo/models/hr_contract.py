@@ -2,6 +2,7 @@
 import json
 
 from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.osv import expression
 
@@ -79,25 +80,25 @@ class HrContract(models.Model):
     graduation_date = fields.Date(string='Fecha de graduación', history=True)
     position = fields.Char(string='Puesto', history=True)
     workplace = fields.Char(string='Plaza', history=True)
-    reason_discharge = fields.Char(string='Descripción del motivo alta', history=True)
-    norm_code_discharge_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
-    type_norm_discharge = fields.Char(string='Tipo de norma alta', related='norm_code_discharge_id.tipoNorma')
+    reason_description = fields.Char(string='Descripción del motivo alta', history=True)
+    norm_code_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
+    type_norm_discharge = fields.Char(string='Tipo de norma alta', related='norm_code_id.tipoNorma')
     norm_number_discharge = fields.Integer(string='Número de norma alta',
-                                           related='norm_code_discharge_id.numeroNorma')
-    norm_year_discharge = fields.Integer(string='Año de norma alta', related='norm_code_discharge_id.anioNorma')
+                                           related='norm_code_id.numeroNorma')
+    norm_year_discharge = fields.Integer(string='Año de norma alta', related='norm_code_id.anioNorma')
     norm_article_discharge = fields.Integer(string='Artículo de norma alta',
-                                            related='norm_code_discharge_id.articuloNorma')
-    resolution_description_discharge = fields.Char(string='Descripción de la resolución', history=True)
-    resolution_date_discharge = fields.Date(string='Fecha de la resolución', history=True)
-    resolution_type_discharge = fields.Selection(
-        [('m', 'Inciso'), ('p', 'Presidencia o Poder ejecutivo'), ('u', 'Unidad ejecutora')],
+                                            related='norm_code_id.articuloNorma')
+    resolution_description = fields.Char(string='Descripción de la resolución', history=True)
+    resolution_date = fields.Date(string='Fecha de la resolución', history=True)
+    resolution_type = fields.Selection(
+        [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
         string='Tipo de resolución alta', history=True)
     contract_expiration_date = fields.Date(string='Vencimiento del contrato', history=True)
-    additional_information_discharge = fields.Char(string='Información adicional alta', history=True)
+    additional_information = fields.Char(string='Información adicional alta', history=True)
     code_day = fields.Char(string="Código de la jornada", history=True)
     description_day = fields.Char(string="Descripción de la Jornada", history=True)
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada retributiva', history=True)
-    id_registration_discharge = fields.Char(string='Id de alta', history=True)
+    id_alta = fields.Char(string='Id de alta', history=True)
     id_deregistration_discharge = fields.Char(string='Id de baja', history=True)
     reason_deregistration = fields.Char(string='Descripción del motivo baja', history=True)
     norm_code_deregistration_id = fields.Many2one('onsc.legajo.norm', string='Código de la norma de baja', history=True)
@@ -111,13 +112,13 @@ class HrContract(models.Model):
     resolution_description_deregistration = fields.Char(string='Descripción de la resolución baja', history=True)
     resolution_date_deregistration = fields.Date(string='Fecha de la resolución baja', history=True)
     resolution_type_deregistration = fields.Selection(
-        [('m', 'Inciso'), ('p', 'Presidencia o Poder ejecutivo'), ('u', 'Unidad ejecutora')],
+        [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
         string='Tipo de resolución baja', history=True)
     causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string="Causal de egreso", history=True)
     causes_discharge_extended = fields.Char(string='Causal de egreso extendido', history=True)
     is_require_extended = fields.Boolean(u"¿Requiere extendido?", related='causes_discharge_id.is_require_extended')
     additional_information_deregistration = fields.Char(string='Información adicional baja', history=True)
-    attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document',
+    alta_attached_document_ids = fields.One2many('onsc.legajo.attached.document',
                                                       'contract_id',
                                                       string='Documentos adjuntos alta',
                                                       domain=[('type', '=', 'discharge')])
@@ -175,6 +176,9 @@ class HrContract(models.Model):
     def get_history_record_action(self, history_id, res_id):
         return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
             'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
+
+    def activate_legajo_contract(self):
+        self.write({'legajo_state': 'active'})
 
     def button_update_occupation(self):
         ctx = self._context.copy()

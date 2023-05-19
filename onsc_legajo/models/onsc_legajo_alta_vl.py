@@ -428,10 +428,13 @@ class ONSCLegajoAltaVL(models.Model):
 
     def _create_legajo(self):
         Legajo = self.env['onsc.legajo']
-        return Legajo.create(self._prepare_legajo_value())
-
-    def _prepare_legajo_value(self):
         employee = self._get_legajo_employee()
+        contract = self._get_legajo_contract(employee)
+        job = self._get_legajo_job(contract)
+        legajo = Legajo.suspend_security().create(self._prepare_legajo_value(employee))
+        return legajo
+
+    def _prepare_legajo_value(self, employee):
         return {
             'employee_id': employee.id,
             'public_admin_entry_date': self.date_income_public_administration,
@@ -443,7 +446,7 @@ class ONSCLegajoAltaVL(models.Model):
         employee = Employee.suspend_security().search([
             ('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
             ('cv_document_type_id', '=', self.cv_document_type_id.id),
-            ('cv_nro_doc', '=', self.cv_nro_doc),
+            ('cv_nro_doc', '=', self.partner_id.cv_nro_doc),
         ], limit=1)
         if not employee:
             employee = Employee.suspend_security().create({
@@ -458,10 +461,13 @@ class ONSCLegajoAltaVL(models.Model):
                 'country_of_birth_id': self.country_of_birth_id.id,
                 'marital_status_id': self.marital_status_id.id,
                 'uy_citizenship': self.uy_citizenship,
+                'credencial_serie': self.credencial_serie,
+                'credencial_number': self.credencial_number,
 
                 'address_info_date': self.date_start,
                 'cv_birthdate': self.cv_birthdate,
                 'cv_sex': self.cv_sex,
+
                 'country_id': self.cv_address_location_id.country_id.id,
                 'cv_address_state_id': self.cv_address_location_id.state_id.id,
                 'cv_address_location_id': self.cv_address_location_id.id,
@@ -479,14 +485,65 @@ class ONSCLegajoAltaVL(models.Model):
 
     def _get_legajo_contract(self, employee):
         Contract = self.env['hr.contract']
-        Contract.create({
+        vals = {
             'employee_id': employee.id,
+            'name': employee.name,
             'date_start': self.date_start or fields.Date.today(),
             'inciso_id': self.inciso_id.id,
             'operating_unit_id': self.operating_unit_id.id,
             'income_mechanism_id': self.income_mechanism_id.id,
-            'income_mechanism_id': self.program_project_id.id,
+            'program': self.program_project_id.programa,
+            'project': self.program_project_id.proyecto,
+            'regime_id': self.regime_id.id,
+            'occupation_id': self.occupation_id.id,
+            'descriptor1_id': self.descriptor1_id.id,
+            'descriptor2_id': self.descriptor2_id.id,
+            'descriptor3_id': self.descriptor3_id.id,
+            'descriptor4_id': self.descriptor4_id.id,
+            'position': self.nroPuesto,
+            'workplace': self.nroPlaza,
+            'sec_position': self.nroPlaza,
+            'reason_description': self.reason_description,
+            'norm_code_id': self.norm_id.id,
+            'resolution_description': self.resolution_description,
+            'resolution_date': self.resolution_date,
+            'resolution_type': self.resolution_type,
+            'call_number': self.call_number,
+            'contract_expiration_date': self.contract_expiration_date,
+            'additional_information': self.additional_information,
+            'code_day': self.retributive_day_id.codigoJornada,
+            'description_day': self.retributive_day_id.descripcionJornada,
+            'retributive_day_id': self.retributive_day_id.id,
+            'id_alta': self.id,
+            #
+            'wage': 1
+        }
+        document_line_vals = []
+        for document_record in self.attached_document_ids:
+            document_line_vals.append({0, 0, {
+                'name': document_record.name,
+                'document_type_id': document_record.document_type_id.id,
+                'document_file': document_record.document_file,
+                'document_file_name': document_record.document_file_name,
+            }})
+        vals['alta_attached_document_ids'] = document_line_vals
+        contract = Contract.suspend_security().create(vals)
+        contract.activate_legajo_contract()
+        contract.onchange_employee()
+        return contract
+
+    def _get_legajo_job(self, contract):
+        Job = self.env['hr.job']
+        job = Job.suspend_security().create({
+            'name': 'DUMMY %s' % (str(contract.id)),
+            'employee_id': contract.employee_id.id,
+            'contract_id': contract.id,
+            'department_id': self.department_id.id,
+            'start_date': self.date_start,
+            'security_job_id': self.security_job_id.id,
         })
+        job.onchange_security_job_id()
+        return job
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
