@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models,api, _
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+
 
 
 STATES = [
@@ -22,12 +22,14 @@ class ONSCActionsCommonData(models.AbstractModel):
 
 
     reason_discharge = fields.Char(string='Descripción del motivo', copy=True)
-    norm_code_discharge_id = fields.Many2one('onsc.legajo.norm', string='Tipo de norma', copy=True)
-    norm_number_discharge = fields.Integer(string='Número de norma', related="norm_code_discharge_id.numeroNorma",
+    norm_id  = fields.Many2one('onsc.legajo.norm', string='Norma', copy=True)
+    norm_code_discharge = fields.Char( string='Tipo de norma', related="norm_id.tipoNorma",
                                            store=True, readonly=True)
-    norm_year_discharge = fields.Integer(string='Año de norma', related="norm_code_discharge_id.anioNorma", store=True,
+    norm_number_discharge = fields.Integer(string='Número de norma',related="norm_id.numeroNorma",
+                                           store=True, readonly=True )
+    norm_year_discharge = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
                                          readonly=True)
-    norm_article_discharge = fields.Integer(string='Artículo de norma', related="norm_code_discharge_id.articuloNorma",
+    norm_article_discharge = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
                                             store=True, readonly=True)
     resolution_description_discharge = fields.Char(string='Descripción de la resolución', copy=True)
     resolution_date_discharge = fields.Date(string='Fecha de la resolución', copy=True)

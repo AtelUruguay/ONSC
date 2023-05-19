@@ -6,7 +6,8 @@
             <field name="model">onsc.legajo.baja.vl</field>
             <field name="arch" type="xml">
                 <search string="Baja VL">
-                     <field name="full_name"/>
+                     <field name="partner_id"/>
+
                 </search>
             </field>
         </record>
@@ -16,7 +17,8 @@
             <field name="model">onsc.legajo.baja.vl</field>
             <field name="arch" type="xml">
                 <tree string="Baja VL">
-                    <field name="full_name"/>
+                     <field name="partner_id"/>
+                     <field name="state"/>
                 </tree>
             </field>
         </record>
@@ -31,26 +33,39 @@
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
+                         <div name="oe_tittle" class="oe_title"></div>
+                        <group name="main_group">
+                            <group name="main_group_left">
+                                <field name="is_require_extended" invisible="1"/>
+                                <field name="partner_id_domain" invisible="1"/>
+                                <field name="cv_emissor_country_id"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                       readonly="1"
+                                       force_save="1"
+                                       string="País"/>
+                                <field name="cv_document_type_id"
+                                       readonly="1"
+                                       force_save="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="partner_id" string="C.I." required="1"
+                                       context="{'tree_view_ref': 'onsc_cv_digital_legajo.onsc_cv_digital_legajo_tree_view','show_cv_nro_doc':True}"
+                                       attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="partner_id_domain"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
 
-                        <group>
-                            <group>
-                                <field name="partner_ids_domain" invisible="1"/>
-                                <field name="res_partner_id" domain="partner_ids_domain"/>
-<!--                                <button name="button_get_contract"-->
-<!--                                    type="object"-->
-<!--                                    string="Buscar" class="oe_highlight"/>-->
+
+
                             </group>
-                            <group >
-
+                            <group name="main_group_right">
                             </group>
-
-                        </group>
-                        <group name="personal">
-                           <field name="full_name" readonly="1" />
                         </group>
                         <group name="group2">
                             <field name="employment_relationship_ids" >
                              <tree  create="false" delete="false">
+                                  <field name="state" invisible="1"/>
+                                  <field name="selected" nolabel="1"
+                                   groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas"
+                                   widget="boolean_toggle" force_save="1" class="oe_edit_only" attrs="{'invisible': [('state', 'not in', ['borrador','error_sgh'])]}"/>
+
                                  <field name="nroPuesto" readonly="1"/>
                                  <field name="nroPlaza" readonly="1"/>
                                  <field name="descriptor1_id" readonly="1"/>
@@ -67,27 +82,40 @@
                              </tree>
                          </field>
                         </group>
-<!--                        <group name="group3">-->
-<!--                            -->
-<!--                        </group>-->
-                         <group name="group4">
-                              <group >
-                                <field name="reason_discharge"/>
-                                <field name="norm_code_discharge_id"/>
-                                <field name="norm_number_discharge" readonly="1"/>
-                                <field name="norm_year_discharge" readonly="1"/>
-                                <field name="norm_article_discharge" readonly="1"/>
+                         <group name="motivo" string="Ingreso de motivo">
+                            <group name="motivo_left">
+                                <field name="reason_discharge" colspan="4"/>
+
+                               <field name="norm_id" colspan="3"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="norm_code_discharge" colspan="2"/>
+                                <field name="norm_number_discharge" colspan="2"/>
+                                <field name="norm_year_discharge" colspan="2"/>
+                                <field name="norm_article_discharge" colspan="1"/>
+                                 <div class="alert alert-info" colspan="6"
+                                             role="alert"
+                                             style="margin-bottom:0px;">
+                                            <p>
+                                                <i class="fa fa-info-circle" role="alert"/>
+                                                En caso de no encontrar la norma de referencia para el movimiento,
+                                                comunicarse con el
+                                                área de puesto de trabajos de CGN al siguiente correo
+                                                <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
+                                            </p>
+                                        </div>
+
+
+
 
                             </group>
-
-                        </group>
-                        <group name="group5">
-                            <group>
-                                <field name="resolution_description_discharge" />
-                                <field name="resolution_date_discharge"  />
-                                <field name="resolution_type_discharge" />
+                            <group name="motivo_right">
+                                <field name="resolution_description_discharge" colspan="4"/>
+                                <field name="resolution_date_discharge" colspan="4"/>
+                                <field name="resolution_type_discharge" colspan="4"/>
                             </group>
                         </group>
+
                         <group name="documentacion" string="Documentación">
                             <field name="attached_document_discharge_ids" nolabel="1">
                                 <tree editable="top">
@@ -106,8 +134,8 @@
                         </group>
                          <group name="group7">
                             <group>
-                                <field name="is_require_extended" invisible="1"/>
-                                <field name="causes_discharge_line_ids"  attrs="{'invsible': [('is_require_extended', '=', False)]}" >
+
+                                <field name="causes_discharge_line_ids"  attrs="{'invisible': [('is_require_extended', '=', False)]}" >
                                     <tree string="Motivo de causal de egreso extendido" editable="top">
                                         <field name="name"/>
                                         <field name="description"/>
