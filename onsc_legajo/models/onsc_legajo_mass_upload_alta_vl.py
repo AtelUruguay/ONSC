@@ -111,7 +111,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             workbook = xlrd.open_workbook(fp.name)
             sheet = workbook.sheet_by_index(0)
 
-        except:
+        except Exception:
             raise UserError(_("Archivo inválido"))
 
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
@@ -448,7 +448,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                 # validar boolean
                 if field[key].type == 'boolean':
                     values[key] = True if value == '0' else False
-            except:
+            except Exception:
                 error.append("El tipo de campo %s no es válido. El tipo de campo debe ser %s" % (
                     field[key].string, "numérico" if field[key].type == 'float' else "entero" if field[
                                                                                                      key].type == 'integer' else "Booleano"))
