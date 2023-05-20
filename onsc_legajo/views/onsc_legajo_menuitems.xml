@@ -166,7 +166,7 @@
               parent="onsc_legajo_root_menu"
               sequence="100"/>
         <menuitem id="onsc_legajo_mass_upload_alta_vl_menu"
-                  name="Carga Masiva de Altas VL"
+                  name="Carga masiva de altas vl"
                   parent="onsc_legajo_settings_menu"
                   action="onsc_legajo_mass_upload_alta_vl_action"
                   sequence="100"/>
