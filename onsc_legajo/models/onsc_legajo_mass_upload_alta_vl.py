@@ -5,7 +5,6 @@ import logging
 import tempfile
 from datetime import timedelta
 
-import pandas as pd
 from odoo import fields, models, api, _
 from odoo.exceptions import UserError
 from odoo.osv import expression
@@ -100,32 +99,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 [self.env.ref('onsc_legajo.view_onsc_legajo_mass_upload_line_alta_vl_form').id, 'form'],
                 [self.env.ref('onsc_legajo.view_onsc_legajo_mass_upload_line_alta_vl_search').id, 'search'],
             ]
-        }
-
-    def action_process2(self):
-
-        fields = self.env['onsc.legajo.mass.upload.line.alta.vl'].get_fields()
-
-        # Crear un diccionario para almacenar los datos
-        data = {}
-
-        # Recorrer los campos y agregarlos al diccionario
-        for field_name, field in fields.items():
-            if 'domain' not in field_name:
-                data[field.string] = []
-
-        # Crear un DataFrame a partir de los datos
-        df = pd.DataFrame(data)
-
-        # Guardar el DataFrame en un archivo Excel
-        df.to_excel('archivo_excel.xlsx', index=False)
-
-        return {
-            'effect': {
-                'fadeout': 'slow',
-                'message': 'Todas las líneas fueron procesadas con éxito',
-                'type': 'rainbow_man',
-            }
         }
 
     def action_process(self):
