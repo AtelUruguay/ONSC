@@ -165,4 +165,9 @@
               name="Configuración"
               parent="onsc_legajo_root_menu"
               sequence="100"/>
+        <menuitem id="onsc_legajo_mass_upload_alta_vl_menu"
+                  name="Carga Masiva de Altas VL"
+                  parent="onsc_legajo_settings_menu"
+                  action="onsc_legajo_mass_upload_alta_vl_action"
+                  sequence="100"/>
 </odoo>
