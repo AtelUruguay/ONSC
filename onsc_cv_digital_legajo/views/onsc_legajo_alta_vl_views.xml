@@ -68,9 +68,9 @@
                         <group>
                             <field name="country_of_birth_id" readonly="1" force_save="1"/>
                             <field name="marital_status_id" readonly="1" force_save="1"/>
-                            <field name="crendencial_serie" readonly="1" force_save="1"/>
                             <field name="health_provider_id" readonly="1" force_save="1"/>
                             <field name="uy_citizenship" readonly="1" force_save="1"/>
+                            <field name="crendencial_serie" readonly="1" force_save="1"/>
                             <field name="credential_number" readonly="1" force_save="1"/>
                             <field name="personal_phone" readonly="1" force_save="1"/>
                             <field name="mobile_phone" readonly="1"/>
