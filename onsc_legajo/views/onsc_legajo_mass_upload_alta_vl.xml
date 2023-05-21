@@ -40,7 +40,7 @@
                         <group>
                             <group>
                                 <field name="id_ejecucion"/>
-                                <field name="inciso_id"
+                                <field name="inciso_id" required="1"
                                        attrs="{'readonly': [('is_inciso_readonly', '!=', False)]}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="operating_unit_id" domain="operating_unit_id_domain"

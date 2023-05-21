@@ -420,7 +420,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
 
     def find_by_code_name_many2one(self, field, code_field, name_field, value):
         value = value.strip() if isinstance(value, str) else value
-        record = self.env[self._fields[field].comodel_name].search(
+        record = self.env[self._fields[field].comodel_name].sudo().search(
             ['|', (code_field, '=', value), (name_field, '=', value)], limit=1)
         if record:
             return record.id
