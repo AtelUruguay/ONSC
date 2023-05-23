@@ -534,3 +534,6 @@ class ONSCLegajoAltaVL(models.Model):
         if self.filtered(lambda x: x.state != 'borrador'):
             raise ValidationError(_("Solo se pueden eliminar una transacción en estado borrador"))
         return super(ONSCLegajoAltaVL, self).unlink()
+    
+    def get_followers_mails(self):
+        return ','.join(self.message_follower_ids.mapped('partner_id.email'))
