@@ -13,7 +13,7 @@ from spyne import rpc
 from spyne.model.fault import Fault
 
 import odoo
-from odoo import api, SUPERUSER_ID
+from odoo import api, tools, SUPERUSER_ID
 from odoo.modules.registry import Registry
 from . import soap_error_codes as legajo_error_codes
 
@@ -95,8 +95,7 @@ class WsLegajoWS5(ServiceBase):
         except Exception as e:
             cr.rollback()
             logic_150_extended = onsc_error_codes.LOGIC_150
-            if hasattr(e, 'name') and isinstance(e.name, str):
-                logic_150_extended['long_desc'] = e.name
+            logic_150_extended['long_desc'] = tools.ustr(e)
             error_item = ErrorHandler(code=logic_150_extended.get('code'),
                                       type=logic_150_extended.get('type'),
                                       error=logic_150_extended.get('desc'),
