@@ -24,11 +24,12 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     @api.model
     def default_get(self, fields):
         res = super(ONSCMassUploadLegajoAltaVL, self).default_get(fields)
-        if self.user_has_groups(
-                'onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
-            'onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue'):
+        recursos_humanos_inciso = self.user_has_groups(
+            'onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso')
+        recursos_humanos_ue = self.user_has_groups('onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue')
+        if recursos_humanos_inciso or recursos_humanos_ue:
             res['inciso_id'] = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-        if self.user_has_groups('onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue'):
+        if recursos_humanos_ue:
             res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
 
