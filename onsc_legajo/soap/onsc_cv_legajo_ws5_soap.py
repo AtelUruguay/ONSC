@@ -33,7 +33,7 @@ class WsLegajoWS5Request(ComplexModel):
     ]
 
 
-class WsCVPostulacion(ServiceBase):
+class WsLegajoWS5(ServiceBase):
     __service_url_path__ = 'legajo_ws5'
     __target_namespace__ = NAMESPACE_BASE_V1
 
@@ -108,4 +108,4 @@ class WsCVPostulacion(ServiceBase):
             cr.close()
 
 
-register_service(WsCVPostulacion)
+register_service(WsLegajoWS5)
