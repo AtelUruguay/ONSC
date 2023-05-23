@@ -37,3 +37,10 @@ AUTH_53 = {
     'desc': u'DBNAME inexistente',
     'long_desc': u'Contacte con el administrador',
 }
+
+LOGIC_150 = {
+    'type': 'LOGICA',
+    'code': '150',
+    'desc': u'Error',
+    'long_desc': u'Contacte con el administrador',
+}
