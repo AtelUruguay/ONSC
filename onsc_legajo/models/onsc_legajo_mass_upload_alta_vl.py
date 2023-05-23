@@ -101,6 +101,16 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             ]
         }
 
+    def process_value(self, row):
+        if isinstance(row.value, int):
+            return int(row.value)
+        elif isinstance(row.value, float):
+            return int(row.value)
+        elif isinstance(row.value, bytes):
+            return row.value.encode('utf-8')
+        else:
+            return str(row.value)
+
     def action_process(self):
 
         try:
@@ -118,9 +128,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         excel_base_date = datetime.datetime(1899, 12, 31)
 
         for row_no in range(1, sheet.nrows):
-            line = list(map(lambda row: int(row.value) if isinstance(row.value, int) else int(row.value) if isinstance(
-                row.value, float) else (row.value.encode('utf-8') if isinstance(row.value, bytes) else str(row.value)),
-                            sheet.row(row_no)))
+            line = list(map(self.process_value, sheet.row(row_no)))
+
             global message_error
             message_error = []
             values = {
@@ -229,6 +238,45 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'type': 'rainbow_man',
                 }
             }
+
+    def action_create_partner(self):
+        Partner = self.env['res.partner']
+        for line in self.lines_processed_ids:
+            data = {
+                'cv_dnic_name_1': line.first_name,
+                'cv_dnic_name_2': line.second_name,
+                'cv_dnic_lastname_1': line.first_surname,
+                'cv_dnic_lastname_2': line.second_surname,
+                'cv_last_name_adoptive_1': line.first_surname_adopted,
+                'cv_last_name_adoptive_2': line.second_surname_adopted,
+                'cv_dnic_full_name': line.name_ci,
+                'cv_sex': line.sex,
+                'cv_birthdate': line.birth_date,
+                'cv_emissor_country_id': line.document_country_id.id,
+                'cv_nro_doc': line.document_number,
+                'is_partner_cv': True,
+                # 'marital_status_id': line.marital_status_id.id,
+                # 'birth_country_id': line.birth_country_id.id,
+                # 'citizenship': line.citizenship,
+                # 'crendencial_serie': line.crendencial_serie,
+                # 'credential_number': line.credential_number,
+                'phone': line.personal_phone,
+                'phone_mobile_search': line.mobile_phone,
+                'email': line.email,
+                'state_id': line.address_state_id.id,
+                'cv_location_id': line.address_location_id.id,
+                'street': line.address_street_id.street,
+                'street2': line.address_street2_id.street,
+                'cv_street3': line.address_street3_id.street,
+                'zip': line.address_zip,
+                'cv_nro_door': line.address_nro_door,
+                'is_cv_bis': line.address_is_bis,
+                'cv_apto': line.address_apto,
+                'cv_address_place': line.address_place,
+                'cv_address_block': line.address_block,
+                'cv_address_sandlot': line.address_sandlot,
+            }
+            Partner.create(data)
 
 
 class ONSCMassUploadLineLegajoAltaVL(models.Model):
@@ -449,9 +497,15 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                 if field[key].type == 'boolean':
                     values[key] = True if value == '0' else False
             except Exception:
+                type_field = ""
+                if field[key].type == 'float':
+                    type_field = "numérico"
+                elif field[key].type == 'integer':
+                    type_field = "entero"
+                elif field[key].type == 'boolean':
+                    type_field = "booleano"
                 error.append("El tipo de campo %s no es válido. El tipo de campo debe ser %s" % (
-                    field[key].string, "numérico" if field[key].type == 'float' else "entero" if field[
-                                                                                                     key].type == 'integer' else "Booleano"))
+                    field[key].string, type_field))
                 values[key] = False
         error = '\n'.join(error)
         return values, error
