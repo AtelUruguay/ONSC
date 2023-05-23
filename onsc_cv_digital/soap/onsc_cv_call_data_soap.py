@@ -13,9 +13,10 @@ from spyne import rpc
 from spyne.model.complex import Array
 from spyne.model.fault import Fault
 
-from . import soap_error_codes
-from .check_user_db import CheckUserDBName
-from .onsc_cv_base_soap import ErrorHandler, WsCVResponse
+from . import soap_error_codes as cv_error_codes
+from odoo.addons.onsc_base.soap import soap_error_codes as onsc_error_codes
+from odoo.addons.onsc_base.soap.check_user_db import CheckUserDBName
+from odoo.addons.onsc_base.soap.onsc_base_soap import ErrorHandler, WsResponse
 
 _logger = logging.getLogger(__name__)
 
@@ -50,7 +51,7 @@ class WsCVDatosLlamado(ServiceBase):
 
     @rpc(WsCVDatosLlamadoRequest.customize(nullable=False, min_occurs=1),
          _body_style='bare',
-         _returns=WsCVResponse)
+         _returns=WsResponse)
     def datosLlamado(self, request):
         # pylint: disable=invalid-commit
         try:
@@ -63,14 +64,14 @@ class WsCVDatosLlamado(ServiceBase):
             env = api.Environment(cr, uid, {})
             parameter = env['ir.config_parameter'].sudo().get_param('parameter_ws_postulation_user')
             if env['res.users'].sudo().browse(integration_uid).login != parameter:
-                soap_error_codes._raise_fault(soap_error_codes.AUTH_51)
+                onsc_error_codes._raise_fault(onsc_error_codes.AUTH_51)
 
         except Fault as e:
             if cr:
                 cr.rollback()
                 cr.close()
             error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
-            response = WsCVResponse(result='error', errors=[])
+            response = WsResponse(result='error', errors=[])
             response.errors.append(error_item)
             return response
         except Exception as e:
@@ -78,7 +79,7 @@ class WsCVDatosLlamado(ServiceBase):
                 cr.rollback()
                 cr.close()
             error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
-            response = WsCVResponse(result='error', errors=[])
+            response = WsResponse(result='error', errors=[])
             response.errors.append(error_item)
             return response
 
@@ -88,23 +89,23 @@ class WsCVDatosLlamado(ServiceBase):
                 postulations.append(element.nroPostulacion)
             env['onsc.cv.digital.call'].call_preselection(request.nroLlamado, postulations)
             cr.commit()
-            return WsCVResponse(result='ok', errors=[])
+            return WsResponse(result='ok', errors=[])
         except Fault as e:
             cr.rollback()
             error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
-            response = WsCVResponse(result='error', errors=[])
+            response = WsResponse(result='error', errors=[])
             response.errors.append(error_item)
             return response
         except Exception as e:
             cr.rollback()
-            logic_150_extended = soap_error_codes.LOGIC_150
+            logic_150_extended = cv_error_codes.LOGIC_150
             if hasattr(e, 'name') and isinstance(e.name, str):
                 logic_150_extended['long_desc'] = e.name
             error_item = ErrorHandler(code=logic_150_extended.get('code'),
                                       type=logic_150_extended.get('type'),
                                       error=logic_150_extended.get('desc'),
                                       description=logic_150_extended.get('long_desc'))
-            response = WsCVResponse(result='error', errors=[])
+            response = WsResponse(result='error', errors=[])
             response.errors.append(error_item)
             return response
         finally:

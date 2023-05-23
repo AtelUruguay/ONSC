@@ -360,6 +360,9 @@ class HrEmployee(models.Model):
             }
             record.suspend_security().write(vals)
 
+    def _syncronize_data(self):
+        return self.button_get_info_fromcv()
+
 
 class ONSCLegajoDriverLicense(models.Model):
     _name = 'onsc.legajo.driver.license'
