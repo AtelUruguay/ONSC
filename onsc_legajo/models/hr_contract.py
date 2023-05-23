@@ -121,9 +121,9 @@ class HrContract(models.Model):
     is_require_extended = fields.Boolean(u"¿Requiere extendido?", related='causes_discharge_id.is_require_extended')
     additional_information_deregistration = fields.Char(string='Información adicional baja', history=True)
     alta_attached_document_ids = fields.One2many('onsc.legajo.attached.document',
-                                                      'contract_id',
-                                                      string='Documentos adjuntos alta',
-                                                      domain=[('type', '=', 'discharge')])
+                                                 'contract_id',
+                                                 string='Documentos adjuntos alta',
+                                                 domain=[('type', '=', 'discharge')])
     attached_document_deregistration_ids = fields.One2many('onsc.legajo.attached.document',
                                                            'contract_id',
                                                            string='Documentos adjuntos baja',
@@ -137,7 +137,7 @@ class HrContract(models.Model):
     def onchange_inciso(self):
         self.operating_unit_id = False
 
-    @api.depends('employee_id', 'position', 'workplace', 'sec_position',)
+    @api.depends('employee_id', 'position', 'workplace', 'sec_position', )
     def _compute_legajo_name(self):
         for rec in self:
             if rec.employee_id and (rec.position or rec.workplace or rec.sec_position):
