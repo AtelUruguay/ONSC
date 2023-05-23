@@ -3,7 +3,7 @@ import json
 from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-
+from odoo.osv import expression
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
@@ -91,6 +91,42 @@ class ONSCLegajoBajaVL(models.Model):
                 rec.is_require_extended = rec.causes_discharge_id.is_require_extended
             else:
                 rec.is_require_extended = False
+    def _get_domain(self, args):
+        args = expression.AND([[
+            ('partner_id', '!=', self.env.user.partner_id.id)
+        ], args])
+        if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso'):
+            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
+            if inciso_id:
+                args = expression.AND([[
+                    ('inciso_id', '=', inciso_id.id)
+                ], args])
+        elif self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue'):
+            contract_id = self.env.user.employee_id.job_id.contract_id
+            inciso_id = contract_id.inciso_id
+            operating_unit_id = contract_id.operating_unit_id
+            if inciso_id:
+                args = expression.AND([[
+                    ('inciso_id', '=', inciso_id.id)
+                ], args])
+            if operating_unit_id:
+                args = expression.AND([[
+                    ('operating_unit_id', '=', operating_unit_id.id)
+                ], args])
+        return args
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        if self._context.get('is_from_menu'):
+            args = self._get_domain(args)
+        return super(ONSCLegajoBajaVL, self)._search(args, offset=offset, limit=limit, order=order, count=count,
+                                                     access_rights_uid=access_rights_uid)
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if self._context.get('is_from_menu'):
+            domain = self._get_domain(domain)
+        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     @api.model
     def default_get(self, fields):
@@ -106,20 +142,28 @@ class ONSCLegajoBajaVL(models.Model):
         return res
 
     def _get_domain_partner_ids(self):
-        contract_id = self.env['hr.contract'].search(
-            [('legajo_state', '=', 'active'), ('employee_id', '=', self.env.user.employee_id.id)])
-        if contract_id:
-            iniciso_id = contract_id.inciso_id.id
-            operating_unit_id = contract_id.operating_unit_id.id
+        if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_administrar_bajas'):
             partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
-                                                          ('inciso_id', '=', iniciso_id),
-                                                          ('operating_unit_id', '=', operating_unit_id),
                                                           ('employee_id', '!=',
                                                            self.env.user.employee_id.id)]).mapped(
                 'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
             return json.dumps([('id', 'in', partner_ids.ids)])
+
         else:
-            return json.dumps([('id', '=', False)])
+            contract_id = self.env['hr.contract'].search(
+                [('legajo_state', '=', 'active'), ('employee_id', '=', self.env.user.employee_id.id)])
+            if contract_id:
+                iniciso_id = contract_id.inciso_id.id
+                operating_unit_id = contract_id.operating_unit_id.id
+                partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
+                                                              ('inciso_id', '=', iniciso_id),
+                                                              ('operating_unit_id', '=', operating_unit_id),
+                                                              ('employee_id', '!=',
+                                                               self.env.user.employee_id.id)]).mapped(
+                    'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
+                return json.dumps([('id', 'in', partner_ids.ids)])
+            else:
+                return json.dumps([('id', '=', False)])
 
     @api.constrains("end_date")
     def _check_date(self):
