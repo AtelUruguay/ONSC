@@ -421,6 +421,9 @@ class ONSCLegajoAltaVL(models.Model):
     def _aprobado_cgn(self):
         legajo = self._create_legajo()
         self.write({'state': 'aprobado_cgn'})
+        validation_email_template_id = self.env.ref('onsc_legajo.email_template_altavl_aprobada')
+        validation_email_template_id.send_mail(self.id, force_send=True,
+                                                      notif_layout='mail.mail_notification_light')
         return legajo
 
     def _rechazado_cgn(self):
@@ -535,5 +538,9 @@ class ONSCLegajoAltaVL(models.Model):
             raise ValidationError(_("Solo se pueden eliminar una transacción en estado borrador"))
         return super(ONSCLegajoAltaVL, self).unlink()
     
+    # MAIL TEMPLATE UTILS
     def get_followers_mails(self):
         return ','.join(self.message_follower_ids.mapped('partner_id.email'))
+
+    def get_altavl_name(self):
+        return self.partner_id.display_name

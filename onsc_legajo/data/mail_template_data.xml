@@ -1,24 +1,24 @@
 <?xml version="1.0" ?>
 <odoo>
     <data noupdate="1">
-        <record id="email_template_ws5_aprobada" model="mail.template">
+        <record id="email_template_altavl_aprobada" model="mail.template">
             <field name="name">Plantilla de aprobación de AltaVL</field>
             <field name="model_id" ref="onsc_legajo.model_onsc_legajo_alta_vl"/>
-            <field name="email_from">"{{ object.company_id.name }}" &lt;{{ (object.company_id.email or user.email) }}&gt;</field>
-            <field name="email_to">{{ object.get_followers_mails() }}&gt;</field>
+            <field name="email_from"></field>
+            <field name="email_to">{{ object.get_followers_mails() }}</field>
             <field name="subject">Aprobación de Alta de vínculo laboral</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
                         Estimado Usuario,
                         <br/>
-                        El Alta de vínculo laboral <strong t-out="object.name"/> ha sido aprobado.
+                        El Alta de vínculo laboral <strong t-out="object.get_altavl_name()"/> ha sido aprobada.
                         <br/>
                     </p>
                 </div>
             </field>
             <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
-            <field name="auto_delete" eval="True"/>
+            <field name="auto_delete" eval="False"/>
         </record>
     </data>
 </odoo>
