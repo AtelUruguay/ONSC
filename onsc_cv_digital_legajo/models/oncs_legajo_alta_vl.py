@@ -300,12 +300,12 @@ class ONSCLegajoAltaVL(models.Model):
                 count = self.sudo().search_count(domain_alta)
                 if count:
                     message.append(
-                        "Ya existe un alta de vínvulo laboral pendiente de auditoría para el departamento seleccionado")
+                        "Ya existe un alta de vínvulo laboral pendiente de auditoría para la UO seleccionada")
                 if not count and record.department_id.manager_id:
-                    message.append("El departamento ya tiene un responsable")
+                    message.append("La UO ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
-            message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str
+            message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
         return True
 
