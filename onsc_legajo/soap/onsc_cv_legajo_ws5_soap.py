@@ -78,7 +78,12 @@ class WsCVPostulacion(ServiceBase):
             #     ('id', '=', 60)], limit=1)
             if not alta_vl:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_151)
-            alta_vl._create_legajo()
+            if request.codResult == 'aprobada':
+                alta_vl._aprobado_cgn()
+            elif request.codResult == 'rechazada':
+                alta_vl._rechazado_cgn()
+            else:
+                onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_152)
             cr.commit()
             return WsResponse(result='ok', errors=[])
         except Fault as e:

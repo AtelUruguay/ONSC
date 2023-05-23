@@ -9,6 +9,7 @@ from odoo.osv import expression
 
 class HrContract(models.Model):
     _name = 'hr.contract'
+    _rec_name = 'legajo_name'
     _inherit = ['hr.contract', 'model.history']
     _history_model = 'hr.contract.model.history'
 
@@ -50,6 +51,7 @@ class HrContract(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
+    legajo_name = fields.Char(string="Nombre", compute='_compute_legajo_name', store=True)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
@@ -135,17 +137,20 @@ class HrContract(models.Model):
     def onchange_inciso(self):
         self.operating_unit_id = False
 
-    @api.onchange('employee_id', 'sec_position')
-    def onchange_employee(self):
-        if self.employee_id:
-            name = self.employee_id.cv_nro_doc if self.employee_id.cv_nro_doc else ''
-            if self.employee_id.name and self.sec_position:
-                name += ' - '
-            if self.sec_position:
-                name += self.sec_position if self.sec_position else ''
-            self.name = name
-        else:
-            self.name = False
+    @api.depends('employee_id', 'position', 'workplace', 'sec_position',)
+    def _compute_legajo_name(self):
+        for rec in self:
+            if rec.employee_id and (rec.position or rec.workplace or rec.sec_position):
+                str_list = [rec.employee_id.cv_nro_doc or rec.employee_id.name]
+                if rec.position:
+                    str_list.append(rec.position)
+                if rec.workplace:
+                    str_list.append(rec.workplace)
+                if rec.sec_position:
+                    str_list.append(rec.sec_position)
+                rec.legajo_name = ' - '.join(str_list)
+            else:
+                rec.legajo_name = rec.name
 
     @api.depends('date_start', 'date_end', 'inciso_id')
     def _compute_operating_unit_id_domain(self):

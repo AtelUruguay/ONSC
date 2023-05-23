@@ -14,3 +14,10 @@ LOGIC_151 = {
     'desc': u'No se ha identificado un Alta de vínculo laboral pendiente de auditoría para ese pdaId',
     'long_desc': u'',
 }
+
+LOGIC_152 = {
+    'type': 'LOGICA',
+    'code': '152',
+    'desc': u'codResult desconocido',
+    'long_desc': u'Valores esperados: aprobada, rechazada',
+}
