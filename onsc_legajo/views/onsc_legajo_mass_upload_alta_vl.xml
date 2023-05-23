@@ -13,6 +13,11 @@
                                 string="Procesar"
                                 attrs="{'invisible': [('state', '=', 'done')]}"
                         />
+                        <button
+                                name="action_create_partner"
+                                type="object"
+                                string="Crear contacto"
+                        />
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
