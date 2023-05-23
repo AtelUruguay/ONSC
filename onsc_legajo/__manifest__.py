@@ -41,6 +41,7 @@ ONSC - Legajo
         'wizard/onsc_legajo_update_occupation_wizard_views.xml',
         'views/hr_employee_views.xml',
         'views/onsc_legajo_alta_vl_views.xml',
+        'views/onsc_legajo_mass_upload_alta_vl.xml',
         'views/res_user_role_views.xml',
         'views/hr_job_views.xml',
         'views/hr_contract_views.xml',
