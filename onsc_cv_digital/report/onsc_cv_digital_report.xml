@@ -956,7 +956,7 @@
             </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
-            <ul>
+            <ul name="ul_work_experience_header">
                 <li>
                     <h4 style="font-weight:bold;">
                         <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/>

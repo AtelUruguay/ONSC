@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record id="onsc_legajo_mass_upload_alta_vl_form_view" model="ir.ui.view">
+            <field name="name">onsc.legajo.mass.upload.alta.vl.form</field>
+            <field name="model">onsc.legajo.mass.upload.alta.vl</field>
+            <field name="arch" type="xml">
+                <form string="Alta masiva de vínculo laboral">
+                    <header>
+                        <button
+                                name="action_process"
+                                type="object"
+                                string="Procesar"
+                                attrs="{'invisible': [('state', '=', 'done')]}"
+                        />
+                        <field name="state" widget="statusbar"/>
+                    </header>
+                    <sheet>
+                        <widget
+                                name="web_ribbon"
+                                title="Procesado con errores"
+                                bg_color="bg-danger"
+                                attrs="{'invisible': [('state', 'in', ['draft','done'])]}"/>
+                        <widget
+                                name="web_ribbon"
+                                title="Procesado con éxito"
+                                bg_color="bg-success"
+                                attrs="{'invisible': [('state', '!=', 'done')]}"/>
+                        <div class="oe_button_box" name="button_box">
+                            <button name="action_view_lines" type="object" class="oe_stat_button" icon="fa-bars">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="line_count" widget="statinfo" nolabel="1"/>
+                                    </span>
+                                    <span class="o_stat_text">Lineas de Alta</span>
+                                </div>
+                            </button>
+                        </div>
+
+                        <group>
+                            <group>
+                                <field name="id_ejecucion"/>
+                                <field name="inciso_id" required="1"
+                                       attrs="{'readonly': [('is_inciso_readonly', '!=', False)]}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="operating_unit_id" domain="operating_unit_id_domain"
+                                       required="1" attrs="{'readonly': [('is_operating_unit_readonly', '!=', False)]}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            </group>
+                            <group>
+                                <field name="operating_unit_id_domain" invisible="1"/>
+                                <field name="is_inciso_readonly" invisible="1"/>
+                                <field name="is_operating_unit_readonly" invisible="1"/>
+                                <field name="document_file" filename="document_filename"/>
+                                <field name="document_filename" invisible="1"/>
+                                <field name="create_date" string="Creado el"/>
+                                <field name="create_uid" string="Creado por"/>
+                            </group>
+                        </group>
+                        <notebook>
+                            <page string="Líneas a procesar" attrs="{'invisible': [('state', '==', 'done')]}">
+                                <field name="line_ids">
+                                    <tree create="false" delete="false">
+                                        <field name="document_idenfication"/>
+                                        <field name="first_name"/>
+                                        <field name="second_name"/>
+                                        <field name="first_surname"/>
+                                        <field name="second_surname"/>
+                                        <field name="message_error"/>
+                                    </tree>
+                                </field>
+                            </page>
+                            <page string="Líneas procesadas" attrs="{'invisible': [('state', '==', 'draft')]}">
+                                <field name="lines_processed_ids">
+                                    <tree create="false" delete="false">
+                                        <field name="document_idenfication"/>
+                                        <field name="first_name"/>
+                                        <field name="second_name"/>
+                                        <field name="first_surname"/>
+                                        <field name="second_surname"/>
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_mass_upload_alta_vl_tree_view" model="ir.ui.view">
+            <field name="name">onsc.legajo.mass.upload.alta.vl.tree</field>
+            <field name="model">onsc.legajo.mass.upload.alta.vl</field>
+            <field name="arch" type="xml">
+                <tree string="Alta masiva de vínculo laboral" decoration-danger="state == 'partially'"
+                      decoration-info="state == 'done'">
+                    <field name="id_ejecucion"/>
+                    <field name="inciso_id"/>
+                    <field name="operating_unit_id"/>
+                    <field name="create_date"/>
+                    <field name="create_uid"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+
+        <record id="view_onsc_legajo_mass_upload_line_alta_vl_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.mass.upload.line.alta.vl.form</field>
+            <field name="model">onsc.legajo.mass.upload.line.alta.vl</field>
+            <field name="arch" type="xml">
+                <form string="Lineas para la carga masiva de legajos de alta VL">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="state"/>
+                                <field name="document_idenfication"/>
+                                <field name="first_name" required="1"/>
+                                <field name="second_name"/>
+                                <field name="first_surname" required="1"/>
+                                <field name="second_surname"/>
+                                <field name="first_surname_adopted"/>
+                                <field name="second_surname_adopted"/>
+                                <field name="name_ci"/>
+                                <field name="sex"/>
+                                <field name="birth_date"/>
+                                <field name="document_country_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="document_type_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="document_number"/>
+                                <field name="marital_status_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="birth_country_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="citizenship"/>
+                                <field name="crendencial_serie"/>
+                                <field name="credential_number"/>
+                                <field name="personal_phone"/>
+                                <field name="mobile_phone"/>
+                                <field name="email"/>
+                                <field name="address_state_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="address_location_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="address_street_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="address_street2_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="address_street3_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="address_zip"/>
+                                <field name="address_nro_door"/>
+                                <field name="address_is_bis"/>
+                                <field name="address_apto"/>
+                                <field name="address_place"/>
+                                <field name="address_block"/>
+                                <field name="address_sandlot"/>
+                                <field name="date_start"/>
+                                <field name="income_mechanism_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="call_number"/>
+                                <field name="inciso_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="is_inciso_readonly" invisible="1"/>
+                                <field name="operating_unit_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="is_operating_unit_readonly" invisible="1"/>
+                                <field name="operating_unit_id_domain" invisible="1"/>
+                                <field name="program"/>
+                                <field name="project"/>
+                                <field name="is_reserva_sgh"/>
+                                <field name="regime_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            </group>
+                            <group>
+                                <field name="descriptor1_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor1_domain_id" invisible="1"/>
+                                <field name="descriptor2_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor2_domain_id" invisible="1"/>
+                                <field name="descriptor3_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor3_domain_id" invisible="1"/>
+                                <field name="descriptor4_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor4_domain_id" invisible="1"/>
+                                <field name="nroPuesto"/>
+                                <field name="nroPlaza"/>
+                                <field name="department_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="department_id_domain" invisible="1"/>
+                                <field name="security_job_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="occupation_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="date_income_public_administration"/>
+                                <field name="inactivity_years"/>
+                                <field name="graduation_date"/>
+                                <field name="contract_expiration_date"/>
+                                <field name="reason_description"/>
+                                <field name="norm_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="norm_type"/>
+                                <field name="norm_number"/>
+                                <field name="norm_year"/>
+                                <field name="norm_article"/>
+                                <field name="resolution_description"/>
+                                <field name="resolution_date"/>
+                                <field name="resolution_type"/>
+                                <field name="retributive_day_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                       context="{'show_only_description':True}"/>
+                                <field name="additional_information"/>
+                                <field name="document_file" filename="document_filename"/>
+                                <field name="document_filename" invisible="1"/>
+                                <field name="message_error"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+
+        <record id="view_onsc_legajo_mass_upload_line_alta_vl_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.mass.upload.line.alta.vl.tree</field>
+            <field name="model">onsc.legajo.mass.upload.line.alta.vl</field>
+            <field name="arch" type="xml">
+                <tree string="Líneas para la carga masiva de legajos de alta VL" decoration-danger="state == 'error'"
+                      decoration-info="state == 'done'" create="0" delete="0">
+                    <field name="mass_upload_id"/>
+                    <field name="state"/>
+                    <field name="message_error"/>
+                    <field name="document_idenfication"/>
+                    <field name="first_name" required="1"/>
+                    <field name="second_name"/>
+                    <field name="first_surname" required="1"/>
+                    <field name="second_surname"/>
+                    <field name="first_surname_adopted"/>
+                    <field name="second_surname_adopted"/>
+                    <field name="name_ci"/>
+                    <field name="sex"/>
+                    <field name="birth_date"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="view_onsc_legajo_mass_upload_line_alta_vl_search" model="ir.ui.view">
+            <field name="name">onsc.legajo.mass.upload.line.alta.vl.search</field>
+            <field name="model">onsc.legajo.mass.upload.line.alta.vl</field>
+            <field name="arch" type="xml">
+                <search>
+                    <field name="document_idenfication"/>
+                    <field name="first_name"/>
+                    <field name="first_surname"/>
+                    <field name="document_number"/>
+                    <field name="state"/>
+                    <filter string="Error" name="error" domain="[('state','=','error')]"/>
+                    <filter string="Procesado" name="processed" domain="[('state','=','done')]"/>
+                </search>
+            </field>
+        </record>
+
+
+        <record id="onsc_legajo_mass_upload_alta_vl_action" model="ir.actions.act_window">
+            <field name="name">Alta masiva de vínculo laboral</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">onsc.legajo.mass.upload.alta.vl</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+    </data>
+</odoo>

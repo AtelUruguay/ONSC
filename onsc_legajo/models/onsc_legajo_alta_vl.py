@@ -2,11 +2,12 @@
 import json
 import logging
 
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 _logger = logging.getLogger(__name__)
 
@@ -232,6 +233,14 @@ class ONSCLegajoAltaVL(models.Model):
     codigoJornadaFormal = fields.Char(string="Código Jornada Formal")
     descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal")
 
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
+
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
+
     @api.constrains("attached_document_ids")
     def _check_attached_document_ids(self):
         for record in self:
@@ -401,14 +410,6 @@ class ONSCLegajoAltaVL(models.Model):
         for rec in self:
             rec.state = 'pendiente_auditoria_cgn'
 
-    def action_aprobado_cgn(self):
-        for rec in self:
-            rec.state = 'aprobado_cgn'
-
-    def action_rechazado_cgn(self):
-        for rec in self:
-            rec.state = 'rechazado_cgn'
-
     def action_gafi_ok(self):
         for rec in self:
             rec.state = 'gafi_ok'
@@ -417,7 +418,122 @@ class ONSCLegajoAltaVL(models.Model):
         for rec in self:
             rec.state = 'gafi_error'
 
+    def _aprobado_cgn(self):
+        legajo = self._create_legajo()
+        self.write({'state': 'aprobado_cgn'})
+        return legajo
+
+    def _rechazado_cgn(self):
+        self.write({'state': 'rechazado_cgn'})
+        return True
+
+    # ALTAVL WS5
+    def _create_legajo(self):
+        employee = self._get_legajo_employee()
+        contract = self._get_legajo_contract(employee)
+        self._get_legajo_job(contract)
+        legajo = self._get_legajo(employee)
+        return legajo
+
+    def _get_legajo(self, employee):
+        Legajo = self.env['onsc.legajo'].suspend_security()
+        legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
+        if not legajo:
+            legajo = Legajo.suspend_security().create(self._prepare_legajo_value(employee))
+        return legajo
+
+    def _prepare_legajo_value(self, employee):
+        return {
+            'employee_id': employee.id,
+            'public_admin_entry_date': self.date_income_public_administration,
+            'public_admin_inactivity_years_qty': self.inactivity_years
+        }
+
+    def _get_legajo_employee(self):
+        Employee = self.env['hr.employee']
+        employee = Employee.suspend_security().search([
+            ('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
+            ('cv_document_type_id', '=', self.cv_document_type_id.id),
+            ('cv_nro_doc', '=', self.partner_id.cv_nro_doc),
+        ], limit=1)
+        if not employee:
+            employee = Employee.suspend_security().create({
+                'name': calc_full_name(self.partner_id.cv_first_name,
+                                       self.partner_id.cv_second_name,
+                                       self.partner_id.cv_last_name_1,
+                                       self.partner_id.cv_last_name_2),
+                'cv_emissor_country_id': self.cv_emissor_country_id.id,
+                'cv_document_type_id': self.cv_document_type_id.id,
+                'cv_nro_doc': self.partner_id.cv_nro_doc})
+        return employee
+
+    def _get_legajo_contract(self, employee):
+        Contract = self.env['hr.contract']
+        vals = {
+            'employee_id': employee.id,
+            'name': employee.name,
+            'date_start': self.date_start or fields.Date.today(),
+            'inciso_id': self.inciso_id.id,
+            'operating_unit_id': self.operating_unit_id.id,
+            'income_mechanism_id': self.income_mechanism_id.id,
+            'program': self.program_project_id.programa,
+            'project': self.program_project_id.proyecto,
+            'regime_id': self.regime_id.id,
+            'occupation_id': self.occupation_id.id,
+            'descriptor1_id': self.descriptor1_id.id,
+            'descriptor2_id': self.descriptor2_id.id,
+            'descriptor3_id': self.descriptor3_id.id,
+            'descriptor4_id': self.descriptor4_id.id,
+            'position': self.nroPuesto,
+            'workplace': self.nroPlaza,
+            'sec_position': self.secPlaza,
+            'graduation_date': self.graduation_date,
+            'reason_description': self.reason_description,
+            'norm_code_id': self.norm_id.id,
+            'resolution_description': self.resolution_description,
+            'resolution_date': self.resolution_date,
+            'resolution_type': self.resolution_type,
+            'call_number': self.call_number,
+            'contract_expiration_date': self.contract_expiration_date,
+            'additional_information': self.additional_information,
+            'code_day': self.retributive_day_id.codigoJornada,
+            'description_day': self.retributive_day_id.descripcionJornada,
+            'retributive_day_id': self.retributive_day_id.id,
+            'id_alta': self.id_alta,
+            #
+            'wage': 1
+        }
+        document_line_vals = []
+        for document_record in self.attached_document_ids:
+            document_line_vals.append((0, 0, {
+                'name': document_record.name,
+                'type': 'discharge',
+                'document_type_id': document_record.document_type_id.id,
+                'document_file': document_record.document_file,
+                'document_file_name': document_record.document_file_name,
+            }))
+        vals['alta_attached_document_ids'] = document_line_vals
+        contract = Contract.suspend_security().create(vals)
+        contract.activate_legajo_contract()
+        return contract
+
+    def _get_legajo_job(self, contract):
+        Job = self.env['hr.job']
+        job = Job.suspend_security().create({
+            'name': 'DUMMY %s' % (str(contract.id)),
+            'employee_id': contract.employee_id.id,
+            'contract_id': contract.id,
+            'department_id': self.department_id.id,
+            'start_date': self.date_start,
+            'security_job_id': self.security_job_id.id,
+        })
+        job.onchange_security_job_id()
+        return job
+
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
             raise ValidationError(_("Solo se pueden eliminar una transacción en estado borrador"))
         return super(ONSCLegajoAltaVL, self).unlink()
+    
+    def get_followers_mails(self):
+        return ','.join(self.message_follower_ids.mapped('partner_id.email'))

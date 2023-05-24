@@ -53,6 +53,7 @@ class ONSCCVCourseCertificate(models.Model):
                                               store=True)
     certificate_start_date = fields.Date('Fecha de obtención del certificado / constancia',
                                          related='start_date', readonly=False)
+    institution_id_domain = fields.Char(compute='_compute_institution_id_domain')
 
     @api.onchange('certificate_start_date')
     def onchange_certificate_start_date(self):
@@ -82,6 +83,17 @@ class ONSCCVCourseCertificate(models.Model):
             rec.certificate_id_domain = json.dumps(
                 [('id', 'in', valid_recordsets.ids)]
             )
+
+    @api.depends('country_id')
+    def _compute_institution_id_domain(self):
+        for rec in self:
+            if rec.country_id:
+                rec.institution_id_domain = json.dumps(
+                    [('country_id', '=', rec.country_id.id), ('is_unformal_education', '=', True)]
+                )
+            else:
+                rec.institution_id_domain = json.dumps(
+                    [('is_unformal_education', '=', True)])
 
     @api.onchange('record_type')
     def onchange_record_type(self):

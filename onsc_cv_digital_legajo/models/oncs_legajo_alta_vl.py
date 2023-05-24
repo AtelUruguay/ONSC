@@ -300,12 +300,12 @@ class ONSCLegajoAltaVL(models.Model):
                 count = self.sudo().search_count(domain_alta)
                 if count:
                     message.append(
-                        "Ya existe un alta de vínvulo laboral pendiente de auditoría para el departamento seleccionado")
+                        "Ya existe un alta de vínvulo laboral pendiente de auditoría para la UO seleccionada")
                 if not count and record.department_id.manager_id:
-                    message.append("El departamento ya tiene un responsable")
+                    message.append("La UO ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
-            message = 'Los siguientes campos son requeridos:  \n \n %s' % fields_str
+            message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
         return True
 
@@ -340,3 +340,67 @@ class ONSCLegajoAltaVL(models.Model):
         self.cv_sex = False
         self.cv_birthdate = False
         self.cv_address_street_id = False
+
+    def _get_legajo_employee(self):
+        employee = super(ONSCLegajoAltaVL, self)._get_legajo_employee()
+        employee._syncronize_data()
+        cv = employee.cv_digital_id
+        vals = {}
+        if cv and employee.user_id.id != cv.partner_id.user_id.id:
+            vals['user_id'] = cv.partner_id.user_id.id
+        # DOMICILIO
+        if cv and cv.cv_address_documentary_validation_state == 'validated':
+            vals.update({
+                'country_id': cv.country_id.id,
+                'cv_address_state_id': cv.cv_address_state_id.id,
+                'cv_address_location_id': cv.cv_address_location_id.id,
+                'cv_address_street': cv.cv_address_street,
+                'cv_address_street_id': cv.cv_address_street_id.id,
+                'cv_address_nro_door': cv.cv_address_nro_door,
+                'cv_address_is_cv_bis': cv.cv_address_is_cv_bis,
+                'cv_address_apto': cv.cv_address_apto,
+                'cv_address_zip': cv.cv_address_zip,
+                'cv_address_place': cv.cv_address_place,
+                'cv_address_block': cv.cv_address_block,
+                'cv_address_sandlot': cv.cv_address_sandlot,
+            })
+        else:
+            vals.update({
+                'country_id': self.cv_emissor_country_id.id,
+                'cv_address_state_id': self.cv_address_state_id.id,
+                'cv_address_location_id': self.cv_address_location_id.id,
+                'cv_address_street': self.cv_address_street,
+                'cv_address_street_id': self.cv_address_street_id.id,
+                'cv_address_nro_door': self.cv_address_nro_door,
+                'cv_address_is_cv_bis': self.cv_address_is_cv_bis,
+                'cv_address_apto': self.cv_address_apto,
+                'cv_address_zip': self.cv_address_zip,
+                'cv_address_place': self.cv_address_place,
+                'cv_address_block': self.cv_address_block,
+                'cv_address_sandlot': self.cv_address_sandlot,
+            })
+        # CREDENCIAL CIVICA
+        if cv and cv.civical_credential_documentary_validation_state == 'validated':
+            vals.update({
+                'uy_citizenship': self.uy_citizenship or cv.uy_citizenship,
+                'crendencial_serie': self.crendencial_serie or cv.crendencial_serie,
+                'credential_number': self.credential_number or cv.credential_number,
+            })
+        else:
+            vals.update({
+                'uy_citizenship': self.uy_citizenship,
+                'crendencial_serie': self.crendencial_serie,
+                'credential_number': self.credential_number
+            })
+        # ESTADO CIVIL
+        if cv and cv.marital_status_documentary_validation_state == 'validated':
+            vals.update({
+                'marital_status_id': self.marital_status_id.id or cv.marital_status_id.id
+            })
+        else:
+            vals.update({
+                'marital_status_id': self.marital_status_id.id
+            })
+        employee.write(vals)
+        cv.write({'is_docket': True, 'is_docket_active': True})
+        return employee
