@@ -79,9 +79,9 @@ class WsLegajoWS5(ServiceBase):
             if not alta_vl:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_151)
             if request.codResult == 'aprobada':
-                alta_vl._aprobado_cgn()
+                alta_vl.action_aprobado_cgn()
             elif request.codResult == 'rechazada':
-                alta_vl._rechazado_cgn()
+                alta_vl.action_rechazado_cgn()
             else:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_152)
             cr.commit()

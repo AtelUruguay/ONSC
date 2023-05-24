@@ -16,7 +16,8 @@
                 <sheet>
                     <div class="oe_title pr-0" name="title">
                         <h1 class="d-flex flex-row justify-content-between">
-                            <field name="employee_id" string="Funcionario"/>
+                            <field name="employee_id" string="Funcionario"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </h1>
                         <h2>
                             <field name="company_id" groups="base.group_multi_company" invisible="1"/>
@@ -200,7 +201,7 @@
         <field name="model">hr.contract</field>
         <field name="arch" type="xml">
             <tree string="Contracts" default_order='date_start ASC'>
-                <field name="name"/>
+                <field name="legajo_name"/>
                 <field name="employee_id" string="Funcionario" widget="many2one_avatar_employee"/>
                 <field name="job_ids" widget="many2many_tags"/>
                 <field name="date_start" />
@@ -211,27 +212,19 @@
         </field>
     </record>
 
-
-    <record id="hr_contract_view_search" model="ir.ui.view">
-        <field name="name">hr.contract.search</field>
+    <record id="onsc_legajo_contract_view_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.contract.search</field>
         <field name="model">hr.contract</field>
-        <field name="inherit_id" ref="hr_contract.hr_contract_view_search"/>
         <field name="arch" type="xml">
-            <xpath expr="//filter[@name='running']" position="replace">
-            </xpath>
-            <xpath expr="//filter[@name='not_running']" position="replace">
-            </xpath>
-            <xpath expr="//filter[@name='group_by_state']" position="replace">
-                <filter string="Estado" name="group_by_state" domain="[]" context="{'group_by': 'legajo_state'}"/>
-            </xpath>
-            <xpath expr="//filter[@name='current_employee']" position="replace">
-            </xpath>
-            <xpath expr="//filter[@name='activities_overdue']" position="replace">
-            </xpath>
-            <xpath expr="//filter[@name='activities_today']" position="replace">
-            </xpath>
-            <xpath expr="//filter[@name='activities_upcoming_all']" position="replace">
-            </xpath>
+            <search string="Contratos">
+                <field name="employee_id" string="Funcionario"/>
+                <field name="legajo_state"/>
+                <field name="position"/>
+                <field name="workplace"/>
+                <field name="sec_position"/>
+                <filter string="Funcionario" name="group_by_employee_id" context="{'group_by':'employee_id'}"/>
+                <filter string="Estado" name="group_by_legajo_state" context="{'group_by':'legajo_state'}"/>
+            </search>
         </field>
     </record>
 
@@ -240,6 +233,7 @@
         <field name="res_model">hr.contract</field>
         <field name="view_mode">tree,form</field>
         <field name="context">{'is_legajo': True}</field>
+        <field name="search_view_id" ref="onsc_legajo.onsc_legajo_contract_view_search"/>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_hr_contract_view_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_hr_contract_view_form')})]"/>
@@ -254,6 +248,7 @@
         <field name="name">Contratos</field>
         <field name="res_model">hr.contract</field>
         <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="onsc_legajo.onsc_legajo_contract_view_search"/>
         <field name="context">{'is_legajo': True, 'filter_contracts':True, 'create': False, 'edit': False}</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_hr_contract_view_tree')}),

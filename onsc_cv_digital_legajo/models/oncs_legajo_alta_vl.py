@@ -404,3 +404,7 @@ class ONSCLegajoAltaVL(models.Model):
         employee.write(vals)
         cv.write({'is_docket': True, 'is_docket_active': True})
         return employee
+
+    # MAIL TEMPLATE UTILS
+    def get_altavl_name(self):
+        return self.with_context(show_cv_nro_doc=True).partner_id.name_get()[0][1]

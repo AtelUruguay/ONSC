@@ -6,7 +6,7 @@
             <field name="model">hr.employee</field>
             <field name="arch" type="xml">
                 <search string="Funcionarios">
-                    <field name="name" string="Empleado"/>
+                    <field name="name" string="Funcionario"/>
                 </search>
             </field>
         </record>
