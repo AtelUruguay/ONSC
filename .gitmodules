@@ -12,7 +12,7 @@
 	branch = 15.0
 [submodule "SUBMODULOS/OCA/social"]
 	path = SUBMODULOS/OCA/social
-	url = git@github.com:OCA/social.git
+	url = https://github.com/OCA/social.git
 	branch = 15.0
 [submodule "SUBMODULOS/Quanam/utils"]
 	path = SUBMODULOS/Quanam/utils
