@@ -533,7 +533,7 @@ class ONSCLegajoAltaVL(models.Model):
     def _get_legajo_job(self, contract):
         Job = self.env['hr.job']
         job = Job.suspend_security().create({
-            'name': 'DUMMY %s' % (str(contract.id)),
+            'name': '%s - %s' % (contract.display_name, str(self.date_start)),
             'employee_id': contract.employee_id.id,
             'contract_id': contract.id,
             'department_id': self.department_id.id,
