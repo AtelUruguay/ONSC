@@ -407,4 +407,4 @@ class ONSCLegajoAltaVL(models.Model):
 
     # MAIL TEMPLATE UTILS
     def get_altavl_name(self):
-        return self.with_context(show_cv_nro_doc = True).partner_id.display_name
+        return self.with_context(show_cv_nro_doc=True).partner_id.name_get()[0][1]

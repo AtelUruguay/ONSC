@@ -34,7 +34,6 @@
                                 <field name="is_indVencimiento" invisible="1"/>
                                 <field name="is_operating_unit_readonly" invisible="1"/>
                                 <field name="should_disable_form_edit" invisible="1"/>
-
                             </group>
                             <group name="main_group_right">
                             </group>

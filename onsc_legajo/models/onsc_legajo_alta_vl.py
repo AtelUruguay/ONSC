@@ -418,17 +418,26 @@ class ONSCLegajoAltaVL(models.Model):
         for rec in self:
             rec.state = 'gafi_error'
 
-    def _aprobado_cgn(self):
+    def action_aprobado_cgn(self):
         legajo = self._create_legajo()
         self.write({'state': 'aprobado_cgn'})
-        validation_email_template_id = self.env.ref('onsc_legajo.email_template_altavl_aprobada')
-        validation_email_template_id.send_mail(self.id, force_send=True,
-                                                      notif_layout='mail.mail_notification_light')
+        self._send_aprobado_notification()
         return legajo
 
-    def _rechazado_cgn(self):
+    def action_rechazado_cgn(self):
         self.write({'state': 'rechazado_cgn'})
+        self._send_rechazado_notification()
         return True
+
+    def _send_aprobado_notification(self):
+        validation_email_template_id = self.env.ref('onsc_legajo.email_template_altavl_aprobada')
+        validation_email_template_id.send_mail(self.id, force_send=True,
+                                               notif_layout='mail.mail_notification_light')
+
+    def _send_rechazado_notification(self):
+        validation_email_template_id = self.env.ref('onsc_legajo.email_template_altavl_rechazada')
+        validation_email_template_id.send_mail(self.id, force_send=True,
+                                               notif_layout='mail.mail_notification_light')
 
     # ALTAVL WS5
     def _create_legajo(self):
@@ -467,7 +476,8 @@ class ONSCLegajoAltaVL(models.Model):
                                        self.partner_id.cv_last_name_2),
                 'cv_emissor_country_id': self.cv_emissor_country_id.id,
                 'cv_document_type_id': self.cv_document_type_id.id,
-                'cv_nro_doc': self.partner_id.cv_nro_doc})
+                'cv_nro_doc': self.partner_id.cv_nro_doc,
+            })
         return employee
 
     def _get_legajo_contract(self, employee):
