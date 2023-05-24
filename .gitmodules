@@ -6,10 +6,6 @@
 	path = SUBMODULOS/OCA/web
 	url = https://github.com/OCA/web.git
 	branch = 15.0
-[submodule "SUBMODULOS/Quanam/utils"]
-	path = SUBMODULOS/Quanam/utils
-	url = https://gitlab.quanam.com/ONSC/utils.git
-	branch = 15.0
 [submodule "SUBMODULOS/OCA/server-backend"]
 	path = SUBMODULOS/OCA/server-backend
 	url = https://github.com/OCA/server-backend.git
@@ -17,4 +13,8 @@
 [submodule "SUBMODULOS/OCA/social"]
 	path = SUBMODULOS/OCA/social
 	url = git@github.com:OCA/social.git
+	branch = 15.0
+[submodule "SUBMODULOS/Quanam/utils"]
+	path = SUBMODULOS/Quanam/utils
+	url = https://gitlab.quanam.com/ONSC/utils.git
 	branch = 15.0
