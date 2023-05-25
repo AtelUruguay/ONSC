@@ -48,8 +48,8 @@
                                 <field name="is_operating_unit_readonly" invisible="1"/>
                                 <field name="document_file" filename="document_filename"/>
                                 <field name="document_filename" invisible="1"/>
-                                <field name="create_date"/>
-                                <field name="create_uid"/>
+                                <field name="create_date" string="Creado el"/>
+                                <field name="create_uid" string="Creado por"/>
                             </group>
                         </group>
                         <notebook>
@@ -116,22 +116,31 @@
                                 <field name="name_ci"/>
                                 <field name="sex"/>
                                 <field name="birth_date"/>
-                                <field name="document_country_id"/>
-                                <field name="document_type_id"/>
+                                <field name="document_country_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="document_type_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="document_number"/>
-                                <field name="marital_status_id"/>
-                                <field name="birth_country_id"/>
+                                <field name="marital_status_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="birth_country_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="citizenship"/>
                                 <field name="crendencial_serie"/>
                                 <field name="credential_number"/>
                                 <field name="personal_phone"/>
                                 <field name="mobile_phone"/>
                                 <field name="email"/>
-                                <field name="address_state_id"/>
-                                <field name="address_location_id"/>
-                                <field name="address_street_id"/>
-                                <field name="address_street2_id"/>
-                                <field name="address_street3_id"/>
+                                <field name="address_state_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="address_location_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="address_street_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="address_street2_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="address_street3_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="address_zip"/>
                                 <field name="address_nro_door"/>
                                 <field name="address_is_bis"/>
@@ -140,39 +149,51 @@
                                 <field name="address_block"/>
                                 <field name="address_sandlot"/>
                                 <field name="date_start"/>
-                                <field name="income_mechanism_id"/>
+                                <field name="income_mechanism_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="call_number"/>
-                                <field name="inciso_id"/>
+                                <field name="inciso_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="is_inciso_readonly" invisible="1"/>
-                                <field name="operating_unit_id"/>
+                                <field name="operating_unit_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="is_operating_unit_readonly" invisible="1"/>
                                 <field name="operating_unit_id_domain" invisible="1"/>
                                 <field name="program"/>
                                 <field name="project"/>
                                 <field name="is_reserva_sgh"/>
-                                <field name="regime_id"/>
+                                <field name="regime_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             </group>
                             <group>
-                                <field name="descriptor1_id"/>
+                                <field name="descriptor1_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor1_domain_id" invisible="1"/>
-                                <field name="descriptor2_id"/>
+                                <field name="descriptor2_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor2_domain_id" invisible="1"/>
-                                <field name="descriptor3_id"/>
+                                <field name="descriptor3_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor3_domain_id" invisible="1"/>
-                                <field name="descriptor4_id"/>
+                                <field name="descriptor4_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor4_domain_id" invisible="1"/>
                                 <field name="nroPuesto"/>
                                 <field name="nroPlaza"/>
-                                <field name="department_id"/>
+                                <field name="department_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="department_id_domain" invisible="1"/>
-                                <field name="security_job_id"/>
-                                <field name="occupation_id"/>
+                                <field name="security_job_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="occupation_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="date_income_public_administration"/>
                                 <field name="inactivity_years"/>
                                 <field name="graduation_date"/>
                                 <field name="contract_expiration_date"/>
                                 <field name="reason_description"/>
-                                <field name="norm_id"/>
+                                <field name="norm_id"
+                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="norm_type"/>
                                 <field name="norm_number"/>
                                 <field name="norm_year"/>
@@ -180,7 +201,9 @@
                                 <field name="resolution_description"/>
                                 <field name="resolution_date"/>
                                 <field name="resolution_type"/>
-                                <field name="retributive_day_id"/>
+                                <field name="retributive_day_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                       context="{'show_only_description':True}"/>
                                 <field name="additional_information"/>
                                 <field name="document_file" filename="document_filename"/>
                                 <field name="document_filename" invisible="1"/>
@@ -198,7 +221,7 @@
             <field name="model">onsc.legajo.mass.upload.line.alta.vl</field>
             <field name="arch" type="xml">
                 <tree string="Líneas para la carga masiva de legajos de alta VL" decoration-danger="state == 'error'"
-                      decoration-info="state == 'done'">
+                      decoration-info="state == 'done'" create="0" delete="0">
                     <field name="mass_upload_id"/>
                     <field name="state"/>
                     <field name="message_error" readonly="1"/>
