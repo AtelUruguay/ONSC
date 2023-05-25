@@ -56,6 +56,7 @@
                                 <field name="cv_expiration_date" readonly="1"/>
                                 <field name="user_id" groups="onsc_legajo.group_legajo_configurador_empleado"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="eff_date" string="Fecha efectiva"/>
                             </group>
                             <group>
                                 <field name="cv_birthdate" readonly="1"/>
