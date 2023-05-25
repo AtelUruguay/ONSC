@@ -90,7 +90,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     altas_vl_ids = fields.One2many('onsc.legajo.alta.vl', 'mass_upload_id', string='Altas VL')
     altas_vl_count = fields.Integer(compute='_compute_altas_vl_count', string='Cantidad de altas VL')
 
-
     # Constrain para id de ejecucion  ,inciso  y unidad ejecutora
     @api.constrains('id_ejecucion', 'inciso_id', 'operating_unit_id')
     def _check_unique_id_ejecucion(self):
@@ -170,7 +169,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             ]
         }
 
-
     def process_value(self, row):
         if isinstance(row.value, int):
             return int(row.value)
@@ -195,11 +193,37 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             raise UserError(_("Archivo inválido"))
 
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
+        LegajoOffice = self.env['onsc.legajo.office']
+        LegajoNorm = self.env['onsc.legajo.norm']
 
         for row_no in range(1, sheet.nrows):
             line = list(map(self.process_value, sheet.row(row_no)))
             global message_error
             message_error = []
+            office = LegajoOffice.search([('programa', '=', line[27]), ('proyecto', '=', line[28])],
+                                         limit=1)
+            norm_id = LegajoNorm.search([('anioNorma', '=', line[47]), ('numeroNorma', '=', line[46]),
+                                         ('articuloNorma', '=', line[48]), ('tipoNorma', '=', line[45])],
+                                        limit=1)
+            if not office:
+                message_error.append("No se puedo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
+                    line[27], line[28]))
+
+            if not norm_id:
+                message_error.append(
+                    message_error.append(
+                        " \nNo se puedo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
+                            line[47], line[46], line[48], line[45])))
+
+            descriptor1_id = MassLine.find_by_code_name_many2one('descriptor1_id', 'code', 'name', line[31])
+            descriptor2_id = MassLine.find_by_code_name_many2one('descriptor2_id', 'code', 'name', line[32])
+            descriptor3_id = MassLine.find_by_code_name_many2one('descriptor3_id', 'code', 'name', line[33])
+            descriptor4_id = MassLine.find_by_code_name_many2one('descriptor4_id', 'code', 'name', line[34])
+            budget_item_id = self.get_partida(descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id)
+            if not budget_item_id:
+                message_error.append(
+                    line.message_error + " \nNo se puedo encontrar la partida con datos de los descriptores")
+
             values = {
                 'nro_line': row_no,
                 'mass_upload_id': self.id,
@@ -240,13 +264,14 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'call_number': line[26],
                 'program': line[27],
                 'project': line[28],
+                'program_project_id': office.id if office else False,
                 'is_reserva_sgh': line[29],
                 'regime_id': MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
                                                                  line[30]),
-                'descriptor1_id': MassLine.find_by_code_name_many2one('descriptor1_id', 'code', 'name', line[31]),
-                'descriptor2_id': MassLine.find_by_code_name_many2one('descriptor2_id', 'code', 'name', line[32]),
-                'descriptor3_id': MassLine.find_by_code_name_many2one('descriptor3_id', 'code', 'name', line[33]),
-                'descriptor4_id': MassLine.find_by_code_name_many2one('descriptor4_id', 'code', 'name', line[34]),
+                'descriptor1_id': descriptor1_id,
+                'descriptor2_id': descriptor2_id,
+                'descriptor3_id': descriptor3_id,
+                'descriptor4_id': descriptor4_id,
                 'nroPuesto': line[35],
                 'nroPlaza': line[36],
                 'department_id': MassLine.find_by_code_name_many2one('department_id', 'code', 'name', line[37]),
@@ -261,6 +286,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     datetime.datetime(1900, 1, 1).toordinal() + line[43] - 2) if line[
                     43] else False,
                 'reason_description': line[44],
+                'norm_id': norm_id.id if norm_id else False,
                 'norm_type': line[45],
                 'norm_number': line[46],
                 'norm_year': line[47],
@@ -297,8 +323,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     def action_create_partner(self):
         Partner = self.env['res.partner']
         AltaVL = self.env['onsc.legajo.alta.vl']
-        LegajoOffice = self.env['onsc.legajo.office']
-        LegajoNorm = self.env['onsc.legajo.norm']
         CVDigital = self.env['onsc.cv.digital']
         cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
                                                                               limit=1).id or False
@@ -355,24 +379,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             except Exception as e:
                 line.write({'state': 'error', 'message_error': "No se puedo crear el CV: " + tools.ustr(e)})
                 continue
-            office = LegajoOffice.search([('programa', '=', line.program), ('proyecto', '=', line.project)],
-                                         limit=1)
-            if not office:
-                line.write({'state': 'error',
-                            'message_error': "No se puedo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
-                                line.program, line.project)})
-            norm_id = LegajoNorm.search([('anioNorma', '=', line.norm_year), ('numeroNorma', '=', line.norm_number),
-                                         ('articuloNorma', '=', line.norm_article), ('tipoNorma', '=', line.norm_type)],
-                                        limit=1)
-            if not norm_id:
-                line.write({'state': 'error',
-                            'message_error': line.message_error + " \nNo se puedo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
-                                line.norm_year, line.norm_number, line.norm_article, line.norm_type)})
 
-            office_id = self.get_office(line)
-            if not office_id:
-                line.write({'state': 'error',
-                            'message_error': line.message_error + " \nNo se puedo encontrar la partida con datos de los descriptores"})
             data_alta_vl = {
                 'partner_id': partner.id,
                 'date_start': line.date_start,
@@ -397,13 +404,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'graduation_date': line.graduation_date,
                 'contract_expiration_date': line.contract_expiration_date,
                 'reason_description': line.reason_description,
-                'program_project_id': office.id if office else False,
+                'program_project_id': line.program_project_id.id if line.program_project_id else False,
                 'resolution_description': line.resolution_description,
                 'resolution_date': line.resolution_date,
                 'resolution_type': line.resolution_type,
                 'retributive_day_id': line.retributive_day_id.id,
                 'additional_information': line.additional_information,
-                'norm_id': norm_id.id if norm_id else False,
+                'norm_id': line.norm_id.id if line.norm_id else False,
                 'mass_upload_id': self.id,
             }
             try:
@@ -429,18 +436,18 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         else:
             self.state = 'partially'
 
-    def get_office(self, rec):
+    def get_partida(self, descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id):
         args = []
         domain = [('id', 'in', [])]
-        if rec.descriptor1_id:
-            args = [('dsc1Id', '=', rec.descriptor1_id.id)]
-        if rec.descriptor2_id:
-            args = expression.AND([[('dsc2Id', '=', rec.descriptor2_id.id)], args])
+        if descriptor1_id:
+            args = [('dsc1Id', '=', descriptor1_id)]
+        if descriptor2_id:
+            args = expression.AND([[('dsc2Id', '=', descriptor2_id)], args])
 
-        if rec.descriptor3_id:
-            args = expression.AND([[('dsc3Id', '=', rec.descriptor3_id.id)], args])
-        if rec.descriptor4_id:
-            args = expression.AND([[('dsc4Id', '=', rec.descriptor4_id.id)], args])
+        if descriptor3_id:
+            args = expression.AND([[('dsc3Id', '=', descriptor3_id)], args])
+        if descriptor4_id:
+            args = expression.AND([[('dsc4Id', '=', descriptor4_id)], args])
         return self.env['onsc.legajo.budget.item'].search(args, limit=1)
 
 
@@ -489,6 +496,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     call_number = fields.Char(string='Número de llamado')
     program = fields.Char(string='Programa')
     project = fields.Char(string='Proyecto')
+    program_project_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto')
     is_reserva_sgh = fields.Boolean(string="¿Tiene reserva en SGH?")
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen')
     # Datos para los Descriptores
