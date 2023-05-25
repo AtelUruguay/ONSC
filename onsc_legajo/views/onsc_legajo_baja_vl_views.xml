@@ -29,11 +29,16 @@
             <field name="arch" type="xml">
                 <form string="Baja VL">
                     <header>
+                        <button name="action_call_ws9" class="btn btn-primary"
+                            type="object" string="Baja SGH"
+                            groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas"
+                            states="borrador,error_sgh"/>
 
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                         <div name="oe_tittle" class="oe_title"></div>
+
+                        <div name="oe_tittle" class="oe_title"></div>
                         <group name="main_group">
                             <group name="main_group_left">
                                 <field name="is_require_extended" invisible="1"/>

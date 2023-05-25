@@ -35,9 +35,9 @@ class ONSCActionsCommonData(models.AbstractModel):
     resolution_date_discharge = fields.Date(string='Fecha de la resolución', copy=True)
     resolution_type_discharge = fields.Selection(
         [
-            ('m', 'Inciso'),
-            ('p', 'Presidencia o Poder ejecutivo'),
-            ('u', 'Unidad ejecutora')
+            ('M', 'Inciso'),
+            ('P', 'Presidencia o Poder ejecutivo'),
+            ('U', 'Unidad ejecutora')
         ],
         copy=True,
         string='Tipo de resolución'

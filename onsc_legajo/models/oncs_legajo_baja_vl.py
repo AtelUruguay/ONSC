@@ -13,6 +13,13 @@ STATES = [
     ('gafi_ok', 'GAFI OK'),
     ('gafi_error', 'GAFI Error'),
 ]
+# campos requeridos para la sincronización
+required_fields = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
+                   'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description',
+                   'resolution_date',
+                   'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
+                   'retributive_day_id', 'occupation_id',
+                   'date_income_public_administration', 'department_id', 'security_job_id']
 
 
 class ONSCEmploymentRelationship(models.Model):
@@ -78,6 +85,13 @@ class ONSCLegajoBajaVL(models.Model):
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     partner_id = fields.Many2one("res.partner", string="Contacto")
     partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
+
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
 
     @api.depends('cv_emissor_country_id')
     def _compute_partner_id_domain(self):
@@ -178,9 +192,6 @@ class ONSCLegajoBajaVL(models.Model):
                 raise ValidationError(_("Debe haber al menos un documento adjunto"))
 
 
-
-
-
     @api.depends( "partner_id")
     def _compute_employment_relationship_ids(self):
         for rec in self:
@@ -210,3 +221,25 @@ class ONSCLegajoBajaVL(models.Model):
                 vinculo_ids.append((0, 0, data))
             rec.employment_relationship_ids = vinculo_ids
 
+    def action_call_ws1(self):
+        return self.syncronize_ws9(log_info=True)
+    @api.model
+    def syncronize_ws9(self, log_info=False):
+        self._check_required_fieds_ws9()
+        response = self.env['onsc.legajo.abstract.alta.vl.ws9'].with_context(log_info=log_info).suspend_security().syncronize(self)
+
+    def _check_required_fieds_ws9(self):
+        for record in self:
+            message = []
+            for required_field in required_fields:
+                if not eval('record.%s' % required_field):
+                    message.append(record._fields[required_field].string)
+
+            if not record.attached_document_ids:
+                message.append(_("Debe haber al menos un documento adjunto"))
+
+        if message:
+            fields_str = '\n'.join(message)
+            message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
+            raise ValidationError(_(message))
+        return True
