@@ -10,27 +10,17 @@
                         <button
                                 name="action_process"
                                 type="object"
-                                string="Procesar"
+                                string="Cargar Líneas del Excel"
                                 attrs="{'invisible': [('state', '=', 'done')]}"
                         />
                         <button
                                 name="action_create_partner"
                                 type="object"
-                                string="Crear contacto"
+                                string="Procesar"
                         />
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <widget
-                                name="web_ribbon"
-                                title="Procesado con errores"
-                                bg_color="bg-danger"
-                                attrs="{'invisible': [('state', 'in', ['draft','done'])]}"/>
-                        <widget
-                                name="web_ribbon"
-                                title="Procesado con éxito"
-                                bg_color="bg-success"
-                                attrs="{'invisible': [('state', '!=', 'done')]}"/>
                         <div class="oe_button_box" name="button_box">
                             <button name="action_view_lines" type="object" class="oe_stat_button" icon="fa-bars">
                                 <div class="o_form_field o_stat_info">
@@ -71,12 +61,12 @@
                                         <field name="second_name"/>
                                         <field name="first_surname"/>
                                         <field name="second_surname"/>
-                                        <field name="message_error"/>
+                                        <field name="message_error" readonly="1"/>
                                     </tree>
                                 </field>
                             </page>
                             <page string="Líneas procesadas" attrs="{'invisible': [('state', '==', 'draft')]}">
-                                <field name="lines_processed_ids">
+                                <field name="lines_processed_ids" readonly="1">
                                     <tree create="false" delete="false">
                                         <field name="document_idenfication"/>
                                         <field name="first_name"/>
@@ -123,8 +113,6 @@
                                 <field name="second_name"/>
                                 <field name="first_surname" required="1"/>
                                 <field name="second_surname"/>
-                                <field name="first_surname_adopted"/>
-                                <field name="second_surname_adopted"/>
                                 <field name="name_ci"/>
                                 <field name="sex"/>
                                 <field name="birth_date"/>
@@ -196,7 +184,7 @@
                                 <field name="additional_information"/>
                                 <field name="document_file" filename="document_filename"/>
                                 <field name="document_filename" invisible="1"/>
-                                <field name="message_error"/>
+                                <field name="message_error" readonly="1"/>
                             </group>
                         </group>
                     </sheet>
@@ -213,14 +201,12 @@
                       decoration-info="state == 'done'">
                     <field name="mass_upload_id"/>
                     <field name="state"/>
-                    <field name="message_error"/>
+                    <field name="message_error" readonly="1"/>
                     <field name="document_idenfication"/>
                     <field name="first_name" required="1"/>
                     <field name="second_name"/>
                     <field name="first_surname" required="1"/>
                     <field name="second_surname"/>
-                    <field name="first_surname_adopted"/>
-                    <field name="second_surname_adopted"/>
                     <field name="name_ci"/>
                     <field name="sex"/>
                     <field name="birth_date"/>
