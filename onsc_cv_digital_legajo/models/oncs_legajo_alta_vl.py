@@ -104,23 +104,28 @@ class ONSCLegajoAltaVL(models.Model):
     def onchange_partner_id(self):
         self._empty_fieldsVL()
         Employee = self.env['hr.employee'].sudo()
+        CVDigital = self.env['onsc.cv.digital'].sudo()
         for record in self.sudo():
             if record.partner_id:
                 employee = Employee.search([
-                    ('user_partner_id', '=', record.partner_id.id),
                     ('cv_emissor_country_id', '=', record.cv_emissor_country_id.id),
                     ('cv_document_type_id', '=', record.cv_document_type_id.id),
+                    ('cv_nro_doc', '=', record.partner_id.cv_nro_doc),
                 ], limit=1)
-                record.employee_id = employee.id
-                record.cv_birthdate = employee.cv_digital_id.cv_birthdate
-                record.cv_sex = employee.cv_digital_id.cv_sex
-                CVDigital = self.env['onsc.cv.digital']
                 cv_digital_id = CVDigital.sudo().search([
-                    ('cv_emissor_country_id', '=', record.partner_id.cv_emissor_country_id.id),
-                    ('cv_document_type_id', '=', record.partner_id.cv_document_type_id.id),
+                    ('cv_emissor_country_id', '=', record.cv_emissor_country_id.id),
+                    ('cv_document_type_id', '=', record.cv_document_type_id.id),
                     ('cv_nro_doc', '=', record.partner_id.cv_nro_doc),
                     ('type', '=', 'cv')
                 ], limit=1)
+                if employee:
+                    record.employee_id = employee.id
+                    record.cv_birthdate = employee.cv_birthdate
+                    record.cv_sex = employee.cv_sex
+                elif cv_digital_id:
+                    record.cv_birthdate = cv_digital_id.cv_birthdate
+                    record.cv_sex = cv_digital_id.cv_sex
+
                 record.cv_digital_id = cv_digital_id
                 record.country_code = cv_digital_id.partner_id.country_id.code
                 record.country_of_birth_id = cv_digital_id.country_of_birth_id
@@ -345,7 +350,10 @@ class ONSCLegajoAltaVL(models.Model):
         employee = super(ONSCLegajoAltaVL, self)._get_legajo_employee()
         employee._syncronize_data()
         cv = employee.cv_digital_id
-        vals = {}
+        vals = {
+            'cv_birthdate': self.cv_birthdate,
+            'cv_sex': self.cv_sex,
+        }
         if cv and employee.user_id.id != cv.partner_id.user_id.id:
             vals['user_id'] = cv.partner_id.user_id.id
         # DOMICILIO

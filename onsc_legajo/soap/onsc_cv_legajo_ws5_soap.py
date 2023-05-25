@@ -58,7 +58,7 @@ class WsLegajoWS5(ServiceBase):
                 cr.rollback()
                 cr.close()
             error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
-            response = WsResponse(result='error', errors=[])
+            response = WsResponse(result='2', description='error', errors=[])
             response.errors.append(error_item)
             return response
         except Exception as e:
@@ -66,7 +66,7 @@ class WsLegajoWS5(ServiceBase):
                 cr.rollback()
                 cr.close()
             error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
-            response = WsResponse(result='error', errors=[])
+            response = WsResponse(result='2', description='error', errors=[])
             response.errors.append(error_item)
             return response
 
@@ -85,11 +85,11 @@ class WsLegajoWS5(ServiceBase):
             else:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_152)
             cr.commit()
-            return WsResponse(result='ok', errors=[])
+            return WsResponse(result='100', description='OK', errors=[])
         except Fault as e:
             cr.rollback()
             error_item = ErrorHandler(code=e.faultcode, type=e.faultactor, error=e.faultstring, description=e.detail)
-            response = WsResponse(result='error', errors=[])
+            response = WsResponse(result='2', description='error', errors=[])
             response.errors.append(error_item)
             return response
         except Exception as e:
@@ -100,7 +100,7 @@ class WsLegajoWS5(ServiceBase):
                                       type=logic_150_extended.get('type'),
                                       error=logic_150_extended.get('desc'),
                                       description=logic_150_extended.get('long_desc'))
-            response = WsResponse(result='error', errors=[])
+            response = WsResponse(result='2', description='error', errors=[])
             response.errors.append(error_item)
             return response
         finally:
