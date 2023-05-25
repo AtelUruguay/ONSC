@@ -179,7 +179,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         else:
             return str(row.value)
 
-    def action_process(self):
+    def action_process_excel(self):
 
         try:
             fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")

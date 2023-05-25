@@ -8,7 +8,7 @@
                 <form string="Alta masiva de vínculo laboral">
                     <header>
                         <button
-                                name="action_process"
+                                name="action_process_excel"
                                 type="object"
                                 string="Cargar Líneas del Excel"
                                 attrs="{'invisible': [('state', '=', 'done')]}"
