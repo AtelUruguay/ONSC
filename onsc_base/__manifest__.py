@@ -10,7 +10,7 @@ ONSC - Base
     """,
     'category': 'ONSC',
     'depends': ['base', 'web_responsive', 'website', 'auth_iduy_primary_login', 'base_user_role',
-                'web_edit_button_conditional_disable'],
+                'web_edit_button_conditional_disable', 'mail_outbound_static'],
     'data': [
         'security/onsc_base_security.xml',
         'security/ir.model.access.csv',

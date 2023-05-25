@@ -32,6 +32,7 @@ class WsResponse(BaseComplexType):
     __type_name__ = 'service_response'
     _type_info = {
         'result': Unicode(min_occurs=1),
+        'description': Unicode(min_occurs=0),
         'errors': Array(ErrorHandler, min_occurs=0, type_name='ArrayOfErrorHandler')
     }
     _type_info_alt = []

@@ -43,6 +43,9 @@ class HrEmployee(models.Model):
     attachment_ids = fields.One2many('ir.attachment', compute='_compute_attachment_ids', string="Archivos adjuntos")
     attachment_count = fields.Integer(compute='_compute_attachment_ids', string="Cantidad de archivos adjuntos")
 
+    # legajo_state = fields.Selection(
+    #     [('active', 'Activo'), ('egresed', 'Egresado')], string='Estado', default='active', history=True)
+
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
         for record in self:
