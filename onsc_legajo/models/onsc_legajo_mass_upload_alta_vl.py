@@ -319,7 +319,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             if not existing_record:
                 MassLine.create_line(values)
 
-    def action_create_partner(self):
+    def action_process(self):
         Partner = self.env['res.partner']
         AltaVL = self.env['onsc.legajo.alta.vl']
         CVDigital = self.env['onsc.cv.digital']

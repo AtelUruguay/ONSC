@@ -14,7 +14,7 @@
                                 attrs="{'invisible': [('state', '=', 'done')]}"
                         />
                         <button
-                                name="action_create_partner"
+                                name="action_process"
                                 type="object"
                                 string="Procesar"
                         />
