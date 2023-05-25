@@ -211,9 +211,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
 
             if not norm_id:
                 message_error.append(
-                    message_error.append(
-                        " \nNo se puedo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
-                            line[47], line[46], line[48], line[45])))
+                    " \nNo se puedo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
+                        line[47], line[46], line[48], line[45]))
 
             descriptor1_id = MassLine.find_by_code_name_many2one('descriptor1_id', 'code', 'name', line[31])
             descriptor2_id = MassLine.find_by_code_name_many2one('descriptor2_id', 'code', 'name', line[32])
@@ -413,12 +412,16 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'norm_id': line.norm_id.id if line.norm_id else False,
                 'mass_upload_id': self.id,
             }
+            alta_vl_id = False
             try:
                 alta_vl_id = AltaVL.create(data_alta_vl)
                 line.write({'state': 'done'})
+                alta_vl_id.check_required_fieds_ws4()
             except Exception as e:
                 line.write({'state': 'error',
                             'message_error': line.message_error + " \nNo se puedo crear el legajo: " + tools.ustr(e)})
+                if alta_vl_id:
+                    alta_vl_id.unlink()
                 continue
             try:
                 alta_vl_id.action_call_ws4()
@@ -454,6 +457,25 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
 class ONSCMassUploadLineLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.mass.upload.line.alta.vl'
     _description = 'Lineas para la carga masiva de legajos de alta VL'
+
+    def read(self, fields=None, load="_classic_read"):
+        Office = self.env['onsc.legajo.office'].sudo()
+        RetributiveDay = self.env['onsc.legajo.jornada.retributiva'].sudo()
+        LegajoNorm = self.env['onsc.legajo.norm'].sudo()
+        result = super(ONSCMassUploadLineLegajoAltaVL, self).read(fields, load)
+        for item in result:
+            if item.get('program_project_id'):
+                program_project_id = item['program_project_id'][0]
+                item['program_project_id'] = (
+                    item['program_project_id'][0], Office.browse(program_project_id)._custom_display_name())
+            if item.get('retributive_day_id'):
+                retributive_day_id = item['retributive_day_id'][0]
+                item['retributive_day_id'] = (
+                    item['retributive_day_id'][0], RetributiveDay.browse(retributive_day_id)._custom_display_name())
+            if item.get('norm_id'):
+                norm_id = item['norm_id'][0]
+                item['norm_id'] = (item['norm_id'][0], LegajoNorm.browse(norm_id)._custom_display_name())
+        return result
 
     mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='Carga masiva')
     state = fields.Selection([('draft', 'Borrador'), ('error', 'Procesado con Error'), ('done', 'Procesado')],

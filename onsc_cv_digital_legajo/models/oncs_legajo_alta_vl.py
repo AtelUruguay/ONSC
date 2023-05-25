@@ -245,7 +245,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.model
     def syncronize_ws4(self, log_info=False):
-        self._check_required_fieds_ws4()
+        self.check_required_fieds_ws4()
         response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
@@ -262,7 +262,7 @@ class ONSCLegajoAltaVL(models.Model):
             self.state = 'error_sgh'
             self.error_message_synchronization = response
 
-    def _check_required_fieds_ws4(self):
+    def check_required_fieds_ws4(self):
         for record in self:
             message = []
             for required_field in required_fields:
