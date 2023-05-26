@@ -241,7 +241,7 @@ class HrEmployee(models.Model):
         for record in self:
             record = record.sudo()
             vals = {
-                'image_1920': record.cv_digital_id.partner_id.image_1920,
+                # 'image_1920': record.cv_digital_id.partner_id.image_1920,
                 'photo_updated_date': record.cv_digital_id.partner_id.cv_photo_updated_date,
                 'document_identity_file': record.cv_digital_id.document_identity_file,
                 'document_identity_filename': record.cv_digital_id.document_identity_filename,
@@ -328,6 +328,11 @@ class HrEmployee(models.Model):
                 'health_department_id': record.cv_digital_id.health_department_id.id,
                 'health_provider_id': record.cv_digital_id.health_provider_id.id,
             }
+            # PHOTO
+            if record.cv_digital_id.photo_documentary_validation_state == 'validated':
+                vals.update({
+                    'image_1920': record.cv_digital_id.partner_id.image_1920,
+                })
             # ESTADO CIVIL
             if record.cv_digital_id.marital_status_documentary_validation_state == 'validated':
                 vals.update({

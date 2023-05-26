@@ -71,7 +71,7 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
                 "onsc_legajo.onsc_legajo_integration_error_WS1_9004")
             if not hasattr(response, 'listaPlazas'):
                 self.create_new_log(
-                    origin='WS4',
+                    origin='WS1',
                     type='error',
                     integration_log=onsc_legajo_integration_error_WS1_9004,
                     long_description="No se obtuvieron vacantes con los datos enviados."

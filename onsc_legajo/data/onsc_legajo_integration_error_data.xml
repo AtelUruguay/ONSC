@@ -127,7 +127,7 @@
         <field name="integration_code">WS1</field>
         <field name="code_error">9004</field>
         <field name="is_system_required">True</field>
-        <field name="description">Error de comunicación</field>
+        <field name="description">Error de lógica</field>
     </record>
     <record id="onsc_legajo_integration_error_WS1_9005" model="onsc.legajo.integration.error">
         <field name="integration_code">WS1</field>
@@ -147,7 +147,7 @@
         <field name="integration_code">WS4</field>
         <field name="code_error">9004</field>
         <field name="is_system_required">True</field>
-        <field name="description">Ok</field>
+        <field name="description">Error de lógica</field>
     </record>
     <record id="onsc_legajo_integration_error_WS4_9005" model="onsc.legajo.integration.error">
         <field name="integration_code">WS4</field>
@@ -167,7 +167,7 @@
         <field name="integration_code">WS12</field>
         <field name="code_error">9004</field>
         <field name="is_system_required">True</field>
-        <field name="description">Ok</field>
+        <field name="description">Error de lógica</field>
     </record>
     <record id="onsc_legajo_integration_error_WS12_9005" model="onsc.legajo.integration.error">
         <field name="integration_code">WS12</field>
