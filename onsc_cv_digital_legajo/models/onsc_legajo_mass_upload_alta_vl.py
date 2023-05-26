@@ -424,7 +424,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     alta_vl_id.unlink()
                 continue
             try:
-                #TODO cambiar esta logica.Se debe llamar el WS4 de todas las lineas q creen un alta VL.No presupuestales
+                # TODO cambiar esta logica.Se debe llamar el WS4 de todas las lineas q creen un alta VL.No presupuestales
                 alta_vl_id.action_call_ws4()
             except:
                 continue
@@ -625,7 +625,6 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                 domain = [('id', 'in', dsc4Id.ids)]
             rec.descriptor4_domain_id = json.dumps(domain)
 
-
     @api.onchange('descriptor1_id')
     def onchange_descriptor1(self):
         self.descriptor2_id = False
@@ -640,7 +639,6 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     @api.onchange('descriptor3_id')
     def onchange_descriptor3(self):
         self.descriptor4_id = False
-
 
     def get_fields(self):
         return self._fields
