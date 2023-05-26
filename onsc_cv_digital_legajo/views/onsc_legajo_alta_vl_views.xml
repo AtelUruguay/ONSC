@@ -85,6 +85,8 @@
                             <field name="cv_address_state_id" readonly="1" force_save="1"/>
                             <field name="cv_address_street_id" readonly="1" force_save="1"
                                    attrs="{'invisible': [('country_code', '!=', 'UY')]}"/>
+                            <field name="cv_address_street2_id" force_save="1" readonly="1"/>
+                            <field name="cv_address_street3_id" force_save="1" readonly="1"/>
                             <field name="cv_address_street" string="Calle"
                                    attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
                             <field name="cv_address_is_cv_bis" readonly="1"/>

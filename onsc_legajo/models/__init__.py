@@ -10,4 +10,3 @@ from . import hr_contract
 from . import onsc_legajo
 from . import ir_attachment
 from . import onsc_legajo_alta_vl
-from . import onsc_legajo_mass_upload_alta_vl

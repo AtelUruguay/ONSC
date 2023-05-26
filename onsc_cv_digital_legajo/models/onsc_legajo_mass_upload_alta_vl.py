@@ -200,11 +200,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             line = list(map(self.process_value, sheet.row(row_no)))
             global message_error
             message_error = []
-            office = LegajoOffice.search([('programa', '=', line[27]), ('proyecto', '=', line[28])],
-                                         limit=1)
-            norm_id = LegajoNorm.search([('anioNorma', '=', line[47]), ('numeroNorma', '=', line[46]),
-                                         ('articuloNorma', '=', line[48]), ('tipoNorma', '=', line[45])],
-                                        limit=1)
+            office = LegajoOffice.sudo().search([('programa', '=', line[27]), ('proyecto', '=', line[28])],
+                                                limit=1)
+            norm_id = LegajoNorm.sudo().search([('anioNorma', '=', line[47]), ('numeroNorma', '=', line[46]),
+                                                ('articuloNorma', '=', line[48]), ('tipoNorma', '=', line[45])],
+                                               limit=1)
             if not office:
                 message_error.append("No se puedo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
                     line[27], line[28]))
@@ -327,8 +327,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                                                               limit=1).id or False
 
         for line in self.line_ids:
-            partner = Partner.search([('cv_nro_doc', '=', line.document_number)], limit=1)
-            cv_digital = CVDigital.search([('partner_id', '=', partner.id)], limit=1)
+            partner = Partner.sudo().search([('cv_nro_doc', '=', line.document_number)], limit=1)
             try:
                 if not partner:
                     data_partner = {
@@ -351,31 +350,31 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             except Exception as e:
                 line.write({'state': 'error', 'message_error': "No se puedo crear el contacto: " + tools.ustr(e)})
                 continue
-            cv_digital = CVDigital.search([('partner_id', '=', partner.id)], limit=1)
+            cv_digital = CVDigital.sudo().search([('partner_id', '=', partner.id)], limit=1)
             try:
                 if not cv_digital:
-                    cv_digital = CVDigital.create({'partner_id': partner.id,
-                                                   'personal_phone': line.personal_phone,
-                                                   'mobile_phone': line.mobile_phone,
-                                                   'email': line.email,
-                                                   'marital_status_id': line.marital_status_id.id,
-                                                   'country_of_birth_id': line.birth_country_id.id,
-                                                   'uy_citizenship': line.citizenship,
-                                                   'crendencial_serie': line.crendencial_serie,
-                                                   'credential_number': line.credential_number,
-                                                   'cv_address_state_id': line.address_state_id.id,
-                                                   'cv_address_location_id': line.address_location_id.id,
-                                                   'cv_address_street_id': line.address_street_id.id,
-                                                   'cv_address_street2_id': line.address_street2_id.id,
-                                                   'cv_address_street3_id': line.address_street3_id.id,
-                                                   'cv_address_zip': line.address_zip,
-                                                   'cv_address_nro_door': line.address_nro_door,
-                                                   'cv_address_is_cv_bis': line.address_is_bis,
-                                                   'cv_address_apto': line.address_apto,
-                                                   'cv_address_place': line.address_place,
-                                                   'cv_address_block': line.address_block,
-                                                   'cv_address_sandlot': line.address_sandlot,
-                                                   })
+                    CVDigital.create({'partner_id': partner.id,
+                                      'personal_phone': line.personal_phone,
+                                      'mobile_phone': line.mobile_phone,
+                                      'email': line.email,
+                                      'marital_status_id': line.marital_status_id.id,
+                                      'country_of_birth_id': line.birth_country_id.id,
+                                      'uy_citizenship': line.citizenship,
+                                      'crendencial_serie': line.crendencial_serie,
+                                      'credential_number': line.credential_number,
+                                      'cv_address_state_id': line.address_state_id.id,
+                                      'cv_address_location_id': line.address_location_id.id,
+                                      'cv_address_street_id': line.address_street_id.id,
+                                      'cv_address_street2_id': line.address_street2_id.id,
+                                      'cv_address_street3_id': line.address_street3_id.id,
+                                      'cv_address_zip': line.address_zip,
+                                      'cv_address_nro_door': line.address_nro_door,
+                                      'cv_address_is_cv_bis': line.address_is_bis,
+                                      'cv_address_apto': line.address_apto,
+                                      'cv_address_place': line.address_place,
+                                      'cv_address_block': line.address_block,
+                                      'cv_address_sandlot': line.address_sandlot,
+                                      })
                 line.write({'message_error': ''})
             except Exception as e:
                 line.write({'state': 'error', 'message_error': "No se puedo crear el CV: " + tools.ustr(e)})
@@ -454,7 +453,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             args = expression.AND([[('dsc3Id', '=', descriptor3_id)], args])
         if descriptor4_id:
             args = expression.AND([[('dsc4Id', '=', descriptor4_id)], args])
-        return self.env['onsc.legajo.budget.item'].search(args, limit=1)
+        return self.env['onsc.legajo.budget.item'].sudo().search(args, limit=1)
 
 
 class ONSCMassUploadLineLegajoAltaVL(models.Model):
@@ -585,7 +584,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
         domain = [('id', 'in', [])]
         for rec in self:
             if not rec.is_reserva_sgh:
-                dsc1Id = self.env['onsc.legajo.budget.item'].search([]).mapped(
+                dsc1Id = self.env['onsc.legajo.budget.item'].sudo().search([]).mapped(
                     'dsc1Id')
                 if dsc1Id:
                     domain = [('id', 'in', dsc1Id.ids)]
@@ -598,7 +597,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
             domain = [('id', 'in', [])]
             if rec.descriptor1_id:
                 args = [('dsc1Id', '=', rec.descriptor1_id.id)]
-            dsc2Id = self.env['onsc.legajo.budget.item'].search(args).mapped('dsc2Id')
+            dsc2Id = self.env['onsc.legajo.budget.item'].sudo().search(args).mapped('dsc2Id')
             if dsc2Id:
                 domain = [('id', 'in', dsc2Id.ids)]
             rec.descriptor2_domain_id = json.dumps(domain)
@@ -612,7 +611,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                 args = [('dsc1Id', '=', rec.descriptor1_id.id)]
             if rec.descriptor2_id:
                 args = expression.AND([[('dsc2Id', '=', rec.descriptor2_id.id)], args])
-            dsc3Id = self.env['onsc.legajo.budget.item'].search(args).mapped('dsc3Id')
+            dsc3Id = self.env['onsc.legajo.budget.item'].sudo().search(args).mapped('dsc3Id')
             if dsc3Id:
                 domain = [('id', 'in', dsc3Id.ids)]
             rec.descriptor3_domain_id = json.dumps(domain)
@@ -628,7 +627,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                 args = expression.AND([[('dsc2Id', '=', rec.descriptor2_id.id)], args])
             if rec.descriptor3_id:
                 args = expression.AND([[('dsc3Id', '=', rec.descriptor3_id.id)], args])
-            dsc4Id = self.env['onsc.legajo.budget.item'].search(args).mapped('dsc4Id')
+            dsc4Id = self.env['onsc.legajo.budget.item'].sudo().search(args).mapped('dsc4Id')
             if dsc4Id:
                 domain = [('id', 'in', dsc4Id.ids)]
             rec.descriptor4_domain_id = json.dumps(domain)
