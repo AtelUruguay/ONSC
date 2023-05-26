@@ -234,7 +234,7 @@ class ONSCLegajoBajaVL(models.Model):
             rec.employment_relationship_ids = vinculo_ids
 
     def action_call_ws9(self):
-        return self.syncronize_ws9(log_info=True)
+        return self.syncronize_ws9()
     @api.model
     def syncronize_ws9(self, log_info=False):
         self._check_required_fieds_ws9()

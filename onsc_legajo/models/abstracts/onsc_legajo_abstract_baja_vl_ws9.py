@@ -15,7 +15,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
     @api.model
     def syncronize(self, record, log_info=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS9_bajaSGH')
-        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9005")
+        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS9_9005")
 
         wsclient = self._get_client(parameter, '', integration_error)
 
@@ -46,19 +46,37 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
         with self._cr.savepoint():
-
-
-            if not hasattr(response, 'BajaSGHRespuesta'):
+            onsc_legajo_integration_error_WS9_9004 = self.env.ref(
+                "onsc_legajo.onsc_legajo_integration_error_WS9_9004")
+            if not hasattr(response, 'servicioResultado'):
+                self.create_new_log(
+                    origin='WS4',
+                    type='error',
+                    integration_log=onsc_legajo_integration_error_WS9_9004,
+                    long_description="No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
+                )
                 return "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
 
-            if response.BajaSGHRespuesta:
-                for external_record in response.BajaSGHRespuesta:
-                    try:
-                        return external_record
-                    except Exception as e:
-                        _logger.warning(tools.ustr(e))
-                        return "Error devuelto por SGH: %s" % tools.ustr(e)
+            if response.pdaId:
+
+                try:
+                    return response.pdaId
+                except Exception as e:
+                    _logger.warning(tools.ustr(e))
+                    self.create_new_log(
+                        origin='WS4',
+                        type='error',
+                        integration_log=onsc_legajo_integration_error_WS9_9004,
+                        long_description="Error devuelto por SGH: %s" % tools.ustr(e)
+                    )
+                    return "Error devuelto por SGH: %s" % tools.ustr(e)
 
             else:
+                self.create_new_log(
+                    origin='WS4',
+                    type='error',
+                    integration_log=onsc_legajo_integration_error_WS9_9004,
+                    long_description="No se obtuvo respuesta del servicio web"
+                )
                 return "No se obtuvo respuesta del servicio web"
             return False

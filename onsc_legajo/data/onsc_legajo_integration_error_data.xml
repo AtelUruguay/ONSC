@@ -175,4 +175,24 @@
         <field name="is_system_required">True</field>
         <field name="description">Error de comunicación</field>
     </record>
+
+    <!--    WS9-->
+    <record id="onsc_legajo_integration_error_WS9_9000" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS9</field>
+        <field name="code_error">9000</field>
+        <field name="is_system_required">True</field>
+        <field name="description">Ok</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS9_9004" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS9</field>
+        <field name="code_error">9004</field>
+        <field name="is_system_required">True</field>
+        <field name="description">Ok</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS9_9005" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS9</field>
+        <field name="code_error">9005</field>
+        <field name="is_system_required">True</field>
+        <field name="description">Error de comunicación</field>
+    </record>
 </odoo>
