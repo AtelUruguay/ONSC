@@ -53,6 +53,7 @@ class ONSCLegajoOffice(models.Model):
             by_domain = ['|', ('programaDescripcion', operator, name), ('proyectoDescripcion', operator, name)] + args
             by_search = self.search(by_domain, limit=limit)
             return list(set(by_name + by_search.name_get()))
+        return by_name
 
     def _custom_display_name(self):
         return self.programaDescripcion + " - " + self.proyectoDescripcion

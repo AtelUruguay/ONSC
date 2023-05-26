@@ -156,7 +156,8 @@
                                 <field name="income_mechanism_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="call_number"/>
-                                <field name="program_project_id"/>
+                                <field name="program_project_id" context="{'show_project_program':True}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="is_reserva_sgh"/>
                                 <field name="regime_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
