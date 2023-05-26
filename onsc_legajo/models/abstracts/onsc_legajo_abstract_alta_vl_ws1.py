@@ -16,7 +16,7 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
     @api.model
     def syncronize(self, record, log_info=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS1_plazasVacantesCedula')
-        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9005")
+        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS1_9005")
 
         wsclient = self._get_client(parameter, '', integration_error)
         # TODO: cuando intente hacer un update a data no me funciono, por eso lo hice asi
@@ -59,14 +59,24 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
             'proyecto': record.program_project_id.proyecto or '',
         })
 
-        return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, '',
-                                                                                   integration_error, data)
+        return self.with_context(alta_vl=record, log_info=log_info).suspend_security()._syncronize(wsclient, parameter,
+                                                                                                   'WS1',
+                                                                                                   integration_error,
+                                                                                                   data)
 
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
         with self._cr.savepoint():
+            onsc_legajo_integration_error_WS1_9004 = self.env.ref(
+                "onsc_legajo.onsc_legajo_integration_error_WS1_9004")
             if not hasattr(response, 'listaPlazas'):
-                return "No se obtuvieron vacantes con los datos enviados"
+                self.create_new_log(
+                    origin='WS4',
+                    type='error',
+                    integration_log=onsc_legajo_integration_error_WS1_9004,
+                    long_description="No se obtuvieron vacantes con los datos enviados."
+                )
+                return "No se obtuvieron vacantes con los datos enviados."
             vacante_ids = [(5,)]
             if response.listaPlazas:
                 for external_record in response.listaPlazas:
@@ -101,12 +111,24 @@ class ONSCLegajoAbstractSyncW1(models.AbstractModel):
                                                                        '%d/%m/%Y').date() if hasattr(external_record,
                                                                                                      'fechaReserva') else False,
                         }
-
                         vacante_ids.append((0, 0, data))
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
+                        self.create_new_log(
+                            origin='WS1',
+                            type='error',
+                            integration_log=onsc_legajo_integration_error_WS1_9004,
+                            long_description="Error al sincronizar vacantes: %s" % tools.ustr(e)
+                        )
                         return "Error al sincronizar vacantes"
-
             else:
+                alta_vl = self._context.get('alta_vl')
+                self.create_new_log(
+                    origin='WS1',
+                    type='error',
+                    integration_log=onsc_legajo_integration_error_WS1_9004,
+                    long_description="No se encontraron vacantes para el Alta de vínculo laboral con identificador: %s" % (
+                        str(alta_vl.id))
+                )
                 return "No se encontraron vacantes"
             return vacante_ids

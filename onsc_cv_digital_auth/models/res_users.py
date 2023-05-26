@@ -32,3 +32,19 @@ class ResUsers(models.Model):
         # LLamada al servicio de DNIC
         oauth_user.partner_id.update_dnic_values(jump_error=True)
         return oauth_user
+
+    @api.model
+    def create(self, values):
+        existing_partner = self._get_existing_partner(values)
+        if existing_partner:
+            values.update({'partner_id': existing_partner.id})
+        return super(ResUsers, self).create(values)
+
+    def _get_existing_partner(self, values):
+        if values.get('is_partner_cv'):
+            return self.env['res.partner'].search([
+                ('cv_emissor_country_id', '=', values.get('cv_emissor_country_id')),
+                ('cv_document_type_id', '=', values.get('cv_document_type_id')),
+                ('cv_nro_doc', '=', values.get('cv_nro_doc')),
+            ], limit=1)
+        return self.env['res.partner']
