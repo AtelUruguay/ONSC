@@ -326,7 +326,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
                                                                               limit=1).id or False
 
-        for line in self.line_ids.filtered(lambda x: len(x.message_error.strip()) == 0):
+        for line in self.line_ids:
             partner = Partner.search([('cv_nro_doc', '=', line.document_number)], limit=1)
             cv_digital = CVDigital.search([('partner_id', '=', partner.id)], limit=1)
             try:
@@ -346,6 +346,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                             'first_surname': partner.cv_last_name_1,
                             'second_surname': partner.cv_last_name_2,
                             'name_ci': partner.cv_dnic_full_name,
+                            'message_error': '',
                             })
             except Exception as e:
                 line.write({'state': 'error', 'message_error': "No se puedo crear el contacto: " + tools.ustr(e)})
@@ -375,6 +376,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                                    'cv_address_block': line.address_block,
                                                    'cv_address_sandlot': line.address_sandlot,
                                                    })
+                line.write({'message_error': ''})
             except Exception as e:
                 line.write({'state': 'error', 'message_error': "No se puedo crear el CV: " + tools.ustr(e)})
                 continue
@@ -416,10 +418,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             try:
                 alta_vl_id = AltaVL.create(data_alta_vl)
                 line.write({'state': 'done'})
-                alta_vl_id.check_required_fieds_ws4()
+                alta_vl_id.with_context({'not_check_attached_document': True}).check_required_fieds_ws4()
             except Exception as e:
                 line.write({'state': 'error',
-                            'message_error': line.message_error + " \nNo se puedo crear el legajo: " + tools.ustr(e)})
+                            'message_error': line.message_error + " \nNo se puedo crear el alta de vínculo laboral: " + tools.ustr(
+                                e)})
                 if alta_vl_id:
                     alta_vl_id.unlink()
                 continue

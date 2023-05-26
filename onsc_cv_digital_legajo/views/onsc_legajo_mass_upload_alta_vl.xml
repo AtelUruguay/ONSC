@@ -10,6 +10,7 @@
                         <button
                                 name="action_process_excel"
                                 type="object"
+                                class="oe_highlight"
                                 string="Cargar Líneas del Excel"
                                 attrs="{'invisible': [('state', '=', 'done')]}"
                         />
