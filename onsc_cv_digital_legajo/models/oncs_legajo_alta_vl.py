@@ -107,7 +107,7 @@ class ONSCLegajoAltaVL(models.Model):
             if record.mass_upload_id:
                 record.origin_type = 'P'
             else:
-                record.mass_upload_id = 'M'
+                record.origin_type = 'M'
     def action_call_ws1(self):
         return self.syncronize_ws1(log_info=True)
 
