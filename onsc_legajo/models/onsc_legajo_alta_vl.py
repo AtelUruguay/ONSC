@@ -249,7 +249,7 @@ class ONSCLegajoAltaVL(models.Model):
             if record.mass_upload_id:
                 record.origin_type = 'P'
             else:
-                record.mass_upload_id = 'M'
+                record.origin_type = 'M'
     
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
