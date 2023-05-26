@@ -9,3 +9,4 @@ from . import onsc_cv_work_experience
 from . import onsc_legajo
 from . import oncs_legajo_alta_vl
 from . import onsc_cv_digital_vacante
+from . import onsc_legajo_mass_upload_alta_vl

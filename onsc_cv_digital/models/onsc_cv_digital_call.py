@@ -7,6 +7,7 @@ from os import remove
 from os.path import join
 
 from odoo import fields, models, api, _
+from odoo.addons.onsc_base.soap import soap_error_codes as onsc_error_codes
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from .abstracts.onsc_cv_abstract_common import SELECTION_RADIO
@@ -610,15 +611,15 @@ class ONSCCVDigitalCall(models.Model):
         :return:
         """
         if len(country_code) != 2:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_151_1)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_151_1)
         country_id = self.env['res.country'].search([('code', '=', country_code)], limit=1)
         if not country_id:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_151)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_151)
         doc_type_id = self.env['onsc.cv.document.type'].search([('code', '=', doc_type_code)], limit=1)
         if not doc_type_id:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_152)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_152)
         if not isinstance(accion, str) or accion not in ['P', 'R', 'C']:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_154)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_154)
 
         cv_digital_id = self.env['onsc.cv.digital'].search([
             ('cv_emissor_country_id', '=', country_id.id),
@@ -627,7 +628,7 @@ class ONSCCVDigitalCall(models.Model):
             ('type', '=', 'cv')
         ], limit=1)
         if not cv_digital_id:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_153)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_153)
 
         if accion == 'P':
             return self._postulate(cv_digital_id, call_number, postulation_date, postulation_number)
@@ -657,7 +658,7 @@ class ONSCCVDigitalCall(models.Model):
             ('call_number', '=', call_number),
         ])
         if not cv_calls:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_155)
         cv_calls.write({'active': False, 'postulation_date': postulation_date})
         return self._postulate(cv_digital_id, call_number, postulation_date, postulation_number)
 
@@ -667,7 +668,7 @@ class ONSCCVDigitalCall(models.Model):
             ('call_number', '=', call_number),
         ])
         if not cv_calls:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_155)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_155)
         cv_calls.write({'active': False, 'is_cancel': True, 'postulation_date': postulation_date})
         return cv_calls
 
@@ -693,11 +694,11 @@ class ONSCCVDigitalCall(models.Model):
         """
         calls = self.search([('call_number', '=', call_number)])
         if len(calls) == 0:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_156)
         if calls[0].is_close:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_157)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_157)
         if calls[0].is_json_sent:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_158)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_158)
         calls.write(
             self._get_call_close_vals(operating_number_code, is_trans, is_afro, is_disabilitie, is_victim))
         calls._generate_json(call_number)
@@ -729,7 +730,7 @@ class ONSCCVDigitalCall(models.Model):
         calls_preselected = self.search([('call_number', '=', call_number), ('postulation_number', 'in', postulations)])
         calls_not_selected = self.search([('call_number', '=', call_number), ('id', 'not in', calls_preselected.ids)])
         if len(calls_preselected) == 0:
-            return soap_error_codes._raise_fault(soap_error_codes.LOGIC_156)
+            return onsc_error_codes._raise_fault(soap_error_codes.LOGIC_156)
         calls_preselected.write({'preselected': 'yes'})
         calls_preselected.with_context(is_preselected=True).button_update_documentary_validation_sections_tovalidate()
         calls_not_selected.write({'preselected': 'no'})

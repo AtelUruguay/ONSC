@@ -235,7 +235,13 @@ class ONSCLegajoAltaVL(models.Model):
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-
+    @api.depends('mass_upload_id')
+    def _compute_origin_type(self):
+        for record in self:
+            if record.mass_upload_id:
+                record.origin_type = 'P'
+            else:
+                record.origin_type = 'M'
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
