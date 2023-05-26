@@ -334,13 +334,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     partner = Partner.sudo().create(data_partner)
                 partner.update_dnic_values()
                 line.sudo().write({'first_name': partner.cv_first_name,
-                            'second_name': partner.cv_second_name,
-                            'first_surname': partner.cv_last_name_1,
-                            'second_surname': partner.cv_last_name_2,
-                            'name_ci': partner.cv_dnic_full_name,
-                            'partner_id': partner.id,
-                            'message_error': '',
-                            })
+                                   'second_name': partner.cv_second_name,
+                                   'first_surname': partner.cv_last_name_1,
+                                   'second_surname': partner.cv_last_name_2,
+                                   'name_ci': partner.cv_dnic_full_name,
+                                   'partner_id': partner.id,
+                                   'message_error': '',
+                                   })
             except Exception as e:
                 line.write({'state': 'error', 'message_error': "No se puedo crear el contacto: " + tools.ustr(e)})
                 continue
@@ -348,27 +348,27 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             try:
                 if not cv_digital:
                     CVDigital.sudo().create({'partner_id': partner.id,
-                                      'personal_phone': line.personal_phone,
-                                      'mobile_phone': line.mobile_phone,
-                                      'email': line.email,
-                                      'marital_status_id': line.marital_status_id.id,
-                                      'country_of_birth_id': line.birth_country_id.id,
-                                      'uy_citizenship': line.citizenship,
-                                      'crendencial_serie': line.crendencial_serie,
-                                      'credential_number': line.credential_number,
-                                      'cv_address_state_id': line.address_state_id.id,
-                                      'cv_address_location_id': line.address_location_id.id,
-                                      'cv_address_street_id': line.address_street_id.id,
-                                      'cv_address_street2_id': line.address_street2_id.id,
-                                      'cv_address_street3_id': line.address_street3_id.id,
-                                      'cv_address_zip': line.address_zip,
-                                      'cv_address_nro_door': line.address_nro_door,
-                                      'cv_address_is_cv_bis': line.address_is_bis,
-                                      'cv_address_apto': line.address_apto,
-                                      'cv_address_place': line.address_place,
-                                      'cv_address_block': line.address_block,
-                                      'cv_address_sandlot': line.address_sandlot,
-                                      })
+                                             'personal_phone': line.personal_phone,
+                                             'mobile_phone': line.mobile_phone,
+                                             'email': line.email,
+                                             'marital_status_id': line.marital_status_id.id,
+                                             'country_of_birth_id': line.birth_country_id.id,
+                                             'uy_citizenship': line.citizenship,
+                                             'crendencial_serie': line.crendencial_serie,
+                                             'credential_number': line.credential_number,
+                                             'cv_address_state_id': line.address_state_id.id,
+                                             'cv_address_location_id': line.address_location_id.id,
+                                             'cv_address_street_id': line.address_street_id.id,
+                                             'cv_address_street2_id': line.address_street2_id.id,
+                                             'cv_address_street3_id': line.address_street3_id.id,
+                                             'cv_address_zip': line.address_zip,
+                                             'cv_address_nro_door': line.address_nro_door,
+                                             'cv_address_is_cv_bis': line.address_is_bis,
+                                             'cv_address_apto': line.address_apto,
+                                             'cv_address_place': line.address_place,
+                                             'cv_address_block': line.address_block,
+                                             'cv_address_sandlot': line.address_sandlot,
+                                             })
                 line.write({'message_error': ''})
             except Exception as e:
                 line.write({'state': 'error', 'message_error': "No se puedo crear el CV: " + tools.ustr(e)})

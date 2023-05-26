@@ -12,7 +12,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
     _inherit = 'onsc.legajo.abstract.sync'
     _description = 'Modelo abstracto para la sincronización de legajo con WS4'
 
-    #TODO Borrar este método
+    # TODO Borrar este método
     @api.model
     def syncronize(self, record, log_info=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS4_altaSGH')
