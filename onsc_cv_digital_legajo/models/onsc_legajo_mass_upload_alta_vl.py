@@ -182,17 +182,16 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
             fp.write(binascii.a2b_base64(self.document_file))
             fp.seek(0)
-            values = {}
             workbook = xlrd.open_workbook(fp.name)
             sheet = workbook.sheet_by_index(0)
-
         except Exception:
             raise UserError(_("Archivo inválido"))
+        if sheet.ncols < 53:
+            raise UserError(_("El archivo no tiene el formato correcto. Se espera un total de 53 columnas por fila"))
 
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
         LegajoOffice = self.env['onsc.legajo.office']
         LegajoNorm = self.env['onsc.legajo.norm']
-
         for row_no in range(1, sheet.nrows):
             line = list(map(self.process_value, sheet.row(row_no)))
             global message_error
