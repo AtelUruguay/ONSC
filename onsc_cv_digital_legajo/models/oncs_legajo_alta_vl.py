@@ -399,7 +399,7 @@ class ONSCLegajoAltaVL(models.Model):
                 'cv_address_sandlot': self.cv_address_sandlot,
             })
             if cv and self.create_date >= cv.cv_address_write_date:
-                cv.button_documentary_tovalidate(documentary_validation = 'cv_address')
+                cv.with_context(documentary_validation='cv_address', can_update_contact_cv = True).button_documentary_approve()
 
         # CREDENCIAL CIVICA
         if cv and cv.civical_credential_documentary_validation_state == 'validated':
@@ -415,7 +415,7 @@ class ONSCLegajoAltaVL(models.Model):
                 'credential_number': self.credential_number
             })
             if cv and self.create_date >= cv.cv_address_write_date:
-                cv.button_documentary_tovalidate(documentary_validation='civical_credential')
+                cv.with_context(documentary_validation='civical_credential').button_documentary_approve()
         # ESTADO CIVIL
         if cv and cv.marital_status_documentary_validation_state == 'validated':
             vals.update({
@@ -426,7 +426,7 @@ class ONSCLegajoAltaVL(models.Model):
                 'marital_status_id': self.marital_status_id.id
             })
             if cv and self.create_date >= cv.cv_address_write_date:
-                cv.button_documentary_tovalidate(documentary_validation='marital_status')
+                cv.with_context(documentary_validation='marital_status').button_documentary_approve()
         employee.write(vals)
         cv.write({'is_docket': True, 'is_docket_active': True})
         return employee
