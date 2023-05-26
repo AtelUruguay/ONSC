@@ -10,14 +10,14 @@ _logger = logging.getLogger(__name__)
 class ONSCLegajoAbstractSyncW4(models.AbstractModel):
     _name = 'onsc.legajo.abstract.alta.vl.ws4'
     _inherit = 'onsc.legajo.abstract.sync'
-    _description = 'Modelo abstracto para la sincronización de legajo con WS5'
+    _description = 'Modelo abstracto para la sincronización de legajo con WS4'
 
     @api.model
     def syncronize(self, record, log_info=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS4_altaSGH')
-        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS3_9005")
+        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS4_9005")
 
-        wsclient = self._get_client(parameter, '', integration_error)
+        wsclient = self._get_client(parameter, 'WS4', integration_error)
 
         data = {
             'inciso': record.inciso_id.budget_code,
@@ -208,7 +208,15 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
         with self._cr.savepoint():
+            onsc_legajo_integration_error_WS4_9004 = self.env.ref(
+                "onsc_legajo.onsc_legajo_integration_error_WS4_9004")
             if not hasattr(response, 'altaSGHMovimientoRespuesta'):
+                self.create_new_log(
+                    origin='WS4',
+                    type='error',
+                    integration_log=onsc_legajo_integration_error_WS4_9004,
+                    long_description="No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
+                )
                 return "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
 
             if response.altaSGHMovimientoRespuesta:
@@ -217,8 +225,47 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                         return external_record
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
+                        self.create_new_log(
+                            origin='WS4',
+                            type='error',
+                            integration_log=onsc_legajo_integration_error_WS4_9004,
+                            long_description="Error devuelto por SGH: %s" % tools.ustr(e)
+                        )
                         return "Error devuelto por SGH: %s" % tools.ustr(e)
 
             else:
+                self.create_new_log(
+                    origin='WS4',
+                    type='error',
+                    integration_log=onsc_legajo_integration_error_WS4_9004,
+                    long_description="No se obtuvo respuesta del servicio web"
+                )
                 return "No se obtuvo respuesta del servicio web"
             return False
+
+    def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
+        IntegrationError = self.env['onsc.legajo.integration.error']
+        if hasattr(response, 'altaSGHMovimientoRespuesta'):
+            result_error_code = response.servicioResultado.codigo
+            validation_error = ''
+            for v_error in response.altaSGHMovimientoRespuesta:
+                error = IntegrationError.search([
+                    ('integration_code', '=', integration_error.integration_code),
+                    ('code_error', '=', str(result_error_code))
+                ], limit=1)
+                validation_error += (error.description or v_error.mensaje) + '\n'
+                self.create_new_log(
+                    origin=origin_name,
+                    type='error',
+                    integration_log=error or integration_error,
+                    ws_tuple=False,
+                    long_description=v_error.mensaje)
+            return "Error al enviar datos al WS:" + str(
+                response.servicioResultado.mensaje) + '\n' + validation_error
+        else:
+            return super(ONSCLegajoAbstractSyncW4, self)._process_response_witherror(
+                response,
+                origin_name,
+                integration_error,
+                long_description
+            )

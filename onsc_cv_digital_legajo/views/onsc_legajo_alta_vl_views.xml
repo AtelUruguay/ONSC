@@ -21,12 +21,10 @@
                     <button name="action_call_ws4" class="btn btn-primary"
                             type="object" string="Enviar a SGH"
                             groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
-                            states="borrador,error_sgh"
-                            attrs="{'invisible': ['|',('is_ready_send_sgh', '=', False)]}"/>
+                            states="borrador,error_sgh"/>
                 </header>
                 <xpath expr="//div[hasclass('oe_title')]" position="before">
                     <field name="is_error_synchronization" invisible="1"/>
-                    <field name="is_ready_send_sgh" invisible="1"/>
                     <div class="alert alert-danger"
                          role="alert"
                          attrs="{'invisible': [('is_error_synchronization', '=', False)]}"

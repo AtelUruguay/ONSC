@@ -41,7 +41,7 @@
     </record>
 
     <record id="legajo_ws12" model="ir.cron">
-        <field name="name">Legajo: WS12 Consulta audotoría CGN</field>
+        <field name="name">Legajo: WS12 Consulta auditoría CGN</field>
         <field name="model_id" ref="model_onsc_legajo_abstract_ws12"/>
         <field name="state">code</field>
         <field name="code">model.syncronize()</field>

@@ -91,7 +91,6 @@ class ONSCLegajoAltaVL(models.Model):
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
     is_error_synchronization = fields.Boolean(copy=False)
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
-    is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
     country_code = fields.Char("Código")
     origin_type = fields.Selection(
         [
@@ -168,12 +167,6 @@ class ONSCLegajoAltaVL(models.Model):
             domain = [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True),
                       ('id', '!=', self.env.user.partner_id.id)]
             self.partner_id_domain = json.dumps(domain)
-
-    @api.depends('vacante_ids')
-    def _compute_is_ready_to_send(self):
-        for record in self:
-            vacante = record.vacante_ids[:1]
-            record.is_ready_send_sgh = bool(vacante and vacante.selected)
 
     def action_gafi_ok(self):
         """
@@ -368,8 +361,12 @@ class ONSCLegajoAltaVL(models.Model):
             'cv_birthdate': self.cv_birthdate,
             'cv_sex': self.cv_sex,
         }
-        if cv and employee.user_id.id != cv.partner_id.user_id.id:
-            vals['user_id'] = cv.partner_id.user_id.id
+        if cv.partner_id.user_ids:
+            user_id = cv.partner_id.user_ids[0]
+        else:
+            user_id = cv.partner_id.user_id
+        if cv and employee.user_id.id != user_id.id:
+            vals['user_id'] = user_id.id
         # DOMICILIO
         if cv and cv.cv_address_documentary_validation_state == 'validated':
             vals.update({
@@ -401,12 +398,15 @@ class ONSCLegajoAltaVL(models.Model):
                 'cv_address_block': self.cv_address_block,
                 'cv_address_sandlot': self.cv_address_sandlot,
             })
+            if cv and self.create_date >= cv.cv_address_write_date:
+                cv.button_documentary_tovalidate(documentary_validation = 'cv_address')
+
         # CREDENCIAL CIVICA
         if cv and cv.civical_credential_documentary_validation_state == 'validated':
             vals.update({
-                'uy_citizenship': self.uy_citizenship or cv.uy_citizenship,
-                'crendencial_serie': self.crendencial_serie or cv.crendencial_serie,
-                'credential_number': self.credential_number or cv.credential_number,
+                'uy_citizenship': cv.uy_citizenship,
+                'crendencial_serie': cv.crendencial_serie,
+                'credential_number': cv.credential_number,
             })
         else:
             vals.update({
@@ -414,15 +414,19 @@ class ONSCLegajoAltaVL(models.Model):
                 'crendencial_serie': self.crendencial_serie,
                 'credential_number': self.credential_number
             })
+            if cv and self.create_date >= cv.cv_address_write_date:
+                cv.button_documentary_tovalidate(documentary_validation='civical_credential')
         # ESTADO CIVIL
         if cv and cv.marital_status_documentary_validation_state == 'validated':
             vals.update({
-                'marital_status_id': self.marital_status_id.id or cv.marital_status_id.id
+                'marital_status_id': cv.marital_status_id.id
             })
         else:
             vals.update({
                 'marital_status_id': self.marital_status_id.id
             })
+            if cv and self.create_date >= cv.cv_address_write_date:
+                cv.button_documentary_tovalidate(documentary_validation='marital_status')
         employee.write(vals)
         cv.write({'is_docket': True, 'is_docket_active': True})
         return employee

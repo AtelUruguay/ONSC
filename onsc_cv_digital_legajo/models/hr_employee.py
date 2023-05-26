@@ -242,67 +242,51 @@ class HrEmployee(models.Model):
             record = record.sudo()
             vals = {
                 'image_1920': record.cv_digital_id.partner_id.image_1920,
-                # 'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
-                # 'cv_second_name': record.cv_digital_id.partner_id.cv_second_name,
-                # 'cv_last_name_1': record.cv_digital_id.partner_id.cv_last_name_1,
-                # 'cv_last_name_2': record.cv_digital_id.partner_id.cv_last_name_2,
                 'photo_updated_date': record.cv_digital_id.partner_id.cv_photo_updated_date,
-                # 'cv_birthdate': record.cv_digital_id.partner_id.cv_birthdate,
                 'document_identity_file': record.cv_digital_id.document_identity_file,
                 'document_identity_filename': record.cv_digital_id.document_identity_filename,
-                # 'cv_sex': record.cv_digital_id.cv_sex,
                 'cv_sex_updated_date': record.cv_digital_id.cv_sex_updated_date,
-                # Datos personales
                 'country_of_birth_id': record.cv_digital_id.country_of_birth_id.id,
-                'marital_status_id': record.cv_digital_id.marital_status_id.id,
-                # 'uy_citizenship': record.cv_digital_id.uy_citizenship,
-                'crendencial_serie': record.cv_digital_id.crendencial_serie,
-                'credential_number': record.cv_digital_id.credential_number,
-                'civical_credential_file': record.cv_digital_id.civical_credential_file,
-                'civical_credential_filename': record.cv_digital_id.civical_credential_filename,
-                # 'prefix_phone_id': record.cv_digital_id.prefix_phone_id.id,
-                # 'personal_phone': record.cv_digital_id.personal_phone,
-                # 'prefix_mobile_phone_id': record.cv_digital_id.prefix_mobile_phone_id.id,
-                # 'mobile_phone': record.cv_digital_id.mobile_phone,
-                # 'email': record.cv_digital_id.email,
-                # 'cjppu_affiliate_number': record.cv_digital_id.cjppu_affiliate_number,
-                # 'professional_resume': record.cv_digital_id.professional_resume,
-                # 'user_linkedIn': record.cv_digital_id.user_linkedIn,
-                # 'is_driver_license': record.cv_digital_id.is_driver_license,
+                # ESTADO CIVIL
+                # 'marital_status_id': record.cv_digital_id.marital_status_id.id,
+                # CREDENCIAL CIVICA
+                # 'crendencial_serie': record.cv_digital_id.crendencial_serie,
+                # 'credential_number': record.cv_digital_id.credential_number,
+                # 'civical_credential_file': record.cv_digital_id.civical_credential_file,
+                # 'civical_credential_filename': record.cv_digital_id.civical_credential_filename,
                 'drivers_license_ids': record._get_driver_licences_orm(),
                 'cv_expiration_date': record.cv_digital_id.cv_expiration_date,
                 'status_civil_date': record.cv_digital_id.status_civil_date,
                 # GENERO
-                'cv_gender_id': record.cv_digital_id.cv_gender_id.id,
-                'cv_gender2': record.cv_digital_id.cv_gender2,
-                'cv_gender_record_file': record.cv_digital_id.cv_gender_record_file,
-                'cv_gender_record_filename': record.cv_digital_id.cv_gender_record_filename,
-                # 'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
-                'gender_date': record.cv_digital_id.gender_date,
+                # 'cv_gender_id': record.cv_digital_id.cv_gender_id.id,
+                # 'cv_gender2': record.cv_digital_id.cv_gender2,
+                # 'cv_gender_record_file': record.cv_digital_id.cv_gender_record_file,
+                # 'cv_gender_record_filename': record.cv_digital_id.cv_gender_record_filename,
+                # # 'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
+                # 'gender_date': record.cv_digital_id.gender_date,
                 # RAZA
-                'cv_race2': record.cv_digital_id.cv_race2,
-                'cv_race_ids': record.cv_digital_id.cv_race_ids,
-                'cv_first_race_id': record.cv_digital_id.cv_first_race_id,
-                'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
-                'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
-                'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
-                'afro_descendant_date': record.cv_digital_id.afro_descendant_date,
+                # 'cv_race2': record.cv_digital_id.cv_race2,
+                # 'cv_race_ids': record.cv_digital_id.cv_race_ids,
+                # 'cv_first_race_id': record.cv_digital_id.cv_first_race_id,
+                # 'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
+                # 'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
+                # 'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
+                # 'afro_descendant_date': record.cv_digital_id.afro_descendant_date,
 
                 # SALUD LABORAL
-                'is_occupational_health_card': record.cv_digital_id.is_occupational_health_card,
-                'occupational_health_card_date': record.cv_digital_id.occupational_health_card_date,
-                'occupational_health_card_file': record.cv_digital_id.occupational_health_card_file,
-                'occupational_health_card_filename': record.cv_digital_id.occupational_health_card_filename,
+                # 'is_occupational_health_card': record.cv_digital_id.is_occupational_health_card,
+                # 'occupational_health_card_date': record.cv_digital_id.occupational_health_card_date,
+                # 'occupational_health_card_file': record.cv_digital_id.occupational_health_card_file,
+                # 'occupational_health_card_filename': record.cv_digital_id.occupational_health_card_filename,
                 # APTITUD MEDICA DEPORTIVA
-                'is_medical_aptitude_certificate_status': record.cv_digital_id.is_medical_aptitude_certificate_status,
-                'medical_aptitude_certificate_date': record.cv_digital_id.medical_aptitude_certificate_date,
-                'medical_aptitude_certificate_file': record.cv_digital_id.medical_aptitude_certificate_file,
-                'medical_aptitude_certificate_filename': record.cv_digital_id.medical_aptitude_certificate_filename,
+                # 'is_medical_aptitude_certificate_status': record.cv_digital_id.is_medical_aptitude_certificate_status,
+                # 'medical_aptitude_certificate_date': record.cv_digital_id.medical_aptitude_certificate_date,
+                # 'medical_aptitude_certificate_file': record.cv_digital_id.medical_aptitude_certificate_file,
+                # 'medical_aptitude_certificate_filename': record.cv_digital_id.medical_aptitude_certificate_filename,
                 # Victima de Delitos violentos
-                'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
-                'is_victim_violent': record.cv_digital_id.is_victim_violent,
-                # 'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
-                'relationship_victim_violent_filename': record.cv_digital_id.relationship_victim_violent_filename,
+                # 'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
+                # 'is_victim_violent': record.cv_digital_id.is_victim_violent,
+                # 'relationship_victim_violent_filename': record.cv_digital_id.relationship_victim_violent_filename,
                 # Domicilio
                 'country_id': record.cv_digital_id.country_id.id,
                 'cv_address_street_id': record.cv_digital_id.cv_address_street_id.id,
@@ -325,24 +309,13 @@ class HrEmployee(models.Model):
                 'address_receipt_file_name': record.cv_digital_id.partner_id.address_receipt_file_name,
 
                 # Discapacidad
-                # 'allow_content_public': record.cv_digital_id.allow_content_public,
-                # 'situation_disability': record.cv_digital_id.situation_disability,
-                'people_disabilitie': record.cv_digital_id.people_disabilitie,
-                'document_certificate_file': record.cv_digital_id.document_certificate_file,
-                'document_certificate_filename': record.cv_digital_id.document_certificate_filename,
-                'certificate_date': record.cv_digital_id.certificate_date,
-                'to_date': record.cv_digital_id.to_date,
-                # 'see': record.cv_digital_id.see,
-                # 'hear': record.cv_digital_id.hear,
-                # 'walk': record.cv_digital_id.walk,
-                # 'speak': record.cv_digital_id.speak,
-                # 'realize': record.cv_digital_id.realize,
-                # 'lear': record.cv_digital_id.lear,
-                # 'interaction': record.cv_digital_id.interaction,
-                # 'is_need_other_support': record.cv_digital_id.is_need_other_support,
-                # 'need_other_support': record.cv_digital_id.need_other_support,
-                'disability_date': record.cv_digital_id.disability_date,
-                'type_support_ids': record._get_type_support_orm(),
+                # 'people_disabilitie': record.cv_digital_id.people_disabilitie,
+                # 'document_certificate_file': record.cv_digital_id.document_certificate_file,
+                # 'document_certificate_filename': record.cv_digital_id.document_certificate_filename,
+                # 'certificate_date': record.cv_digital_id.certificate_date,
+                # 'to_date': record.cv_digital_id.to_date,
+                # 'disability_date': record.cv_digital_id.disability_date,
+                # 'type_support_ids': record._get_type_support_orm(),
                 # Datos del legajo
                 'emergency_service_id': record.cv_digital_id.emergency_service_id.id,
                 'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
@@ -354,10 +327,71 @@ class HrEmployee(models.Model):
                 'information_contact_ids': record._get_information_contact_orm(),
                 'health_department_id': record.cv_digital_id.health_department_id.id,
                 'health_provider_id': record.cv_digital_id.health_provider_id.id,
-                # Extras
-                # 'last_modification_date': record.cv_digital_id.last_modification_date,
-
             }
+            # ESTADO CIVIL
+            if record.cv_digital_id.marital_status_documentary_validation_state == 'validated':
+                vals.update({
+                    'marital_status_id': record.cv_digital_id.marital_status_id.id,
+                })
+            # CREDENCIAL CIVICA
+            if record.cv_digital_id.civical_credential_documentary_validation_state == 'validated':
+                vals.update({
+                    'crendencial_serie': record.cv_digital_id.crendencial_serie,
+                    'credential_number': record.cv_digital_id.credential_number,
+                    'civical_credential_file': record.cv_digital_id.civical_credential_file,
+                    'civical_credential_filename': record.cv_digital_id.civical_credential_filename,
+                })
+            # GENERO
+            if record.cv_digital_id.gender_documentary_validation_state == 'validated':
+                vals.update({
+                    'cv_gender_id': record.cv_digital_id.cv_gender_id.id,
+                    'cv_gender2': record.cv_digital_id.cv_gender2,
+                    'cv_gender_record_file': record.cv_digital_id.cv_gender_record_file,
+                    'cv_gender_record_filename': record.cv_digital_id.cv_gender_record_filename,
+                    # 'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
+                    'gender_date': record.cv_digital_id.gender_date,
+                })
+            # IDENTIDAD ÉTNICO RACIAL
+            if record.cv_digital_id.cv_race_documentary_validation_state == 'validated':
+                vals.update({
+                    'cv_race2': record.cv_digital_id.cv_race2,
+                    'cv_race_ids': record.cv_digital_id.cv_race_ids,
+                    'cv_first_race_id': record.cv_digital_id.cv_first_race_id,
+                    'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
+                    'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
+                    'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
+                    'afro_descendant_date': record.cv_digital_id.afro_descendant_date,
+                })
+            if record.cv_digital_id.occupational_health_card_documentary_validation_state == 'validated':
+                vals.update({
+                    'is_occupational_health_card': record.cv_digital_id.is_occupational_health_card,
+                    'occupational_health_card_date': record.cv_digital_id.occupational_health_card_date,
+                    'occupational_health_card_file': record.cv_digital_id.occupational_health_card_file,
+                    'occupational_health_card_filename': record.cv_digital_id.occupational_health_card_filename,
+                })
+            if record.cv_digital_id.medical_aptitude_certificate_documentary_validation_state == 'validated':
+                vals.update({
+                    'is_medical_aptitude_certificate_status': record.cv_digital_id.is_medical_aptitude_certificate_status,
+                    'medical_aptitude_certificate_date': record.cv_digital_id.medical_aptitude_certificate_date,
+                    'medical_aptitude_certificate_file': record.cv_digital_id.medical_aptitude_certificate_file,
+                    'medical_aptitude_certificate_filename': record.cv_digital_id.medical_aptitude_certificate_filename,
+                })
+            if record.cv_digital_id.victim_violent_documentary_validation_state == 'validated':
+                vals.update({
+                    'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
+                    'is_victim_violent': record.cv_digital_id.is_victim_violent,
+                    'relationship_victim_violent_filename': record.cv_digital_id.relationship_victim_violent_filename,
+                })
+            if record.cv_digital_id.disabilitie_documentary_validation_state == 'validated':
+                vals.update({
+                    'people_disabilitie': record.cv_digital_id.people_disabilitie,
+                    'document_certificate_file': record.cv_digital_id.document_certificate_file,
+                    'document_certificate_filename': record.cv_digital_id.document_certificate_filename,
+                    'certificate_date': record.cv_digital_id.certificate_date,
+                    'to_date': record.cv_digital_id.to_date,
+                    'disability_date': record.cv_digital_id.disability_date,
+                    'type_support_ids': record._get_type_support_orm(),
+                })
             record.suspend_security().write(vals)
 
     def _syncronize_data(self):
