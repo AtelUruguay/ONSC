@@ -3,8 +3,7 @@ import datetime
 import json
 import logging
 import tempfile
-from datetime import timedelta
-
+from odoo.exceptions import ValidationError
 from odoo import fields, models, api, _, tools
 from odoo.exceptions import UserError
 from odoo.osv import expression
@@ -26,7 +25,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         res = super(ONSCMassUploadLegajoAltaVL, self).default_get(fields)
         recursos_humanos_inciso = self.user_has_groups(
             'onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso')
-        recursos_humanos_ue = self.user_has_groups('onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue')
+        recursos_humanos_ue = self.user_has_groups(
+            'onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue')
         if recursos_humanos_inciso or recursos_humanos_ue:
             res['inciso_id'] = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         if recursos_humanos_ue:
@@ -311,6 +311,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 MassLine.create_line(values)
 
     def action_process(self):
+        if not self.line_ids:
+            raise ValidationError(_('No hay lineas para procesar'))
+
         Partner = self.env['res.partner']
         AltaVL = self.env['onsc.legajo.alta.vl']
         CVDigital = self.env['onsc.cv.digital']

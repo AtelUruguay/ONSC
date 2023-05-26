@@ -68,10 +68,6 @@
                                 <field name="line_ids">
                                     <tree create="false" delete="false">
                                         <field name="document_number"/>
-                                        <field name="first_name"/>
-                                        <field name="second_name"/>
-                                        <field name="first_surname"/>
-                                        <field name="second_surname"/>
                                         <field name="message_error" readonly="1"/>
                                     </tree>
                                 </field>
