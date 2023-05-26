@@ -70,6 +70,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     line_ids = fields.One2many('onsc.legajo.mass.upload.line.alta.vl', 'mass_upload_id', string='Líneas',
                                domain=[('state', '!=', 'done')])
     line_count = fields.Integer(compute='_compute_line_count', string='Cantidad de lineas')
+    line2process_qty = fields.Integer(compute='_compute_line_count', string='Cantidad de lineas a procesar')
     lines_processed_ids = fields.One2many('onsc.legajo.mass.upload.line.alta.vl', 'mass_upload_id',
                                           domain=[('state', '=', 'done')], string='Líneas procesadas')
     state = fields.Selection([('draft', 'Borrador'), ('partially', 'Procesado con Error'), ('done', 'Procesado')],
@@ -98,10 +99,12 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     raise UserError(
                         "Ya existe una carga masiva con el mismo ID de ejecución, inciso y unidad ejecutora")
 
-    @api.depends('line_ids')
+    @api.depends('line_ids','lines_processed_ids')
     def _compute_line_count(self):
         for rec in self:
-            rec.line_count = len(rec.line_ids) + len(rec.lines_processed_ids)
+            _process_qty = len(rec.line_ids)
+            rec.line2process_qty = _process_qty
+            rec.line_count = _process_qty + len(rec.lines_processed_ids)
 
     @api.depends('altas_vl_ids')
     def _compute_altas_vl_count(self):
