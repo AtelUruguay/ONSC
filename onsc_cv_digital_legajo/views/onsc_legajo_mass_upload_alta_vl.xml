@@ -19,6 +19,11 @@
                                 type="object"
                                 string="Procesar"
                         />
+                        <button
+                                name="syncronize_ws4"
+                                type="object"
+                                string="WS4"
+                        />
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
@@ -61,7 +66,8 @@
                                 <field name="document_file" filename="document_filename"/>
                                 <field name="document_filename" invisible="1"/>
                                 <field name="create_date" string="Creado el"/>
-                                <field name="create_uid" string="Creado por"/>
+                                <field name="create_uid" string="Creado por"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             </group>
                         </group>
                         <notebook>

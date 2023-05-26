@@ -331,13 +331,14 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         'cv_document_type_id': cv_document_type_id,
                         'is_partner_cv': True,
                     }
-                    partner = Partner.create(data_partner)
+                    partner = Partner.sudo().create(data_partner)
                 partner.update_dnic_values()
-                line.write({'first_name': partner.cv_first_name,
+                line.sudo().write({'first_name': partner.cv_first_name,
                             'second_name': partner.cv_second_name,
                             'first_surname': partner.cv_last_name_1,
                             'second_surname': partner.cv_last_name_2,
                             'name_ci': partner.cv_dnic_full_name,
+                            'partner_id': partner.id,
                             'message_error': '',
                             })
             except Exception as e:
@@ -346,7 +347,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             cv_digital = CVDigital.sudo().search([('partner_id', '=', partner.id)], limit=1)
             try:
                 if not cv_digital:
-                    CVDigital.create({'partner_id': partner.id,
+                    CVDigital.sudo().create({'partner_id': partner.id,
                                       'personal_phone': line.personal_phone,
                                       'mobile_phone': line.mobile_phone,
                                       'email': line.email,
@@ -423,8 +424,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     alta_vl_id.unlink()
                 continue
             try:
-                # TODO cambiar esta logica.Se debe llamar el WS4 de todas las lineas q creen un alta VL.No presupuestales
-                alta_vl_id.action_call_ws4()
+                self.syncronize_multi_ws4()
             except:
                 continue
         if not self.line_ids:
@@ -445,6 +445,14 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         if descriptor4_id:
             args = expression.AND([[('dsc4Id', '=', descriptor4_id)], args])
         return self.env['onsc.legajo.budget.item'].sudo().search(args, limit=1)
+
+    def syncronize_ws4(self):
+        self.search([]).mapped('altas_vl_ids').action_call_multi_ws4()
+
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'draft'):
+            raise ValidationError(_("Solo se pueden eliminar registros en estado borrador"))
+        return super(ONSCMassUploadLegajoAltaVL, self).unlink()
 
 
 class ONSCMassUploadLineLegajoAltaVL(models.Model):
@@ -480,6 +488,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     first_surname = fields.Char(string='Primer apellido')
     second_surname = fields.Char(string='Segundo apellido')
     name_ci = fields.Char(string='Nombre en cédula')
+    partner_id = fields.Many2one('res.partner', string='Contacto')
     cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], u'Sexo')
     birth_date = fields.Date(string='Fecha de nacimiento')
     document_country_id = fields.Many2one('res.country', string='País del documento')
