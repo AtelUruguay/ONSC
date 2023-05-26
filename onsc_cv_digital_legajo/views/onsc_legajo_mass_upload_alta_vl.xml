@@ -69,12 +69,6 @@
                                 <field name="line_ids">
                                     <tree create="false" delete="false">
                                         <field name="document_number"/>
-                                        <field name="first_name" attrs="{'invisible': [('first_name', '=', False)]}"/>
-                                        <field name="second_name" attrs="{'invisible': [('second_name', '=', False)]}"/>
-                                        <field name="first_surname"
-                                               attrs="{'invisible': [('first_surname', '=', False)]}"/>
-                                        <field name="second_surname"
-                                               attrs="{'invisible': [('second_surname', '=', False)]}"/>
                                         <field name="message_error" readonly="1"/>
                                     </tree>
                                 </field>
@@ -168,17 +162,17 @@
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             </group>
                             <group>
-                                <field name="descriptor1_id"
+                                <field name="descriptor1_id" domain="descriptor1_domain_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor2_id" domain="descriptor2_domain_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor3_id" domain="descriptor3_domain_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor4_id" domain="descriptor4_domain_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor1_domain_id" invisible="1"/>
-                                <field name="descriptor2_id"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor2_domain_id" invisible="1"/>
-                                <field name="descriptor3_id"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor3_domain_id" invisible="1"/>
-                                <field name="descriptor4_id"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor4_domain_id" invisible="1"/>
                                 <field name="nroPuesto"/>
                                 <field name="nroPlaza"/>
