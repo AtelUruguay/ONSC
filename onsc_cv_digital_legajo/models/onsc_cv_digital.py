@@ -644,7 +644,7 @@ class ONSCCVDigital(models.Model):
         vals = {
             '%s_documentary_validation_state' % documentary_field: state,
             '%s_documentary_reject_reason' % documentary_field: reject_reason,
-            '%s_documentary_validation_date' % documentary_field: fields.Date.today(),
+            '%s_documentary_validation_date' % documentary_field: fields.Datetime.now(),
             '%s_documentary_user_id' % documentary_field: self.env.user.id,
         }
         if not self._context.get('no_update_cv_calls'):
@@ -657,7 +657,9 @@ class ONSCCVDigital(models.Model):
                 last_write_date = eval('record.%s_write_date' % documentary_field)
                 custom_vals = vals.copy()
                 custom_vals['%s_write_date' % documentary_field] = fields.Datetime.now()
-                calls.filtered(lambda x: (eval('x.%s_write_date' % (documentary_field)) <= last_write_date or eval('x.%s_write_date' % (documentary_field)) is False) and x.gral_info_documentary_validation_state != 'validated').write(custom_vals)
+                calls.filtered(lambda x: x.create_date >= last_write_date).write(custom_vals)
+                # calls.filtered(lambda x: (eval('x.%s_write_date' % (documentary_field)) <= last_write_date or eval('x.%s_write_date' % (documentary_field)) is False) and x.gral_info_documentary_validation_state != 'validated').write(custom_vals)
+                # calls.filtered(lambda x: (eval('x.%s_write_date' % (documentary_field)) <= last_write_date or eval('x.%s_write_date' % (documentary_field)) is False) and x.gral_info_documentary_validation_state != 'validated').write(custom_vals)
         self.write(vals)
 
     def _update_cv_digital_origin_documentary_values(self, documentary_field, vals):
