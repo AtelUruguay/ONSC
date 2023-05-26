@@ -8,24 +8,20 @@
                 <form string="Alta masiva de vínculo laboral">
                     <header>
                         <button
+                                name="action_process_excel"
+                                type="object"
+                                class="oe_highlight"
+                                string="Cargar Líneas del Excel"
+                                attrs="{'invisible': [('state', '=', 'done')]}"
+                        />
+                        <button
                                 name="action_process"
                                 type="object"
                                 string="Procesar"
-                                attrs="{'invisible': [('state', '=', 'done')]}"
                         />
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-                        <widget
-                                name="web_ribbon"
-                                title="Procesado con errores"
-                                bg_color="bg-danger"
-                                attrs="{'invisible': [('state', 'in', ['draft','done'])]}"/>
-                        <widget
-                                name="web_ribbon"
-                                title="Procesado con éxito"
-                                bg_color="bg-success"
-                                attrs="{'invisible': [('state', '!=', 'done')]}"/>
                         <div class="oe_button_box" name="button_box">
                             <button name="action_view_lines" type="object" class="oe_stat_button" icon="fa-bars">
                                 <div class="o_form_field o_stat_info">
@@ -35,6 +31,15 @@
                                     <span class="o_stat_text">Lineas de Alta</span>
                                 </div>
                             </button>
+                            <button name="action_view_altas_vl_ids" type="object" class="oe_stat_button" icon="fa-bars" attrs="{'invisible': [('altas_vl_ids','=',False)]}">
+                                <div class="o_form_field o_stat_info">
+                                    <span class="o_stat_value">
+                                        <field name="altas_vl_count" widget="statinfo" nolabel="1"/>
+                                    </span>
+                                    <span class="o_stat_text">Altas VL</span>
+                                </div>
+                            </button>
+
                         </div>
 
                         <group>
@@ -46,6 +51,7 @@
                                 <field name="operating_unit_id" domain="operating_unit_id_domain"
                                        required="1" attrs="{'readonly': [('is_operating_unit_readonly', '!=', False)]}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="altas_vl_ids" invisible="1"/>
                             </group>
                             <group>
                                 <field name="operating_unit_id_domain" invisible="1"/>
@@ -61,19 +67,19 @@
                             <page string="Líneas a procesar" attrs="{'invisible': [('state', '==', 'done')]}">
                                 <field name="line_ids">
                                     <tree create="false" delete="false">
-                                        <field name="document_idenfication"/>
+                                        <field name="document_number"/>
                                         <field name="first_name"/>
                                         <field name="second_name"/>
                                         <field name="first_surname"/>
                                         <field name="second_surname"/>
-                                        <field name="message_error"/>
+                                        <field name="message_error" readonly="1"/>
                                     </tree>
                                 </field>
                             </page>
                             <page string="Líneas procesadas" attrs="{'invisible': [('state', '==', 'draft')]}">
-                                <field name="lines_processed_ids">
+                                <field name="lines_processed_ids" readonly="1">
                                     <tree create="false" delete="false">
-                                        <field name="document_idenfication"/>
+                                        <field name="document_number"/>
                                         <field name="first_name"/>
                                         <field name="second_name"/>
                                         <field name="first_surname"/>
@@ -96,8 +102,8 @@
                     <field name="id_ejecucion"/>
                     <field name="inciso_id"/>
                     <field name="operating_unit_id"/>
-                    <field name="create_date"/>
-                    <field name="create_uid"/>
+                    <field name="create_date" string="Creado el"/>
+                    <field name="create_uid" string="Creado por"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -113,21 +119,16 @@
                         <group>
                             <group>
                                 <field name="state"/>
-                                <field name="document_idenfication"/>
+                                <field name="document_number"/>
                                 <field name="first_name" required="1"/>
                                 <field name="second_name"/>
                                 <field name="first_surname" required="1"/>
                                 <field name="second_surname"/>
-                                <field name="first_surname_adopted"/>
-                                <field name="second_surname_adopted"/>
                                 <field name="name_ci"/>
                                 <field name="sex"/>
                                 <field name="birth_date"/>
                                 <field name="document_country_id"
                                     options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="document_type_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="document_number"/>
                                 <field name="marital_status_id"
                                     options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="birth_country_id"
@@ -158,14 +159,7 @@
                                 <field name="date_start"/>
                                 <field name="income_mechanism_id"
                                     options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="call_number"/>
-                                <field name="inciso_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="is_inciso_readonly" invisible="1"/>
-                                <field name="operating_unit_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="is_operating_unit_readonly" invisible="1"/>
-                                <field name="operating_unit_id_domain" invisible="1"/>
+                                <field name="call_number"/>                                
                                 <field name="program"/>
                                 <field name="project"/>
                                 <field name="is_reserva_sgh"/>
@@ -214,7 +208,7 @@
                                 <field name="additional_information"/>
                                 <field name="document_file" filename="document_filename"/>
                                 <field name="document_filename" invisible="1"/>
-                                <field name="message_error"/>
+                                <field name="message_error" readonly="1"/>
                             </group>
                         </group>
                     </sheet>
@@ -231,14 +225,12 @@
                       decoration-info="state == 'done'" create="0" delete="0">
                     <field name="mass_upload_id"/>
                     <field name="state"/>
-                    <field name="message_error"/>
-                    <field name="document_idenfication"/>
+                    <field name="message_error" readonly="1"/>
+                    <field name="document_number"/>
                     <field name="first_name" required="1"/>
                     <field name="second_name"/>
                     <field name="first_surname" required="1"/>
                     <field name="second_surname"/>
-                    <field name="first_surname_adopted"/>
-                    <field name="second_surname_adopted"/>
                     <field name="name_ci"/>
                     <field name="sex"/>
                     <field name="birth_date"/>
@@ -251,10 +243,9 @@
             <field name="model">onsc.legajo.mass.upload.line.alta.vl</field>
             <field name="arch" type="xml">
                 <search>
-                    <field name="document_idenfication"/>
+                    <field name="document_number"/>
                     <field name="first_name"/>
                     <field name="first_surname"/>
-                    <field name="document_number"/>
                     <field name="state"/>
                     <filter string="Error" name="error" domain="[('state','=','error')]"/>
                     <filter string="Procesado" name="processed" domain="[('state','=','done')]"/>

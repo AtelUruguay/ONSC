@@ -245,7 +245,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.model
     def syncronize_ws4(self, log_info=False):
-        self._check_required_fieds_ws4()
+        self.check_required_fieds_ws4()
         response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
             log_info=log_info).suspend_security().syncronize(self)
         if not isinstance(response, str):
@@ -262,7 +262,7 @@ class ONSCLegajoAltaVL(models.Model):
             self.state = 'error_sgh'
             self.error_message_synchronization = response
 
-    def _check_required_fieds_ws4(self):
+    def check_required_fieds_ws4(self):
         for record in self:
             message = []
             for required_field in required_fields:
@@ -287,7 +287,7 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append(record._fields['nroPlaza'].string)
             if record.income_mechanism_id.is_call_number_required and not record.call_number:
                 message.append(record._fields['call_number'].string)
-            if not record.attached_document_ids:
+            if not record.attached_document_ids and not self.env.context.get('not_check_attached_document', False):
                 message.append(_("Debe haber al menos un documento adjunto"))
             if record.health_provider_id and record.health_provider_id.code:
                 try:

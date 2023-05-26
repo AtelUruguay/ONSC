@@ -22,6 +22,7 @@ ONSC CV Digital - Legajo
         'views/onsc_cv_digital_validation_views.xml',
         'views/onsc_legajo_views.xml',
         'views/onsc_legajo_alta_vl_views.xml',
+        'views/onsc_legajo_mass_upload_alta_vl.xml',
         'views/onsc_cv_digital_legajo_menuitems.xml',
         'report/onsc_cv_digital_report.xml'
     ],
