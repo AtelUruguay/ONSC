@@ -93,7 +93,21 @@ class ONSCLegajoAltaVL(models.Model):
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
     country_code = fields.Char("Código")
+    origin_type = fields.Selection(
+        [
+            ('M', 'Manual'),
+            ('P', 'Proceso')
+        ],
+        string='Origen', compute='_compute_origin_type', store=True)
+    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='Modo de creación')
 
+    @api.depends('mass_upload_id')
+    def _compute_origin_type(self):
+        for record in self:
+            if record.mass_upload_id:
+                record.origin_type = 'P'
+            else:
+                record.mass_upload_id = 'M'
     def action_call_ws1(self):
         return self.syncronize_ws1(log_info=True)
 
