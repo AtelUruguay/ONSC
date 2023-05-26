@@ -12,7 +12,7 @@
                                 type="object"
                                 class="oe_highlight"
                                 string="Cargar Líneas del Excel"
-                                attrs="{'invisible': [('state', '=', 'done')]}"
+                                attrs="{'invisible': [('state', '!=', 'draft')]}"
                         />
                         <button
                                 name="action_process"
@@ -31,7 +31,8 @@
                                     <span class="o_stat_text">Lineas de Alta</span>
                                 </div>
                             </button>
-                            <button name="action_view_altas_vl_ids" type="object" class="oe_stat_button" icon="fa-bars" attrs="{'invisible': [('altas_vl_ids','=',False)]}">
+                            <button name="action_view_altas_vl_ids" type="object" class="oe_stat_button" icon="fa-bars"
+                                    attrs="{'invisible': [('altas_vl_ids','=',False)]}">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_value">
                                         <field name="altas_vl_count" widget="statinfo" nolabel="1"/>
@@ -68,10 +69,6 @@
                                 <field name="line_ids">
                                     <tree create="false" delete="false">
                                         <field name="document_number"/>
-                                        <field name="first_name"/>
-                                        <field name="second_name"/>
-                                        <field name="first_surname"/>
-                                        <field name="second_surname"/>
                                         <field name="message_error" readonly="1"/>
                                     </tree>
                                 </field>
@@ -118,21 +115,20 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="state"/>
                                 <field name="document_number"/>
-                                <field name="first_name" required="1"/>
-                                <field name="second_name"/>
-                                <field name="first_surname" required="1"/>
-                                <field name="second_surname"/>
-                                <field name="name_ci"/>
-                                <field name="sex"/>
+                                <field name="first_name" readonly="1"/>
+                                <field name="second_name" readonly="1"/>
+                                <field name="first_surname" readonly="1"/>
+                                <field name="second_surname" readonly="1"/>
+                                <field name="name_ci" readonly="1"/>
+                                <field name="cv_sex"/>
                                 <field name="birth_date"/>
                                 <field name="document_country_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="marital_status_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="birth_country_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="citizenship"/>
                                 <field name="crendencial_serie"/>
                                 <field name="credential_number"/>
@@ -140,15 +136,15 @@
                                 <field name="mobile_phone"/>
                                 <field name="email"/>
                                 <field name="address_state_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="address_location_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="address_street_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="address_street2_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="address_street3_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="address_zip"/>
                                 <field name="address_nro_door"/>
                                 <field name="address_is_bis"/>
@@ -158,43 +154,43 @@
                                 <field name="address_sandlot"/>
                                 <field name="date_start"/>
                                 <field name="income_mechanism_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="call_number"/>                                
-                                <field name="program"/>
-                                <field name="project"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="call_number"/>
+                                <field name="program_project_id" context="{'show_project_program':True}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="is_reserva_sgh"/>
                                 <field name="regime_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             </group>
                             <group>
-                                <field name="descriptor1_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor1_id" domain="descriptor1_domain_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor2_id" domain="descriptor2_domain_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor3_id" domain="descriptor3_domain_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="descriptor4_id" domain="descriptor4_domain_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor1_domain_id" invisible="1"/>
-                                <field name="descriptor2_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor2_domain_id" invisible="1"/>
-                                <field name="descriptor3_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor3_domain_id" invisible="1"/>
-                                <field name="descriptor4_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="descriptor4_domain_id" invisible="1"/>
                                 <field name="nroPuesto"/>
                                 <field name="nroPlaza"/>
                                 <field name="department_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="department_id_domain" invisible="1"/>
                                 <field name="security_job_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="occupation_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="date_income_public_administration"/>
                                 <field name="inactivity_years"/>
                                 <field name="graduation_date"/>
                                 <field name="contract_expiration_date"/>
                                 <field name="reason_description"/>
                                 <field name="norm_id"
-                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="norm_type"/>
                                 <field name="norm_number"/>
                                 <field name="norm_year"/>
@@ -206,8 +202,6 @@
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                        context="{'show_only_description':True}"/>
                                 <field name="additional_information"/>
-                                <field name="document_file" filename="document_filename"/>
-                                <field name="document_filename" invisible="1"/>
                                 <field name="message_error" readonly="1"/>
                             </group>
                         </group>
@@ -227,12 +221,12 @@
                     <field name="state"/>
                     <field name="message_error" readonly="1"/>
                     <field name="document_number"/>
-                    <field name="first_name" required="1"/>
+                    <field name="first_name"/>
                     <field name="second_name"/>
-                    <field name="first_surname" required="1"/>
+                    <field name="first_surname"/>
                     <field name="second_surname"/>
                     <field name="name_ci"/>
-                    <field name="sex"/>
+                    <field name="cv_sex"/>
                     <field name="birth_date"/>
                 </tree>
             </field>
@@ -259,6 +253,7 @@
             <field name="type">ir.actions.act_window</field>
             <field name="res_model">onsc.legajo.mass.upload.alta.vl</field>
             <field name="view_mode">tree,form</field>
+            <field name="context">{'is_from_menu': True}</field>
         </record>
 
     </data>

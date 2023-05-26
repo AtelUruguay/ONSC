@@ -17,6 +17,6 @@
               name="Alta masiva VL"
               parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
               action="onsc_legajo_mass_upload_alta_vl_action"
-              groups="onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_carga_masiva_alta_vl_consulta_altas_vl,onsc_legajo.group_legajo_carga_masiva_alta_vl_administrar_altas_vl"
+              groups="onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso,onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue,onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_consulta_altas_vl,onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_administrar_altas_vl"
               sequence="100"/>
 </odoo>

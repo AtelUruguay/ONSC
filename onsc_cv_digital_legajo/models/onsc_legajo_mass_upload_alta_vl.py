@@ -3,8 +3,7 @@ import datetime
 import json
 import logging
 import tempfile
-from datetime import timedelta
-
+from odoo.exceptions import ValidationError
 from odoo import fields, models, api, _, tools
 from odoo.exceptions import UserError
 from odoo.osv import expression
@@ -25,8 +24,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     def default_get(self, fields):
         res = super(ONSCMassUploadLegajoAltaVL, self).default_get(fields)
         recursos_humanos_inciso = self.user_has_groups(
-            'onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso')
-        recursos_humanos_ue = self.user_has_groups('onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue')
+            'onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso')
+        recursos_humanos_ue = self.user_has_groups(
+            'onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue')
         if recursos_humanos_inciso or recursos_humanos_ue:
             res['inciso_id'] = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         if recursos_humanos_ue:
@@ -34,16 +34,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         return res
 
     def _get_domain(self, args):
-        args = expression.AND([[
-            ('partner_id', '!=', self.env.user.partner_id.id)
-        ], args])
-        if self.user_has_groups('onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso'):
+        if self.user_has_groups('onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND([[
                     ('inciso_id', '=', inciso_id.id)
                 ], args])
-        elif self.user_has_groups('onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue'):
+        elif self.user_has_groups('onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
@@ -119,12 +116,12 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 rec.is_operating_unit_readonly = True
             else:
                 rec.is_inciso_readonly = (self.user_has_groups(
-                    'onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
-                    'onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue')) and not self.user_has_groups(
-                    'onsc_legajo.group_legajo_carga_masiva_alta_vl_administrar_altas_vl')
+                    'onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
+                    'onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue')) and not self.user_has_groups(
+                    'onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_administrar_altas_vl')
                 rec.is_operating_unit_readonly = self.user_has_groups(
-                    'onsc_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue') and not self.user_has_groups(
-                    'onsc_legajo.group_legajo_carga_masiva_alta_vl_administrar_altas_vl')
+                    'onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue') and not self.user_has_groups(
+                    'onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_administrar_altas_vl')
 
     @api.depends('inciso_id')
     def _compute_operating_unit_id_domain(self):
@@ -150,9 +147,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             'view_mode': 'tree,form',
             'domain': [('id', 'in', self.line_ids.ids + self.lines_processed_ids.ids)],
             'views': [
-                [self.env.ref('onsc_legajo.view_onsc_legajo_mass_upload_line_alta_vl_tree').id, 'tree'],
-                [self.env.ref('onsc_legajo.view_onsc_legajo_mass_upload_line_alta_vl_form').id, 'form'],
-                [self.env.ref('onsc_legajo.view_onsc_legajo_mass_upload_line_alta_vl_search').id, 'search'],
+                [self.env.ref('onsc_cv_digital_legajo.view_onsc_legajo_mass_upload_line_alta_vl_tree').id, 'tree'],
+                [self.env.ref('onsc_cv_digital_legajo.view_onsc_legajo_mass_upload_line_alta_vl_form').id, 'form'],
+                [self.env.ref('onsc_cv_digital_legajo.view_onsc_legajo_mass_upload_line_alta_vl_search').id, 'search'],
             ]
         }
 
@@ -165,7 +162,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             'domain': [('id', 'in', self.altas_vl_ids.ids)],
             'views': [
                 [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_tree').id, 'tree'],
-                [self.env.ref('onsc_legajo.onsc_legajo_alta_vl_form').id, 'form'],
+                [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_form').id, 'form'],
             ]
         }
 
@@ -227,7 +224,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'nro_line': row_no,
                 'mass_upload_id': self.id,
                 'document_number': line[0],
-                'sex': line[1],
+                'cv_sex': line[1],
                 'birth_date': datetime.datetime.fromordinal(datetime.datetime(1900, 1, 1).toordinal() + line[2] - 2) if
                 line[2] else False,
                 'document_country_id': MassLine.find_by_code_name_many2one('document_country_id', 'code', 'name',
@@ -261,8 +258,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'income_mechanism_id': MassLine.find_by_code_name_many2one('income_mechanism_id', 'code', 'name',
                                                                            line[25]),
                 'call_number': line[26],
-                'program': line[27],
-                'project': line[28],
                 'program_project_id': office.id if office else False,
                 'is_reserva_sgh': line[29],
                 'regime_id': MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
@@ -286,10 +281,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     43] else False,
                 'reason_description': line[44],
                 'norm_id': norm_id.id if norm_id else False,
-                'norm_type': line[45],
-                'norm_number': line[46],
-                'norm_year': line[47],
-                'norm_article': line[48],
                 'resolution_description': line[49],
                 'resolution_date': datetime.datetime.fromordinal(
                     datetime.datetime(1900, 1, 1).toordinal() + line[50] - 2) if line[
@@ -320,6 +311,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 MassLine.create_line(values)
 
     def action_process(self):
+        if not self.line_ids:
+            raise ValidationError(_('No hay líneas para procesar'))
+
         Partner = self.env['res.partner']
         AltaVL = self.env['onsc.legajo.alta.vl']
         CVDigital = self.env['onsc.cv.digital']
@@ -331,7 +325,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             try:
                 if not partner:
                     data_partner = {
-                        'cv_sex': "male" if line.sex == 'm' else 'f',
+                        'cv_sex': line.cv_sex,
                         'cv_birthdate': line.birth_date,
                         'cv_emissor_country_id': line.document_country_id.id,
                         'cv_nro_doc': line.document_number,
@@ -385,21 +379,24 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'date_start': line.date_start,
                 'inciso_id': self.inciso_id.id,
                 'operating_unit_id': self.operating_unit_id.id,
+                'cv_sex': line.cv_sex,
+                'cv_birthdate': line.birth_date,
                 'cv_document_type_id': cv_document_type_id,
                 'is_reserva_sgh': line.is_reserva_sgh,
                 'crendencial_serie': line.crendencial_serie,
                 'credential_number': line.credential_number,
                 'regime_id': line.regime_id.id,
-                'descriptor1_id': line.descriptor1_id.id,
-                'descriptor2_id': line.descriptor2_id.id,
-                'descriptor3_id': line.descriptor3_id.id,
-                'descriptor4_id': line.descriptor4_id.id,
+                'descriptor1_id': line.descriptor1_id.id if line.descriptor1_id else False,
+                'descriptor2_id': line.descriptor2_id.id if line.descriptor2_id else False,
+                'descriptor3_id': line.descriptor3_id.id if line.descriptor3_id else False,
+                'descriptor4_id': line.descriptor4_id.id if line.descriptor4_id else False,
                 'nroPuesto': line.nroPuesto,
                 'nroPlaza': line.nroPlaza,
-                'department_id': line.department_id.id,
-                'security_job_id': line.security_job_id.id,
-                'occupation_id': line.occupation_id.id,
+                'department_id': line.department_id.id if line.department_id else False,
+                'security_job_id': line.security_job_id.id if line.security_job_id else False,
+                'occupation_id': line.occupation_id.id if line.occupation_id else False,
                 'date_income_public_administration': line.date_income_public_administration,
+                'income_mechanism_id': line.income_mechanism_id.id if line.income_mechanism_id else False,
                 'inactivity_years': line.inactivity_years,
                 'graduation_date': line.graduation_date,
                 'contract_expiration_date': line.contract_expiration_date,
@@ -408,9 +405,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'resolution_description': line.resolution_description,
                 'resolution_date': line.resolution_date,
                 'resolution_type': line.resolution_type,
-                'retributive_day_id': line.retributive_day_id.id,
+                'retributive_day_id': line.retributive_day_id.id if line.retributive_day_id else False,
                 'additional_information': line.additional_information,
                 'norm_id': line.norm_id.id if line.norm_id else False,
+                'call_number': line.call_number,
                 'mass_upload_id': self.id,
             }
             alta_vl_id = False
@@ -426,18 +424,12 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     alta_vl_id.unlink()
                 continue
             try:
+                # TODO cambiar esta logica.Se debe llamar el WS4 de todas las lineas q creen un alta VL.No presupuestales
                 alta_vl_id.action_call_ws4()
             except:
                 continue
         if not self.line_ids:
             self.state = 'done'
-            return {
-                'effect': {
-                    'fadeout': 'slow',
-                    'message': 'Todas las líneas fueron procesadas con éxito',
-                    'type': 'rainbow_man',
-                }
-            }
         else:
             self.state = 'partially'
 
@@ -488,11 +480,11 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     second_name = fields.Char(string='Segundo nombre')
     first_surname = fields.Char(string='Primer apellido')
     second_surname = fields.Char(string='Segundo apellido')
-    name_ci = fields.Char(string='Nombre en cedula')
-    sex = fields.Char(string='Sexo')
+    name_ci = fields.Char(string='Nombre en cédula')
+    cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], u'Sexo')
     birth_date = fields.Date(string='Fecha de nacimiento')
     document_country_id = fields.Many2one('res.country', string='País del documento')
-    document_number = fields.Char(string='Nro documento')
+    document_number = fields.Char(string='C.I.')
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil")
     birth_country_id = fields.Many2one('res.country', string='Lugar de nacimiento')
     citizenship = fields.Selection(string="Ciudadanía",
@@ -546,10 +538,13 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
 
     # Datos de la Norma
     norm_id = fields.Many2one('onsc.legajo.norm', string='Norma')
-    norm_type = fields.Char(string="Tipo norma")
-    norm_number = fields.Integer(string='Número de norma')
-    norm_year = fields.Integer(string='Año de norma')
-    norm_article = fields.Integer(string='Artículo de norma')
+    norm_type = fields.Char(string="Tipo norma", related="norm_id.tipoNorma", store=True, readonly=True)
+    norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
+                                 store=True, readonly=True)
+    norm_year = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
+                               readonly=True)
+    norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
+                                  store=True, readonly=True)
     resolution_description = fields.Char(string='Descripción de la resolución')
     resolution_date = fields.Date(string='Fecha de la resolución')
     resolution_type = fields.Selection(
@@ -562,8 +557,6 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     )
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada retributiva')
     additional_information = fields.Text(string="Información adicional")
-    document_file = fields.Binary(string="Documento Adjunto")
-    document_filename = fields.Char(string="Nombre del documento adjunto")
 
     @api.depends('mass_upload_id')
     def _compute_department_id_domain(self):
@@ -631,6 +624,21 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
             if dsc4Id:
                 domain = [('id', 'in', dsc4Id.ids)]
             rec.descriptor4_domain_id = json.dumps(domain)
+
+    @api.onchange('descriptor1_id')
+    def onchange_descriptor1(self):
+        self.descriptor2_id = False
+        self.descriptor3_id = False
+        self.descriptor4_id = False
+
+    @api.onchange('descriptor2_id')
+    def onchange_descriptor2(self):
+        self.descriptor3_id = False
+        self.descriptor4_id = False
+
+    @api.onchange('descriptor3_id')
+    def onchange_descriptor3(self):
+        self.descriptor4_id = False
 
     def get_fields(self):
         return self._fields
