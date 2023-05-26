@@ -45,12 +45,13 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 ], limit=1)
                 long_description = '%s - Código: %s' % (
                     tools.ustr(response.servicioResultado.mensaje), str(response.servicioResultado.codigo))
-                return self._process_response_witherror(
+                self._process_response_witherror(
                     response,
                     origin_name,
                     error or integration_error,
                     long_description
                 )
+                return long_description
         elif hasattr(response, 'codigoResultado'):
             if response.codigoResultado == 0:
                 return self._populate_from_syncronization(response)
@@ -61,16 +62,17 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 ], limit=1)
                 long_description = '%s - Código: %s' % (
                     tools.ustr(response.mensajeResultado), str(response.codigoResultado))
-                return self._process_response_witherror(
+                self._process_response_witherror(
                     response,
                     origin_name,
                     error or integration_error,
                     long_description
                 )
+                return long_description
         return "No se obtuvo respuesta del WS"
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
-        self.create_new_log(
+        return self.create_new_log(
             origin=origin_name,
             type='error',
             integration_log=integration_error,
