@@ -114,7 +114,6 @@
                     <sheet>
                         <group>
                             <group>
-                                <field name="state"/>
                                 <field name="document_number"/>
                                 <field name="first_name" readonly="1"/>
                                 <field name="second_name" readonly="1"/>

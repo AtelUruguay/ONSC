@@ -312,7 +312,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
 
     def action_process(self):
         if not self.line_ids:
-            raise ValidationError(_('No hay lineas para procesar'))
+            raise ValidationError(_('No hay líneas para procesar'))
 
         Partner = self.env['res.partner']
         AltaVL = self.env['onsc.legajo.alta.vl']
@@ -479,11 +479,11 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     second_name = fields.Char(string='Segundo nombre')
     first_surname = fields.Char(string='Primer apellido')
     second_surname = fields.Char(string='Segundo apellido')
-    name_ci = fields.Char(string='Nombre en cedula')
+    name_ci = fields.Char(string='Nombre en cédula')
     cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], u'Sexo')
     birth_date = fields.Date(string='Fecha de nacimiento')
     document_country_id = fields.Many2one('res.country', string='País del documento')
-    document_number = fields.Char(string='Nro documento')
+    document_number = fields.Char(string='C.I.')
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil")
     birth_country_id = fields.Many2one('res.country', string='Lugar de nacimiento')
     citizenship = fields.Selection(string="Ciudadanía",
