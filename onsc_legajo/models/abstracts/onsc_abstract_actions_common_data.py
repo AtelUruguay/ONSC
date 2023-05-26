@@ -25,6 +25,8 @@ class ONSCActionsCommonData(models.AbstractModel):
     norm_id  = fields.Many2one('onsc.legajo.norm', string='Norma', copy=True)
     norm_code_discharge = fields.Char( string='Tipo de norma', related="norm_id.tipoNorma",
                                            store=True, readonly=True)
+    type_norm_code_discharge = fields.Char(string='Tipo de norma', related="norm_id.tipoNormaSigla",
+                                      store=True, readonly=True)
     norm_number_discharge = fields.Integer(string='Número de norma',related="norm_id.numeroNorma",
                                            store=True, readonly=True )
     norm_year_discharge = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,

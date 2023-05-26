@@ -32,13 +32,25 @@
                         <button name="action_call_ws9" class="btn btn-primary"
                             type="object" string="Baja SGH"
                             groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas"
-                            states="borrador,error_sgh"/>
+                            states="borrador,error_sgh"
+                            attrs="{'invisible': ['|',('is_ready_send_sgh', '=', False)]}"/>
 
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
 
                         <div name="oe_tittle" class="oe_title"></div>
+                         <field name="is_error_synchronization" invisible="1"/>
+                        <field name="is_ready_send_sgh" invisible="1"/>
+                        <div class="alert alert-danger"
+                             role="alert"
+                             attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
+                             style="margin-bottom:0px;">
+                            <p>
+                                <i class="fa fa-info-circle" role="alert" aria-label="Warning" title="Warning"/>
+                                <field name="error_message_synchronization" readonly="1"/>
+                            </p>
+                        </div>
                         <group name="main_group">
                             <group name="main_group_left">
                                 <field name="is_require_extended" invisible="1"/>
@@ -64,12 +76,13 @@
                             </group>
                         </group>
                         <group name="group2">
-                            <field name="employment_relationship_ids" >
-                             <tree  create="false" delete="false">
+
+                            <field name="employment_relationship_ids" nolabel="1" readonly="1" force_save="1">
+                             <tree  string="Vinculo laboral"  create="false" delete="false">
                                   <field name="state" invisible="1"/>
                                   <field name="selected" nolabel="1"
                                    groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas"
-                                   widget="boolean_toggle" force_save="1" class="oe_edit_only" attrs="{'invisible': [('state', 'not in', ['borrador','error_sgh'])]}"/>
+                                    widget="boolean_toggle" force_save="1" class="oe_edit_only" attrs="{'invisible': [('state', 'not in', ['borrador','error_sgh'])]}"/>
 
                                  <field name="nroPuesto" readonly="1"/>
                                  <field name="nroPlaza" readonly="1"/>
@@ -173,5 +186,15 @@
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_baja_vl_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_baja_vl_form')})]"/>
         </record>
+<!--         <record id="action_call_ws9" model="ir.actions.server">-->
+<!--            <field name="name">WS9</field>-->
+<!--            <field name="model_id" ref="onsc_legajo.model_onsc.legajo.baja.vl"/>-->
+<!--            <field name="groups_id"-->
+<!--                   eval="[(4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')), (4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'))]"/>-->
+<!--            <field name="binding_model_id" ref="onsc_legajo.model_onsc.legajo.baja.vl"/>-->
+<!--            <field name="binding_view_types">list</field>-->
+<!--            <field name="state">code</field>-->
+<!--            <field name="code">records.action_call_ws9()</field>-->
+<!--        </record>-->
     </data>
 </odoo>

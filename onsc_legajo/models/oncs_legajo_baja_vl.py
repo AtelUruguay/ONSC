@@ -14,12 +14,10 @@ STATES = [
     ('gafi_error', 'GAFI Error'),
 ]
 # campos requeridos para la sincronización
-required_fields = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
-                   'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description',
-                   'resolution_date',
-                   'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
-                   'retributive_day_id', 'occupation_id',
-                   'date_income_public_administration', 'department_id', 'security_job_id']
+
+required_fields = ['end_date', 'reason_discharge', 'norm_number_discharge', 'norm_article_discharge',
+                   'norm_code_discharge', 'norm_year_discharge', 'resolution_description_discharge', 'resolution_date_discharge',
+                   'resolution_type_discharge','causes_discharge_id']
 
 
 class ONSCEmploymentRelationship(models.Model):
@@ -40,6 +38,7 @@ class ONSCEmploymentRelationship(models.Model):
     baja_vl_id = fields.Many2one("onsc.legajo.baja.vl", string="Baja de vínculo laboral", copy=False)
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False)
     state = fields.Selection(related='baja_vl_id.state', string='Estado', readonly=True)
+    secPosition = fields.Char(string="Sec Plaza")
 
 
 class ONSCLegajoBajaVL(models.Model):
@@ -60,7 +59,7 @@ class ONSCLegajoBajaVL(models.Model):
                 node_form.set('edit', '0')
                 node_form.set('copy', '0')
                 node_form.set('delete', '0')
-            for node_form in doc.xpath("//button[@name='action_call_ws1']"):
+            for node_form in doc.xpath("//button[@name='action_call_ws9']"):
                 node_form.getparent().remove(node_form)
         res['arch'] = etree.tostring(doc)
         return res
@@ -87,6 +86,9 @@ class ONSCLegajoBajaVL(models.Model):
     partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
+    is_error_synchronization = fields.Boolean(copy=False)
+    is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
+    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
@@ -98,6 +100,11 @@ class ONSCLegajoBajaVL(models.Model):
         for rec in self:
             rec.partner_id_domain = self._get_domain_partner_ids()
 
+    @api.depends('employment_relationship_ids')
+    def _compute_is_ready_to_send(self):
+        for record in self:
+            vinculo = record.employment_relationship_ids[:1]
+            record.is_ready_send_sgh = bool(vinculo and vinculo.selected)
     @api.depends('causes_discharge_id')
     def _compute_is_require_extended(self):
         for rec in self:
@@ -164,8 +171,12 @@ class ONSCLegajoBajaVL(models.Model):
             return json.dumps([('id', 'in', partner_ids.ids)])
 
         else:
+            employee_id = self.env['hr.employee'].sudo().search(
+                [('cv_emissor_country_id', '=', self.env.user.cv_emissor_country_id.id),
+                 ('cv_document_type_id', '=', self.env.user.cv_document_type_id.id),
+                 ('cv_nro_doc', '=', self.env.user.partner_id.cv_nro_doc)])
             contract_id = self.env['hr.contract'].search(
-                [('legajo_state', '=', 'active'), ('employee_id', '=', self.env.user.employee_id.id)])
+                [('legajo_state', '=', 'active'), ('employee_id', '=', employee_id.id)])
             if contract_id:
                 iniciso_id = contract_id.inciso_id.id
                 operating_unit_id = contract_id.operating_unit_id.id
@@ -207,6 +218,7 @@ class ONSCLegajoBajaVL(models.Model):
                 data = {
                     'nroPuesto': contract.position,
                     'nroPlaza': contract.workplace,
+                    'secPosition':contract.sec_position,
                     'descriptor1_id': contract.descriptor1_id and contract.descriptor1_id.id or False,
                     'descriptor2_id': contract.descriptor2_id and contract.descriptor2_id.id or False,
                     'descriptor3_id': contract.descriptor3_id and contract.descriptor3_id.id or False,
@@ -221,12 +233,22 @@ class ONSCLegajoBajaVL(models.Model):
                 vinculo_ids.append((0, 0, data))
             rec.employment_relationship_ids = vinculo_ids
 
-    def action_call_ws1(self):
+    def action_call_ws9(self):
         return self.syncronize_ws9(log_info=True)
     @api.model
     def syncronize_ws9(self, log_info=False):
         self._check_required_fieds_ws9()
-        response = self.env['onsc.legajo.abstract.alta.vl.ws9'].with_context(log_info=log_info).suspend_security().syncronize(self)
+        response = self.env['onsc.legajo.abstract.baja.vl.ws9'].with_context(log_info=log_info).suspend_security().syncronize(self)
+
+        if not isinstance(response, str):
+            self.id_baja = response['pdaId']
+            self.is_error_synchronization = False
+            self.state = 'pendiente_auditoria_cgn'
+        elif isinstance(response, str):
+            self.is_error_synchronization = True
+            self.state = 'error_sgh'
+            self.error_message_synchronization = response
+
 
     def _check_required_fieds_ws9(self):
         for record in self:
@@ -234,8 +256,10 @@ class ONSCLegajoBajaVL(models.Model):
             for required_field in required_fields:
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
+            if not record.partner_id.cv_nro_doc:
+                message.append(_("Debe tener numero de documento"))
 
-            if not record.attached_document_ids:
+            if not record.attached_document_discharge_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
 
         if message:
