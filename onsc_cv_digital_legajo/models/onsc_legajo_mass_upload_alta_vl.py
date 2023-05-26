@@ -34,9 +34,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         return res
 
     def _get_domain(self, args):
-        args = expression.AND([[
-            ('partner_id', '!=', self.env.user.partner_id.id)
-        ], args])
         if self.user_has_groups('onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
