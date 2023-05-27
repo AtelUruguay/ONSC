@@ -11,3 +11,4 @@ class ONSCLegajoAltaVLAttachedDocument(models.Model):
     document_file = fields.Binary('Archivo')
     document_file_name = fields.Char('Nombre del archivo')
     alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'Alta VL')
+    baja_vl_id = fields.Many2one("onsc.legajo.baja.vl", string="Baja de vínculo laboral")
