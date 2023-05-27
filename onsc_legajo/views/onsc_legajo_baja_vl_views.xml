@@ -102,15 +102,15 @@
                         </group>
                          <group name="motivo" string="Ingreso de motivo">
                             <group name="motivo_left">
-                                <field name="reason_discharge" colspan="4"/>
+                                <field name="reason_description" colspan="4"/>
 
                                <field name="norm_id" colspan="3"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="norm_code_discharge" colspan="2"/>
-                                <field name="norm_number_discharge" colspan="2"/>
-                                <field name="norm_year_discharge" colspan="2"/>
-                                <field name="norm_article_discharge" colspan="1"/>
+                                <field name="norm_type" colspan="2"/>
+                                <field name="norm_number" colspan="2"/>
+                                <field name="norm_year" colspan="2"/>
+                                <field name="norm_article" colspan="1"/>
                                  <div class="alert alert-info" colspan="6"
                                              role="alert"
                                              style="margin-bottom:0px;">
@@ -128,9 +128,9 @@
 
                             </group>
                             <group name="motivo_right">
-                                <field name="resolution_description_discharge" colspan="4"/>
-                                <field name="resolution_date_discharge" colspan="4"/>
-                                <field name="resolution_type_discharge" colspan="4"/>
+                                <field name="resolution_description" colspan="4"/>
+                                <field name="resolution_date" colspan="4"/>
+                                <field name="resolution_type" colspan="4"/>
                             </group>
                         </group>
 

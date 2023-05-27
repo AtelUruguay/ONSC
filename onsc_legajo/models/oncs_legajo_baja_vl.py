@@ -15,9 +15,9 @@ STATES = [
 ]
 # campos requeridos para la sincronización
 
-required_fields = ['end_date', 'reason_discharge', 'norm_number_discharge', 'norm_article_discharge',
-                   'norm_code_discharge', 'norm_year_discharge', 'resolution_description_discharge', 'resolution_date_discharge',
-                   'resolution_type_discharge','causes_discharge_id']
+required_fields = ['end_date', 'reason_description', 'norm_number', 'norm_article',
+                   'norm_type', 'norm_year', 'resolution_description', 'resolution_date',
+                   'resolution_type','causes_discharge_id']
 
 
 class ONSCEmploymentRelationship(models.Model):
@@ -79,10 +79,10 @@ class ONSCLegajoBajaVL(models.Model):
     contract_id = fields.Many2one('hr.contract', 'Contrato')
     id_baja = fields.Char(string="Id Baja")
     is_require_extended = fields.Boolean("¿Requiere extendido?", compute="_compute_is_require_extended")
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False)
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
+    # inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False)
+    # operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
-    partner_id = fields.Many2one("res.partner", string="Contacto")
+    # partner_id = fields.Many2one("res.partner", string="Contacto")
     partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')

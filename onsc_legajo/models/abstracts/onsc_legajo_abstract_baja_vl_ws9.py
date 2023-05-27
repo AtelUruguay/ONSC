@@ -23,14 +23,14 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
 
             data = {
                 'fechaDeBaja': record.end_date.strftime('%d/%m/%Y'),
-                'descripcionMotivo':record.reason_discharge,
-                'numeroNorma': record.norm_number_discharge,
-                'articuloNorma': record.norm_article_discharge,
-                'tipoNormaSigla': record.type_norm_code_discharge,
-                'anioNorma': record.norm_year_discharge,
-                'descripcionResolucion': record.resolution_description_discharge,
-                'fechaResolucion': record.resolution_date_discharge.strftime('%d/%m/%Y'),
-                'tipoResolucion': record.resolution_type_discharge,
+                'descripcionMotivo':record.reason_description,
+                'numeroNorma': record.norm_number,
+                'articuloNorma': record.norm_article,
+                'tipoNormaSigla': record.norm_id.tipoNormaSigla,
+                'anioNorma': record.norm_year,
+                'descripcionResolucion': record.resolution_description,
+                'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y'),
+                'tipoResolucion': record.resolution_type,
                 'cedula': record.partner_id.cv_nro_doc,
                 'secPlaza': vl.secPosition,
                 'estadoLaboralBaja': record.causes_discharge_id.code_cgn

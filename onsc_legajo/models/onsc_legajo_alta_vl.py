@@ -24,7 +24,7 @@ STATES = [
 
 class ONSCLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.alta.vl'
-    _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
+    _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin', 'onsc.legajo.actions.common.data']
     _description = 'Alta de vínculo laboral'
 
     @api.model
@@ -98,7 +98,7 @@ class ONSCLegajoAltaVL(models.Model):
             res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
 
-    partner_id = fields.Many2one("res.partner", string="Contacto")
+    # partner_id = fields.Many2one("res.partner", string="Contacto")
     date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False, readonly=True,
                              states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False,
@@ -109,11 +109,11 @@ class ONSCLegajoAltaVL(models.Model):
                               states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     is_call_number_required = fields.Boolean(string="¿Requiere número de llamado?",
                                              related="income_mechanism_id.is_call_number_required", store=True)
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False, readonly=True,
-                                states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    # inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False, readonly=True,
+    #                             states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     is_inciso_readonly = fields.Boolean(compute="_compute_is_readonly", readonly=True,
                                         states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
+    # operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     is_operating_unit_readonly = fields.Boolean(compute="_compute_is_readonly")
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
     department_id = fields.Many2one("hr.department", string="Unidad organizativa", copy=False, readonly=True,
@@ -186,40 +186,43 @@ class ONSCLegajoAltaVL(models.Model):
     contract_expiration_date = fields.Date(string='Vencimiento del contrato', copy=False,
                                            readonly=True, states={'borrador': [('readonly', False)],
                                                                   'error_sgh': [('readonly', False)]})
-    reason_description = fields.Char(string='Descripción del motivo', copy=True,
-                                     readonly=True,
-                                     states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
 
-    # Datos de la Norma
-    norm_id = fields.Many2one('onsc.legajo.norm', string='Norma', copy=True,
-                              readonly=True,
-                              states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    norm_type = fields.Char(string="Tipo norma", related="norm_id.tipoNorma", store=True, readonly=True)
-    norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
-                                 store=True, readonly=True)
-    norm_year = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
-                               readonly=True)
-    norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
-                                  store=True, readonly=True)
-    resolution_description = fields.Char(string='Descripción de la resolución', copy=True,
-                                         readonly=True,
-                                         states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    resolution_date = fields.Date(string='Fecha de la resolución', copy=True,
-                                  readonly=True,
-                                  states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    resolution_type = fields.Selection(
-        [
-            ('M', 'Inciso'),
-            ('P', 'Presidencia o Poder ejecutivo'),
-            ('U', 'Unidad ejecutora')
-        ],
-        copy=True,
-        string='Tipo de resolución'
-        , readonly=True, states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    # POTENTIAL INHERITANCE
+    # reason_description = fields.Char(string='Descripción del motivo', copy=True,
+    #                                  readonly=True,
+    #                                  states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    #
+    # norm_id = fields.Many2one('onsc.legajo.norm', string='Norma', copy=True,
+    #                           readonly=True,
+    #                           states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    # norm_type = fields.Char(string="Tipo norma", related="norm_id.tipoNorma", store=True, readonly=True)
+    # norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
+    #                              store=True, readonly=True)
+    #
+    # norm_year = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
+    #                            readonly=True)
+    # norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
+    #                               store=True, readonly=True)
+    # resolution_description = fields.Char(string='Descripción de la resolución', copy=True,
+    #                                      readonly=True,
+    #                                      states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    # resolution_date = fields.Date(string='Fecha de la resolución', copy=True,
+    #                               readonly=True,
+    #                               states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    # resolution_type = fields.Selection(
+    #     [
+    #         ('M', 'Inciso'),
+    #         ('P', 'Presidencia o Poder ejecutivo'),
+    #         ('U', 'Unidad ejecutora')
+    #     ],
+    #     copy=True,
+    #     string='Tipo de resolución'
+    #     , readonly=True, states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    # additional_information = fields.Text(string='Información adicional', copy=False,
+    #                                      readonly=True,
+    #                                      states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+
     health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Cobertura de salud", copy=False,
-                                         readonly=True,
-                                         states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    additional_information = fields.Text(string='Información adicional', copy=False,
                                          readonly=True,
                                          states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     attached_document_ids = fields.One2many('onsc.legajo.alta.vl.attached.document', 'alta_vl_id',
