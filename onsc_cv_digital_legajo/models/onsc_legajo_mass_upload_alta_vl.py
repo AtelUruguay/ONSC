@@ -334,43 +334,44 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         'cv_document_type_id': cv_document_type_id,
                         'is_partner_cv': True,
                     }
-                    partner = Partner.create(data_partner)
+                    partner = Partner.sudo().create(data_partner)
                 partner.update_dnic_values()
-                line.write({'first_name': partner.cv_first_name,
-                            'second_name': partner.cv_second_name,
-                            'first_surname': partner.cv_last_name_1,
-                            'second_surname': partner.cv_last_name_2,
-                            'name_ci': partner.cv_dnic_full_name,
-                            'message_error': '',
-                            })
+                line.sudo().write({'first_name': partner.cv_first_name,
+                                   'second_name': partner.cv_second_name,
+                                   'first_surname': partner.cv_last_name_1,
+                                   'second_surname': partner.cv_last_name_2,
+                                   'name_ci': partner.cv_dnic_full_name,
+                                   'partner_id': partner.id,
+                                   'message_error': '',
+                                   })
             except Exception as e:
                 line.write({'state': 'error', 'message_error': "No se puedo crear el contacto: " + tools.ustr(e)})
                 continue
             cv_digital = CVDigital.sudo().search([('partner_id', '=', partner.id)], limit=1)
             try:
                 if not cv_digital:
-                    CVDigital.create({'partner_id': partner.id,
-                                      'personal_phone': line.personal_phone,
-                                      'mobile_phone': line.mobile_phone,
-                                      'email': line.email,
-                                      'marital_status_id': line.marital_status_id.id,
-                                      'country_of_birth_id': line.birth_country_id.id,
-                                      'uy_citizenship': line.citizenship,
-                                      'crendencial_serie': line.crendencial_serie,
-                                      'credential_number': line.credential_number,
-                                      'cv_address_state_id': line.address_state_id.id,
-                                      'cv_address_location_id': line.address_location_id.id,
-                                      'cv_address_street_id': line.address_street_id.id,
-                                      'cv_address_street2_id': line.address_street2_id.id,
-                                      'cv_address_street3_id': line.address_street3_id.id,
-                                      'cv_address_zip': line.address_zip,
-                                      'cv_address_nro_door': line.address_nro_door,
-                                      'cv_address_is_cv_bis': line.address_is_bis,
-                                      'cv_address_apto': line.address_apto,
-                                      'cv_address_place': line.address_place,
-                                      'cv_address_block': line.address_block,
-                                      'cv_address_sandlot': line.address_sandlot,
-                                      })
+                    CVDigital.sudo().create({'partner_id': partner.id,
+                                             'personal_phone': line.personal_phone,
+                                             'mobile_phone': line.mobile_phone,
+                                             'email': line.email,
+                                             'marital_status_id': line.marital_status_id.id,
+                                             'country_of_birth_id': line.birth_country_id.id,
+                                             'uy_citizenship': line.citizenship,
+                                             'crendencial_serie': line.crendencial_serie,
+                                             'credential_number': line.credential_number,
+                                             'cv_address_state_id': line.address_state_id.id,
+                                             'cv_address_location_id': line.address_location_id.id,
+                                             'cv_address_street_id': line.address_street_id.id,
+                                             'cv_address_street2_id': line.address_street2_id.id,
+                                             'cv_address_street3_id': line.address_street3_id.id,
+                                             'cv_address_zip': line.address_zip,
+                                             'cv_address_nro_door': line.address_nro_door,
+                                             'cv_address_is_cv_bis': line.address_is_bis,
+                                             'cv_address_apto': line.address_apto,
+                                             'cv_address_place': line.address_place,
+                                             'cv_address_block': line.address_block,
+                                             'cv_address_sandlot': line.address_sandlot,
+                                             })
                 line.write({'message_error': ''})
             except Exception as e:
                 line.write({'state': 'error', 'message_error': "No se puedo crear el CV: " + tools.ustr(e)})
@@ -426,8 +427,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     alta_vl_id.unlink()
                 continue
             try:
-                # TODO cambiar esta logica.Se debe llamar el WS4 de todas las lineas q creen un alta VL.No presupuestales
-                alta_vl_id.action_call_ws4()
+                self.syncronize_multi_ws4()
             except:
                 continue
         if not self.line_ids:
@@ -448,6 +448,14 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         if descriptor4_id:
             args = expression.AND([[('dsc4Id', '=', descriptor4_id)], args])
         return self.env['onsc.legajo.budget.item'].sudo().search(args, limit=1)
+
+    def syncronize_ws4(self):
+        self.search([]).mapped('altas_vl_ids').action_call_multi_ws4()
+
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'draft'):
+            raise ValidationError(_("Solo se pueden eliminar registros en estado borrador"))
+        return super(ONSCMassUploadLegajoAltaVL, self).unlink()
 
 
 class ONSCMassUploadLineLegajoAltaVL(models.Model):
@@ -483,6 +491,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     first_surname = fields.Char(string='Primer apellido')
     second_surname = fields.Char(string='Segundo apellido')
     name_ci = fields.Char(string='Nombre en cédula')
+    partner_id = fields.Many2one('res.partner', string='Contacto')
     cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], u'Sexo')
     birth_date = fields.Date(string='Fecha de nacimiento')
     document_country_id = fields.Many2one('res.country', string='País del documento')
