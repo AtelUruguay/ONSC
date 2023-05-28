@@ -99,14 +99,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     raise UserError(
                         "Ya existe una carga masiva con el mismo ID de ejecución, inciso y unidad ejecutora")
 
-    @api.depends('line_ids','lines_processed_ids')
+    @api.depends('line_ids', 'lines_processed_ids')
     def _compute_line_count(self):
         for rec in self:
             _process_qty = len(rec.line_ids)
             rec.line2process_qty = _process_qty
             rec.line_count = _process_qty + len(rec.lines_processed_ids)
 
-    @api.depends('altas_vl_ids')
     def _compute_altas_vl_count(self):
         for rec in self:
             rec.altas_vl_count = len(rec.altas_vl_ids)
@@ -195,122 +194,134 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
         LegajoOffice = self.env['onsc.legajo.office']
         LegajoNorm = self.env['onsc.legajo.norm']
-        for row_no in range(1, sheet.nrows):
-            line = list(map(self.process_value, sheet.row(row_no)))
-            global message_error
-            message_error = []
-            office = LegajoOffice.sudo().search([('programa', '=', line[27]), ('proyecto', '=', line[28])],
-                                                limit=1)
-            norm_id = LegajoNorm.sudo().search([('anioNorma', '=', line[47]), ('numeroNorma', '=', line[46]),
-                                                ('articuloNorma', '=', line[48]), ('tipoNorma', '=', line[45])],
-                                               limit=1)
-            if not office:
-                message_error.append("No se puedo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
-                    line[27], line[28]))
+        try:
+            for row_no in range(1, sheet.nrows):
+                line = list(map(self.process_value, sheet.row(row_no)))
+                global message_error
+                message_error = []
+                office = LegajoOffice.sudo().search(
+                    [('programa', '=', str(line[27])), ('proyecto', '=', str(line[28]))],
+                    limit=1)
+                norm_id = LegajoNorm.sudo().search(
+                    [('anioNorma', '=', int(float(line[47]))), ('numeroNorma', '=', int(float(line[46]))),
+                     ('articuloNorma', '=', int(float(line[48]))), ('tipoNorma', '=', line[45])],
+                    limit=1)
+                if not office:
+                    message_error.append(
+                        "No se puedo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
+                            line[27], line[28]))
 
-            if not norm_id:
-                message_error.append(
-                    " \nNo se puedo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
-                        line[47], line[46], line[48], line[45]))
+                if not norm_id:
+                    message_error.append(
+                        " \nNo se puedo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
+                            line[47], line[46], line[48], line[45]))
 
-            descriptor1_id = MassLine.find_by_code_name_many2one('descriptor1_id', 'code', 'name', line[31])
-            descriptor2_id = MassLine.find_by_code_name_many2one('descriptor2_id', 'code', 'name', line[32])
-            descriptor3_id = MassLine.find_by_code_name_many2one('descriptor3_id', 'code', 'name', line[33])
-            descriptor4_id = MassLine.find_by_code_name_many2one('descriptor4_id', 'code', 'name', line[34])
-            budget_item_id = self.get_partida(descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id)
-            if not budget_item_id:
-                message_error.append(
-                    line.message_error + " \nNo se puedo encontrar la partida con datos de los descriptores")
+                descriptor1_id = MassLine.find_by_code_name_many2one('descriptor1_id', 'code', 'name', line[31])
+                descriptor2_id = MassLine.find_by_code_name_many2one('descriptor2_id', 'code', 'name', line[32])
+                descriptor3_id = MassLine.find_by_code_name_many2one('descriptor3_id', 'code', 'name', line[33])
+                descriptor4_id = MassLine.find_by_code_name_many2one('descriptor4_id', 'code', 'name', line[34])
+                budget_item_id = self.get_partida(descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id)
+                if not budget_item_id:
+                    message_error.append(
+                        line.message_error + " \nNo se puedo encontrar la partida con datos de los descriptores")
 
-            values = {
-                'nro_line': row_no,
-                'mass_upload_id': self.id,
-                'document_number': line[0],
-                'cv_sex': line[1],
-                'birth_date': datetime.datetime.fromordinal(datetime.datetime(1900, 1, 1).toordinal() + line[2] - 2) if
-                line[2] else False,
-                'document_country_id': MassLine.find_by_code_name_many2one('document_country_id', 'code', 'name',
-                                                                           line[3]),
-                'marital_status_id': MassLine.find_by_code_name_many2one('marital_status_id', 'code', 'name', line[4]),
-                'birth_country_id': MassLine.find_by_code_name_many2one('birth_country_id', 'code', 'name', line[5]),
-                'citizenship': line[6],
-                'crendencial_serie': line[7],
-                'credential_number': line[8],
-                'personal_phone': line[9],
-                'mobile_phone': line[10],
-                'email': line[11],
-                'address_state_id': MassLine.find_by_code_name_many2one('address_state_id', 'code', 'name', line[12]),
-                'address_location_id': MassLine.find_by_code_name_many2one('address_location_id', 'code', 'name',
-                                                                           line[13]),
-                'address_street_id': MassLine.find_by_code_name_many2one('address_street_id', 'code', 'street',
-                                                                         line[14]),
-                'address_street2_id': MassLine.find_by_code_name_many2one('address_street2_id', 'code', 'street',
-                                                                          line[15]),
-                'address_street3_id': MassLine.find_by_code_name_many2one('address_street3_id', 'code', 'street',
-                                                                          line[16]),
-                'address_zip': line[17],
-                'address_nro_door': line[18],
-                'address_is_bis': line[19],
-                'address_apto': line[20],
-                'address_place': line[21],
-                'address_block': line[22],
-                'address_sandlot': line[23],
-                'date_start': datetime.datetime.fromordinal(datetime.datetime(1900, 1, 1).toordinal() + line[24] - 2) if
-                line[24] else False,
-                'income_mechanism_id': MassLine.find_by_code_name_many2one('income_mechanism_id', 'code', 'name',
-                                                                           line[25]),
-                'call_number': line[26],
-                'program_project_id': office.id if office else False,
-                'is_reserva_sgh': line[29],
-                'regime_id': MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
-                                                                 line[30]),
-                'descriptor1_id': descriptor1_id,
-                'descriptor2_id': descriptor2_id,
-                'descriptor3_id': descriptor3_id,
-                'descriptor4_id': descriptor4_id,
-                'nroPuesto': line[35],
-                'nroPlaza': line[36],
-                'department_id': MassLine.find_by_code_name_many2one('department_id', 'code', 'name', line[37]),
-                'security_job_id': MassLine.find_by_code_name_many2one('security_job_id', 'name', 'name', line[38]),
-                'occupation_id': MassLine.find_by_code_name_many2one('occupation_id', 'code', 'name', line[39]),
-                'date_income_public_administration': datetime.datetime.fromordinal(
-                    datetime.datetime(1900, 1, 1).toordinal() + line[40] - 2) if line[40] else False,
-                'inactivity_years': line[41],
-                'graduation_date': datetime.datetime.fromordinal(
-                    datetime.datetime(1900, 1, 1).toordinal() + line[42] - 2) if line[42] else False,
-                'contract_expiration_date': datetime.datetime.fromordinal(
-                    datetime.datetime(1900, 1, 1).toordinal() + line[43] - 2) if line[
-                    43] else False,
-                'reason_description': line[44],
-                'norm_id': norm_id.id if norm_id else False,
-                'resolution_description': line[49],
-                'resolution_date': datetime.datetime.fromordinal(
-                    datetime.datetime(1900, 1, 1).toordinal() + line[50] - 2) if line[
-                    50] else False,
-                'resolution_type': line[51],
-                'retributive_day_id': MassLine.find_by_code_name_many2one('retributive_day_id', 'codigoJornada',
-                                                                          'descripcionJornada', line[52]),
-                'additional_information': line[53],
-                'message_error': '',
-            }
-            values, validate_error = MassLine.validate_fields(values)
-            if validate_error:
-                values['message_error'] = values['message_error'] + '\n' + validate_error
+                values = {
+                    'nro_line': row_no,
+                    'mass_upload_id': self.id,
+                    'document_number': line[0],
+                    'cv_sex': line[1],
+                    'birth_date': datetime.datetime.fromordinal(
+                        datetime.datetime(1900, 1, 1).toordinal() + line[2] - 2) if
+                    line[2] else False,
+                    'document_country_id': MassLine.find_by_code_name_many2one('document_country_id', 'code', 'name',
+                                                                               line[3]),
+                    'marital_status_id': MassLine.find_by_code_name_many2one('marital_status_id', 'code', 'name',
+                                                                             line[4]),
+                    'birth_country_id': MassLine.find_by_code_name_many2one('birth_country_id', 'code', 'name',
+                                                                            line[5]),
+                    'citizenship': line[6],
+                    'crendencial_serie': line[7],
+                    'credential_number': line[8],
+                    'personal_phone': line[9],
+                    'mobile_phone': line[10],
+                    'email': line[11],
+                    'address_state_id': MassLine.find_by_code_name_many2one('address_state_id', 'code', 'name',
+                                                                            line[12]),
+                    'address_location_id': MassLine.find_by_code_name_many2one('address_location_id', 'code', 'name',
+                                                                               line[13]),
+                    'address_street_id': MassLine.find_by_code_name_many2one('address_street_id', 'code', 'street',
+                                                                             line[14]),
+                    'address_street2_id': MassLine.find_by_code_name_many2one('address_street2_id', 'code', 'street',
+                                                                              line[15]),
+                    'address_street3_id': MassLine.find_by_code_name_many2one('address_street3_id', 'code', 'street',
+                                                                              line[16]),
+                    'address_zip': line[17],
+                    'address_nro_door': line[18],
+                    'address_is_bis': line[19],
+                    'address_apto': line[20],
+                    'address_place': line[21],
+                    'address_block': line[22],
+                    'address_sandlot': line[23],
+                    'date_start': datetime.datetime.fromordinal(
+                        datetime.datetime(1900, 1, 1).toordinal() + line[24] - 2) if
+                    line[24] else False,
+                    'income_mechanism_id': MassLine.find_by_code_name_many2one('income_mechanism_id', 'code', 'name',
+                                                                               line[25]),
+                    'call_number': line[26],
+                    'program_project_id': office.id if office else False,
+                    'is_reserva_sgh': line[29],
+                    'regime_id': MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
+                                                                     line[30]),
+                    'descriptor1_id': descriptor1_id,
+                    'descriptor2_id': descriptor2_id,
+                    'descriptor3_id': descriptor3_id,
+                    'descriptor4_id': descriptor4_id,
+                    'nroPuesto': line[35],
+                    'nroPlaza': line[36],
+                    'department_id': MassLine.find_by_code_name_many2one('department_id', 'code', 'name', line[37]),
+                    'security_job_id': MassLine.find_by_code_name_many2one('security_job_id', 'name', 'name', line[38]),
+                    'occupation_id': MassLine.find_by_code_name_many2one('occupation_id', 'code', 'name', line[39]),
+                    'date_income_public_administration': datetime.datetime.fromordinal(
+                        datetime.datetime(1900, 1, 1).toordinal() + line[40] - 2) if line[40] else False,
+                    'inactivity_years': line[41],
+                    'graduation_date': datetime.datetime.fromordinal(
+                        datetime.datetime(1900, 1, 1).toordinal() + line[42] - 2) if line[42] else False,
+                    'contract_expiration_date': datetime.datetime.fromordinal(
+                        datetime.datetime(1900, 1, 1).toordinal() + line[43] - 2) if line[
+                        43] else False,
+                    'reason_description': line[44],
+                    'norm_id': norm_id.id if norm_id else False,
+                    'resolution_description': line[49],
+                    'resolution_date': datetime.datetime.fromordinal(
+                        datetime.datetime(1900, 1, 1).toordinal() + line[50] - 2) if line[
+                        50] else False,
+                    'resolution_type': line[51],
+                    'retributive_day_id': MassLine.find_by_code_name_many2one('retributive_day_id', 'codigoJornada',
+                                                                              'descripcionJornada', line[52]),
+                    'additional_information': line[53],
+                    'message_error': '',
+                }
+                values, validate_error = MassLine.validate_fields(values)
+                if validate_error:
+                    values['message_error'] = values['message_error'] + '\n' + validate_error
 
-            if message_error:
-                values['message_error'] = values['message_error'] + '\n' + '\n'.join(message_error)
+                if message_error:
+                    values['message_error'] = values['message_error'] + '\n' + '\n'.join(message_error)
 
-            if message_error or validate_error:
-                values['state'] = 'error'
-                values['message_error'] = 'Información faltante o no cumple validación' + values['message_error']
-            else:
-                values['message_error'] = ''
+                if message_error or validate_error:
+                    values['state'] = 'error'
+                    values['message_error'] = 'Información faltante o no cumple validación' + values['message_error']
+                else:
+                    values['message_error'] = ''
 
-            existing_record = MassLine.search([('nro_line', '=', row_no), ('mass_upload_id', '=', self.id)], limit=1)
-            if existing_record and existing_record.state != 'done':
-                existing_record.update_line(values)
-            if not existing_record:
-                MassLine.create_line(values)
+                existing_record = MassLine.search([('nro_line', '=', row_no), ('mass_upload_id', '=', self.id)],
+                                                  limit=1)
+                if existing_record and existing_record.state != 'done':
+                    existing_record.update_line(values)
+                if not existing_record:
+                    MassLine.create_line(values)
+        except Exception as e:
+            raise ValidationError(_('El archivo no es válido'))
 
     def action_process(self):
         if not self.line_ids:
