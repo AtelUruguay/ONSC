@@ -165,4 +165,12 @@
               name="Configuración"
               parent="onsc_legajo_root_menu"
               sequence="100"/>
+
+    <menuitem
+            id="onsc_baja_vl_menu"
+            name="Baja vínculo laboral"
+            parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
+            action="onsc_legajo.onsc_legajo_baja_vl_action"
+            groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas,onsc_legajo.group_legajo_baja_vl_consulta_bajas_vl"
+            sequence="5"/>
 </odoo>

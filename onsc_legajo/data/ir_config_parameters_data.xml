@@ -33,6 +33,10 @@
             <field name="key">parameter_ws5_user</field>
             <field name="value"></field>
         </record>
+         <record id="parameter_onsc_legajo_WS9" model="ir.config_parameter">
+            <field name="key">onsc_legajo_WS9_bajaSGH</field>
+            <field name="value"></field>
+        </record>
 
     </data>
 </odoo>
