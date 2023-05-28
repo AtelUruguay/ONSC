@@ -321,7 +321,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 if not existing_record:
                     MassLine.create_line(values)
         except Exception as e:
-            raise ValidationError(_('El archivo no es válido'))
+            raise ValidationError(_('El archivo no es válido o no tiene el formato correcto.'))
 
     def action_process(self):
         if not self.line_ids:
