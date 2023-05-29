@@ -198,13 +198,20 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             for row_no in range(1, sheet.nrows):
                 line = list(map(self.process_value, sheet.row(row_no)))
                 global message_error
-                norm_id= False
+                norm_id = False
                 message_error = []
-                office=False
+                office = False
                 try:
-                    office = LegajoOffice.sudo().search(
-                        [('programa', '=', str(line[27])), ('proyecto', '=', str(line[28]))],
-                        limit=1)
+                    office = LegajoOffice.sudo().search([
+                        ('inciso', '=', self.inciso_id.id),
+                        ('unidadEjecutora', '=', self.operating_unit_id.id),
+                        '&','|',
+                        ('programa', '=', str(line[27])),
+                        ('programaDescripcion', '=', str(line[27])),
+                        '|',
+                        ('proyecto', '=', str(line[28])),
+                        ('proyectoDescripcion', '=', str(line[28]))
+                    ], limit=1)
                 except Exception:
                     message_error.append(
                         " \n Los datos para la oficina tiene un formato inválido")
@@ -447,10 +454,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 if alta_vl_id:
                     alta_vl_id.unlink()
                 continue
-            try:
-                self.syncronize_multi_ws4()
-            except:
-                continue
+            # try:
+            # self.syncronize_multi_ws4()
+            # except:
+            # continue
         if not self.line_ids:
             self.state = 'done'
         else:
