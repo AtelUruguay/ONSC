@@ -198,14 +198,24 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             for row_no in range(1, sheet.nrows):
                 line = list(map(self.process_value, sheet.row(row_no)))
                 global message_error
+                norm_id= False
                 message_error = []
-                office = LegajoOffice.sudo().search(
-                    [('programa', '=', str(line[27])), ('proyecto', '=', str(line[28]))],
-                    limit=1)
-                norm_id = LegajoNorm.sudo().search(
-                    [('anioNorma', '=', int(float(line[47]))), ('numeroNorma', '=', int(float(line[46]))),
-                     ('articuloNorma', '=', int(float(line[48]))), ('tipoNorma', '=', line[45])],
-                    limit=1)
+                office=False
+                try:
+                    office = LegajoOffice.sudo().search(
+                        [('programa', '=', str(line[27])), ('proyecto', '=', str(line[28]))],
+                        limit=1)
+                except Exception:
+                    message_error.append(
+                        " \n Los datos para la oficina tiene un formato inválido")
+                try:
+                    norm_id = LegajoNorm.sudo().search(
+                        [('anioNorma', '=', int(float(line[47]))), ('numeroNorma', '=', int(float(line[46]))),
+                         ('articuloNorma', '=', int(float(line[48]))), ('tipoNorma', '=', line[45])],
+                        limit=1)
+                except Exception:
+                    message_error.append(
+                        " \n Los datos para la norma tiene un formato inválido")
                 if not office:
                     message_error.append(
                         "No se puedo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
