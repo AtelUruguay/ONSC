@@ -2,10 +2,10 @@
 import json
 
 from lxml import etree
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 # campos requeridos para la sincronización
 required_fields = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
@@ -271,12 +271,12 @@ class ONSCLegajoAltaVL(models.Model):
             self.error_message_synchronization = response
 
     def action_call_multi_ws4(self):
-        altas_presupuestas=self.filtered(lambda x: x.state in ['borrador', 'error_sgh'] and x.is_presupuestado)
+        if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
+            raise ValidationError(_("Solo se pueden sincronizar altas en estado borrador o error SGH"))
+        altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
         altas_presupuestas.syncronize_multi_ws4()
-        altas_no_presupuestas=self.filtered(lambda x: x.state in ['borrador', 'error_sgh'] and not x.is_presupuestado)
+        altas_no_presupuestas = self.filtered(lambda x: not x.is_presupuestado)
         altas_no_presupuestas.syncronize_multi_ws4()
-
-
 
     def syncronize_multi_ws4(self):
         altas_vl_grouped = {}
@@ -439,7 +439,8 @@ class ONSCLegajoAltaVL(models.Model):
                 'cv_address_sandlot': self.cv_address_sandlot,
             })
             if cv and self.create_date >= cv.cv_address_write_date:
-                cv.with_context(documentary_validation='cv_address', can_update_contact_cv = True).button_documentary_approve()
+                cv.with_context(documentary_validation='cv_address',
+                                can_update_contact_cv=True).button_documentary_approve()
 
         # CREDENCIAL CIVICA
         if cv and cv.civical_credential_documentary_validation_state == 'validated':
