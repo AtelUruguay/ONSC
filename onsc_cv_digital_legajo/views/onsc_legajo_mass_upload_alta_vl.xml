@@ -13,32 +13,31 @@
                                 class="oe_highlight"
                                 string="Cargar Líneas del Excel"
                                 attrs="{'invisible': [('state', '!=', 'draft')]}"
+                                groups="onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso,onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue,onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_administrar_altas_vl"
                         />
                         <button
                                 name="action_process"
                                 type="object"
                                 string="Procesar"
                                 attrs="{'invisible': [('line2process_qty', '=', 0)]}"
-                        />
-                        <button
-                                name="syncronize_ws4"
-                                type="object"
-                                string="WS4"
+                                groups="onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_inciso,onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_recursos_humanos_ue,onsc_cv_digital_legajo.group_legajo_carga_masiva_alta_vl_administrar_altas_vl"
+
                         />
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
                         <div class="oe_button_box" name="button_box">
-                            <button name="action_view_lines" type="object" class="oe_stat_button" icon="fa-bars">
+                            <button name="action_view_lines" type="object" class="oe_stat_button" icon="fa-bars"
+                                    attrs="{'invisible': [('line_count', '=', 0)]}">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_value">
                                         <field name="line_count" widget="statinfo" nolabel="1"/>
                                     </span>
-                                    <span class="o_stat_text">Lineas de Alta</span>
+                                    <span class="o_stat_text">Líneas de Alta</span>
                                 </div>
                             </button>
                             <button name="action_view_altas_vl_ids" type="object" class="oe_stat_button" icon="fa-bars"
-                                    attrs="{'invisible': [('altas_vl_ids','=',False)]}">
+                                    attrs="{'invisible': [('altas_vl_count', '=', 0)]}">
                                 <div class="o_form_field o_stat_info">
                                     <span class="o_stat_value">
                                         <field name="altas_vl_count" widget="statinfo" nolabel="1"/>
