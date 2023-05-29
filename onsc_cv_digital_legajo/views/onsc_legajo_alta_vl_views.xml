@@ -154,11 +154,11 @@
             </field>
         </record>
 
-        <record id="action_ws4" model="ir.actions.server">
+        <record id="action_multi_ws4" model="ir.actions.server">
             <field name="name">Enviar a SGH</field>
             <field name="model_id" ref="onsc_legajo.model_onsc_legajo_alta_vl"/>
             <field name="groups_id"
-                   eval="[(4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')), (4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'))]"/>
+                   eval="[(4, ref('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')), (4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')), (4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'))]"/>
             <field name="binding_model_id" ref="onsc_legajo.model_onsc_legajo_alta_vl"/>
             <field name="binding_view_types">list</field>
             <field name="state">code</field>
