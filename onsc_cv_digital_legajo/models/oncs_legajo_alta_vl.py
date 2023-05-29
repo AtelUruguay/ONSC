@@ -2,13 +2,13 @@
 import json
 
 from lxml import etree
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-
 # campos requeridos para la sincronización
-required_fields = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
+REQUIRED_FIELDS = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
                    'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description', 'resolution_date',
                    'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
                    'retributive_day_id', 'occupation_id',
@@ -271,10 +271,14 @@ class ONSCLegajoAltaVL(models.Model):
             self.error_message_synchronization = response
 
     def action_call_multi_ws4(self):
-        altas_presupuestas = self.filtered(lambda x: x.state in ['borrador', 'error_sgh'] and x.is_presupuestado)
+        self.check_required_fieds_ws4()
+        if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
+            raise ValidationError(_("Solo se pueden sincronizar altas en estado borrador o error SGH"))
+        altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
         altas_presupuestas.syncronize_multi_ws4()
-        altas_no_presupuestas = self.filtered(lambda x: x.state in ['borrador', 'error_sgh'] and not x.is_presupuestado)
+        altas_no_presupuestas = self.filtered(lambda x: not x.is_presupuestado)
         altas_no_presupuestas.syncronize_multi_ws4()
+        return True
 
     def syncronize_multi_ws4(self):
         altas_vl_grouped = {}
@@ -310,7 +314,7 @@ class ONSCLegajoAltaVL(models.Model):
     def check_required_fieds_ws4(self):
         for record in self:
             message = []
-            for required_field in required_fields:
+            for required_field in REQUIRED_FIELDS:
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
             if record.is_indVencimiento and not record.contract_expiration_date:
