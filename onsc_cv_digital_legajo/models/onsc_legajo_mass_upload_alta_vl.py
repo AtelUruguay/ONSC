@@ -205,7 +205,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     office = LegajoOffice.sudo().search([
                         ('inciso', '=', self.inciso_id.id),
                         ('unidadEjecutora', '=', self.operating_unit_id.id),
-                        '&','|',
+                        '&', '|',
                         ('programa', '=', str(line[27])),
                         ('programaDescripcion', '=', str(line[27])),
                         '|',
@@ -454,10 +454,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 if alta_vl_id:
                     alta_vl_id.unlink()
                 continue
-            # try:
-            # self.syncronize_multi_ws4()
-            # except:
-            # continue
+            try:
+                self.syncronize_multi_ws4()
+            except:
+                continue
         if not self.line_ids:
             self.state = 'done'
         else:
