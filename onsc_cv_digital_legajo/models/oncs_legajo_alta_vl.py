@@ -325,7 +325,8 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append("Primer Nombre")
             if (record.is_reserva_sgh or record.is_presupuestado) and not record.vacante_ids.filtered(
                     lambda x: x.selected):
-                message.append("Necesita seleccionar una vacante")
+                if not record.nroPlaza or not record.nroPuesto:
+                    message.append("Necesita seleccionar una vacante")
             if not record.is_reserva_sgh and not record.is_presupuestado and not record.descriptor3_id:
                 message.append(record._fields['descriptor3_id'].string)
             if not record.is_reserva_sgh and not record.is_presupuestado and not record.regime_id:
