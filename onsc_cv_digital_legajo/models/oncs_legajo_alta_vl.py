@@ -271,12 +271,10 @@ class ONSCLegajoAltaVL(models.Model):
             self.error_message_synchronization = response
 
     def action_call_multi_ws4(self):
-        altas_presupuestas=self.filtered(lambda x: x.state in ['borrador', 'error_sgh'] and x.is_presupuestado)
+        altas_presupuestas = self.filtered(lambda x: x.state in ['borrador', 'error_sgh'] and x.is_presupuestado)
         altas_presupuestas.syncronize_multi_ws4()
-        altas_no_presupuestas=self.filtered(lambda x: x.state in ['borrador', 'error_sgh'] and not x.is_presupuestado)
+        altas_no_presupuestas = self.filtered(lambda x: x.state in ['borrador', 'error_sgh'] and not x.is_presupuestado)
         altas_no_presupuestas.syncronize_multi_ws4()
-
-
 
     def syncronize_multi_ws4(self):
         altas_vl_grouped = {}
@@ -323,7 +321,8 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append("Primer Nombre")
             if (record.is_reserva_sgh or record.is_presupuestado) and not record.vacante_ids.filtered(
                     lambda x: x.selected):
-                message.append("Necesita seleccionar una vacante")
+                if not record.nroPlaza or not record.nroPuesto:
+                    message.append("Necesita seleccionar una vacante")
             if not record.is_reserva_sgh and not record.is_presupuestado and not record.descriptor3_id:
                 message.append(record._fields['descriptor3_id'].string)
             if not record.is_reserva_sgh and not record.is_presupuestado and not record.regime_id:
@@ -439,7 +438,8 @@ class ONSCLegajoAltaVL(models.Model):
                 'cv_address_sandlot': self.cv_address_sandlot,
             })
             if cv and self.create_date >= cv.cv_address_write_date:
-                cv.with_context(documentary_validation='cv_address', can_update_contact_cv = True).button_documentary_approve()
+                cv.with_context(documentary_validation='cv_address',
+                                can_update_contact_cv=True).button_documentary_approve()
 
         # CREDENCIAL CIVICA
         if cv and cv.civical_credential_documentary_validation_state == 'validated':
