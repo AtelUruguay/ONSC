@@ -462,7 +462,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 self.env.cr.commit()
                 continue
             try:
-                self.syncronize_multi_ws4()
+                self.syncronize_ws4()
             except:
                 continue
         if not self.line_ids:
