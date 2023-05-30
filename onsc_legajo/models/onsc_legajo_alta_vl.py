@@ -225,7 +225,7 @@ class ONSCLegajoAltaVL(models.Model):
     health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Cobertura de salud", copy=False,
                                          readonly=True,
                                          states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    attached_document_ids = fields.One2many('onsc.legajo.alta.vl.attached.document', 'alta_vl_id',
+    attached_document_ids = fields.One2many('onsc.legajo.attached.document', 'alta_vl_id',
                                             string='Documentos adjuntos',
                                             readonly=True, states={'borrador': [('readonly', False)],
                                                                    'error_sgh': [('readonly', False)]})
@@ -525,17 +525,14 @@ class ONSCLegajoAltaVL(models.Model):
             #
             'wage': 1
         }
-        document_line_vals = []
-        for document_record in self.attached_document_ids:
-            document_line_vals.append((0, 0, {
-                'name': document_record.name,
-                'type': 'discharge',
-                'document_type_id': document_record.document_type_id.id,
-                'document_file': document_record.document_file,
-                'document_file_name': document_record.document_file_name,
-            }))
-        vals['alta_attached_document_ids'] = document_line_vals
+
         contract = Contract.suspend_security().create(vals)
+
+        for document_record in self.attached_document_ids:
+            document_record.write({
+                'contract_id': contract.id,
+                'type': 'discharge'})
+
         contract.activate_legajo_contract()
         return contract
 

@@ -4,6 +4,7 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
@@ -17,13 +18,14 @@ STATES = [
 
 required_fields = ['end_date', 'reason_description', 'norm_number', 'norm_article',
                    'norm_type', 'norm_year', 'resolution_description', 'resolution_date',
-                   'resolution_type','causes_discharge_id']
+                   'resolution_type', 'causes_discharge_id']
 
 
 class ONSCEmploymentRelationship(models.Model):
     _name = 'onsc.legajo.employment.relationship'
     _description = 'Vínculo laboral'
 
+    contract_id = fields.Many2one('hr.contract', 'Contrato')
     selected = fields.Boolean(string="Seleccionado", help="Active para seleccionar Vinculo")
     programa = fields.Char(string='Programa', copy=False)
     proyecto = fields.Char(string='Proyecto', copy=False)
@@ -32,6 +34,7 @@ class ONSCEmploymentRelationship(models.Model):
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor 3', copy=False)
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor 4', copy=False)
     nroPuesto = fields.Char(string='Puesto', copy=False)
+    job_id = fields.Many2one('hr.job', string='Puesto', copy=False)
     nroPlaza = fields.Char(string='Plaza', copy=False)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
@@ -51,9 +54,9 @@ class ONSCLegajoBajaVL(models.Model):
         res = super(ONSCLegajoBajaVL, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                             submenu=submenu)
         doc = etree.XML(res['arch'])
-        is_user_alta_vl = self.env.user.has_group('onsc_legajo.group_legajo_baja_vl_consulta_bajas_vl')
-        is_user_administrar_altas_vl = self.env.user.has_group('onsc_legajo.group_legajo_baja_vl_administrar_bajas')
-        if view_type in ['form', 'tree', 'kanban'] and is_user_alta_vl and not is_user_administrar_altas_vl:
+        is_user_baja_vl = self.env.user.has_group('onsc_legajo.group_legajo_baja_vl_consulta_bajas_vl')
+        is_user_administrar_baja_vl = self.env.user.has_group('onsc_legajo.group_legajo_baja_vl_administrar_bajas')
+        if view_type in ['form', 'tree', 'kanban'] and is_user_baja_vl and not is_user_administrar_baja_vl:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('create', '0')
                 node_form.set('edit', '0')
@@ -67,22 +70,22 @@ class ONSCLegajoBajaVL(models.Model):
     end_date = fields.Date(string="Fecha de Baja", default=fields.Date.today(), required=True, copy=False)
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
-    causes_discharge_line_ids = fields.One2many('onsc.legajo.causes.discharge.line',
-                                                related='causes_discharge_id.causes_discharge_line_ids',
-                                                string="Motivos de causal de egreso extendido")
-    employment_relationship_ids = fields.One2many('onsc.legajo.employment.relationship','baja_vl_id',
-                                                  string="Vínculo laboral",compute="_compute_employment_relationship_ids",store=True)
-    attached_document_discharge_ids = fields.One2many('onsc.legajo.alta.vl.attached.document', 'baja_vl_id',
+    causes_discharge_extended_id = fields.Many2one("onsc.legajo.causes.discharge.line",
+                                                string="Causal de egreso extendido",
+                                                domain="[('causes_discharge_id', '=', causes_discharge_id)]",
+                                                history=True)
+
+
+    employment_relationship_ids = fields.One2many('onsc.legajo.employment.relationship', 'baja_vl_id',
+                                                  string="Vínculo laboral",
+                                                  compute="_compute_employment_relationship_ids", store=True)
+    attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'baja_vl_id',
                                                       string='Documentos adjuntos')
     integration_error_id = fields.Many2one('onsc.legajo.integration.error', string=u'Error reportado integración',
                                            copy=False)
-    contract_id = fields.Many2one('hr.contract', 'Contrato')
+
     id_baja = fields.Char(string="Id Baja")
     is_require_extended = fields.Boolean("¿Requiere extendido?", compute="_compute_is_require_extended")
-    # inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False)
-    # operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
-    full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
-    # partner_id = fields.Many2one("res.partner", string="Contacto")
     partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
@@ -105,6 +108,7 @@ class ONSCLegajoBajaVL(models.Model):
         for record in self:
             vinculo = record.employment_relationship_ids[:1]
             record.is_ready_send_sgh = bool(vinculo and vinculo.selected)
+
     @api.depends('causes_discharge_id')
     def _compute_is_require_extended(self):
         for rec in self:
@@ -112,6 +116,7 @@ class ONSCLegajoBajaVL(models.Model):
                 rec.is_require_extended = rec.causes_discharge_id.is_require_extended
             else:
                 rec.is_require_extended = False
+
     def _get_domain(self, args):
         args = expression.AND([[
             ('partner_id', '!=', self.env.user.partner_id.id)
@@ -202,8 +207,7 @@ class ONSCLegajoBajaVL(models.Model):
             if not record.attached_document_discharge_ids:
                 raise ValidationError(_("Debe haber al menos un documento adjunto"))
 
-
-    @api.depends( "partner_id")
+    @api.depends("partner_id")
     def _compute_employment_relationship_ids(self):
         for rec in self:
             employee_id = self.env['hr.employee'].sudo().search(
@@ -211,14 +215,15 @@ class ONSCLegajoBajaVL(models.Model):
                  ('cv_document_type_id', '=', rec.cv_document_type_id.id),
                  ('cv_nro_doc', '=', rec.partner_id.cv_nro_doc)])
 
-            contract_ids = self.env['hr.contract'].sudo().search([('employee_id', '=', employee_id.id)])
+            contract_ids = self.env['hr.contract'].sudo().search([('employee_id', '=', employee_id.id),
+                                                                  ('legajo_state', '=', 'active')])
             vinculo_ids = [(5,)]
 
             for contract in contract_ids:
                 data = {
-                    'nroPuesto': contract.position,
+                    'job_id': contract.job_ids.filtered(lambda x: x.end_date is False)[0].id,
                     'nroPlaza': contract.workplace,
-                    'secPosition':contract.sec_position,
+                    'secPosition': contract.sec_position,
                     'descriptor1_id': contract.descriptor1_id and contract.descriptor1_id.id or False,
                     'descriptor2_id': contract.descriptor2_id and contract.descriptor2_id.id or False,
                     'descriptor3_id': contract.descriptor3_id and contract.descriptor3_id.id or False,
@@ -228,6 +233,7 @@ class ONSCLegajoBajaVL(models.Model):
                     'programa': contract.program,
                     'proyecto': contract.project,
                     'regime_id': contract.regime_id and contract.regime_id.id or False,
+                    'contract_id': contract.id
                 }
 
                 vinculo_ids.append((0, 0, data))
@@ -235,10 +241,12 @@ class ONSCLegajoBajaVL(models.Model):
 
     def action_call_ws9(self):
         return self.syncronize_ws9()
+
     @api.model
     def syncronize_ws9(self, log_info=False):
         self._check_required_fieds_ws9()
-        response = self.env['onsc.legajo.abstract.baja.vl.ws9'].with_context(log_info=log_info).suspend_security().syncronize(self)
+        response = self.env['onsc.legajo.abstract.baja.vl.ws9'].with_context(
+            log_info=log_info).suspend_security().syncronize(self)
 
         if not isinstance(response, str):
             self.id_baja = response['pdaId']
@@ -248,7 +256,6 @@ class ONSCLegajoBajaVL(models.Model):
             self.is_error_synchronization = True
             self.state = 'error_sgh'
             self.error_message_synchronization = response
-
 
     def _check_required_fieds_ws9(self):
         for record in self:
