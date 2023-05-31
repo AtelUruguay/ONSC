@@ -20,7 +20,16 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS4_9005")
 
         wsclient = self._get_client(parameter, 'WS4', integration_error)
+        data = self._get_data(record)
+        _logger.info('******************WS4 DATA')
+        _logger.info(data)
+        _logger.info('******************WS4 DATA')
+        return self.with_context(alta_vl=record, log_info=log_info).suspend_security()._syncronize(wsclient, parameter,
+                                                                                                   'WS4',
+                                                                                                   integration_error,
+                                                                                                   data)
 
+    def _get_data(self, record):
         data = {
             'inciso': record.inciso_id.budget_code,
             'ue': record.operating_unit_id.budget_code,
@@ -200,12 +209,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             data['altaDetalle'][0].update({
                 'fechaGradAsig': record.graduation_date.strftime('%d/%m/%Y')
             })
-
-        _logger.info('******************WS4')
-        _logger.info(data)
-        _logger.info('******************WS4')
-        return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, 'WS4',
-                                                                                   integration_error, data)
+        return data
 
     @api.model
     def syncronize_multi(self, records, log_info=False):
@@ -213,7 +217,17 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS4_9005")
 
         wsclient = self._get_client(parameter, 'WS4', integration_error)
+        data = self._get_data_multi(records)
 
+        _logger.info('******************WS4')
+        _logger.info(data)
+        _logger.info('******************WS4')
+        return self.with_context(alta_vl=records, log_info=log_info).suspend_security()._syncronize(wsclient, parameter,
+                                                                                                    'WS4',
+                                                                                                    integration_error,
+                                                                                                    data)
+
+    def _get_data_multi(self, records):
         data = {
             'inciso': records[0].inciso_id.budget_code,
             'ue': records[0].operating_unit_id.budget_code,
@@ -399,74 +413,76 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             altasDetalle.append(altaDetalle)
 
         data['altaDetalle'] = altasDetalle
-        _logger.info('******************WS4')
-        _logger.info(data)
-        _logger.info('******************WS4')
-        return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, 'WS4',
-                                                                                   integration_error, data)
-    def _syncronize(self, client, parameter, origin_name, integration_error, values=False):
-        IntegrationError = self.env['onsc.legajo.integration.error']
-        ONSCLegajoClient = soap_client.ONSCLegajoClient()
-        try:
-            response = ONSCLegajoClient.get_response(client, parameter, values)
-        except Exception as e:
-            self.create_new_log(
-                origin=origin_name,
-                type='error',
-                integration_log=integration_error,
-                ws_tuple=False,
-                long_description=tools.ustr(e))
-            return "Error devuelto por SGH: " + tools.ustr(e)
-        if hasattr(response, 'servicioResultado'):
-            if response.servicioResultado.codigo == 0:
-                return self._populate_from_syncronization(response)
-            else:
-                error = IntegrationError.search([
-                    ('integration_code', '=', integration_error.integration_code),
-                    ('code_error', '=', str(response.servicioResultado.codigo))
-                ], limit=1)
-                return self._process_response_witherror(
-                    response,
-                    origin_name,
-                    error or integration_error,
-                    ''
-                )
-        elif hasattr(response, 'codigoResultado'):
-            if response.codigoResultado == 0:
-                return self._populate_from_syncronization(response)
-            else:
-                error = IntegrationError.search([
-                    ('integration_code', '=', integration_error.integration_code),
-                    ('code_error', '=', str(response.codigoResultado))
-                ], limit=1)
+        return data
 
-                return self._process_response_witherror(
-                    response,
-                    origin_name,
-                    error or integration_error,
-                    ''
-                )
-        return "No se obtuvo respuesta del WS"
+    # def _syncronize(self, client, parameter, origin_name, integration_error, values=False):
+    #     IntegrationError = self.env['onsc.legajo.integration.error']
+    #     ONSCLegajoClient = soap_client.ONSCLegajoClient()
+    #     try:
+    #         response = ONSCLegajoClient.get_response(client, parameter, values)
+    #     except Exception as e:
+    #         self.create_new_log(
+    #             origin=origin_name,
+    #             type='error',
+    #             integration_log=integration_error,
+    #             ws_tuple=False,
+    #             long_description=tools.ustr(e))
+    #         return "Error devuelto por SGH: " + tools.ustr(e)
+    #     if hasattr(response, 'servicioResultado'):
+    #         if response.servicioResultado.codigo == 0:
+    #             return self._populate_from_syncronization(response)
+    #         else:
+    #             error = IntegrationError.search([
+    #                 ('integration_code', '=', integration_error.integration_code),
+    #                 ('code_error', '=', str(response.servicioResultado.codigo))
+    #             ], limit=1)
+    #             return self._process_response_witherror(
+    #                 response,
+    #                 origin_name,
+    #                 error or integration_error,
+    #                 ''
+    #             )
+    #     elif hasattr(response, 'codigoResultado'):
+    #         if response.codigoResultado == 0:
+    #             return self._populate_from_syncronization(response)
+    #         else:
+    #             error = IntegrationError.search([
+    #                 ('integration_code', '=', integration_error.integration_code),
+    #                 ('code_error', '=', str(response.codigoResultado))
+    #             ], limit=1)
+    #
+    #             return self._process_response_witherror(
+    #                 response,
+    #                 origin_name,
+    #                 error or integration_error,
+    #                 ''
+    #             )
+    #     return "No se obtuvo respuesta del WS"
 
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
         with self._cr.savepoint():
+            alta_vl = self._context.get('alta_vl')
             onsc_legajo_integration_error_WS4_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_WS4_9004")
-            if not hasattr(response, 'altaSGHMovimientoRespuesta'):
-                self.create_new_log(
-                    origin='WS4',
-                    type='error',
-                    integration_log=onsc_legajo_integration_error_WS4_9004,
-                    long_description="No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
-                )
-                return "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
-
-            if response.altaSGHMovimientoRespuesta:
-                external_record = []
-                for respuesta in response.altaSGHMovimientoRespuesta:
+            if hasattr(response, 'altaSGHMovimientoRespuesta') and response.altaSGHMovimientoRespuesta:
+                for response in response.altaSGHMovimientoRespuesta:
                     try:
-                        external_record.append(respuesta)
+                        error = True if 'pdaId' in response and response['pdaId'] == 0 else False
+                        alta_vl.write({
+                            'id_alta': response['pdaId'] if 'pdaId' in response else False,
+                            'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
+                            'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
+                            'nroPlaza': response['nroPlaza'] if 'nroPlaza' in response else False,
+                            'codigoJornadaFormal': response[
+                                'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
+                            'descripcionJornadaFormal': response[
+                                'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
+                            'is_error_synchronization': error,
+                            'state': 'pendiente_auditoria_cgn' if not error else 'error_sgh',
+                            'error_message_synchronization': response[
+                                'mensaje'] if error and 'mensaje' in response else False
+                        })
                     except Exception as e:
                         _logger.warning(tools.ustr(e))
                         self.create_new_log(
@@ -475,21 +491,28 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                             integration_log=onsc_legajo_integration_error_WS4_9004,
                             long_description="Error devuelto por SGH: %s" % tools.ustr(e)
                         )
-                        return "Error devuelto por SGH: %s" % tools.ustr(e)
-                return external_record
+                        alta_vl.write({
+                            'is_error_synchronization': True,
+                            'state': 'error_sgh',
+                            'error_message_synchronization': "Error devuelto por SGH: %s" % tools.ustr(e)
+                        })
 
             else:
                 self.create_new_log(
                     origin='WS4',
                     type='error',
                     integration_log=onsc_legajo_integration_error_WS4_9004,
-                    long_description="No se obtuvo respuesta del servicio web"
+                    long_description="No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
                 )
-                return "No se obtuvo respuesta del servicio web"
-            return False
+                alta_vl.write({
+                    'is_error_synchronization': True,
+                    'state': 'error_sgh',
+                    'error_message_synchronization': "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
+                })
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
         IntegrationError = self.env['onsc.legajo.integration.error']
+        alta_vl = self._context.get('alta_vl')
         if hasattr(response, 'altaSGHMovimientoRespuesta'):
             result_error_code = response.servicioResultado.codigo
             for v_error in response.altaSGHMovimientoRespuesta:
@@ -503,9 +526,13 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                     integration_log=error or integration_error,
                     ws_tuple=False,
                     long_description=v_error.mensaje)
-            return response.altaSGHMovimientoRespuesta
+            alta_vl.write({
+                'is_error_synchronization': True,
+                'state': 'error_sgh',
+                'error_message_synchronization': v_error.mensaje
+            })
         else:
-            return super(ONSCLegajoAbstractSyncW4, self)._process_response_witherror(
+            super(ONSCLegajoAbstractSyncW4, self)._process_response_witherror(
                 response,
                 origin_name,
                 integration_error,

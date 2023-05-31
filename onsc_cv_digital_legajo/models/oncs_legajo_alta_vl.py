@@ -254,30 +254,30 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         self.check_required_fieds_ws4()
-        responses = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
+        self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
             log_info=log_info).suspend_security().syncronize_multi(self)
-        if isinstance(responses, str):
-            self.is_error_synchronization = True
-            self.state = 'error_sgh'
-            self.error_message_synchronization = responses
-        else:
-            for response in responses:
-                if not isinstance(response, str):
-                    error = True if 'pdaId' in response and response['pdaId'] == 0 else False
-                    self.write({
-                        'id_alta': response['pdaId'] if 'pdaId' in response else False,
-                        'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
-                        'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
-                        'nroPlaza': response['nroPlaza'] if 'nroPlaza' in response else False,
-                        'codigoJornadaFormal': response[
-                            'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
-                        'descripcionJornadaFormal': response[
-                            'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
-                        'is_error_synchronization': error,
-                        'state': 'pendiente_auditoria_cgn' if not error else 'error_sgh',
-                        'error_message_synchronization': response[
-                            'mensaje'] if error and 'mensaje' in response else False
-                    })
+        # if isinstance(responses, str):
+        #     self.is_error_synchronization = True
+        #     self.state = 'error_sgh'
+        #     self.error_message_synchronization = responses
+        # else:
+        #     for response in responses:
+        #         if not isinstance(response, str):
+        #             error = True if 'pdaId' in response and response['pdaId'] == 0 else False
+        #             self.write({
+        #                 'id_alta': response['pdaId'] if 'pdaId' in response else False,
+        #                 'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
+        #                 'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
+        #                 'nroPlaza': response['nroPlaza'] if 'nroPlaza' in response else False,
+        #                 'codigoJornadaFormal': response[
+        #                     'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
+        #                 'descripcionJornadaFormal': response[
+        #                     'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
+        #                 'is_error_synchronization': error,
+        #                 'state': 'pendiente_auditoria_cgn' if not error else 'error_sgh',
+        #                 'error_message_synchronization': response[
+        #                     'mensaje'] if error and 'mensaje' in response else False
+        #             })
 
     def action_call_multi_ws4(self):
         self.with_context(not_check_attached_document=True).check_required_fieds_ws4()
