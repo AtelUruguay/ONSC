@@ -3,10 +3,11 @@ import datetime
 import json
 import logging
 import tempfile
-from odoo.exceptions import ValidationError
 from odoo import fields, models, api, _, tools
 from odoo.exceptions import UserError
+from odoo.exceptions import ValidationError
 from odoo.osv import expression
+
 from ...onsc_cv_digital.models.onsc_cv_useful_tools import is_valid_phone
 
 _logger = logging.getLogger(__name__)
@@ -197,21 +198,21 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             error.append("El formato del teléfono móvil es incorrecto")
         return error
 
-    def obtener_nombre_campo_por_string(self,valor_string):
+    def get_string_by_fieldname(self, field_name):
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
         for nombre_campo, campo in MassLine.get_fields().items():
-            if campo.string == valor_string:
-                return nombre_campo
-        return None
+            if campo.name == field_name:
+                return campo.string
+        return ''
 
-    def get_position(self,array, field_string):
-        field_name=self.obtener_nombre_campo_por_string(field_string)
+    def get_position(self, array, field_name):
+        field_string = self.get_string_by_fieldname(field_name)
 
-        if field_name in array:
-            posicion = array.index(field_name)
+        if field_string in array:
+            posicion = array.index(field_string)
             return posicion
         else:
-            return -1
+            return message_error.append("La columna %s no corresponde al formato esperado" % field_string)
 
     def action_process_excel(self):
 
@@ -229,6 +230,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
         LegajoOffice = self.env['onsc.legajo.office']
         LegajoNorm = self.env['onsc.legajo.norm']
+        country_code = "UY"
+        country_uy_id = self.env['res.country'].search([
+            ('code', 'in', [country_code.upper(), country_code.lower()])
+        ], limit=1)
         column_names = sheet.row_values(0)
         try:
             for row_no in range(1, sheet.nrows):
@@ -242,19 +247,21 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         ('inciso', '=', self.inciso_id.id),
                         ('unidadEjecutora', '=', self.operating_unit_id.id),
                         '&', '|',
-                        ('programa', '=', str(line[27])),
-                        ('programaDescripcion', '=', str(line[27])),
+                        ('programa', '=', str(line[self.get_position(column_names, 'program')])),
+                        ('programaDescripcion', '=', str(line[self.get_position(column_names, 'program')])),
                         '|',
-                        ('proyecto', '=', str(line[28])),
-                        ('proyectoDescripcion', '=', str(line[28]))
+                        ('proyecto', '=', str(line[self.get_position(column_names, 'project')])),
+                        ('proyectoDescripcion', '=', str(line[self.get_position(column_names, 'project')]))
                     ], limit=1)
                 except Exception:
                     message_error.append(
                         " \n Los datos para la oficina tiene un formato inválido")
                 try:
                     norm_id = LegajoNorm.sudo().search(
-                        [('anioNorma', '=', int(float(line[47]))), ('numeroNorma', '=', int(float(line[46]))),
-                         ('articuloNorma', '=', int(float(line[48]))), ('tipoNorma', '=', line[45])],
+                        [('anioNorma', '=', int(float(line[self.get_position(column_names, 'norm_year')]))),
+                         ('numeroNorma', '=', int(float(line[self.get_position(column_names, 'norm_number')]))),
+                         ('articuloNorma', '=', int(float(line[self.get_position(column_names, 'norm_article')]))),
+                         ('tipoNorma', '=', line[self.get_position(column_names, 'norm_type')])],
                         limit=1)
                 except Exception:
                     message_error.append(
@@ -262,99 +269,131 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 if not office:
                     message_error.append(
                         "No se puedo encontrar la oficina con los códigos de programa %s y proyecto %s" % (
-                            line[27], line[28]))
+                            line[self.get_position(column_names, 'program')],
+                            line[self.get_position(column_names, 'project')]))
 
                 if not norm_id:
                     message_error.append(
                         " \nNo se puedo encontrar la norma con los códigos de año %s, número %s, artículo %s y tipo %s" % (
-                            line[47], line[46], line[48], line[45]))
+                            line[self.get_position(column_names, 'norm_year')],
+                            line[self.get_position(column_names, 'norm_number')],
+                            line[self.get_position(column_names, 'norm_article')],
+                            line[self.get_position(column_names, 'norm_type')]))
 
-                descriptor1_id = MassLine.find_by_code_name_many2one('descriptor1_id', 'code', 'name', line[31])
-                descriptor2_id = MassLine.find_by_code_name_many2one('descriptor2_id', 'code', 'name', line[32])
-                descriptor3_id = MassLine.find_by_code_name_many2one('descriptor3_id', 'code', 'name', line[33])
-                descriptor4_id = MassLine.find_by_code_name_many2one('descriptor4_id', 'code', 'name', line[34])
+                descriptor1_id = MassLine.find_by_code_name_many2one('descriptor1_id', 'code', 'name', line[
+                    self.get_position(column_names, 'descriptor1_id')])
+                descriptor2_id = MassLine.find_by_code_name_many2one('descriptor2_id', 'code', 'name', line[
+                    self.get_position(column_names, 'descriptor2_id')])
+                descriptor3_id = MassLine.find_by_code_name_many2one('descriptor3_id', 'code', 'name', line[
+                    self.get_position(column_names, 'descriptor3_id')])
+                descriptor4_id = MassLine.find_by_code_name_many2one('descriptor4_id', 'code', 'name', line[
+                    self.get_position(column_names, 'descriptor4_id')])
                 budget_item_id = self.get_partida(descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id)
                 if not budget_item_id:
                     message_error.append(
                         line.message_error + " \nNo se puedo encontrar la partida con datos de los descriptores")
 
+                document_number = line[self.get_position(column_names, 'document_number')]
+                sex = line[self.get_position(column_names, 'cv_sex')]
+                birth_date = line[self.get_position(column_names, 'birth_date')]
+                crendencial_serie = line[self.get_position(column_names, 'crendencial_serie')]
+                credential_number = line[self.get_position(column_names, 'credential_number')]
+                date_start = line[self.get_position(column_names, 'date_start')]
+                date_income_public_administration = line[
+                    self.get_position(column_names, 'date_income_public_administration')]
+                graduation_date = line[self.get_position(column_names, 'graduation_date')]
+                contract_expiration_date = line[self.get_position(column_names, 'contract_expiration_date')]
+                resolution_date = line[self.get_position(column_names, 'resolution_date')]
                 values = {
                     'nro_line': row_no,
                     'mass_upload_id': self.id,
-                    'document_number': line[0] if line[0] else message_error.append(
+                    'document_number': document_number if document_number else message_error.append(
                         " \nEl número de documento es obligatorio"),
-                    'cv_sex': line[1] if line[1] else message_error.append(" \nEl sexo es obligatorio"),
+                    'cv_sex': sex if sex else message_error.append(" \nEl sexo es obligatorio"),
                     'birth_date': datetime.datetime.fromordinal(
-                        datetime.datetime(1900, 1, 1).toordinal() + line[2] - 2) if
-                    line[2] else message_error.append(" \nLa fecha de nacimiento es obligatoria"),
-                    'document_country_id': MassLine.find_by_code_name_many2one('document_country_id', 'code', 'name',
-                                                                               line[3]),
+                        datetime.datetime(1900, 1, 1).toordinal() + birth_date - 2) if
+                    birth_date else message_error.append(" \nLa fecha de nacimiento es obligatoria"),
+                    'document_country_id': country_uy_id.id if country_uy_id else False,
                     'marital_status_id': MassLine.find_by_code_name_many2one('marital_status_id', 'code', 'name',
-                                                                             line[4]),
+                                                                             line[self.get_position(column_names,
+                                                                                                    'marital_status_id')]),
                     'birth_country_id': MassLine.find_by_code_name_many2one('birth_country_id', 'code', 'name',
-                                                                            line[5]),
-                    'citizenship': line[6],
-                    'crendencial_serie': line[7].upper() if line[7] else message_error.append(
+                                                                            line[self.get_position(column_names,
+                                                                                                   'birth_country_id')]),
+                    'citizenship': line[self.get_position(column_names, 'citizenship')],
+                    'crendencial_serie': crendencial_serie.upper() if crendencial_serie else message_error.append(
                         " \nEl número de credencial es obligatorio"),
-                    'credential_number': line[8] if line[8] else message_error.append(
+                    'credential_number': credential_number if credential_number else message_error.append(
                         " \nEl número de credencial es obligatorio"),
-                    'personal_phone': line[9],
-                    'mobile_phone': line[10],
-                    'email': line[11],
+                    'personal_phone': line[self.get_position(column_names, 'personal_phone')],
+                    'mobile_phone': line[self.get_position(column_names, 'mobile_phone')],
+                    'email': line[self.get_position(column_names, 'email')],
                     'address_state_id': MassLine.find_by_code_name_many2one('address_state_id', 'code', 'name',
-                                                                            line[12]),
+                                                                            line[self.get_position(column_names,
+                                                                                                   'address_state_id')]),
                     'address_location_id': MassLine.find_by_code_name_many2one('address_location_id', 'code', 'name',
-                                                                               line[13]),
+                                                                               line[self.get_position(column_names,
+                                                                                                      'address_location_id')]),
                     'address_street_id': MassLine.find_by_code_name_many2one('address_street_id', 'code', 'street',
-                                                                             line[14]),
+                                                                             line[self.get_position(column_names,
+                                                                                                    'address_street_id')]),
                     'address_street2_id': MassLine.find_by_code_name_many2one('address_street2_id', 'code', 'street',
-                                                                              line[15]),
+                                                                              line[self.get_position(column_names,
+                                                                                                     'address_street2_id')]),
                     'address_street3_id': MassLine.find_by_code_name_many2one('address_street3_id', 'code', 'street',
-                                                                              line[16]),
-                    'address_zip': line[17],
-                    'address_nro_door': line[18],
-                    'address_is_bis': line[19],
-                    'address_apto': line[20],
-                    'address_place': line[21],
-                    'address_block': line[22],
-                    'address_sandlot': line[23],
+                                                                              line[self.get_position(column_names,
+                                                                                                     'address_street3_id')]),
+                    'address_zip': line[self.get_position(column_names, 'address_zip')],
+                    'address_nro_door': line[self.get_position(column_names, 'address_nro_door')],
+                    'address_is_bis': line[self.get_position(column_names, 'address_is_bis')],
+                    'address_apto': line[self.get_position(column_names, 'address_apto')],
+                    'address_place': line[self.get_position(column_names, 'address_place')],
+                    'address_block': line[self.get_position(column_names, 'address_block')],
+                    'address_sandlot': line[self.get_position(column_names, 'address_sandlot')],
                     'date_start': datetime.datetime.fromordinal(
-                        datetime.datetime(1900, 1, 1).toordinal() + line[24] - 2) if
-                    line[24] else False,
+                        datetime.datetime(1900, 1, 1).toordinal() + date_start - 2) if
+                    date_start else False,
                     'income_mechanism_id': MassLine.find_by_code_name_many2one('income_mechanism_id', 'code', 'name',
-                                                                               line[25]),
-                    'call_number': line[26],
+                                                                               line[self.get_position(column_names,
+                                                                                                      'income_mechanism_id')]),
+                    'call_number': line[self.get_position(column_names, 'call_number')],
                     'program_project_id': office.id if office else False,
-                    'is_reserva_sgh': line[29],
+                    'is_reserva_sgh': line[self.get_position(column_names, 'is_reserva_sgh')],
                     'regime_id': MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
-                                                                     line[30]),
+                                                                     line[self.get_position(column_names,
+                                                                                            'regime_id')]),
                     'descriptor1_id': descriptor1_id,
                     'descriptor2_id': descriptor2_id,
                     'descriptor3_id': descriptor3_id,
                     'descriptor4_id': descriptor4_id,
-                    'nroPuesto': line[35],
-                    'nroPlaza': line[36],
-                    'department_id': MassLine.find_by_code_name_many2one('department_id', 'code', 'name', line[37]),
-                    'security_job_id': MassLine.find_by_code_name_many2one('security_job_id', 'name', 'name', line[38]),
-                    'occupation_id': MassLine.find_by_code_name_many2one('occupation_id', 'code', 'name', line[39]),
+                    'nroPuesto': line[self.get_position(column_names, 'nroPuesto')],
+                    'nroPlaza': line[self.get_position(column_names, 'nroPlaza')],
+                    'department_id': MassLine.find_by_code_name_many2one('department_id', 'code', 'name', line[
+                        self.get_position(column_names, 'department_id')]),
+                    'security_job_id': MassLine.find_by_code_name_many2one('security_job_id', 'name', 'name', line[
+                        self.get_position(column_names, 'security_job_id')]),
+                    'occupation_id': MassLine.find_by_code_name_many2one('occupation_id', 'code', 'name', line[
+                        self.get_position(column_names, 'occupation_id')]),
                     'date_income_public_administration': datetime.datetime.fromordinal(
-                        datetime.datetime(1900, 1, 1).toordinal() + line[40] - 2) if line[40] else False,
-                    'inactivity_years': line[41],
+                        datetime.datetime(1900, 1,
+                                          1).toordinal() + date_income_public_administration - 2) if date_income_public_administration else False,
+                    'inactivity_years': line[self.get_position(column_names, 'inactivity_years')],
                     'graduation_date': datetime.datetime.fromordinal(
-                        datetime.datetime(1900, 1, 1).toordinal() + line[42] - 2) if line[42] else False,
+                        datetime.datetime(1900, 1, 1).toordinal() + graduation_date - 2) if graduation_date else False,
                     'contract_expiration_date': datetime.datetime.fromordinal(
-                        datetime.datetime(1900, 1, 1).toordinal() + line[43] - 2) if line[
-                        43] else False,
-                    'reason_description': line[44],
+                        datetime.datetime(1900, 1,
+                                          1).toordinal() + contract_expiration_date - 2) if contract_expiration_date else False,
+                    'reason_description': line[self.get_position(column_names, 'reason_description')],
                     'norm_id': norm_id.id if norm_id else False,
-                    'resolution_description': line[49],
+                    'resolution_description': line[self.get_position(column_names, 'resolution_description')],
                     'resolution_date': datetime.datetime.fromordinal(
-                        datetime.datetime(1900, 1, 1).toordinal() + line[50] - 2) if line[
-                        50] else False,
-                    'resolution_type': line[51],
+                        datetime.datetime(1900, 1, 1).toordinal() + resolution_date - 2) if resolution_date else False,
+                    'resolution_type': line[self.get_position(column_names, 'resolution_type')],
                     'retributive_day_id': MassLine.find_by_code_name_many2one('retributive_day_id', 'codigoJornada',
-                                                                              'descripcionJornada', line[52]),
-                    'additional_information': line[53],
+                                                                              'descripcionJornada', line[
+                                                                                  self.get_position(column_names,
+                                                                                                    'retributive_day_id')]),
+                    'additional_information': line[self.get_position(column_names, 'additional_information')],
                     'message_error': '',
                 }
                 values, validate_error = MassLine.validate_fields(values)
@@ -590,7 +629,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     second_surname = fields.Char(string='Segundo apellido')
     name_ci = fields.Char(string='Nombre en cédula')
     partner_id = fields.Many2one('res.partner', string='Contacto')
-    cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], u'Sexo')
+    cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], 'Sexo')
     birth_date = fields.Date(string='Fecha de nacimiento')
     document_country_id = fields.Many2one('res.country', string='País del documento')
     document_number = fields.Char(string='C.I.')
