@@ -3,6 +3,7 @@
 import logging
 
 from odoo import models, tools, api
+from ...soap import soap_client
 
 _logger = logging.getLogger(__name__)
 
@@ -403,6 +404,49 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         _logger.info('******************WS4')
         return self.with_context(log_info=log_info).suspend_security()._syncronize(wsclient, parameter, 'WS4',
                                                                                    integration_error, data)
+    def _syncronize(self, client, parameter, origin_name, integration_error, values=False):
+        IntegrationError = self.env['onsc.legajo.integration.error']
+        ONSCLegajoClient = soap_client.ONSCLegajoClient()
+        try:
+            response = ONSCLegajoClient.get_response(client, parameter, values)
+        except Exception as e:
+            self.create_new_log(
+                origin=origin_name,
+                type='error',
+                integration_log=integration_error,
+                ws_tuple=False,
+                long_description=tools.ustr(e))
+            return "Error devuelto por SGH: " + tools.ustr(e)
+        if hasattr(response, 'servicioResultado'):
+            if response.servicioResultado.codigo == 0:
+                return self._populate_from_syncronization(response)
+            else:
+                error = IntegrationError.search([
+                    ('integration_code', '=', integration_error.integration_code),
+                    ('code_error', '=', str(response.servicioResultado.codigo))
+                ], limit=1)
+                return self._process_response_witherror(
+                    response,
+                    origin_name,
+                    error or integration_error,
+                    ''
+                )
+        elif hasattr(response, 'codigoResultado'):
+            if response.codigoResultado == 0:
+                return self._populate_from_syncronization(response)
+            else:
+                error = IntegrationError.search([
+                    ('integration_code', '=', integration_error.integration_code),
+                    ('code_error', '=', str(response.codigoResultado))
+                ], limit=1)
+
+                return self._process_response_witherror(
+                    response,
+                    origin_name,
+                    error or integration_error,
+                    ''
+                )
+        return "No se obtuvo respuesta del WS"
 
     def _populate_from_syncronization(self, response):
         # pylint: disable=invalid-commit
@@ -448,21 +492,18 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         IntegrationError = self.env['onsc.legajo.integration.error']
         if hasattr(response, 'altaSGHMovimientoRespuesta'):
             result_error_code = response.servicioResultado.codigo
-            validation_error = ''
             for v_error in response.altaSGHMovimientoRespuesta:
                 error = IntegrationError.search([
                     ('integration_code', '=', integration_error.integration_code),
                     ('code_error', '=', str(result_error_code))
                 ], limit=1)
-                validation_error += (error.description or v_error.mensaje) + '\n'
                 self.create_new_log(
                     origin=origin_name,
                     type='error',
                     integration_log=error or integration_error,
                     ws_tuple=False,
                     long_description=v_error.mensaje)
-            return "Error al enviar datos al WS:" + str(
-                response.servicioResultado.mensaje) + '\n' + validation_error
+            return response.altaSGHMovimientoRespuesta
         else:
             return super(ONSCLegajoAbstractSyncW4, self)._process_response_witherror(
                 response,

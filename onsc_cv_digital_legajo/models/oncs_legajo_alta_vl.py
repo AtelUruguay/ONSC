@@ -254,24 +254,33 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         self.check_required_fieds_ws4()
-        response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
-            log_info=log_info).suspend_security().syncronize(self)[0]
-        if not isinstance(response, str):
-            self.id_alta = response['pdaId']
-            self.secPlaza = response['secPlaza']
-            self.nroPuesto = response['idPuesto']
-            self.nroPlaza = response['nroPlaza']
-            self.codigoJornadaFormal = response['codigoJornadaFormal']
-            self.descripcionJornadaFormal = response['descripcionJornadaFormal']
-            self.is_error_synchronization = False
-            self.state = 'pendiente_auditoria_cgn'
-        elif isinstance(response, str):
+        responses = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
+            log_info=log_info).suspend_security().syncronize_multi(self)
+        if isinstance(responses, str):
             self.is_error_synchronization = True
             self.state = 'error_sgh'
-            self.error_message_synchronization = response
+            self.error_message_synchronization = responses
+        else:
+            for response in responses:
+                if not isinstance(response, str):
+                    error = True if 'pdaId' in response and response['pdaId'] == 0 else False
+                    self.write({
+                        'id_alta': response['pdaId'] if 'pdaId' in response else False,
+                        'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
+                        'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
+                        'nroPlaza': response['nroPlaza'] if 'nroPlaza' in response else False,
+                        'codigoJornadaFormal': response[
+                            'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
+                        'descripcionJornadaFormal': response[
+                            'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
+                        'is_error_synchronization': error,
+                        'state': 'pendiente_auditoria_cgn' if not error else 'error_sgh',
+                        'error_message_synchronization': response[
+                            'mensaje'] if error and 'mensaje' in response else False
+                    })
 
     def action_call_multi_ws4(self):
-        self.check_required_fieds_ws4()
+        self.with_context(not_check_attached_document=True).check_required_fieds_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
             raise ValidationError(_("Solo se pueden sincronizar altas en estado borrador o error SGH"))
         altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
@@ -282,6 +291,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     def syncronize_multi_ws4(self):
         altas_vl_grouped = {}
+        AltaVLWS4 = self.env['onsc.legajo.abstract.alta.vl.ws4'].sudo()
         for alta in self:
             inciso = alta.inciso_id
             unidad_ejecutora = alta.operating_unit_id
@@ -291,8 +301,8 @@ class ONSCLegajoAltaVL(models.Model):
             else:
                 altas_vl_grouped[clave] = alta
         for clave, altas_vl in altas_vl_grouped.items():
-            responses = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
-                log_info=False).suspend_security().syncronize_multi(altas_vl)
+            responses = AltaVLWS4.with_context(
+                log_info=False).syncronize_multi(altas_vl)
             if isinstance(responses, str):
                 altas_vl.write({
                     'is_error_synchronization': True,
@@ -300,16 +310,26 @@ class ONSCLegajoAltaVL(models.Model):
                     'error_message_synchronization': responses
                 })
             else:
-                for response, record in zip(responses, altas_vl):
+                for response in responses:
                     if not isinstance(response, str):
-                        record.id_alta = response['pdaId']
-                        record.secPlaza = response['secPlaza']
-                        record.nroPuesto = response['idPuesto']
-                        record.nroPlaza = response['nroPlaza']
-                        record.codigoJornadaFormal = response['codigoJornadaFormal']
-                        record.descripcionJornadaFormal = response['descripcionJornadaFormal']
-                        record.is_error_synchronization = False
-                        record.state = 'pendiente_auditoria_cgn'
+                        altas_vl_id = altas_vl.filtered(
+                            lambda x: x.partner_id.cv_nro_doc[:-1] == str(response['cedula']))
+                        error = True if 'pdaId' in response and response['pdaId'] == 0 else False
+                        if altas_vl_id:
+                            altas_vl_id.write({
+                                'id_alta': response['pdaId'] if 'pdaId' in response else False,
+                                'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
+                                'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
+                                'nroPlaza': response['nroPlaza'] if 'nroPlaza' in response else False,
+                                'codigoJornadaFormal': response[
+                                    'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
+                                'descripcionJornadaFormal': response[
+                                    'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
+                                'is_error_synchronization': error,
+                                'state': 'pendiente_auditoria_cgn' if not error else 'error_sgh',
+                                'error_message_synchronization': response[
+                                    'mensaje'] if error and 'mensaje' in response else False
+                            })
 
     def check_required_fieds_ws4(self):
         for record in self:

@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 from odoo import fields, models, api, _, tools
 from odoo.exceptions import UserError
 from odoo.osv import expression
+from ...onsc_cv_digital.models.onsc_cv_useful_tools import is_valid_phone
 
 _logger = logging.getLogger(__name__)
 try:
@@ -178,6 +179,40 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         else:
             return str(row.value)
 
+    def validate_cv_fields(self, value):
+        error = []
+        if value['credential_number'] and not str(value['credential_number']).isdigit():
+            error.append("El número de credencial debe ser numérico")
+        if value['crendencial_serie'] and not str(value['crendencial_serie']).isalpha():
+            error.append("La serie de la credencial no puede contener números")
+        prefix_phone_id = self.env['res.country.phone'].search(
+            [('country_id.code', '=', 'UY')])
+        phone_formatted, format_with_error, invalid_phone = is_valid_phone(str(value['personal_phone']),
+                                                                           prefix_phone_id.country_id)
+        if format_with_error or invalid_phone:
+            error.append("El formato del teléfono alternativo es incorrecto")
+        phone_formatted, format_with_error, invalid_phone = is_valid_phone(str(value['mobile_phone']),
+                                                                           prefix_phone_id.country_id)
+        if format_with_error or invalid_phone:
+            error.append("El formato del teléfono móvil es incorrecto")
+        return error
+
+    def obtener_nombre_campo_por_string(self,valor_string):
+        MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
+        for nombre_campo, campo in MassLine.get_fields().items():
+            if campo.string == valor_string:
+                return nombre_campo
+        return None
+
+    def get_position(self,array, field_string):
+        field_name=self.obtener_nombre_campo_por_string(field_string)
+
+        if field_name in array:
+            posicion = array.index(field_name)
+            return posicion
+        else:
+            return -1
+
     def action_process_excel(self):
 
         try:
@@ -185,7 +220,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             fp.write(binascii.a2b_base64(self.document_file))
             fp.seek(0)
             workbook = xlrd.open_workbook(fp.name)
-            sheet = workbook.sheet_by_index(0)
+            sheet = workbook.sheet_by_name('Datos')
         except Exception:
             raise UserError(_("Archivo inválido"))
         if sheet.ncols < 53:
@@ -194,6 +229,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
         LegajoOffice = self.env['onsc.legajo.office']
         LegajoNorm = self.env['onsc.legajo.norm']
+        column_names = sheet.row_values(0)
         try:
             for row_no in range(1, sheet.nrows):
                 line = list(map(self.process_value, sheet.row(row_no)))
@@ -245,11 +281,12 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 values = {
                     'nro_line': row_no,
                     'mass_upload_id': self.id,
-                    'document_number': line[0],
-                    'cv_sex': line[1],
+                    'document_number': line[0] if line[0] else message_error.append(
+                        " \nEl número de documento es obligatorio"),
+                    'cv_sex': line[1] if line[1] else message_error.append(" \nEl sexo es obligatorio"),
                     'birth_date': datetime.datetime.fromordinal(
                         datetime.datetime(1900, 1, 1).toordinal() + line[2] - 2) if
-                    line[2] else False,
+                    line[2] else message_error.append(" \nLa fecha de nacimiento es obligatoria"),
                     'document_country_id': MassLine.find_by_code_name_many2one('document_country_id', 'code', 'name',
                                                                                line[3]),
                     'marital_status_id': MassLine.find_by_code_name_many2one('marital_status_id', 'code', 'name',
@@ -257,8 +294,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'birth_country_id': MassLine.find_by_code_name_many2one('birth_country_id', 'code', 'name',
                                                                             line[5]),
                     'citizenship': line[6],
-                    'crendencial_serie': line[7],
-                    'credential_number': line[8],
+                    'crendencial_serie': line[7].upper() if line[7] else message_error.append(
+                        " \nEl número de credencial es obligatorio"),
+                    'credential_number': line[8] if line[8] else message_error.append(
+                        " \nEl número de credencial es obligatorio"),
                     'personal_phone': line[9],
                     'mobile_phone': line[10],
                     'email': line[11],
@@ -319,6 +358,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'message_error': '',
                 }
                 values, validate_error = MassLine.validate_fields(values)
+                message_error.extend(self.validate_cv_fields(values))
                 if validate_error:
                     values['message_error'] = values['message_error'] + '\n' + validate_error
 
@@ -349,7 +389,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         CVDigital = self.env['onsc.cv.digital']
         cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
                                                                               limit=1).id or False
-
+        country_code = "UY"
+        country_uy = self.env['res.country'].search([
+            ('code', 'in', [country_code.upper(), country_code.lower()])
+        ], limit=1)
         for line in self.line_ids:
             partner = Partner.sudo().search([('cv_nro_doc', '=', line.document_number)], limit=1)
             try:
@@ -361,9 +404,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         'cv_nro_doc': line.document_number,
                         'cv_document_type_id': cv_document_type_id,
                         'is_partner_cv': True,
+                        'email': line.email,
                     }
                     partner = Partner.suspend_security().create(data_partner)
-                partner.suspend_security().update_dnic_values()
+                    partner.suspend_security().update_dnic_values()
                 if not partner.cv_first_name or not partner.cv_last_name_1:
                     raise ValidationError(_('No se creo el contacto.No se pudo obtener el nombre y apellido del DNIC'))
                 line.suspend_security().write({'first_name': partner.cv_first_name,
@@ -382,28 +426,33 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             cv_digital = CVDigital.sudo().search([('partner_id', '=', partner.id)], limit=1)
             try:
                 if not cv_digital:
-                    CVDigital.suspend_security().create({'partner_id': partner.id,
-                                                         'personal_phone': line.personal_phone,
-                                                         'mobile_phone': line.mobile_phone,
-                                                         'email': line.email,
-                                                         'marital_status_id': line.marital_status_id.id,
-                                                         'country_of_birth_id': line.birth_country_id.id,
-                                                         'uy_citizenship': line.citizenship,
-                                                         'crendencial_serie': line.crendencial_serie,
-                                                         'credential_number': line.credential_number,
-                                                         'cv_address_state_id': line.address_state_id.id,
-                                                         'cv_address_location_id': line.address_location_id.id,
-                                                         'cv_address_street_id': line.address_street_id.id,
-                                                         'cv_address_street2_id': line.address_street2_id.id,
-                                                         'cv_address_street3_id': line.address_street3_id.id,
-                                                         'cv_address_zip': line.address_zip,
-                                                         'cv_address_nro_door': line.address_nro_door,
-                                                         'cv_address_is_cv_bis': line.address_is_bis,
-                                                         'cv_address_apto': line.address_apto,
-                                                         'cv_address_place': line.address_place,
-                                                         'cv_address_block': line.address_block,
-                                                         'cv_address_sandlot': line.address_sandlot,
-                                                         })
+                    data = {'partner_id': partner.id,
+                            'personal_phone': line.personal_phone,
+                            'mobile_phone': line.mobile_phone,
+                            'email': line.email,
+                            'country_id': country_uy.id if country_uy else False,
+                            'marital_status_id': line.marital_status_id.id,
+                            'country_of_birth_id': line.birth_country_id.id,
+                            'uy_citizenship': line.citizenship,
+                            'crendencial_serie': line.crendencial_serie,
+                            'credential_number': line.credential_number,
+                            'cv_address_state_id': line.address_state_id.id,
+                            'cv_address_location_id': line.address_location_id.id,
+                            'cv_address_street_id': line.address_street_id.id,
+                            'cv_address_street2_id': line.address_street2_id.id,
+                            'cv_address_street3_id': line.address_street3_id.id,
+                            'cv_address_zip': line.address_zip,
+                            'cv_address_nro_door': line.address_nro_door,
+                            'cv_address_is_cv_bis': line.address_is_bis,
+                            'cv_address_apto': line.address_apto,
+                            'cv_address_place': line.address_place,
+                            'cv_address_block': line.address_block,
+                            'cv_address_sandlot': line.address_sandlot,
+                            }
+                    error = self.validate_cv_fields(data)
+                    if error:
+                        raise ValidationError(''.join(error))
+                    cv_digital = CVDigital.suspend_security().create(data)
                 line.write({'message_error': ''})
                 self.env.cr.commit()
             except Exception as e:
@@ -447,6 +496,17 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'additional_information': line.additional_information,
                 'norm_id': line.norm_id.id if line.norm_id else False,
                 'call_number': line.call_number,
+                'country_code': cv_digital.country_code,
+                'country_of_birth_id': cv_digital.country_of_birth_id.id if cv_digital.country_of_birth_id else False,
+                'marital_status_id': cv_digital.marital_status_id.id if cv_digital.marital_status_id else False,
+                'uy_citizenship': cv_digital.uy_citizenship,
+                'personal_phone': cv_digital.personal_phone,
+                'mobile_phone': cv_digital.mobile_phone,
+                'email': cv_digital.email,
+                'cv_address_street_id': cv_digital.cv_address_street_id.id if cv_digital.cv_address_street_id else False,
+                'cv_address_street2_id': cv_digital.cv_address_street2_id.id if cv_digital.cv_address_street2_id else False,
+                'cv_address_street3_id': cv_digital.cv_address_street3_id.id if cv_digital.cv_address_street3_id else False,
+                'health_provider_id': cv_digital.health_provider_id.id if cv_digital.health_provider_id else False,
                 'mass_upload_id': self.id,
             }
             try:
@@ -461,14 +521,16 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                 e)})
                 self.env.cr.commit()
                 continue
-            try:
-                self.syncronize_ws4()
-            except:
-                continue
+
         if not self.line_ids:
             self.state = 'done'
         else:
             self.state = 'partially'
+
+        try:
+            self.syncronize_ws4()
+        except Exception as e:
+            _logger.error("Error al sincronizar con WS4: " + tools.ustr(e))
 
     def get_partida(self, descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id):
         args = []
@@ -485,7 +547,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         return self.env['onsc.legajo.budget.item'].sudo().search(args, limit=1)
 
     def syncronize_ws4(self):
-        self.search([]).mapped('altas_vl_ids').action_call_multi_ws4()
+        self.mapped('altas_vl_ids').action_call_multi_ws4()
 
     def unlink(self):
         if self.filtered(lambda x: x.altas_vl_ids):
@@ -724,18 +786,18 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                     values[key] = True if 's' in value.lower() or '1' in value else False
                 if field[key].type == 'selection':
                     for selection in self._fields[key].selection:
-                        if value in selection[0]:
+                        if value == '':
+                            values[key] = ''
+                            break
+                        elif value in selection[0]:
                             values[key] = selection[0]
                             break
                         elif value in selection[1]:
                             values[key] = selection[0]
                             break
-                        elif value == '':
-                            values[key] = False
-                            break
                         else:
                             values[key] = False
-                    if not values[key]:
+                    if values[key] == False:
                         raise
             except Exception as e:
                 type_field = ""
