@@ -95,7 +95,7 @@ class ONSCLegajoAltaVL(models.Model):
     country_code = fields.Char("Código")
     origin_type = fields.Selection([('M', 'Manual'), ('P', 'Proceso')], string='Origen',
                                    compute='_compute_origin_type', store=True)
-    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='Modo de creación')
+    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución')
 
     ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN")
 
@@ -255,25 +255,11 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         self.check_required_fieds_ws4()
-        response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
-            log_info=log_info).suspend_security().syncronize(self)[0]
-        if not isinstance(response, str):
-            self.ws4_user_id = self.env.user.id
-            self.id_alta = response['pdaId']
-            self.secPlaza = response['secPlaza']
-            self.nroPuesto = response['idPuesto']
-            self.nroPlaza = response['nroPlaza']
-            self.codigoJornadaFormal = response['codigoJornadaFormal']
-            self.descripcionJornadaFormal = response['descripcionJornadaFormal']
-            self.is_error_synchronization = False
-            self.state = 'pendiente_auditoria_cgn'
-        elif isinstance(response, str):
-            self.is_error_synchronization = True
-            self.state = 'error_sgh'
-            self.error_message_synchronization = response
+        self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
+            log_info=log_info).suspend_security().syncronize_multi(self)
 
     def action_call_multi_ws4(self):
-        self.check_required_fieds_ws4()
+        self.with_context(not_check_attached_document=True).check_required_fieds_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
             raise ValidationError(_("Solo se pueden sincronizar altas en estado borrador o error SGH"))
         altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
@@ -284,6 +270,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     def syncronize_multi_ws4(self):
         altas_vl_grouped = {}
+        AltaVLWS4 = self.env['onsc.legajo.abstract.alta.vl.ws4'].sudo()
         for alta in self:
             inciso = alta.inciso_id
             unidad_ejecutora = alta.operating_unit_id
@@ -293,26 +280,8 @@ class ONSCLegajoAltaVL(models.Model):
             else:
                 altas_vl_grouped[clave] = alta
         for clave, altas_vl in altas_vl_grouped.items():
-            responses = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
-                log_info=False).suspend_security().syncronize_multi(altas_vl)
-            if isinstance(responses, str):
-                altas_vl.write({
-                    'is_error_synchronization': True,
-                    'state': 'error_sgh',
-                    'error_message_synchronization': responses
-                })
-            else:
-                for response, record in zip(responses, altas_vl):
-                    if not isinstance(response, str):
-                        record.ws4_user_id = self.env.user.id
-                        record.id_alta = response['pdaId']
-                        record.secPlaza = response['secPlaza']
-                        record.nroPuesto = response['idPuesto']
-                        record.nroPlaza = response['nroPlaza']
-                        record.codigoJornadaFormal = response['codigoJornadaFormal']
-                        record.descripcionJornadaFormal = response['descripcionJornadaFormal']
-                        record.is_error_synchronization = False
-                        record.state = 'pendiente_auditoria_cgn'
+            AltaVLWS4.with_context(
+                log_info=False).syncronize_multi(altas_vl)
 
     def check_required_fieds_ws4(self):
         for record in self:

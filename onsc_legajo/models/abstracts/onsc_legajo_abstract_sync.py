@@ -71,6 +71,9 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 return long_description
         return "No se obtuvo respuesta del WS"
 
+    def _populate_from_syncronization(self, response):
+        return True
+
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
         return self.create_new_log(
             origin=origin_name,
