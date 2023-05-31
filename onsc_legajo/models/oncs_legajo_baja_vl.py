@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 import json
+
 from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -16,7 +18,7 @@ STATES = [
 ]
 # campos requeridos para la sincronización
 
-required_fields = ['end_date', 'reason_description', 'norm_number', 'norm_article',
+REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article',
                    'norm_type', 'norm_year', 'resolution_description', 'resolution_date',
                    'resolution_type', 'causes_discharge_id']
 
@@ -66,56 +68,6 @@ class ONSCLegajoBajaVL(models.Model):
                 node_form.getparent().remove(node_form)
         res['arch'] = etree.tostring(doc)
         return res
-
-    end_date = fields.Date(string="Fecha de Baja", default=fields.Date.today(), required=True, copy=False)
-
-    causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
-    causes_discharge_extended_id = fields.Many2one("onsc.legajo.causes.discharge.line",
-                                                string="Causal de egreso extendido",
-                                                domain="[('causes_discharge_id', '=', causes_discharge_id)]",
-                                                history=True)
-
-
-    employment_relationship_ids = fields.One2many('onsc.legajo.employment.relationship', 'baja_vl_id',
-                                                  string="Vínculo laboral",
-                                                  compute="_compute_employment_relationship_ids", store=True)
-    attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'baja_vl_id',
-                                                      string='Documentos adjuntos')
-    integration_error_id = fields.Many2one('onsc.legajo.integration.error', string=u'Error reportado integración',
-                                           copy=False)
-
-    id_baja = fields.Char(string="Id Baja")
-    is_require_extended = fields.Boolean("¿Requiere extendido?", compute="_compute_is_require_extended")
-    partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
-    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
-                                              compute='_compute_should_disable_form_edit')
-    is_error_synchronization = fields.Boolean(copy=False)
-    is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
-    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
-
-    @api.depends('state')
-    def _compute_should_disable_form_edit(self):
-        for record in self:
-            record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
-
-    @api.depends('cv_emissor_country_id')
-    def _compute_partner_id_domain(self):
-        for rec in self:
-            rec.partner_id_domain = self._get_domain_partner_ids()
-
-    @api.depends('employment_relationship_ids')
-    def _compute_is_ready_to_send(self):
-        for record in self:
-            vinculo = record.employment_relationship_ids[:1]
-            record.is_ready_send_sgh = bool(vinculo and vinculo.selected)
-
-    @api.depends('causes_discharge_id')
-    def _compute_is_require_extended(self):
-        for rec in self:
-            if rec.causes_discharge_id:
-                rec.is_require_extended = rec.causes_discharge_id.is_require_extended
-            else:
-                rec.is_require_extended = False
 
     def _get_domain(self, args):
         args = expression.AND([[
@@ -167,33 +119,30 @@ class ONSCLegajoBajaVL(models.Model):
             res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
 
-    def _get_domain_partner_ids(self):
-        if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_administrar_bajas'):
-            partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
-                                                          ('employee_id', '!=',
-                                                           self.env.user.employee_id.id)]).mapped(
-                'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
-            return json.dumps([('id', 'in', partner_ids.ids)])
+    end_date = fields.Date(string="Fecha de Baja", default=fields.Date.today(), required=True, copy=False)
 
-        else:
-            employee_id = self.env['hr.employee'].sudo().search(
-                [('cv_emissor_country_id', '=', self.env.user.cv_emissor_country_id.id),
-                 ('cv_document_type_id', '=', self.env.user.cv_document_type_id.id),
-                 ('cv_nro_doc', '=', self.env.user.partner_id.cv_nro_doc)])
-            contract_id = self.env['hr.contract'].search(
-                [('legajo_state', '=', 'active'), ('employee_id', '=', employee_id.id)])
-            if contract_id:
-                iniciso_id = contract_id.inciso_id.id
-                operating_unit_id = contract_id.operating_unit_id.id
-                partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
-                                                              ('inciso_id', '=', iniciso_id),
-                                                              ('operating_unit_id', '=', operating_unit_id),
-                                                              ('employee_id', '!=',
-                                                               self.env.user.employee_id.id)]).mapped(
-                    'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
-                return json.dumps([('id', 'in', partner_ids.ids)])
-            else:
-                return json.dumps([('id', '=', False)])
+    causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
+    causes_discharge_extended_id = fields.Many2one("onsc.legajo.causes.discharge.line",
+                                                   string="Causal de egreso extendido",
+                                                   domain="[('causes_discharge_id', '=', causes_discharge_id)]",
+                                                   history=True)
+
+    employment_relationship_ids = fields.One2many('onsc.legajo.employment.relationship', 'baja_vl_id',
+                                                  string="Vínculo laboral",
+                                                  compute="_compute_employment_relationship_ids", store=True)
+    attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'baja_vl_id',
+                                                      string='Documentos adjuntos')
+    integration_error_id = fields.Many2one('onsc.legajo.integration.error', string=u'Error reportado integración',
+                                           copy=False)
+
+    id_baja = fields.Char(string="Id Baja")
+    is_require_extended = fields.Boolean("¿Requiere extendido?", compute="_compute_is_require_extended")
+    partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
+    is_error_synchronization = fields.Boolean(copy=False)
+    is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
+    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
 
     @api.constrains("end_date")
     def _check_date(self):
@@ -206,6 +155,30 @@ class ONSCLegajoBajaVL(models.Model):
         for record in self:
             if not record.attached_document_discharge_ids:
                 raise ValidationError(_("Debe haber al menos un documento adjunto"))
+
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
+
+    @api.depends('cv_emissor_country_id')
+    def _compute_partner_id_domain(self):
+        for rec in self:
+            rec.partner_id_domain = self._get_domain_partner_ids()
+
+    @api.depends('employment_relationship_ids')
+    def _compute_is_ready_to_send(self):
+        for record in self:
+            vinculo = record.employment_relationship_ids[:1]
+            record.is_ready_send_sgh = bool(vinculo and vinculo.selected)
+
+    @api.depends('causes_discharge_id')
+    def _compute_is_require_extended(self):
+        for rec in self:
+            if rec.causes_discharge_id:
+                rec.is_require_extended = rec.causes_discharge_id.is_require_extended
+            else:
+                rec.is_require_extended = False
 
     @api.depends("partner_id")
     def _compute_employment_relationship_ids(self):
@@ -240,27 +213,41 @@ class ONSCLegajoBajaVL(models.Model):
             rec.employment_relationship_ids = vinculo_ids
 
     def action_call_ws9(self):
-        return self.syncronize_ws9()
-
-    @api.model
-    def syncronize_ws9(self, log_info=False):
         self._check_required_fieds_ws9()
-        response = self.env['onsc.legajo.abstract.baja.vl.ws9'].with_context(
-            log_info=log_info).suspend_security().syncronize(self)
+        self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
-        if not isinstance(response, str):
-            self.id_baja = response['pdaId']
-            self.is_error_synchronization = False
-            self.state = 'pendiente_auditoria_cgn'
-        elif isinstance(response, str):
-            self.is_error_synchronization = True
-            self.state = 'error_sgh'
-            self.error_message_synchronization = response
+    def _get_domain_partner_ids(self):
+        if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_administrar_bajas'):
+            partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
+                                                          ('employee_id', '!=',
+                                                           self.env.user.employee_id.id)]).mapped(
+                'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
+            return json.dumps([('id', 'in', partner_ids.ids)])
+
+        else:
+            employee_id = self.env['hr.employee'].sudo().search(
+                [('cv_emissor_country_id', '=', self.env.user.cv_emissor_country_id.id),
+                 ('cv_document_type_id', '=', self.env.user.cv_document_type_id.id),
+                 ('cv_nro_doc', '=', self.env.user.partner_id.cv_nro_doc)])
+            contract_id = self.env['hr.contract'].search(
+                [('legajo_state', '=', 'active'), ('employee_id', '=', employee_id.id)])
+            if contract_id:
+                iniciso_id = contract_id.inciso_id.id
+                operating_unit_id = contract_id.operating_unit_id.id
+                partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
+                                                              ('inciso_id', '=', iniciso_id),
+                                                              ('operating_unit_id', '=', operating_unit_id),
+                                                              ('employee_id', '!=',
+                                                               self.env.user.employee_id.id)]).mapped(
+                    'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
+                return json.dumps([('id', 'in', partner_ids.ids)])
+            else:
+                return json.dumps([('id', '=', False)])
 
     def _check_required_fieds_ws9(self):
         for record in self:
             message = []
-            for required_field in required_fields:
+            for required_field in REQUIRED_FIELDS:
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
             if not record.partner_id.cv_nro_doc:
