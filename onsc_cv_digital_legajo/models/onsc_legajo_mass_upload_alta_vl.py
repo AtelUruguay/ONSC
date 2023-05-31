@@ -705,6 +705,12 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     )
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada retributiva')
     additional_information = fields.Text(string="Información adicional")
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.state not in ['draft', 'error']
 
     @api.depends('mass_upload_id')
     def _compute_department_id_domain(self):
