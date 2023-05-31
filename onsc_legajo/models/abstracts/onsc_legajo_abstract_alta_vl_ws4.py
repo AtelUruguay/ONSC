@@ -239,6 +239,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                 'descripcionJornadaFormal': response[
                                     'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
                                 'is_error_synchronization': False,
+                                'ws4_user_id': self.env.user.id,
                                 'state': 'pendiente_auditoria_cgn'
                             })
                     except Exception as e:
