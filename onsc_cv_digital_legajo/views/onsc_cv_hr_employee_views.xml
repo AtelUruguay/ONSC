@@ -10,6 +10,9 @@
                     <button name="button_get_info_fromcv" type="object" string="Sincronizar con CV"
                             groups="onsc_legajo.group_legajo_configurador_empleado"/>
                 </header>
+                <field name="cv_sex" position="after">
+                    <field name="cv_sex_updated_date" readonly="1"/>
+                </field>
                 <field name="photo_updated_date" position="after">
                     <field name="last_modification_date" readonly="1"/>
                     <field name="cv_digital_id" invisible="1"/>

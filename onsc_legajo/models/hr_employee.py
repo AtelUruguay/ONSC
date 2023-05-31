@@ -28,7 +28,6 @@ class HrEmployee(models.Model):
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
 
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
-    cv_sex_updated_date = fields.Date(u'Fecha de información sexo')
 
     prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
                                       default=lambda self: self.env['res.country.phone'].search(
