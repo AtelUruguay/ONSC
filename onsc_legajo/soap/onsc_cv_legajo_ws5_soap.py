@@ -71,17 +71,21 @@ class WsLegajoWS5(ServiceBase):
             return response
 
         try:
-            alta_vl = env['onsc.legajo.alta.vl'].search([
+            operacion_vl = env['onsc.legajo.alta.vl'].search([
                 ('id_alta', '=', request.pdaId),
                 ('state', '=', 'pendiente_auditoria_cgn')], limit=1)
-            # alta_vl = env['onsc.legajo.alta.vl'].search([
-            #     ('id', '=', 60)], limit=1)
-            if not alta_vl:
+
+            if not operacion_vl:
+                operacion_vl = env['onsc.legajo.baja.vl'].search([
+                ('id_baja', '=', request.pdaId),
+                ('state', '=', 'pendiente_auditoria_cgn')], limit=1)
+
+            if not operacion_vl:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_151)
             if request.codResult == 'aprobada':
-                alta_vl.action_aprobado_cgn()
+                operacion_vl.action_aprobado_cgn()
             elif request.codResult == 'rechazada':
-                alta_vl.action_rechazado_cgn()
+                operacion_vl.action_rechazado_cgn()
             else:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_152)
             cr.commit()

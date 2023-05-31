@@ -47,3 +47,9 @@ class ONSCLegajoCausesDischargeLine(models.Model):
     causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge",
                                           string="Causal de egreso",
                                           ondelete='cascade')
+
+    def name_get(self):
+        res = []
+        for rec in self:
+            res.append((rec.id, rec.name + '-'+rec.description))
+        return res
