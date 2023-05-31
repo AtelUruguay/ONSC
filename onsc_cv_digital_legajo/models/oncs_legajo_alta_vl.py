@@ -121,8 +121,8 @@ class ONSCLegajoAltaVL(models.Model):
         if self.employee_id.cv_sex != self.cv_sex:
             vals.update({'cv_sex': self.cv_sex})
         if vals:
+            self.cv_digital_id.with_context(can_update_contact_cv=True).suspend_security().write(vals)
             self.employee_id.suspend_security().write(vals)
-            self.cv_digital_id.suspend_security().write(vals)
         return legajo
 
     @api.onchange('partner_id')
@@ -152,21 +152,21 @@ class ONSCLegajoAltaVL(models.Model):
                     record.cv_sex = cv_digital_id.cv_sex
 
                 record.cv_digital_id = cv_digital_id
-                record.country_code = cv_digital_id.partner_id.country_id.code
+                record.country_code = cv_digital_id.country_id.code
                 record.country_of_birth_id = cv_digital_id.country_of_birth_id
-                record.cv_address_state_id = record.partner_id.state_id
-                record.cv_address_location_id = record.partner_id.cv_location_id
+                record.cv_address_state_id = cv_digital_id.cv_address_state_id
+                record.cv_address_location_id = cv_digital_id.cv_address_location_id
                 record.cv_address_street_id = cv_digital_id.cv_address_street_id
                 record.cv_address_street2_id = cv_digital_id.cv_address_street2_id
                 record.cv_address_street3_id = cv_digital_id.cv_address_street3_id
-                record.cv_address_street = record.partner_id.street
-                record.cv_address_nro_door = record.partner_id.cv_nro_door
-                record.cv_address_is_cv_bis = record.partner_id.is_cv_bis
-                record.cv_address_apto = record.partner_id.cv_apto
-                record.cv_address_place = record.partner_id.cv_address_place
-                record.cv_address_zip = record.partner_id.zip
-                record.cv_address_block = record.partner_id.cv_address_block
-                record.cv_address_sandlot = record.partner_id.cv_address_sandlot
+                record.cv_address_street = cv_digital_id.cv_address_street
+                record.cv_address_nro_door = cv_digital_id.cv_address_nro_door
+                record.cv_address_is_cv_bis = cv_digital_id.cv_address_is_cv_bis
+                record.cv_address_apto = cv_digital_id.cv_address_apto
+                record.cv_address_place = cv_digital_id.cv_address_place
+                record.cv_address_zip = cv_digital_id.cv_address_zip
+                record.cv_address_block = cv_digital_id.cv_address_block
+                record.cv_address_sandlot = cv_digital_id.cv_address_sandlot
 
                 record.marital_status_id = cv_digital_id.marital_status_id
                 record.uy_citizenship = cv_digital_id.uy_citizenship

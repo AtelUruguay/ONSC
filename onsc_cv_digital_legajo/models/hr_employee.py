@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields, api
 from odoo.addons.onsc_base.models.onsc_abstract_contact_common_data import CV_SEX as CV_SEX
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SELECTION_RADIO as SELECTION_RADIO
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SITUATION as SITUATION
 
+from odoo import models, fields, api
 from .abstracts.onsc_cv_legajo_abstract_common import BLOOD_TYPE as BLOOD_TYPE
 
 DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
@@ -61,6 +61,10 @@ class HrEmployee(models.Model):
                               related='cv_digital_id.partner_id.cv_sex',
                               store=True,
                               history=True)
+    cv_sex_updated_date = fields.Date(u'Fecha de información sexo',
+                                      related='cv_digital_id.partner_id.cv_sex_updated_date',
+                                      store=True,
+                                      history=True)
     # TODO: SI ERES EMPLEADO SACAR DE AHÍ LA INFO
 
     prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
@@ -240,7 +244,6 @@ class HrEmployee(models.Model):
             type_support_orm.append((4, type_support.id))
         return type_support_orm
 
-
     def _get_info_fromcv(self):
         record = self.sudo()
         vals = {
@@ -249,7 +252,7 @@ class HrEmployee(models.Model):
             # 'cv_expiration_date': record.cv_digital_id.cv_expiration_date,
             # 'document_identity_file': record.cv_digital_id.document_identity_file,
             # 'document_identity_filename': record.cv_digital_id.document_identity_filename,
-            'cv_sex_updated_date': record.cv_digital_id.cv_sex_updated_date,
+            # 'cv_sex_updated_date': record.cv_sex_updated_date,
             'country_of_birth_id': record.cv_digital_id.country_of_birth_id.id,
             # ESTADO CIVIL
             # 'marital_status_id': record.cv_digital_id.marital_status_id.id,
