@@ -663,7 +663,7 @@ class ONSCCVDigital(models.Model):
         }
         if not self._context.get('no_update_cv_calls'):
             for record in self:
-                calls = Calls.search([
+                calls = Calls.with_context(unactive_user_config=True).search([
                     ('cv_digital_origin_id', '=', record.id),
                     ('is_zip', '=', False),
                     ('preselected', '!=', 'no'),
