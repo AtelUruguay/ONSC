@@ -52,6 +52,7 @@
                     <field name="partner_id_domain" invisible="1"/>
                     <field name="is_docket" invisible="1"/>
                     <field name="employee_id" invisible="1"/>
+                    <field name="cv_digital_id" invisible="1"/>
                 </field>
                 <group name="main_group_right" position="inside">
                     <field name="cv_birthdate"
@@ -64,10 +65,14 @@
                 <xpath expr="//notebook" position="inside">
                     <page string="Datos personales">
                         <group>
-                            <field name="country_of_birth_id" readonly="1" force_save="1"/>
-                            <field name="marital_status_id" readonly="1" force_save="1"/>
-                            <field name="health_provider_id" readonly="1" force_save="1"/>
-                            <field name="uy_citizenship" readonly="1" force_save="1"/>
+                            <field name="country_of_birth_id" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="marital_status_id" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="health_provider_id" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="uy_citizenship" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="crendencial_serie" readonly="1" force_save="1"/>
                             <field name="credential_number" readonly="1" force_save="1"/>
                             <field name="personal_phone" readonly="1" force_save="1"/>
@@ -76,21 +81,27 @@
                         <group>
                             <field name="email" readonly="1"/>
                             <field name="country_code" readonly="1" force_save="1" invisible="1"/>
-                            <field name="cv_address_location_id" readonly="1"/>
-                            <field name="cv_address_nro_door" readonly="1"/>
-                            <field name="cv_address_apto" readonly="1"/>
-                            <field name="cv_address_zip" readonly="1"/>
-                            <field name="cv_address_state_id" readonly="1" force_save="1"/>
+                            <field name="cv_address_location_id" force_save="1" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="cv_address_nro_door" force_save="1" readonly="1"/>
+                            <field name="cv_address_apto" force_save="1" readonly="1"/>
+                            <field name="cv_address_zip" force_save="1" readonly="1"/>
+                            <field name="cv_address_state_id" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="cv_address_street_id" readonly="1" force_save="1"
-                                   attrs="{'invisible': [('country_code', '!=', 'UY')]}"/>
-                            <field name="cv_address_street2_id" force_save="1" readonly="1"/>
-                            <field name="cv_address_street3_id" force_save="1" readonly="1"/>
+                                   attrs="{'invisible': [('country_code', '!=', 'UY')]}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="cv_address_street2_id" force_save="1" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="cv_address_street3_id" force_save="1" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="cv_address_street" string="Calle"
+                                   force_save="1"
                                    attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
-                            <field name="cv_address_is_cv_bis" readonly="1"/>
-                            <field name="cv_address_place" readonly="1"/>
-                            <field name="cv_address_block" readonly="1"/>
-                            <field name="cv_address_sandlot"/>
+                            <field name="cv_address_is_cv_bis" force_save="1" readonly="1"/>
+                            <field name="cv_address_place" force_save="1" readonly="1"/>
+                            <field name="cv_address_block" force_save="1" readonly="1"/>
+                            <field name="cv_address_sandlot"  force_save="1" readonly="1"/>
                         </group>
                     </page>
                 </xpath>
@@ -154,16 +165,15 @@
             </field>
         </record>
 
-
-        <record id="action_ws4" model="ir.actions.server">
-            <field name="name">WS4</field>
+        <record id="action_multi_ws4" model="ir.actions.server">
+            <field name="name">Enviar a SGH</field>
             <field name="model_id" ref="onsc_legajo.model_onsc_legajo_alta_vl"/>
             <field name="groups_id"
-                   eval="[(4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')), (4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'))]"/>
+                   eval="[(4, ref('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')), (4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')), (4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'))]"/>
             <field name="binding_model_id" ref="onsc_legajo.model_onsc_legajo_alta_vl"/>
             <field name="binding_view_types">list</field>
             <field name="state">code</field>
-            <field name="code">records.action_call_ws4()</field>
+            <field name="code">records.action_call_multi_ws4()</field>
         </record>
     </data>
 </odoo>

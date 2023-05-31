@@ -85,7 +85,7 @@ class ResPartner(models.Model):
 
     @api.depends('image_1920')
     def _compute_photo_updated_date(self):
-        for record in self:
+        for record in self.filtered(lambda x: x.image_1920):
             record.cv_photo_updated_date = fields.Date.today()
 
     def check_can_update(self):

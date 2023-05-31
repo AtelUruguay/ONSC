@@ -82,7 +82,7 @@ class ResPartner(models.Model):
         cv_full_name = calc_full_name(cv_dnic_name_1, cv_dnic_name_2, cv_dnic_lastname_1, cv_dnic_lastname_2)
 
         # Caso 1: Ambos Nombres y Apellidos coinciden con nombre en cédula
-        if compare_string_without_consider_accents(cv_full_name, cv_dnic_full_name):
+        if compare_string_without_consider_accents(cv_full_name, cv_dnic_full_name) or not cv_dnic_full_name:
             # Caso 1.b: Apellido1 nulo
             result.update({
                 'cv_first_name': cv_dnic_name_1,
@@ -102,7 +102,7 @@ class ResPartner(models.Model):
         else:
             # Caso 2: Apellidos cambiados de orden
             cv_full_name = calc_full_name(cv_dnic_name_1, cv_dnic_name_2, cv_dnic_lastname_2, cv_dnic_lastname_1)
-            if compare_string_without_consider_accents(cv_full_name, cv_dnic_full_name):
+            if compare_string_without_consider_accents(cv_full_name, cv_dnic_full_name) or not cv_dnic_full_name:
                 result.update({
                     'cv_first_name': cv_dnic_name_1,
                     'cv_second_name': cv_dnic_name_2,
@@ -115,7 +115,7 @@ class ResPartner(models.Model):
                     cv_full_name = calc_full_name(cv_dnic_name_1, cv_dnic_name_2, cv_last_name_adoptive_1,
                                                   cv_last_name_adoptive_2)
                     # Caso 3: Apellidos adoptivos en nombre en cédula
-                    if compare_string_without_consider_accents(cv_full_name, cv_dnic_full_name):
+                    if compare_string_without_consider_accents(cv_full_name, cv_dnic_full_name) or not cv_dnic_full_name:
                         result.update({
                             'cv_first_name': cv_dnic_name_1,
                             'cv_second_name': cv_dnic_name_2,
