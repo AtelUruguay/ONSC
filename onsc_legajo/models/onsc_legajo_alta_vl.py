@@ -440,13 +440,11 @@ class ONSCLegajoAltaVL(models.Model):
 
     def _send_aprobado_notification(self):
         validation_email_template_id = self.env.ref('onsc_legajo.email_template_altavl_aprobada')
-        validation_email_template_id.send_mail(self.id, force_send=True,
-                                               notif_layout='mail.mail_notification_light')
+        validation_email_template_id.send_mail(self.id, force_send=True)
 
     def _send_rechazado_notification(self):
         validation_email_template_id = self.env.ref('onsc_legajo.email_template_altavl_rechazada')
-        validation_email_template_id.send_mail(self.id, force_send=True,
-                                               notif_layout='mail.mail_notification_light')
+        validation_email_template_id.send_mail(self.id, force_send=True)
 
     # ALTAVL WS5
     def _create_legajo(self):

@@ -48,3 +48,7 @@ class ONSCLegajo(models.Model):
         res = super(ONSCLegajo, self).create(values)
         res.cv_digital_id.write({'is_docket': True, 'is_docket_active': True})
         return res
+
+    def unlink(self):
+        self.mapped('cv_digital_id').write({'is_docket': False, 'is_docket_active': False})
+        return super(ONSCLegajo, self).unlink()

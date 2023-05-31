@@ -9,7 +9,7 @@ ONSC CV Digital - Legajo
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['onsc_cv_digital', 'hr', 'onsc_legajo'],
+    'depends': ['onsc_cv_digital', 'hr', 'onsc_legajo', 'onsc_cv_digital_catalog'],
     'data': [
         'security/onsc_cv_digital_legajo_security.xml',
         'security/onsc_cv_digital_legajo_rules.xml',

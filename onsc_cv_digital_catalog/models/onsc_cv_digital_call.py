@@ -18,7 +18,7 @@ class ONSCCVDigitalCall(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_call_documentary_validation') and self.user_has_groups(
-                'onsc_cv_digital.group_validador_documental_cv'):
+                'onsc_cv_digital.group_validador_documental_cv') and not self._context.get('unactive_user_config'):
             configs = self.env['onsc.catalog.validators.inciso.ue'].search([('user_id', '=', self.env.user.id)])
             args = expression.AND([[
                 ('preselected', '=', 'yes'),
