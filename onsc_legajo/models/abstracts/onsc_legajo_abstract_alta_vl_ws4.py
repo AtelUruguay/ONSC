@@ -300,14 +300,14 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                         'error_message_synchronization': str(long_description) + "." + v_error.mensaje
                     })
         else:
+            altas_vl.write({
+                'is_error_synchronization': True,
+                'state': 'error_sgh',
+                'error_message_synchronization': long_description
+            })
             super(ONSCLegajoAbstractSyncW4, self)._process_response_witherror(
                 response,
                 origin_name,
                 integration_error,
                 long_description
             )
-            altas_vl.write({
-                'is_error_synchronization': True,
-                'state': 'error_sgh',
-                'error_message_synchronization': long_description
-            })
