@@ -321,7 +321,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                                                             line[self.get_position(column_names,
                                                                                                    'birth_country_id')]),
                     'citizenship': line[self.get_position(column_names, 'citizenship')],
-                    'crendencial_serie': crendencial_serie.upper() if crendencial_serie else message_error.append(
+                    'crendencial_serie': str(crendencial_serie).upper() if crendencial_serie else message_error.append(
                         " \nEl número de credencial es obligatorio"),
                     'credential_number': credential_number if credential_number else message_error.append(
                         " \nEl número de credencial es obligatorio"),
