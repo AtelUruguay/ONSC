@@ -128,6 +128,9 @@ class ONSCLegajoAltaVL(models.Model):
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         self._empty_fieldsVL()
+        self._update_altavl_info()
+
+    def _update_altavl_info(self):
         Employee = self.env['hr.employee'].sudo()
         CVDigital = self.env['onsc.cv.digital'].sudo()
         for record in self.sudo():
@@ -147,7 +150,7 @@ class ONSCLegajoAltaVL(models.Model):
                     record.employee_id = employee.id
                     record.cv_birthdate = employee.cv_birthdate
                     record.cv_sex = employee.cv_sex
-                elif cv_digital_id:
+                elif cv_digital_id and not self._context.get('no_update_extra'):
                     record.cv_birthdate = cv_digital_id.cv_birthdate
                     record.cv_sex = cv_digital_id.cv_sex
 
@@ -176,6 +179,7 @@ class ONSCLegajoAltaVL(models.Model):
                 record.mobile_phone = cv_digital_id.mobile_phone
                 record.email = cv_digital_id.email
                 record.health_provider_id = cv_digital_id.health_provider_id
+
 
     @api.depends('partner_id')
     def _compute_full_name(self):
