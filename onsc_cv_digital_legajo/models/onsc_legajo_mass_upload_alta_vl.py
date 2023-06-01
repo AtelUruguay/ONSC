@@ -98,8 +98,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 domain = [('id_ejecucion', '=', rec.id_ejecucion), ('inciso_id', '=', rec.inciso_id.id),
                           ('operating_unit_id', '=', rec.operating_unit_id.id)]
                 if self.search_count(domain) > 1:
-                    raise UserError(
-                        "Ya existe una carga masiva con el mismo ID de ejecución, inciso y unidad ejecutora")
+                    raise UserError(_(
+                        "Ya existe una carga masiva con el mismo ID de ejecución, inciso y unidad ejecutora"))
 
     @api.depends('line_ids', 'lines_processed_ids')
     def _compute_line_count(self):
@@ -224,9 +224,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             sheet = workbook.sheet_by_name('Datos')
         except Exception:
             raise UserError(_("Archivo inválido"))
-        if sheet.ncols < 53:
-            raise UserError(_("El archivo no tiene el formato correcto. Se espera un total de 53 columnas por fila"))
-
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
         LegajoOffice = self.env['onsc.legajo.office']
         LegajoNorm = self.env['onsc.legajo.norm']
@@ -317,9 +314,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'marital_status_id': MassLine.find_by_code_name_many2one('marital_status_id', 'code', 'name',
                                                                              line[self.get_position(column_names,
                                                                                                     'marital_status_id')]),
-                    'birth_country_id': MassLine.find_by_code_name_many2one('birth_country_id', 'code', 'name',
-                                                                            line[self.get_position(column_names,
-                                                                                                   'birth_country_id')]),
+                    'birth_country_id': country_uy_id.id if country_uy_id else False,
                     'citizenship': line[self.get_position(column_names, 'citizenship')],
                     'crendencial_serie': crendencial_serie.upper() if crendencial_serie else message_error.append(
                         " \nEl número de credencial es obligatorio"),
@@ -707,6 +702,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     additional_information = fields.Text(string="Información adicional")
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
+
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
