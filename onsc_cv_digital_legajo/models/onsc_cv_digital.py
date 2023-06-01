@@ -324,12 +324,13 @@ class ONSCCVDigital(models.Model):
         digitized_document_file = values.get('digitized_document_file')
         if marital_status_id or status_civil_date or digitized_document_file:
             self.marital_status_documentary_validation_state = 'to_validate'
+            self.marital_status_write_date = fields.Datetime.now()
 
         # NRO DOCUMENTO
-        cv_expiration_date = values.get('cv_expiration_date')
-        document_identity_file = values.get('document_identity_file')
-        if cv_expiration_date or document_identity_file:
-            self.nro_doc_documentary_validation_state = 'to_validate'
+        # cv_expiration_date = values.get('cv_expiration_date')
+        # document_identity_file = values.get('document_identity_file')
+        # if cv_expiration_date or document_identity_file:
+        #     self.nro_doc_documentary_validation_state = 'to_validate'
 
         # GENERO
         cv_gender_id = values.get('cv_gender_id')
@@ -346,13 +347,15 @@ class ONSCCVDigital(models.Model):
                     employee_id.gender_date = record.gender_date
                 else:
                     record.gender_documentary_validation_state = 'to_validate'
+            self.gender_write_date = fields.Datetime.now()
 
-        # Identidad étnico racial
+        # IDENTIDAD ETNICO RACIAL
         cv_race_ids = values.get('cv_race_ids')
         cv_first_race_id = values.get('cv_first_race_id')
         cv_race2 = values.get('cv_race2')
         if cv_race_ids or cv_first_race_id or cv_race2:
             self.cv_race_documentary_validation_state = 'to_validate'
+            self.cv_race_write_date = fields.Datetime.now()
 
         # AFRODESCENDIENTES
         is_afro_descendants_in_values = 'is_afro_descendants' in values
@@ -371,6 +374,7 @@ class ONSCCVDigital(models.Model):
                     employee_id.afro_descendant_date = record.afro_descendant_date
                 else:
                     record.afro_descendant_documentary_validation_state = 'to_validate'
+            self.afro_descendant_write_date = fields.Datetime.now()
 
         # CARNE SALUD LABORAL
         is_occupational_health_card_in_values = 'is_occupational_health_card' in values
@@ -388,7 +392,9 @@ class ONSCCVDigital(models.Model):
                     record.with_context(documentary_validation='occupational_health_card').button_documentary_approve()
                 else:
                     record.occupational_health_card_documentary_validation_state = 'to_validate'
+            self.occupational_health_card_write_date = fields.Datetime.now()
 
+        # APTITUD MEDICO DEPORTIVA
         is_medical_aptitude_certificate_status_in_values = 'is_medical_aptitude_certificate_status' in values
         medical_aptitude_certificate_date = values.get('medical_aptitude_certificate_date')
         medical_aptitude_certificate_file = values.get('medical_aptitude_certificate_file')
@@ -405,7 +411,9 @@ class ONSCCVDigital(models.Model):
                         documentary_validation='medical_aptitude_certificate').button_documentary_approve()
                 else:
                     record.medical_aptitude_certificate_documentary_validation_state = 'to_validate'
+            self.medical_aptitude_certificate_write_date = fields.Datetime.now()
 
+        # VICTIMA DE DELITOS VIOLENTOS
         is_victim_violent_in_values = 'is_victim_violent' in values
         relationship_victim_violent_file = values.get('relationship_victim_violent_file')
         if is_victim_violent_in_values or relationship_victim_violent_file:
@@ -419,7 +427,9 @@ class ONSCCVDigital(models.Model):
                     record.with_context(documentary_validation='victim_violent').button_documentary_approve()
                 else:
                     record.victim_violent_documentary_validation_state = 'to_validate'
+            self.victim_violent_write_date = fields.Datetime.now()
 
+        # DISCAPACIDAD
         is_situation_disability_in_values = 'people_disabilitie' in values
         document_certificate_file = values.get('document_certificate_file')
         certificate_date = values.get('certificate_date')
@@ -437,7 +447,9 @@ class ONSCCVDigital(models.Model):
                     record.with_context(documentary_validation='disabilitie').button_documentary_approve()
                 else:
                     record.disabilitie_documentary_validation_state = 'to_validate'
+            self.disabilitie_write_date = fields.Datetime.now()
 
+        # DOMICILIO
         country_id = values.get('country_id')
         address_receipt_file = values.get('address_receipt_file')
         address_info_date = values.get('address_info_date')
@@ -457,6 +469,7 @@ class ONSCCVDigital(models.Model):
         cv_address_block = values.get('cv_address_block')
         cv_address_sandlot = values.get('cv_address_sandlot')
         if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or address_info_date or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot or cv_address_street:
+            self.cv_address_write_date = fields.Datetime.now()
             self.cv_address_documentary_validation_state = 'to_validate'
 
         super(ONSCCVDigital, self).update_header_documentary_validation(values)
@@ -641,15 +654,16 @@ class ONSCCVDigital(models.Model):
 
     def _legajo_update_documentary(self, documentary_field, state, reject_reason):
         Calls = self.env['onsc.cv.digital.call']
+        _user_id = self._context.get('user_id', self.env.user.id)
         vals = {
             '%s_documentary_validation_state' % documentary_field: state,
             '%s_documentary_reject_reason' % documentary_field: reject_reason,
             '%s_documentary_validation_date' % documentary_field: fields.Datetime.now(),
-            '%s_documentary_user_id' % documentary_field: self.env.user.id,
+            '%s_documentary_user_id' % documentary_field: _user_id,
         }
         if not self._context.get('no_update_cv_calls'):
             for record in self:
-                calls = Calls.search([
+                calls = Calls.with_context(unactive_user_config=True).search([
                     ('cv_digital_origin_id', '=', record.id),
                     ('is_zip', '=', False),
                     ('preselected', '!=', 'no'),

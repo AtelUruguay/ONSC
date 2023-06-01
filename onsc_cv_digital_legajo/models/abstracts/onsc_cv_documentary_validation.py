@@ -78,11 +78,12 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         return super(ONSCCVAbstractFileValidation, self).button_documentary_tovalidate()
 
     def button_documentary_approve(self):
+        _user_id = self._context.get('user_id', self.env.user.id)
         args = {
             'documentary_validation_state': 'validated',
             'documentary_reject_reason': '',
             'documentary_validation_date': fields.Date.today(),
-            'documentary_user_id': self.env.user.id,
+            'documentary_user_id': _user_id,
         }
         self.update_call_instances(args)
         return super(ONSCCVAbstractFileValidation, self).button_documentary_approve()

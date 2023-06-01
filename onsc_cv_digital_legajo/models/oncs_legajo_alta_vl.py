@@ -1,8 +1,10 @@
 # -*- coding:utf-8 -*-
 import json
+
 from lxml import etree
-from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 # campos requeridos para la sincronización
@@ -71,17 +73,18 @@ class ONSCLegajoAltaVL(models.Model):
     personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone')
     mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile')
     email = fields.Char(string="e-mail", related='partner_id.email')
-    cv_address_state_id = fields.Many2one('res.country.state', related='partner_id.state_id', string='Departamento')
-    cv_address_location_id = fields.Many2one('onsc.cv.location', related='partner_id.cv_location_id',
-                                             string="Localidad")
-    cv_address_street = fields.Char(related='partner_id.street', readonly=True)
-    cv_address_nro_door = fields.Char(string="Número de puerta", related='partner_id.cv_nro_door')
-    cv_address_is_cv_bis = fields.Boolean(string="Bis", related='partner_id.is_cv_bis')
-    cv_address_apto = fields.Char(string="Apartamento", related='partner_id.cv_apto', )
-    cv_address_place = fields.Text(string="Paraje", related='partner_id.cv_address_place')
-    cv_address_zip = fields.Char(related='partner_id.zip', string="Código Postal")
-    cv_address_block = fields.Char(related='partner_id.cv_address_block', string="Manzana")
-    cv_address_sandlot = fields.Char(related='partner_id.cv_address_sandlot', string="Solar")
+
+    cv_address_state_id = fields.Many2one('res.country.state', string='Departamento')
+    cv_address_location_id = fields.Many2one('onsc.cv.location', string="Localidad")
+    cv_address_street = fields.Char(string="Calle")
+    cv_address_nro_door = fields.Char(string="Número de puerta")
+    cv_address_is_cv_bis = fields.Boolean(string="Bis")
+    cv_address_apto = fields.Char(string="Apartamento")
+    cv_address_place = fields.Text(string="Paraje")
+    cv_address_zip = fields.Char(string="Código Postal")
+    cv_address_block = fields.Char(string="Manzana")
+    cv_address_sandlot = fields.Char(string="Solar")
+
     employee_id = fields.Many2one('hr.employee', 'Employee')
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="Legajo Digital", copy=False)
     is_docket = fields.Boolean(string="Tiene legajo", related='cv_digital_id.is_docket')
@@ -90,13 +93,11 @@ class ONSCLegajoAltaVL(models.Model):
     is_error_synchronization = fields.Boolean(copy=False)
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
     country_code = fields.Char("Código")
-    origin_type = fields.Selection(
-        [
-            ('M', 'Manual'),
-            ('P', 'Proceso')
-        ],
-        string='Origen', compute='_compute_origin_type', store=True)
+    origin_type = fields.Selection([('M', 'Manual'), ('P', 'Proceso')], string='Origen',
+                                   compute='_compute_origin_type', store=True)
     mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución')
+
+    ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN")
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -111,6 +112,18 @@ class ONSCLegajoAltaVL(models.Model):
 
     def action_call_ws4(self):
         return self.syncronize_ws4(log_info=True)
+
+    def action_aprobado_cgn(self):
+        legajo = super(ONSCLegajoAltaVL, self).action_aprobado_cgn()
+        vals = dict()
+        if self.employee_id.cv_birthdate != self.cv_birthdate:
+            vals.update({'cv_birthdate': self.cv_birthdate, })
+        if self.employee_id.cv_sex != self.cv_sex:
+            vals.update({'cv_sex': self.cv_sex})
+        if vals:
+            self.cv_digital_id.with_context(can_update_contact_cv=True).suspend_security().write(vals)
+            self.employee_id.suspend_security().write(vals)
+        return legajo
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
@@ -139,8 +152,22 @@ class ONSCLegajoAltaVL(models.Model):
                     record.cv_sex = cv_digital_id.cv_sex
 
                 record.cv_digital_id = cv_digital_id
-                record.country_code = cv_digital_id.partner_id.country_id.code
+                record.country_code = cv_digital_id.country_id.code
                 record.country_of_birth_id = cv_digital_id.country_of_birth_id
+                record.cv_address_state_id = cv_digital_id.cv_address_state_id
+                record.cv_address_location_id = cv_digital_id.cv_address_location_id
+                record.cv_address_street_id = cv_digital_id.cv_address_street_id
+                record.cv_address_street2_id = cv_digital_id.cv_address_street2_id
+                record.cv_address_street3_id = cv_digital_id.cv_address_street3_id
+                record.cv_address_street = cv_digital_id.cv_address_street
+                record.cv_address_nro_door = cv_digital_id.cv_address_nro_door
+                record.cv_address_is_cv_bis = cv_digital_id.cv_address_is_cv_bis
+                record.cv_address_apto = cv_digital_id.cv_address_apto
+                record.cv_address_place = cv_digital_id.cv_address_place
+                record.cv_address_zip = cv_digital_id.cv_address_zip
+                record.cv_address_block = cv_digital_id.cv_address_block
+                record.cv_address_sandlot = cv_digital_id.cv_address_sandlot
+
                 record.marital_status_id = cv_digital_id.marital_status_id
                 record.uy_citizenship = cv_digital_id.uy_citizenship
                 record.crendencial_serie = cv_digital_id.crendencial_serie
@@ -148,9 +175,6 @@ class ONSCLegajoAltaVL(models.Model):
                 record.personal_phone = cv_digital_id.personal_phone
                 record.mobile_phone = cv_digital_id.mobile_phone
                 record.email = cv_digital_id.email
-                record.cv_address_street_id = cv_digital_id.cv_address_street_id
-                record.cv_address_street2_id = cv_digital_id.cv_address_street2_id
-                record.cv_address_street3_id = cv_digital_id.cv_address_street3_id
                 record.health_provider_id = cv_digital_id.health_provider_id
 
     @api.depends('partner_id')
@@ -165,28 +189,7 @@ class ONSCLegajoAltaVL(models.Model):
         for record in self:
             domain = [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True),
                       ('id', '!=', self.env.user.partner_id.id)]
-            self.partner_id_domain = json.dumps(domain)
-
-    def action_gafi_ok(self):
-        """
-        Cuando ha sido aprobado se impacta en el empleado y en el CV la fecha de nacimiento y el sexo
-        si han sido modificado
-        :return:
-        """
-        super(ONSCLegajoAltaVL, self).action_gafi_ok()
-        for rec in self:
-            vals = dict()
-            if rec.employee_id.cv_birthdate != rec.cv_birthdate:
-                vals.update({
-                    'cv_birthdate': rec.cv_birthdate,
-                })
-            if rec.employee_id.cv_sex != rec.cv_sex:
-                vals.update({
-                    'cv_sex': rec.cv_sex
-                })
-            if vals:
-                rec.employee_id.suspend_security().write(vals)
-                rec.cv_digital_id.suspend_security().write(vals)
+            record.partner_id_domain = json.dumps(domain)
 
     @api.onchange('regime_id')
     def onchange_regimen(self):
@@ -366,13 +369,13 @@ class ONSCLegajoAltaVL(models.Model):
         self.cv_address_street_id = False
 
     def _get_legajo_employee(self):
-        employee = super(ONSCLegajoAltaVL, self)._get_legajo_employee()
-        employee._syncronize_data()
+        employee = super(ONSCLegajoAltaVL, self.with_context(is_alta_vl=True))._get_legajo_employee()
         cv = employee.cv_digital_id
-        vals = {
+        vals = employee._get_info_fromcv()
+        vals.update({
             'cv_birthdate': self.cv_birthdate,
             'cv_sex': self.cv_sex,
-        }
+        })
         if cv.partner_id.user_ids:
             user_id = cv.partner_id.user_ids[0]
         else:
@@ -380,66 +383,51 @@ class ONSCLegajoAltaVL(models.Model):
         if cv and employee.user_id.id != user_id.id:
             vals['user_id'] = user_id.id
         # DOMICILIO
-        if cv and cv.cv_address_documentary_validation_state == 'validated':
-            vals.update({
-                'country_id': cv.country_id.id,
-                'cv_address_state_id': cv.cv_address_state_id.id,
-                'cv_address_location_id': cv.cv_address_location_id.id,
-                'cv_address_street': cv.cv_address_street,
-                'cv_address_street_id': cv.cv_address_street_id.id,
-                'cv_address_nro_door': cv.cv_address_nro_door,
-                'cv_address_is_cv_bis': cv.cv_address_is_cv_bis,
-                'cv_address_apto': cv.cv_address_apto,
-                'cv_address_zip': cv.cv_address_zip,
-                'cv_address_place': cv.cv_address_place,
-                'cv_address_block': cv.cv_address_block,
-                'cv_address_sandlot': cv.cv_address_sandlot,
-            })
-        else:
+        if cv and cv.cv_address_documentary_validation_state != 'validated':
             vals.update({
                 'country_id': self.cv_emissor_country_id.id,
-                'cv_address_state_id': self.cv_address_state_id.id,
-                'cv_address_location_id': self.cv_address_location_id.id,
                 'cv_address_street': self.cv_address_street,
                 'cv_address_street_id': self.cv_address_street_id.id,
+                'cv_address_street2_id': self.cv_address_street2_id.id,
+                'cv_address_street3_id': self.cv_address_street3_id.id,
+                'cv_address_state_id': self.cv_address_state_id.id,
+                'cv_address_location_id': self.cv_address_location_id.id,
                 'cv_address_nro_door': self.cv_address_nro_door,
-                'cv_address_is_cv_bis': self.cv_address_is_cv_bis,
                 'cv_address_apto': self.cv_address_apto,
                 'cv_address_zip': self.cv_address_zip,
+                'cv_address_is_cv_bis': self.cv_address_is_cv_bis,
                 'cv_address_place': self.cv_address_place,
                 'cv_address_block': self.cv_address_block,
                 'cv_address_sandlot': self.cv_address_sandlot,
             })
             if cv and self.create_date >= cv.cv_address_write_date:
                 cv.with_context(documentary_validation='cv_address',
+                                user_id=self.ws4_user_id.id,
                                 can_update_contact_cv=True).button_documentary_approve()
 
         # CREDENCIAL CIVICA
-        if cv and cv.civical_credential_documentary_validation_state == 'validated':
-            vals.update({
-                'uy_citizenship': cv.uy_citizenship,
-                'crendencial_serie': cv.crendencial_serie,
-                'credential_number': cv.credential_number,
-            })
-        else:
+        if cv and cv.civical_credential_documentary_validation_state != 'validated':
             vals.update({
                 'uy_citizenship': self.uy_citizenship,
                 'crendencial_serie': self.crendencial_serie,
                 'credential_number': self.credential_number
             })
-            if cv and self.create_date >= cv.cv_address_write_date:
-                cv.with_context(documentary_validation='civical_credential').button_documentary_approve()
+            if cv and self.create_date >= cv.civical_credential_write_date:
+                cv.with_context(user_id=self.ws4_user_id.id,
+                                documentary_validation='civical_credential').button_documentary_approve()
         # ESTADO CIVIL
-        if cv and cv.marital_status_documentary_validation_state == 'validated':
-            vals.update({
-                'marital_status_id': cv.marital_status_id.id
-            })
-        else:
+        if cv and cv.marital_status_documentary_validation_state != 'validated':
             vals.update({
                 'marital_status_id': self.marital_status_id.id
             })
-            if cv and self.create_date >= cv.cv_address_write_date:
-                cv.with_context(documentary_validation='marital_status').button_documentary_approve()
+            if cv and self.create_date >= cv.marital_status_write_date:
+                cv.with_context(user_id=self.ws4_user_id.id,
+                                documentary_validation='marital_status').button_documentary_approve()
+        # NRO DOCUMENTO
+        if cv and cv.nro_doc_documentary_validation_state != 'validated':
+            if cv and self.create_date >= cv.nro_doc_write_date:
+                cv.with_context(user_id=self.ws4_user_id.id,
+                                documentary_validation='nro_doc').button_documentary_approve()
         employee.write(vals)
         cv.write({'is_docket': True, 'is_docket_active': True})
         return employee

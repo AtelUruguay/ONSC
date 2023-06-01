@@ -239,34 +239,36 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                 'descripcionJornadaFormal': response[
                                     'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
                                 'is_error_synchronization': False,
+                                'ws4_user_id': self.env.user.id,
                                 'state': 'pendiente_auditoria_cgn'
                             })
                     except Exception as e:
-                        _logger.warning(tools.ustr(e))
+                        long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
+                        _logger.warning(long_description)
                         self.create_new_log(
                             origin='WS4',
                             type='error',
                             integration_log=onsc_legajo_integration_error_WS4_9004,
-                            long_description="Error devuelto por SGH: %s" % tools.ustr(e)
+                            long_description=long_description
                         )
                         altas_vl.write({
                             'is_error_synchronization': True,
                             'state': 'error_sgh',
-                            'error_message_synchronization': "Error devuelto por SGH: %s" % tools.ustr(e)
+                            'error_message_synchronization': long_description
                         })
 
             else:
-                MESSAGE = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
+                long_description = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
                 self.create_new_log(
                     origin='WS4',
                     type='error',
                     integration_log=onsc_legajo_integration_error_WS4_9004,
-                    long_description=MESSAGE
+                    long_description=long_description
                 )
                 altas_vl.write({
                     'is_error_synchronization': True,
                     'state': 'error_sgh',
-                    'error_message_synchronization': MESSAGE
+                    'error_message_synchronization': long_description
                 })
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
@@ -300,14 +302,14 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                         'error_message_synchronization': str(long_description) + "." + v_error.mensaje
                     })
         else:
+            altas_vl.write({
+                'is_error_synchronization': True,
+                'state': 'error_sgh',
+                'error_message_synchronization': long_description
+            })
             super(ONSCLegajoAbstractSyncW4, self)._process_response_witherror(
                 response,
                 origin_name,
                 integration_error,
                 long_description
             )
-            altas_vl.write({
-                'is_error_synchronization': True,
-                'state': 'error_sgh',
-                'error_message_synchronization': long_description
-            })
