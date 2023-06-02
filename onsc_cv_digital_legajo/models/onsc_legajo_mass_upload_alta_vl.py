@@ -77,8 +77,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                           domain=[('state', '=', 'done')], string='Líneas procesadas')
     state = fields.Selection([('draft', 'Borrador'), ('partially', 'Procesado con Error'), ('done', 'Procesado')],
                              default='draft', string='Estado')
-    id_ejecucion = fields.Char(string='ID de ejecución', required=True, readonly=True,
-                               states={'draft': [('readonly', False)]})
+    id_ejecucion = fields.Char(string='ID de ejecución')
     document_file = fields.Binary(string='Archivo de carga', required=True, readonly=True,
                                   states={'draft': [('readonly', False)]})
     document_filename = fields.Char(string="Nombre del documento adjunto")
@@ -89,17 +88,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
     altas_vl_ids = fields.One2many('onsc.legajo.alta.vl', 'mass_upload_id', string='Altas VL')
     altas_vl_count = fields.Integer(compute='_compute_altas_vl_count', string='Cantidad de altas VL')
-
-    # Constrain para id de ejecucion  ,inciso  y unidad ejecutora
-    @api.constrains('id_ejecucion', 'inciso_id', 'operating_unit_id')
-    def _check_unique_id_ejecucion(self):
-        for rec in self:
-            if rec.id_ejecucion and rec.inciso_id and rec.operating_unit_id:
-                domain = [('id_ejecucion', '=', rec.id_ejecucion), ('inciso_id', '=', rec.inciso_id.id),
-                          ('operating_unit_id', '=', rec.operating_unit_id.id)]
-                if self.search_count(domain) > 1:
-                    raise UserError(_(
-                        "Ya existe una carga masiva con el mismo ID de ejecución, inciso y unidad ejecutora"))
 
     @api.depends('line_ids', 'lines_processed_ids')
     def _compute_line_count(self):
@@ -163,6 +151,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             'name': "Altas de vínculo laboral",
             'res_model': 'onsc.legajo.alta.vl',
             'view_mode': 'tree,form',
+            'context': {'not_check_attached_document': True},
             'domain': [('id', 'in', self.altas_vl_ids.ids)],
             'views': [
                 [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_tree').id, 'tree'],
@@ -317,7 +306,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'birth_country_id': country_uy_id.id if country_uy_id else False,
                     'citizenship': line[self.get_position(column_names, 'citizenship')],
                     'crendencial_serie': str(crendencial_serie).upper() if crendencial_serie else message_error.append(
-                        " \nEl número de credencial es obligatorio"),
+                        " \nLa serie de credencial es obligatoria"),
                     'credential_number': credential_number if credential_number else message_error.append(
                         " \nEl número de credencial es obligatorio"),
                     'personal_phone': line[self.get_position(column_names, 'personal_phone')],
@@ -582,6 +571,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
 
     def syncronize_ws4(self):
         self.mapped('altas_vl_ids').action_call_multi_ws4()
+
+    @api.model
+    def create(self, vals):
+        vals['id_ejecucion'] = self.env['ir.sequence'].next_by_code('onsc.legajo.mass.upload.alta.vl.sequence')
+        return super().create(vals)
 
     def unlink(self):
         if self.filtered(lambda x: x.altas_vl_ids):

@@ -14,6 +14,7 @@ ONSC CV Digital - Legajo
         'security/onsc_cv_digital_legajo_security.xml',
         'security/onsc_cv_digital_legajo_rules.xml',
         'security/ir.model.access.csv',
+        'data/data.xml',
         'views/res_partner_views.xml',
         'views/onsc_cv_documentary_validation_config_views.xml',
         'views/onsc_cv_digital_views.xml',

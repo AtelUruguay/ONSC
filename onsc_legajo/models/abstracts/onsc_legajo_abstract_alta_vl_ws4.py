@@ -275,12 +275,12 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         IntegrationError = self.env['onsc.legajo.integration.error']
         altas_vl = self._context.get('altas_vl')
         if hasattr(response, 'altaSGHMovimientoRespuesta'):
-            result_error_code = response.servicioResultado.codigo
             for v_error in response.altaSGHMovimientoRespuesta:
                 error = IntegrationError.search([
-                    ('integration_code', '=', integration_error.integration_code),
-                    ('code_error', '=', str(result_error_code))
+                    ('integration_code', '=', origin_name),
+                    ('code_error', '=', str(v_error.codigo)),
                 ], limit=1)
+                message = error.description if error else v_error.mensaje
                 self.create_new_log(
                     origin=origin_name,
                     type='error',
@@ -293,13 +293,13 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                     altas_vl_id.write({
                         'is_error_synchronization': True,
                         'state': 'error_sgh',
-                        'error_message_synchronization': str(long_description) + "." + v_error.mensaje
+                        'error_message_synchronization': str(long_description) + "." + message
                     })
                 else:
                     altas_vl.write({
                         'is_error_synchronization': True,
                         'state': 'error_sgh',
-                        'error_message_synchronization': str(long_description) + "." + v_error.mensaje
+                        'error_message_synchronization': str(long_description) + "." + message
                     })
         else:
             altas_vl.write({
