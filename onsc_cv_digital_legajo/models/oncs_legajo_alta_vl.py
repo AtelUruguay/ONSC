@@ -263,7 +263,7 @@ class ONSCLegajoAltaVL(models.Model):
             log_info=log_info).suspend_security().syncronize_multi(self)
 
     def action_call_multi_ws4(self):
-        self.with_context(not_check_attached_document=True).check_required_fieds_ws4()
+        self.check_required_fieds_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
             raise ValidationError(_("Solo se pueden sincronizar altas en estado borrador o error SGH"))
         altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
@@ -288,7 +288,7 @@ class ONSCLegajoAltaVL(models.Model):
                 log_info=False).syncronize_multi(altas_vl)
 
     def check_required_fieds_ws4(self):
-        check_attached_documents = len(list(set([x.mass_upload_id.id for x in self.search]))) != 1
+        check_attached_documents = len(list(set([x.mass_upload_id.id for x in self]))) != 1
         for record in self:
             message = []
             for required_field in REQUIRED_FIELDS:
