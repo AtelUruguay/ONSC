@@ -34,7 +34,7 @@ class ONSCEmploymentRelationship(models.Model):
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor 3', copy=False)
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor 4', copy=False)
     nroPuesto = fields.Char(string='Puesto', copy=False)
-    job_id = fields.Many2one('hr.job', string='Puesto', copy=False)
+
     nroPlaza = fields.Char(string='Plaza', copy=False)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
@@ -42,6 +42,27 @@ class ONSCEmploymentRelationship(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False)
     state = fields.Selection(related='baja_vl_id.state', string='Estado', readonly=True)
     secPosition = fields.Char(string="Sec Plaza")
+
+    def button_open_current_contract(self):
+        ctx = self.env.context.copy()
+        ctx.update({'edit': True})
+
+
+        return {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'res_model': 'hr.contract',
+            'name': 'Ver contrato',
+            'context': ctx,
+            "target": "current",
+            "res_id": self.contract_id.id,
+            'views': [
+
+                [self.env.ref('onsc_legajo.onsc_legajo_hr_contract_view_form').id, 'form'],
+            ]
+
+        }
+
 
 
 class ONSCLegajoBajaVL(models.Model):
@@ -67,7 +88,7 @@ class ONSCLegajoBajaVL(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
-    end_date = fields.Date(string="Fecha de Baja", default=fields.Date.today(), required=True, copy=False)
+    end_date = fields.Date(string="Fecha de Baja", default= lambda *a: fields.Date.today(), required=True, copy=False)
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
     causes_discharge_extended_id = fields.Many2one("onsc.legajo.causes.discharge.line",
@@ -172,7 +193,7 @@ class ONSCLegajoBajaVL(models.Model):
             partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
                                                           ('employee_id', '!=',
                                                            self.env.user.employee_id.id)]).mapped(
-                'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
+                'employee_id.user_id.partner_id')
             return json.dumps([('id', 'in', partner_ids.ids)])
 
         else:
@@ -190,7 +211,7 @@ class ONSCLegajoBajaVL(models.Model):
                                                               ('operating_unit_id', '=', operating_unit_id),
                                                               ('employee_id', '!=',
                                                                self.env.user.employee_id.id)]).mapped(
-                    'employee_id.user_id.partner_id').filtered(lambda x: x.is_partner_cv)
+                    'employee_id.user_id.partner_id')
                 return json.dumps([('id', 'in', partner_ids.ids)])
             else:
                 return json.dumps([('id', '=', False)])
@@ -201,27 +222,22 @@ class ONSCLegajoBajaVL(models.Model):
             if record.end_date > fields.Date.today():
                 raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
 
-    @api.constrains("attached_document_discharge_ids")
-    def _check_attached_document_discharge(self):
-        for record in self:
-            if not record.attached_document_discharge_ids:
-                raise ValidationError(_("Debe haber al menos un documento adjunto"))
 
     @api.depends("partner_id")
     def _compute_employment_relationship_ids(self):
         for rec in self:
+            vinculo_ids = [(5,)]
             employee_id = self.env['hr.employee'].sudo().search(
-                [('cv_emissor_country_id', '=', rec.cv_emissor_country_id.id),
-                 ('cv_document_type_id', '=', rec.cv_document_type_id.id),
-                 ('cv_nro_doc', '=', rec.partner_id.cv_nro_doc)])
+                [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
+                 ('cv_document_type_id', '=', self.cv_document_type_id.id),
+                 ('cv_nro_doc', '=', self.partner_id.cv_nro_doc)])
 
             contract_ids = self.env['hr.contract'].sudo().search([('employee_id', '=', employee_id.id),
                                                                   ('legajo_state', '=', 'active')])
-            vinculo_ids = [(5,)]
 
             for contract in contract_ids:
                 data = {
-                    'job_id': contract.job_ids.filtered(lambda x: x.end_date is False)[0].id,
+                    'nroPuesto': contract.position,
                     'nroPlaza': contract.workplace,
                     'secPosition': contract.sec_position,
                     'descriptor1_id': contract.descriptor1_id and contract.descriptor1_id.id or False,
@@ -237,7 +253,7 @@ class ONSCLegajoBajaVL(models.Model):
                 }
 
                 vinculo_ids.append((0, 0, data))
-            rec.employment_relationship_ids = vinculo_ids
+            rec.employment_relationship_ids =vinculo_ids
 
     def action_call_ws9(self):
         return self.syncronize_ws9()
@@ -274,3 +290,16 @@ class ONSCLegajoBajaVL(models.Model):
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
         return True
+
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'borrador'):
+            raise ValidationError(_("Solo se pueden eliminar una transacción en estado borrador"))
+        return super(ONSCLegajoBajaVL, self).unlink()
+
+    @api.onchange("employment_relationship_ids")
+    def onchange_employment_relationship_ids(self):
+        for record in self:
+            if record.employment_relationship_ids:
+                for vinculo_id in record.employment_relationship_ids:
+                    if vinculo_id.selected:
+                        record.employment_relationship_ids = vinculo_id

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models
+from odoo import fields, models,api
 
 STATES = [
     ('borrador', 'Borrador'),
@@ -47,3 +47,10 @@ class ONSCActionsCommonData(models.AbstractModel):
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
 
     additional_information = fields.Text(string='Información adicional', copy=False)
+    is_error_synchronization = fields.Boolean(copy=False)
+
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
+

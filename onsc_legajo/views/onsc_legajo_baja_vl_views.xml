@@ -42,6 +42,7 @@
                         <div name="oe_tittle" class="oe_title"></div>
                          <field name="is_error_synchronization" invisible="1"/>
                         <field name="is_ready_send_sgh" invisible="1"/>
+                          <field name="should_disable_form_edit" invisible="1"/>
                         <div class="alert alert-danger"
                              role="alert"
                              attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
@@ -77,23 +78,29 @@
                         </group>
                         <group name="group2">
 
-                            <field name="employment_relationship_ids" nolabel="1" readonly="1" force_save="1">
-                             <tree  string="Vinculo laboral"  create="false" delete="false">
+                            <field name="employment_relationship_ids" nolabel="1" readonly="1"
+
+                                   force_save="1" style="pointer-events:none;">
+                             <tree  string="Vinculo laboral"  create="false" delete="false" >
                                   <field name="state" invisible="1"/>
                                   <field name="selected" nolabel="1"
                                    groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas"
                                     widget="boolean_toggle" force_save="1" class="oe_edit_only" attrs="{'invisible': [('state', 'not in', ['borrador','error_sgh'])]}"/>
-
-                                 <field name="job_id" readonly="1"/>
-                                 <field name="nroPlaza" readonly="1"/>
-                                 <field name="descriptor1_id" readonly="1"/>
-                                 <field name="descriptor2_id" readonly="1"/>
-                                 <field name="descriptor3_id" readonly="1"/>
+                                 <button type="object"
+                                            string="Ver Contrato"
+                                            name="button_open_current_contract"
+                                            icon="fa-edit" style="pointer-events:all;"
+                                           />
+                                 <field name="nroPuesto" readonly="1"/>
+                                 <field name="nroPlaza" readonly="1" />
+                                 <field name="descriptor1_id" readonly="1" />
+                                 <field name="descriptor2_id" readonly="1" />
+                                 <field name="descriptor3_id" readonly="1" />
                                  <field name="descriptor4_id" readonly="1" />
-                                 <field name="inciso_id" readonly="1"/>
+                                 <field name="inciso_id" readonly="1" />
                                 <field name="operating_unit_id" readonly="1" />
-                                <field name="programa" readonly="1"/>
-                                <field name="proyecto" readonly="1"/>
+                                <field name="programa" readonly="1" />
+                                <field name="proyecto" readonly="1" />
                                 <field name="regime_id" readonly="1"/>
 
 

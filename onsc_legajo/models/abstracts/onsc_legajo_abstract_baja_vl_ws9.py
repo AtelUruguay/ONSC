@@ -31,9 +31,9 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
                 'descripcionResolucion': record.resolution_description,
                 'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y'),
                 'tipoResolucion': record.resolution_type,
-                'cedula': record.partner_id.cv_nro_doc,
-                'secPlaza': vl.secPosition,
-                'estadoLaboralBaja': record.causes_discharge_id.code_cgn
+                'cedula': int(record.partner_id.cv_nro_doc[:-1], 16),
+                'secPlaza': int(vl.secPosition),
+                'estadoLaboralBaja': int(record.causes_discharge_id.code_cgn)
             }
 
 
@@ -50,7 +50,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
                 "onsc_legajo.onsc_legajo_integration_error_WS9_9004")
             if not hasattr(response, 'servicioResultado'):
                 self.create_new_log(
-                    origin='WS4',
+                    origin='WS9',
                     type='error',
                     integration_log=onsc_legajo_integration_error_WS9_9004,
                     long_description="No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
@@ -64,7 +64,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
                 except Exception as e:
                     _logger.warning(tools.ustr(e))
                     self.create_new_log(
-                        origin='WS4',
+                        origin='WS9',
                         type='error',
                         integration_log=onsc_legajo_integration_error_WS9_9004,
                         long_description="Error devuelto por SGH: %s" % tools.ustr(e)
@@ -73,7 +73,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
 
             else:
                 self.create_new_log(
-                    origin='WS4',
+                    origin='WS9',
                     type='error',
                     integration_log=onsc_legajo_integration_error_WS9_9004,
                     long_description="No se obtuvo respuesta del servicio web"
