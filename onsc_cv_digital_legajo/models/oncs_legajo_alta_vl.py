@@ -265,7 +265,7 @@ class ONSCLegajoAltaVL(models.Model):
     def action_call_multi_ws4(self):
         self.check_required_fieds_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
-            raise ValidationError(_("Solo se pueden sincronizar altas en estado borrador o error SGH"))
+            raise ValidationError(_("Solo se pueden enviar altas en estado borrador o error SGH"))
         altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
         altas_presupuestas.syncronize_multi_ws4()
         altas_no_presupuestas = self.filtered(lambda x: not x.is_presupuestado)
