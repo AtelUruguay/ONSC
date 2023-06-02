@@ -151,7 +151,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             'name': "Altas de vínculo laboral",
             'res_model': 'onsc.legajo.alta.vl',
             'view_mode': 'tree,form',
-            'context': {'not_check_attached_document': True},
             'domain': [('id', 'in', self.altas_vl_ids.ids)],
             'views': [
                 [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_tree').id, 'tree'],
