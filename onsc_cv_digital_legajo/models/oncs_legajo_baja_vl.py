@@ -22,6 +22,22 @@ class ONSCLegajoBajaVL(models.Model):
                 record.partner_id.cv_first_name, record.partner_id.cv_second_name,
                 record.partner_id.cv_last_name_1, record.partner_id.cv_last_name_2) + ' - '+ record.end_date.strftime('%Y%m%d')
     def action_aprobado_cgn(self):
+        employee_id = self.env['hr.employee'].sudo().search(
+            [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
+             ('cv_document_type_id', '=', self.cv_document_type_id.id),
+             ('cv_nro_doc', '=', self.partner_id.cv_nro_doc)])
+
+        count = self.env['hr.contract'].sudo().search_count([('employee_id', '=', employee_id.id),
+                                                             ('legajo_state', '=', 'active')])
+        if count == len(self.employment_relationship_ids.filtered(lambda x: x.selected)):
+            CvDigital = self.env['onsc.cv.digital']
+            cv_digital = CvDigital.suspend_security().search(
+                [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
+                 ('cv_document_type_id', '=', self.cv_document_type_id.id),
+                 ('cv_nro_doc', '=', self.partner_id.cv_nro_doc),
+                 ('type', '=', 'cv')], limit=1)
+            cv_digital.suspend_security().write({'is_docket_active': False})
+
         for vl in self.employment_relationship_ids.filtered(lambda x: x.selected):
             contrato_id = self.env['hr.contract'].sudo().browse(vl.contract_id.id)
             data = {
@@ -41,30 +57,15 @@ class ONSCLegajoBajaVL(models.Model):
                 'causes_discharge_extended':self.causes_discharge_extended_id and self.causes_discharge_extended_id.id or False
             }
 
-            new_lines = [(5,)]
+
             for attach in self.attached_document_discharge_ids:
                 attach.write({
                     'contract_id': contrato_id.id,
                     'type': 'deregistration'})
 
-            contrato_id.suspend_security().write[data]
-            vl.job_id.write({'end_date': vl.end_date})
+            contrato_id.suspend_security().write(data)
+            vl.job_id.write({'end_date': self.end_date})
 
-        employee_id = self.env['hr.employee'].sudo().search(
-            [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
-             ('cv_document_type_id', '=', self.cv_document_type_id.id),
-             ('cv_nro_doc', '=', self.partner_id.cv_nro_doc)])
-
-        count = self.env['hr.contract'].sudo().search_count([('employee_id', '=', employee_id.id),
-                                                             ('legajo_state', '=', 'active')])
-        if count == len(self.employment_relationship_ids.filtered(lambda x: x.selected)):
-            CvDigital = self.env['onsc.cv.digital']
-            cv_digital = CvDigital.suspend_security().search(
-                [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
-                 ('cv_document_type_id', '=', self.cv_document_type_id.id),
-                 ('cv_nro_doc', '=', self.partner_id.cv_nro_doc),
-                 ('type', '=', 'cv')], limit=1)
-            cv_digital.suspend_security().write({'is_docket_active': False})
 
         self.write({'state': 'aprobado_cgn'})
 
