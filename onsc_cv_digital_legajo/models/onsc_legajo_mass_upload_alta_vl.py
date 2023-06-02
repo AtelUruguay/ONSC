@@ -88,6 +88,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
     altas_vl_ids = fields.One2many('onsc.legajo.alta.vl', 'mass_upload_id', string='Altas VL')
     altas_vl_count = fields.Integer(compute='_compute_altas_vl_count', string='Cantidad de altas VL')
+    is_can_process = fields.Boolean(compute='_compute_is_can_process', string='Puede procesar')
 
     @api.depends('line_ids', 'lines_processed_ids')
     def _compute_line_count(self):
@@ -99,6 +100,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     def _compute_altas_vl_count(self):
         for rec in self:
             rec.altas_vl_count = len(rec.altas_vl_ids)
+
+    def _compute_is_can_process(self):
+        for rec in self:
+            rec.is_can_process = (rec.state == 'draft' and len(
+                ' '.join(rec.line_ids.mapped('message_error')).strip())) == 0 and not rec.state == 'done'
 
     @api.depends('inciso_id')
     def _compute_is_readonly(self):
