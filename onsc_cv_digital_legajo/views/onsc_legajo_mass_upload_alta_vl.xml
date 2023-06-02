@@ -59,6 +59,7 @@
                                 <field name="altas_vl_ids" invisible="1"/>
                                 <field name="line2process_qty" invisible="1"/>
                                 <field name="is_can_process" invisible="1"/>
+                                <field name="should_disable_form_edit" invisible="1"/>
                             </group>
                             <group>
                                 <field name="operating_unit_id_domain" invisible="1"/>

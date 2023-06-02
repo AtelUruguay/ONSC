@@ -89,6 +89,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     altas_vl_ids = fields.One2many('onsc.legajo.alta.vl', 'mass_upload_id', string='Altas VL')
     altas_vl_count = fields.Integer(compute='_compute_altas_vl_count', string='Cantidad de altas VL')
     is_can_process = fields.Boolean(compute='_compute_is_can_process', string='Puede procesar')
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
+
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.state == 'draft'
 
     @api.depends('line_ids', 'lines_processed_ids')
     def _compute_line_count(self):
