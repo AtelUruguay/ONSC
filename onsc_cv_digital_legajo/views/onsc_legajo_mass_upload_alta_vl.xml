@@ -73,7 +73,7 @@
                         </group>
                         <notebook>
                             <page string="Líneas a procesar" attrs="{'invisible': [('state', '==', 'done')]}">
-                                <field name="line_ids">
+                                <field name="line_ids" readonly="1">
                                     <tree create="false" delete="false">
                                         <field name="document_number"/>
                                         <field name="message_error" readonly="1"/>
