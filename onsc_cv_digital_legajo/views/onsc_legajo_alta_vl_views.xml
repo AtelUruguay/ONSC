@@ -6,6 +6,24 @@
             <field name="model">onsc.legajo.alta.vl</field>
             <field name="arch" type="xml">
                 <tree string="Alta VL">
+                    <header>
+                        <button name="action_call_multi_ws4" type="object" string="Enviar a SGH"/>
+                    </header>
+                    <field name="full_name"/>
+                    <field name="state"/>
+                    <field name="error_message_synchronization" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+        <record id="onsc_legajo_alta_vl_mass_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.alta.vl.tree</field>
+            <field name="model">onsc.legajo.alta.vl</field>
+            <field name="arch" type="xml">
+                <tree string="Alta VL">
+                    <header>
+                        <button name="action_call_multi_ws4" type="object" string="Enviar a SGH"
+                                context="{'not_check_attached_document': True}"/>
+                    </header>
                     <field name="full_name"/>
                     <field name="state"/>
                     <field name="error_message_synchronization" optional="hide"/>
@@ -102,7 +120,7 @@
                             <field name="cv_address_is_cv_bis" force_save="1" readonly="1"/>
                             <field name="cv_address_place" force_save="1" readonly="1"/>
                             <field name="cv_address_block" force_save="1" readonly="1"/>
-                            <field name="cv_address_sandlot"  force_save="1" readonly="1"/>
+                            <field name="cv_address_sandlot" force_save="1" readonly="1"/>
                         </group>
                     </page>
                 </xpath>
@@ -114,11 +132,13 @@
                             states="borrador,error_sgh"
                             attrs="{'invisible': ['|','&amp;',('is_presupuestado', '=', False), ('is_reserva_sgh', '=', False)]}"/>
                     <field name="vacante_ids" nolabel="1"
-                           attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}" readonly="1" force_save="1">
+                           attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"
+                           readonly="1" force_save="1">
                         <tree string="Vacantes" create="false" delete="false">
                             <field name="selected" nolabel="1"
                                    groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
-                                   widget="boolean_toggle" force_save="1" class="oe_edit_only" attrs="{'invisible': [('state', 'not in', ['borrador','error_sgh'])]}"/>
+                                   widget="boolean_toggle" force_save="1" class="oe_edit_only"
+                                   attrs="{'invisible': [('state', 'not in', ['borrador','error_sgh'])]}"/>
                             <field name="Dsc3Descripcion" readonly="1"/>
                             <field name="Dsc4Descripcion" readonly="1"/>
                             <field name="nroPuesto" readonly="1"/>
@@ -164,17 +184,6 @@
                     </sheet>
                 </form>
             </field>
-        </record>
-
-        <record id="action_multi_ws4" model="ir.actions.server">
-            <field name="name">Enviar a SGH</field>
-            <field name="model_id" ref="onsc_legajo.model_onsc_legajo_alta_vl"/>
-            <field name="groups_id"
-                   eval="[(4, ref('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')), (4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')), (4, ref('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'))]"/>
-            <field name="binding_model_id" ref="onsc_legajo.model_onsc_legajo_alta_vl"/>
-            <field name="binding_view_types">list</field>
-            <field name="state">code</field>
-            <field name="code">records.action_call_multi_ws4()</field>
         </record>
     </data>
 </odoo>

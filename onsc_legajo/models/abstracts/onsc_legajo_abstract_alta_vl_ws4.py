@@ -43,18 +43,18 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             altaDetalle = {'fechaAlta': record.date_start.strftime('%d/%m/%Y'),
                            'cedula': record.partner_id.cv_nro_doc[:-1],
                            'digitoVerificador': record.partner_id.cv_nro_doc[-1],
-                           'primerApellido': record.partner_id.cv_last_name_1,
+                           'primerApellido': record.partner_id.cv_last_name_1[:20],
                            }
             if record.partner_id.cv_last_name_2:
                 altaDetalle.update({
-                    'segundoApellido': record.partner_id.cv_last_name_2
+                    'segundoApellido': record.partner_id.cv_last_name_2[:20]
                 })
             altaDetalle.update({
-                'primerNombre': record.partner_id.cv_first_name,
+                'primerNombre': record.partner_id.cv_first_name[:20],
             })
             if record.partner_id.cv_second_name:
                 altaDetalle.update({
-                    'segundoNombre': record.partner_id.cv_second_name
+                    'segundoNombre': record.partner_id.cv_second_name[:20]
                 })
             if record.regime_id and record.regime_id.codRegimen:
                 altaDetalle.update({
@@ -240,7 +240,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                     'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
                                 'is_error_synchronization': False,
                                 'ws4_user_id': self.env.user.id,
-                                'state': 'pendiente_auditoria_cgn'
+                                'state': 'pendiente_auditoria_cgn',
+                                'error_message_synchronization': ''
                             })
                     except Exception as e:
                         long_description = "Error devuelto por SGH: %s" % tools.ustr(e)

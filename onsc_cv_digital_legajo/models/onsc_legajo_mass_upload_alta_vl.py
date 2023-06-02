@@ -166,7 +166,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             'view_mode': 'tree,form',
             'domain': [('id', 'in', self.altas_vl_ids.ids)],
             'views': [
-                [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_tree').id, 'tree'],
+                [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_mass_tree').id, 'tree'],
                 [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_form').id, 'form'],
             ]
         }

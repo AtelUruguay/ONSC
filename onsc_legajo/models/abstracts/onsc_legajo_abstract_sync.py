@@ -34,6 +34,12 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 integration_log=integration_error,
                 ws_tuple=False,
                 long_description=tools.ustr(e))
+            altas_vl = self._context.get('altas_vl')
+            altas_vl.write({
+                'is_error_synchronization': True,
+                'state': 'error_sgh',
+                'error_message_synchronization': "Error devuelto por SGH: " + tools.ustr(e)
+            })
             return "Error devuelto por SGH: " + tools.ustr(e)
         if hasattr(response, 'servicioResultado'):
             if response.servicioResultado.codigo == 0:
