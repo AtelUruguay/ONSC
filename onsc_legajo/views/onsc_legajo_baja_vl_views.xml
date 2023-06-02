@@ -79,7 +79,7 @@
                         <group name="group2">
 
                             <field name="employment_relationship_ids" nolabel="1" readonly="1"
-
+                                    context="{'form_view_ref' : 'onsc_legajo.onsc_legajo_hr_contract_view_form'}"
                                    force_save="1" style="pointer-events:none;">
                              <tree  string="Vinculo laboral"  create="false" delete="false" >
                                   <field name="state" invisible="1"/>
@@ -89,8 +89,7 @@
                                  <button type="object"
                                             string="Ver Contrato"
                                             name="button_open_current_contract"
-                                            icon="fa-edit" style="pointer-events:all;"
-                                           />
+                                          style="pointer-events:all;"   icon="fa-edit" />
                                  <field name="nroPuesto" readonly="1"/>
                                  <field name="nroPlaza" readonly="1" />
                                  <field name="descriptor1_id" readonly="1" />
