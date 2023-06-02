@@ -782,14 +782,14 @@ class ONSCCVDigital(models.Model):
             formatted_response = "Servidor no encontrado."
         return formatted_response
 
-    @api.model
-    def create(self, values):
-        record = super(ONSCCVDigital, self).create(values)
-        if values.get('cv_address_street_id'):
-            record.partner_id.suspend_security().write(
-                {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
-                 'cv_street3': record.cv_address_street3_id.street})
-        return record
+    # @api.model
+    # def create(self, values):
+    #     record = super(ONSCCVDigital, self).create(values)
+    #     if values.get('cv_address_street_id'):
+    #         record.partner_id.suspend_security().write(
+    #             {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
+    #              'cv_street3': record.cv_address_street3_id.street})
+    #     return record
 
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
