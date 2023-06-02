@@ -166,7 +166,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             'view_mode': 'tree,form',
             'domain': [('id', 'in', self.altas_vl_ids.ids)],
             'views': [
-                [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_tree').id, 'tree'],
+                [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_mass_tree').id, 'tree'],
                 [self.env.ref('onsc_cv_digital_legajo.onsc_legajo_alta_vl_form').id, 'form'],
             ]
         }
@@ -584,7 +584,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         return self.env['onsc.legajo.budget.item'].sudo().search(args, limit=1)
 
     def syncronize_ws4(self):
-        self.mapped('altas_vl_ids').action_call_multi_ws4()
+        self.mapped('altas_vl_ids').with_context(not_check_attached_document=True).action_call_multi_ws4()
 
     @api.model
     def create(self, vals):
