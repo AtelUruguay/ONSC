@@ -26,6 +26,7 @@ class ONSCLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.alta.vl'
     _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin', 'onsc.legajo.actions.common.data']
     _description = 'Alta de vínculo laboral'
+    _order = 'create_date DESC'
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
