@@ -8,6 +8,7 @@
                 <tree string="Alta VL">
                     <field name="full_name"/>
                     <field name="state"/>
+                    <field name="error_message_synchronization" optional="hide"/>
                 </tree>
             </field>
         </record>

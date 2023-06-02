@@ -263,9 +263,9 @@ class ONSCLegajoAltaVL(models.Model):
             log_info=log_info).suspend_security().syncronize_multi(self)
 
     def action_call_multi_ws4(self):
-        self.with_context(not_check_attached_document=True).check_required_fieds_ws4()
+        self.check_required_fieds_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
-            raise ValidationError(_("Solo se pueden sincronizar altas en estado borrador o error SGH"))
+            raise ValidationError(_("Solo se pueden enviar altas en estado borrador o error SGH"))
         altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
         altas_presupuestas.syncronize_multi_ws4()
         altas_no_presupuestas = self.filtered(lambda x: not x.is_presupuestado)
@@ -288,6 +288,7 @@ class ONSCLegajoAltaVL(models.Model):
                 log_info=False).syncronize_multi(altas_vl)
 
     def check_required_fieds_ws4(self):
+        check_attached_documents = len(list(set([x.mass_upload_id.id for x in self]))) != 1
         for record in self:
             message = []
             for required_field in REQUIRED_FIELDS:
@@ -313,7 +314,8 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append(record._fields['nroPlaza'].string)
             if record.income_mechanism_id.is_call_number_required and not record.call_number:
                 message.append(record._fields['call_number'].string)
-            if not record.attached_document_ids and not self.env.context.get('not_check_attached_document', False):
+            if check_attached_documents and not self.env.context.get('not_check_attached_document',
+                                                                     False) and not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
             if record.health_provider_id and record.health_provider_id.code:
                 try:
