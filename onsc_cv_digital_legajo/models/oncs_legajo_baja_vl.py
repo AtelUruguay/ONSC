@@ -15,15 +15,12 @@ class ONSCLegajoBajaVL(models.Model):
     _rec_name = 'full_name'
 
     full_name = fields.Char('Nombre', compute='_compute_full_name')
-
     @api.depends('partner_id')
     def _compute_full_name(self):
         for record in self:
-            record.full_name = record.partner_id.cv_nro_doc + ' - ' + calc_full_name(
+            record.full_name = record.partner_id.cv_nro_doc + ' - '+calc_full_name(
                 record.partner_id.cv_first_name, record.partner_id.cv_second_name,
-                record.partner_id.cv_last_name_1, record.partner_id.cv_last_name_2) + ' - ' + record.end_date.strftime(
-                '%Y%m%d')
-
+                record.partner_id.cv_last_name_1, record.partner_id.cv_last_name_2) + ' - '+ record.end_date.strftime('%Y%m%d')
     def action_aprobado_cgn(self):
         employee_id = self.env['hr.employee'].sudo().search(
             [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
@@ -57,8 +54,9 @@ class ONSCLegajoBajaVL(models.Model):
                 'causes_discharge_id': self.causes_discharge_id and self.causes_discharge_id.id or False,
                 'additional_information_deregistration': self.additional_information,
                 'legajo_state': 'baja',
-                'causes_discharge_extended': self.causes_discharge_extended_id and self.causes_discharge_extended_id.id or False
+                'causes_discharge_extended':self.causes_discharge_extended_id and self.causes_discharge_extended_id.id or False
             }
+
 
             for attach in self.attached_document_discharge_ids:
                 attach.write({
@@ -67,6 +65,7 @@ class ONSCLegajoBajaVL(models.Model):
 
             contrato_id.suspend_security().write(data)
             vl.job_id.write({'end_date': self.end_date})
+
 
         self.write({'state': 'aprobado_cgn'})
 
