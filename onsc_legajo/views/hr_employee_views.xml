@@ -61,7 +61,6 @@
                             <group>
                                 <field name="cv_birthdate" readonly="1"/>
                                 <field name="cv_sex" readonly="1"/>
-                                <field name="cv_sex_updated_date" readonly="1"/>
                                 <field name="photo_updated_date" readonly="1"/>
                             </group>
                         </group>

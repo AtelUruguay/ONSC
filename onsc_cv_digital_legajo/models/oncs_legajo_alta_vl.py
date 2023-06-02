@@ -95,7 +95,7 @@ class ONSCLegajoAltaVL(models.Model):
     country_code = fields.Char("Código")
     origin_type = fields.Selection([('M', 'Manual'), ('P', 'Proceso')], string='Origen',
                                    compute='_compute_origin_type', store=True)
-    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='Modo de creación')
+    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución')
 
     ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN")
 
@@ -121,13 +121,16 @@ class ONSCLegajoAltaVL(models.Model):
         if self.employee_id.cv_sex != self.cv_sex:
             vals.update({'cv_sex': self.cv_sex})
         if vals:
+            self.cv_digital_id.with_context(can_update_contact_cv=True).suspend_security().write(vals)
             self.employee_id.suspend_security().write(vals)
-            self.cv_digital_id.suspend_security().write(vals)
         return legajo
 
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         self._empty_fieldsVL()
+        self._update_altavl_info()
+
+    def _update_altavl_info(self):
         Employee = self.env['hr.employee'].sudo()
         CVDigital = self.env['onsc.cv.digital'].sudo()
         for record in self.sudo():
@@ -147,26 +150,26 @@ class ONSCLegajoAltaVL(models.Model):
                     record.employee_id = employee.id
                     record.cv_birthdate = employee.cv_birthdate
                     record.cv_sex = employee.cv_sex
-                elif cv_digital_id:
+                elif cv_digital_id and not self._context.get('no_update_extra'):
                     record.cv_birthdate = cv_digital_id.cv_birthdate
                     record.cv_sex = cv_digital_id.cv_sex
 
                 record.cv_digital_id = cv_digital_id
-                record.country_code = cv_digital_id.partner_id.country_id.code
+                record.country_code = cv_digital_id.country_id.code
                 record.country_of_birth_id = cv_digital_id.country_of_birth_id
-                record.cv_address_state_id = record.partner_id.state_id
-                record.cv_address_location_id = record.partner_id.cv_location_id
+                record.cv_address_state_id = cv_digital_id.cv_address_state_id
+                record.cv_address_location_id = cv_digital_id.cv_address_location_id
                 record.cv_address_street_id = cv_digital_id.cv_address_street_id
                 record.cv_address_street2_id = cv_digital_id.cv_address_street2_id
                 record.cv_address_street3_id = cv_digital_id.cv_address_street3_id
-                record.cv_address_street = record.partner_id.street
-                record.cv_address_nro_door = record.partner_id.cv_nro_door
-                record.cv_address_is_cv_bis = record.partner_id.is_cv_bis
-                record.cv_address_apto = record.partner_id.cv_apto
-                record.cv_address_place = record.partner_id.cv_address_place
-                record.cv_address_zip = record.partner_id.zip
-                record.cv_address_block = record.partner_id.cv_address_block
-                record.cv_address_sandlot = record.partner_id.cv_address_sandlot
+                record.cv_address_street = cv_digital_id.cv_address_street
+                record.cv_address_nro_door = cv_digital_id.cv_address_nro_door
+                record.cv_address_is_cv_bis = cv_digital_id.cv_address_is_cv_bis
+                record.cv_address_apto = cv_digital_id.cv_address_apto
+                record.cv_address_place = cv_digital_id.cv_address_place
+                record.cv_address_zip = cv_digital_id.cv_address_zip
+                record.cv_address_block = cv_digital_id.cv_address_block
+                record.cv_address_sandlot = cv_digital_id.cv_address_sandlot
 
                 record.marital_status_id = cv_digital_id.marital_status_id
                 record.uy_citizenship = cv_digital_id.uy_citizenship
@@ -176,6 +179,7 @@ class ONSCLegajoAltaVL(models.Model):
                 record.mobile_phone = cv_digital_id.mobile_phone
                 record.email = cv_digital_id.email
                 record.health_provider_id = cv_digital_id.health_provider_id
+
 
     @api.depends('partner_id')
     def _compute_full_name(self):
@@ -255,25 +259,11 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         self.check_required_fieds_ws4()
-        response = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
-            log_info=log_info).suspend_security().syncronize(self)[0]
-        if not isinstance(response, str):
-            self.ws4_user_id = self.env.user.id
-            self.id_alta = response['pdaId']
-            self.secPlaza = response['secPlaza']
-            self.nroPuesto = response['idPuesto']
-            self.nroPlaza = response['nroPlaza']
-            self.codigoJornadaFormal = response['codigoJornadaFormal']
-            self.descripcionJornadaFormal = response['descripcionJornadaFormal']
-            self.is_error_synchronization = False
-            self.state = 'pendiente_auditoria_cgn'
-        elif isinstance(response, str):
-            self.is_error_synchronization = True
-            self.state = 'error_sgh'
-            self.error_message_synchronization = response
+        self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
+            log_info=log_info).suspend_security().syncronize_multi(self)
 
     def action_call_multi_ws4(self):
-        self.check_required_fieds_ws4()
+        self.with_context(not_check_attached_document=True).check_required_fieds_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
             raise ValidationError(_("Solo se pueden sincronizar altas en estado borrador o error SGH"))
         altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
@@ -284,6 +274,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     def syncronize_multi_ws4(self):
         altas_vl_grouped = {}
+        AltaVLWS4 = self.env['onsc.legajo.abstract.alta.vl.ws4'].sudo()
         for alta in self:
             inciso = alta.inciso_id
             unidad_ejecutora = alta.operating_unit_id
@@ -293,26 +284,8 @@ class ONSCLegajoAltaVL(models.Model):
             else:
                 altas_vl_grouped[clave] = alta
         for clave, altas_vl in altas_vl_grouped.items():
-            responses = self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
-                log_info=False).suspend_security().syncronize_multi(altas_vl)
-            if isinstance(responses, str):
-                altas_vl.write({
-                    'is_error_synchronization': True,
-                    'state': 'error_sgh',
-                    'error_message_synchronization': responses
-                })
-            else:
-                for response, record in zip(responses, altas_vl):
-                    if not isinstance(response, str):
-                        record.ws4_user_id = self.env.user.id
-                        record.id_alta = response['pdaId']
-                        record.secPlaza = response['secPlaza']
-                        record.nroPuesto = response['idPuesto']
-                        record.nroPlaza = response['nroPlaza']
-                        record.codigoJornadaFormal = response['codigoJornadaFormal']
-                        record.descripcionJornadaFormal = response['descripcionJornadaFormal']
-                        record.is_error_synchronization = False
-                        record.state = 'pendiente_auditoria_cgn'
+            AltaVLWS4.with_context(
+                log_info=False).syncronize_multi(altas_vl)
 
     def check_required_fieds_ws4(self):
         for record in self:

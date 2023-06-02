@@ -186,42 +186,6 @@ class ONSCLegajoAltaVL(models.Model):
     contract_expiration_date = fields.Date(string='Vencimiento del contrato', copy=False,
                                            readonly=True, states={'borrador': [('readonly', False)],
                                                                   'error_sgh': [('readonly', False)]})
-
-    # POTENTIAL INHERITANCE
-    # reason_description = fields.Char(string='Descripción del motivo', copy=True,
-    #                                  readonly=True,
-    #                                  states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    #
-    # norm_id = fields.Many2one('onsc.legajo.norm', string='Norma', copy=True,
-    #                           readonly=True,
-    #                           states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    # norm_type = fields.Char(string="Tipo norma", related="norm_id.tipoNorma", store=True, readonly=True)
-    # norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
-    #                              store=True, readonly=True)
-    #
-    # norm_year = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
-    #                            readonly=True)
-    # norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
-    #                               store=True, readonly=True)
-    # resolution_description = fields.Char(string='Descripción de la resolución', copy=True,
-    #                                      readonly=True,
-    #                                      states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    # resolution_date = fields.Date(string='Fecha de la resolución', copy=True,
-    #                               readonly=True,
-    #                               states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    # resolution_type = fields.Selection(
-    #     [
-    #         ('M', 'Inciso'),
-    #         ('P', 'Presidencia o Poder ejecutivo'),
-    #         ('U', 'Unidad ejecutora')
-    #     ],
-    #     copy=True,
-    #     string='Tipo de resolución'
-    #     , readonly=True, states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    # additional_information = fields.Text(string='Información adicional', copy=False,
-    #                                      readonly=True,
-    #                                      states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-
     health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Cobertura de salud", copy=False,
                                          readonly=True,
                                          states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
@@ -440,13 +404,11 @@ class ONSCLegajoAltaVL(models.Model):
 
     def _send_aprobado_notification(self):
         validation_email_template_id = self.env.ref('onsc_legajo.email_template_altavl_aprobada')
-        validation_email_template_id.send_mail(self.id, force_send=True,
-                                               notif_layout='mail.mail_notification_light')
+        validation_email_template_id.send_mail(self.id, force_send=True)
 
     def _send_rechazado_notification(self):
         validation_email_template_id = self.env.ref('onsc_legajo.email_template_altavl_rechazada')
-        validation_email_template_id.send_mail(self.id, force_send=True,
-                                               notif_layout='mail.mail_notification_light')
+        validation_email_template_id.send_mail(self.id, force_send=True)
 
     # ALTAVL WS5
     def _create_legajo(self):
