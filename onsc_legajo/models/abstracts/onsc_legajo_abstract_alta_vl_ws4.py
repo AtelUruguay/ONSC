@@ -127,7 +127,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 'eMail': record.email,
                 'deptoCod': record.cv_address_state_id.code or '99',
                 # TODO default 99 : record.cv_address_state_id.code or '99', Codigo de departamento  en nuestro catalogo son string
-                'localidadCod': record.cv_address_location_id.code if record.cv_address_location_id and record.cv_address_location_id.code else '9999999999',
+                'localidadCod': record.cv_address_location_id.other_code if record.cv_address_location_id and record.cv_address_location_id.other_code else '9999999999',
                 'calleCod': calleCod,
             })
 
