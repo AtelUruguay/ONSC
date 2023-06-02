@@ -229,7 +229,8 @@ class ONSCLegajoBajaVL(models.Model):
             rec.employment_relationship_ids =vinculo_ids
 
     def action_call_ws9(self):
-        return self.syncronize_ws9()
+        self._check_required_fieds_ws9()
+        self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
     def _get_domain_partner_ids(self):
         if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_administrar_bajas'):
