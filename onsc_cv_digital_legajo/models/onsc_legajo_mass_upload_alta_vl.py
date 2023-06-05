@@ -95,7 +95,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state == 'draft'
+            record.should_disable_form_edit = record.state != 'draft'
 
     @api.depends('line_ids', 'lines_processed_ids')
     def _compute_line_count(self):
