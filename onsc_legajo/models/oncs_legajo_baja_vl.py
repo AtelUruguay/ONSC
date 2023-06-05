@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 import json
+
 from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -46,8 +48,6 @@ class ONSCEmploymentRelationship(models.Model):
     def button_open_current_contract(self):
         ctx = self.env.context.copy()
         ctx.update({'edit': True})
-
-
         return {
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
@@ -60,10 +60,7 @@ class ONSCEmploymentRelationship(models.Model):
 
                 [self.env.ref('onsc_legajo.onsc_legajo_hr_contract_view_form').id, 'form'],
             ]
-
         }
-
-
 
 class ONSCLegajoBajaVL(models.Model):
     _name = 'onsc.legajo.baja.vl'
@@ -87,7 +84,6 @@ class ONSCLegajoBajaVL(models.Model):
                 node_form.getparent().remove(node_form)
         res['arch'] = etree.tostring(doc)
         return res
-
 
     def _get_domain(self, args):
         args = expression.AND([[
@@ -164,13 +160,11 @@ class ONSCLegajoBajaVL(models.Model):
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
 
-
     @api.constrains("end_date")
     def _check_date(self):
         for record in self:
             if record.end_date > fields.Date.today():
                 raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
-
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
@@ -226,7 +220,7 @@ class ONSCLegajoBajaVL(models.Model):
                 }
 
                 vinculo_ids.append((0, 0, data))
-            rec.employment_relationship_ids =vinculo_ids
+            rec.employment_relationship_ids = vinculo_ids
 
     def action_call_ws9(self):
         self._check_required_fieds_ws9()
@@ -259,7 +253,6 @@ class ONSCLegajoBajaVL(models.Model):
                 return json.dumps([('id', 'in', partner_ids.ids)])
             else:
                 return json.dumps([('id', '=', False)])
-
 
     def _check_required_fieds_ws9(self):
         for record in self:
