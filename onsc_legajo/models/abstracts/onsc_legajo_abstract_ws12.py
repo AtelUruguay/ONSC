@@ -38,7 +38,6 @@ class ONSCLegajoAbstractSyncWS12(models.AbstractModel):
         # pylint: disable=invalid-commit
         with self._cr.savepoint():
             integration_error_WS12_9000 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS12_9000")
-            alta_vl = self._context.get('alta_vl')
             onsc_legajo_integration_error_WS12_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_WS12_9004")
             if self._context.get('alta_vl'):

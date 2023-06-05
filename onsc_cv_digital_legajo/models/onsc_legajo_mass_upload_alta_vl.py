@@ -4,11 +4,11 @@ import datetime
 import json
 import logging
 import tempfile
+
 from odoo import fields, models, api, _, tools
 from odoo.exceptions import UserError
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-
 from ...onsc_cv_digital.models.onsc_cv_useful_tools import is_valid_phone
 
 _logger = logging.getLogger(__name__)
@@ -572,12 +572,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
 
     def get_partida(self, descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id):
         args = []
-        domain = [('id', 'in', [])]
         if descriptor1_id:
             args = [('dsc1Id', '=', descriptor1_id)]
         if descriptor2_id:
             args = expression.AND([[('dsc2Id', '=', descriptor2_id)], args])
-
         if descriptor3_id:
             args = expression.AND([[('dsc3Id', '=', descriptor3_id)], args])
         if descriptor4_id:
@@ -847,7 +845,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                             break
                         else:
                             values[key] = False
-                    if values[key] == False:
+                    if values[key] is False:
                         raise
             except Exception as e:
                 type_field = ""
