@@ -281,7 +281,7 @@ class ONSCLegajoBajaVL(models.Model):
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
-            raise ValidationError(_("Solo se pueden eliminar una transacción en estado borrador"))
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
         return super(ONSCLegajoBajaVL, self).unlink()
 
     @api.onchange("employment_relationship_ids")
