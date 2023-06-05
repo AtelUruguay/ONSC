@@ -11,7 +11,7 @@ LOGIC_150 = {
 LOGIC_151 = {
     'type': 'LOGICA',
     'code': '151',
-    'desc': u'No se ha identificado un Alta de vínculo laboral pendiente de auditoría para ese pdaId',
+    'desc': u'No se ha identificado un Alta o Baja de vínculo laboral pendiente de auditoría para ese pdaId',
     'long_desc': u'',
 }
 
