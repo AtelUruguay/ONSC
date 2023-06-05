@@ -1,29 +1,14 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import models, fields, api
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 
 class HrEmployee(models.Model):
     _name = "hr.employee"
     _inherit = ['hr.employee', 'onsc.partner.common.data', 'model.history']
     _history_model = 'hr.employee.history'
-    _history_columns = ['cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2',
-                        'status_civil_date', 'uy_citizenship',
-                        'cv_gender_id', 'gender_date', 'is_cv_gender_public',
-                        'is_afro_descendants', 'afro_descendant_date',
-                        'is_occupational_health_card', 'occupational_health_card_date',
-                        'medical_aptitude_certificate_date', 'is_public_information_victim_violent',
-                        'allow_content_public', 'situation_disability',
-                        'people_disabilitie', 'certificate_date',
-                        'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear', 'interaction',
-                        'need_other_support', 'emergency_service_id', 'emergency_service_telephone',
-                        'health_department_id', 'health_provider_id', 'name_contact', 'contact_person_telephone',
-                        'remark_contact_person', 'other_information_official', 'disability_date', 'cv_first_race_id',
-                        'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
-                        'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2', 'is_cv_race_public'
-                        ]
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
@@ -41,8 +26,8 @@ class HrEmployee(models.Model):
         return res
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
+
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
-    cv_sex_updated_date = fields.Date(u'Fecha de información sexo')
 
     prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
                                       default=lambda self: self.env['res.country.phone'].search(
@@ -56,6 +41,9 @@ class HrEmployee(models.Model):
 
     attachment_ids = fields.One2many('ir.attachment', compute='_compute_attachment_ids', string="Archivos adjuntos")
     attachment_count = fields.Integer(compute='_compute_attachment_ids', string="Cantidad de archivos adjuntos")
+
+    # legajo_state = fields.Selection(
+    #     [('active', 'Activo'), ('egresed', 'Egresado')], string='Estado', default='active', history=True)
 
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
@@ -149,6 +137,11 @@ class HrEmployee(models.Model):
                      'res_id': rec.id, 'type': 'binary'})
 
     def write(self, values):
+        history_fields = self.get_history_fields()
+        if not values.get('eff_date') and set(list(values)).intersection(set(history_fields)):
+            values.update({
+                'eff_date': fields.Date.today()
+            })
         self._set_binary_history(values)
         if self.env.context.get('is_legajo'):
             res = super(HrEmployee, self.suspend_security()).write(values)
@@ -189,3 +182,8 @@ class HrEmployeeHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.employee.history'
     _parent_model = 'hr.employee'
+
+    @api.model
+    def create(self, values):
+        record = super(HrEmployeeHistory, self).create(values)
+        return record

@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="onsc_legajo_alta_vl_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.alta.vl.tree</field>
+            <field name="model">onsc.legajo.alta.vl</field>
+            <field name="arch" type="xml">
+                <tree string="Alta VL">
+                    <header>
+                        <button name="action_call_multi_ws4" type="object" string="Enviar a SGH"/>
+                    </header>
+                    <field name="full_name"/>
+                    <field name="state"/>
+                    <field name="error_message_synchronization" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+        <record id="onsc_legajo_alta_vl_mass_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.alta.vl.tree</field>
+            <field name="model">onsc.legajo.alta.vl</field>
+            <field name="arch" type="xml">
+                <tree string="Alta VL">
+                    <header>
+                        <button name="action_call_multi_ws4" type="object" string="Enviar a SGH"
+                                context="{'not_check_attached_document': True}"/>
+                    </header>
+                    <field name="full_name"/>
+                    <field name="state"/>
+                    <field name="error_message_synchronization" optional="hide"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_alta_vl_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.alta.vl.form</field>
+            <field name="model">onsc.legajo.alta.vl</field>
+            <field name="inherit_id" ref="onsc_legajo.onsc_legajo_alta_vl_form"/>
+            <field name="arch" type="xml">
+                <header position="inside">
+                    <button name="action_call_ws4" class="btn btn-primary"
+                            type="object" string="Enviar a SGH"
+                            groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
+                            states="borrador,error_sgh"/>
+                </header>
+                <xpath expr="//div[hasclass('oe_title')]" position="before">
+                    <field name="is_error_synchronization" invisible="1"/>
+                    <div class="alert alert-danger"
+                         role="alert"
+                         attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
+                         style="margin-bottom:0px;">
+                        <p>
+                            <i class="fa fa-info-circle" role="alert" aria-label="Warning" title="Warning"/>
+                            <field name="error_message_synchronization" readonly="1"/>
+                        </p>
+                    </div>
+                </xpath>
+                <field name="is_inciso_readonly" position="before">
+                    <field name="cv_emissor_country_id"
+                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                           readonly="1"
+                           force_save="1"
+                           string="País"/>
+                    <field name="cv_document_type_id"
+                           readonly="1"
+                           force_save="1"
+                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                    <field name="partner_id" string="C.I." required="1"
+                           context="{'tree_view_ref': 'onsc_cv_digital_legajo.onsc_cv_digital_legajo_tree_view','show_cv_nro_doc':True}"
+                           attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="partner_id_domain"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="partner_id_domain" invisible="1"/>
+                    <field name="is_docket" invisible="1"/>
+                    <field name="employee_id" invisible="1"/>
+                    <field name="cv_digital_id" invisible="1"/>
+                </field>
+                <group name="main_group_right" position="inside">
+                    <field name="cv_birthdate"
+                           attrs="{'readonly': ['|',('state', 'not in', ['borrador', 'error_sgh']),('is_docket', '=', True)]}"
+                           force_save="1"/>
+                    <field name="cv_sex"
+                           attrs="{'readonly': ['|',('state', 'not in', ['borrador', 'error_sgh']),('is_docket', '=', True)]}"
+                           force_save="1"/>
+                </group>
+                <xpath expr="//notebook" position="inside">
+                    <page string="Datos personales">
+                        <group>
+                            <field name="country_of_birth_id" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="marital_status_id" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="health_provider_id" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="uy_citizenship" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="crendencial_serie" readonly="1" force_save="1"/>
+                            <field name="credential_number" readonly="1" force_save="1"/>
+                            <field name="personal_phone" readonly="1" force_save="1"/>
+                            <field name="mobile_phone" readonly="1"/>
+                        </group>
+                        <group>
+                            <field name="email" readonly="1"/>
+                            <field name="country_code" readonly="1" force_save="1" invisible="1"/>
+                            <field name="cv_address_location_id" force_save="1" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="cv_address_nro_door" force_save="1" readonly="1"/>
+                            <field name="cv_address_apto" force_save="1" readonly="1"/>
+                            <field name="cv_address_zip" force_save="1" readonly="1"/>
+                            <field name="cv_address_state_id" readonly="1" force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="cv_address_street_id" readonly="1" force_save="1"
+                                   attrs="{'invisible': [('country_code', '!=', 'UY')]}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="cv_address_street2_id" force_save="1" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="cv_address_street3_id" force_save="1" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="cv_address_street" string="Calle"
+                                   force_save="1"
+                                   attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
+                            <field name="cv_address_is_cv_bis" force_save="1" readonly="1"/>
+                            <field name="cv_address_place" force_save="1" readonly="1"/>
+                            <field name="cv_address_block" force_save="1" readonly="1"/>
+                            <field name="cv_address_sandlot" force_save="1" readonly="1"/>
+                        </group>
+                    </page>
+                </xpath>
+                <xpath expr="//group[@name='group3']" position="inside">
+                    <button type="object" name="action_call_ws1" icon="fa-search"
+                            groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
+                            class="btn btn-primary oe_edit_only" string="Buscar vacantes"
+                            style="width: 10%;"
+                            states="borrador,error_sgh"
+                            attrs="{'invisible': ['|','&amp;',('is_presupuestado', '=', False), ('is_reserva_sgh', '=', False)]}"/>
+                    <field name="vacante_ids" nolabel="1"
+                           attrs="{'invisible': [('is_presupuestado', '=', False),('is_reserva_sgh', '=', False)]}"
+                           readonly="1" force_save="1">
+                        <tree string="Vacantes" create="false" delete="false">
+                            <field name="selected" nolabel="1"
+                                   groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
+                                   widget="boolean_toggle" force_save="1" class="oe_edit_only"
+                                   attrs="{'invisible': [('state', 'not in', ['borrador','error_sgh'])]}"/>
+                            <field name="Dsc3Descripcion" readonly="1"/>
+                            <field name="Dsc4Descripcion" readonly="1"/>
+                            <field name="nroPuesto" readonly="1"/>
+                            <field name="nroPlaza" readonly="1"/>
+                            <field name="descripcionJornadaFormal" readonly="1"/>
+                            <field name="state" invisible="1"/>
+                        </tree>
+                    </field>
+                </xpath>
+                <xpath expr="//group[@name='group5']" position="inside">
+                    <group>
+
+                    </group>
+                </xpath>
+            </field>
+        </record>
+
+        <record id="onsc_cv_digital_vacante_from" model="ir.ui.view">
+            <field name="name">onsc.cv.digital.vacante.from</field>
+            <field name="model">onsc.cv.digital.vacante</field>
+            <field name="arch" type="xml">
+                <form string="Vacantes">
+                    <sheet>
+                        <group>
+                            <group>
+                                <field name="nroPlaza"/>
+                                <field name="nroPuesto"/>
+                                <field name="Dsc3Id"/>
+                                <field name="Dsc3Descripcion"/>
+                                <field name="Dsc4Id"/>
+                                <field name="Dsc4Descripcion"/>
+                            </group>
+                            <group>
+                                <field name="fechaReserva"/>
+                                <field name="fechaNotificacion"/>
+                                <field name="fechaVacantePLaza"/>
+                                <field name="codigoJornadaFormal"/>
+                                <field name="descripcionJornadaFormal"/>
+                                <field name="codRegimen"/>
+                                <field name="descripcionRegimen"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+    </data>
+</odoo>

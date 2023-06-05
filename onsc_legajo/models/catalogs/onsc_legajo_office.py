@@ -35,6 +35,29 @@ class ONSCLegajoOffice(models.Model):
         ('code_uniq', 'unique(code)', u'El código de la oficina debe ser único')
     ]
 
+    def name_get(self):
+        res = []
+        for record in self:
+            name = record.code
+            if self._context.get('show_project_program', False) and (record.programa or record.programaDescripcion):
+                name = record.programaDescripcion + " - " + record.proyectoDescripcion
+            res.append((record.id, name))
+        return res
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        by_name = super(ONSCLegajoOffice, self).name_search(name, args=args, operator=operator, limit=limit)
+        if self._context.get('show_project_program', False):
+            by_domain = ['|', ('programaDescripcion', operator, name), ('proyectoDescripcion', operator, name)] + args
+            by_search = self.search(by_domain, limit=limit)
+            return list(set(by_name + by_search.name_get()))
+        return by_name
+
+    def _custom_display_name(self):
+        return self.programaDescripcion + " - " + self.proyectoDescripcion
+
     @api.depends('inciso', 'unidadEjecutora', 'programa', 'proyecto')
     def _compute_code(self):
         for record in self:
@@ -162,9 +185,9 @@ class ONSCLegajoOffice(models.Model):
                         new_office = self.create({
                             'inciso': inciso.id,
                             'unidadEjecutora': operating_unit.id,
-                            'programa': external_record.programa > 0 and str(external_record.programa) or False,
+                            'programa': str(external_record.programa) or False,
                             'programaDescripcion': external_record.programaDescripcion,
-                            'proyecto': external_record.proyecto > 0 and str(external_record.proyecto) or False,
+                            'proyecto': str(external_record.proyecto) or False,
                             'proyectoDescripcion': external_record.proyectoDescripcion,
                         })
                         all_offices |= new_office
@@ -222,10 +245,8 @@ class ONSCLegajoOffice(models.Model):
 
     def _get_code_by_keyparams(self, inciso, unidadEjecutora, programa=False, proyecto=False):
         code = _('Inciso: %s - UE: %s') % (inciso, unidadEjecutora)
-        if programa > 0:
-            code += _(' - Programa: %s') % (programa)
-        if proyecto > 0:
-            code += _(' - Proyecto: %s') % (proyecto)
+        code += _(' - Programa: %s') % (programa)
+        code += _(' - Proyecto: %s') % (proyecto)
         return code
 
     def _get_office_by_keyparams(self, inciso, unidadEjecutora, programa=False, proyecto=False):
@@ -257,3 +278,27 @@ class ONSCLegajoJornadaRetributiva(models.Model):
     def _get_code_by_keyparams(self, inciso, unidadEjecutora, codigoJornada, programa=False, proyecto=False):
         office_code = self.env['onsc.legajo.office']._get_code_by_keyparams(inciso, unidadEjecutora, programa, proyecto)
         return _('%s - Jornada ret: %s') % (office_code, codigoJornada)
+
+    def name_get(self):
+        res = []
+        for record in self:
+            name = record.code
+            if self._context.get('show_only_description', False):
+                name = record.descripcionJornada
+            res.append((record.id, name))
+        return res
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        by_name = super(ONSCLegajoJornadaRetributiva, self).name_search(name, args=args, operator=operator, limit=limit)
+        if self._context.get('show_only_description', False):
+            by_descripcionJornada_domain = [('descripcionJornada', operator, name)]
+            by_descripcionJornada_domain += args
+            by_descripcionJornada = self.search(by_descripcionJornada_domain, limit=limit)
+            return list(set(by_name + by_descripcionJornada.name_get()))
+        return by_name
+
+    def _custom_display_name(self):
+        return self.descripcionJornada

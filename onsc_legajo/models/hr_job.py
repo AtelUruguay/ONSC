@@ -12,6 +12,7 @@ class HrJob(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict',
                                       tracking=True)
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
+    role_extra_is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')
 
     @api.constrains("contract_id", "start_date", "end_date")
@@ -31,7 +32,10 @@ class HrJob(models.Model):
 
     def _compute_is_readonly(self):
         for record in self:
+            # readonly si la fecha end_date es menor a la fecha actual
             record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto')
+            record.role_extra_is_readonly = not self.user_has_groups(
+                'onsc_legajo.group_legajo_configurador_puesto') and record.end_date and record.end_date <= fields.Date.today()
 
     @api.onchange('start_date')
     def onchange_start_date(self):
@@ -88,7 +92,7 @@ class HrJob(models.Model):
 
     def button_open_current_job(self):
         ctx = self.env.context.copy()
-        ctx.update({'edit':True})
+        ctx.update({'edit': True})
         return {
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
@@ -98,7 +102,6 @@ class HrJob(models.Model):
             "target": "current",
             "res_id": self.id,
         }
-
 
 
 class HrJobRoleLine(models.Model):
@@ -112,8 +115,12 @@ class HrJobRoleLine(models.Model):
         for record in self:
             job_roles = record.job_id.role_ids
             job_roles |= record.job_id.role_extra_ids
-            job_roles = job_roles.filtered(lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
-            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date)) or (x.end_date and x.end_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date))):
+            job_roles = job_roles.filtered(
+                lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
+            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and
+                                             (record.end_date is False or record.end_date >= x.start_date)) or
+                                            (x.end_date and x.end_date >= record.start_date and
+                                             (record.end_date is False or record.end_date >= x.start_date))):
                 raise ValidationError(
                     _("El rol configurado no puede repetirse para el mismo puesto en el mismo periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
 
@@ -182,4 +189,3 @@ class HrJobRoleLine(models.Model):
             rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
                                     tracking_value_ids=tracking_value_ids)
         return True
-

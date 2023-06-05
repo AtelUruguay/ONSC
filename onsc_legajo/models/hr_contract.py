@@ -2,13 +2,29 @@
 import json
 
 from lxml import etree
+
 from odoo import fields, models, api, _
+from odoo.osv import expression
 
 
 class HrContract(models.Model):
     _name = 'hr.contract'
+    _rec_name = 'legajo_name'
     _inherit = ['hr.contract', 'model.history']
     _history_model = 'hr.contract.model.history'
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        if not self._context.get('no_scale') and self._context.get('filter_contracts') and not self._context.get(
+                'from_smart_button'):
+            if self._context.get('active_id'):
+                contract_ids = self.env['onsc.legajo'].with_context(no_scale=True).browse(
+                    self._context.get('active_id')).contract_ids.ids
+            else:
+                contract_ids = []
+            args = expression.AND([[('id', 'in', contract_ids)], args])
+        return super(HrContract, self)._search(args, offset=offset, limit=limit, order=order, count=count,
+                                               access_rights_uid=access_rights_uid)
 
     @api.model
     def fields_view_get(self, view_id=None, view_type="form", toolbar=False, submenu=False):
@@ -19,7 +35,9 @@ class HrContract(models.Model):
             submenu=submenu,
         )
         doc = etree.fromstring(res['arch'])
-        is_group_security = self.env.user.has_group('onsc_legajo.group_legajo_editar_ocupacion_contrato')
+        is_group_security = self.env.user.has_group(
+            'onsc_legajo.group_legajo_editar_ocupacion_contrato') and not self.env.user.has_group(
+            'onsc_legajo.group_legajo_configurador_legajo')
         if is_group_security:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('create', '0')
@@ -33,6 +51,7 @@ class HrContract(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
+    legajo_name = fields.Char(string="Nombre", compute='_compute_legajo_name', store=True)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
@@ -42,7 +61,7 @@ class HrContract(models.Model):
     legajo_state = fields.Selection(
         [('active', 'Activo'), ('baja', 'Baja'), ('outgoing_commission', 'Comisión saliente'),
          ('incoming_commission', 'Comisión entrante')], string='Estado', history=True)
-    cs_contract_id = fields.Many2one('hr.contract', string='Contrato CS', history=True)
+    cs_contract_id = fields.Many2one('hr.contract', string='Contrato comisión', history=True)
     first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name')
     second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name')
     last_name_1 = fields.Char(string=u'Primer apellido', related='employee_id.cv_last_name_1')
@@ -63,26 +82,28 @@ class HrContract(models.Model):
     graduation_date = fields.Date(string='Fecha de graduación', history=True)
     position = fields.Char(string='Puesto', history=True)
     workplace = fields.Char(string='Plaza', history=True)
+    reason_description = fields.Char(string='Descripción del motivo alta', history=True)
+    norm_code_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
+    type_norm_discharge = fields.Char(string='Tipo de norma alta', related='norm_code_id.tipoNorma')
     workplace_state = fields.Char( string='Estado de la plaza' ,history=True)
     reason_discharge = fields.Char(string='Descripción del motivo alta', history=True)
     norm_code_discharge_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
-    type_norm_discharge = fields.Char(string='Tipo de norma alta', related='norm_code_discharge_id.tipoNorma')
     norm_number_discharge = fields.Integer(string='Número de norma alta',
-                                           related='norm_code_discharge_id.numeroNorma')
-    norm_year_discharge = fields.Integer(string='Año de norma alta', related='norm_code_discharge_id.anioNorma')
+                                           related='norm_code_id.numeroNorma')
+    norm_year_discharge = fields.Integer(string='Año de norma alta', related='norm_code_id.anioNorma')
     norm_article_discharge = fields.Integer(string='Artículo de norma alta',
-                                            related='norm_code_discharge_id.articuloNorma')
-    resolution_description_discharge = fields.Char(string='Descripción de la resolución', history=True)
-    resolution_date_discharge = fields.Date(string='Fecha de la resolución', history=True)
-    resolution_type_discharge = fields.Selection(
-        [('m', 'Inciso'), ('p', 'Presidencia o Poder ejecutivo'), ('u', 'Unidad ejecutora')],
+                                            related='norm_code_id.articuloNorma')
+    resolution_description = fields.Char(string='Descripción de la resolución', history=True)
+    resolution_date = fields.Date(string='Fecha de la resolución', history=True)
+    resolution_type = fields.Selection(
+        [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
         string='Tipo de resolución alta', history=True)
     contract_expiration_date = fields.Date(string='Vencimiento del contrato', history=True)
-    additional_information_discharge = fields.Char(string='Información adicional alta', history=True)
+    additional_information = fields.Char(string='Información adicional alta', history=True)
     code_day = fields.Char(string="Código de la jornada", history=True)
     description_day = fields.Char(string="Descripción de la Jornada", history=True)
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada retributiva', history=True)
-    id_registration_discharge = fields.Char(string='Id de alta', history=True)
+    id_alta = fields.Char(string='Id de alta', history=True)
     id_deregistration_discharge = fields.Char(string='Id de baja', history=True)
     reason_deregistration = fields.Char(string='Descripción del motivo baja', history=True)
     norm_code_deregistration_id = fields.Many2one('onsc.legajo.norm', string='Código de la norma de baja', history=True)
@@ -96,39 +117,47 @@ class HrContract(models.Model):
     resolution_description_deregistration = fields.Char(string='Descripción de la resolución baja', history=True)
     resolution_date_deregistration = fields.Date(string='Fecha de la resolución baja', history=True)
     resolution_type_deregistration = fields.Selection(
-        [('m', 'Inciso'), ('p', 'Presidencia o Poder ejecutivo'), ('u', 'Unidad ejecutora')],
+        [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
         string='Tipo de resolución baja', history=True)
     causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string="Causal de egreso", history=True)
-    causes_discharge_extended = fields.Char(string='Causal de egreso extendido', history=True)
+    causes_discharge_extended = fields.Many2one("onsc.legajo.causes.discharge.line",
+                                                string="Causal de egreso extendido",
+                                                domain = "[('causes_discharge_id', '=', causes_discharge_id)]", history=True)
+
     is_require_extended = fields.Boolean(u"¿Requiere extendido?", related='causes_discharge_id.is_require_extended')
     additional_information_deregistration = fields.Char(string='Información adicional baja', history=True)
-    attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document',
-                                                      'contract_id',
-                                                      string='Documentos adjuntos alta',
-                                                      domain=[('type', '=', 'discharge')])
+    alta_attached_document_ids = fields.One2many('onsc.legajo.attached.document',
+                                                 'contract_id',
+                                                 string='Documentos adjuntos alta',
+                                                 domain=[('type', '=', 'discharge')])
     attached_document_deregistration_ids = fields.One2many('onsc.legajo.attached.document',
                                                            'contract_id',
                                                            string='Documentos adjuntos baja',
                                                            domain=[('type', '=', 'deregistration')])
     job_ids = fields.One2many('hr.job', 'contract_id', string='Puestos')
+    commission_regime_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen comisión', history=True)
 
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
+    is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
         self.operating_unit_id = False
 
-    @api.onchange('employee_id', 'sec_position')
-    def onchange_employee(self):
-        if self.employee_id:
-            name = self.employee_id.cv_nro_doc if self.employee_id.cv_nro_doc else ''
-            if self.employee_id.name and self.sec_position:
-                name += ' - '
-            if self.sec_position:
-                name += self.sec_position if self.sec_position else ''
-            self.name = name
-        else:
-            self.name = False
+    @api.depends('employee_id', 'position', 'workplace', 'sec_position', )
+    def _compute_legajo_name(self):
+        for rec in self:
+            if rec.employee_id and (rec.position or rec.workplace or rec.sec_position):
+                str_list = [rec.employee_id.cv_nro_doc or rec.employee_id.name]
+                if rec.position:
+                    str_list.append(rec.position)
+                if rec.workplace:
+                    str_list.append(rec.workplace)
+                if rec.sec_position:
+                    str_list.append(rec.sec_position)
+                rec.legajo_name = ' - '.join(str_list)
+            else:
+                rec.legajo_name = rec.name
 
     @api.depends('date_start', 'date_end', 'inciso_id')
     def _compute_operating_unit_id_domain(self):
@@ -148,14 +177,20 @@ class HrContract(models.Model):
         for rec in self:
             is_valid_group = self.env.user.has_group(
                 'onsc_legajo.group_legajo_editar_ocupacion_contrato')
-            is_valid_incoming = rec.legajo_state == 'incoming_commission' and (
-                        rec.date_end is False or rec.date_end > fields.Date.today())
-            is_valid_state = rec.legajo_state == 'active'
-            rec.show_button_update_occupation = is_valid_group and (is_valid_state or is_valid_incoming)
+            is_valid_state = rec.legajo_state != 'baja'
+            rec.show_button_update_occupation = is_valid_group and is_valid_state
+
+    def _compute_is_mi_legajo(self):
+        for rec in self:
+            rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
+
     @api.model
     def get_history_record_action(self, history_id, res_id):
         return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
             'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
+
+    def activate_legajo_contract(self):
+        self.write({'legajo_state': 'active'})
 
     def button_update_occupation(self):
         ctx = self._context.copy()

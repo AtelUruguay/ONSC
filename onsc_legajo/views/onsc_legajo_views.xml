@@ -95,6 +95,7 @@
                             </div>
                         </button>
                     </div>
+                    <field name="contract_ids" invisible="1"/>
                     <field name="avatar_128" invisible="1"/>
                     <field name="image_1920" widget="image" class="oe_avatar"
                            options="{&quot;zoom&quot;: true, &quot;preview_image&quot;:&quot;avatar_128&quot;}"/>
@@ -126,7 +127,7 @@
     </record>
 
     <record id='onsc_legajo_action' model='ir.actions.act_window'>
-        <field name="name">Legajos</field>
+        <field name="name">Consulta de legajos</field>
         <field name="res_model">onsc.legajo</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="context">{'is_legajo':True}</field>

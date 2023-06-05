@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Legajo',
-    'version': '15.0.4.0.2',
+    'version': '15.0.6.0.0',
     'summary': 'ONSC - Legajo',
     'sequence': 11,
     'description': """
@@ -26,6 +26,7 @@ ONSC - Legajo
         'data/onsc_legajo_reason_extinction_commission_data.xml',
         'data/onsc_legajo_commission_regime_data.xml',
         'data/onsc_legajo_integration_error_data.xml',
+        'data/mail_template_data.xml',
         'views/catalogs/onsc_legajo_emergency_views.xml',
         'views/catalogs/onsc_legajo_health_provider_views.xml',
         'views/catalogs/onsc_legajo_document_type_views.xml',
@@ -40,6 +41,8 @@ ONSC - Legajo
         'views/catalogs/onsc_legajo_base_views.xml',
         'wizard/onsc_legajo_update_occupation_wizard_views.xml',
         'views/hr_employee_views.xml',
+        'views/onsc_legajo_alta_vl_views.xml',
+        'views/onsc_legajo_baja_vl_views.xml',
         'views/res_user_role_views.xml',
         'views/hr_job_views.xml',
         'views/hr_contract_views.xml',

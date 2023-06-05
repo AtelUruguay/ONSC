@@ -20,7 +20,6 @@
     <menuitem id="onsc_cv_catalog_parent_uo_menu"
               name="Unidades organizativas"
               parent="onsc_catalog_root_menu"
-              groups="group_catalog_configurador_servicio_civil,group_catalog_aprobador_cgn"
               sequence="3"/>
     <menuitem id="onsc_cv_catalog_uo_menu"
               name="Unidades organizativas"

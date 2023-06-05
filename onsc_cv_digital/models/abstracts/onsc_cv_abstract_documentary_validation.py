@@ -93,14 +93,16 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
     def field_documentary_validation_state_tree(self):
         return etree.XML(_("""<field name='documentary_validation_state' optional='show'/>"""))
 
+    def _get_validation_config(self):
+        return self.env["onsc.cv.documentary.validation.config"].get_config(self._name)
+
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         """Add in form view divs with info status off documentary validation """
         res = super(ONSCCVAbstractFileValidation, self).fields_view_get(view_id, view_type, toolbar, submenu)
+        config = self._get_validation_config()
         if view_type == 'form':
             doc = etree.XML(res['arch'])
-            config = self.env["onsc.cv.documentary.validation.config"].search(
-                [('model_id.model', '=', self._name)], limit=1)
             if self._context.get('is_call_documentary_validation', False) and not self._context.get('is_zip', False):
                 for field in config.field_ids:
                     node = doc.xpath("//field[@name='" + field.name + "']")
@@ -118,8 +120,6 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 res['fields'] = xfields
         elif view_type == 'tree' and self._context.get('is_call_documentary_validation', False):
             doc = etree.XML(res['arch'])
-            config = self.env["onsc.cv.documentary.validation.config"].search(
-                [('model_id.model', '=', self._name)])
             if len(config):
                 for node in doc.xpath('//tree'):
                     node.append(self.field_documentary_validation_state_tree)
@@ -141,8 +141,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             return super(ONSCCVAbstractFileValidation, self).unlink()
 
     def _update_custom_write_date(self, vals):
-        excluded_field_names = self.env["onsc.cv.documentary.validation.config"].sudo().search([
-            ('model_id.model', '=', self._name)]).field_ids.mapped('name')
+        excluded_field_names = self._get_validation_config().field_ids.mapped('name')
         if len(set(vals.keys()) - set(excluded_field_names)):
             return True
 
@@ -206,9 +205,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             calls.button_update_documentary_validation_sections_tovalidate()
 
     def _check_todisable(self):
-        config = self.env['onsc.cv.documentary.validation.config']
-        _name = self._name
-        if not self._fields.get('cv_digital_id', False) or not config.search_count([('model_id.model', '=', _name)]):
+        if not self._fields.get('cv_digital_id', False) or len(self._get_validation_config()) == 0:
             return True
         for record in self:
             if record.documentary_validation_state == 'validated' and record._check_todisable_dynamic_fields():
@@ -221,8 +218,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         return self.cv_digital_id._is_rve_link()
 
     def _get_json_dict(self):
-        config = self.env["onsc.cv.documentary.validation.config"].search(
-            [('model_id.model', '=', self._name)], limit=1)
+        config = self._get_validation_config()
         if len(config):
             return [
                 "id",

@@ -24,8 +24,8 @@ class ONSCCVLocation(models.Model):
     @api.constrains('code')
     def _check_code_location(self):
         for record in self:
-            if record.code and len(record.code) != 10:
-                raise ValidationError(_("El Código debe tener 10 dígitos"))
+            if record.code and len(record.code) > 10:
+                raise ValidationError(_("El Código debe tener como máximo 10 dígitos"))
 
     @api.onchange('country_id')
     def _onchange_country_id(self):

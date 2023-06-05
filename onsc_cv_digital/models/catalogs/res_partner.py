@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+
 from odoo import SUPERUSER_ID, models, fields, api, _
 from odoo.exceptions import ValidationError
 
@@ -39,7 +41,7 @@ class ResPartner(models.Model):
     cv_photo_updated_date = fields.Date(u'Fecha de foto del/de la funcionario/a', compute='_compute_photo_updated_date',
                                         store=True)
     is_partner_cv = fields.Boolean(u'¿Es un contacto de CV?')
-    is_cv_uruguay = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay')
+    is_cv_uruguay = fields.Boolean('¿Es documento uruguayo?', compute='_compute_is_cv_uruguay', store=True)
     cv_full_name = fields.Char('Nombre', compute='_compute_cv_full_name', store=True)
     cv_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad')
     cv_nro_door = fields.Char(u'Número')
@@ -85,7 +87,7 @@ class ResPartner(models.Model):
 
     @api.depends('image_1920')
     def _compute_photo_updated_date(self):
-        for record in self:
+        for record in self.filtered(lambda x: x.image_1920):
             record.cv_photo_updated_date = fields.Date.today()
 
     def check_can_update(self):
@@ -133,8 +135,23 @@ class ResPartner(models.Model):
     def name_get(self):
         res = []
         for record in self:
-            name = record.cv_full_name
+            name = record.cv_full_name or record.name
             if self._context.get('show_cv_nro_doc', False) and record.cv_nro_doc:
-                name = record.cv_nro_doc
+                name = record.cv_nro_doc + " - " + record.cv_full_name or record.name
             res.append((record.id, name))
         return res
+
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        by_name = super(ResPartner, self).name_search(name, args=args, operator=operator, limit=limit)
+        if self._context.get('show_cv_nro_doc', False):
+            by_cv_nro_doc_domain = [('cv_nro_doc', operator, name)]
+            by_cv_nro_doc_domain += args
+            by_cv_nro_doc = self.search(by_cv_nro_doc_domain, limit=limit)
+            return list(set(by_name + by_cv_nro_doc.name_get()))
+        return by_name
+
+    def _custom_display_name(self):
+        return self.cv_nro_doc + " - " + self.cv_full_name or self.name

@@ -12,4 +12,6 @@ class ONSCLegajoAttachedDocument(models.Model):
     document_file_name = fields.Char('Nombre del archivo')
     type = fields.Selection([('deregistration', 'Baja'), ('discharge', 'Alta')], 'Tipo')
     contract_id = fields.Many2one('hr.contract', 'Contrato')
+    alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'Alta VL')
+    baja_vl_id = fields.Many2one("onsc.legajo.baja.vl", string="Baja de vínculo laboral")
     alta_cs_id = fields.Many2one('onsc.legajo.alta.cs', 'Alta CS')

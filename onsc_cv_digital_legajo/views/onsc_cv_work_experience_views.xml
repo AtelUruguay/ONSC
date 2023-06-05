@@ -6,7 +6,7 @@
         <field name="inherit_id" ref="onsc_cv_digital.onsc_cv_work_experience_form_view"/>
         <field name="arch" type="xml">
             <field name="currently_working" position="after">
-                <field name="causes_discharge_id"
+                <field name="causes_discharge"
                        attrs="{'invisible': [('currently_working','!=','no')],'required': [('currently_working','=','no')]}"/>
             </field>
         </field>

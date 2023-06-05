@@ -101,6 +101,7 @@ class ONSCCVDigital(models.Model):
     cv_expiration_date = fields.Date(
         string=u'Fecha de vencimiento documento de identidad',
         related='partner_id.cv_expiration_date', store=True, readonly=False)
+    identity_document_expiration_date = fields.Date(string=u'Fecha de vencimiento documento de identidad')
     email = fields.Char(
         string="Email",
         related='partner_id.email', store=True)
@@ -141,24 +142,24 @@ class ONSCCVDigital(models.Model):
 
     # DOMICILIO----<Page>
     # Campos en el partner pero con otro nombre
-    country_id = fields.Many2one(related='partner_id.country_id', readonly=False)
+    country_id = fields.Many2one('res.country', string="País")
     country_code = fields.Char("Código", related="country_id.code", readonly=True)
-    cv_address_state_id = fields.Many2one(related='partner_id.state_id', readonly=False)
-    cv_address_location_id = fields.Many2one(related='partner_id.cv_location_id', readonly=False, store=True)
+    cv_address_state_id = fields.Many2one('res.country.state', string="Departamento")
+    cv_address_location_id = fields.Many2one('onsc.cv.location', string=u"Localidad/Ciudad")
     # cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle")
     # cv_address_street2_id = fields.Many2one('onsc.cv.street', string="Entre calle")
     # cv_address_street3_id = fields.Many2one('onsc.cv.street', string=u'Y calle')
-    cv_address_nro_door = fields.Char(related='partner_id.cv_nro_door', readonly=False)
-    cv_address_apto = fields.Char(related='partner_id.cv_apto', readonly=False)
-    cv_address_street = fields.Char(related='partner_id.street', readonly=False)
-    cv_address_zip = fields.Char(related='partner_id.zip', readonly=False)
-    cv_address_is_cv_bis = fields.Boolean(related='partner_id.is_cv_bis', readonly=False)
-    cv_address_amplification = fields.Text(related='partner_id.cv_amplification', readonly=False)
+    cv_address_nro_door = fields.Char('Número')
+    cv_address_apto = fields.Char(string="Apto")
+    cv_address_street = fields.Char("Calle")
+    cv_address_zip = fields.Char('C.P')
+    cv_address_is_cv_bis = fields.Boolean("BIS")
+    cv_address_amplification = fields.Text("Aclaraciones")
     cv_address_state = fields.Selection(related='cv_address_location_id.state', store=True)
     cv_address_reject_reason = fields.Text(related='cv_address_location_id.reject_reason')
-    cv_address_place = fields.Text(related='partner_id.cv_address_place', string="Paraje", size=200, readonly=False)
-    cv_address_block = fields.Char(related='partner_id.cv_address_block', string="Manzana", size=5, readonly=False)
-    cv_address_sandlot = fields.Char(related='partner_id.cv_address_sandlot', string="Solar", size=5, readonly=False)
+    cv_address_place = fields.Text(string="Paraje", size=200)
+    cv_address_block = fields.Char(string="Manzana", size=5)
+    cv_address_sandlot = fields.Char(string="Solar", size=5)
     # country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
     # uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
     #                                   selection=[('legal', 'Legal'), ('natural', 'Natural'),
@@ -533,6 +534,7 @@ class ONSCCVDigital(models.Model):
         self.cv_address_place = False
         self.cv_address_block = False
         self.cv_address_sandlot = False
+        self.cv_address_amplification = False
 
     @api.onchange('is_occupational_health_card')
     def onchange_is_occupational_health_card(self):
@@ -571,6 +573,7 @@ class ONSCCVDigital(models.Model):
             self.realize = False
             self.lear = False
             self.interaction = False
+            self.people_disabilitie = 'no'
             self.type_support_ids = [(5,)]
 
     @api.onchange('people_disabilitie')
@@ -779,29 +782,30 @@ class ONSCCVDigital(models.Model):
             formatted_response = "Servidor no encontrado."
         return formatted_response
 
-    @api.model
-    def create(self, values):
-        record = super(ONSCCVDigital, self).create(values)
-        if values.get('cv_address_street_id'):
-            record.partner_id.suspend_security().write(
-                {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
-                 'cv_street3': record.cv_address_street3_id.street})
-        return record
+    # @api.model
+    # def create(self, values):
+    #     record = super(ONSCCVDigital, self).create(values)
+    #     if values.get('cv_address_street_id'):
+    #         record.partner_id.suspend_security().write(
+    #             {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
+    #              'cv_street3': record.cv_address_street3_id.street})
+    #     return record
 
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
-        self.update_header_documentary_validation(values)
-        if values.get('country_code') == 'UY' or values.get('cv_address_street_id') or values.get(
-                'cv_address_street2_id') or values.get('cv_address_street3_id'):
-            for record in self:
-                record.partner_id.suspend_security().write(
-                    {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
-                     'cv_street3': record.cv_address_street3_id.street})
-        else:
-            self.filtered(lambda x: x.country_code != 'UY').mapped('partner_id').suspend_security().write({
-                'street2': False,
-                'cv_street3': False
-            })
+        if not self._context.get('no_update_header_documentary_validation'):
+            self.update_header_documentary_validation(values)
+        # if values.get('country_code') == 'UY' or values.get('cv_address_street_id') or values.get(
+        #         'cv_address_street2_id') or values.get('cv_address_street3_id'):
+        #     for record in self:
+        #         record.partner_id.suspend_security().write(
+        #             {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
+        #              'cv_street3': record.cv_address_street3_id.street})
+        # else:
+        #     self.filtered(lambda x: x.country_code != 'UY').mapped('partner_id').suspend_security().write({
+        #         'street2': False,
+        #         'cv_street3': False
+        #     })
         return records
 
     def update_header_documentary_validation(self, values):
@@ -810,18 +814,33 @@ class ONSCCVDigital(models.Model):
         civical_credential_file_value = values.get('civical_credential_file')
         crendencial_serie_value = values.get('crendencial_serie')
         credential_number_value = values.get('credential_number')
-        document_certificate_file_value = values.get('document_certificate_file')
-        certificate_date_file_value = values.get('certificate_date')
-        to_date_file_value = values.get('to_date')
         if cv_expiration_date_value or document_identity_file_value:
             self.nro_doc_write_date = fields.Datetime.now()
             self.nro_doc_documentary_validation_state = 'to_validate'
         if civical_credential_file_value or crendencial_serie_value or credential_number_value:
             self.civical_credential_write_date = fields.Datetime.now()
             self.civical_credential_documentary_validation_state = 'to_validate'
-        if document_certificate_file_value or certificate_date_file_value or to_date_file_value:
+        self.update_disabilitie_documentary_validation(values)
+        self.update_license_documentary_validation(values)
+
+    def update_disabilitie_documentary_validation(self, values):
+        document_certificate_file_value = values.get('document_certificate_file')
+        certificate_date_file_value = values.get('certificate_date')
+        to_date_file_value = values.get('to_date')
+        people_disabilitie = values.get('people_disabilitie')
+        if people_disabilitie or document_certificate_file_value or certificate_date_file_value or to_date_file_value:
+            for record in self:
+                if record.people_disabilitie == 'no':
+                    record.disabilitie_documentary_validation_state = 'validated'
+                else:
+                    record.disabilitie_documentary_validation_state = 'to_validate'
             self.disabilitie_write_date = fields.Datetime.now()
-            self.disabilitie_documentary_validation_state = 'to_validate'
+
+    def update_license_documentary_validation(self, values):
+        if 'is_driver_license' in values:
+            for record in self:
+                if record.is_driver_license is False:
+                    record.drivers_license_ids.button_documentary_approve()
 
     # REPORTE DE CV: UTILITIES
     def _get_report_cv_formation_seccion(self):
