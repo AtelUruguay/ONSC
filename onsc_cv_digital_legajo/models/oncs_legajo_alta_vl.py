@@ -13,6 +13,9 @@ REQUIRED_FIELDS = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date
                    'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
                    'retributive_day_id', 'occupation_id',
                    'date_income_public_administration', 'department_id', 'security_job_id']
+name_doc_one = u'Documento digitalizado "Partida de matrimonio / Partida de unión concubinaria / '
+name_doc_two = u'Certificado de convivencia / Partida o Certificado de divorcio / Partida de defunción'
+digitized_document_full_name = f'{name_doc_one}{name_doc_two}'
 
 
 class ONSCLegajoAltaVL(models.Model):
@@ -73,6 +76,8 @@ class ONSCLegajoAltaVL(models.Model):
     personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone')
     mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile')
     email = fields.Char(string="e-mail", related='partner_id.email')
+    digitized_document_file = fields.Binary(string=digitized_document_full_name)
+    digitized_document_filename = fields.Char('Nombre del documento Digitalizado')
 
     cv_address_state_id = fields.Many2one('res.country.state', string='Departamento')
     cv_address_location_id = fields.Many2one('onsc.cv.location', string="Localidad")
@@ -84,6 +89,8 @@ class ONSCLegajoAltaVL(models.Model):
     cv_address_zip = fields.Char(string="Código Postal")
     cv_address_block = fields.Char(string="Manzana")
     cv_address_sandlot = fields.Char(string="Solar")
+    address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
+    address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
     employee_id = fields.Many2one('hr.employee', 'Employee')
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="Legajo Digital", copy=False)
@@ -166,6 +173,16 @@ class ONSCLegajoAltaVL(models.Model):
                 record.cv_address_zip = cv_digital_id.cv_address_zip
                 record.cv_address_block = cv_digital_id.cv_address_block
                 record.cv_address_sandlot = cv_digital_id.cv_address_sandlot
+
+                record.cv_expiration_date = cv_digital_id.cv_expiration_date
+                record.document_identity_file = cv_digital_id.document_identity_file
+                record.document_identity_filename = cv_digital_id.document_identity_filename
+                record.address_receipt_file = cv_digital_id.address_receipt_file
+                record.address_receipt_file_name = cv_digital_id.address_receipt_file_name
+                record.civical_credential_file = cv_digital_id.civical_credential_file
+                record.civical_credential_filename = cv_digital_id.civical_credential_filename
+                record.digitized_document_file = cv_digital_id.digitized_document_file
+                record.digitized_document_filename = cv_digital_id.digitized_document_filename
 
                 record.marital_status_id = cv_digital_id.marital_status_id
                 record.uy_citizenship = cv_digital_id.uy_citizenship
@@ -424,6 +441,11 @@ class ONSCLegajoAltaVL(models.Model):
                                 documentary_validation='marital_status').button_documentary_approve()
         # NRO DOCUMENTO
         if cv and cv.nro_doc_documentary_validation_state != 'validated':
+            vals.update({
+                'cv_expiration_date': self.cv_expiration_date,
+                'document_identity_file': self.document_identity_file,
+                'document_identity_filename': self.document_identity_filename,
+            })
             if cv and self.create_date >= cv.nro_doc_write_date:
                 cv.with_context(user_id=self.ws4_user_id.id,
                                 documentary_validation='nro_doc').button_documentary_approve()
