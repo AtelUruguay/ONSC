@@ -89,15 +89,11 @@ class ONSCLegajoAltaVL(models.Model):
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="Legajo Digital", copy=False)
     is_docket = fields.Boolean(string="Tiene legajo", related='cv_digital_id.is_docket')
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
-    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
-    is_error_synchronization = fields.Boolean(copy=False)
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
     country_code = fields.Char("Código")
     origin_type = fields.Selection([('M', 'Manual'), ('P', 'Proceso')], string='Origen',
                                    compute='_compute_origin_type', store=True)
     mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución')
-
-    ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN")
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -265,10 +261,10 @@ class ONSCLegajoAltaVL(models.Model):
         self.check_required_fieds_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
             raise ValidationError(_("Solo se pueden enviar altas en estado borrador o error SGH"))
-        altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
-        altas_presupuestas.syncronize_multi_ws4()
-        altas_no_presupuestas = self.filtered(lambda x: not x.is_presupuestado)
-        altas_no_presupuestas.syncronize_multi_ws4()
+        altas_presupuestales = self.filtered(lambda x: x.is_presupuestado)
+        altas_presupuestales.syncronize_multi_ws4()
+        altas_no_presupuestales = self.filtered(lambda x: not x.is_presupuestado)
+        altas_no_presupuestales.syncronize_multi_ws4()
         return True
 
     def syncronize_multi_ws4(self):

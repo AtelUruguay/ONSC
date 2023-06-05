@@ -45,9 +45,10 @@ class ONSCActionsCommonData(models.AbstractModel):
         string='Tipo de resolución'
     )
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
-
     additional_information = fields.Text(string='Información adicional', copy=False)
+
     is_error_synchronization = fields.Boolean(copy=False)
+    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):

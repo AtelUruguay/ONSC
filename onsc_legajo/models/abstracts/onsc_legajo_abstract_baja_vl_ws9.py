@@ -49,13 +49,19 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
             onsc_legajo_integration_error_WS9_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_WS9_9004")
             if not hasattr(response, 'servicioResultado'):
+                long_description = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
                 self.create_new_log(
                     origin='WS9',
                     type='error',
                     integration_log=onsc_legajo_integration_error_WS9_9004,
-                    long_description="No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
+                    long_description=long_description
                 )
-                return "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
+                baja_vl.write({
+                    'id_baja': False,
+                    'is_error_synchronization': True,
+                    'state': 'error_sgh',
+                    'error_message_synchronization': long_description
+                })
             if response.pdaId:
                 try:
                     baja_vl.write({
@@ -93,7 +99,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
                     'state': 'error_sgh',
                     'error_message_synchronization': long_description,
                 })
-                
+
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
         IntegrationError = self.env['onsc.legajo.integration.error']
         baja_vl = self._context.get('baja_vl')

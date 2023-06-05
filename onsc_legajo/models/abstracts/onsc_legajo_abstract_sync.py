@@ -34,7 +34,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 integration_log=integration_error,
                 ws_tuple=False,
                 long_description=tools.ustr(e))
-            altas_vl = self._context.get('altas_vl')
+            altas_vl = self._context.get('altas_vl', self.env['onsc.legajo.alta.vl'])
             altas_vl.write({
                 'is_error_synchronization': True,
                 'state': 'error_sgh',

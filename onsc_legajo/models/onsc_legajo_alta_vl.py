@@ -200,6 +200,7 @@ class ONSCLegajoAltaVL(models.Model):
     secPlaza = fields.Char(string="Sec Plaza")
     codigoJornadaFormal = fields.Char(string="Código Jornada Formal")
     descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal")
+    ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN")
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
