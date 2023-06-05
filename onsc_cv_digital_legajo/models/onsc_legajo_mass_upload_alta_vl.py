@@ -1,3 +1,4 @@
+# pylint: disable=E8102
 import binascii
 import datetime
 import json

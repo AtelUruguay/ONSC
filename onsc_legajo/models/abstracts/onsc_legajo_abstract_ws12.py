@@ -28,7 +28,6 @@ class ONSCLegajoAbstractSyncWS12(models.AbstractModel):
                 alta_vl.id_alta)
         for baja_vl in self.env['onsc.legajo.baja.vl'].suspend_security().search([
             ('state', '=', 'pendiente_auditoria_cgn')], limit=100):
-
             self.with_context(baja_vl=baja_vl, log_info=log_info).suspend_security()._syncronize(
                 wsclient, parameter,
                 'WS12',

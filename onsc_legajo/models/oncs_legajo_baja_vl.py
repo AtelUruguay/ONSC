@@ -62,6 +62,7 @@ class ONSCEmploymentRelationship(models.Model):
             ]
         }
 
+
 class ONSCLegajoBajaVL(models.Model):
     _name = 'onsc.legajo.baja.vl'
     _inherit = ['onsc.legajo.actions.common.data', 'onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']

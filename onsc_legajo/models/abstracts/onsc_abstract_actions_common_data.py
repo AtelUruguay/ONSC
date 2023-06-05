@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models,api
+from odoo import fields, models, api
 
 STATES = [
     ('borrador', 'Borrador'),
@@ -24,15 +24,13 @@ class ONSCActionsCommonData(models.AbstractModel):
 
     norm_id = fields.Many2one('onsc.legajo.norm', string='Norma', copy=True)
     norm_type = fields.Char(string='Tipo de norma', related="norm_id.tipoNorma",
-                                      store=True, readonly=True)
-    # type_norm_code_discharge = fields.Char(string='Tipo de norma', related="norm_id.tipoNormaSigla",
-    #                                        store=True, readonly=True)
+                            store=True, readonly=True)
     norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
-                                           store=True, readonly=True)
+                                 store=True, readonly=True)
     norm_year = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
-                                         readonly=True)
+                               readonly=True)
     norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
-                                            store=True, readonly=True)
+                                  store=True, readonly=True)
     resolution_description = fields.Char(string='Descripción de la resolución', copy=True)
     resolution_date = fields.Date(string='Fecha de la resolución', copy=True)
     resolution_type = fields.Selection(
@@ -54,4 +52,3 @@ class ONSCActionsCommonData(models.AbstractModel):
     def _compute_should_disable_form_edit(self):
         for record in self:
             record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
-
