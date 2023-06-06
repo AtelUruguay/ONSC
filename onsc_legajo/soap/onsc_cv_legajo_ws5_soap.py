@@ -71,14 +71,18 @@ class WsLegajoWS5(ServiceBase):
             return response
 
         try:
+
             operacion_vl = env['onsc.legajo.alta.vl'].search([
                 ('id_alta', '=', request.pdaId),
                 ('state', '=', 'pendiente_auditoria_cgn')], limit=1)
 
             if not operacion_vl:
+
+
                 operacion_vl = env['onsc.legajo.baja.vl'].search([
-                ('id_baja', '=', request.pdaId),
-                ('state', '=', 'pendiente_auditoria_cgn')], limit=1)
+                    ('id_baja', '=', request.pdaId),
+                    ('state', '=', 'pendiente_auditoria_cgn')], limit=1)
+
 
             if not operacion_vl:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_151)
