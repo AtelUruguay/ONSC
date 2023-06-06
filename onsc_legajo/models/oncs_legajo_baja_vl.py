@@ -25,7 +25,7 @@ class ONSCEmploymentRelationship(models.Model):
     _name = 'onsc.legajo.employment.relationship'
     _description = 'Vínculo laboral'
 
-    contract_id = fields.Many2one('hr.contract', 'Contrato')
+    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
     selected = fields.Boolean(string="Seleccionado", help="Active para seleccionar Vinculo")
     programa = fields.Char(string='Programa', copy=False)
     proyecto = fields.Char(string='Proyecto', copy=False)
@@ -42,7 +42,13 @@ class ONSCEmploymentRelationship(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False)
     state = fields.Selection(related='baja_vl_id.state', string='Estado', readonly=True)
     secPosition = fields.Char(string="Sec Plaza")
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
 
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = True
     def button_open_current_contract(self):
         ctx = self.env.context.copy()
         ctx.update({'edit': True})
@@ -157,12 +163,14 @@ class ONSCLegajoBajaVL(models.Model):
 
     id_baja = fields.Char(string="Id Baja")
     is_require_extended = fields.Boolean("¿Requiere extendido?", compute="_compute_is_require_extended")
-    partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
+
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
     is_error_synchronization = fields.Boolean(copy=False)
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
+    employee_id = fields.Many2one("hr.employee", string="Empleado")
+    employee_id_domain = fields.Char(string="Dominio Empleado", compute='_compute_employee_id_domain')
 
 
     @api.constrains("end_date")
@@ -178,9 +186,9 @@ class ONSCLegajoBajaVL(models.Model):
             record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
 
     @api.depends('cv_emissor_country_id')
-    def _compute_partner_id_domain(self):
+    def _compute_employee_id_domain(self):
         for rec in self:
-            rec.partner_id_domain = self._get_domain_partner_ids()
+            rec.employee_id_domain = self._get_domain_employee_ids()
 
     @api.depends('employment_relationship_ids')
     def _compute_is_ready_to_send(self):
@@ -196,16 +204,13 @@ class ONSCLegajoBajaVL(models.Model):
             else:
                 rec.is_require_extended = False
 
-    @api.depends("partner_id")
+    @api.depends("employee_id")
     def _compute_employment_relationship_ids(self):
         for rec in self:
             vinculo_ids = [(5,)]
-            employee_id = self.env['hr.employee'].sudo().search(
-                [('cv_emissor_country_id', '=', rec.cv_emissor_country_id.id),
-                 ('cv_document_type_id', '=', rec.cv_document_type_id.id),
-                 ('cv_nro_doc', '=', rec.partner_id.cv_nro_doc)])
 
-            contract_ids = self.env['hr.contract'].sudo().search([('employee_id', '=', employee_id.id),
+
+            contract_ids = self.env['hr.contract'].sudo().search([('employee_id', '=', rec.employee_id.id),
                                                                   ('legajo_state', '=', 'active')])
 
             for contract in contract_ids:
@@ -226,37 +231,39 @@ class ONSCLegajoBajaVL(models.Model):
                 }
 
                 vinculo_ids.append((0, 0, data))
-            rec.employment_relationship_ids =vinculo_ids
+            rec.employment_relationship_ids = vinculo_ids
 
     def action_call_ws9(self):
         self._check_required_fieds_ws9()
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
-    def _get_domain_partner_ids(self):
+    def _get_domain_employee_ids(self):
         if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_administrar_bajas'):
-            partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
+            employee_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
                                                           ('employee_id', '!=',
                                                            self.env.user.employee_id.id)]).mapped(
-                'employee_id.user_id.partner_id')
-            return json.dumps([('id', 'in', partner_ids.ids)])
+                'employee_id')
+            return json.dumps([('id', 'in', employee_ids.ids)])
 
         else:
             employee_id = self.env['hr.employee'].sudo().search(
                 [('cv_emissor_country_id', '=', self.env.user.cv_emissor_country_id.id),
                  ('cv_document_type_id', '=', self.env.user.cv_document_type_id.id),
                  ('cv_nro_doc', '=', self.env.user.partner_id.cv_nro_doc)])
-            contract_id = self.env['hr.contract'].search(
+            contracts = self.env['hr.contract'].search(
                 [('legajo_state', '=', 'active'), ('employee_id', '=', employee_id.id)])
-            if contract_id:
-                iniciso_id = contract_id.inciso_id.id
-                operating_unit_id = contract_id.operating_unit_id.id
-                partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
+            if contracts:
+                for contract in contracts:
+                    iniciso_id = contract_id.inciso_id.id
+                    operating_unit_id = contract_id.operating_unit_id.id
+
+                employees = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
                                                               ('inciso_id', '=', iniciso_id),
                                                               ('operating_unit_id', '=', operating_unit_id),
                                                               ('employee_id', '!=',
                                                                self.env.user.employee_id.id)]).mapped(
-                    'employee_id.user_id.partner_id')
-                return json.dumps([('id', 'in', partner_ids.ids)])
+                    'employee_id')
+                return json.dumps([('id', 'in', employees.ids)])
             else:
                 return json.dumps([('id', '=', False)])
 
@@ -267,7 +274,7 @@ class ONSCLegajoBajaVL(models.Model):
             for required_field in REQUIRED_FIELDS:
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
-            if not record.partner_id.cv_nro_doc:
+            if not record.employee_id.cv_nro_doc:
                 message.append(_("Debe tener numero de documento"))
 
             if not record.attached_document_discharge_ids:

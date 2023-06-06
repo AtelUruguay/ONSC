@@ -18,9 +18,9 @@ class ONSCLegajoBajaVL(models.Model):
     @api.depends('partner_id')
     def _compute_full_name(self):
         for record in self:
-            record.full_name = record.partner_id.cv_nro_doc + ' - '+calc_full_name(
-                record.partner_id.cv_first_name, record.partner_id.cv_second_name,
-                record.partner_id.cv_last_name_1, record.partner_id.cv_last_name_2) + ' - '+ record.end_date.strftime('%Y%m%d')
+            record.full_name = record.employee_id.cv_nro_doc + ' - '+calc_full_name(
+                record.employee_id.cv_first_name, record.employee_id.cv_second_name,
+                record.employee_id.cv_last_name_1, record.employee_id.cv_last_name_2) + ' - '+ record.end_date.strftime('%Y%m%d')
     def action_aprobado_cgn(self):
         employee_id = self.env['hr.employee'].sudo().search(
             [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
