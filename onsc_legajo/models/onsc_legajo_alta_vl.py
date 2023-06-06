@@ -204,6 +204,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
+
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
         for record in self:
@@ -211,6 +212,7 @@ class ONSCLegajoAltaVL(models.Model):
                 record.origin_type = 'P'
             else:
                 record.origin_type = 'M'
+
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
@@ -515,9 +517,9 @@ class ONSCLegajoAltaVL(models.Model):
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
-            raise ValidationError(_("Solo se pueden eliminar una transacción en estado borrador"))
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
         return super(ONSCLegajoAltaVL, self).unlink()
-    
+
     # MAIL TEMPLATE UTILS
     def get_followers_mails(self):
         return ','.join(self.message_follower_ids.mapped('partner_id.email'))
