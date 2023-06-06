@@ -172,13 +172,12 @@ class ONSCLegajoAltaVL(models.Model):
                 record.cv_address_place = cv_digital_id.cv_address_place
                 record.cv_address_zip = cv_digital_id.cv_address_zip
                 record.cv_address_block = cv_digital_id.cv_address_block
-                record.cv_address_sandlot = cv_digital_id.cv_address_sandlot
+                record.address_receipt_file = cv_digital_id.address_receipt_file
+                record.address_receipt_file_name = cv_digital_id.address_receipt_file_name
 
                 record.cv_expiration_date = cv_digital_id.cv_expiration_date
                 record.document_identity_file = cv_digital_id.document_identity_file
                 record.document_identity_filename = cv_digital_id.document_identity_filename
-                record.address_receipt_file = cv_digital_id.address_receipt_file
-                record.address_receipt_file_name = cv_digital_id.address_receipt_file_name
                 record.civical_credential_file = cv_digital_id.civical_credential_file
                 record.civical_credential_filename = cv_digital_id.civical_credential_filename
                 record.digitized_document_file = cv_digital_id.digitized_document_file
@@ -415,6 +414,8 @@ class ONSCLegajoAltaVL(models.Model):
                 'cv_address_place': self.cv_address_place,
                 'cv_address_block': self.cv_address_block,
                 'cv_address_sandlot': self.cv_address_sandlot,
+                'address_receipt_file': self.address_receipt_file,
+                'address_receipt_file_name': self.address_receipt_file_name,
             })
             if cv and self.create_date >= cv.cv_address_write_date:
                 cv.with_context(documentary_validation='cv_address',
@@ -426,7 +427,9 @@ class ONSCLegajoAltaVL(models.Model):
             vals.update({
                 'uy_citizenship': self.uy_citizenship,
                 'crendencial_serie': self.crendencial_serie,
-                'credential_number': self.credential_number
+                'credential_number': self.credential_number,
+                'civical_credential_file': self.civical_credential_file,
+                'civical_credential_filename': self.civical_credential_filename
             })
             if cv and self.create_date >= cv.civical_credential_write_date:
                 cv.with_context(user_id=self.ws4_user_id.id,
@@ -434,7 +437,9 @@ class ONSCLegajoAltaVL(models.Model):
         # ESTADO CIVIL
         if cv and cv.marital_status_documentary_validation_state != 'validated':
             vals.update({
-                'marital_status_id': self.marital_status_id.id
+                'marital_status_id': self.marital_status_id.id,
+                'digitized_document_file': self.digitized_document_file,
+                'digitized_document_filename': self.digitized_document_filename,
             })
             if cv and self.create_date >= cv.marital_status_write_date:
                 cv.with_context(user_id=self.ws4_user_id.id,
