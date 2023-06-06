@@ -26,6 +26,7 @@ class ONSCLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.alta.vl'
     _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin', 'onsc.legajo.actions.common.data']
     _description = 'Alta de vínculo laboral'
+    _order = 'create_date DESC'
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -199,9 +200,11 @@ class ONSCLegajoAltaVL(models.Model):
     secPlaza = fields.Char(string="Sec Plaza")
     codigoJornadaFormal = fields.Char(string="Código Jornada Formal")
     descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal")
+    ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN")
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
+
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
         for record in self:
@@ -209,6 +212,7 @@ class ONSCLegajoAltaVL(models.Model):
                 record.origin_type = 'P'
             else:
                 record.origin_type = 'M'
+
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
@@ -513,9 +517,9 @@ class ONSCLegajoAltaVL(models.Model):
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
-            raise ValidationError(_("Solo se pueden eliminar una transacción en estado borrador"))
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
         return super(ONSCLegajoAltaVL, self).unlink()
-    
+
     # MAIL TEMPLATE UTILS
     def get_followers_mails(self):
         return ','.join(self.message_follower_ids.mapped('partner_id.email'))

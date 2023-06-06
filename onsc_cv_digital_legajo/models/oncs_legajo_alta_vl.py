@@ -89,15 +89,11 @@ class ONSCLegajoAltaVL(models.Model):
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="Legajo Digital", copy=False)
     is_docket = fields.Boolean(string="Tiene legajo", related='cv_digital_id.is_docket')
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
-    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
-    is_error_synchronization = fields.Boolean(copy=False)
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
     country_code = fields.Char("Código")
     origin_type = fields.Selection([('M', 'Manual'), ('P', 'Proceso')], string='Origen',
                                    compute='_compute_origin_type', store=True)
     mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución')
-
-    ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN")
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -179,7 +175,6 @@ class ONSCLegajoAltaVL(models.Model):
                 record.mobile_phone = cv_digital_id.mobile_phone
                 record.email = cv_digital_id.email
                 record.health_provider_id = cv_digital_id.health_provider_id
-
 
     @api.depends('partner_id')
     def _compute_full_name(self):
@@ -263,13 +258,13 @@ class ONSCLegajoAltaVL(models.Model):
             log_info=log_info).suspend_security().syncronize_multi(self)
 
     def action_call_multi_ws4(self):
-        self.with_context(not_check_attached_document=True).check_required_fieds_ws4()
+        self.check_required_fieds_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
-            raise ValidationError(_("Solo se pueden sincronizar altas en estado borrador o error SGH"))
-        altas_presupuestas = self.filtered(lambda x: x.is_presupuestado)
-        altas_presupuestas.syncronize_multi_ws4()
-        altas_no_presupuestas = self.filtered(lambda x: not x.is_presupuestado)
-        altas_no_presupuestas.syncronize_multi_ws4()
+            raise ValidationError(_("Solo se pueden enviar altas en estado borrador o error SGH"))
+        altas_presupuestales = self.filtered(lambda x: x.is_presupuestado)
+        altas_presupuestales.syncronize_multi_ws4()
+        altas_no_presupuestales = self.filtered(lambda x: not x.is_presupuestado)
+        altas_no_presupuestales.syncronize_multi_ws4()
         return True
 
     def syncronize_multi_ws4(self):
@@ -313,7 +308,7 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append(record._fields['nroPlaza'].string)
             if record.income_mechanism_id.is_call_number_required and not record.call_number:
                 message.append(record._fields['call_number'].string)
-            if not record.attached_document_ids and not self.env.context.get('not_check_attached_document', False):
+            if not self.env.context.get('not_check_attached_document', False) and not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
             if record.health_provider_id and record.health_provider_id.code:
                 try:

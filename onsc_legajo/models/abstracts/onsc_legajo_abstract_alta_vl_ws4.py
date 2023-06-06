@@ -43,18 +43,18 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             altaDetalle = {'fechaAlta': record.date_start.strftime('%d/%m/%Y'),
                            'cedula': record.partner_id.cv_nro_doc[:-1],
                            'digitoVerificador': record.partner_id.cv_nro_doc[-1],
-                           'primerApellido': record.partner_id.cv_last_name_1,
+                           'primerApellido': record.partner_id.cv_last_name_1[:20],
                            }
             if record.partner_id.cv_last_name_2:
                 altaDetalle.update({
-                    'segundoApellido': record.partner_id.cv_last_name_2
+                    'segundoApellido': record.partner_id.cv_last_name_2[:20]
                 })
             altaDetalle.update({
-                'primerNombre': record.partner_id.cv_first_name,
+                'primerNombre': record.partner_id.cv_first_name[:20],
             })
             if record.partner_id.cv_second_name:
                 altaDetalle.update({
-                    'segundoNombre': record.partner_id.cv_second_name
+                    'segundoNombre': record.partner_id.cv_second_name[:20]
                 })
             if record.regime_id and record.regime_id.codRegimen:
                 altaDetalle.update({
@@ -117,17 +117,21 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                     'telefonoMovil': record.mobile_phone,
                 })
 
-            if record.cv_address_street_id and record.cv_address_street_id.code:
+            if record.cv_address_street_id:
                 calleCod = record.cv_address_street_id.code
             elif record.cv_address_street:
                 calleCod = record.cv_address_street
             else:
                 calleCod = '9999999999'
+            if record.cv_address_location_id:
+                localidadCod = record.cv_address_location_id.other_code
+            else:
+                localidadCod = '9999999999'
             altaDetalle.update({
                 'eMail': record.email,
                 'deptoCod': record.cv_address_state_id.code or '99',
                 # TODO default 99 : record.cv_address_state_id.code or '99', Codigo de departamento  en nuestro catalogo son string
-                'localidadCod': record.cv_address_location_id.code if record.cv_address_location_id and record.cv_address_location_id.code else '9999999999',
+                'localidadCod': localidadCod,
                 'calleCod': calleCod,
             })
 
@@ -240,7 +244,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                     'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
                                 'is_error_synchronization': False,
                                 'ws4_user_id': self.env.user.id,
-                                'state': 'pendiente_auditoria_cgn'
+                                'state': 'pendiente_auditoria_cgn',
+                                'error_message_synchronization': ''
                             })
                     except Exception as e:
                         long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
@@ -275,12 +280,12 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         IntegrationError = self.env['onsc.legajo.integration.error']
         altas_vl = self._context.get('altas_vl')
         if hasattr(response, 'altaSGHMovimientoRespuesta'):
-            result_error_code = response.servicioResultado.codigo
             for v_error in response.altaSGHMovimientoRespuesta:
                 error = IntegrationError.search([
-                    ('integration_code', '=', integration_error.integration_code),
-                    ('code_error', '=', str(result_error_code))
+                    ('integration_code', '=', origin_name),
+                    ('code_error', '=', str(v_error.codigo)),
                 ], limit=1)
+                message = error.description if error else v_error.mensaje
                 self.create_new_log(
                     origin=origin_name,
                     type='error',
@@ -293,13 +298,13 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                     altas_vl_id.write({
                         'is_error_synchronization': True,
                         'state': 'error_sgh',
-                        'error_message_synchronization': str(long_description) + "." + v_error.mensaje
+                        'error_message_synchronization': str(long_description) + "." + message
                     })
                 else:
                     altas_vl.write({
                         'is_error_synchronization': True,
                         'state': 'error_sgh',
-                        'error_message_synchronization': str(long_description) + "." + v_error.mensaje
+                        'error_message_synchronization': str(long_description) + "." + message
                     })
         else:
             altas_vl.write({

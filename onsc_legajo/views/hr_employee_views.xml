@@ -48,15 +48,27 @@
                         </div>
                         <group>
                             <group>
-                                <field name="cv_emissor_country_id" required="1"
+                                <field name="cv_emissor_country_id"
+                                       readonly="1"
+                                       force_save="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                <field name="cv_document_type_id" required="1"
+                                <field name="cv_document_type_id"
+                                       readonly="1"
+                                       force_save="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                <field name="cv_nro_doc" required="1"/>
+                                <field name="cv_nro_doc"
+                                       readonly="1"
+                                       force_save="1"/>
                                 <field name="cv_expiration_date" readonly="1"/>
-                                <field name="user_id" groups="onsc_legajo.group_legajo_configurador_empleado"
+                                <field name="user_id"
+                                       readonly="1"
+                                       force_save="1"
+                                       groups="onsc_legajo.group_legajo_configurador_empleado"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                <field name="eff_date" string="Fecha efectiva"/>
+                                <field name="eff_date"
+                                       readonly="1"
+                                       force_save="1"
+                                       string="Fecha efectiva"/>
                             </group>
                             <group>
                                 <field name="cv_birthdate" readonly="1"/>

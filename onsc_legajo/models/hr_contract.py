@@ -119,7 +119,8 @@ class HrContract(models.Model):
     causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string="Causal de egreso", history=True)
     causes_discharge_extended = fields.Many2one("onsc.legajo.causes.discharge.line",
                                                 string="Causal de egreso extendido",
-                                                domain = "[('causes_discharge_id', '=', causes_discharge_id)]", history=True)
+                                                domain="[('causes_discharge_id', '=', causes_discharge_id)]",
+                                                history=True)
 
     is_require_extended = fields.Boolean(u"¿Requiere extendido?", related='causes_discharge_id.is_require_extended')
     additional_information_deregistration = fields.Char(string='Información adicional baja', history=True)

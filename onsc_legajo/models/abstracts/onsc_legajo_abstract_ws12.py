@@ -19,18 +19,19 @@ class ONSCLegajoAbstractSyncWS12(models.AbstractModel):
 
         wsclient = self._get_client(parameter, 'WS12', integration_error)
 
-        for alta_vl in self.env['onsc.legajo.alta.vl'].suspend_security().search([
-            ('state', '=', 'pendiente_auditoria_cgn')], limit=100):
+        AltaVL = self.env['onsc.legajo.alta.vl']
+        BajaVL = self.env['onsc.legajo.baja.vl']
+        for alta_vl in AltaVL.suspend_security().search([('state', '=', 'pendiente_auditoria_cgn')], limit=100):
             self.with_context(alta_vl=alta_vl, log_info=log_info).suspend_security()._syncronize(
-                wsclient, parameter,
+                wsclient,
+                parameter,
                 'WS12',
                 integration_error,
                 alta_vl.id_alta)
-        for baja_vl in self.env['onsc.legajo.baja.vl'].suspend_security().search([
-            ('state', '=', 'pendiente_auditoria_cgn')], limit=100):
-
+        for baja_vl in BajaVL.suspend_security().search([('state', '=', 'pendiente_auditoria_cgn')], limit=100):
             self.with_context(baja_vl=baja_vl, log_info=log_info).suspend_security()._syncronize(
-                wsclient, parameter,
+                wsclient,
+                parameter,
                 'WS12',
                 integration_error,
                 baja_vl.id_baja)
@@ -39,7 +40,6 @@ class ONSCLegajoAbstractSyncWS12(models.AbstractModel):
         # pylint: disable=invalid-commit
         with self._cr.savepoint():
             integration_error_WS12_9000 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS12_9000")
-            alta_vl = self._context.get('alta_vl')
             onsc_legajo_integration_error_WS12_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_WS12_9004")
             if self._context.get('alta_vl'):

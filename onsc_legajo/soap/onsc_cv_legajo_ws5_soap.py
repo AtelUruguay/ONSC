@@ -49,7 +49,8 @@ class WsLegajoWS5(ServiceBase):
             uid = SUPERUSER_ID
             registry = odoo.registry(dbname)
             cr = registry.cursor()
-            env = api.Environment(cr, uid, {})
+            ctx = api.Environment(cr, uid, {})['res.users'].context_get()
+            env = api.Environment(cr, uid, ctx)
             parameter = env['ir.config_parameter'].sudo().get_param('parameter_ws5_user')
             if env['res.users'].sudo().browse(integration_uid).login != parameter:
                 onsc_error_codes._raise_fault(onsc_error_codes.AUTH_51)

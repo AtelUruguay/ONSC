@@ -169,7 +169,9 @@
                                 <field name="address_receipt_file" filename="address_receipt_file_name" readonly="1"
                                        options="{'accepted_file_extensions': '.pdf'}"/>
                                 <field name="address_receipt_file_name" invisible="1"/>
-                                <field name="address_info_date"/>
+                                <field name="address_info_date"
+                                       readonly="1"
+                                       force_save="1"/>
                                 <field name="country_id" string="País" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="cv_address_state_id" string="Departamento" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="cv_address_location_id" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>

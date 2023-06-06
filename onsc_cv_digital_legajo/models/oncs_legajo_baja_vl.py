@@ -17,7 +17,6 @@ class ONSCLegajoBajaVL(models.Model):
     _rec_name = 'full_name'
 
     full_name = fields.Char('Nombre', compute='_compute_full_name')
-
     @api.depends('partner_id')
     def _compute_full_name(self):
         for record in self:

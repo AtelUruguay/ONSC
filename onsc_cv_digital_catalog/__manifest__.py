@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital - Catálogo',
-    'version': '15.0.4.1.1',
+    'version': '15.0.4.2.0',
     'license': '',
     'author': "Quanam",
     'website': "https://www.quanam.com",
