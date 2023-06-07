@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 
-from odoo import fields, models, api, _
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_documentary_validation import \
     DOCUMENTARY_VALIDATION_STATES
+
+from odoo import fields, models, api, _
 
 
 class ONSCCVDigital(models.Model):
@@ -22,7 +23,7 @@ class ONSCCVDigital(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string="Empleado", compute='_compute_employee_id', store=True)
     is_docket = fields.Boolean(string="Tiene legajo")
-    is_docket_active = fields.Boolean(string="Tiene legajo activo")
+    is_docket_active = fields.Boolean(string="Tiene legajo activo", compute='_compute_is_docket_active', store=True)
     # gender_date = fields.Date(string="Fecha de información género")
     gender_public_visualization_date = fields.Date(string="Fecha información visualización pública de género",
                                                    compute='_compute_gender_public_visualization_date', store=True)
@@ -215,6 +216,11 @@ class ONSCCVDigital(models.Model):
                 ('cv_document_type_id', '=', record.cv_document_type_id.id),
                 ('cv_nro_doc', '=', record.cv_nro_doc),
             ], limit=1)
+
+    @api.depends('employee_id', 'employee_id.legajo_state')
+    def _compute_is_docket_active(self):
+        for record in self:
+            record.is_docket_active = record.employee_id and record.employee_id.legajo_state == 'active'
 
     @api.depends(lambda self: self._get_legajo_documentary_validation_models())
     def _compute_legajo_gral_info_documentary_validation_state(self):
@@ -728,8 +734,9 @@ class ONSCCVInformationContact(models.Model):
     @api.model
     def create(self, values):
         record = super(ONSCCVInformationContact, self).create(values)
-        employee_id = self.env['hr.employee'].suspend_security().search([('cv_digital_id', '=', record.cv_digital_id.id)],
-                                                                        limit=1)
+        employee_id = self.env['hr.employee'].suspend_security().search(
+            [('cv_digital_id', '=', record.cv_digital_id.id)],
+            limit=1)
         if employee_id:
             record.sync_legajo_information_contacto(employee_id)
         return record
