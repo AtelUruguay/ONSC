@@ -43,11 +43,11 @@ class ONSCLegajo(models.Model):
             record.certificate_ids = record.cv_digital_id.certificate_ids.filtered(
                 lambda x: x.documentary_validation_state == 'validated')
 
-    @api.model
-    def create(self, values):
-        res = super(ONSCLegajo, self).create(values)
-        res.cv_digital_id.write({'is_docket': True, 'is_docket_active': True})
-        return res
+    # @api.model
+    # def create(self, values):
+    #     res = super(ONSCLegajo, self).create(values)
+    #     res.cv_digital_id.write({'is_docket': True, 'is_docket_active': True})
+    #     return res
 
     def unlink(self):
         self.mapped('cv_digital_id').write({'is_docket': False, 'is_docket_active': False})
