@@ -98,6 +98,22 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
                     'error_message_synchronization': long_description,
                 })
 
+    def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
+        baja_vl = self._context.get('baja_vl')
+        baja_vl.write({
+            'id_baja': False,
+            'is_error_synchronization': True,
+            'state': 'error_sgh',
+            'error_message_synchronization': integration_error.description
+        })
+        super(ONSCLegajoAbstractSyncWS9, self)._process_servicecall_error(
+            exception,
+            origin_name,
+            integration_error,
+            long_description
+        )
+
+
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
         IntegrationError = self.env['onsc.legajo.integration.error']
         baja_vl = self._context.get('baja_vl')

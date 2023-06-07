@@ -6,8 +6,11 @@
             <field name="model">onsc.legajo.baja.vl</field>
             <field name="arch" type="xml">
                 <search string="Baja VL">
-                    <field name="partner_id"/>
-
+                    <field name="employee_id" string="Funcionario"/>
+                    <field name="contract_id"/>
+                    <field name="operating_unit_id"/>
+                    <filter string="Funcionarios" name="groupby_employee_id" domain="[]" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Unidades ejecutoras" name="groupby_operating_unit_id" domain="[]" context="{'group_by': 'operating_unit_id'}"/>
                 </search>
             </field>
         </record>
@@ -17,7 +20,8 @@
             <field name="model">onsc.legajo.baja.vl</field>
             <field name="arch" type="xml">
                 <tree string="Baja VL">
-                    <field name="employee_id"/>
+                    <field name="employee_id" sting="Funcionario"/>
+                    <field name="contract_id"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -34,11 +38,9 @@
                                 groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas"
                                 states="borrador,error_sgh"
                                 attrs="{'invisible': ['|',('is_ready_send_sgh', '=', False)]}"/>
-
                         <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-
                         <div name="oe_tittle" class="oe_title"></div>
                         <field name="is_error_synchronization" invisible="1"/>
                         <field name="is_ready_send_sgh" invisible="1"/>
@@ -70,21 +72,12 @@
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-
-
+                                <field name="contract_id" domain="contract_id_domain"/>
+                                <field name="end_date"/>
                             </group>
                             <group name="main_group_right">
                             </group>
                         </group>
-                        <group name="group2">
-                            <group>
-                                <field name="contract_id" domain="contract_id_domain"/>
-                            </group>
-                            <group>
-                            </group>
-
-                        </group>
-
                         <group name="motivo" string="Ingreso de motivo">
                             <group name="motivo_left">
                                 <field name="reason_description" colspan="4"/>
@@ -107,8 +100,6 @@
                                         <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
                                     </p>
                                 </div>
-
-
                             </group>
                             <group name="motivo_right">
                                 <field name="resolution_description" colspan="4"/>
@@ -116,7 +107,6 @@
                                 <field name="resolution_type" colspan="4"/>
                             </group>
                         </group>
-
                         <group name="documentacion" string="Documentación">
                             <field name="attached_document_discharge_ids" nolabel="1">
                                 <tree editable="top">
@@ -132,15 +122,12 @@
                                 <field name="causes_discharge_id"/>
                                 <field name="causes_discharge_extended_id"
                                        attrs="{'invisible': [('is_require_extended', '=', False)]}"/>
-                                <field name="end_date"/>
                             </group>
                         </group>
-
                         <group name="adicional" string="Información Adicional">
                             <field name="additional_information" nolabel="1"
                                    placeholder="Información Adicional"/>
                         </group>
-
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" groups="base.group_user"/>

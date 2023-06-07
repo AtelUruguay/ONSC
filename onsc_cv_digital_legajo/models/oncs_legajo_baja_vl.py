@@ -26,18 +26,6 @@ class ONSCLegajoBajaVL(models.Model):
                 record.employee_id.cv_last_name_2) + ' - ' + record.end_date.strftime('%Y%m%d')
 
     def action_aprobado_cgn(self):
-        count = self.env['hr.contract'].sudo().search_count([('employee_id', '=', self.employee_id.id),
-                                                             ('legajo_state', '=', 'active')])
-
-        if count == 1:
-            CvDigital = self.env['onsc.cv.digital']
-            cv_digital = CvDigital.suspend_security().search(
-                [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
-                 ('cv_document_type_id', '=', self.cv_document_type_id.id),
-                 ('cv_nro_doc', '=', self.employee_id.cv_nro_doc),
-                 ('type', '=', 'cv')], limit=1)
-            cv_digital.suspend_security().write({'is_docket_active': False})
-
         data = {
             'id_deregistration_discharge': self.id_baja,
             'reason_deregistration': self.reason_description or False,
@@ -58,19 +46,12 @@ class ONSCLegajoBajaVL(models.Model):
         for attach in self.attached_document_discharge_ids:
             attach.write({
                 'contract_id': self.contract_id.id,
-                'type': 'deregistration'})
+                'type': 'deregistration'
+            })
 
         self.contract_id.suspend_security().write(data)
-
-        job = self.contract_id.job_ids.filtered(lambda x: x.end_date is False)
-
-        if job[0]:
-            job[0].suspend_security().write({'end_date': self.end_date})
-
+        self.contract_id.job_ids.filtered(lambda x: x.end_date is False).write({'end_date': self.end_date})
         self.suspend_security().write({'state': 'aprobado_cgn'})
-
         return True
 
-    def action_rechazado_cgn(self):
-        self.write({'state': 'rechazado_cgn'})
-        return True
+

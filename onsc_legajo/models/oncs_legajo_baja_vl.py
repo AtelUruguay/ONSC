@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 import json
+
 from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -95,6 +97,10 @@ class ONSCLegajoBajaVL(models.Model):
             res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
 
+    employee_id = fields.Many2one("hr.employee", string="Funcionario")
+    employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
+    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
+    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     end_date = fields.Date(string="Fecha de Baja", default=lambda *a: fields.Date.today(), required=True, copy=False)
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
@@ -105,21 +111,12 @@ class ONSCLegajoBajaVL(models.Model):
 
     attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'baja_vl_id',
                                                       string='Documentos adjuntos')
-    integration_error_id = fields.Many2one('onsc.legajo.integration.error', string=u'Error reportado integración',
-                                           copy=False)
-
     id_baja = fields.Char(string="Id Baja")
-    is_require_extended = fields.Boolean("¿Requiere extendido?", compute="_compute_is_require_extended")
 
+    is_require_extended = fields.Boolean("¿Requiere extendido?", compute="_compute_is_require_extended")
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    is_error_synchronization = fields.Boolean(copy=False)
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
-    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
-    employee_id = fields.Many2one("hr.employee", string="Empleado")
-    employee_id_domain = fields.Char(string="Dominio Empleado", compute='_compute_employee_id_domain')
-    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
-    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
 
     @api.constrains("end_date")
     def _check_date(self):
@@ -131,6 +128,11 @@ class ONSCLegajoBajaVL(models.Model):
     def _compute_should_disable_form_edit(self):
         for record in self:
             record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
+
+    @api.depends('cv_emissor_country_id')
+    def _compute_employee_id_domain(self):
+        for rec in self:
+            rec.employee_id_domain = self._get_domain_employee_ids()
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
@@ -145,14 +147,8 @@ class ONSCLegajoBajaVL(models.Model):
                     rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
                 else:
                     rec.contract_id_domain = json.dumps([('id', '=', False)])
-
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
-
-    @api.depends('cv_emissor_country_id')
-    def _compute_employee_id_domain(self):
-        for rec in self:
-            rec.employee_id_domain = self._get_domain_employee_ids()
 
     @api.depends('contract_id')
     def _compute_is_ready_to_send(self):
@@ -172,7 +168,6 @@ class ONSCLegajoBajaVL(models.Model):
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
     def _get_domain_employee_ids(self):
-
         args = [("legajo_state", "=", 'active')]
         args = self._get_domain(args)
 
@@ -198,6 +193,56 @@ class ONSCLegajoBajaVL(models.Model):
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
+        return True
+
+    def action_aprobado_cgn(self):
+        count = self.env['hr.contract'].sudo().search_count([('employee_id', '=', self.employee_id.id),
+                                                             ('legajo_state', '=', 'active')])
+
+        if count == 1:
+            CvDigital = self.env['onsc.cv.digital']
+            cv_digital = CvDigital.suspend_security().search(
+                [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
+                 ('cv_document_type_id', '=', self.cv_document_type_id.id),
+                 ('cv_nro_doc', '=', self.employee_id.cv_nro_doc),
+                 ('type', '=', 'cv')], limit=1)
+            cv_digital.suspend_security().write({'is_docket_active': False})
+
+        data = {
+            'id_deregistration_discharge': self.id_baja,
+            'reason_deregistration': self.reason_description or False,
+            'norm_code_deregistration_id': self.norm_id and self.norm_id.id or False,
+            'type_norm_deregistration': self.norm_type or False,
+            'norm_number_deregistration': self.norm_number or False,
+            'norm_year_deregistration': self.norm_year or False,
+            'norm_article_deregistration': self.norm_article or False,
+            'resolution_description_deregistration': self.resolution_description or False,
+            'resolution_date_deregistration': self.resolution_date or False,
+            'resolution_type_deregistration': self.resolution_type or False,
+            'causes_discharge_id': self.causes_discharge_id and self.causes_discharge_id.id or False,
+            'additional_information_deregistration': self.additional_information,
+            'legajo_state': 'baja',
+            'causes_discharge_extended': self.causes_discharge_extended_id and self.causes_discharge_extended_id.id or False
+        }
+
+        for attach in self.attached_document_discharge_ids:
+            attach.write({
+                'contract_id': self.contract_id.id,
+                'type': 'deregistration'})
+
+        self.contract_id.suspend_security().write(data)
+
+        job = self.contract_id.job_ids.filtered(lambda x: x.end_date is False)
+
+        if job[0]:
+            job[0].suspend_security().write({'end_date': self.end_date})
+
+        self.suspend_security().write({'state': 'aprobado_cgn'})
+
+        return True
+
+    def action_rechazado_cgn(self):
+        self.write({'state': 'rechazado_cgn'})
         return True
 
     def unlink(self):

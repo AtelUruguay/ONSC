@@ -430,6 +430,14 @@ class HrEmployee(models.Model):
         for record in self:
             record.suspend_security().write(record._get_info_fromcv())
 
+    def write(self, vals):
+        result = super(HrEmployee, self).write(vals)
+        if vals.get('legajo_state', '') == 'egresed':
+            self.suspend_security().mapped('cv_digital_id').write({'is_docket_active': False})
+        elif vals.get('legajo_state', '') == 'active':
+            self.suspend_security().mapped('cv_digital_id').write({'is_docket_active': True})
+        return result
+
 
 class ONSCLegajoDriverLicense(models.Model):
     _name = 'onsc.legajo.driver.license'
