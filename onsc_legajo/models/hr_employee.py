@@ -45,6 +45,14 @@ class HrEmployee(models.Model):
     # legajo_state = fields.Selection(
     #     [('active', 'Activo'), ('egresed', 'Egresado')], string='Estado', default='active', history=True)
 
+    def name_get(self):
+        res = []
+        for record in self:
+            name = record.full_name or record.name
+            if self._context.get('show_cv_nro_doc', False) and record.cv_nro_doc:
+                name = record.cv_nro_doc + " - " + record.full_name or record.name
+            res.append((record.id, name))
+        return res
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
         for record in self:
@@ -54,6 +62,8 @@ class HrEmployee(models.Model):
                 record.full_name = full_name
             else:
                 record.full_name = record.name
+
+
 
     def _compute_attachment_ids(self):
         for rec in self:

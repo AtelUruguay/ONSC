@@ -67,7 +67,7 @@
                                        force_save="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="employee_id" string="C.I." required="1"
-                                       context="{'tree_view_ref': 'onsc_cv_digital_legajo.onsc_cv_digital_legajo_tree_view','show_cv_nro_doc':True}"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
 
