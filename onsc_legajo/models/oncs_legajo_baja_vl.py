@@ -6,7 +6,7 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
@@ -27,6 +27,7 @@ class ONSCLegajoBajaVL(models.Model):
     _name = 'onsc.legajo.baja.vl'
     _inherit = ['onsc.legajo.actions.common.data', 'onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
     _description = 'Baja de vínculo laboral'
+    _rec_name = 'full_name'
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
@@ -117,6 +118,8 @@ class ONSCLegajoBajaVL(models.Model):
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
+    full_name = fields.Char('Nombre', compute='_compute_full_name')
+
 
     @api.constrains("end_date")
     def _check_date(self):
@@ -162,6 +165,13 @@ class ONSCLegajoBajaVL(models.Model):
                 rec.is_require_extended = rec.causes_discharge_id.is_require_extended
             else:
                 rec.is_require_extended = False
+    @api.depends('employee_id')
+    def _compute_full_name(self):
+        for record in self:
+            record.full_name = record.employee_id.cv_nro_doc + ' - ' + calc_full_name(
+                record.employee_id.cv_first_name, record.employee_id.cv_second_name,
+                record.employee_id.cv_last_name_1,
+                record.employee_id.cv_last_name_2) + ' - ' + record.end_date.strftime('%Y%m%d')
 
     def action_call_ws9(self):
         self._check_required_fieds_ws9()
@@ -196,18 +206,6 @@ class ONSCLegajoBajaVL(models.Model):
         return True
 
     def action_aprobado_cgn(self):
-        count = self.env['hr.contract'].sudo().search_count([('employee_id', '=', self.employee_id.id),
-                                                             ('legajo_state', '=', 'active')])
-
-        if count == 1:
-            CvDigital = self.env['onsc.cv.digital']
-            cv_digital = CvDigital.suspend_security().search(
-                [('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
-                 ('cv_document_type_id', '=', self.cv_document_type_id.id),
-                 ('cv_nro_doc', '=', self.employee_id.cv_nro_doc),
-                 ('type', '=', 'cv')], limit=1)
-            cv_digital.suspend_security().write({'is_docket_active': False})
-
         data = {
             'id_deregistration_discharge': self.id_baja,
             'reason_deregistration': self.reason_description or False,
@@ -228,17 +226,12 @@ class ONSCLegajoBajaVL(models.Model):
         for attach in self.attached_document_discharge_ids:
             attach.write({
                 'contract_id': self.contract_id.id,
-                'type': 'deregistration'})
+                'type': 'deregistration'
+            })
 
         self.contract_id.suspend_security().write(data)
-
-        job = self.contract_id.job_ids.filtered(lambda x: x.end_date is False)
-
-        if job[0]:
-            job[0].suspend_security().write({'end_date': self.end_date})
-
+        self.contract_id.job_ids.filtered(lambda x: x.end_date is False).write({'end_date': self.end_date})
         self.suspend_security().write({'state': 'aprobado_cgn'})
-
         return True
 
     def action_rechazado_cgn(self):

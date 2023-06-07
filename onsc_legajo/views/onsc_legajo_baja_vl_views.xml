@@ -9,8 +9,10 @@
                     <field name="employee_id" string="Funcionario"/>
                     <field name="contract_id"/>
                     <field name="operating_unit_id"/>
-                    <filter string="Funcionarios" name="groupby_employee_id" domain="[]" context="{'group_by': 'employee_id'}"/>
-                    <filter string="Unidades ejecutoras" name="groupby_operating_unit_id" domain="[]" context="{'group_by': 'operating_unit_id'}"/>
+                    <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
+                            context="{'group_by': 'employee_id'}"/>
+                    <filter string="Unidades ejecutoras" name="groupby_operating_unit_id" domain="[]"
+                            context="{'group_by': 'operating_unit_id'}"/>
                 </search>
             </field>
         </record>
@@ -20,7 +22,7 @@
             <field name="model">onsc.legajo.baja.vl</field>
             <field name="arch" type="xml">
                 <tree string="Baja VL">
-                    <field name="employee_id" sting="Funcionario"/>
+                    <field name="employee_id" string="Funcionario"/>
                     <field name="contract_id"/>
                     <field name="state"/>
                 </tree>
@@ -72,7 +74,9 @@
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="contract_id" domain="contract_id_domain"/>
+                                <field name="contract_id" domain="contract_id_domain"
+                                       attrs="{'readonly': [('state', '!=', 'borrador')]}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true}"/>
                                 <field name="end_date"/>
                             </group>
                             <group name="main_group_right">
@@ -119,9 +123,11 @@
                         </group>
                         <group name="group6">
                             <group>
-                                <field name="causes_discharge_id"/>
+                                <field name="causes_discharge_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="causes_discharge_extended_id"
-                                       attrs="{'invisible': [('is_require_extended', '=', False)]}"/>
+                                       attrs="{'invisible': [('is_require_extended', '=', False)]}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             </group>
                         </group>
                         <group name="adicional" string="Información Adicional">
