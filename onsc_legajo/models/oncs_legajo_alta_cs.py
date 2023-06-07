@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import json
-
+from lxml import etree
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -13,14 +13,110 @@ class ONSCLegajoAltaCS(models.Model):
     _description = 'Alta de Comisión Saliente'
     _rec_name = 'full_name'
 
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super().fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+                                      submenu=submenu)
+        doc = etree.XML(res['arch'])
+        is_user_alta_vl = self.env.user.has_group('onsc_legajo.group_legajo_consulta_altas_cs')
+        is_user_administrar_altas_vl = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        if view_type in ['form', 'tree', 'kanban'] and is_user_alta_vl and not is_user_administrar_altas_vl:
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('create', '0')
+                node_form.set('edit', '0')
+                node_form.set('copy', '0')
+                node_form.set('delete', '0')
+        res['arch'] = etree.tostring(doc)
+        return res
+
+    def read(self, fields=None, load="_classic_read"):
+        Partner = self.env['res.partner'].sudo()
+        Office = self.env['onsc.legajo.office'].sudo()
+        LegajoNorm = self.env['onsc.legajo.norm'].sudo()
+        result = super().read(fields, load)
+        for item in result:
+            if item.get('partner_id'):
+                partner_id = item['partner_id'][0]
+                item['partner_id'] = (item['partner_id'][0], Partner.browse(partner_id)._custom_display_name())
+            if item.get('program_project_origin_id'):
+                program_project_id = item['program_project_origin_id'][0]
+                item['program_project_origin_id'] = (
+                    item['program_project_origin_id'][0], Office.browse(program_project_id)._custom_display_name())
+            if item.get('program_project_destination_id'):
+                program_project_id = item['program_project_destination_id'][0]
+                item['program_project_destination_id'] = (
+                    item['program_project_destination_id'][0], Office.browse(program_project_id)._custom_display_name())
+            if item.get('norm_id'):
+                norm_id = item['norm_id'][0]
+                item['norm_id'] = (item['norm_id'][0], LegajoNorm.browse(norm_id)._custom_display_name())
+        return result
+
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super().fields_get(allfields, attributes)
+        hide = ['document_identity_file', 'document_identity_filename', 'civical_credential_file',
+                'civical_credential_filename', 'is_cv_race_public', 'cv_gender_record_filename',
+                'cjppu_affiliate_number', 'professional_resume', 'user_linkedIn', 'is_driver_license', 'cv_gender2',
+                'cv_gender_id', 'is_afro_descendants', 'is_occupational_health_card', 'occupational_health_card_date',
+                'is_medical_aptitude_certificate_status', 'medical_aptitude_certificate_date', 'is_victim_violent',
+                'is_public_information_victim_violent', 'allow_content_public', 'situation_disability',
+                'people_disabilitie', 'certificate_date', 'to_date', 'see', 'hear', 'walk', 'speak', 'realize', 'lear',
+                'interaction', 'need_other_support', 'afro_descendants_file', 'occupational_health_card_file',
+                'occupational_health_card_filename', 'relationship_victim_violent_filename', 'is_cv_gender_public',
+                'medical_aptitude_certificate_file', 'relationship_victim_violent_file', 'document_certificate_file',
+                'document_certificate_filename', 'afro_descendants_filename']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
+
+    def _get_domain(self, args):
+        args = expression.AND([[
+            ('partner_id', '!=', self.env.user.partner_id.id)
+        ], args])
+        if self.user_has_groups('onsc_legajo.group_legajo_hr_inciso_alta_cs'):
+            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
+            if inciso_id:
+                args = expression.AND([[
+                    ('inciso_destination_id', '=', inciso_id.id)
+                ], args])
+        elif self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
+            contract_id = self.env.user.employee_id.job_id.contract_id
+            inciso_id = contract_id.inciso_id
+            operating_unit_id = contract_id.operating_unit_id
+            if inciso_id:
+                args = expression.AND([[
+                    ('inciso_destination_id', '=', inciso_id.id)
+                ], args])
+            if operating_unit_id:
+                args = expression.AND([[
+                    ('operating_unit_destination_id', '=', operating_unit_id.id)
+                ], args])
+        return args
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        if self._context.get('is_from_menu'):
+            args = self._get_domain(args)
+        return super()._search(args, offset=offset, limit=limit, order=order, count=count,
+                               access_rights_uid=access_rights_uid)
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if self._context.get('is_from_menu'):
+            domain = self._get_domain(domain)
+        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+
     employee_id = fields.Many2one('hr.employee', 'Empleados')
-    partner_id = fields.Many2one('res.partner', string='CI', required=True, )
+    partner_id = fields.Many2one('res.partner', string='CI', required=True)
     partner_id_domain = fields.Char(compute='_compute_partner_id_domain')
     full_name = fields.Char('Nombre', related='partner_id.cv_full_name', store=True)
 
     inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso Origen', required=True,
                                        default=lambda self: self._get_default_inciso_id(), copy=False)
-    inciso_origin_id_domain = fields.Char(compute='_compute_inciso_id_domain')
+    inciso_origin_id_domain = fields.Char(compute='_compute_inciso_origin_id_domain')
     is_inciso_origin_ac = fields.Boolean("El inciso de origen es AC?",
                                          related='inciso_origin_id.is_central_administration')
     operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora Origen", required=True,
@@ -29,13 +125,19 @@ class ONSCLegajoAltaCS(models.Model):
     line_ids = fields.One2many('onsc.legajo.alta.cs.contract.line', 'alta_cs_id', string='Líneas de Alta de Comisión')
     sequence_position_origin = fields.Char(string='Secuencia Plaza Origen')
     contract_id = fields.Many2one('hr.contract', 'Contrato', compute='_compute_contract_id', store=True)
-    program_origin = fields.Char(string='Programa Origen')
-    project_origin = fields.Char(string='Proyecto Origen')
+    program_project_origin_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto Origen',
+                                                domain="[('inciso', '=', inciso_origin_id),('unidadEjecutora', '=', operating_unit_origin_id)]")
+    program_origin = fields.Char(string='Programa Origen', related='program_project_origin_id.programaDescripcion')
+    project_origin = fields.Char(string='Proyecto Origen', related='program_project_origin_id.proyectoDescripcion')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen Origen')
-    descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1', related='contract_id.descriptor1_id')
-    descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2', related='contract_id.descriptor2_id')
-    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', related='contract_id.descriptor3_id')
-    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4', related='contract_id.descriptor4_id')
+    descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
+                                     related='contract_id.descriptor1_id')
+    descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
+                                     related='contract_id.descriptor2_id')
+    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3',
+                                     related='contract_id.descriptor3_id')
+    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4',
+                                     related='contract_id.descriptor4_id')
     type_commission_selection = fields.Selection(
         [('cs', 'Comisión de Servicio'), ('pc', 'Pase en Comisión')],
         string='Tipo de comisión', compute='_compute_type_commission_selection')
@@ -44,10 +146,12 @@ class ONSCLegajoAltaCS(models.Model):
     operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora Destino", required=True)
     operating_unit_destination_id_domain = fields.Char(compute='_compute_operating_unit_destination_id_domain')
 
-    office_id = fields.Many2one("onsc.legajo.office", string="Oficina")
-    office_id_domain = fields.Char(compute='_compute_office_id_domain')
-    program_destination = fields.Char(string='Programa Destino', related='office_id.programaDescripcion')
-    project_destination = fields.Char(string='Proyecto Destino', related='office_id.proyectoDescripcion')
+    program_project_destination_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto Destino',
+                                                     domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]")
+    program_destination = fields.Char(string='Programa Destino',
+                                      related='program_project_destination_id.programaDescripcion')
+    project_destination = fields.Char(string='Proyecto Destino',
+                                      related='program_project_destination_id.proyectoDescripcion')
     regime_destination = fields.Char(string='Régimen Destino', default='3001')
     date_start_commission = fields.Date(string='Fecha desde de la Comisión', required=True)
     department_id = fields.Many2one('hr.department', string='UO')
@@ -55,12 +159,14 @@ class ONSCLegajoAltaCS(models.Model):
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
     regime_commission_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen de comisión')
     description_reason = fields.Text(string='Descripción del motivo')
-    norm_code_id = fields.Many2one('onsc.legajo.norm', string='Código de norma')
-    norm_number = fields.Integer(string='Número de norma',
-                                 related='norm_code_id.numeroNorma')
-    norm_year = fields.Integer(string='Año de norma alta', related='norm_code_id.anioNorma')
-    norm_article = fields.Integer(string='Artículo de norma',
-                                  related='norm_code_id.articuloNorma')
+    norm_id = fields.Many2one('onsc.legajo.norm', string='Norma')
+    norm_type = fields.Char(string="Tipo norma", related="norm_id.tipoNorma", store=True, readonly=True)
+    norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
+                                 store=True, readonly=True)
+    norm_year = fields.Integer(string='Año de norma', related="norm_id.anioNorma", store=True,
+                               readonly=True)
+    norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
+                                  store=True, readonly=True)
     tag_norm_not_found = fields.Char(string='Etiqueta con el mensaje en caso de no encontrar la norma')
     description_resolution = fields.Text(string='Descripción de la resolución')
     date_resolution = fields.Date(string='Fecha de la resolución')
@@ -83,6 +189,8 @@ class ONSCLegajoAltaCS(models.Model):
     type_move_selection = fields.Selection(
         [('ac2ac', 'AC a AC'), ('ac2out', 'AC a fuera de AC'), ('out2ac', 'Fuera de AC a AC  ')],
         string='Tipo de movimiento', compute='_compute_type_move_selection')
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
 
     @api.constrains("line_ids")
     def _check_line_ids(self):
@@ -115,6 +223,11 @@ class ONSCLegajoAltaCS(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.state not in ['draft', 'to_process']
+
     @api.depends('operating_unit_origin_id', 'operating_unit_destination_id')
     def _compute_type_commission_selection(self):
         for record in self:
@@ -124,21 +237,11 @@ class ONSCLegajoAltaCS(models.Model):
                 else:
                     record.type_commission_selection = 'pc'
 
-    @api.depends('operating_unit_destination_id', 'inciso_destination_id')
-    def _compute_office_id_domain(self):
-        for record in self:
-            if record.operating_unit_destination_id and record.inciso_destination_id:
-                record.office_id_domain = json.dumps(
-                    [('inciso', '=', record.inciso_destination_id.name),
-                     ('unidadEjecutora', '=', record.operating_unit_destination_id.name)])
-            else:
-                record.office_id_domain = json.dumps([])
-
     @api.depends('operating_unit_origin_id')
     def _compute_partner_id_domain(self):
         for record in self:
             if record.is_inciso_origin_ac:
-                employee_ids = self.env['hr.contract'].search(
+                employee_ids = self.env['hr.contract'].sudo().search(
                     [('operating_unit_id', '=', record.operating_unit_origin_id.id),
                      ('legajo_state', '=', 'active'),
                      ('regime_id.presupuesto', '=', True)]).mapped(
@@ -148,12 +251,12 @@ class ONSCLegajoAltaCS(models.Model):
                 record.partner_id_domain = json.dumps(
                     [('cv_document_type_id.code', '=', 'ci'), ('is_partner_cv', '=', True)])
 
-    def _compute_inciso_id_domain(self):
+    def _compute_inciso_origin_id_domain(self):
         for rec in self:
             contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
             inciso_id = contract.inciso_id.id if contract else False
             domain = ['|', ('id', '=', inciso_id), ('is_central_administration', '=', False)]
-            rec.inciso_id_domain = json.dumps(domain)
+            rec.inciso_origin_id_domain = json.dumps(domain)
 
     @api.depends('inciso_origin_id')
     def _compute_inciso_destination_id_domain(self):
@@ -285,15 +388,20 @@ class ONSCLegajoAltaCS(models.Model):
     def onchange_inciso_origin_id(self):
         if self.inciso_origin_id:
             self.operating_unit_origin_id = False
-            self.program_origin = False
-            self.project_origin = False
+            self.program_project_origin_id = False
             self.partner_id = False
+
+    @api.onchange('inciso_destination_id')
+    def onchange_inciso_destination_id(self):
+        if self.inciso_destination_id:
+            self.operating_unit_destination_id = False
+            self.program_project_destination_id = False
 
     # validar q las operating unit de origen y destino no sean iguales
     @api.onchange('operating_unit_origin_id', 'operating_unit_destination_id')
     def onchange_operating_unit(self):
         for rec in self:
-            if rec.operating_unit_origin_id == rec.operating_unit_destination_id:
+            if rec.operating_unit_destination_id and rec.operating_unit_origin_id and rec.operating_unit_origin_id == rec.operating_unit_destination_id:
                 raise ValidationError('La unidad ejecutora de origen y destino no pueden ser iguales')
 
 

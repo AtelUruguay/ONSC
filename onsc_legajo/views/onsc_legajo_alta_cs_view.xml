@@ -38,6 +38,7 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="partner_id_domain" invisible="1"/>
                             <field name="full_name" readonly="1"/>
+                            <field name="should_disable_form_edit" invisible="1"/>
                         </group>
                     </group>
                     <br></br>
@@ -57,8 +58,7 @@
                     <group string="Datos del puesto seleccionado"
                            attrs="{'invisible': [('is_inciso_origin_ac', '!=', True)]}">
                         <group>
-                            <field name="program_origin"/>
-                            <field name="project_origin"/>
+                            <field name="program_project_origin_id" context="{'show_project_program':True}"/>
                             <field name="regime_origin_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
@@ -80,15 +80,9 @@
                             <field name="operating_unit_destination_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="operating_unit_destination_id_domain" invisible="1"/>
-                            <field name="office_id"
-                                   domain="office_id_domain"
+                            <field name="program_project_destination_id" context="{'show_project_program':True}"
                                    attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="office_id_domain" invisible="1"/>
-                            <field name="program_destination" readonly="1"
-                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
-                            <field name="project_destination" readonly="1"
-                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
                             <field name="date_start_commission"
                                    attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
                         </group>
@@ -110,11 +104,13 @@
                            attrs="{'invisible': [('type_move_selection', '=', 'ac2ac')]}">
                         <group>
                             <field name="description_reason"/>
-                            <field name="norm_code_id"
+                            <field name="norm_id" colspan="3"
+                                   context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="norm_number"/>
-                            <field name="norm_year"/>
-                            <field name="norm_article"/>
+                            <field name="norm_type" colspan="2"/>
+                            <field name="norm_number" colspan="2"/>
+                            <field name="norm_year" colspan="1"/>
+                            <field name="norm_article" colspan="2"/>
                         </group>
                         <group>
                             <field name="tag_norm_not_found"/>
