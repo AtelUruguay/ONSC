@@ -63,11 +63,15 @@ class ResUser(models.Model):
         list_users |= self.env.ref('base.public_user')
         for rec in self.filtered(lambda x: x not in list_users):
             rec = rec.sudo()
-            rec.role_line_ids.filtered(lambda x: x.is_job_role_line).unlink()
+            rec._clean_role_lines()
             role_lines = rec.get_roleline_one_job()
             if len(role_lines):
                 rec.sudo().write({'role_line_ids': role_lines})
             self.env.cr.commit()
+
+    def _clean_role_lines(self):
+        self.role_line_ids.filtered(lambda x: x.is_job_role_line).unlink()
+
 
     def get_roleline_one_job(self):
         role_line_ids = []

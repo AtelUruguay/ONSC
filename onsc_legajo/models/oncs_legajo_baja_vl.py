@@ -6,7 +6,7 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
@@ -20,53 +20,14 @@ STATES = [
 
 REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article',
                    'norm_type', 'norm_year', 'resolution_description', 'resolution_date',
-                   'resolution_type', 'causes_discharge_id']
-
-
-class ONSCEmploymentRelationship(models.Model):
-    _name = 'onsc.legajo.employment.relationship'
-    _description = 'Vínculo laboral'
-
-    contract_id = fields.Many2one('hr.contract', 'Contrato')
-    selected = fields.Boolean(string="Seleccionado", help="Active para seleccionar Vinculo")
-    programa = fields.Char(string='Programa', copy=False)
-    proyecto = fields.Char(string='Proyecto', copy=False)
-    descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor 1', copy=False)
-    descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor 2', copy=False)
-    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor 3', copy=False)
-    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor 4', copy=False)
-    nroPuesto = fields.Char(string='Puesto', copy=False)
-
-    nroPlaza = fields.Char(string='Plaza', copy=False)
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False)
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
-    baja_vl_id = fields.Many2one("onsc.legajo.baja.vl", string="Baja de vínculo laboral", copy=False)
-    regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False)
-    state = fields.Selection(related='baja_vl_id.state', string='Estado', readonly=True)
-    secPosition = fields.Char(string="Sec Plaza")
-
-    def button_open_current_contract(self):
-        ctx = self.env.context.copy()
-        ctx.update({'edit': True})
-        return {
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': 'hr.contract',
-            'name': 'Ver contrato',
-            'context': ctx,
-            "target": "current",
-            "res_id": self.contract_id.id,
-            'views': [
-
-                [self.env.ref('onsc_legajo.onsc_legajo_hr_contract_view_form').id, 'form'],
-            ]
-        }
+                   'resolution_type', 'causes_discharge_id', 'contract_id']
 
 
 class ONSCLegajoBajaVL(models.Model):
     _name = 'onsc.legajo.baja.vl'
     _inherit = ['onsc.legajo.actions.common.data', 'onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
     _description = 'Baja de vínculo laboral'
+    _rec_name = 'full_name'
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
@@ -88,8 +49,9 @@ class ONSCLegajoBajaVL(models.Model):
 
     def _get_domain(self, args):
         args = expression.AND([[
-            ('partner_id', '!=', self.env.user.partner_id.id)
+            ('employee_id', '!=', self.env.user.employee_id.id)
         ], args])
+
         if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
@@ -136,6 +98,10 @@ class ONSCLegajoBajaVL(models.Model):
             res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
 
+    employee_id = fields.Many2one("hr.employee", string="Funcionario")
+    employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
+    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
+    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     end_date = fields.Date(string="Fecha de Baja", default=lambda *a: fields.Date.today(), required=True, copy=False)
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
@@ -144,22 +110,16 @@ class ONSCLegajoBajaVL(models.Model):
                                                    domain="[('causes_discharge_id', '=', causes_discharge_id)]",
                                                    history=True)
 
-    employment_relationship_ids = fields.One2many('onsc.legajo.employment.relationship', 'baja_vl_id',
-                                                  string="Vínculo laboral",
-                                                  compute="_compute_employment_relationship_ids", store=True)
     attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'baja_vl_id',
                                                       string='Documentos adjuntos')
-    integration_error_id = fields.Many2one('onsc.legajo.integration.error', string=u'Error reportado integración',
-                                           copy=False)
-
     id_baja = fields.Char(string="Id Baja")
+
     is_require_extended = fields.Boolean("¿Requiere extendido?", compute="_compute_is_require_extended")
-    partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    is_error_synchronization = fields.Boolean(copy=False)
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
-    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
+    full_name = fields.Char('Nombre', compute='_compute_full_name')
+
 
     @api.constrains("end_date")
     def _check_date(self):
@@ -173,15 +133,30 @@ class ONSCLegajoBajaVL(models.Model):
             record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
 
     @api.depends('cv_emissor_country_id')
-    def _compute_partner_id_domain(self):
+    def _compute_employee_id_domain(self):
         for rec in self:
-            rec.partner_id_domain = self._get_domain_partner_ids()
+            rec.employee_id_domain = self._get_domain_employee_ids()
 
-    @api.depends('employment_relationship_ids')
+    @api.depends('employee_id')
+    def _compute_contract_id_domain(self):
+        Contract = self.env['hr.contract']
+        for rec in self:
+            if rec.employee_id:
+                args = [("legajo_state", "=", 'active'), ('employee_id', '=', rec.employee_id.id)]
+                args = self._get_domain(args)
+
+                contracts = Contract.search(args)
+                if contracts:
+                    rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
+                else:
+                    rec.contract_id_domain = json.dumps([('id', '=', False)])
+            else:
+                rec.contract_id_domain = json.dumps([('id', '=', False)])
+
+    @api.depends('contract_id')
     def _compute_is_ready_to_send(self):
         for record in self:
-            vinculo = record.employment_relationship_ids[:1]
-            record.is_ready_send_sgh = bool(vinculo and vinculo.selected)
+            record.is_ready_send_sgh = bool(record.contract_id)
 
     @api.depends('causes_discharge_id')
     def _compute_is_require_extended(self):
@@ -190,70 +165,27 @@ class ONSCLegajoBajaVL(models.Model):
                 rec.is_require_extended = rec.causes_discharge_id.is_require_extended
             else:
                 rec.is_require_extended = False
-
-    @api.depends("partner_id")
-    def _compute_employment_relationship_ids(self):
-        for rec in self:
-            vinculo_ids = [(5,)]
-            employee_id = self.env['hr.employee'].sudo().search(
-                [('cv_emissor_country_id', '=', rec.cv_emissor_country_id.id),
-                 ('cv_document_type_id', '=', rec.cv_document_type_id.id),
-                 ('cv_nro_doc', '=', rec.partner_id.cv_nro_doc)])
-
-            contract_ids = self.env['hr.contract'].sudo().search([('employee_id', '=', employee_id.id),
-                                                                  ('legajo_state', '=', 'active')])
-
-            for contract in contract_ids:
-                data = {
-                    'nroPuesto': contract.position,
-                    'nroPlaza': contract.workplace,
-                    'secPosition': contract.sec_position,
-                    'descriptor1_id': contract.descriptor1_id and contract.descriptor1_id.id or False,
-                    'descriptor2_id': contract.descriptor2_id and contract.descriptor2_id.id or False,
-                    'descriptor3_id': contract.descriptor3_id and contract.descriptor3_id.id or False,
-                    'descriptor4_id': contract.descriptor4_id and contract.descriptor4_id.id or False,
-                    'inciso_id': contract.inciso_id and contract.inciso_id.id or False,
-                    'operating_unit_id': contract.operating_unit_id and contract.operating_unit_id.id or False,
-                    'programa': contract.program,
-                    'proyecto': contract.project,
-                    'regime_id': contract.regime_id and contract.regime_id.id or False,
-                    'contract_id': contract.id
-                }
-
-                vinculo_ids.append((0, 0, data))
-            rec.employment_relationship_ids = vinculo_ids
+    @api.depends('employee_id')
+    def _compute_full_name(self):
+        for record in self:
+            record.full_name = record.employee_id.cv_nro_doc + ' - ' + calc_full_name(
+                record.employee_id.cv_first_name, record.employee_id.cv_second_name,
+                record.employee_id.cv_last_name_1,
+                record.employee_id.cv_last_name_2) + ' - ' + record.end_date.strftime('%Y%m%d')
 
     def action_call_ws9(self):
         self._check_required_fieds_ws9()
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
-    def _get_domain_partner_ids(self):
-        if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_administrar_bajas'):
-            partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
-                                                          ('employee_id', '!=',
-                                                           self.env.user.employee_id.id)]).mapped(
-                'employee_id.user_id.partner_id')
-            return json.dumps([('id', 'in', partner_ids.ids)])
+    def _get_domain_employee_ids(self):
+        args = [("legajo_state", "=", 'active')]
+        args = self._get_domain(args)
 
+        employees = self.env['hr.contract'].search(args).mapped('employee_id')
+        if employees:
+            return json.dumps([('id', 'in', employees.ids)])
         else:
-            employee_id = self.env['hr.employee'].sudo().search(
-                [('cv_emissor_country_id', '=', self.env.user.cv_emissor_country_id.id),
-                 ('cv_document_type_id', '=', self.env.user.cv_document_type_id.id),
-                 ('cv_nro_doc', '=', self.env.user.partner_id.cv_nro_doc)])
-            contract_id = self.env['hr.contract'].search(
-                [('legajo_state', '=', 'active'), ('employee_id', '=', employee_id.id)])
-            if contract_id:
-                iniciso_id = contract_id.inciso_id.id
-                operating_unit_id = contract_id.operating_unit_id.id
-                partner_ids = self.env['hr.contract'].search([('legajo_state', '=', 'active'),
-                                                              ('inciso_id', '=', iniciso_id),
-                                                              ('operating_unit_id', '=', operating_unit_id),
-                                                              ('employee_id', '!=',
-                                                               self.env.user.employee_id.id)]).mapped(
-                    'employee_id.user_id.partner_id')
-                return json.dumps([('id', 'in', partner_ids.ids)])
-            else:
-                return json.dumps([('id', '=', False)])
+            return json.dumps([('id', '=', False)])
 
     def _check_required_fieds_ws9(self):
         for record in self:
@@ -261,7 +193,7 @@ class ONSCLegajoBajaVL(models.Model):
             for required_field in REQUIRED_FIELDS:
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
-            if not record.partner_id.cv_nro_doc:
+            if not record.employee_id.cv_nro_doc:
                 message.append(_("Debe tener numero de documento"))
 
             if not record.attached_document_discharge_ids:
@@ -273,15 +205,40 @@ class ONSCLegajoBajaVL(models.Model):
             raise ValidationError(_(message))
         return True
 
+    def action_aprobado_cgn(self):
+        data = {
+            'id_deregistration_discharge': self.id_baja,
+            'reason_deregistration': self.reason_description or False,
+            'norm_code_deregistration_id': self.norm_id and self.norm_id.id or False,
+            'type_norm_deregistration': self.norm_type or False,
+            'norm_number_deregistration': self.norm_number or False,
+            'norm_year_deregistration': self.norm_year or False,
+            'norm_article_deregistration': self.norm_article or False,
+            'resolution_description_deregistration': self.resolution_description or False,
+            'resolution_date_deregistration': self.resolution_date or False,
+            'resolution_type_deregistration': self.resolution_type or False,
+            'causes_discharge_id': self.causes_discharge_id and self.causes_discharge_id.id or False,
+            'additional_information_deregistration': self.additional_information,
+            'legajo_state': 'baja',
+            'causes_discharge_extended': self.causes_discharge_extended_id and self.causes_discharge_extended_id.id or False
+        }
+
+        for attach in self.attached_document_discharge_ids:
+            attach.write({
+                'contract_id': self.contract_id.id,
+                'type': 'deregistration'
+            })
+
+        self.contract_id.suspend_security().write(data)
+        self.contract_id.job_ids.filtered(lambda x: x.end_date is False).write({'end_date': self.end_date})
+        self.suspend_security().write({'state': 'aprobado_cgn'})
+        return True
+
+    def action_rechazado_cgn(self):
+        self.write({'state': 'rechazado_cgn'})
+        return True
+
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
             raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
         return super(ONSCLegajoBajaVL, self).unlink()
-
-    @api.onchange("employment_relationship_ids")
-    def onchange_employment_relationship_ids(self):
-        for record in self:
-            if record.employment_relationship_ids:
-                for vinculo_id in record.employment_relationship_ids:
-                    if vinculo_id.selected:
-                        record.employment_relationship_ids = vinculo_id

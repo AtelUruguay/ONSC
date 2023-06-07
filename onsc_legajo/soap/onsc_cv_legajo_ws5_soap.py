@@ -43,6 +43,7 @@ class WsLegajoWS5(ServiceBase):
     def legajo_ws5(self, request):
         # pylint: disable=invalid-commit
         try:
+            cr = False
             (integration_uid, pwd, dbname) = CheckUserDBName().check_user_dbname(self.transport)
             dbname = list(Registry.registries.d)[0]
             uid = SUPERUSER_ID

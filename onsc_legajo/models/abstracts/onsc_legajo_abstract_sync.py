@@ -28,12 +28,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
         try:
             response = ONSCLegajoClient.get_response(client, parameter, values)
         except Exception as e:
-            self.create_new_log(
-                origin=origin_name,
-                type='error',
-                integration_log=integration_error,
-                ws_tuple=False,
-                long_description=tools.ustr(e))
+            self._process_servicecall_error(e, origin_name, integration_error)
             altas_vl = self._context.get('altas_vl', self.env['onsc.legajo.alta.vl'])
             altas_vl.write({
                 'is_error_synchronization': True,
@@ -88,6 +83,14 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             ws_tuple=False,
             long_description=long_description
         )
+
+    def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
+        self.create_new_log(
+            origin=origin_name,
+            type='error',
+            integration_log=integration_error,
+            ws_tuple=False,
+            long_description=tools.ustr(exception))
 
     # pylint: disable=redefined-builtin
     def create_new_log(self, origin, type, integration_log, ws_tuple=False, long_description=False):

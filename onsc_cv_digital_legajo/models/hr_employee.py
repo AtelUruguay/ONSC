@@ -351,6 +351,8 @@ class HrEmployee(models.Model):
         if record.cv_digital_id.marital_status_documentary_validation_state == 'validated':
             vals.update({
                 'marital_status_id': record.cv_digital_id.marital_status_id.id,
+                'digitized_document_file': record.cv_digital_id.digitized_document_file,
+                'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
             })
         # CREDENCIAL CIVICA
         if record.cv_digital_id.civical_credential_documentary_validation_state == 'validated':
