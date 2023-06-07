@@ -1,0 +1,152 @@
+# -*- coding:utf-8 -*-
+import json
+
+from lxml import etree
+
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
+from odoo.osv import expression
+
+STATES = [
+    ('borrador', 'Borrador'),
+    ('error_sgh', 'Error SGH'),
+    ('confirmado', 'Confirmado'),
+
+]
+# campos requeridos para la sincronización
+
+REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article',
+                   'norm_type', 'norm_year', 'resolution_description', 'resolution_date',
+                   'resolution_type', 'causes_discharge_id']
+
+
+class ONSCLegajoBajaCS(models.Model):
+    _name = 'onsc.legajo.baja.cs'
+    _inherit = ['onsc.legajo.actions.common.data', 'onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
+    _description = 'Baja de Comisión  Servicio'
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super(ONSCLegajoBajaCS, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
+                                                            submenu=submenu)
+        doc = etree.XML(res['arch'])
+        is_user_baja_cs = self.env.user.has_group('onsc_legajo.group_legajo_baja_cs_consulta_bajas_cs')
+        is_user_administrar_baja_cs = self.env.user.has_group('onsc_legajo.group_legajo_baja_cs_administrar_bajas')
+        if view_type in ['form', 'tree', 'kanban'] and is_user_baja_cs and not is_user_administrar_baja_cs:
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('create', '0')
+                node_form.set('edit', '0')
+                node_form.set('copy', '0')
+                node_form.set('delete', '0')
+            for node_form in doc.xpath("//button[@name='action_call_ws11']"):
+                node_form.getparent().remove(node_form)
+        res['arch'] = etree.tostring(doc)
+        return res
+
+    def _get_domain(self, args):
+        args = expression.AND([[
+            ('employee_id', '!=', self.env.user.employee_id.id)
+        ], args])
+        if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
+            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
+            if inciso_id:
+                args = expression.AND([[
+                    ('inciso_id', '=', inciso_id.id)
+                ], args])
+        elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
+            contract_id = self.env.user.employee_id.job_id.contract_id
+            inciso_id = contract_id.inciso_id
+            operating_unit_id = contract_id.operating_unit_id
+            if inciso_id:
+                args = expression.AND([[
+                    ('inciso_id', '=', inciso_id.id)
+                ], args])
+            if operating_unit_id:
+                args = expression.AND([[
+                    ('operating_unit_id', '=', operating_unit_id.id)
+                ], args])
+        return args
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        if self._context.get('is_from_menu'):
+            args = self._get_domain(args)
+        return super(ONSCLegajoBajaCS, self)._search(args, offset=offset, limit=limit, order=order, count=count,
+                                                     access_rights_uid=access_rights_uid)
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if self._context.get('is_from_menu'):
+            domain = self._get_domain(domain)
+        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+
+    @api.model
+    def default_get(self, fields):
+        res = super(ONSCLegajoBajaCS , self).default_get(fields)
+        res['cv_emissor_country_id'] = self.env.ref('base.uy').id
+        res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
+                                                                                     limit=1).id or False
+
+        return res
+
+    position = fields.Char(string='Puesto')
+    workplace = fields.Char(string='Plaza')
+    program_origin = fields.Char(string='Programa Origen')
+    project_origin = fields.Char(string='Proyecto Origen')
+    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen Origen')
+    descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
+                                     related='contract_id.descriptor1_id')
+    descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
+                                     related='contract_id.descriptor2_id')
+    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3',
+                                     related='contract_id.descriptor3_id')
+    descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4',
+                                     related='contract_id.descriptor4_id')
+    end_date = fields.Date(string="Fecha de Baja", default=lambda *a: fields.Date.today(), required=True, copy=False)
+
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
+    is_error_synchronization = fields.Boolean(copy=False)
+    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
+    @api.constrains("end_date")
+    def _check_date(self):
+        for record in self:
+            if record.end_date > fields.Date.today():
+                raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
+
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.state not in ['borrador']
+
+    @api.depends('cv_emissor_country_id')
+    def _compute_partner_id_domain(self):
+        for rec in self:
+            rec.partner_id_domain = self._get_domain_partner_ids()
+
+
+
+
+    def action_call_ws11(self):
+        self._check_required_fieds_ws9()
+        self.env['onsc.legajo.abstract.baja.cs.ws11'].suspend_security().syncronize(self)
+
+    def _check_required_fieds_ws11(self):
+        for record in self:
+            message = []
+            for required_field in REQUIRED_FIELDS:
+                if not eval('record.%s' % required_field):
+                    message.append(record._fields[required_field].string)
+
+
+        if message:
+            fields_str = '\n'.join(message)
+            message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
+            raise ValidationError(_(message))
+        return True
+
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'borrador'):
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
+        return super(ONSCLegajoBajaCS, self).unlink()
+
