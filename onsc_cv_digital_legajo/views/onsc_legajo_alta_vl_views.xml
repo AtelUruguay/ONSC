@@ -71,8 +71,12 @@
                     <field name="document_identity_file" readonly="1" force_save="1"
                            filename="document_identity_filename"
                            options="{'accepted_file_extensions': '.pdf'}"/>
+                    <button type="object" name="action_update_binary_fields" string="Cargar documentos adjuntos"
+                            groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
+                            states="borrador,error_sgh"
+                            class="oe_edit_only"/>
                     <field name="document_identity_filename" invisible="1" force_save="1"/>
-                    <field name="cv_expiration_date" force_save="1"/>
+                    <field name="cv_expiration_date" force_save="1" readonly="1"/>
                     <field name="partner_id_domain" invisible="1"/>
                     <field name="is_docket" invisible="1"/>
                     <field name="employee_id" invisible="1"/>

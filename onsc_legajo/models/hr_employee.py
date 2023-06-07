@@ -42,8 +42,12 @@ class HrEmployee(models.Model):
     attachment_ids = fields.One2many('ir.attachment', compute='_compute_attachment_ids', string="Archivos adjuntos")
     attachment_count = fields.Integer(compute='_compute_attachment_ids', string="Cantidad de archivos adjuntos")
 
-    # legajo_state = fields.Selection(
-    #     [('active', 'Activo'), ('egresed', 'Egresado')], string='Estado', default='active', history=True)
+    legajo_state = fields.Selection(
+        [('active', 'Activo'), ('egresed', 'Egresado')],
+        string='Estado',
+        compute='_compute_legajo_state',
+        store=True,
+        history=True)
 
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
@@ -61,6 +65,14 @@ class HrEmployee(models.Model):
                 [('res_id', '=', rec.id), ('res_model', '=', 'hr.employee')])
             rec.attachment_ids = attachment_ids
             rec.attachment_count = len(attachment_ids)
+
+    @api.depends('contract_ids', 'contract_ids.legajo_state')
+    def _compute_legajo_state(self):
+        for rec in self:
+            if rec.contract_ids.filtered(lambda x: x.legajo_state in ['active', 'outgoing_commmission']):
+                rec.legajo_state = 'active'
+            else:
+                rec.legajo_state = 'egresed'
 
     @api.model
     def create(self, values):

@@ -283,6 +283,15 @@ class ONSCLegajoAltaVL(models.Model):
         altas_no_presupuestales.syncronize_multi_ws4()
         return True
 
+    def action_update_binary_fields(self):
+        for record in self:
+            record.document_identity_file = record.cv_digital_id.document_identity_file
+            record.document_identity_filename = record.cv_digital_id.document_identity_filename
+            record.civical_credential_file = record.cv_digital_id.civical_credential_file
+            record.civical_credential_filename = record.cv_digital_id.civical_credential_filename
+            record.digitized_document_file = record.cv_digital_id.digitized_document_file
+            record.digitized_document_filename = record.cv_digital_id.digitized_document_filename
+
     def syncronize_multi_ws4(self):
         altas_vl_grouped = {}
         AltaVLWS4 = self.env['onsc.legajo.abstract.alta.vl.ws4'].sudo()
