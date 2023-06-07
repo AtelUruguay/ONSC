@@ -134,12 +134,13 @@ class ONSCLegajoBajaVL(models.Model):
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
+        Contract = self.env['hr.contract']
         for rec in self:
             if rec.employee_id:
                 args = [("legajo_state", "=", 'active'), ('employee_id', '=', rec.employee_id.id)]
                 args = self._get_domain(args)
 
-                contracts = self.env['hr.contract'].search(args)
+                contracts = Contract.search(args)
                 if contracts:
                     rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
                 else:
