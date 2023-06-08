@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="onsc_legajo_alta_cs_search" model="ir.ui.view">
+            <field name="name">onsc.legajo.baja.cs.search</field>
+            <field name="model">onsc.legajo.baja.cs</field>
+            <field name="arch" type="xml">
+                <search string="Baja CS">
+                    <field name="employee_id" string="Funcionario"/>
+                    <field name="inciso_id"/>
+                    <field name="operating_unit_id"/>
+                    <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
+                            context="{'group_by': 'employee_id'}"/>
+                    <filter string="Para Procesado" name="processed"
+                            domain="[('state','in',['borrador','error_sgh'])]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_baja_cs_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.baja.cs.tree</field>
+            <field name="model">onsc.legajo.baja.cs</field>
+            <field name="arch" type="xml">
+                <tree string="Baja CS">
+                    <field name="employee_id" string="Funcionario"/>
+                    <field name="contract_id"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_baja_cs_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.baja.cs.form</field>
+            <field name="model">onsc.legajo.baja.cs</field>
+            <field name="arch" type="xml">
+                <form string="Baja VL">
+                    <header>
+                        <button name="action_call_ws11" class="btn btn-primary"
+                                type="object" string="Enviar SGH"
+                                groups="onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue,onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_cs_administrar_bajas"
+                                states="borrador,error_sgh"
+                                attrs="{'invisible': ['|',('is_ready_send_sgh', '=', False)]}"/>
+                        <field name="state" widget="statusbar" statusbar_visible="borrador,error_sgh"/>
+                    </header>
+                    <sheet>
+                        <div name="oe_tittle" class="oe_title"></div>
+                        <field name="is_error_synchronization" invisible="1"/>
+                        <field name="should_disable_form_edit" invisible="1"/>
+                        <div class="alert alert-danger"
+                             role="alert"
+                             attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
+                             style="margin-bottom:0px;">
+                            <p>
+                                <i class="fa fa-info-circle" role="alert" aria-label="Warning" title="Warning"/>
+                                <field name="error_message_synchronization" readonly="1"/>
+                            </p>
+                        </div>
+                        <group name="main_group">
+                            <group name="main_group_left">
+                                <field name="is_require_extended" invisible="1"/>
+                                <field name="employee_id_domain" invisible="1"/>
+                                <field name="contract_id_domain" invisible="1"/>
+                                <field name="cv_emissor_country_id"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                       readonly="1"
+                                       force_save="1"
+                                       string="País"/>
+                                <field name="cv_document_type_id"
+                                       readonly="1"
+                                       force_save="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="employee_id" string="C.I." required="1"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
+                                       attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="contract_id" domain="contract_id_domain"
+                                       attrs="{'readonly': [('state', '!=', 'borrador')]}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true}"/>
+                                <field name="end_date"/>
+                            </group>
+                            <group name="main_group_right">
+                            </group>
+                        </group>
+                        <group name="puesto" string="Datos del Puesto">
+
+                            <field name="inciso_id"/>
+                            <field name="operating_unit_id"/>
+                            <field name="program"/>
+                             <field name="project"/>
+                            <field name="regime_origin_id"/>
+                            <field name="descriptor1_id"/>
+                            <field name="descriptor2_id"/>
+                            <field name="descriptor3_id" />
+                            <field name="descriptor4_id" />
+
+
+                        </group>
+                        <group name="motivo" string="Ingreso de motivo">
+                            <group name="motivo_left">
+                                <field name="reason_description" colspan="4"/>
+
+                                <field name="norm_id" colspan="3"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="norm_type" colspan="2"/>
+                                <field name="norm_number" colspan="2"/>
+                                <field name="norm_year" colspan="2"/>
+                                <field name="norm_article" colspan="1"/>
+                                <div class="alert alert-info" colspan="6"
+                                     role="alert"
+                                     style="margin-bottom:0px;">
+                                    <p>
+                                        <i class="fa fa-info-circle" role="alert"/>
+                                        En caso de no encontrar la norma de referencia para el movimiento,
+                                        comunicarse con el
+                                        área de puesto de trabajos de CGN al siguiente correo
+                                        <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
+                                    </p>
+                                </div>
+                            </group>
+                            <group name="motivo_right">
+                                <field name="resolution_description" colspan="4"/>
+                                <field name="resolution_date" colspan="4"/>
+                                <field name="resolution_type" colspan="4"/>
+                            </group>
+                        </group>
+                        <group name="documentacion" string="Documentación">
+                            <field name="attached_document_discharge_ids" nolabel="1">
+                                <tree editable="top">
+                                    <field name="name" required="1"/>
+                                    <field name="document_type_id" required="1"/>
+                                    <field name="document_file" required="1" filename="document_file_name"/>
+                                    <field name="document_file_name" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                        <group name="group6">
+                            <group>
+                                <field name="causes_discharge_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="causes_discharge_extended_id"
+                                       attrs="{'invisible': [('is_require_extended', '=', False)]}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            </group>
+                        </group>
+                        <group name="adicional" string="Información Adicional">
+                            <field name="additional_information" nolabel="1"
+                                   placeholder="Información Adicional"/>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id='onsc_legajo_baja_cd_action' model='ir.actions.act_window'>
+            <field name="name">Baja comisión de servicio</field>
+            <field name="res_model">onsc.legajo.baja.cs</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'is_from_menu': True}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear una Baja de CS
+                </p>
+            </field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_baja_cs_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_baja_cs_form')})]"/>
+        </record>
+
+    </data>
+</odoo>

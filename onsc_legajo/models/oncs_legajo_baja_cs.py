@@ -7,12 +7,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
-STATES = [
-    ('borrador', 'Borrador'),
-    ('error_sgh', 'Error SGH'),
-    ('confirmado', 'Confirmado'),
 
-]
 # campos requeridos para la sincronización
 
 REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article',
@@ -89,30 +84,35 @@ class ONSCLegajoBajaCS(models.Model):
 
         return res
 
-    position = fields.Char(string='Puesto')
-    workplace = fields.Char(string='Plaza')
-    program_origin = fields.Char(string='Programa Origen')
-    project_origin = fields.Char(string='Proyecto Origen')
+    employee_id = fields.Many2one("hr.employee", string="Funcionario")
+    employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
+
+    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
+    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
+    position = fields.Char(string='Puesto', related='contract_id.position')
+    workplace = fields.Char(string='Plaza' ,related='contract_id.workplace')
+
+    program = fields.Char(string='Programa Origen')
+    project = fields.Char(string='Proyecto Origen')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen Origen')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
                                      related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
                                      related='contract_id.descriptor2_id')
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3',
-                                     related='contract_id.descriptor3_id')
+                                        )
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4',
-                                     related='contract_id.descriptor4_id')
-    end_date = fields.Date(string="Fecha de Baja", default=lambda *a: fields.Date.today(), required=True, copy=False)
+                                      related='contract_id.descriptor4_id')
+    end_date = fields.Date(string="Fecha hasta de  la Comisión", default=lambda *a: fields.Date.today(), required=True, copy=False)
+    extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission", string="Motivo extinción de la comisión")
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    is_error_synchronization = fields.Boolean(copy=False)
-    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
     @api.constrains("end_date")
     def _check_date(self):
         for record in self:
             if record.end_date > fields.Date.today():
-                raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
+                raise ValidationError(_("La Fecha hasta de  la Comisión debe ser menor o igual  al día de baja"))
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
@@ -124,13 +124,24 @@ class ONSCLegajoBajaCS(models.Model):
         for rec in self:
             rec.partner_id_domain = self._get_domain_partner_ids()
 
-
-
+    @api.depends('cv_emissor_country_id')
+    def _compute_employee_id_domain(self):
+        for rec in self:
+            rec.employee_id_domain = self._get_domain_employee_ids()
 
     def action_call_ws11(self):
         self._check_required_fieds_ws9()
         self.env['onsc.legajo.abstract.baja.cs.ws11'].suspend_security().syncronize(self)
 
+    def _get_domain_employee_ids(self):
+        args = [("legajo_state", "=", 'active')]
+        args = self._get_domain(args)
+
+        employees = self.env['hr.contract'].search(args).mapped('employee_id')
+        if employees:
+            return json.dumps([('id', 'in', employees.ids)])
+        else:
+            return json.dumps([('id', '=', False)])
     def _check_required_fieds_ws11(self):
         for record in self:
             message = []
@@ -138,6 +149,11 @@ class ONSCLegajoBajaCS(models.Model):
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
 
+        if not record.employee_id.cv_nro_doc:
+            message.append(_("Debe tener numero de documento"))
+
+        if not record.attached_document_discharge_ids:
+            message.append(_("Debe haber al menos un documento adjunto"))
 
         if message:
             fields_str = '\n'.join(message)
