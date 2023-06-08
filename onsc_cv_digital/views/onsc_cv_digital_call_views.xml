@@ -7,7 +7,7 @@
             <search string="Copias de CV">
                 <field name="partner_id" string="Nombre"/>
                 <field name="call_number"/>
-                <field name="postulation_date"/>
+                <field name="postulation_date_str"/>
                 <field name="postulation_number"/>
                 <separator/>
                 <filter string="Uruguay" name="filter_uruguay_country" icon="terp-personal"
@@ -39,7 +39,7 @@
                 <field name="partner_id" string="Nombre"/>
                 <field name="call_number"/>
                 <field name="postulation_number"/>
-                <field name="postulation_date" string="Fecha de actualización"/>
+                <field name="postulation_date_str" string="Fecha de actualización"/>
                 <field name="call_conditional_state" invisible="context.get('is_mypostulations', False)"/>
             </tree>
         </field>
@@ -86,8 +86,8 @@
                         </h1>
                         <label for="call_number" string="Llamado"/>
                         <h2><field name="call_number"/></h2>
-                        <label for="postulation_date" string="Fecha de actualización"/>
-                        <h2><field name="postulation_date"/></h2>
+                        <label for="postulation_date_str" string="Fecha de actualización"/>
+                        <h2><field name="postulation_date_str"/></h2>
                         <label for="postulation_number" string="Número de postulación"/>
                         <h2><field name="postulation_number"/></h2>
                         <label for="documentary_validation_sections_tovalidate"

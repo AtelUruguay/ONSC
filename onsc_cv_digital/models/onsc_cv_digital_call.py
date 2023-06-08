@@ -60,8 +60,16 @@ class ONSCCVDigitalCall(models.Model):
         ondelete='set null',
         index=True)
 
+    @api.depends('postulation_date')
+    def _compute_postulation_date_str(self):
+        for rec in self:
+            rec.postulation_date_str = str(rec.postulation_date)
+
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
     postulation_date = fields.Datetime(string=u"Fecha de actualización", required=True, index=True)
+    postulation_date_str = fields.Char(string=u"Fecha de actualización",
+                                           compute='_compute_postulation_date_str',
+                                           store=True)
     postulation_number = fields.Char(string=u"Número de postulación", required=True, index=True)
     is_close = fields.Boolean(string="Cerrado", default=False)
     is_json_sent = fields.Boolean(string="Copia enviada", default=False)

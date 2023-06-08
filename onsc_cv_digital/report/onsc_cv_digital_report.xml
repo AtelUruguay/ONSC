@@ -1013,7 +1013,6 @@
                 <h4 t-if="object.description_tasks">Descripción de tareas:
                     <span t-field="object.description_tasks"/>
                 </h4>
-                <br></br>
                 <h4 t-if="object.task_ids">Tareas clave:</h4>
                 <t t-foreach="object.task_ids" t-as="line">
                     <ul>
