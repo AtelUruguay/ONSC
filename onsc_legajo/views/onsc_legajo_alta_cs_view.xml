@@ -37,7 +37,6 @@
                             <field name="partner_id" domain="partner_id_domain" context="{'show_cv_nro_doc':True}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="partner_id_domain" invisible="1"/>
-                            <field name="full_name" readonly="1"/>
                             <field name="should_disable_form_edit" invisible="1"/>
                         </group>
                     </group>

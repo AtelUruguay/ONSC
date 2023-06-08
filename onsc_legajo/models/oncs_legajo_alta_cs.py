@@ -6,12 +6,24 @@ from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
 
+"""
+1 El inciso debe ser el mismo que el del usuario logueado, pero del puesto seleccionado arriba cuando se loguea--> Rafa
+2 Al grupo de cs inciso debe mostrarse el inciso del contrato del puesto logueado y los q no tengan AC
+3 cuando tiene grupo por UE, en el caso que seleccionaste tu inciso , solo pudes seleccionar tu UE
+4 Las Líneas de Alta de Comisión cambiarla a como esta en la baja vl q es un combo a contrato
+6 no mostra el campo de  contrato si el insico no es ac
+5 ordenar menu por secuencia
+7 El de inciso destino no pude modificar inciso origen
+8 porgrama proyecto son solo lectura y salen del contrato
+9 cuando se envia a destino , es q puede el destino poder llenar los campos de destino y no de origen
+"""
+
 class ONSCLegajoAltaCS(models.Model):
     _name = 'onsc.legajo.alta.cs'
     _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin',
                 'onsc.legajo.abstract.legajo.security']
     _description = 'Alta de Comisión Saliente'
-    _rec_name = 'full_name'
+    _rec_name = 'partner_id'
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
@@ -72,26 +84,26 @@ class ONSCLegajoAltaCS(models.Model):
                 res[field]['sortable'] = False
         return res
 
-    def _get_domain(self, args):
-        args = expression.AND([[
-            ('partner_id', '!=', self.env.user.partner_id.id)
-        ], args])
+    def get_domain(self, args):
         if self.user_has_groups('onsc_legajo.group_legajo_hr_inciso_alta_cs'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND([[
+                    '|', ('inciso_origin_id', '=', inciso_id.id),
                     ('inciso_destination_id', '=', inciso_id.id)
                 ], args])
-        elif self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
+        if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
             if inciso_id:
                 args = expression.AND([[
+                    '|', ('inciso_origin_id', '=', inciso_id.id),
                     ('inciso_destination_id', '=', inciso_id.id)
                 ], args])
             if operating_unit_id:
                 args = expression.AND([[
+                    '|', ('operating_unit_origin_id', '=', operating_unit_id.id),
                     ('operating_unit_destination_id', '=', operating_unit_id.id)
                 ], args])
         return args
@@ -112,7 +124,6 @@ class ONSCLegajoAltaCS(models.Model):
     employee_id = fields.Many2one('hr.employee', 'Empleados')
     partner_id = fields.Many2one('res.partner', string='CI', required=True)
     partner_id_domain = fields.Char(compute='_compute_partner_id_domain')
-    full_name = fields.Char('Nombre', related='partner_id.cv_full_name', store=True)
 
     inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso Origen', required=True,
                                        default=lambda self: self._get_default_inciso_id(), copy=False)
@@ -189,6 +200,7 @@ class ONSCLegajoAltaCS(models.Model):
     type_move_selection = fields.Selection(
         [('ac2ac', 'AC a AC'), ('ac2out', 'AC a fuera de AC'), ('out2ac', 'Fuera de AC a AC  ')],
         string='Tipo de movimiento', compute='_compute_type_move_selection')
+
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
 
@@ -261,13 +273,14 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('inciso_origin_id')
     def _compute_inciso_destination_id_domain(self):
         # Inciso Destino: cualquier inciso salvo que el inciso origen esté fuera de AC que en ese caso debe ser el del usuario.
+        #Observacion el inciso origen y el destino no puden ser los dos Fuera AC
         for rec in self:
             contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
             inciso_id = contract.inciso_id.id if contract else False
             if rec.inciso_origin_id and not rec.inciso_origin_id.is_central_administration:
                 domain = [('id', '=', inciso_id)]
             else:
-                domain = [('is_central_administration', '=', False)]
+                domain = ['|', ('id', '=', inciso_id),('is_central_administration', '=', False)]
             rec.inciso_destination_id_domain = json.dumps(domain)
 
     @api.depends('inciso_origin_id', 'inciso_destination_id')
@@ -325,40 +338,6 @@ class ONSCLegajoAltaCS(models.Model):
     def _get_abstract_ue_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs')
 
-    def get_domain(self, args):
-        if self.user_has_groups('onsc_legajo.group_legajo_hr_inciso_alta_cs'):
-            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
-            if inciso_id:
-                args = expression.AND([[
-                    '|', ('inciso_origin_id', '=', inciso_id.id),
-                    ('inciso_destination_id', '=', inciso_id.id)
-                ], args])
-        if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
-            contract_id = self.env.user.employee_id.job_id.contract_id
-            inciso_id = contract_id.inciso_id
-            operating_unit_id = contract_id.operating_unit_id
-            if inciso_id:
-                args = expression.AND([[
-                    '|', ('inciso_origin_id', '=', inciso_id.id),
-                    ('inciso_destination_id', '=', inciso_id.id)
-                ], args])
-            if operating_unit_id:
-                args = expression.AND([[
-                    '|', ('operating_unit_origin_id', '=', operating_unit_id.id),
-                    ('operating_unit_destination_id', '=', operating_unit_id.id)
-                ], args])
-        return args
-
-    @api.model
-    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        args = self.get_domain(args)
-        return super(ONSCLegajoAltaCS, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-                                                     access_rights_uid=access_rights_uid)
-
-    @api.model
-    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        domain = self.get_domain(domain)
-        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     @api.onchange('partner_id')
     def onchange_employee_id(self):
