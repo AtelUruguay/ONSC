@@ -43,6 +43,7 @@ class WsLegajoWS5(ServiceBase):
     def legajo_ws5(self, request):
         # pylint: disable=invalid-commit
         try:
+            cr = False
             (integration_uid, pwd, dbname) = CheckUserDBName().check_user_dbname(self.transport)
             dbname = list(Registry.registries.d)[0]
             uid = SUPERUSER_ID
@@ -77,8 +78,8 @@ class WsLegajoWS5(ServiceBase):
 
             if not operacion_vl:
                 operacion_vl = env['onsc.legajo.baja.vl'].search([
-                ('id_baja', '=', request.pdaId),
-                ('state', '=', 'pendiente_auditoria_cgn')], limit=1)
+                    ('id_baja', '=', request.pdaId),
+                    ('state', '=', 'pendiente_auditoria_cgn')], limit=1)
 
             if not operacion_vl:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_151)
