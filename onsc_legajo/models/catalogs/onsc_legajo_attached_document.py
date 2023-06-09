@@ -14,3 +14,4 @@ class ONSCLegajoAttachedDocument(models.Model):
     contract_id = fields.Many2one('hr.contract', 'Contrato')
     alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'Alta VL')
     baja_vl_id = fields.Many2one("onsc.legajo.baja.vl", string="Baja de vínculo laboral")
+    baja_cs_id = fields.Many2one("onsc.legajo.baja.cs", string="Baja de vínculo laboral")

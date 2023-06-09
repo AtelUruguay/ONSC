@@ -87,8 +87,8 @@ class ONSCLegajoBajaCS(models.Model):
     employee_id = fields.Many2one("hr.employee", string="Funcionario")
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
 
-    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
-    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
+    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False, compute='_compute_contract_id',store =True)
+
     position = fields.Char(string='Puesto', related='contract_id.position')
     workplace = fields.Char(string='Plaza' ,related='contract_id.workplace')
 
@@ -105,7 +105,8 @@ class ONSCLegajoBajaCS(models.Model):
                                       related='contract_id.descriptor4_id')
     end_date = fields.Date(string="Fecha hasta de  la Comisión", default=lambda *a: fields.Date.today(), required=True, copy=False)
     extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission", string="Motivo extinción de la comisión")
-
+    attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'baja_cs_id',
+                                                      string='Documentos adjuntos')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
     @api.constrains("end_date")
@@ -119,22 +120,38 @@ class ONSCLegajoBajaCS(models.Model):
         for record in self:
             record.should_disable_form_edit = record.state not in ['borrador']
 
-    @api.depends('cv_emissor_country_id')
-    def _compute_partner_id_domain(self):
-        for rec in self:
-            rec.partner_id_domain = self._get_domain_partner_ids()
+
 
     @api.depends('cv_emissor_country_id')
     def _compute_employee_id_domain(self):
         for rec in self:
             rec.employee_id_domain = self._get_domain_employee_ids()
 
+    @api.depends('employee_id')
+    def _compute_contract_id(self):
+        Contract = self.env['hr.contract']
+        for rec in self:
+
+            if rec.employee_id:
+
+                args = [("legajo_state", "in",['outgoing_commission','incoming_commission']), ('employee_id', '=', rec.employee_id.id)]
+                args = self._get_domain(args)
+
+                contract = Contract.search(args)
+                if contract:
+                    rec.contract_id = contract.id
+                else:
+                    rec.contract_id = False
+            else:
+                rec.contract_id = False
+
     def action_call_ws11(self):
         self._check_required_fieds_ws9()
         self.env['onsc.legajo.abstract.baja.cs.ws11'].suspend_security().syncronize(self)
 
     def _get_domain_employee_ids(self):
-        args = [("legajo_state", "=", 'active')]
+
+        args = [("legajo_state", "in",['outgoing_commission','incoming_commission'])]
         args = self._get_domain(args)
 
         employees = self.env['hr.contract'].search(args).mapped('employee_id')
