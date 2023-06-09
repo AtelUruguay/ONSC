@@ -218,6 +218,14 @@ class HrContract(models.Model):
             'context': ctx,
         }
 
+    @api.model
+    def create(self, vals):
+       if vals.get('employee_id',False) and vals.get('sec_position',False):
+         employee = self.env['hr.employee'].browse(vals.get('employee_id'))
+         vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
+
+       return super(HrContract, self).create(vals)
+
 
 class HrContractHistory(models.Model):
     _inherit = ['model.history.data']
