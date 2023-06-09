@@ -20,6 +20,16 @@
         <field name="arch" type="xml">
             <form string="Alta de Comisión Saliente">
                 <header>
+                    <button name="action_send_destination" class="btn btn-primary"
+                            type="object" string="Enviar a destino"
+                            attrs="{'invisible': ['|',('type_move_selection', '!=', 'ac2ac'),('state','not in',['draft','returned'])]}"/>
+                    <button name="action_send_origin" class="btn btn-primary"
+                            type="object" string="Enviar a origen"
+                            states="to_process"/>
+                    <button name="action_cancel" class="btn btn-primary"
+                            type="object" string="Enviar a origen"
+                            states="draft,returned,to_process,error_sgh"
+                    />
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -27,39 +37,39 @@
                     <group string="Datos del puesto seleccionado">
                         <group>
                             <field name="inciso_origin_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="operating_unit_origin_id" domain="operating_unit_origin_id_domain"/>
-                            <field name="operating_unit_origin_id_domain" invisible="1"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'readonly': [('is_edit_origin', '=', False)]}"
+                                   domain="inciso_origin_id_domain"/>
+                            <field name="inciso_origin_id_domain"/>
+                            <field name="is_edit_origin" invisible="1"/>
+                            <field name="operating_unit_origin_id" domain="operating_unit_origin_id_domain"
+                                   attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
+                            <field name="operating_unit_origin_id_domain"/>
                             <field name="is_inciso_origin_ac" invisible="1"/>
 
                         </group>
                         <group>
                             <field name="partner_id" domain="partner_id_domain" context="{'show_cv_nro_doc':True}"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
                             <field name="partner_id_domain" invisible="1"/>
                             <field name="should_disable_form_edit" invisible="1"/>
+                            <field name="contract_id_domain" invisible="1"/>
+                            <field name="contract_id" domain="contract_id_domain"
+                                   attrs="{'invisible': [('is_inciso_origin_ac', '=', False)],'readonly': [('is_edit_origin', '=', False)]}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="employee_id" invisible="1"/>
                         </group>
                     </group>
                     <br></br>
-                    <group string="Origen">
-                        <field name="line_ids" readonly="1" force_save="1">
-                            <tree string="Origen" editable="top">
-                                <field name="position" force_save="1"/>
-                                <field name="workplace" force_save="1"/>
-                                <field name="workplace_state" force_save="1"/>
-                                <field name="is_selected" widget="boolean_toggle" force_save="1"/>
-                                <field name="contract_id" invisible="1"/>
-                            </tree>
-                        </field>
-                    </group>
-                    <br></br>
+
 
                     <group string="Datos del puesto seleccionado"
                            attrs="{'invisible': [('is_inciso_origin_ac', '!=', True)]}">
                         <group>
-                            <field name="program_project_origin_id" context="{'show_project_program':True}"/>
-                            <field name="regime_origin_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="program_project_origin_id" context="{'show_project_program':True}" readonly="1"
+                                   forcesave="1"/>
+                            <field name="regime_origin_id" forcesave="1"/>
                         </group>
                         <group>
                             <field name="descriptor1_id" readonly="1"/>
@@ -73,34 +83,39 @@
                         <group>
                             <field name="inciso_destination_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   domain="inciso_destination_id_domain"/>
-                            <field name="inciso_destination_id_domain" invisible="1"/>
+                                   domain="inciso_destination_id_domain"
+                                   attrs="{'readonly': [('is_edit_inciso_ou_destination', '=',False)]}"/>
+                            <field name="inciso_destination_id_domain"/>
                             <field name="type_move_selection"/>
+                            <field name="is_edit_inciso_ou_destination" invisible="1"/>
                             <field name="operating_unit_destination_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="operating_unit_destination_id_domain" invisible="1"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'readonly': [('is_edit_inciso_ou_destination', '=',False)]}"
+                                   domain="operating_unit_destination_id_domain"/>
+                            <field name="operating_unit_destination_id_domain"/>
+                            <field name="is_edit_destination" invisible="1"/>
                             <field name="program_project_destination_id" context="{'show_project_program':True}"
-                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="date_start_commission"
-                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
                         </group>
                         <group>
                             <field name="department_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
                             <field name="security_job_id"
-                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
                             <field name="occupation_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
                             <field name="regime_commission_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   attrs="{'invisible': [('type_move_selection', 'in', ['ac2ac',False])]}"/>
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
                         </group>
                     </group>
                     <group string="Ingreso Motivo"
-                           attrs="{'invisible': [('type_move_selection', '=', 'ac2ac')]}">
+                           attrs="{'invisible': [('is_edit_destination', '=',False)]}">
                         <group>
                             <field name="description_reason"/>
                             <field name="norm_id" colspan="3"
@@ -142,10 +157,22 @@
         <field name="type">tree</field>
         <field name="arch" type="xml">
             <tree string="Alta de Comisión Saliente">
-                <field name="full_name"/>
+                <field name="partner_id"/>
                 <field name="state"/>
                 <field name="inciso_origin_id"/>
             </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_alta_cs_action" model="ir.actions.act_window">
+        <field name="name">Alta comisiones</field>
+        <field name="res_model">onsc.legajo.alta.cs</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'is_from_menu': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Alta de comisiones
+            </p>
         </field>
     </record>
 </odoo>
