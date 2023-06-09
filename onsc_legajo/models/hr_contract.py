@@ -220,7 +220,7 @@ class HrContract(models.Model):
 
     @api.model
     def create(self, vals):
-       if vals.get('employee_id',False) and vals.get('sec_position',False):
+       if not vals.get('name',False) and vals.get('employee_id',False) and vals.get('sec_position',False):
          employee = self.env['hr.employee'].browse(vals.get('employee_id'))
          vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
 
