@@ -40,11 +40,11 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"
                                    domain="inciso_origin_id_domain"/>
-                            <field name="inciso_origin_id_domain"/>
+                            <field name="inciso_origin_id_domain" invisible="1"/>
                             <field name="is_edit_origin" invisible="1"/>
                             <field name="operating_unit_origin_id" domain="operating_unit_origin_id_domain"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
-                            <field name="operating_unit_origin_id_domain"/>
+                            <field name="operating_unit_origin_id_domain" invisible="1"/>
                             <field name="is_inciso_origin_ac" invisible="1"/>
 
                         </group>
@@ -85,14 +85,14 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    domain="inciso_destination_id_domain"
                                    attrs="{'readonly': [('is_edit_inciso_ou_destination', '=',False)]}"/>
-                            <field name="inciso_destination_id_domain"/>
-                            <field name="type_move_selection"/>
+                            <field name="inciso_destination_id_domain" invisible="1"/>
+                            <field name="type_move_selection" invisible="1"/>
                             <field name="is_edit_inciso_ou_destination" invisible="1"/>
                             <field name="operating_unit_destination_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'readonly': [('is_edit_inciso_ou_destination', '=',False)]}"
                                    domain="operating_unit_destination_id_domain"/>
-                            <field name="operating_unit_destination_id_domain"/>
+                            <field name="operating_unit_destination_id_domain" invisible="1"/>
                             <field name="is_edit_destination" invisible="1"/>
                             <field name="program_project_destination_id" context="{'show_project_program':True}"
                                    attrs="{'invisible': [('is_edit_destination', '=',False)]}"

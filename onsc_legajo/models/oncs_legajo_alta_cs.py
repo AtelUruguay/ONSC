@@ -5,19 +5,6 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
-"""
-1 El inciso debe ser el mismo que el del usuario logueado, pero del puesto seleccionado arriba cuando se loguea ****
-2 Al grupo de cs inciso debe mostrarse el inciso del contrato del puesto logueado y los q no tengan AC *****
-3 cuando tiene grupo por UE, en el caso que seleccionaste tu inciso , solo pudes seleccionar tu UE
-4 Las Líneas de Alta de Comisión cambiarla a como esta en la baja vl q es un combo a contrato *****
-6 no mostra el campo de  contrato si el insico no es ac ***
-5 ordenar menu por secuencia
-7 El de inciso destino no pude modificar inciso origen
-8 porgrama proyecto son solo lectura y salen del contrato
-9 cuando se envia a destino , es q puede el destino poder llenar los campos de destino y no de origen
-"""
-
-
 class ONSCLegajoAltaCS(models.Model):
     _name = 'onsc.legajo.alta.cs'
     _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
