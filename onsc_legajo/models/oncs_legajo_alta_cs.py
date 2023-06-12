@@ -334,7 +334,7 @@ class ONSCLegajoAltaCS(models.Model):
             if rec.inciso_destination_id:
                 domain = [('inciso_id', '=', rec.inciso_destination_id.id)]
             if rec.inciso_destination_id and rec.inciso_origin_id and rec.inciso_destination_id == rec.inciso_origin_id:
-                if self.self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
+                if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
                     contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
                     operating_unit_id = contract.operating_unit_id.id if contract else False
                     domain = [('id', '=', operating_unit_id), ('id', '!=', rec.operating_unit_origin_id.id)]
