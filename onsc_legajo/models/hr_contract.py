@@ -138,6 +138,21 @@ class HrContract(models.Model):
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
     is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
 
+    def name_get(self):
+        res = []
+        for record in self:
+            name = record.legajo_name
+            if self._context.get('show_descriptors', False):
+                descriptor1 = record.descriptor1_id and record.descriptor1_id.name or ''
+                descriptor2 = record.descriptor2_id and record.descriptor2_id.name or ''
+                descriptor3 = record.descriptor3_id and record.descriptor3_id.name or ''
+                descriptor4 = record.descriptor4_id and record.descriptor4_id.name or ''
+
+                name = record.legajo_name + " - " + descriptor1 + " - " + descriptor2 + \
+                       " - " + descriptor3 + " - " + descriptor4
+            res.append((record.id, name))
+        return res
+
     @api.onchange('inciso_id')
     def onchange_inciso(self):
         self.operating_unit_id = False
@@ -202,6 +217,14 @@ class HrContract(models.Model):
             'type': 'ir.actions.act_window',
             'context': ctx,
         }
+
+    @api.model
+    def create(self, vals):
+       if not vals.get('name',False) and vals.get('employee_id',False) and vals.get('sec_position',False):
+         employee = self.env['hr.employee'].browse(vals.get('employee_id'))
+         vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
+
+       return super(HrContract, self).create(vals)
 
 
 class HrContractHistory(models.Model):
