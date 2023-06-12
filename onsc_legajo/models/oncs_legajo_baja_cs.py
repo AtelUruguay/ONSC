@@ -146,7 +146,7 @@ class ONSCLegajoBajaCS(models.Model):
                 rec.contract_id = False
 
     def action_call_ws11(self):
-        self._check_required_fieds_ws9()
+        self._check_required_fieds_ws11()
         self.env['onsc.legajo.abstract.baja.cs.ws11'].suspend_security().syncronize(self)
 
     def _get_domain_employee_ids(self):

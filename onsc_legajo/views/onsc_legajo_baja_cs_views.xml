@@ -78,12 +78,14 @@
                             </group>
                         </group>
                         <group name="puesto" string="Datos del Puesto">
+                        <group name="motivo_left">
 
                             <field name="inciso_id"/>
                             <field name="operating_unit_id"/>
                             <field name="program"/>
                              <field name="project"/>
                             <field name="regime_origin_id"/>
+                        </group>
                             <field name="descriptor1_id"/>
                             <field name="descriptor2_id"/>
                             <field name="descriptor3_id" />
@@ -130,15 +132,7 @@
                                 </tree>
                             </field>
                         </group>
-                        <group name="group6">
-                            <group>
-                                <field name="causes_discharge_id"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="causes_discharge_extended_id"
-                                       attrs="{'invisible': [('is_require_extended', '=', False)]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            </group>
-                        </group>
+|
                         <group name="adicional" string="Información Adicional">
                             <field name="additional_information" nolabel="1"
                                    placeholder="Información Adicional"/>
