@@ -238,6 +238,17 @@ class ONSCLegajoBajaVL(models.Model):
         self.write({'state': 'rechazado_cgn'})
         return True
 
+    def button_open_contract(self):
+        self.ensure_one()
+        if self.contract_id:
+            action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_one_hr_contract_action')
+            action.update({
+                'res_id': self.contract_id.id
+            })
+        else :
+            return True
+        return action
+
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
             raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
