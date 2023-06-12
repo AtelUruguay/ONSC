@@ -27,7 +27,7 @@
                             type="object" string="Enviar a origen"
                             states="to_process"/>
                     <button name="action_cancel" class="btn btn-primary"
-                            type="object" string="Enviar a origen"
+                            type="object" string="Cancelar"
                             states="draft,returned,to_process,error_sgh"
                     />
                     <field name="state" widget="statusbar"/>
