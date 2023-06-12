@@ -71,13 +71,12 @@
                          name="div_cv_user_acceptance"
                          style="overflow:hidden;"
                          invisible="context.get('user_cv', False) is False"
-                         attrs="{'invisible': ['|',('is_cv_user_acceptance_ok', '=', True),('is_cv_user_acceptance_hidden', '=', True)]}">
+                         attrs="{'invisible': [('is_cv_user_acceptance_ok', '=', True)]}">
                         <div class="oe_left">
                             <p class="mb-0">
                             <strong>
                                 <field name="cv_user_acceptance"/>
                                 <field name="is_cv_user_acceptance_ok" invisible="1"/>
-                                <field name="is_cv_user_acceptance_hidden" invisible="1"/>
                             </strong>
                             <newline/>
                             <button type="object" class="btn-outline-success oe_inline"
