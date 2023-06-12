@@ -248,20 +248,23 @@ class ONSCCVDigitalCall(models.Model):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
             record.show_race_info = (conditional_show and
-                                     record.is_cv_race_public or
-                                     record.is_afro) or not conditional_show
+                                     (record.is_cv_race_public or
+                                     record.is_afro) and record.is_afrodescendants) or not conditional_show
 
     def _compute_show_disabilitie_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
-            record.show_disabilitie_info = (conditional_show and record.allow_content_public == 'si' or
-                                            record.is_disabilitie) or not conditional_show
+            _disabilitie = record.allow_content_public == 'si' or record.is_disabilitie
+            record.show_disabilitie_info = (conditional_show and
+                                            _disabilitie and
+                                            record.people_disabilitie == 'si') or not conditional_show
 
     def _compute_show_gender_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
-            record.show_gender_info = (conditional_show and record.is_cv_gender_public or
-                                       record.is_trans) or not conditional_show
+            record.show_gender_info = (conditional_show and
+                                       (record.is_cv_gender_public or record.is_trans) and
+                                       record.cv_gender_id.record) or not conditional_show
 
     def button_update_documentary_validation_sections_tovalidate(self):
         self._compute_gral_info_documentary_validation_state()

@@ -187,7 +187,7 @@
                                             </h4>
                                         </t>
                                     </li>
-                                    <t t-if="cupos.get('show_gender_info', False) == True">
+                                    <t t-if="cupos.get('show_afro', False) == True">
                                         <li>
                                             <h4 t-if="o.cv_race_ids">Identidad étnico-racial:
                                                 <t t-set="emp_count" t-value="0"/>
@@ -201,7 +201,7 @@
                                             </h4>
                                         </li>
                                         <li>
-                                            <t t-if="o.cv_race2 and cupos.get('show_gender_info', False) == True">
+                                            <t t-if="o.cv_race2 and cupos.get('show_afro', False) == True">
                                                 <h4>Otra identidad étnico-racial:
                                                     <span>
                                                         <t t-esc="o.cv_race2"/>
