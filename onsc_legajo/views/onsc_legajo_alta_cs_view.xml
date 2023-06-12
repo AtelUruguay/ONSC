@@ -26,6 +26,9 @@
                     <button name="action_send_origin" class="btn btn-primary"
                             type="object" string="Enviar a origen"
                             states="to_process"/>
+                    <button name="action_send_sgh" class="btn btn-primary"
+                            type="object" string="Enviar a SGH"
+                            states="to_process"/>
                     <button name="action_cancel" class="btn btn-primary"
                             type="object" string="Cancelar"
                             states="draft,returned,to_process,error_sgh"
@@ -42,6 +45,8 @@
                                    domain="inciso_origin_id_domain"/>
                             <field name="inciso_origin_id_domain" invisible="1"/>
                             <field name="is_edit_origin" invisible="1"/>
+                            <field name="is_operating_unit_origin_readonly" invisible="1"/>
+                            <field name="is_inciso_origin_readonly" invisible="1"/>
                             <field name="operating_unit_origin_id" domain="operating_unit_origin_id_domain"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
                             <field name="operating_unit_origin_id_domain" invisible="1"/>
@@ -86,7 +91,7 @@
                                    domain="inciso_destination_id_domain"
                                    attrs="{'readonly': [('is_edit_inciso_ou_destination', '=',False)]}"/>
                             <field name="inciso_destination_id_domain" invisible="1"/>
-                            <field name="type_move_selection" invisible="1"/>
+                            <field name="type_move_selection"/>
                             <field name="is_edit_inciso_ou_destination" invisible="1"/>
                             <field name="operating_unit_destination_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"

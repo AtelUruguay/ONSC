@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 import json
+
 from lxml import etree
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+
 
 class ONSCLegajoAltaCS(models.Model):
     _name = 'onsc.legajo.alta.cs'
@@ -113,12 +115,14 @@ class ONSCLegajoAltaCS(models.Model):
     employee_id = fields.Many2one('hr.employee', 'Empleados', compute="_compute_employee", store=True)
     partner_id = fields.Many2one('res.partner', string='CI', required=True)
     partner_id_domain = fields.Char(compute='_compute_partner_id_domain')
-
+    # ORIGIN
     inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso Origen', required=True,
                                        default=lambda self: self._get_default_inciso_id(), copy=False)
     inciso_origin_id_domain = fields.Char(compute='_compute_inciso_origin_id_domain')
     is_inciso_origin_ac = fields.Boolean("El inciso de origen es AC?",
                                          related='inciso_origin_id.is_central_administration')
+    is_inciso_origin_readonly = fields.Boolean(compute="_compute_is_readonly")
+    is_operating_unit_origin_readonly = fields.Boolean(compute="_compute_is_readonly")
     operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora Origen", required=True,
                                                default=lambda self: self._get_default_ue_id(), copy=False)
     operating_unit_origin_id_domain = fields.Char(compute='_compute_operating_unit_origin_id_domain')
@@ -141,6 +145,7 @@ class ONSCLegajoAltaCS(models.Model):
     type_commission_selection = fields.Selection(
         [('cs', 'Comisión de Servicio'), ('pc', 'Pase en Comisión')],
         string='Tipo de comisión', compute='_compute_type_commission_selection')
+    # DESTINATION
     inciso_destination_id = fields.Many2one('onsc.catalog.inciso', string='Inciso Destino')
     inciso_destination_id_domain = fields.Char(compute='_compute_inciso_destination_id_domain')
     operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora Destino")
@@ -284,15 +289,14 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('inciso_origin_id')
     def _compute_inciso_destination_id_domain(self):
-        # Inciso Destino: cualquier inciso salvo que el inciso origen esté fuera de AC que en ese caso debe ser el del usuario.
-        # Observacion el inciso origen y el destino no puden ser los dos Fuera AC
         for rec in self:
-            contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
-            inciso_id = contract.inciso_id.id if contract else False
-            if rec.inciso_origin_id and not rec.inciso_origin_id.is_central_administration:
-                domain = [('id', '=', inciso_id)]
+            domain = [('id', 'in', [])]
+            if rec.inciso_origin_id and rec.inciso_origin_id.is_central_administration:
+                domain = []
             else:
-                domain = ['|', ('id', '=', inciso_id), ('is_central_administration', '=', False)]
+                contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
+                inciso_id = contract.inciso_id.id if contract else False
+                domain = [('id', '=', inciso_id)]
             rec.inciso_destination_id_domain = json.dumps(domain)
 
     @api.depends('inciso_origin_id', 'inciso_destination_id')
@@ -315,20 +319,28 @@ class ONSCLegajoAltaCS(models.Model):
         for rec in self:
             domain = [('id', 'in', [])]
             if rec.inciso_origin_id:
-                contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
-                inciso_id = contract.inciso_id.id if contract else False
-                domain = ['|', ('inciso_id', '=', rec.inciso_origin_id.id), ('id', '=', inciso_id)]
+                domain = [('inciso_id', '=', rec.inciso_origin_id.id)]
+                if rec.inciso_origin_id.is_central_administration and self.user_has_groups(
+                        'onsc_legajo.group_legajo_hr_ue_alta_cs'):
+                    contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
+                    operating_unit = contract.operating_unit_id.id if contract else False
+                    domain = [('id', '=', operating_unit)]
             self.operating_unit_origin_id_domain = json.dumps(domain)
 
     @api.depends('inciso_destination_id')
     def _compute_operating_unit_destination_id_domain(self):
-        # UE Destino: si el inciso destino es el del usuario se filtra por la seguridad del usuario. Si la UE de destino es igual a la de origen “Error: no se puede realizar una comisión dentro de la misma UE.”
         for rec in self:
             domain = [('id', 'in', [])]
             if rec.inciso_destination_id:
-                contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
-                inciso_id = contract.inciso_id.id if contract else False
-                domain = ['|', ('inciso_id', '=', rec.inciso_destination_id.id), ('id', '=', inciso_id)]
+                domain = [('inciso_id', '=', rec.inciso_destination_id.id)]
+            if rec.inciso_destination_id and rec.inciso_origin_id and rec.inciso_destination_id == rec.inciso_origin_id:
+                if self.self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
+                    contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
+                    operating_unit_id = contract.operating_unit_id.id if contract else False
+                    domain = [('id', '=', operating_unit_id), ('id', '!=', rec.operating_unit_origin_id.id)]
+                else:
+                    domain = [('inciso_id', '=', rec.inciso_destination_id.id),
+                              ('id', '!=', rec.operating_unit_origin_id.id)]
             self.operating_unit_destination_id_domain = json.dumps(domain)
 
     @api.depends('contract_id')
@@ -378,6 +390,17 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.is_edit_inciso_ou_destination = True
 
+    @api.depends('is_inciso_origin_readonly')
+    def _compute_is_readonly(self):
+        for rec in self:
+            rec.is_inciso_origin_readonly = (self.user_has_groups(
+                'onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.user_has_groups(
+                'onsc_legajo.group_legajo_hr_ue_alta_cs')) and not self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+            rec.is_operating_unit_origin_readonly = self.user_has_groups(
+                'onsc_legajo.group_legajo_hr_ue_alta_cs') and not self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+
     def get_inciso_operating_unit_by_user(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
@@ -424,3 +447,6 @@ class ONSCLegajoAltaCS(models.Model):
 
     def action_cancel(self):
         self.state = 'cancelled'
+
+    def action_send_sgh(self):
+        self.state = 'to_send_sgh'

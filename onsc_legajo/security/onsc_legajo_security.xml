@@ -68,7 +68,8 @@
             <field name="name">Editar Ocupación Contrato</field>
             <field name="comment">Editar Ocupación Contrato</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
-            <field name="implied_ids" eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
         <!--LEGAJO-->
@@ -160,20 +161,20 @@
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
 
-         <record id="group_legajo_baja_vl_administrar_bajas" model="res.groups">
+        <record id="group_legajo_baja_vl_administrar_bajas" model="res.groups">
             <field name="name">Baja VL - Administrar Bajas VL</field>
             <field name="comment">Baja VL Administrar Bajas VL</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
-             <field name="implied_ids"
+            <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
-      </record>
-      <record id="group_legajo_baja_vl_consulta_bajas_vl" model="res.groups">
+        </record>
+        <record id="group_legajo_baja_vl_consulta_bajas_vl" model="res.groups">
             <field name="name">Baja VL - Consulta de Bajas VL</field>
             <field name="comment">Baja VL - Consulta de Bajas VL</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
-      </record>
+        </record>
 
 
         <!--ALTA CS-->
@@ -201,7 +202,7 @@
         <record id="group_legajo_alta_cs_administrar_altas_cs" model="res.groups">
             <field name="name">Alta CS – Administrar Altas CS</field>
             <field name="comment">Alta CS – Administrar Altas CS</field>
-             <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
