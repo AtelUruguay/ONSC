@@ -862,7 +862,7 @@ class ONSCCVDigital(models.Model):
             else:
                 show_disabilitie = False
             call_doc_val_afro_show = (is_call_documentary_validation and (
-                        cv_call_id.is_cv_race_public or cv_call_id.is_afro) and cv_call_id.is_afrodescendants)
+                        cv_call_id.is_cv_race_public or cv_call_id.is_afro) and cv_call_id.is_afro_descendants)
             if cv_call_id.is_cv_race_public or is_cv_copy or call_doc_val_afro_show:
                 show_afro = True
             else:
