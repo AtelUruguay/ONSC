@@ -146,13 +146,13 @@ class HrContract(models.Model):
         for record in self:
             name = record.legajo_name
             if self._context.get('show_descriptors', False):
-                descriptor1 = record.descriptor1_id and record.descriptor1_id.name or ''
-                descriptor2 = record.descriptor2_id and record.descriptor2_id.name or ''
-                descriptor3 = record.descriptor3_id and record.descriptor3_id.name or ''
-                descriptor4 = record.descriptor4_id and record.descriptor4_id.name or ''
+                descriptor1 = record.descriptor1_id and " - " + record.descriptor1_id.name or ''
+                descriptor2 = record.descriptor2_id and " - " + record.descriptor2_id.name or ''
+                descriptor3 = record.descriptor3_id and " - " +  record.descriptor3_id.name or ''
+                descriptor4 = record.descriptor4_id and  " - " + record.descriptor4_id.name or ''
 
-                name = record.legajo_name + " - " + descriptor1 + " - " + descriptor2 + \
-                       " - " + descriptor3 + " - " + descriptor4
+                name = record.legajo_name + descriptor1 + descriptor2 + \
+                       descriptor3 + descriptor4
             res.append((record.id, name))
         return res
 

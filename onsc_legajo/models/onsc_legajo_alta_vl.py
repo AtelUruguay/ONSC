@@ -92,10 +92,10 @@ class ONSCLegajoAltaVL(models.Model):
         res['cv_emissor_country_id'] = self.env.ref('base.uy').id
         res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
                                                                                      limit=1).id or False
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
+        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl') or self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
                 'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
             res['inciso_id'] = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
+        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl') or self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
             res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
 

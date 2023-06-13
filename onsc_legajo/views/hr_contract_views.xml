@@ -116,7 +116,7 @@
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
-                                    <field name="document_file" required="1" filename="document_file_name"
+                                    <field name="document_file" required="1"  widget="binary" filename="document_file_name"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="type" invisible="1"/>
                                     <field name="document_file_name" invisible="1"/>
@@ -129,7 +129,7 @@
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id"/>
-                                    <field name="document_file" required="1" filename="document_file_name"
+                                    <field name="document_file" required="1"    widget="binary" filename="document_file_name"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="type" invisible="1"/>
                                     <field name="document_file_name" invisible="1"/>

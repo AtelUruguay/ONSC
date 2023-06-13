@@ -91,16 +91,21 @@ class ONSCLegajoBajaVL(models.Model):
         res['cv_emissor_country_id'] = self.env.ref('base.uy').id
         res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
                                                                                      limit=1).id or False
-        if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso') or self.user_has_groups(
-                'onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue'):
-            res['inciso_id'] = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-        if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue'):
-            res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
+
+    def read(self, fields=None, load="_classic_read"):
+        Employee = self.env['hr.employee'].sudo()
+        result = super(ONSCLegajoBajaVL, self).read(fields, load)
+        for item in result:
+            if item.get('employee_id'):
+                employee_id = item['employee_id'][0]
+                item['employee_id'] = (item['employee_id'][0], Employee.browse(employee_id)._custom_display_name())
+
+        return result
 
     employee_id = fields.Many2one("hr.employee", string="Funcionario")
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
-    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
+    contract_id = fields.Many2one('hr.contract', 'Contrato', required=True,copy=False)
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     end_date = fields.Date(string="Fecha de Baja", default=lambda *a: fields.Date.today(), required=True, copy=False)
 
@@ -173,6 +178,11 @@ class ONSCLegajoBajaVL(models.Model):
                 record.employee_id.cv_last_name_1,
                 record.employee_id.cv_last_name_2) + ' - ' + record.end_date.strftime('%Y%m%d')
 
+    @api.onchange('contract_id')
+    def onchange_contract_id(self):
+        self.operating_unit_id = self.contract_id.operating_unit_id.id
+        self.inciso_id = self.contract_id.inciso_id.id
+
     def action_call_ws9(self):
         self._check_required_fieds_ws9()
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
@@ -195,6 +205,9 @@ class ONSCLegajoBajaVL(models.Model):
                     message.append(record._fields[required_field].string)
             if not record.employee_id.cv_nro_doc:
                 message.append(_("Debe tener numero de documento"))
+
+            if record.contract_id.legajo_state !='active':
+                message.append(_("El contrato debe estar activo "))
 
             if not record.attached_document_discharge_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
