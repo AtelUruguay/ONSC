@@ -78,20 +78,22 @@
                             </group>
                         </group>
                         <group name="puesto" string="Datos del Puesto">
-                        <group name="motivo_left">
+                            <group name="puesto_left">
+                                <field name="contract_id" invisible="1"/>
+                                <field name="inciso_id" readonly="1"/>
+                                <field name="operating_unit_id" readonly="1"/>
+                                <field name="program" readonly="1"/>
+                                 <field name="project" readonly="1"/>
+                                <field name="regime_origin_id" readonly="1"/>
+                            </group>
+                            <group name="puesto_right">
+                                <field name="descriptor1_id" readonly="1"/>
+                                <field name="descriptor2_id" readonly="1"/>
+                                <field name="descriptor3_id" readonly="1" />
+                                <field name="descriptor4_id" readonly="1" />
 
-                            <field name="inciso_id"/>
-                            <field name="operating_unit_id"/>
-                            <field name="program"/>
-                             <field name="project"/>
-                            <field name="regime_origin_id"/>
-                        </group>
-                            <field name="descriptor1_id"/>
-                            <field name="descriptor2_id"/>
-                            <field name="descriptor3_id" />
-                            <field name="descriptor4_id" />
 
-
+                            </group>
                         </group>
                         <group name="motivo" string="Ingreso de motivo">
                             <group name="motivo_left">

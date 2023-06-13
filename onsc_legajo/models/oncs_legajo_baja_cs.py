@@ -75,6 +75,16 @@ class ONSCLegajoBajaCS(models.Model):
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
+    def read(self, fields=None, load="_classic_read"):
+        Employee = self.env['hr.employee'].sudo()
+        result = super(ONSCLegajoBajaCS, self).read(fields, load)
+        for item in result:
+            if item.get('employee_id'):
+                employee_id = item['employee_id'][0]
+                item['employee_id'] = (item['employee_id'][0], Employee.browse(employee_id)._custom_display_name())
+
+        return result
+
     @api.model
     def default_get(self, fields):
         res = super(ONSCLegajoBajaCS , self).default_get(fields)
