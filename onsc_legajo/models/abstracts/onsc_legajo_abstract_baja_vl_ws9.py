@@ -29,7 +29,8 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
             'tipoResolucion': record.resolution_type,
             'cedula': int(record.employee_id.cv_nro_doc[:-1], 16),
             'secPlaza': int(record.contract_id.sec_position),
-            'estadoLaboralBaja': int(record.causes_discharge_id.code_cgn)
+            'estadoLaboralBaja': int(record.causes_discharge_id.code_cgn),
+            'causalEgreso':record.causes_discharge_id.is_require_extended  and record.causes_discharge_extended_id.description or None
         }
         _logger.info('******************WS9')
         _logger.info(data)
