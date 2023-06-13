@@ -29,4 +29,4 @@ class ONSCLegajoAttachedDocument(models.Model):
                 tmp = self.document_file_name.split('.')
                 ext = tmp[len(tmp) - 1]
                 if ext != 'pdf':
-                    raise ValidationError(_("La archivo debe ser un pdf"))
+                    raise ValidationError(_("El archivo debe ser un pdf"))
