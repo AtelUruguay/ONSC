@@ -79,14 +79,19 @@
                                 <field name="is_cv_user_acceptance_ok" invisible="1"/>
                             </strong>
                             <newline/>
-                            <button type="object" class="btn-outline-success oe_inline"
+                            <button type="object"
+                                    icon="fa-thumbs-o-up"
+                                    class="btn-success btn-lg oe_inline"
+                                    style="margin-top:15px"
                                     name="button_cv_user_acceptance_ok"
-                                    string="Acepto"/>
-                        </p>
-                        </div>
-                        <div class="oe_right">
-                            <div class="fa fa-close" style="font-weight: bold !important; cursor: pointer; color: blueviolet;"
-                            onclick="$('div[name|=\'div_cv_user_acceptance\']').slideUp();"/><br/>
+                                    string="Aceptar"/>
+                            <button
+                                    icon="fa-thumbs-o-down"
+                                    class="btn-outline-danger btn-lg oe_inline"
+                                    style="margin-top:15px"
+                                    onclick="$('div[name|=\'div_cv_user_acceptance\']').slideUp();"
+                                    string="Rechazar"/>
+                            </p>
                         </div>
                     </div>
                     <field name="avatar_128" invisible="1"/>
