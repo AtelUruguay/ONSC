@@ -205,8 +205,7 @@ class HrContract(models.Model):
         return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
             'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
 
-    def activate_legajo_contract(self):
-        self.write({'legajo_state': 'active'})
+
 
     def button_update_occupation(self):
         ctx = self._context.copy()
@@ -220,6 +219,15 @@ class HrContract(models.Model):
             'type': 'ir.actions.act_window',
             'context': ctx,
         }
+
+    def activate_legajo_contract(self, legajo_state='active'):
+        self.write({'legajo_state': legajo_state})
+
+    def deactivate_legajo_contract(self, date_end, legajo_state='baja'):
+        self.write({
+            'legajo_state': legajo_state,
+        })
+        self.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write({'end_date': date_end})
 
     @api.model
     def create(self, vals):

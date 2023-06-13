@@ -6,6 +6,8 @@ from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
+from dateutil.relativedelta import relativedelta
+
 
 class ONSCLegajoAltaCS(models.Model):
     _name = 'onsc.legajo.alta.cs'
@@ -203,6 +205,13 @@ class ONSCLegajoAltaCS(models.Model):
     is_edit_origin = fields.Boolean(string="Editar datos de origen", compute='_compute_is_edit_origin')
     is_edit_inciso_ou_destination = fields.Boolean(string="Editar inciso/ou destino",
                                                    compute='_compute_is_edit_inciso_ou_destination')
+
+    # DATOS DEL WS10
+    nroPuesto = fields.Char(string='Puesto', copy=False)
+    nroPlaza = fields.Char(string='Plaza', copy=False,)
+    secPlaza = fields.Char(string="Sec Plaza")
+
+
 
     @api.constrains("date_start_commission")
     def _check_date(self):
@@ -450,3 +459,77 @@ class ONSCLegajoAltaCS(models.Model):
 
     def action_send_sgh(self):
         self.state = 'to_send_sgh'
+
+    def action_aprobado_cgn(self):
+        # TODO
+        # linkear los contratos a la ACS oculoto
+        new_contract = self._get_legajo_contract()
+        self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
+        date_start = fields.Date.from_string(self.date_start_commission)
+        self.contract_id.deactivate_legajo_contract(
+            date_end = date_start - relativedelta(days=1),
+            legajo_state='outgoing_commission'
+        )
+        self._get_legajo_job(new_contract)
+        self.write({'state': 'confirmed'})
+
+    def _get_legajo_contract(self):
+        Contract = self.env['hr.contract']
+        origin_contract_id = self.contract_id
+        vals = {
+            'employee_id': self.employee_id.id,
+            'name': self.employee_id.name,
+            'date_start': self.date_start_commission or fields.Date.today(),
+            'inciso_id': self.inciso_destination_id.id,
+            'operating_unit_id': self.operating_unit_destination_id.id,
+            'income_mechanism_id': origin_contract_id.income_mechanism_id.id,
+            'program': self.program_project_destination_id.programa,
+            'project': self.program_project_destination_id.proyecto,
+            'regime_id': origin_contract_id.regime_id.id,
+            'occupation_id': self.occupation_id.id,
+            'descriptor1_id': origin_contract_id.descriptor1_id.id,
+            'descriptor2_id': origin_contract_id.descriptor2_id.id,
+            'descriptor3_id': origin_contract_id.descriptor3_id.id,
+            'descriptor4_id': origin_contract_id.descriptor4_id.id,
+            'position': self.nroPuesto,
+            'workplace': self.nroPlaza,
+            'sec_position': self.secPlaza,
+            'graduation_date': origin_contract_id.graduation_date,
+            'reason_description': self.description_reason,
+            'norm_code_id': self.norm_id.id,
+            'resolution_description': self.description_resolution,
+            'resolution_date': self.date_resolution,
+            'resolution_type': self.resolution_type,
+            'call_number': origin_contract_id.call_number,
+            'additional_information': self.additional_information,
+            'code_day': origin_contract_id.retributive_day_id.codigoJornada,
+            'description_day': origin_contract_id.retributive_day_id.descripcionJornada,
+            'retributive_day_id': origin_contract_id.retributive_day_id.id,
+            'wage': 1,
+            'cs_contract_id': origin_contract_id.id,
+        }
+        contract = Contract.suspend_security().create(vals)
+
+        for document_record in self.attached_document_ids:
+            document_record.write({
+                'contract_id': contract.id,
+                'type': 'discharge'})
+
+        contract.activate_legajo_contract(legajo_state='incoming_commission')
+        return contract
+
+    def _get_legajo_job(self, contract):
+        Job = self.env['hr.job']
+        job = Job.suspend_security().create({
+            'name': '%s - %s' % (contract.display_name, str(self.date_start)),
+            'employee_id': contract.employee_id.id,
+            'contract_id': contract.id,
+            'department_id': self.department_id.id,
+            'start_date': self.date_start_commission,
+            'security_job_id': self.security_job_id.id,
+        })
+        job.onchange_security_job_id()
+        return job
+
+
+
