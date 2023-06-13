@@ -229,14 +229,24 @@ class ONSCLegajoBajaVL(models.Model):
                 'type': 'deregistration'
             })
 
-        self.contract_id.suspend_security().write(data)
-        self.contract_id.job_ids.filtered(lambda x: x.end_date is False).write({'end_date': self.end_date})
+        self.contract_id.suspend_security().deactivate_legajo_contract(date_end=self.end_date)
         self.suspend_security().write({'state': 'aprobado_cgn'})
         return True
 
     def action_rechazado_cgn(self):
         self.write({'state': 'rechazado_cgn'})
         return True
+
+    def button_open_contract(self):
+        self.ensure_one()
+        if self.contract_id:
+            action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_one_hr_contract_action')
+            action.update({
+                'res_id': self.contract_id.id
+            })
+        else :
+            return True
+        return action
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
