@@ -249,7 +249,7 @@ class ONSCCVDigitalCall(models.Model):
         for record in self:
             record.show_race_info = (conditional_show and
                                      (record.is_cv_race_public or
-                                     record.is_afro) and record.is_afrodescendants) or not conditional_show
+                                     record.is_afro) and record.is_afro_descendants) or not conditional_show
 
     def _compute_show_disabilitie_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
