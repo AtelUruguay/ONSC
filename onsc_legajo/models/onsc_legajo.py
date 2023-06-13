@@ -53,21 +53,18 @@ class ONSCLegajo(models.Model):
     contract_ids = fields.One2many('hr.contract', compute='_compute_contract_info')
     contracts_count = fields.Integer(string='Cantidad de contratos', compute='_compute_contract_info')
 
+    legajo_state = fields.Selection(
+        [('active', 'Activo'), ('egresed', 'Egresado')],
+        string='Estado del funcionario',
+        related='employee_id.legajo_state',
+        store=True
+    )
+
     def _compute_contract_info(self):
         for record in self:
             available_contracts = record._get_user_available_contract(record.employee_id)
             record.contract_ids = available_contracts
             record.contracts_count = len(available_contracts)
-
-    # is_disassociated = fields.Boolean(string="Es egresado", compute='_compute_is_disassociated')
-    #
-    # @api.depends('contract_ids')
-    # def _compute_is_disassociated(self):
-    #     user_inciso = self.env.user.employee_id.job_id.contract_id.inciso_id
-    #     for record in self:
-    #         any_contract_active = record.contract_ids.filtered(lambda x:x.legajo_state != 'baja')
-    #         if len(any_contract_active) == 0 and len(record.contract_ids) > 0 and record.contract_ids.sorted(key=lambda x: x.date_end, reverse=True)[0].inciso_id == user_inciso:
-    #             record.is_disassociated = True
 
     def button_open_contract(self):
         self.ensure_one()

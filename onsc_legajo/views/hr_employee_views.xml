@@ -6,7 +6,11 @@
             <field name="model">hr.employee</field>
             <field name="arch" type="xml">
                 <search string="Funcionarios">
-                    <field name="name" string="Funcionario"/>
+                    <field name="full_name" string="Funcionario"/>
+                    <field name="legajo_state"/>
+                    <group expand="0" string="Group By">
+                    <filter string="Estado del funcionario" name="groupby_legajo_state" domain="[]" context="{'group_by': 'legajo_state'}"/>
+                </group>
                 </search>
             </field>
         </record>
@@ -20,6 +24,7 @@
                     <field name="cv_emissor_country_id"/>
                     <field name="cv_document_type_id"/>
                     <field name="cv_nro_doc"/>
+                    <field name="legajo_state"/>
                 </tree>
             </field>
         </record>

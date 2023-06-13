@@ -241,9 +241,8 @@ class ONSCLegajoBajaVL(models.Model):
                 'contract_id': self.contract_id.id,
                 'type': 'deregistration'
             })
-
         self.contract_id.suspend_security().write(data)
-        self.contract_id.job_ids.filtered(lambda x: x.end_date is False).write({'end_date': self.end_date})
+        self.contract_id.suspend_security().deactivate_legajo_contract(date_end=self.end_date)
         self.suspend_security().write({'state': 'aprobado_cgn'})
         return True
 

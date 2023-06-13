@@ -81,7 +81,7 @@ class HrEmployee(models.Model):
     @api.depends('contract_ids', 'contract_ids.legajo_state')
     def _compute_legajo_state(self):
         for rec in self:
-            if rec.contract_ids.filtered(lambda x: x.legajo_state in ['active', 'outgoing_commmission']):
+            if rec.contract_ids.filtered(lambda x: x.legajo_state != 'baja'):
                 rec.legajo_state = 'active'
             else:
                 rec.legajo_state = 'egresed'

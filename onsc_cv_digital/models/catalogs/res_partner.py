@@ -5,6 +5,8 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 from odoo import SUPERUSER_ID, models, fields, api, _
 from odoo.exceptions import ValidationError
 
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+
 # TODO female otherwhise feminine
 CV_SEX = [('male', 'Masculino'), ('feminine', 'Femenino')]
 
