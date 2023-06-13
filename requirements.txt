@@ -7,3 +7,4 @@ Flask==0.12.2
 Flask-Spyne==0.3.1
 basicauth==0.4.1
 phonenumbers==8.12.54
+suds==1.1.2
