@@ -4,7 +4,7 @@
 import logging
 
 import odoo
-from odoo import api, SUPERUSER_ID
+from odoo import api, SUPERUSER_ID, tools
 from odoo.addons.ws_int_base.utils.service_registration import register_service
 from odoo.modules.registry import Registry
 from spyne import ServiceBase, ComplexModel
@@ -92,6 +92,8 @@ class WsCVCierreLlamado(ServiceBase):
             return response
         except Exception as e:
             cr.rollback()
+            _logger.warning("CIERRE DE LLAMADO ERROR GENERICO")
+            _logger.warning(tools.ustr(e))
             logic_150_extended = soap_error_codes.LOGIC_150
             if hasattr(e, 'name') and isinstance(e.name, str):
                 logic_150_extended['long_desc'] = e.name
