@@ -22,12 +22,16 @@
                 <header>
                     <button name="action_send_destination" class="btn btn-primary" type="object"
                             string="Enviar a destino"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
                             attrs="{'invisible': ['|',('is_edit_destination', '=', True),('state','not in',['draft','returned'])]}"/>
                     <button name="action_send_origin" class="btn btn-primary" type="object" string="Enviar a origen"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
                             states="to_process"/>
                     <button name="action_send_sgh" type="object" string="Enviar a SGH"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
                             attrs="{'invisible': [('is_available_send_to_sgh', '=', False)]}"/>
                     <button name="action_cancel" type="object" string="Cancelar"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
                             states="draft,returned,to_process,error_sgh"/>
                     <field name="state" widget="statusbar"/>
                 </header>
