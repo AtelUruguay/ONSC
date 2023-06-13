@@ -3,10 +3,12 @@ import json
 
 from dateutil.relativedelta import relativedelta
 from lxml import etree
-
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+
+REQUIRED_FIELDS = ['date_start_commission', 'reason_description', 'norm_id', 'resolution_description',
+                   'resolution_date', 'resolution_type', 'regime_commission_id', 'type_commission_selection']
 
 
 class ONSCLegajoAltaCS(models.Model):
@@ -109,6 +111,8 @@ class ONSCLegajoAltaCS(models.Model):
     employee_id = fields.Many2one('hr.employee', 'Empleados', compute="_compute_employee", store=True)
     partner_id = fields.Many2one('res.partner', string='CI', required=True)
     partner_id_domain = fields.Char(compute='_compute_partner_id_domain')
+    cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
+    cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], string=u'Sexo', copy=False)
     # ORIGIN
     inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso Origen', required=True,
                                        default=lambda self: self._get_default_inciso_id(), copy=False)
@@ -135,7 +139,7 @@ class ONSCLegajoAltaCS(models.Model):
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4',
                                      related='contract_id.descriptor4_id')
     type_commission_selection = fields.Selection(
-        [('cs', 'Comisión de Servicio'), ('pc', 'Pase en Comisión')],
+        [('1', 'Comisión de Servicio'), ('2', 'Pase en Comisión')],
         string='Tipo de comisión', compute='_compute_type_commission_selection')
     # DESTINATION
     inciso_destination_id = fields.Many2one('onsc.catalog.inciso', string='Inciso Destino')
@@ -177,9 +181,9 @@ class ONSCLegajoAltaCS(models.Model):
          ('cancelled', 'Cancelado'), ('error_sgh', 'Error SGH'), ('confirmed', 'Confirmado')],
         string='Estado', default='draft')
     additional_information = fields.Text(string='Información adicional')
-    attached_documen_ids = fields.One2many('onsc.legajo.attached.document',
-                                           'alta_cs_id',
-                                           string='Documentos adjuntos')
+    attached_document_ids = fields.One2many('onsc.legajo.attached.document',
+                                            'alta_cs_id',
+                                            string='Documentos adjuntos')
     error_reported_integration_id = fields.Many2one('onsc.legajo.integration.error',
                                                     string='Error reportado integración')
 
@@ -202,11 +206,15 @@ class ONSCLegajoAltaCS(models.Model):
                                               compute='_compute_is_available_send_to_sgh')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
+    is_available_send_origin = fields.Boolean(string="Disponible para enviar a origen",
+                                              compute='_compute_is_available_send_origin')
 
     # DATOS DEL WS10
     nroPuesto = fields.Char(string='Puesto', copy=False)
     nroPlaza = fields.Char(string='Plaza', copy=False, )
     secPlaza = fields.Char(string="Sec Plaza")
+    is_error_synchronization = fields.Boolean(copy=False)
+    error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
 
     @api.constrains("date_start_commission")
     def _check_date(self):
@@ -217,29 +225,16 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state not in ['draft', 'to_process', 'returned']
+            record.should_disable_form_edit = record.state not in ['draft', 'to_process', 'returned', 'error_sgh']
 
     @api.depends('operating_unit_origin_id', 'operating_unit_destination_id')
     def _compute_type_commission_selection(self):
         for record in self:
             if record.operating_unit_origin_id and record.operating_unit_destination_id:
                 if record.operating_unit_origin_id.inciso_id == record.operating_unit_destination_id.inciso_id:
-                    record.type_commission_selection = 'cs'
+                    record.type_commission_selection = '1'
                 else:
-                    record.type_commission_selection = 'pc'
-
-    @api.depends('partner_id')
-    def _compute_employee(self):
-        for record in self:
-            Employee = self.env['hr.employee'].suspend_security()
-            cv_emissor_country_id = self.env.ref('base.uy').id
-            cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
-                                                                                  limit=1).id or False
-            record.employee_id = Employee.search([
-                ('cv_emissor_country_id', '=', cv_emissor_country_id),
-                ('cv_document_type_id', '=', cv_document_type_id),
-                ('cv_nro_doc', '=', record.partner_id.cv_nro_doc),
-            ], limit=1)
+                    record.type_commission_selection = '2'
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
@@ -248,7 +243,7 @@ class ONSCLegajoAltaCS(models.Model):
             if rec.employee_id:
                 args = [("legajo_state", "=", 'active'), ('employee_id', '=', rec.employee_id.id),
                         ('operating_unit_id', '=', rec.operating_unit_origin_id.id)]
-                contracts = Contract.search(args)
+                contracts = Contract.sudo().search(args)
                 if contracts:
                     rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
                 else:
@@ -259,16 +254,19 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('operating_unit_origin_id')
     def _compute_partner_id_domain(self):
         for record in self:
+            # Partner del usuario
+            user_partner_id = self.env.user.partner_id
             if record.is_inciso_origin_ac:
                 employee_ids = self.env['hr.contract'].sudo().search(
                     [('operating_unit_id', '=', record.operating_unit_origin_id.id),
                      ('legajo_state', '=', 'active'),
                      ('regime_id.presupuesto', '=', True)]).mapped(
                     'employee_id').ids
-                record.partner_id_domain = json.dumps([('legajo_employee_ids', 'in', employee_ids)])
+                record.partner_id_domain = json.dumps(
+                    [('legajo_employee_ids', 'in', employee_ids), ('id', '!=', user_partner_id.id)])
             else:
                 record.partner_id_domain = json.dumps(
-                    [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True)])
+                    [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True), ('id', '!=', user_partner_id.id)])
 
     # COMPUTES ORIGIN AND DESTINATION DOMAIN
     @api.depends('inciso_origin_id')
@@ -298,7 +296,9 @@ class ONSCLegajoAltaCS(models.Model):
             if rec.inciso_origin_id:
                 domain = [('inciso_id', '=', rec.inciso_origin_id.id)]
                 if rec.inciso_origin_id.is_central_administration and self.user_has_groups(
-                        'onsc_legajo.group_legajo_hr_ue_alta_cs'):
+                        'onsc_legajo.group_legajo_hr_ue_alta_cs') and not (self.env.user.has_group(
+                    'onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
+                    'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')):
                     contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
                     operating_unit = contract.operating_unit_id.id if contract else False
                     domain = [('id', '=', operating_unit)]
@@ -310,7 +310,9 @@ class ONSCLegajoAltaCS(models.Model):
             domain = [('id', 'in', [])]
             contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
             operating_unit_id = contract.operating_unit_id.id if contract else False
-            if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
+            if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs') and not (self.env.user.has_group(
+                    'onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
+                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')):
                 if rec.inciso_destination_id and rec.inciso_origin_id and (
                         rec.inciso_destination_id == rec.inciso_origin_id or rec.inciso_destination_id == contract.inciso_id):
                     domain = [('id', '=', operating_unit_id), ('id', '!=', rec.operating_unit_origin_id.id)]
@@ -338,7 +340,7 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_program_project_origin_id(self):
         for rec in self:
             if rec.contract_id:
-                rec.program_project_origin_id = self.env['onsc.legajo.office'].search(
+                rec.program_project_origin_id = self.env['onsc.legajo.office'].sudo().search(
                     [('inciso', '=', rec.contract_id.inciso_id.id),
                      ('unidadEjecutora', '=', rec.contract_id.operating_unit_id.id),
                      ('programa', '=', rec.contract_id.program), ('proyecto', '=', rec.contract_id.project)]).id
@@ -349,7 +351,6 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'operating_unit_origin_id',
                  'operating_unit_destination_id')
     def _compute_is_edit_origin(self):
-        inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         for record in self:
             if record.state == 'draft':
                 record.is_edit_origin = True
@@ -366,10 +367,18 @@ class ONSCLegajoAltaCS(models.Model):
             operating_unit_security = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
             if administrator_security:
                 record.is_edit_destination = True
+            # Editar por el usuario Destino
+            # El Usuario logueado tiene permiso por inciso y el inciso de destino es el mismo que el del usuario
             elif record.type_cs == 'ac2ac' and inciso_security and record.inciso_destination_id == inciso_id:
                 record.is_edit_destination = True
+            # El Usuario logueado tiene permiso por ue y la ue de destino es el mismo que el del usuario
             elif record.type_cs == 'ac2ac' and operating_unit_security and record.operating_unit_destination_id == operating_unit_id:
                 record.is_edit_destination = True
+            # Editar por el usuario Origen
+            # El Usuario logueado tiene permiso por ue y la ue de destino es el mismo que el del usuario
+            elif record.type_cs == 'ac2ac' and record.inciso_destination_id == record.inciso_origin_id:
+                record.is_edit_destination = True
+            # Siempre poder editar si no es ac2ac
             elif record.type_cs != 'ac2ac':
                 record.is_edit_destination = True
             else:
@@ -379,21 +388,39 @@ class ONSCLegajoAltaCS(models.Model):
                  'operating_unit_destination_id')
     def _compute_is_edit_inciso_ou_destination(self):
         for record in self:
-            record.is_edit_inciso_ou_destination = record.is_edit_destination and (self.env.user.has_group(
-                'onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
-                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'))
+            # Destino tiene permiso para editar la UE solo si tiene permiso de inciso o es administrador
+            if record.is_edit_destination and not (
+                    self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
+                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')):
+                record.is_edit_inciso_ou_destination = False
+            # Origen tiene permiso para editar la UE siempre que no este en el state to_process
+            if not record.is_edit_destination and record.type_cs == 'ac2ac' and record.state in ['to_process',
+                                                                                                 'returned',
+                                                                                                 'error_sgh']:
+                record.is_edit_inciso_ou_destination = False
+            else:
+                record.is_edit_inciso_ou_destination = True
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs')
     def _compute_is_available_send_to_sgh(self):
         for record in self:
-            if record.state == 'draft' and record.type_cs == 'ac2ac' and record.inciso_origin_id == record.inciso_destination_id:
+            # AC2AC siendo tu mismo inciso origen y destino
+            if record.state in ['draft', 'to_process', 'error_sgh',
+                                'returned'] and record.type_cs == 'ac2ac' and record.inciso_origin_id == record.inciso_destination_id:
                 record.is_available_send_to_sgh = True
-            elif record.type_cs != 'ac2ac' and record.state == 'draft' and record.inciso_origin_id and record.inciso_destination_id:
+            # No AC2AC siempre enviar a SGH
+            elif record.type_cs != 'ac2ac' and record.state in ['draft',
+                                                                'error_sgh'] and record.inciso_origin_id and record.inciso_destination_id:
                 record.is_available_send_to_sgh = True
-            elif record.is_edit_destination and record.state == 'to_process':
+            # Si eres el destino y esta en estado to_process o error_sgh
+            elif record.is_edit_destination and record.state in ['to_process', 'error_sgh']:
                 record.is_available_send_to_sgh = True
             else:
                 record.is_available_send_to_sgh = False
+
+    def _compute_is_available_send_origin(self):
+        for record in self:
+            record.is_available_send_origin = False
 
     def get_inciso_operating_unit_by_user(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
@@ -418,6 +445,29 @@ class ONSCLegajoAltaCS(models.Model):
     @api.onchange('partner_id')
     def onchange_partner_id(self):
         self.contract_id = False
+        Employee = self.env['hr.employee'].sudo()
+        for record in self.sudo():
+            if record.partner_id:
+                cv_emissor_country_id = self.env.ref('base.uy').id
+                cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
+                                                                                      limit=1).id or False
+                employee_id = Employee.sudo().search([
+                    ('cv_emissor_country_id', '=', cv_emissor_country_id),
+                    ('cv_document_type_id', '=', cv_document_type_id),
+                    ('cv_nro_doc', '=', record.partner_id.cv_nro_doc),
+                ], limit=1)
+                if employee_id:
+                    record.employee_id = employee_id.id
+                    record.cv_birthdate = employee_id.cv_birthdate
+                    record.cv_sex = employee_id.cv_sex
+                else:
+                    record.employee_id = False
+                    record.cv_birthdate = False
+                    record.cv_sex = False
+            else:
+                record.cv_birthdate = False
+                record.cv_sex = False
+                record.employee_id = False
 
     @api.onchange('inciso_destination_id')
     def onchange_inciso_destination_id(self):
@@ -433,6 +483,41 @@ class ONSCLegajoAltaCS(models.Model):
             if rec.operating_unit_destination_id and rec.operating_unit_origin_id and rec.operating_unit_origin_id == rec.operating_unit_destination_id:
                 raise ValidationError('La unidad ejecutora de origen y destino no pueden ser iguales')
 
+    def check_required_fieds_ws10(self):
+        for record in self:
+            message = []
+            for required_field in REQUIRED_FIELDS:
+                if not eval('record.%s' % required_field):
+                    message.append(record._fields[required_field].string)
+            if record.inciso_origin_id.is_central_administration and not record.contract_id.sec_position:
+                message.append(record._fields['secPlaza'].string)
+            if record.inciso_origin_id.is_central_administration and not record.inciso_origin_id:
+                message.append(record._fields['inciso_origin_id'].string)
+            if not record.partner_id.cv_last_name_1:
+                message.append("Primer Apellido")
+            if not record.partner_id.cv_first_name:
+                message.append("Primer Nombre")
+            if record.inciso_destination_id.is_central_administration and not record.operating_unit_destination_id:
+                message.append(record._fields['operating_unit_destination_id'].string)
+            if record.inciso_destination_id.is_central_administration and not record.program_project_destination_id:
+                message.append(record._fields['program_project_destination_id'].string)
+            if not record.inciso_destination_id.is_central_administration and not record.inciso_destination_id:
+                message.append(record._fields['inciso_destination_id'].string)
+            if not record.attached_document_ids:
+                message.append(_("Debe haber al menos un documento adjunto"))
+            if not record.cv_birthdate:
+                message.append(_("Fecha de nacimiento"))
+            if not record.cv_sex:
+                message.append(_("Sexo"))
+            if not record.regime_commission_id.cgn_code:
+                message.append(_("Código CGN de régimen de comisión"))
+
+        if message:
+            fields_str = '\n'.join(message)
+            message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
+            raise ValidationError(_(message))
+        return True
+
     def action_send_destination(self):
         self.state = 'to_process'
 
@@ -443,7 +528,13 @@ class ONSCLegajoAltaCS(models.Model):
         self.state = 'cancelled'
 
     def action_send_sgh(self):
-        self.state = 'to_send_sgh'
+        self.check_required_fieds_ws10()
+        error_sgh = self.env['onsc.legajo.abstract.alta.cs.ws10'].with_context(
+            log_info=True, altas_cs=self).suspend_security().syncronize(self)
+        if isinstance(error_sgh, str):
+            self.state = 'error_sgh'
+            self.is_error_synchronization = True
+            self.error_message_synchronization = error_sgh
 
     def action_aprobado_cgn(self):
         # TODO
