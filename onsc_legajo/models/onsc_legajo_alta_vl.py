@@ -2,7 +2,6 @@
 import json
 import logging
 
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 from odoo import fields, models, api, _
@@ -92,10 +91,12 @@ class ONSCLegajoAltaVL(models.Model):
         res['cv_emissor_country_id'] = self.env.ref('base.uy').id
         res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
                                                                                      limit=1).id or False
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl') or self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
+        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl') or self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
+            'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
             res['inciso_id'] = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl') or self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
+        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl') or self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
             res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
 
@@ -423,37 +424,16 @@ class ONSCLegajoAltaVL(models.Model):
         return legajo
 
     def _get_legajo(self, employee):
-        Legajo = self.env['onsc.legajo'].suspend_security()
-        legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
-        if not legajo:
-            legajo = Legajo.suspend_security().create(self._prepare_legajo_value(employee))
-        return legajo
-
-    def _prepare_legajo_value(self, employee):
-        return {
-            'employee_id': employee.id,
-            'public_admin_entry_date': self.date_income_public_administration,
-            'public_admin_inactivity_years_qty': self.inactivity_years
-        }
+        return self.env['onsc.legajo']._get_legajo(
+            employee,
+            self.date_income_public_administration,
+            self.inactivity_years)
 
     def _get_legajo_employee(self):
-        Employee = self.env['hr.employee']
-        employee = Employee.suspend_security().search([
-            ('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
-            ('cv_document_type_id', '=', self.cv_document_type_id.id),
-            ('cv_nro_doc', '=', self.partner_id.cv_nro_doc),
-        ], limit=1)
-        if not employee:
-            employee = Employee.suspend_security().create({
-                'name': calc_full_name(self.partner_id.cv_first_name,
-                                       self.partner_id.cv_second_name,
-                                       self.partner_id.cv_last_name_1,
-                                       self.partner_id.cv_last_name_2),
-                'cv_emissor_country_id': self.cv_emissor_country_id.id,
-                'cv_document_type_id': self.cv_document_type_id.id,
-                'cv_nro_doc': self.partner_id.cv_nro_doc,
-            })
-        return employee
+        return self.env['hr.employee']._get_legajo_employee(
+            self.cv_emissor_country_id,
+            self.cv_document_type_id,
+            self.partner_id)
 
     def _get_legajo_contract(self, employee):
         Contract = self.env['hr.contract']
@@ -503,17 +483,7 @@ class ONSCLegajoAltaVL(models.Model):
         return contract
 
     def _get_legajo_job(self, contract):
-        Job = self.env['hr.job']
-        job = Job.suspend_security().create({
-            'name': '%s - %s' % (contract.display_name, str(self.date_start)),
-            'employee_id': contract.employee_id.id,
-            'contract_id': contract.id,
-            'department_id': self.department_id.id,
-            'start_date': self.date_start,
-            'security_job_id': self.security_job_id.id,
-        })
-        job.onchange_security_job_id()
-        return job
+        return self.env['hr.job'].create_job(contract, self.department_id, self.date_start, self.security_job_id)
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):

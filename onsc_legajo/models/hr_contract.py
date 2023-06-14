@@ -227,7 +227,7 @@ class HrContract(models.Model):
         vals = {'legajo_state': legajo_state}
         if legajo_state == 'baja':
             vals.update({'date_end': date_end})
-        self.write(vals)
+        self.suspend_security().write(vals)
         self.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write({'end_date': date_end})
         self.suspend_security().job_ids.onchange_end_date()
 
