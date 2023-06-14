@@ -28,6 +28,7 @@
                             groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
                             states="to_process"/>
                     <button name="action_send_sgh" type="object" string="Enviar a SGH"
+                            class="btn btn-primary"
                             groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
                             attrs="{'invisible': [('is_available_send_to_sgh', '=', False)]}"/>
                     <button name="action_cancel" type="object" string="Cancelar"
