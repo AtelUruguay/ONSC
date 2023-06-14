@@ -200,14 +200,14 @@ class ONSCLegajoAltaCS(models.Model):
     # DEFINICION COMPORTAMIENTOS
     is_edit_destination = fields.Boolean(string="Editar datos de destino", compute='_compute_is_edit_destination')
     is_edit_origin = fields.Boolean(string="Editar datos de origen", compute='_compute_is_edit_origin')
-    is_edit_inciso_ou_destination = fields.Boolean(string="Editar inciso/ou destino",
-                                                   compute='_compute_is_edit_inciso_ou_destination')
     is_available_send_to_sgh = fields.Boolean(string="Disponible para enviar a SGH",
                                               compute='_compute_is_available_send_to_sgh')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
     is_available_send_origin = fields.Boolean(string="Disponible para enviar a origen",
                                               compute='_compute_is_available_send_origin')
+    is_available_send_destination = fields.Boolean(string="Disponible para enviar a destino",
+                                                   compute='_compute_is_available_send_destination')
 
     # DATOS DEL WS10
     nroPuesto = fields.Char(string='Puesto', copy=False)
@@ -284,13 +284,18 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_inciso_destination_id_domain(self):
         for rec in self:
             domain = [('id', 'in', [])]
+            # Si el inciso origen es AC, el destino puede ser cualquier inciso
             if rec.inciso_origin_id and rec.inciso_origin_id.is_central_administration:
                 domain = []
             else:
-                #Si el inciso origen es No es AC, el inciso destino es el del contrato del usuario: unico que es AC
-                contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
-                inciso_id = contract.inciso_id.id if contract else False
-                domain = [('id', '=', inciso_id)]
+                if not self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
+                    # si no eres admin CSC y el inciso origen es No es AC, el inciso destino es el del contrato del usuario: unico que es AC
+                    contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
+                    inciso_id = contract.inciso_id.id if contract else False
+                    domain = [('id', '=', inciso_id)]
+                else:
+                    # si eres admin CSC y el inciso origen es No es AC, todos los incisos destino son AC
+                    domain = [('is_central_administration', '=', True)]
             rec.inciso_destination_id_domain = json.dumps(domain)
 
     @api.depends('inciso_origin_id')
@@ -371,6 +376,8 @@ class ONSCLegajoAltaCS(models.Model):
             operating_unit_security = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
             if administrator_security:
                 record.is_edit_destination = True
+            elif record.state == 'returned':
+                record.is_edit_destination = False
             # Editar por el usuario Destino
             # El Usuario logueado tiene permiso por inciso y el inciso de destino es el mismo que el del usuario
             elif record.type_cs == 'ac2ac' and inciso_security and record.inciso_destination_id == inciso_id:
@@ -387,23 +394,6 @@ class ONSCLegajoAltaCS(models.Model):
                 record.is_edit_destination = True
             else:
                 record.is_edit_destination = False
-
-    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'operating_unit_origin_id',
-                 'operating_unit_destination_id')
-    def _compute_is_edit_inciso_ou_destination(self):
-        for record in self:
-            # Destino tiene permiso para editar la UE solo si tiene permiso de inciso o es administrador
-            if record.is_edit_destination and not (
-                    self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
-                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')):
-                record.is_edit_inciso_ou_destination = False
-            # Origen tiene permiso para editar la UE siempre que no este en el state to_process
-            if not record.is_edit_destination and record.type_cs == 'ac2ac' and record.state in ['to_process',
-                                                                                                 'returned',
-                                                                                                 'error_sgh']:
-                record.is_edit_inciso_ou_destination = False
-            else:
-                record.is_edit_inciso_ou_destination = True
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs')
     def _compute_is_available_send_to_sgh(self):
@@ -422,9 +412,21 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.is_available_send_to_sgh = False
 
+    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_send_origin(self):
         for record in self:
-            record.is_available_send_origin = False
+            if record.state == 'to_process' and record.is_edit_destination and record.type_cs == 'ac2ac':
+                record.is_available_send_origin = True
+            else:
+                record.is_available_send_origin = False
+
+    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
+    def _compute_is_available_send_destination(self):
+        for record in self:
+            if record.state == 'draft' and record.type_cs == 'ac2ac':
+                record.is_available_send_destination = True
+            else:
+                record.is_available_send_destination = False
 
     def get_inciso_operating_unit_by_user(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
