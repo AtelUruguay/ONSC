@@ -103,6 +103,27 @@ class HrJob(models.Model):
             "res_id": self.id,
         }
 
+        # INTELIGENCIA DE ENTIDAD
+
+    def create_job(self, contract, department, start_date, security_job):
+        """
+        CREA NUEVO PUESTO A PARTIR DE LA DATA DE ENTRADA
+        :param contract: Recordset a hr.contract
+        :param department: Recordset a hr.department
+        :param start_date: Date
+        :param security_job: Recordset a onsc.legajo.security.job
+        """
+        job = self.suspend_security().create({
+            'name': '%s - %s' % (contract.display_name, str(start_date)),
+            'employee_id': contract.employee_id.id,
+            'contract_id': contract.id,
+            'department_id': department.id,
+            'start_date': start_date,
+            'security_job_id': security_job.id,
+        })
+        job.onchange_security_job_id()
+        return job
+
 
 class HrJobRoleLine(models.Model):
     _inherit = 'hr.job.role.line'
@@ -189,3 +210,4 @@ class HrJobRoleLine(models.Model):
             rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
                                     tracking_value_ids=tracking_value_ids)
         return True
+

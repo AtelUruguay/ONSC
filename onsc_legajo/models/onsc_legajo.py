@@ -90,7 +90,6 @@ class ONSCLegajo(models.Model):
                 'context': str(_context),
                 'domain': [('id', 'in', self.contract_ids.ids)]
             })
-            # action['domain'] = [('id', 'in', self.contract_ids.ids)]
         return action
 
     def button_open_employee(self):
@@ -128,3 +127,14 @@ class ONSCLegajo(models.Model):
 
     def _get_abstract_ue_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
+
+    def _get_legajo(self, employee, entry_date, inactivity_years):
+        Legajo = self.suspend_security()
+        legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
+        if not legajo:
+            legajo = Legajo.create({
+                'employee_id': employee.id,
+                'public_admin_entry_date': entry_date,
+                'public_admin_inactivity_years_qty': inactivity_years
+            })
+        return legajo

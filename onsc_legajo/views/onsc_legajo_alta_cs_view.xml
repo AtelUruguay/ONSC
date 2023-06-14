@@ -138,7 +138,7 @@
                     </group>
 
                     <group name="documentacion" string="Documentación">
-                        <field name="attached_documen_ids" nolabel="1">
+                        <field name="attached_document_ids" nolabel="1">
                             <tree editable="top">
                                 <field name="name" required="1"/>
                                 <field name="document_type_id" required="1"/>

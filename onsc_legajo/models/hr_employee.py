@@ -69,8 +69,6 @@ class HrEmployee(models.Model):
             else:
                 record.full_name = record.name
 
-
-
     def _compute_attachment_ids(self):
         for rec in self:
             attachment_ids = self.env['ir.attachment'].sudo().search(
@@ -200,6 +198,25 @@ class HrEmployee(models.Model):
             ]
         }
         return vals
+
+    #INTELIGENCIA
+    def _get_legajo_employee(self, emissor_country, document_type, partner_id):
+        employee = self.suspend_security().search([
+            ('cv_emissor_country_id', '=', emissor_country.id),
+            ('cv_document_type_id', '=', document_type.id),
+            ('cv_nro_doc', '=', partner_id.cv_nro_doc),
+        ], limit=1)
+        if not employee:
+            employee = self.suspend_security().create({
+                'name': calc_full_name(partner_id.cv_first_name,
+                                       partner_id.cv_second_name,
+                                       partner_id.cv_last_name_1,
+                                       partner_id.cv_last_name_2),
+                'cv_emissor_country_id': emissor_country.id,
+                'cv_document_type_id': document_type.id,
+                'cv_nro_doc': partner_id.cv_nro_doc,
+            })
+        return employee
 
 
 class HrEmployeeHistory(models.Model):

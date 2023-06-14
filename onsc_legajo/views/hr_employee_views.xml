@@ -9,8 +9,8 @@
                     <field name="full_name" string="Funcionario"/>
                     <field name="legajo_state"/>
                     <group expand="0" string="Group By">
-                    <filter string="Estado del funcionario" name="groupby_legajo_state" domain="[]" context="{'group_by': 'legajo_state'}"/>
-                </group>
+                        <filter string="Estado del funcionario" name="groupby_legajo_state" domain="[]" context="{'group_by': 'legajo_state'}"/>
+                    </group>
                 </search>
             </field>
         </record>
