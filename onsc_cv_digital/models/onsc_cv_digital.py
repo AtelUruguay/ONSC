@@ -339,6 +339,10 @@ class ONSCCVDigital(models.Model):
         compute=lambda s: s._get_help('cv_help_reference'),
         default=lambda s: s._get_help('cv_help_reference', True)
     )
+    is_cv_user_acceptance_active = fields.Boolean(
+        compute=lambda s: s._get_is_cv_user_acceptance('is_cv_user_acceptance_active'),
+        default=lambda s: s._get_is_cv_user_acceptance('is_cv_user_acceptance_active', True)
+    )
     cv_user_acceptance = fields.Text(
         compute=lambda s: s._get_cv_user_acceptance('cv_user_acceptance'),
         default=lambda s: s._get_cv_user_acceptance('cv_user_acceptance', True)
@@ -399,6 +403,13 @@ class ONSCCVDigital(models.Model):
             setattr(rec, help_field, _html2construct)
 
     def _get_cv_user_acceptance(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
+
+    def _get_is_cv_user_acceptance(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         if is_default:
             return _url

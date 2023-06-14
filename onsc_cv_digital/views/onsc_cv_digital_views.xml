@@ -71,23 +71,24 @@
                          name="div_cv_user_acceptance"
                          style="overflow:hidden;"
                          invisible="context.get('user_cv', False) is False"
-                         attrs="{'invisible': [('is_cv_user_acceptance_ok', '=', True)]}">
+                         attrs="{'invisible': ['|',('is_cv_user_acceptance_ok', '=', True),('is_cv_user_acceptance_active', '=', False)]}">
                         <div class="oe_left">
                             <p class="mb-0">
                             <strong>
                                 <field name="cv_user_acceptance"/>
                                 <field name="is_cv_user_acceptance_ok" invisible="1"/>
+                                <field name="is_cv_user_acceptance_active" invisible="1"/>
                             </strong>
                             <newline/>
                             <button type="object"
                                     icon="fa-thumbs-o-up"
-                                    class="btn-success btn-lg oe_inline"
+                                    class="btn-success oe_inline"
                                     style="margin-top:15px"
                                     name="button_cv_user_acceptance_ok"
                                     string="Aceptar"/>
                             <button
                                     icon="fa-thumbs-o-down"
-                                    class="btn-outline-danger btn-lg oe_inline"
+                                    class="btn-outline-danger oe_inline"
                                     style="margin-top:15px"
                                     onclick="$('div[name|=\'div_cv_user_acceptance\']').slideUp();"
                                     string="Rechazar"/>
