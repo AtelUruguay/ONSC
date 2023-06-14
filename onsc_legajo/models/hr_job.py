@@ -190,6 +190,8 @@ class HrJobRoleLine(models.Model):
         return json.dumps([('id', 'in', roles.ids)])
 
     def _check_write(self):
+        if self._context.get('no_check_write'):
+            return True
         is_informatica_onsc = self.user_has_groups(
             'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc')
         if not is_informatica_onsc and self.filtered(
