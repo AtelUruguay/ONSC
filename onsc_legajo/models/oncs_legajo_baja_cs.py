@@ -197,3 +197,15 @@ class ONSCLegajoBajaCS(models.Model):
             raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
         return super(ONSCLegajoBajaCS, self).unlink()
 
+    def action_actualizar_puesto(self):
+
+        if self.inciso_id.is_central_administration and self.contract_id.inciso_id.is_central_administration:
+            self.contract_id.suspend_security().activate_legajo_contract()
+        elif self.inciso_id.is_central_administration and not  self.contract_id.inciso_id.is_central_administration:
+            self.contract_id.suspend_security().activate_legajo_contract()
+        # elif not  self.inciso_id.is_central_administration and  self.contract_id.inciso_id.is_central_administration:
+        #     record.type_cs = 'out2ac'
+
+        self.contract_id.suspend_security().deactivate_legajo_contract()
+        self.suspend_security().write({'state': 'confirmado'})
+        return True
