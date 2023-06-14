@@ -128,7 +128,15 @@ class ONSCLegajo(models.Model):
     def _get_abstract_ue_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
 
-    def _get_legajo(self, employee, entry_date, inactivity_years):
+    # INTELIGENCIA DE ENTIDAD
+    def _get_legajo(self, employee, entry_date=False, inactivity_years=False):
+        """
+        Si existe un legajo para ese Empleado lo devuelve sino lo crea
+        :param employee: Recordset a hr.employee
+        :param entry_date: Fecha de ingreso a la administracion publica
+        :param inactivity_years: Cantidad de anios de inactividad
+        :return: nuevo recordet de onsc.legajo
+        """
         Legajo = self.suspend_security()
         legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
         if not legajo:

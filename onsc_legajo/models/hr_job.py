@@ -103,8 +103,7 @@ class HrJob(models.Model):
             "res_id": self.id,
         }
 
-        # INTELIGENCIA DE ENTIDAD
-
+    # INTELIGENCIA DE ENTIDAD
     def create_job(self, contract, department, start_date, security_job):
         """
         CREA NUEVO PUESTO A PARTIR DE LA DATA DE ENTRADA
@@ -112,6 +111,7 @@ class HrJob(models.Model):
         :param department: Recordset a hr.department
         :param start_date: Date
         :param security_job: Recordset a onsc.legajo.security.job
+        :return: nuevo recordet de hr.job
         """
         job = self.suspend_security().create({
             'name': '%s - %s' % (contract.display_name, str(start_date)),

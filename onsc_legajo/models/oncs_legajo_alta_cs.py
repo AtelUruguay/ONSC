@@ -545,7 +545,7 @@ class ONSCLegajoAltaCS(models.Model):
     def action_aprobado_cgn(self):
         if self.type_cs == 'out2ac':
             employee = self._get_legajo_employee()
-            legajo = self._get_legajo(employee)
+            self._get_legajo(employee)
         new_contract = self._get_legajo_contract(employee)
         self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
         date_start = fields.Date.from_string(self.date_start_commission)
@@ -554,7 +554,7 @@ class ONSCLegajoAltaCS(models.Model):
             legajo_state='outgoing_commission'
         )
         if self.type_cs != 'ac2out':
-            job = self._get_legajo_job(new_contract)
+            self._get_legajo_job(new_contract)
         self.write({'state': 'confirmed'})
 
     def _get_legajo_employee(self):
@@ -564,10 +564,7 @@ class ONSCLegajoAltaCS(models.Model):
         return self.env['hr.employee']._get_legajo_employee(cv_emissor_country_id, cv_document_type_id, self.partner_id)
 
     def _get_legajo(self, employee):
-        return self.env['onsc.legajo']._get_legajo(
-            employee,
-            self.date_income_public_administration,
-            self.inactivity_years)
+        return self.env['onsc.legajo']._get_legajo(employee)
 
     def _get_legajo_contract(self, employee_id=False):
         Contract = self.env['hr.contract']

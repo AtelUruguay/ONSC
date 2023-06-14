@@ -199,8 +199,15 @@ class HrEmployee(models.Model):
         }
         return vals
 
-    #INTELIGENCIA
+    # INTELIGENCIA DE ENTIDAD
     def _get_legajo_employee(self, emissor_country, document_type, partner_id):
+        """
+        SI EXISTE EL EMPLEADO LO DEVUELVE SINO LO CREA
+        :param emissor_country: Recordset a res.country
+        :param document_type: Recordset a onsc.cv.document.type
+        :param partner_id: Recordset a res.partner
+        :return: Recordset de hr.employee
+        """
         employee = self.suspend_security().search([
             ('cv_emissor_country_id', '=', emissor_country.id),
             ('cv_document_type_id', '=', document_type.id),
