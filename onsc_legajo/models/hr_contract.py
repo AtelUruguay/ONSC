@@ -85,6 +85,9 @@ class HrContract(models.Model):
     reason_description = fields.Char(string='Descripción del motivo alta', history=True)
     norm_code_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
     type_norm_discharge = fields.Char(string='Tipo de norma alta', related='norm_code_id.tipoNorma')
+    workplace_state = fields.Char( string='Estado de la plaza' ,history=True)
+    reason_discharge = fields.Char(string='Descripción del motivo alta', history=True)
+    norm_code_discharge_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
     norm_number_discharge = fields.Integer(string='Número de norma alta',
                                            related='norm_code_id.numeroNorma')
     norm_year_discharge = fields.Integer(string='Año de norma alta', related='norm_code_id.anioNorma')
@@ -202,8 +205,7 @@ class HrContract(models.Model):
         return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
             'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
 
-    def activate_legajo_contract(self):
-        self.write({'legajo_state': 'active'})
+
 
     def button_update_occupation(self):
         ctx = self._context.copy()
@@ -217,6 +219,17 @@ class HrContract(models.Model):
             'type': 'ir.actions.act_window',
             'context': ctx,
         }
+
+    def activate_legajo_contract(self, legajo_state='active'):
+        self.write({'legajo_state': legajo_state})
+
+    def deactivate_legajo_contract(self, date_end, legajo_state='baja'):
+        vals = {'legajo_state': legajo_state}
+        if legajo_state == 'baja':
+            vals.update({'date_end': date_end})
+        self.write(vals)
+        self.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write({'end_date': date_end})
+        self.suspend_security().job_ids.onchange_end_date()
 
     @api.model
     def create(self, vals):

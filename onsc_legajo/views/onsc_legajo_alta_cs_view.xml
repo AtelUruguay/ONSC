@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="onsc_legajo_alta_cs_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.alta.cs.search</field>
+        <field name="model">onsc.legajo.alta.cs</field>
+        <field name="arch" type="xml">
+            <search string="Altas de Comisión">
+                <filter string="Para procesar" name="filter_altas_draft"
+                        domain="[('state','in',['borrador','to_process','returned'])]"/>
+            </search>
+        </field>
+    </record>
+
+
+    <record id="view_onsc_legajo_alta_cs_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.alta.cs.form</field>
+        <field name="model">onsc.legajo.alta.cs</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form string="Alta de Comisión Saliente">
+                <header>
+                    <button name="action_send_destination" class="btn btn-primary" type="object"
+                            string="Enviar a destino"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
+                            attrs="{'invisible': ['|',('is_edit_destination', '=', True),('state','not in',['draft','returned'])]}"/>
+                    <button name="action_send_origin" class="btn btn-primary" type="object" string="Enviar a origen"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
+                            states="to_process"/>
+                    <button name="action_send_sgh" type="object" string="Enviar a SGH"
+                            class="btn btn-primary"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
+                            attrs="{'invisible': [('is_available_send_to_sgh', '=', False)]}"/>
+                    <button name="action_cancel" type="object" string="Cancelar"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
+                            states="draft,returned,to_process,error_sgh"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <field name="is_error_synchronization" invisible="1"/>
+                    <div class="alert alert-danger"
+                         role="alert"
+                         attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
+                         style="margin-bottom:0px;">
+                        <p>
+                            <i class="fa fa-info-circle" role="alert" aria-label="Warning" title="Warning"/>
+                            <field name="error_message_synchronization" readonly="1"/>
+                        </p>
+                    </div>
+                    <group string="Datos del puesto seleccionado">
+                        <group>
+                            <field name="inciso_origin_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'readonly': [('is_edit_origin', '=', False)]}"
+                                   domain="inciso_origin_id_domain"/>
+                            <field name="inciso_origin_id_domain" invisible="1"/>
+                            <field name="is_edit_origin" invisible="1"/>
+                            <field name="operating_unit_origin_id" domain="operating_unit_origin_id_domain"
+                                   attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
+                            <field name="operating_unit_origin_id_domain" invisible="1"/>
+                            <field name="is_inciso_origin_ac" invisible="1"/>
+                            <field name="is_available_send_to_sgh" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="partner_id" domain="partner_id_domain" context="{'show_cv_nro_doc':True}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
+                            <field name="cv_birthdate" force_save="1"
+                                   attrs="{'readonly': ['|',('state', 'not in', ['draft', 'error_sgh']),('employee_id', '!=', False)]}"/>
+                            <field name="cv_sex" force_save="1"
+                                   attrs="{'readonly': ['|',('state', 'not in', ['draft', 'error_sgh']),('employee_id', '!=', False)]}"/>
+                            <field name="partner_id_domain" invisible="1"/>
+                            <field name="should_disable_form_edit" invisible="1"/>
+                            <field name="contract_id_domain" invisible="1"/>
+                            <field name="contract_id" domain="contract_id_domain"
+                                   attrs="{'invisible': [('is_inciso_origin_ac', '=', False)],'readonly': [('is_edit_origin', '=', False)]}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="employee_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <br></br>
+
+
+                    <group string="Datos del contrato seleccionado"
+                           attrs="{'invisible': [('is_inciso_origin_ac', '!=', True)]}">
+                        <group>
+                            <field name="program_project_origin_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   context="{'show_project_program':True}" readonly="1"
+                                   forcesave="1"/>
+                            <field name="regime_origin_id" forcesave="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </group>
+                        <group>
+                            <field name="descriptor1_id" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor2_id" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor3_id" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor4_id" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </group>
+                    </group>
+
+                    <group string="Destino">
+                        <group>
+                            <field name="inciso_destination_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   domain="inciso_destination_id_domain"
+                                   attrs="{'readonly': [('state','!=','draft')]}"/>
+                            <field name="inciso_destination_id_domain" invisible="1"/>
+                            <field name="type_cs" invisible="1"/>
+                            <field name="is_edit_inciso_ou_destination" invisible="1"/>
+                            <field name="operating_unit_destination_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'readonly': [('is_edit_inciso_ou_destination', '=',False)]}"
+                                   domain="operating_unit_destination_id_domain"/>
+                            <field name="operating_unit_destination_id_domain" invisible="1"/>
+                            <field name="is_edit_destination" invisible="1"/>
+                            <field name="program_project_destination_id" context="{'show_project_program':True}"
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="date_start_commission"
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
+                        </group>
+                        <group>
+                            <field name="department_id"
+                                   domain="[('operating_unit_id','=',operating_unit_destination_id)]"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
+                            <field name="security_job_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
+                            <field name="occupation_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
+                            <field name="regime_commission_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
+                        </group>
+                    </group>
+                    <group string="Ingreso Motivo"
+                           attrs="{'invisible': [('is_edit_destination', '=',False)]}">
+                        <group>
+                            <field name="reason_description"/>
+                            <field name="norm_id" colspan="3"
+                                   context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="norm_type" colspan="2"/>
+                            <field name="norm_number" colspan="2"/>
+                            <field name="norm_year" colspan="1"/>
+                            <field name="norm_article" colspan="2"/>
+                        </group>
+                        <group>
+                            <field name="tag_norm_not_found"/>
+                            <field name="resolution_description"/>
+                            <field name="resolution_date"/>
+                            <field name="resolution_type"/>
+                        </group>
+                    </group>
+
+                    <group name="documentacion" string="Documentación">
+                        <field name="attached_document_ids" nolabel="1">
+                            <tree editable="top">
+                                <field name="name" required="1"/>
+                                <field name="document_type_id" required="1"/>
+                                <field name="document_file" required="1" filename="document_file_name"/>
+                                <field name="document_file_name" invisible="1"/>
+                            </tree>
+                        </field>
+                        <group name="adicional" string="Información Adicional">
+                            <field name="additional_information" nolabel="1" placeholder="Información Adicional"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="view_onsc_legajo_alta_cs_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.alta.cs.tree</field>
+        <field name="model">onsc.legajo.alta.cs</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree string="Alta de Comisión Saliente">
+                <field name="partner_id"/>
+                <field name="state"/>
+                <field name="inciso_origin_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_alta_cs_action" model="ir.actions.act_window">
+        <field name="name">Alta comisiones</field>
+        <field name="res_model">onsc.legajo.alta.cs</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'is_from_menu': True}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Alta de comisiones
+            </p>
+        </field>
+    </record>
+</odoo>
