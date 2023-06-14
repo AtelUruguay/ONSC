@@ -79,14 +79,16 @@
                         </group>
                         <group name="puesto" string="Datos del Puesto">
                             <group name="puesto_left">
-                                <field name="contract_id" invisible="1"/>
+                                <field name="contract_id" invisible = "1"/>
                                 <field name="inciso_id" readonly="1"/>
                                 <field name="operating_unit_id" readonly="1"/>
                                 <field name="program" readonly="1"/>
-                                 <field name="project" readonly="1"/>
-                                <field name="regime_origin_id" readonly="1"/>
+                                <field name="project" readonly="1"/>
+                                <field name="position" readonly="1"/>
+                                <field name="workplace" readonly="1"/>
                             </group>
                             <group name="puesto_right">
+                                   <field name="regime_origin_id" readonly="1"/>
                                 <field name="descriptor1_id" readonly="1"/>
                                 <field name="descriptor2_id" readonly="1"/>
                                 <field name="descriptor3_id" readonly="1" />

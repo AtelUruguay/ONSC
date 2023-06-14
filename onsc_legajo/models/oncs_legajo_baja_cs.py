@@ -101,10 +101,11 @@ class ONSCLegajoBajaCS(models.Model):
 
     position = fields.Char(string='Puesto', related='contract_id.position')
     workplace = fields.Char(string='Plaza' ,related='contract_id.workplace')
-
-    program = fields.Char(string='Programa Origen')
-    project = fields.Char(string='Proyecto Origen')
-    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen Origen')
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id')
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",related='contract_id.operating_unit_id')
+    program = fields.Char(string='Programa Origen',related='contract_id.program')
+    project = fields.Char(string='Proyecto Origen',related='contract_id.project')
+    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen Origen',related='contract_id.regime_id')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
                                      related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
@@ -178,6 +179,9 @@ class ONSCLegajoBajaCS(models.Model):
 
         if not record.employee_id.cv_nro_doc:
             message.append(_("Debe tener numero de documento"))
+
+        if not record.contract_id.sec_position:
+                message.append(_("El contrato debe tener Sec. Plaza definido"))
 
         if not record.attached_document_discharge_ids:
             message.append(_("Debe haber al menos un documento adjunto"))
