@@ -273,6 +273,7 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_inciso_origin_id_domain(self):
         for rec in self:
             domain = []
+            # Si no es admin de altas de CS, el inciso origen es el del contrato del usuario: unico que es AC
             if not self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
                 contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
                 inciso_id = contract.inciso_id.id if contract else False
@@ -286,6 +287,7 @@ class ONSCLegajoAltaCS(models.Model):
             if rec.inciso_origin_id and rec.inciso_origin_id.is_central_administration:
                 domain = []
             else:
+                #Si el inciso origen es No es AC, el inciso destino es el del contrato del usuario: unico que es AC
                 contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
                 inciso_id = contract.inciso_id.id if contract else False
                 domain = [('id', '=', inciso_id)]
@@ -415,7 +417,7 @@ class ONSCLegajoAltaCS(models.Model):
                                                                 'error_sgh'] and record.inciso_origin_id and record.inciso_destination_id:
                 record.is_available_send_to_sgh = True
             # Si eres el destino y esta en estado to_process o error_sgh
-            elif record.is_edit_destination and record.state in ['to_process', 'error_sgh']:
+            elif record.is_edit_destination and record.state in ['to_process', 'error_sgh', 'draft']:
                 record.is_available_send_to_sgh = True
             else:
                 record.is_available_send_to_sgh = False
