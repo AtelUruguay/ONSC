@@ -198,13 +198,38 @@ class ONSCLegajoBajaCS(models.Model):
         return super(ONSCLegajoBajaCS, self).unlink()
 
     def action_actualizar_puesto(self):
+        Job = self.env['hr.job']
+        ContratoOrigen = self.env['hr.contract'].sudo().search( [("cs_contract_id", "=", self.contract_id.id)])
+        if self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
+            ContratoOrigen.suspend_security().activate_legajo_contract()
+            self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write({'end_date': self.end_date})
 
-        if self.inciso_id.is_central_administration and self.contract_id.inciso_id.is_central_administration:
+            job = Job.suspend_security().create({
+                'name': '%s - %s' % (self.contract_id.display_name, str(self.date_start)),
+                'employee_id': self.contract_id.employee_id.id,
+                'contract_id': self.contract_id.id,
+                'department_id': self.department_id.id,
+                'start_date': self.date_start_commission,
+                'security_job_id': self.security_job_id.id,
+            })
+            job.onchange_security_job_id()
+        elif self.contract_id.inciso_id.is_central_administration and not ContratoOrigen.is_central_administration :
             self.contract_id.suspend_security().activate_legajo_contract()
-        elif self.inciso_id.is_central_administration and not  self.contract_id.inciso_id.is_central_administration:
-            self.contract_id.suspend_security().activate_legajo_contract()
-        # elif not  self.inciso_id.is_central_administration and  self.contract_id.inciso_id.is_central_administration:
-        #     record.type_cs = 'out2ac'
+            ContratoOrigen.suspend_security().write({'cs_contract_id': False,})
+
+            job = Job.suspend_security().create({
+                'name': '%s - %s' % (self.contract_id.display_name, str(self.date_start)),
+                'employee_id': self.contract_id.employee_id.id,
+                'contract_id': self.contract_id.id,
+                'department_id': self.department_id.id,
+                'start_date': self.date_start_commission,
+                'security_job_id': self.security_job_id.id,
+            })
+            job.onchange_security_job_id()
+
+        elif not self.inciso_id.is_central_administration and ContratoOrigen.is_central_administration :
+            self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
+                {'end_date': self.end_date})
 
         self.contract_id.suspend_security().deactivate_legajo_contract()
         self.suspend_security().write({'state': 'confirmado'})

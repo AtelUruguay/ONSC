@@ -40,7 +40,8 @@
                                 groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas"
                                 states="borrador,error_sgh"
                                 attrs="{'invisible': ['|',('is_ready_send_sgh', '=', False)]}"/>
-                        <field name="state" widget="statusbar"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="borrador,error_sgh,pendiente_auditoria_cgn,aprobado_cgn,rechazado_cgn,gafi_ok,gafi_error"/>
                     </header>
                     <sheet>
                         <div name="oe_tittle" class="oe_title"></div>
@@ -61,8 +62,8 @@
                                 <field name="is_require_extended" invisible="1"/>
                                 <field name="employee_id_domain" invisible="1"/>
                                 <field name="contract_id_domain" invisible="1"/>
-                                 <field name="operating_unit_id" invisible="1"  force_save="1"/>
-                                 <field name="inciso_id" invisible="1" force_save="1"/>
+                                <field name="operating_unit_id" invisible="1" force_save="1"/>
+                                <field name="inciso_id" invisible="1" force_save="1"/>
                                 <field name="cv_emissor_country_id"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                        readonly="1"
@@ -133,7 +134,8 @@
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id" required="1"/>
-                                    <field name="document_file" required="1" widget="binary" filename="document_file_name"
+                                    <field name="document_file" required="1" widget="binary"
+                                           filename="document_file_name"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="document_file_name" invisible="1"/>
                                 </tree>
