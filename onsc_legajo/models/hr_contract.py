@@ -146,13 +146,13 @@ class HrContract(models.Model):
         for record in self:
             name = record.legajo_name
             if self._context.get('show_descriptors', False):
-                descriptor1 = record.descriptor1_id and record.descriptor1_id.name or ''
-                descriptor2 = record.descriptor2_id and record.descriptor2_id.name or ''
-                descriptor3 = record.descriptor3_id and record.descriptor3_id.name or ''
-                descriptor4 = record.descriptor4_id and record.descriptor4_id.name or ''
+                descriptor1 = record.descriptor1_id and " - " + record.descriptor1_id.name or ''
+                descriptor2 = record.descriptor2_id and " - " + record.descriptor2_id.name or ''
+                descriptor3 = record.descriptor3_id and " - " +  record.descriptor3_id.name or ''
+                descriptor4 = record.descriptor4_id and  " - " + record.descriptor4_id.name or ''
 
-                name = record.legajo_name + " - " + descriptor1 + " - " + descriptor2 + \
-                       " - " + descriptor3 + " - " + descriptor4
+                name = record.legajo_name + descriptor1 + descriptor2 + \
+                       descriptor3 + descriptor4
             res.append((record.id, name))
         return res
 
@@ -224,10 +224,12 @@ class HrContract(models.Model):
         self.write({'legajo_state': legajo_state})
 
     def deactivate_legajo_contract(self, date_end, legajo_state='baja'):
-        self.write({
-            'legajo_state': legajo_state,
-        })
+        vals = {'legajo_state': legajo_state}
+        if legajo_state == 'baja':
+            vals.update({'date_end': date_end})
+        self.write(vals)
         self.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write({'end_date': date_end})
+        self.suspend_security().job_ids.onchange_end_date()
 
     @api.model
     def create(self, vals):

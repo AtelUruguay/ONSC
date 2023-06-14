@@ -41,15 +41,10 @@ class ONSCLegajoCausesDischarge(models.Model):
 class ONSCLegajoCausesDischargeLine(models.Model):
     _name = 'onsc.legajo.causes.discharge.line'
     _description = 'Causal de egreso Linea'
+    _rec_name = 'description'
 
     name = fields.Char("Código", required=True)
     description = fields.Char(u"Descripción", required=True)
     causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge",
                                           string="Causal de egreso",
                                           ondelete='cascade')
-
-    def name_get(self):
-        res = []
-        for rec in self:
-            res.append((rec.id, rec.name + '-'+rec.description))
-        return res

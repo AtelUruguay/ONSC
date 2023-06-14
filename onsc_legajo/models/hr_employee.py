@@ -57,6 +57,8 @@ class HrEmployee(models.Model):
                 name = record.cv_nro_doc + " - " + record.full_name or record.name
             res.append((record.id, name))
         return res
+    def _custom_display_name(self):
+        return self.cv_nro_doc + " - " + self.full_name or self.name
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
         for record in self:
@@ -79,7 +81,7 @@ class HrEmployee(models.Model):
     @api.depends('contract_ids', 'contract_ids.legajo_state')
     def _compute_legajo_state(self):
         for rec in self:
-            if rec.contract_ids.filtered(lambda x: x.legajo_state in ['active', 'outgoing_commmission']):
+            if rec.contract_ids.filtered(lambda x: x.legajo_state != 'baja'):
                 rec.legajo_state = 'active'
             else:
                 rec.legajo_state = 'egresed'
