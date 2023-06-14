@@ -22,17 +22,31 @@
                 <header>
                     <button name="action_send_destination" class="btn btn-primary" type="object"
                             string="Enviar a destino"
-                            attrs="{'invisible': ['|',('is_edit_destination', '=', True),('state','not in',['draft','returned'])]}"/>
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
+                            attrs="{'invisible': [('is_available_send_destination', '=', False)]}"/>
                     <button name="action_send_origin" class="btn btn-primary" type="object" string="Enviar a origen"
-                            states="to_process"/>
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
+                            attrs="{'invisible': [('is_available_send_origin', '=', False)]}"/>
                     <button name="action_send_sgh" type="object" string="Enviar a SGH"
+                            class="btn btn-primary"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
                             attrs="{'invisible': [('is_available_send_to_sgh', '=', False)]}"/>
                     <button name="action_cancel" type="object" string="Cancelar"
+                            groups="onsc_legajo.group_legajo_hr_inciso_alta_cs,onsc_legajo.group_legajo_hr_ue_alta_cs,onsc_legajo.group_legajo_alta_cs_administrar_altas_cs"
                             states="draft,returned,to_process,error_sgh"/>
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
-
+                    <field name="is_error_synchronization" invisible="1"/>
+                    <div class="alert alert-danger"
+                         role="alert"
+                         attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
+                         style="margin-bottom:0px;">
+                        <p>
+                            <i class="fa fa-info-circle" role="alert" aria-label="Warning" title="Warning"/>
+                            <field name="error_message_synchronization" readonly="1"/>
+                        </p>
+                    </div>
                     <group string="Datos del puesto seleccionado">
                         <group>
                             <field name="inciso_origin_id"
@@ -46,11 +60,17 @@
                             <field name="operating_unit_origin_id_domain" invisible="1"/>
                             <field name="is_inciso_origin_ac" invisible="1"/>
                             <field name="is_available_send_to_sgh" invisible="1"/>
+                            <field name="is_available_send_origin" invisible="1"/>
+                            <field name="is_available_send_destination" invisible="1"/>
                         </group>
                         <group>
                             <field name="partner_id" domain="partner_id_domain" context="{'show_cv_nro_doc':True}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
+                            <field name="cv_birthdate" force_save="1"
+                                   attrs="{'readonly': ['|',('state', 'not in', ['draft', 'error_sgh']),('employee_id', '!=', False)]}"/>
+                            <field name="cv_sex" force_save="1"
+                                   attrs="{'readonly': ['|',('state', 'not in', ['draft', 'error_sgh']),('employee_id', '!=', False)]}"/>
                             <field name="partner_id_domain" invisible="1"/>
                             <field name="should_disable_form_edit" invisible="1"/>
                             <field name="contract_id_domain" invisible="1"/>
@@ -63,20 +83,25 @@
                     <br></br>
 
 
-                    <group string="Datos del puesto seleccionado"
+                    <group string="Datos del contrato seleccionado"
                            attrs="{'invisible': [('is_inciso_origin_ac', '!=', True)]}">
                         <group>
                             <field name="program_project_origin_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    context="{'show_project_program':True}" readonly="1"
                                    forcesave="1"/>
-                            <field name="regime_origin_id" forcesave="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="regime_origin_id" forcesave="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                         <group>
-                            <field name="descriptor1_id" readonly="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="descriptor2_id" readonly="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="descriptor3_id" readonly="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="descriptor4_id" readonly="1" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor1_id" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor2_id" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor3_id" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor4_id" readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                     </group>
 
@@ -87,11 +112,10 @@
                                    domain="inciso_destination_id_domain"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
                             <field name="inciso_destination_id_domain" invisible="1"/>
-                            <field name="type_cs"/>
-                            <field name="is_edit_inciso_ou_destination" invisible="1"/>
+                            <field name="type_cs" invisible="1"/>
                             <field name="operating_unit_destination_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   attrs="{'readonly': [('is_edit_inciso_ou_destination', '=',False)]}"
+                                   attrs="{'readonly': [('state','!=','draft')]}"
                                    domain="operating_unit_destination_id_domain"/>
                             <field name="operating_unit_destination_id_domain" invisible="1"/>
                             <field name="is_edit_destination" invisible="1"/>
@@ -142,7 +166,8 @@
                             <tree editable="top">
                                 <field name="name" required="1"/>
                                 <field name="document_type_id" required="1"/>
-                                <field name="document_file" required="1" filename="document_file_name"/>
+                                <field name="document_file" options="{'accepted_file_extensions': '.pdf'}" required="1"
+                                       filename="document_file_name"/>
                                 <field name="document_file_name" invisible="1"/>
                             </tree>
                         </field>
