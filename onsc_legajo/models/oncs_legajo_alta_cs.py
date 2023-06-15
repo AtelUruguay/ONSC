@@ -8,7 +8,7 @@ from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
 REQUIRED_FIELDS = ['date_start_commission', 'reason_description', 'norm_id', 'resolution_description',
-                   'resolution_date', 'resolution_type', 'regime_commission_id', 'type_commission_selection']
+                   'resolution_date', 'resolution_type', 'regime_commission_id']
 
 
 class ONSCLegajoAltaCS(models.Model):
@@ -168,7 +168,6 @@ class ONSCLegajoAltaCS(models.Model):
                                readonly=True)
     norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
                                   store=True, readonly=True)
-    tag_norm_not_found = fields.Char(string='Etiqueta con el mensaje en caso de no encontrar la norma')
     resolution_description = fields.Text(string='Descripción de la resolución')
     resolution_date = fields.Date(string='Fecha de la resolución')
     resolution_type = fields.Selection(
@@ -208,6 +207,7 @@ class ONSCLegajoAltaCS(models.Model):
                                               compute='_compute_is_available_send_origin')
     is_available_send_destination = fields.Boolean(string="Disponible para enviar a destino",
                                                    compute='_compute_is_available_send_destination')
+    is_edit_contract = fields.Boolean(string="Editar datos de contrato")
 
     # DATOS DEL WS10
     nroPuesto = fields.Char(string='Puesto', copy=False)
@@ -466,14 +466,25 @@ class ONSCLegajoAltaCS(models.Model):
                     record.employee_id = employee_id.id
                     record.cv_birthdate = employee_id.cv_birthdate
                     record.cv_sex = employee_id.cv_sex
+                    args = [("legajo_state", "=", 'active'), ('employee_id', '=', record.employee_id.id),
+                            ('operating_unit_id', '=', record.operating_unit_origin_id.id)]
+                    contracts = self.env['hr.contract'].sudo().search(args)
+                    if len(contracts) == 1:
+                        record.contract_id = contracts.id
+                        record.is_edit_contract = False
+                    else:
+                        record.is_edit_contract = True
                 else:
                     record.employee_id = False
                     record.cv_birthdate = False
                     record.cv_sex = False
+                    record.is_edit_contract = True
             else:
                 record.cv_birthdate = False
                 record.cv_sex = False
                 record.employee_id = False
+                record.contract_id = False
+                record.is_edit_contract = True
 
     @api.onchange('inciso_destination_id')
     def onchange_inciso_destination_id(self):
@@ -613,3 +624,8 @@ class ONSCLegajoAltaCS(models.Model):
         })
         job.onchange_security_job_id()
         return job
+
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'draft'):
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
+        return super().unlink()

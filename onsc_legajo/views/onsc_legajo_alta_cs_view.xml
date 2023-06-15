@@ -56,6 +56,7 @@
                             <field name="inciso_origin_id_domain" invisible="1"/>
                             <field name="is_edit_origin" invisible="1"/>
                             <field name="operating_unit_origin_id" domain="operating_unit_origin_id_domain"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
                             <field name="operating_unit_origin_id_domain" invisible="1"/>
                             <field name="is_inciso_origin_ac" invisible="1"/>
@@ -75,9 +76,11 @@
                             <field name="should_disable_form_edit" invisible="1"/>
                             <field name="contract_id_domain" invisible="1"/>
                             <field name="contract_id" domain="contract_id_domain"
-                                   attrs="{'invisible': [('is_inciso_origin_ac', '=', False)],'readonly': [('is_edit_origin', '=', False)]}"
+                                   context="{'show_descriptors':True}"
+                                   attrs="{'invisible': [('is_inciso_origin_ac', '=', False)],'readonly': ['|',('is_edit_contract', '=', False),('state', '!=', 'draft')]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="employee_id" invisible="1"/>
+                            <field name="is_edit_contract" invisible="1"/>
                         </group>
                     </group>
                     <br></br>
@@ -154,7 +157,6 @@
                             <field name="norm_article" colspan="2"/>
                         </group>
                         <group>
-                            <field name="tag_norm_not_found"/>
                             <field name="resolution_description"/>
                             <field name="resolution_date"/>
                             <field name="resolution_type"/>
