@@ -171,7 +171,7 @@ class ONSCLegajoAltaCS(models.Model):
     resolution_description = fields.Text(string='Descripción de la resolución')
     resolution_date = fields.Date(string='Fecha de la resolución')
     resolution_type = fields.Selection(
-        [('m', 'Inciso'), ('p', 'Presidencia o Poder ejecutivo'), ('u', 'Unidad ejecutora')],
+        [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
         string='Tipo de resolución')
     code_regime_start_commission_id = fields.Many2one('onsc.legajo.commission.regime',
                                                       string='Código del régimen de Inicio de Comisión')
@@ -555,24 +555,36 @@ class ONSCLegajoAltaCS(models.Model):
             self.error_message_synchronization = error_sgh
 
     def action_aprobado_cgn(self):
-        # TODO
-        # linkear los contratos a la ACS oculoto
-        new_contract = self._get_legajo_contract()
+        if self.type_cs == 'out2ac':
+            employee = self._get_legajo_employee()
+            self._get_legajo(employee)
+        new_contract = self._get_legajo_contract(employee)
         self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
         date_start = fields.Date.from_string(self.date_start_commission)
         self.contract_id.deactivate_legajo_contract(
             date_end=date_start - relativedelta(days=1),
             legajo_state='outgoing_commission'
         )
-        self._get_legajo_job(new_contract)
+        if self.type_cs != 'ac2out':
+            self._get_legajo_job(new_contract)
         self.write({'state': 'confirmed'})
 
-    def _get_legajo_contract(self):
+    def _get_legajo_employee(self):
+        cv_emissor_country_id = self.env.ref('base.uy')
+        cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([
+            ('code', '=', 'ci')], limit=1)
+        return self.env['hr.employee']._get_legajo_employee(cv_emissor_country_id, cv_document_type_id, self.partner_id)
+
+    def _get_legajo(self, employee):
+        return self.env['onsc.legajo']._get_legajo(employee)
+
+    def _get_legajo_contract(self, employee_id=False):
         Contract = self.env['hr.contract']
         origin_contract_id = self.contract_id
+        employee = employee_id or self.employee_id
         vals = {
-            'employee_id': self.employee_id.id,
-            'name': self.employee_id.name,
+            'employee_id': employee.id,
+            'name': employee.name,
             'date_start': self.date_start_commission or fields.Date.today(),
             'inciso_id': self.inciso_destination_id.id,
             'operating_unit_id': self.operating_unit_destination_id.id,
@@ -613,17 +625,8 @@ class ONSCLegajoAltaCS(models.Model):
         return contract
 
     def _get_legajo_job(self, contract):
-        Job = self.env['hr.job']
-        job = Job.suspend_security().create({
-            'name': '%s - %s' % (contract.display_name, str(self.date_start)),
-            'employee_id': contract.employee_id.id,
-            'contract_id': contract.id,
-            'department_id': self.department_id.id,
-            'start_date': self.date_start_commission,
-            'security_job_id': self.security_job_id.id,
-        })
-        job.onchange_security_job_id()
-        return job
+        return self.env['hr.job'].create_job(contract, self.department_id, self.date_start_commission,
+                                             self.security_job_id)
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'draft'):

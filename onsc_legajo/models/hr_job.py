@@ -103,6 +103,27 @@ class HrJob(models.Model):
             "res_id": self.id,
         }
 
+    # INTELIGENCIA DE ENTIDAD
+    def create_job(self, contract, department, start_date, security_job):
+        """
+        CREA NUEVO PUESTO A PARTIR DE LA DATA DE ENTRADA
+        :param contract: Recordset a hr.contract
+        :param department: Recordset a hr.department
+        :param start_date: Date
+        :param security_job: Recordset a onsc.legajo.security.job
+        :return: nuevo recordet de hr.job
+        """
+        job = self.suspend_security().create({
+            'name': '%s - %s' % (contract.display_name, str(start_date)),
+            'employee_id': contract.employee_id.id,
+            'contract_id': contract.id,
+            'department_id': department.id,
+            'start_date': start_date,
+            'security_job_id': security_job.id,
+        })
+        job.onchange_security_job_id()
+        return job
+
 
 class HrJobRoleLine(models.Model):
     _inherit = 'hr.job.role.line'
@@ -169,6 +190,8 @@ class HrJobRoleLine(models.Model):
         return json.dumps([('id', 'in', roles.ids)])
 
     def _check_write(self):
+        if self._context.get('no_check_write'):
+            return True
         is_informatica_onsc = self.user_has_groups(
             'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc')
         if not is_informatica_onsc and self.filtered(
@@ -189,3 +212,4 @@ class HrJobRoleLine(models.Model):
             rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
                                     tracking_value_ids=tracking_value_ids)
         return True
+
