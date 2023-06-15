@@ -76,6 +76,7 @@
                             <field name="should_disable_form_edit" invisible="1"/>
                             <field name="contract_id_domain" invisible="1"/>
                             <field name="contract_id" domain="contract_id_domain"
+                                   force_save="1"
                                    context="{'show_descriptors':True}"
                                    attrs="{'invisible': [('is_inciso_origin_ac', '=', False)],'readonly': ['|',('is_edit_contract', '=', False),('state', '!=', 'draft')]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
