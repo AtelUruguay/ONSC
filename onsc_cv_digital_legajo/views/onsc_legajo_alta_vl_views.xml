@@ -7,9 +7,9 @@
             <field name="arch" type="xml">
                 <tree string="Alta VL">
                     <header>
-                        <button name="action_call_multi_ws4" type="object"
+                        <button name="action_call_multi_ws4"
                                 groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
-                                string="Enviar a SGH"/>
+                                type="object" string="Enviar a SGH"/>
                     </header>
                     <field name="full_name"/>
                     <field name="state"/>
