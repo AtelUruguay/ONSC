@@ -173,6 +173,11 @@
                         </field>
                         <group name="adicional" string="Información Adicional">
                             <field name="additional_information" nolabel="1" placeholder="Información Adicional"/>
+<!--                            BORRAR-->
+                            <field name="nroPuesto"/>
+                            <field name="nroPlaza"/>
+                            <field name="secPlaza"/>
+                            <button name="action_aprobado_cgn" type="object" string="TEMPORAL: WS10 OK"/>
                         </group>
                     </group>
                 </sheet>
