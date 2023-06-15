@@ -809,7 +809,9 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     def get_fields(self):
         return self._fields
 
-    def find_by_code_name_many2one(self, field, code_field, name_field, value, args=[]):
+    def find_by_code_name_many2one(self, field, code_field, name_field, value, args=None):
+        if args is None:
+            args = []
         value = value.strip() if isinstance(value, str) else value
         args = expression.AND([['|', (code_field, '=', value), (name_field, '=', value)], args])
         record = self.env[self._fields[field].comodel_name].sudo().search(args, limit=1)
