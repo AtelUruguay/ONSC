@@ -108,7 +108,7 @@ class ONSCLegajoAltaCS(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
-    employee_id = fields.Many2one('hr.employee', 'Empleados', compute="_compute_employee", store=True)
+    employee_id = fields.Many2one('hr.employee', 'Empleados')
     partner_id = fields.Many2one('res.partner', string='CI', required=True)
     partner_id_domain = fields.Char(compute='_compute_partner_id_domain')
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
@@ -263,7 +263,7 @@ class ONSCLegajoAltaCS(models.Model):
                      ('regime_id.presupuesto', '=', True)]).mapped(
                     'employee_id').ids
                 record.partner_id_domain = json.dumps(
-                    [('legajo_employee_ids', 'in', employee_ids), ('id', '!=', user_partner_id.id)])
+                    [('legajo_employee_id', 'in', employee_ids), ('id', '!=', user_partner_id.id)])
             else:
                 record.partner_id_domain = json.dumps(
                     [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True), ('id', '!=', user_partner_id.id)])
@@ -517,7 +517,8 @@ class ONSCLegajoAltaCS(models.Model):
                 message.append(_("Sexo"))
             if not record.regime_commission_id.cgn_code:
                 message.append(_("Código CGN de régimen de comisión"))
-
+            if not record.contract_id.legajo_state == 'active':
+                message.append(_("El contrato debe estar activo"))
         if message:
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
