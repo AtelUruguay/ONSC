@@ -217,14 +217,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             return message_error.append("La columna %s no corresponde al formato esperado" % field_string)
 
     def action_process_excel(self):
-
         try:
             fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
             fp.write(binascii.a2b_base64(self.document_file))
             fp.seek(0)
             workbook = xlrd.open_workbook(fp.name)
             sheet = workbook.sheet_by_name('Datos')
-        except Exception:
+        except Exception as e:
             raise UserError(_("Archivo inválido"))
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
         LegajoOffice = self.env['onsc.legajo.office']
@@ -303,6 +302,26 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 graduation_date = line[self.get_position(column_names, 'graduation_date')]
                 contract_expiration_date = line[self.get_position(column_names, 'contract_expiration_date')]
                 resolution_date = line[self.get_position(column_names, 'resolution_date')]
+
+                address_state_id = MassLine.find_by_code_name_many2one(
+                    'address_state_id', 'code', 'name', line[self.get_position(column_names, 'address_state_id')]
+                )
+                address_location_id = MassLine.find_by_code_name_many2one(
+                    'address_location_id', 'code', 'name', line[self.get_position(column_names, 'address_location_id')],
+                    [('state_id', '=', address_state_id)]
+                )
+                address_street_id = MassLine.find_by_code_name_many2one(
+                    'address_street_id', 'code','street', line[self.get_position(column_names, 'address_street_id')],
+                    [('cv_location_id', '=', address_location_id)]
+                )
+                address_street2_id = MassLine.find_by_code_name_many2one(
+                    'address_street2_id', 'code', 'street', line[self.get_position(column_names, 'address_street2_id')],
+                    [('cv_location_id', '=', address_location_id)]
+                )
+                address_street3_id = MassLine.find_by_code_name_many2one(
+                    'address_street3_id', 'code', 'street', line[self.get_position(column_names, 'address_street3_id')],
+                    [('cv_location_id', '=', address_location_id)]
+                )
                 values = {
                     'nro_line': row_no,
                     'mass_upload_id': self.id,
@@ -325,21 +344,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'personal_phone': line[self.get_position(column_names, 'personal_phone')],
                     'mobile_phone': line[self.get_position(column_names, 'mobile_phone')],
                     'email': line[self.get_position(column_names, 'email')],
-                    'address_state_id': MassLine.find_by_code_name_many2one('address_state_id', 'code', 'name',
-                                                                            line[self.get_position(column_names,
-                                                                                                   'address_state_id')]),
-                    'address_location_id': MassLine.find_by_code_name_many2one('address_location_id', 'code', 'name',
-                                                                               line[self.get_position(column_names,
-                                                                                                      'address_location_id')]),
-                    'address_street_id': MassLine.find_by_code_name_many2one('address_street_id', 'code', 'street',
-                                                                             line[self.get_position(column_names,
-                                                                                                    'address_street_id')]),
-                    'address_street2_id': MassLine.find_by_code_name_many2one('address_street2_id', 'code', 'street',
-                                                                              line[self.get_position(column_names,
-                                                                                                     'address_street2_id')]),
-                    'address_street3_id': MassLine.find_by_code_name_many2one('address_street3_id', 'code', 'street',
-                                                                              line[self.get_position(column_names,
-                                                                                                     'address_street3_id')]),
+                    'address_state_id': address_state_id,
+                    'address_location_id': address_location_id,
+                    'address_street_id': address_street_id,
+                    'address_street2_id': address_street2_id,
+                    'address_street3_id': address_street3_id,
                     'address_zip': line[self.get_position(column_names, 'address_zip')],
                     'address_nro_door': line[self.get_position(column_names, 'address_nro_door')],
                     'address_is_bis': line[self.get_position(column_names, 'address_is_bis')],
@@ -800,10 +809,10 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     def get_fields(self):
         return self._fields
 
-    def find_by_code_name_many2one(self, field, code_field, name_field, value):
+    def find_by_code_name_many2one(self, field, code_field, name_field, value, args=[]):
         value = value.strip() if isinstance(value, str) else value
-        record = self.env[self._fields[field].comodel_name].sudo().search(
-            ['|', (code_field, '=', value), (name_field, '=', value)], limit=1)
+        args = expression.AND([['|', (code_field, '=', value), (name_field, '=', value)], args])
+        record = self.env[self._fields[field].comodel_name].sudo().search(args, limit=1)
         if record:
             return record.id
         elif len(value) == 0:
