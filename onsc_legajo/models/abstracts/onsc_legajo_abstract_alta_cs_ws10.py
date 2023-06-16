@@ -23,7 +23,7 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
         _logger.info('******************WS10')
         _logger.info(data)
         _logger.info('******************WS10')
-        return self.with_context(altas_vl=records, log_info=log_info).suspend_security()._syncronize(wsclient,
+        return self.with_context(altas_cs=records, log_info=log_info).suspend_security()._syncronize(wsclient,
                                                                                                      parameter,
                                                                                                      'WS10',
                                                                                                      integration_error,
@@ -103,15 +103,12 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
             altas_cs = self._context.get('altas_cs')
             onsc_legajo_integration_error_WS10_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_WS10_9004")
-            # if hasattr(response, 'AltaComisionRespuesta') and response.AltaComisionRespuesta:
+
             try:
                 altas_cs.write({
                     'secPlaza': response['secPlazaDestino'] if 'secPlazaDestino' in response else False,
                     'nroPuesto': response['idPuestoDestino'] if 'idPuestoDestino' in response else False,
                     'nroPlaza': response['nroPlazaDestino'] if 'nroPlazaDestino' in response else False,
-                    'is_error_synchronization': False,
-                    'state': 'confirmed',
-                    'error_message_synchronization': ''
                 })
                 altas_cs.action_aprobado_cgn()
             except Exception as e:

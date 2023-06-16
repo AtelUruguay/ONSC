@@ -586,6 +586,8 @@ class ONSCLegajoAltaCS(models.Model):
         if self.type_cs == 'out2ac':
             employee = self._get_legajo_employee()
             self._get_legajo(employee)
+        else:
+            employee = self.employee_id
         new_contract = self._get_legajo_contract(employee)
         self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
         date_start = fields.Date.from_string(self.date_start_commission)
@@ -595,7 +597,11 @@ class ONSCLegajoAltaCS(models.Model):
         )
         if self.type_cs != 'ac2out':
             self._get_legajo_job(new_contract)
-        self.write({'state': 'confirmed'})
+        self.write({
+            'is_error_synchronization': False,
+            'error_message_synchronization': '',
+            'state': 'confirmed'
+        })
 
     def _get_legajo_employee(self):
         cv_emissor_country_id = self.env.ref('base.uy')
