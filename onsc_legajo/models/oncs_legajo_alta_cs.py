@@ -558,9 +558,9 @@ class ONSCLegajoAltaCS(models.Model):
                 message.append("Primer Apellido")
             if not record.partner_id.cv_first_name:
                 message.append("Primer Nombre")
-            if record.operating_unit_destination_id:
+            if not record.operating_unit_destination_id:
                 message.append(record._fields['operating_unit_destination_id'].string)
-            if record.program_project_destination_id:
+            if not record.program_project_destination_id:
                 message.append(record._fields['program_project_destination_id'].string)
             if record.inciso_destination_id:
                 message.append(record._fields['inciso_destination_id'].string)
