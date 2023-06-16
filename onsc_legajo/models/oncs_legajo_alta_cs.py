@@ -588,15 +588,12 @@ class ONSCLegajoAltaCS(models.Model):
 
     def action_send_destination(self):
         self.state = 'to_process'
-        return True
 
     def action_send_origin(self):
         self.state = 'returned'
-        return True
 
     def action_cancel(self):
         self.state = 'cancelled'
-        return True
 
     def action_send_sgh(self):
         self.check_required_fieds_ws10()
