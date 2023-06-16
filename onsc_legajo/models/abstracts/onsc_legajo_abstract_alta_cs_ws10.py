@@ -113,6 +113,7 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
                     'state': 'confirmed',
                     'error_message_synchronization': ''
                 })
+                altas_cs.action_aprobado_cgn()
             except Exception as e:
                 long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
                 _logger.warning(long_description)

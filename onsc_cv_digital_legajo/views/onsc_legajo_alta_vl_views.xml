@@ -7,7 +7,9 @@
             <field name="arch" type="xml">
                 <tree string="Alta VL">
                     <header>
-                        <button name="action_call_multi_ws4" type="object" string="Enviar a SGH"/>
+                        <button name="action_call_multi_ws4"
+                                groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
+                                type="object" string="Enviar a SGH"/>
                     </header>
                     <field name="full_name"/>
                     <field name="state"/>
@@ -22,6 +24,7 @@
                 <tree string="Alta VL">
                     <header>
                         <button name="action_call_multi_ws4" type="object" string="Enviar a SGH"
+                                groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
                                 context="{'not_check_attached_document': True}"/>
                     </header>
                     <field name="full_name"/>
@@ -94,8 +97,9 @@
                 <xpath expr="//notebook" position="inside">
                     <page string="Datos personales">
                         <group>
-                            <field name="address_receipt_file" filename="address_receipt_file_name" readonly="1" force_save="1"
-                                options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="address_receipt_file" filename="address_receipt_file_name" readonly="1"
+                                   force_save="1"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="address_receipt_file_name" invisible="1" force_save="1"/>
                             <field name="country_of_birth_id" readonly="1" force_save="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
@@ -106,9 +110,9 @@
                             <field name="crendencial_serie" readonly="1" force_save="1"/>
                             <field name="credential_number" readonly="1" force_save="1"/>
                             <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
-                                       filename="civical_credential_filename"
-                                       attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"
-                                       readonly="1" force_save="1"/>
+                                   filename="civical_credential_filename"
+                                   attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"
+                                   readonly="1" force_save="1"/>
                             <field name="civical_credential_filename" invisible="1" readonly="1" force_save="1"/>
                             <field name="marital_status_id" readonly="1" force_save="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
