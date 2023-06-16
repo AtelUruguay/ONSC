@@ -262,5 +262,8 @@ class ONSCLegajoBajaCS(models.Model):
                 {'end_date': self.end_date})
 
         self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
-        self.suspend_security().write({'state': 'confirmado'})
+        self.suspend_security().write({'state': 'confirmado',
+                                       'is_error_synchronization': False,
+                                       'error_message_synchronization': ''
+                                       })
         return True
