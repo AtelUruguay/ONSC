@@ -605,8 +605,8 @@ class ONSCLegajoAltaCS(models.Model):
             self.error_message_synchronization = error_sgh
 
     def action_aprobado_cgn(self):
+        employee = self._get_legajo_employee()
         if self.type_cs == 'out2ac':
-            employee = self._get_legajo_employee()
             self._get_legajo(employee)
         new_contract = self._get_legajo_contract(employee)
         self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
