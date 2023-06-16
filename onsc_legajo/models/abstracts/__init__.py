@@ -8,3 +8,4 @@ from . import onsc_legajo_abstract_alta_vl_ws4
 from . import onsc_legajo_abstract_baja_vl_ws9
 from . import onsc_legajo_abstract_ws12
 from . import onsc_legajo_abstract_alta_cs_ws10
+from . import onsc_legajo_abstract_baja_vl_ws11

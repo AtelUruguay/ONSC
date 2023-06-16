@@ -70,6 +70,23 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                     long_description
                 )
                 return long_description
+        elif hasattr(response, 'codigo'):
+            if response.codigo == 0:
+                return self._populate_from_syncronization(response)
+            else:
+                error = IntegrationError.search([
+                    ('integration_code', '=', integration_error.integration_code),
+                    ('code_error', '=', str(response.codigo))
+                ], limit=1)
+                long_description = '%s - Código: %s' % (
+                    tools.ustr(response.mensaje), str(response.codigo))
+                self._process_response_witherror(
+                    response,
+                    origin_name,
+                    error or integration_error,
+                    long_description
+                )
+                return long_description
         return "No se obtuvo respuesta del WS"
 
     def _populate_from_syncronization(self, response):
