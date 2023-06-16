@@ -820,8 +820,17 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
         elif len(value) == 0:
             return False
         else:
-            message_error.append(
-                'No se encontró el valor %s en el catálogo de %s' % (value, self._fields[field].string))
+            if field in ['address_location_id']:
+                message_error.append(
+                    'No se encontró el valor %s en el catálogo de %s para ese valor de Departamento' %
+                    (value, self._fields[field].string))
+            elif field in ['address_street_id', 'address_street2_id', 'address_street3_id']:
+                message_error.append(
+                    'No se encontró el valor %s en el catálogo de %s para esa Localidad' % (
+                    value, self._fields[field].string))
+            else:
+                message_error.append(
+                    'No se encontró el valor %s en el catálogo de %s' % (value, self._fields[field].string))
 
     def create_line(self, values):
         return self.create(values)

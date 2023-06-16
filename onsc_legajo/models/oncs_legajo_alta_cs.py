@@ -461,16 +461,16 @@ class ONSCLegajoAltaCS(models.Model):
         Employee = self.env['hr.employee'].sudo()
         for record in self:
             if record.partner_id:
-                record.employee_id = Employee.sudo().search([
+                record.employee_id = Employee.search([
                     ('partner_id', '=', record.partner_id.id)
                 ], limit=1)
             else:
                 record.employee_id = False
 
+
     @api.onchange('employee_id')
     def onchange_employee_id(self):
-        self.cv_birthdate = self.employee_id.cv_birthdate
-        self.cv_sex = self.employee_id.cv_sex
+        self.set_extra_data()
         contracts = self.env['hr.contract'].sudo().search([
             ("legajo_state", "=", 'active'),
             ('employee_id', '=', self.employee_id.id),
