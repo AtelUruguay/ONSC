@@ -562,7 +562,7 @@ class ONSCLegajoAltaCS(models.Model):
                 message.append(record._fields['operating_unit_destination_id'].string)
             if not record.program_project_destination_id:
                 message.append(record._fields['program_project_destination_id'].string)
-            if record.inciso_destination_id:
+            if not record.inciso_destination_id:
                 message.append(record._fields['inciso_destination_id'].string)
             if not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
