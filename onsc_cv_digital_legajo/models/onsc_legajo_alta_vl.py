@@ -464,7 +464,7 @@ class ONSCLegajoAltaVL(models.Model):
                 cv.with_context(user_id=self.ws4_user_id.id,
                                 documentary_validation='nro_doc').button_documentary_approve()
         employee.write(vals)
-        cv.write({'is_docket': True, 'is_docket_active': True})
+        cv.write({'is_docket': True})
         return employee
 
     # MAIL TEMPLATE UTILS

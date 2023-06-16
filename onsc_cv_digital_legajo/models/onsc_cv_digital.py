@@ -217,7 +217,7 @@ class ONSCCVDigital(models.Model):
                 ('cv_nro_doc', '=', record.cv_nro_doc),
             ], limit=1)
 
-    @api.depends('employee_id', 'employee_id.legajo_state')
+    @api.depends('employee_id', 'employee_id.legajo_state', 'is_docket')
     def _compute_is_docket_active(self):
         for record in self:
             record.is_docket_active = record.employee_id and record.employee_id.legajo_state == 'active'
