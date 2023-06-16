@@ -604,11 +604,11 @@ class ONSCLegajoAltaCS(models.Model):
             self.is_error_synchronization = True
             self.error_message_synchronization = error_sgh
 
-    def action_aprobado_cgn(self,nroPuesto,secPlaza,nroPlaza):
+    def action_aprobado_cgn(self):
         if self.type_cs == 'out2ac':
             employee = self._get_legajo_employee()
             self._get_legajo(employee)
-        new_contract = self._get_legajo_contract(employee,nroPuesto,secPlaza,nroPlaza)
+        new_contract = self._get_legajo_contract(employee)
         self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
         date_start = fields.Date.from_string(self.date_start_commission)
         self.contract_id.deactivate_legajo_contract(
@@ -617,13 +617,11 @@ class ONSCLegajoAltaCS(models.Model):
         )
         if self.type_cs != 'ac2out':
             self._get_legajo_job(new_contract)
-        self.write({'state': 'confirmed',
-                    'secPlaza': secPlaza,
-                    'nroPuesto': nroPuesto,
-                    'nroPlaza':nroPlaza,
-                    'is_error_synchronization': False,
-                    'error_message_synchronization': ''
-                    })
+        self.write({
+            'is_error_synchronization': False,
+            'error_message_synchronization': '',
+            'state': 'confirmed'
+        })
 
     def _get_legajo_employee(self):
         cv_emissor_country_id = self.env.ref('base.uy')
@@ -634,7 +632,7 @@ class ONSCLegajoAltaCS(models.Model):
     def _get_legajo(self, employee):
         return self.env['onsc.legajo']._get_legajo(employee)
 
-    def _get_legajo_contract(self, employee_id=False,nroPuesto=False,secPlaza=False,nroPlaza=False):
+    def _get_legajo_contract(self, employee_id=False):
         Contract = self.env['hr.contract']
         origin_contract_id = self.contract_id
         employee = employee_id or self.employee_id
@@ -653,9 +651,9 @@ class ONSCLegajoAltaCS(models.Model):
             'descriptor2_id': origin_contract_id.descriptor2_id.id,
             'descriptor3_id': origin_contract_id.descriptor3_id.id,
             'descriptor4_id': origin_contract_id.descriptor4_id.id,
-            'position': nroPuesto,
-            'workplace': nroPlaza,
-            'sec_position': secPlaza,
+            'position': self.nroPuesto,
+            'workplace': self.nroPlaza,
+            'sec_position': self.secPlaza,
             'graduation_date': origin_contract_id.graduation_date,
             'reason_description': self.reason_description,
             'norm_code_id': self.norm_id.id,

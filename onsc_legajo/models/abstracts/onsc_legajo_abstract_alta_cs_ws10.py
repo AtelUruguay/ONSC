@@ -105,11 +105,12 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
                 "onsc_legajo.onsc_legajo_integration_error_WS10_9004")
 
             try:
-                nroPuesto = response['secPlazaDestino'] if 'secPlazaDestino' in response else False
-                secPlaza = response['idPuestoDestino'] if 'idPuestoDestino' in response else False
-                nroPlaza = response['nroPlazaDestino'] if 'nroPlazaDestino' in response else False
-
-                altas_cs.action_aprobado_cgn(nroPuesto,secPlaza,nroPlaza)
+                altas_cs.write({
+                    'secPlaza': response['secPlazaDestino'] if 'secPlazaDestino' in response else False,
+                    'nroPuesto': response['idPuestoDestino'] if 'idPuestoDestino' in response else False,
+                    'nroPlaza': response['nroPlazaDestino'] if 'nroPlazaDestino' in response else False,
+                })
+                altas_cs.action_aprobado_cgn()
             except Exception as e:
                 long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
                 _logger.warning(long_description)
