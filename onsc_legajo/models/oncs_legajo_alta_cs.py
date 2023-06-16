@@ -207,6 +207,8 @@ class ONSCLegajoAltaCS(models.Model):
                                               compute='_compute_is_available_send_origin')
     is_available_send_destination = fields.Boolean(string="Disponible para enviar a destino",
                                                    compute='_compute_is_available_send_destination')
+    is_available_cancel = fields.Boolean(string="Disponible para cancelar",
+                                         compute='_compute_is_available_cancel')
     is_edit_contract = fields.Boolean(string="Editar datos de contrato")
 
     # DATOS DEL WS10
@@ -222,10 +224,18 @@ class ONSCLegajoAltaCS(models.Model):
             if record.date_start_commission and record.date_start_commission > fields.Date.today():
                 raise ValidationError("La fecha debe ser menor o igual al día de alta")
 
-    @api.depends('state')
+    @api.depends('state', 'type_cs', 'inciso_origin_id')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state not in ['draft', 'to_process', 'returned', 'error_sgh']
+            inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
+            if record.state not in ['draft', 'to_process', 'returned', 'error_sgh']:
+                record.should_disable_form_edit = True
+            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and record.inciso_origin_id == inciso_id:
+                record.should_disable_form_edit = True
+            elif record.state == 'returned' and record.type_cs == 'ac2ac' and record.inciso_destination_id == inciso_id:
+                record.should_disable_form_edit = True
+            else:
+                record.should_disable_form_edit = False
 
     @api.depends('operating_unit_origin_id', 'operating_unit_destination_id')
     def _compute_type_commission_selection(self):
@@ -235,6 +245,8 @@ class ONSCLegajoAltaCS(models.Model):
                     record.type_commission_selection = '1'
                 else:
                     record.type_commission_selection = '2'
+            else:
+                record.type_commission_selection = '1'
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
@@ -396,15 +408,16 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_is_available_send_to_sgh(self):
         for record in self:
             # AC2AC siendo tu mismo inciso origen y destino
-            if record.state in ['draft', 'to_process', 'error_sgh',
-                                'returned'] and record.type_cs == 'ac2ac' and record.inciso_origin_id == record.inciso_destination_id:
+            if record.state in ['draft', 'to_process',
+                                'error_sgh'] and record.type_cs == 'ac2ac' and record.inciso_origin_id == record.inciso_destination_id:
                 record.is_available_send_to_sgh = True
             # No AC2AC siempre enviar a SGH
             elif record.type_cs != 'ac2ac' and record.state in ['draft',
                                                                 'error_sgh'] and record.inciso_origin_id and record.inciso_destination_id:
                 record.is_available_send_to_sgh = True
             # Si eres el destino y esta en estado to_process o error_sgh
-            elif record.is_edit_destination and record.state in ['to_process', 'error_sgh', 'draft']:
+            elif record.is_edit_destination and record.state in ['to_process',
+                                                                 'error_sgh'] and record.type_cs == 'ac2ac':
                 record.is_available_send_to_sgh = True
             else:
                 record.is_available_send_to_sgh = False
@@ -420,10 +433,28 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_send_destination(self):
         for record in self:
-            if record.state == 'draft' and record.type_cs == 'ac2ac':
+            # Enviar a destino si es ac2ac y no es el mismo inciso en estado borrador o devuelto a origen
+            inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
+            if record.state in ['draft',
+                                'returned'] and record.type_cs == 'ac2ac' and not record.is_edit_destination and record.inciso_origin_id == inciso_id:
                 record.is_available_send_destination = True
             else:
                 record.is_available_send_destination = False
+
+    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
+    def _compute_is_available_cancel(self):
+        inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
+        for record in self:
+            if record.state == 'returned' and record.type_cs == 'ac2ac' and record.inciso_origin_id == inciso_id:
+                record.is_available_cancel = True
+            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and record.inciso_destination_id == inciso_id:
+                record.is_available_cancel = True
+            elif record.state == 'error_sgh' and record.type_cs == 'ac2ac' and record.inciso_destination_id == inciso_id:
+                record.is_available_cancel = True
+            elif record.state not in ['draft', 'confirmed'] and record.type_cs != 'ac2ac':
+                record.is_available_cancel = True
+            else:
+                record.is_available_cancel = False
 
     @api.depends('partner_id')
     def _compute_employee_id(self):
@@ -450,7 +481,6 @@ class ONSCLegajoAltaCS(models.Model):
         else:
             self.contract_id = False
             self.is_edit_contract = True
-
 
     def get_inciso_operating_unit_by_user(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
@@ -528,19 +558,25 @@ class ONSCLegajoAltaCS(models.Model):
                 message.append("Primer Apellido")
             if not record.partner_id.cv_first_name:
                 message.append("Primer Nombre")
-            if record.inciso_destination_id.is_central_administration and not record.operating_unit_destination_id:
+            if not record.operating_unit_destination_id:
                 message.append(record._fields['operating_unit_destination_id'].string)
-            if record.inciso_destination_id.is_central_administration and not record.program_project_destination_id:
+            if not record.program_project_destination_id:
                 message.append(record._fields['program_project_destination_id'].string)
-            if not record.inciso_destination_id.is_central_administration and not record.inciso_destination_id:
+            if not record.inciso_destination_id:
                 message.append(record._fields['inciso_destination_id'].string)
             if not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
             if not record.cv_birthdate:
                 message.append(_("Fecha de nacimiento"))
+            if record.type_cs != 'ac2out' and not record.department_id:
+                message.append(record._fields['department_id'].string)
+            if record.type_cs != 'ac2out' and not record.security_job_id:
+                message.append(record._fields['security_job_id'].string)
+            if record.type_cs != 'ac2out' and not record.occupation_id:
+                message.append(record._fields['occupation_id'].string)
             if not record.cv_sex:
                 message.append(_("Sexo"))
-            if not record.regime_commission_id.cgn_code:
+            if not record.regime_commission_id.cgn_code and not record.regime_commission_id:
                 message.append(_("Código CGN de régimen de comisión"))
             if not record.contract_id.legajo_state == 'active':
                 message.append(_("El contrato debe estar activo"))
