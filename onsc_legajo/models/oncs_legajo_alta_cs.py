@@ -8,7 +8,7 @@ from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
 REQUIRED_FIELDS = ['date_start_commission', 'reason_description', 'norm_id', 'resolution_description',
-                   'resolution_date', 'resolution_type', 'regime_commission_id', 'type_commission_selection']
+                   'resolution_date', 'resolution_type', 'regime_commission_id']
 
 
 class ONSCLegajoAltaCS(models.Model):
@@ -64,7 +64,7 @@ class ONSCLegajoAltaCS(models.Model):
             if inciso_id:
                 args = expression.AND([[
                     '|', ('inciso_origin_id', '=', inciso_id.id),
-                    ('inciso_destination_id', '=', inciso_id.id)
+                    '&', ('inciso_destination_id', '=', inciso_id.id), ('state', '!=', 'draft')
                 ], args])
         if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
             contract_id = self.env.user.employee_id.job_id.contract_id
@@ -73,12 +73,12 @@ class ONSCLegajoAltaCS(models.Model):
             if inciso_id:
                 args = expression.AND([[
                     '|', ('inciso_origin_id', '=', inciso_id.id),
-                    ('inciso_destination_id', '=', inciso_id.id)
+                    '&', ('inciso_destination_id', '=', inciso_id.id), ('state', '!=', 'draft')
                 ], args])
             if operating_unit_id:
                 args = expression.AND([[
                     '|', ('operating_unit_origin_id', '=', operating_unit_id.id),
-                    ('operating_unit_destination_id', '=', operating_unit_id.id)
+                    '&', ('operating_unit_destination_id', '=', operating_unit_id.id), ('state', '!=', 'draft')
                 ], args])
         return args
 
@@ -108,9 +108,9 @@ class ONSCLegajoAltaCS(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
-    employee_id = fields.Many2one('hr.employee', 'Empleados', compute="_compute_employee", store=True)
     partner_id = fields.Many2one('res.partner', string='CI', required=True)
     partner_id_domain = fields.Char(compute='_compute_partner_id_domain')
+    employee_id = fields.Many2one('hr.employee', 'Empleados', compute='_compute_employee_id', store=True)
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
     cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], string=u'Sexo', copy=False)
     # ORIGIN
@@ -168,7 +168,6 @@ class ONSCLegajoAltaCS(models.Model):
                                readonly=True)
     norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
                                   store=True, readonly=True)
-    tag_norm_not_found = fields.Char(string='Etiqueta con el mensaje en caso de no encontrar la norma')
     resolution_description = fields.Text(string='Descripción de la resolución')
     resolution_date = fields.Date(string='Fecha de la resolución')
     resolution_type = fields.Selection(
@@ -208,6 +207,9 @@ class ONSCLegajoAltaCS(models.Model):
                                               compute='_compute_is_available_send_origin')
     is_available_send_destination = fields.Boolean(string="Disponible para enviar a destino",
                                                    compute='_compute_is_available_send_destination')
+    is_available_cancel = fields.Boolean(string="Disponible para cancelar",
+                                         compute='_compute_is_available_cancel')
+    is_edit_contract = fields.Boolean(string="Editar datos de contrato")
 
     # DATOS DEL WS10
     nroPuesto = fields.Char(string='Puesto', copy=False)
@@ -222,10 +224,18 @@ class ONSCLegajoAltaCS(models.Model):
             if record.date_start_commission and record.date_start_commission > fields.Date.today():
                 raise ValidationError("La fecha debe ser menor o igual al día de alta")
 
-    @api.depends('state')
+    @api.depends('state', 'type_cs', 'inciso_origin_id')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state not in ['draft', 'to_process', 'returned', 'error_sgh']
+            inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
+            if record.state not in ['draft', 'to_process', 'returned', 'error_sgh']:
+                record.should_disable_form_edit = True
+            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and record.inciso_origin_id == inciso_id:
+                record.should_disable_form_edit = True
+            elif record.state == 'returned' and record.type_cs == 'ac2ac' and record.inciso_destination_id == inciso_id:
+                record.should_disable_form_edit = True
+            else:
+                record.should_disable_form_edit = False
 
     @api.depends('operating_unit_origin_id', 'operating_unit_destination_id')
     def _compute_type_commission_selection(self):
@@ -235,35 +245,34 @@ class ONSCLegajoAltaCS(models.Model):
                     record.type_commission_selection = '1'
                 else:
                     record.type_commission_selection = '2'
+            else:
+                record.type_commission_selection = '1'
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
-        Contract = self.env['hr.contract']
+        Contract = self.env['hr.contract'].sudo()
         for rec in self:
             if rec.employee_id:
-                args = [("legajo_state", "=", 'active'), ('employee_id', '=', rec.employee_id.id),
-                        ('operating_unit_id', '=', rec.operating_unit_origin_id.id)]
-                contracts = Contract.sudo().search(args)
-                if contracts:
-                    rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
-                else:
-                    rec.contract_id_domain = json.dumps([('id', '=', False)])
+                contracts = Contract.search([
+                    ("legajo_state", "=", 'active'),
+                    ('employee_id', '=', rec.employee_id.id),
+                    ('operating_unit_id', '=', rec.operating_unit_origin_id.id)])
+                rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
 
     @api.depends('operating_unit_origin_id')
     def _compute_partner_id_domain(self):
         for record in self:
-            # Partner del usuario
             user_partner_id = self.env.user.partner_id
-            if record.is_inciso_origin_ac:
-                employee_ids = self.env['hr.contract'].sudo().search(
+            if not record.operating_unit_origin_id:
+                record.partner_id_domain = json.dumps([('id', 'in', [])])
+            elif record.is_inciso_origin_ac:
+                partner_ids = self.env['hr.contract'].sudo().search(
                     [('operating_unit_id', '=', record.operating_unit_origin_id.id),
                      ('legajo_state', '=', 'active'),
-                     ('regime_id.presupuesto', '=', True)]).mapped(
-                    'employee_id').ids
-                record.partner_id_domain = json.dumps(
-                    [('legajo_employee_ids', 'in', employee_ids), ('id', '!=', user_partner_id.id)])
+                     ('regime_id.presupuesto', '=', True)]).mapped('employee_id.partner_id').ids
+                record.partner_id_domain = json.dumps([('id', 'in', partner_ids), ('id', '!=', user_partner_id.id)])
             else:
                 record.partner_id_domain = json.dumps(
                     [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True), ('id', '!=', user_partner_id.id)])
@@ -399,15 +408,16 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_is_available_send_to_sgh(self):
         for record in self:
             # AC2AC siendo tu mismo inciso origen y destino
-            if record.state in ['draft', 'to_process', 'error_sgh',
-                                'returned'] and record.type_cs == 'ac2ac' and record.inciso_origin_id == record.inciso_destination_id:
+            if record.state in ['draft', 'to_process',
+                                'error_sgh'] and record.type_cs == 'ac2ac' and record.inciso_origin_id == record.inciso_destination_id:
                 record.is_available_send_to_sgh = True
             # No AC2AC siempre enviar a SGH
             elif record.type_cs != 'ac2ac' and record.state in ['draft',
                                                                 'error_sgh'] and record.inciso_origin_id and record.inciso_destination_id:
                 record.is_available_send_to_sgh = True
             # Si eres el destino y esta en estado to_process o error_sgh
-            elif record.is_edit_destination and record.state in ['to_process', 'error_sgh', 'draft']:
+            elif record.is_edit_destination and record.state in ['to_process',
+                                                                 'error_sgh'] and record.type_cs == 'ac2ac':
                 record.is_available_send_to_sgh = True
             else:
                 record.is_available_send_to_sgh = False
@@ -423,10 +433,54 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_send_destination(self):
         for record in self:
-            if record.state == 'draft' and record.type_cs == 'ac2ac':
+            # Enviar a destino si es ac2ac y no es el mismo inciso en estado borrador o devuelto a origen
+            inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
+            if record.state in ['draft',
+                                'returned'] and record.type_cs == 'ac2ac' and not record.is_edit_destination and record.inciso_origin_id == inciso_id:
                 record.is_available_send_destination = True
             else:
                 record.is_available_send_destination = False
+
+    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
+    def _compute_is_available_cancel(self):
+        inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
+        for record in self:
+            if record.state == 'returned' and record.type_cs == 'ac2ac' and record.inciso_origin_id == inciso_id:
+                record.is_available_cancel = True
+            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and record.inciso_destination_id == inciso_id:
+                record.is_available_cancel = True
+            elif record.state == 'error_sgh' and record.type_cs == 'ac2ac' and record.inciso_destination_id == inciso_id:
+                record.is_available_cancel = True
+            elif record.state not in ['draft', 'confirmed'] and record.type_cs != 'ac2ac':
+                record.is_available_cancel = True
+            else:
+                record.is_available_cancel = False
+
+    @api.depends('partner_id')
+    def _compute_employee_id(self):
+        Employee = self.env['hr.employee'].sudo()
+        for record in self:
+            if record.partner_id:
+                record.employee_id = Employee.sudo().search([
+                    ('partner_id', '=', record.partner_id.id)
+                ], limit=1)
+            else:
+                record.employee_id = False
+
+    @api.onchange('employee_id')
+    def onchange_employee_id(self):
+        self.cv_birthdate = self.employee_id.cv_birthdate
+        self.cv_sex = self.employee_id.cv_sex
+        contracts = self.env['hr.contract'].sudo().search([
+            ("legajo_state", "=", 'active'),
+            ('employee_id', '=', self.employee_id.id),
+            ('operating_unit_id', '=', self.operating_unit_origin_id.id)])
+        if len(contracts) == 1:
+            self.contract_id = contracts.id
+            self.is_edit_contract = False
+        else:
+            self.contract_id = False
+            self.is_edit_contract = True
 
     def get_inciso_operating_unit_by_user(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
@@ -448,32 +502,33 @@ class ONSCLegajoAltaCS(models.Model):
         self.operating_unit_destination_id = False
         self.contract_id = False
 
-    @api.onchange('partner_id')
-    def onchange_partner_id(self):
-        self.contract_id = False
-        Employee = self.env['hr.employee'].sudo()
-        for record in self.sudo():
-            if record.partner_id:
-                cv_emissor_country_id = self.env.ref('base.uy').id
-                cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
-                                                                                      limit=1).id or False
-                employee_id = Employee.sudo().search([
-                    ('cv_emissor_country_id', '=', cv_emissor_country_id),
-                    ('cv_document_type_id', '=', cv_document_type_id),
-                    ('cv_nro_doc', '=', record.partner_id.cv_nro_doc),
-                ], limit=1)
-                if employee_id:
-                    record.employee_id = employee_id.id
-                    record.cv_birthdate = employee_id.cv_birthdate
-                    record.cv_sex = employee_id.cv_sex
-                else:
-                    record.employee_id = False
-                    record.cv_birthdate = False
-                    record.cv_sex = False
-            else:
-                record.cv_birthdate = False
-                record.cv_sex = False
-                record.employee_id = False
+    # @api.onchange('partner_id')
+    # def onchange_partner_id(self):
+    #     self.contract_id = False
+    #     Employee = self.env['hr.employee'].sudo()
+    #     for record in self.sudo():
+    #         if record.partner_id:
+    #
+    #             if employee_id:
+    #                 args = [("legajo_state", "=", 'active'), ('employee_id', '=', record.employee_id.id),
+    #                         ('operating_unit_id', '=', record.operating_unit_origin_id.id)]
+    #                 contracts = self.env['hr.contract'].sudo().search(args)
+    #                 if len(contracts) == 1:
+    #                     record.contract_id = contracts.id
+    #                     record.is_edit_contract = False
+    #                 else:
+    #                     record.is_edit_contract = True
+    #             else:
+    #                 record.employee_id = False
+    #                 record.cv_birthdate = False
+    #                 record.cv_sex = False
+    #                 record.is_edit_contract = True
+    #         else:
+    #             record.cv_birthdate = False
+    #             record.cv_sex = False
+    #             record.employee_id = False
+    #             record.contract_id = False
+    #             record.is_edit_contract = True
 
     @api.onchange('inciso_destination_id')
     def onchange_inciso_destination_id(self):
@@ -503,21 +558,28 @@ class ONSCLegajoAltaCS(models.Model):
                 message.append("Primer Apellido")
             if not record.partner_id.cv_first_name:
                 message.append("Primer Nombre")
-            if record.inciso_destination_id.is_central_administration and not record.operating_unit_destination_id:
+            if not record.operating_unit_destination_id:
                 message.append(record._fields['operating_unit_destination_id'].string)
-            if record.inciso_destination_id.is_central_administration and not record.program_project_destination_id:
+            if not record.program_project_destination_id:
                 message.append(record._fields['program_project_destination_id'].string)
-            if not record.inciso_destination_id.is_central_administration and not record.inciso_destination_id:
+            if not record.inciso_destination_id:
                 message.append(record._fields['inciso_destination_id'].string)
             if not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
             if not record.cv_birthdate:
                 message.append(_("Fecha de nacimiento"))
+            if record.type_cs != 'ac2out' and not record.department_id:
+                message.append(record._fields['department_id'].string)
+            if record.type_cs != 'ac2out' and not record.security_job_id:
+                message.append(record._fields['security_job_id'].string)
+            if record.type_cs != 'ac2out' and not record.occupation_id:
+                message.append(record._fields['occupation_id'].string)
             if not record.cv_sex:
                 message.append(_("Sexo"))
-            if not record.regime_commission_id.cgn_code:
+            if not record.regime_commission_id.cgn_code and not record.regime_commission_id:
                 message.append(_("Código CGN de régimen de comisión"))
-
+            if not record.contract_id.legajo_state == 'active':
+                message.append(_("El contrato debe estar activo"))
         if message:
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
@@ -615,3 +677,8 @@ class ONSCLegajoAltaCS(models.Model):
     def _get_legajo_job(self, contract):
         return self.env['hr.job'].create_job(contract, self.department_id, self.date_start_commission,
                                              self.security_job_id)
+
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'draft'):
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
+        return super().unlink()
