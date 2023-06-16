@@ -25,6 +25,8 @@ class HrEmployee(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
+    partner_id = fields.Many2one('res.partner', string='Contacto', compute='_compute_partner_id', store=True)
+
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
 
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
@@ -59,6 +61,18 @@ class HrEmployee(models.Model):
         return res
     def _custom_display_name(self):
         return self.cv_nro_doc + " - " + self.full_name or self.name
+
+    @api.depends('cv_emissor_country_id','cv_document_type_id','cv_nro_doc')
+    def _compute_partner_id(self):
+        Partner = self.env['res.partner'].sudo()
+        for record in self:
+            record.partner_id = Partner.search([
+                ('cv_emissor_country_id', '=', record.cv_emissor_country_id.id),
+                ('cv_document_type_id', '=', record.cv_document_type_id.id),
+                ('cv_nro_doc', '=', record.cv_nro_doc),
+            ], limit=1)
+
+
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):
         for record in self:

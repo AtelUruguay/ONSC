@@ -64,7 +64,7 @@ class ONSCLegajoAltaCS(models.Model):
             if inciso_id:
                 args = expression.AND([[
                     '|', ('inciso_origin_id', '=', inciso_id.id),
-                    ('inciso_destination_id', '=', inciso_id.id)
+                    '&', ('inciso_destination_id', '=', inciso_id.id), ('state', '!=', 'draft')
                 ], args])
         if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
             contract_id = self.env.user.employee_id.job_id.contract_id
@@ -73,12 +73,12 @@ class ONSCLegajoAltaCS(models.Model):
             if inciso_id:
                 args = expression.AND([[
                     '|', ('inciso_origin_id', '=', inciso_id.id),
-                    ('inciso_destination_id', '=', inciso_id.id)
+                    '&', ('inciso_destination_id', '=', inciso_id.id), ('state', '!=', 'draft')
                 ], args])
             if operating_unit_id:
                 args = expression.AND([[
                     '|', ('operating_unit_origin_id', '=', operating_unit_id.id),
-                    ('operating_unit_destination_id', '=', operating_unit_id.id)
+                    '&', ('operating_unit_destination_id', '=', operating_unit_id.id), ('state', '!=', 'draft')
                 ], args])
         return args
 
@@ -108,9 +108,9 @@ class ONSCLegajoAltaCS(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
-    employee_id = fields.Many2one('hr.employee', 'Empleados')
     partner_id = fields.Many2one('res.partner', string='CI', required=True)
     partner_id_domain = fields.Char(compute='_compute_partner_id_domain')
+    employee_id = fields.Many2one('hr.employee', 'Empleados', compute='_compute_employee_id', store=True)
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
     cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], string=u'Sexo', copy=False)
     # ORIGIN
@@ -238,32 +238,29 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
-        Contract = self.env['hr.contract']
+        Contract = self.env['hr.contract'].sudo()
         for rec in self:
             if rec.employee_id:
-                args = [("legajo_state", "=", 'active'), ('employee_id', '=', rec.employee_id.id),
-                        ('operating_unit_id', '=', rec.operating_unit_origin_id.id)]
-                contracts = Contract.sudo().search(args)
-                if contracts:
-                    rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
-                else:
-                    rec.contract_id_domain = json.dumps([('id', '=', False)])
+                contracts = Contract.search([
+                    ("legajo_state", "=", 'active'),
+                    ('employee_id', '=', rec.employee_id.id),
+                    ('operating_unit_id', '=', rec.operating_unit_origin_id.id)])
+                rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
 
     @api.depends('operating_unit_origin_id')
     def _compute_partner_id_domain(self):
         for record in self:
-            # Partner del usuario
             user_partner_id = self.env.user.partner_id
-            if record.is_inciso_origin_ac:
-                employee_ids = self.env['hr.contract'].sudo().search(
+            if not record.operating_unit_origin_id:
+                record.partner_id_domain = json.dumps([('id', 'in', [])])
+            elif record.is_inciso_origin_ac:
+                partner_ids = self.env['hr.contract'].sudo().search(
                     [('operating_unit_id', '=', record.operating_unit_origin_id.id),
                      ('legajo_state', '=', 'active'),
-                     ('regime_id.presupuesto', '=', True)]).mapped(
-                    'employee_id').ids
-                record.partner_id_domain = json.dumps(
-                    [('legajo_employee_id', 'in', employee_ids), ('id', '!=', user_partner_id.id)])
+                     ('regime_id.presupuesto', '=', True)]).mapped('employee_id.partner_id').ids
+                record.partner_id_domain = json.dumps([('id', 'in', partner_ids), ('id', '!=', user_partner_id.id)])
             else:
                 record.partner_id_domain = json.dumps(
                     [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True), ('id', '!=', user_partner_id.id)])
@@ -428,6 +425,33 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.is_available_send_destination = False
 
+    @api.depends('partner_id')
+    def _compute_employee_id(self):
+        Employee = self.env['hr.employee'].sudo()
+        for record in self:
+            if record.partner_id:
+                record.employee_id = Employee.sudo().search([
+                    ('partner_id', '=', record.partner_id.id)
+                ], limit=1)
+            else:
+                record.employee_id = False
+
+    @api.onchange('employee_id')
+    def onchange_employee_id(self):
+        self.cv_birthdate = self.employee_id.cv_birthdate
+        self.cv_sex = self.employee_id.cv_sex
+        contracts = self.env['hr.contract'].sudo().search([
+            ("legajo_state", "=", 'active'),
+            ('employee_id', '=', self.employee_id.id),
+            ('operating_unit_id', '=', self.operating_unit_origin_id.id)])
+        if len(contracts) == 1:
+            self.contract_id = contracts.id
+            self.is_edit_contract = False
+        else:
+            self.contract_id = False
+            self.is_edit_contract = True
+
+
     def get_inciso_operating_unit_by_user(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
@@ -448,43 +472,33 @@ class ONSCLegajoAltaCS(models.Model):
         self.operating_unit_destination_id = False
         self.contract_id = False
 
-    @api.onchange('partner_id')
-    def onchange_partner_id(self):
-        self.contract_id = False
-        Employee = self.env['hr.employee'].sudo()
-        for record in self.sudo():
-            if record.partner_id:
-                cv_emissor_country_id = self.env.ref('base.uy').id
-                cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
-                                                                                      limit=1).id or False
-                employee_id = Employee.sudo().search([
-                    ('cv_emissor_country_id', '=', cv_emissor_country_id),
-                    ('cv_document_type_id', '=', cv_document_type_id),
-                    ('cv_nro_doc', '=', record.partner_id.cv_nro_doc),
-                ], limit=1)
-                if employee_id:
-                    record.employee_id = employee_id.id
-                    record.cv_birthdate = employee_id.cv_birthdate
-                    record.cv_sex = employee_id.cv_sex
-                    args = [("legajo_state", "=", 'active'), ('employee_id', '=', record.employee_id.id),
-                            ('operating_unit_id', '=', record.operating_unit_origin_id.id)]
-                    contracts = self.env['hr.contract'].sudo().search(args)
-                    if len(contracts) == 1:
-                        record.contract_id = contracts.id
-                        record.is_edit_contract = False
-                    else:
-                        record.is_edit_contract = True
-                else:
-                    record.employee_id = False
-                    record.cv_birthdate = False
-                    record.cv_sex = False
-                    record.is_edit_contract = True
-            else:
-                record.cv_birthdate = False
-                record.cv_sex = False
-                record.employee_id = False
-                record.contract_id = False
-                record.is_edit_contract = True
+    # @api.onchange('partner_id')
+    # def onchange_partner_id(self):
+    #     self.contract_id = False
+    #     Employee = self.env['hr.employee'].sudo()
+    #     for record in self.sudo():
+    #         if record.partner_id:
+    #
+    #             if employee_id:
+    #                 args = [("legajo_state", "=", 'active'), ('employee_id', '=', record.employee_id.id),
+    #                         ('operating_unit_id', '=', record.operating_unit_origin_id.id)]
+    #                 contracts = self.env['hr.contract'].sudo().search(args)
+    #                 if len(contracts) == 1:
+    #                     record.contract_id = contracts.id
+    #                     record.is_edit_contract = False
+    #                 else:
+    #                     record.is_edit_contract = True
+    #             else:
+    #                 record.employee_id = False
+    #                 record.cv_birthdate = False
+    #                 record.cv_sex = False
+    #                 record.is_edit_contract = True
+    #         else:
+    #             record.cv_birthdate = False
+    #             record.cv_sex = False
+    #             record.employee_id = False
+    #             record.contract_id = False
+    #             record.is_edit_contract = True
 
     @api.onchange('inciso_destination_id')
     def onchange_inciso_destination_id(self):
