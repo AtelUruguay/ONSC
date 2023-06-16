@@ -175,10 +175,10 @@ class ONSCLegajoAltaCS(models.Model):
         string='Tipo de resolución')
     code_regime_start_commission_id = fields.Many2one('onsc.legajo.commission.regime',
                                                       string='Código del régimen de Inicio de Comisión')
-    # state = fields.Selection(
-    #     [('draft', 'Borrador'), ('to_process', 'A procesar en destino'), ('returned', 'Devuelto a origen'),
-    #      ('cancelled', 'Cancelado'), ('error_sgh', 'Error SGH'), ('confirmed', 'Confirmado')],
-    #     string='Estado', default='draft')
+    state = fields.Selection(
+        [('draft', 'Borrador'), ('to_process', 'A procesar en destino'), ('returned', 'Devuelto a origen'),
+         ('cancelled', 'Cancelado'), ('error_sgh', 'Error SGH'), ('confirmed', 'Confirmado')],
+        string='Estado', default='draft')
     additional_information = fields.Text(string='Información adicional')
     attached_document_ids = fields.One2many('onsc.legajo.attached.document',
                                             'alta_cs_id',
