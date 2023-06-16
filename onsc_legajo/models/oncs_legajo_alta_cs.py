@@ -114,22 +114,22 @@ class ONSCLegajoAltaCS(models.Model):
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
     cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], string=u'Sexo', copy=False)
     # ORIGIN
-    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso Origen', required=True,
+    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True,
                                        default=lambda self: self._get_default_inciso_id(), copy=False)
     inciso_origin_id_domain = fields.Char(compute='_compute_inciso_origin_id_domain')
     is_inciso_origin_ac = fields.Boolean("El inciso de origen es AC?",
                                          related='inciso_origin_id.is_central_administration')
-    operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora Origen", required=True,
+    operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True,
                                                default=lambda self: self._get_default_ue_id(), copy=False)
     operating_unit_origin_id_domain = fields.Char(compute='_compute_operating_unit_origin_id_domain')
-    sequence_position_origin = fields.Char(string='Secuencia Plaza Origen')
+    sequence_position_origin = fields.Char(string='Secuencia Plaza')
     contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
-    program_project_origin_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto Origen',
+    program_project_origin_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto',
                                                 compute='_compute_program_project_origin_id', store=True)
-    program_origin = fields.Char(string='Programa Origen', related='program_project_origin_id.programaDescripcion')
-    project_origin = fields.Char(string='Proyecto Origen', related='program_project_origin_id.proyectoDescripcion')
-    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen Origen', related='contract_id.regime_id')
+    program_origin = fields.Char(string='Programa', related='program_project_origin_id.programaDescripcion')
+    project_origin = fields.Char(string='Proyecto', related='program_project_origin_id.proyectoDescripcion')
+    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.regime_id')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
                                      related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
@@ -142,18 +142,18 @@ class ONSCLegajoAltaCS(models.Model):
         [('1', 'Comisión de Servicio'), ('2', 'Pase en Comisión')],
         string='Tipo de comisión', compute='_compute_type_commission_selection')
     # DESTINATION
-    inciso_destination_id = fields.Many2one('onsc.catalog.inciso', string='Inciso Destino')
+    inciso_destination_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     inciso_destination_id_domain = fields.Char(compute='_compute_inciso_destination_id_domain')
-    operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora Destino")
+    operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
     operating_unit_destination_id_domain = fields.Char(compute='_compute_operating_unit_destination_id_domain')
 
-    program_project_destination_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto Destino',
+    program_project_destination_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto',
                                                      domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]")
-    program_destination = fields.Char(string='Programa Destino',
+    program_destination = fields.Char(string='Programa',
                                       related='program_project_destination_id.programaDescripcion')
-    project_destination = fields.Char(string='Proyecto Destino',
+    project_destination = fields.Char(string='Proyecto',
                                       related='program_project_destination_id.proyectoDescripcion')
-    regime_destination = fields.Char(string='Régimen Destino', default='3001')
+    regime_destination = fields.Char(string='Régimen', default='3001')
     date_start_commission = fields.Date(string='Fecha desde de la Comisión')
     department_id = fields.Many2one('hr.department', string='UO')
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
@@ -256,6 +256,7 @@ class ONSCLegajoAltaCS(models.Model):
                 contracts = Contract.search([
                     ("legajo_state", "=", 'active'),
                     ('employee_id', '=', rec.employee_id.id),
+                    ('regime_id.presupuesto', '=', True),
                     ('operating_unit_id', '=', rec.operating_unit_origin_id.id)])
                 rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
             else:
@@ -467,20 +468,35 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.employee_id = False
 
-    @api.onchange('employee_id')
+    @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
-        self.cv_birthdate = self.employee_id.cv_birthdate
-        self.cv_sex = self.employee_id.cv_sex
-        contracts = self.env['hr.contract'].sudo().search([
-            ("legajo_state", "=", 'active'),
-            ('employee_id', '=', self.employee_id.id),
-            ('operating_unit_id', '=', self.operating_unit_origin_id.id)])
-        if len(contracts) == 1:
-            self.contract_id = contracts.id
-            self.is_edit_contract = False
-        else:
+        if self.employee_id:
+            self.cv_birthdate = self.employee_id.cv_birthdate
+            self.cv_sex = self.employee_id.cv_sex
+            contracts = self.env['hr.contract'].sudo().search([
+                ("legajo_state", "=", 'active'),
+                ('employee_id', '=', self.employee_id.id),
+                ('operating_unit_id', '=', self.operating_unit_origin_id.id)])
+            if len(contracts) == 1:
+                self.contract_id = contracts.id
+                self.is_edit_contract = False
+            else:
+                self.contract_id = False
+                self.is_edit_contract = True
+        elif self.partner_id:
+            cv_digital_id = self.env['onsc.cv.digital'].sudo().search([
+                ('cv_emissor_country_id', '=', self.partner_id.cv_emissor_country_id.id),
+                ('cv_document_type_id', '=', self.partner_id.cv_document_type_id.id),
+                ('cv_nro_doc', '=', self.partner_id.cv_nro_doc),
+                ('type', '=', 'cv')
+            ], limit=1)
+            self.cv_birthdate = cv_digital_id.cv_birthdate
+            self.cv_sex = cv_digital_id.cv_sex
             self.contract_id = False
-            self.is_edit_contract = True
+        else:
+            self.cv_birthdate = False
+            self.cv_sex = False
+            self.contract_id = False
 
     def get_inciso_operating_unit_by_user(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
@@ -501,34 +517,6 @@ class ONSCLegajoAltaCS(models.Model):
         self.inciso_destination_id = False
         self.operating_unit_destination_id = False
         self.contract_id = False
-
-    # @api.onchange('partner_id')
-    # def onchange_partner_id(self):
-    #     self.contract_id = False
-    #     Employee = self.env['hr.employee'].sudo()
-    #     for record in self.sudo():
-    #         if record.partner_id:
-    #
-    #             if employee_id:
-    #                 args = [("legajo_state", "=", 'active'), ('employee_id', '=', record.employee_id.id),
-    #                         ('operating_unit_id', '=', record.operating_unit_origin_id.id)]
-    #                 contracts = self.env['hr.contract'].sudo().search(args)
-    #                 if len(contracts) == 1:
-    #                     record.contract_id = contracts.id
-    #                     record.is_edit_contract = False
-    #                 else:
-    #                     record.is_edit_contract = True
-    #             else:
-    #                 record.employee_id = False
-    #                 record.cv_birthdate = False
-    #                 record.cv_sex = False
-    #                 record.is_edit_contract = True
-    #         else:
-    #             record.cv_birthdate = False
-    #             record.cv_sex = False
-    #             record.employee_id = False
-    #             record.contract_id = False
-    #             record.is_edit_contract = True
 
     @api.onchange('inciso_destination_id')
     def onchange_inciso_destination_id(self):
@@ -577,7 +565,8 @@ class ONSCLegajoAltaCS(models.Model):
             if not record.cv_sex:
                 message.append(_("Sexo"))
             if not record.regime_commission_id.cgn_code and not record.regime_commission_id:
-                message.append(_("Código CGN de régimen de comisión"))
+                message.append(
+                    _("Falta el Código de CGN en la configuración del Régimen de comisión seleccionado. Contactar al administrador del sistema."))
             if not record.contract_id.legajo_state == 'active':
                 message.append(_("El contrato debe estar activo"))
         if message:
@@ -588,6 +577,10 @@ class ONSCLegajoAltaCS(models.Model):
 
     def action_send_destination(self):
         self.state = 'to_process'
+        if not self.inciso_destination_id:
+            raise ValidationError(_("Debe seleccionar inciso de destino"))
+        if not self.operating_unit_destination_id:
+            raise ValidationError(_("Debe seleccionar una unidad ejecutora de destino"))
 
     def action_send_origin(self):
         self.state = 'returned'
@@ -663,6 +656,7 @@ class ONSCLegajoAltaCS(models.Model):
             'retributive_day_id': origin_contract_id.retributive_day_id.id,
             'wage': 1,
             'cs_contract_id': origin_contract_id.id,
+            'commission_regime_id': self.regime_commission_id.id,
         }
         contract = Contract.suspend_security().create(vals)
 
