@@ -481,41 +481,26 @@ class ONSCLegajoAltaCS(models.Model):
         Employee = self.env['hr.employee'].sudo()
         for record in self:
             if record.partner_id:
-                record.employee_id = Employee.sudo().search([
+                record.employee_id = Employee.search([
                     ('partner_id', '=', record.partner_id.id)
                 ], limit=1)
             else:
                 record.employee_id = False
 
+
     @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
-        if self.employee_id:
-            self.cv_birthdate = self.employee_id.cv_birthdate
-            self.cv_sex = self.employee_id.cv_sex
-            contracts = self.env['hr.contract'].sudo().search([
-                ("legajo_state", "=", 'active'),
-                ('employee_id', '=', self.employee_id.id),
-                ('operating_unit_id', '=', self.operating_unit_origin_id.id)])
-            if len(contracts) == 1:
-                self.contract_id = contracts.id
-                self.is_edit_contract = False
-            else:
-                self.contract_id = False
-                self.is_edit_contract = True
-        elif self.partner_id:
-            cv_digital_id = self.env['onsc.cv.digital'].sudo().search([
-                ('cv_emissor_country_id', '=', self.partner_id.cv_emissor_country_id.id),
-                ('cv_document_type_id', '=', self.partner_id.cv_document_type_id.id),
-                ('cv_nro_doc', '=', self.partner_id.cv_nro_doc),
-                ('type', '=', 'cv')
-            ], limit=1)
-            self.cv_birthdate = cv_digital_id.cv_birthdate
-            self.cv_sex = cv_digital_id.cv_sex
-            self.contract_id = False
+        self.set_extra_data()
+        contracts = self.env['hr.contract'].sudo().search([
+            ("legajo_state", "=", 'active'),
+            ('employee_id', '=', self.employee_id.id),
+            ('operating_unit_id', '=', self.operating_unit_origin_id.id)])
+        if len(contracts) == 1:
+            self.contract_id = contracts.id
+            self.is_edit_contract = False
         else:
-            self.cv_birthdate = False
-            self.cv_sex = False
             self.contract_id = False
+            self.is_edit_contract = True
 
     def get_inciso_operating_unit_by_user(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
