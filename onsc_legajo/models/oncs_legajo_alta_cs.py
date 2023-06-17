@@ -639,8 +639,6 @@ class ONSCLegajoAltaCS(models.Model):
             self.error_message_synchronization = error_sgh
 
     def action_aprobado_cgn(self):
-        # TODO esta dando error porque la variable employee no esta definida antes
-        employee = self.employee_id
         if self.type_cs == 'out2ac':
             employee = self._get_legajo_employee()
             self._get_legajo(employee)
