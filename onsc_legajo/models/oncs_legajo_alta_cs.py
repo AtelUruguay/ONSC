@@ -211,6 +211,25 @@ class ONSCLegajoAltaCS(models.Model):
                                          compute='_compute_is_available_cancel')
     is_edit_contract = fields.Boolean(string="Editar datos de contrato")
 
+    filter_destination = fields.Boolean(string="Filtrar destino", compute='_compute_filter_destination',
+                                        search='_search_filter_destination')
+
+    def _compute_filter_destination(self):
+        for record in self:
+            record.filter_destination = False
+
+    # TODO revisar este filtro con Rafael --> Funciona correctamente
+    def _search_filter_destination(self, operator, value):
+        return ['|',
+                '&', ('state', 'in', ['draft', 'to_process', 'error_sgh']),
+                ('inciso_destination_id', '=', self.env.user.employee_id.job_id.contract_id.inciso_id.id),
+                '|',
+                '&', ('state', 'in', ['draft', 'returned']),
+                ('inciso_origin_id', '=', self.env.user.employee_id.job_id.contract_id.inciso_id.id),
+                '&', ('state', '=', 'error_sgh'),
+                ('type_cs', 'in', ['ac2out', 'out2ac'])
+                ]
+
     # DATOS DEL WS10
     nroPuesto = fields.Char(string='Puesto', copy=False)
     nroPlaza = fields.Char(string='Plaza', copy=False, )
@@ -495,19 +514,38 @@ class ONSCLegajoAltaCS(models.Model):
         self.operating_unit_destination_id = False
         self.contract_id = False
 
-    @api.onchange('operating_unit_origin_id')
+    @api.onchange('operating_unit_origin_id', 'operating_unit_destination_id')
     def onchange_operating_unit_origin_id(self):
         self.partner_id = False
         self.inciso_destination_id = False
         self.operating_unit_destination_id = False
         self.contract_id = False
+        self.program_project_origin_id = False
+        self.program_origin = False
+        self.project_origin = False
+        self.regime_origin_id = False
+        self.program_project_destination_id = False
+        self.program_destination = False
+        self.project_destination = False
+        self.regime_destination = False
+        self.date_start_commission = False
+        self.department_id = False
+        self.security_job_id = False
+        self.occupation_id = False
+        self.regime_commission_id = False
+        self.reason_description = False
+        self.norm_id = False
+        self.resolution_description = False
+        self.resolution_date = False
+        self.code_regime_start_commission_id = False
+        self.additional_information = False
 
     @api.onchange('inciso_destination_id')
     def onchange_inciso_destination_id(self):
         self.operating_unit_destination_id = False
 
     @api.onchange('operating_unit_destination_id')
-    def onchange_operating_unit_destination_idd(self):
+    def onchange_operating_unit_destination_id(self):
         self.department_id = False
 
     @api.onchange('operating_unit_origin_id', 'operating_unit_destination_id')
@@ -553,6 +591,9 @@ class ONSCLegajoAltaCS(models.Model):
                     _("Falta el Código de CGN en la configuración del Régimen de comisión seleccionado. Contactar al administrador del sistema."))
             if not record.contract_id.legajo_state == 'active':
                 message.append(_("El contrato debe estar activo"))
+            # TODO revisar si es correcto
+            if record.department_id.manager_id:
+                message.append("La UO ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
