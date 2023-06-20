@@ -620,6 +620,8 @@ class ONSCLegajoAltaCS(models.Model):
 
     def action_send_sgh(self):
         self.check_required_fieds_ws10()
+        if not self.env['hr.job'].is_job_available(self.department_id, self.security_job_id, self.date_start_commission):
+            raise ValidationError(_("REPONSABLE UO SOLAPADO"))
         error_sgh = self.env['onsc.legajo.abstract.alta.cs.ws10'].with_context(
             log_info=True, altas_cs=self).suspend_security().syncronize(self)
         if isinstance(error_sgh, str):
