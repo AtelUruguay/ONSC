@@ -209,7 +209,7 @@ class ONSCLegajoAltaCS(models.Model):
                                                    compute='_compute_is_available_send_destination')
     is_available_cancel = fields.Boolean(string="Disponible para cancelar",
                                          compute='_compute_is_available_cancel')
-    is_edit_contract = fields.Boolean(string="Editar datos de contrato")
+    is_edit_contract = fields.Boolean(string="Editar datos de contrato", compute='_compute_contract_id_domain')
 
     filter_destination = fields.Boolean(string="Filtrar destino", compute='_compute_filter_destination',
                                         search='_search_filter_destination')
@@ -277,9 +277,12 @@ class ONSCLegajoAltaCS(models.Model):
                     ('employee_id', '=', rec.employee_id.id),
                     ('regime_id.presupuesto', '=', True),
                     ('operating_unit_id', '=', rec.operating_unit_origin_id.id)])
+                if len(contracts) == 1:
+                    rec.is_edit_contract = True
                 rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
+                rec.is_edit_contract = False
 
     @api.depends('operating_unit_origin_id')
     def _compute_partner_id_domain(self):
@@ -487,20 +490,18 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.employee_id = False
 
-
     @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
-        self.set_extra_data()
+        # TODO da error set_extra_data
+        # self.set_extra_data()
         contracts = self.env['hr.contract'].sudo().search([
             ("legajo_state", "=", 'active'),
             ('employee_id', '=', self.employee_id.id),
             ('operating_unit_id', '=', self.operating_unit_origin_id.id)])
         if len(contracts) == 1:
             self.contract_id = contracts.id
-            self.is_edit_contract = False
         else:
             self.contract_id = False
-            self.is_edit_contract = True
 
     def get_inciso_operating_unit_by_user(self):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
@@ -515,11 +516,14 @@ class ONSCLegajoAltaCS(models.Model):
         self.operating_unit_destination_id = False
         self.contract_id = False
 
-    @api.onchange('operating_unit_origin_id', 'operating_unit_destination_id')
+    @api.onchange('operating_unit_origin_id')
     def onchange_operating_unit_origin_id(self):
-        self.partner_id = False
-        self.inciso_destination_id = False
         self.operating_unit_destination_id = False
+        self.inciso_destination_id = False
+
+    @api.onchange('operating_unit_origin_id', 'operating_unit_destination_id')
+    def onchange_operating_units(self):
+        self.partner_id = False
         self.contract_id = False
         self.program_project_origin_id = False
         self.program_origin = False
