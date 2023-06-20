@@ -120,18 +120,18 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
                     integration_log=onsc_legajo_integration_error_WS10_9004,
                     long_description=long_description
                 )
-                self._process_alta_cs(long_description)
+                self._process_error_alta_cs(long_description)
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
-        self._process_alta_cs(long_description)
+        self._process_error_alta_cs(long_description)
         return super()._process_response_witherror(response, origin_name, integration_error,
                                                    long_description=long_description)
 
     def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
-        self._process_alta_cs(long_description)
+        self._process_error_alta_cs(long_description)
         super()._process_servicecall_error(exception, origin_name, integration_error, long_description=long_description)
 
-    def _process_alta_cs(self, long_description):
+    def _process_error_alta_cs(self, long_description):
         altas_cs = self._context.get('altas_cs')
         altas_cs.write({
             'is_error_synchronization': True,
