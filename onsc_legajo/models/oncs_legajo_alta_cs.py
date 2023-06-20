@@ -629,6 +629,11 @@ class ONSCLegajoAltaCS(models.Model):
             date_end=date_start - relativedelta(days=1),
             legajo_state='outgoing_commission'
         )
+        self.write({
+            'state': 'confirmed',
+            'is_error_synchronization': False,
+            'error_message_synchronization': ''
+        })
 
     def _get_legajo_employee(self):
         cv_emissor_country_id = self.env.ref('base.uy')
