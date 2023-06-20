@@ -50,12 +50,15 @@
                     <group string="Origen">
                         <group>
                             <field name="inciso_origin_id"
+                                   required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"
                                    domain="inciso_origin_id_domain"/>
                             <field name="inciso_origin_id_domain" invisible="1"/>
                             <field name="is_edit_origin" invisible="1"/>
-                            <field name="operating_unit_origin_id" domain="operating_unit_origin_id_domain"
+                            <field name="operating_unit_origin_id"
+                                   required="1"
+                                   domain="operating_unit_origin_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
                             <field name="operating_unit_origin_id_domain" invisible="1"/>
@@ -67,6 +70,7 @@
                         </group>
                         <group>
                             <field name="partner_id" domain="partner_id_domain" context="{'show_cv_nro_doc':True}"
+                                   required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
                             <field name="cv_birthdate" force_save="1"
