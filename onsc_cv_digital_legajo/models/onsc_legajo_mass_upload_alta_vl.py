@@ -497,7 +497,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     error = self.validate_cv_fields(data)
                     if error:
                         raise ValidationError(''.join(error))
-                    cv_digital = CVDigital.suspend_security().create(data)
+                    CVDigital.suspend_security().create(data)
                 line.write({'message_error': ''})
                 self.env.cr.commit()
             except Exception as e:
