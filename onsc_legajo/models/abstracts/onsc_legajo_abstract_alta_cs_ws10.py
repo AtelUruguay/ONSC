@@ -125,3 +125,17 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
                     'state': 'error_sgh',
                     'error_message_synchronization': long_description
                 })
+
+    def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
+        altas_cs = self._context.get('altas_cs')
+        altas_cs.write({
+            'is_error_synchronization': True,
+            'state': 'error_sgh',
+            'error_message_synchronization': long_description or "Error devuelto por SGH: No se puedo conectar con el servicio web"
+        })
+        self.create_new_log(
+            origin=origin_name,
+            type='error',
+            integration_log=integration_error,
+            ws_tuple=False,
+            long_description=tools.ustr(exception))
