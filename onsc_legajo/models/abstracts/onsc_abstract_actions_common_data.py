@@ -10,6 +10,7 @@ STATES = [
     ('rechazado_cgn', 'Rechazado CGN'),
     ('gafi_ok', 'GAFI OK'),
     ('gafi_error', 'GAFI Error'),
+    ('confirmado', 'Confirmado'),
 ]
 
 

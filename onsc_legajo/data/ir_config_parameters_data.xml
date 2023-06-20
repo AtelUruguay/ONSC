@@ -41,6 +41,10 @@
             <field name="key">onsc_legajo_WS10_altaCS</field>
             <field name="value"></field>
         </record>
+        <record id="parameter_onsc_legajo_WS11" model="ir.config_parameter">
+            <field name="key">onsc_legajo_WS11_bajaCS</field>
+            <field name="value"></field>
+        </record>
 
     </data>
 </odoo>
