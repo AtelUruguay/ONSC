@@ -475,7 +475,10 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_is_available_cancel(self):
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         for record in self:
-            if record.state == 'returned' and record.type_cs == 'ac2ac' and record.inciso_origin_id == inciso_id:
+            if record.state not in ['draft', 'cancelled'] and self.env.user.has_group(
+                    'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
+                record.is_available_cancel = True
+            elif record.state == 'returned' and record.type_cs == 'ac2ac' and record.inciso_origin_id == inciso_id:
                 record.is_available_cancel = True
             elif record.state == 'to_process' and record.type_cs == 'ac2ac' and record.inciso_destination_id == inciso_id:
                 record.is_available_cancel = True
