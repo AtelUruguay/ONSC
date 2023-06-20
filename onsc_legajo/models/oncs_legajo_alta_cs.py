@@ -255,16 +255,16 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.should_disable_form_edit = False
 
-    @api.depends('operating_unit_origin_id', 'operating_unit_destination_id')
+    @api.depends('inciso_origin_id', 'inciso_destination_id')
     def _compute_type_commission_selection(self):
         for record in self:
-            if record.operating_unit_origin_id and record.operating_unit_destination_id:
-                if record.operating_unit_origin_id.inciso_id == record.operating_unit_destination_id.inciso_id:
+            if record.inciso_origin_id and record.inciso_destination_id:
+                if record.inciso_origin_id == record.inciso_destination_id:
                     record.type_commission_selection = '1'
                 else:
                     record.type_commission_selection = '2'
             else:
-                record.type_commission_selection = '1'
+                record.type_commission_selection = False
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
@@ -520,15 +520,11 @@ class ONSCLegajoAltaCS(models.Model):
     def onchange_operating_unit_origin_id(self):
         self.operating_unit_destination_id = False
         self.inciso_destination_id = False
+        self.partner_id = False
+        self.contract_id = False
 
     @api.onchange('operating_unit_origin_id', 'operating_unit_destination_id')
     def onchange_operating_units(self):
-        self.partner_id = False
-        self.contract_id = False
-        self.program_project_origin_id = False
-        self.program_origin = False
-        self.project_origin = False
-        self.regime_origin_id = False
         self.program_project_destination_id = False
         self.program_destination = False
         self.project_destination = False
@@ -559,7 +555,7 @@ class ONSCLegajoAltaCS(models.Model):
             if rec.operating_unit_destination_id and rec.operating_unit_origin_id and rec.operating_unit_origin_id == rec.operating_unit_destination_id:
                 raise ValidationError('La unidad ejecutora de origen y destino no pueden ser iguales')
 
-    def check_required_fieds_ws10(self):
+    def check_send_sgh(self):
         for record in self:
             message = []
             for required_field in REQUIRED_FIELDS:
@@ -575,7 +571,7 @@ class ONSCLegajoAltaCS(models.Model):
                 message.append("Primer Nombre")
             if not record.operating_unit_destination_id:
                 message.append(record._fields['operating_unit_destination_id'].string)
-            if not record.program_project_destination_id:
+            if not record.program_project_destination_id and record.type_cs != 'ac2out':
                 message.append(record._fields['program_project_destination_id'].string)
             if not record.inciso_destination_id:
                 message.append(record._fields['inciso_destination_id'].string)
@@ -591,13 +587,13 @@ class ONSCLegajoAltaCS(models.Model):
                 message.append(record._fields['occupation_id'].string)
             if not record.cv_sex:
                 message.append(_("Sexo"))
-            if not record.regime_commission_id.cgn_code and not record.regime_commission_id:
+            if record.regime_commission_id and not record.regime_commission_id.cgn_code:
                 message.append(
                     _("Falta el Código de CGN en la configuración del Régimen de comisión seleccionado. Contactar al administrador del sistema."))
             if not record.contract_id.legajo_state == 'active':
                 message.append(_("El contrato debe estar activo"))
-            # TODO revisar si es correcto
-            if record.department_id.manager_id:
+            if record.department_id.manager_id or not self.env['hr.job'].is_job_available_for_manager(
+                    record.department_id, record.security_job_id, record.date_start_commission):
                 message.append("La UO ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
@@ -619,15 +615,9 @@ class ONSCLegajoAltaCS(models.Model):
         self.state = 'cancelled'
 
     def action_send_sgh(self):
-        self.check_required_fieds_ws10()
-        if not self.env['hr.job'].is_job_available(self.department_id, self.security_job_id, self.date_start_commission):
-            raise ValidationError(_("REPONSABLE UO SOLAPADO"))
-        error_sgh = self.env['onsc.legajo.abstract.alta.cs.ws10'].with_context(
+        self.check_send_sgh()
+        self.env['onsc.legajo.abstract.alta.cs.ws10'].with_context(
             log_info=True, altas_cs=self).suspend_security().syncronize(self)
-        if isinstance(error_sgh, str):
-            self.state = 'error_sgh'
-            self.is_error_synchronization = True
-            self.error_message_synchronization = error_sgh
 
     def action_aprobado_cgn(self):
         if self.type_cs == 'out2ac':
@@ -642,13 +632,6 @@ class ONSCLegajoAltaCS(models.Model):
             date_end=date_start - relativedelta(days=1),
             legajo_state='outgoing_commission'
         )
-        if self.type_cs != 'ac2out':
-            self._get_legajo_job(new_contract)
-        self.write({
-            'is_error_synchronization': False,
-            'error_message_synchronization': '',
-            'state': 'confirmed'
-        })
 
     def _get_legajo_employee(self):
         cv_emissor_country_id = self.env.ref('base.uy')
