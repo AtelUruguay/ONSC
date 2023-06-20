@@ -218,7 +218,6 @@ class ONSCLegajoAltaCS(models.Model):
         for record in self:
             record.filter_destination = False
 
-    # TODO revisar este filtro con Rafael --> Funciona correctamente
     def _search_filter_destination(self, operator, value):
         return ['|',
                 '&', ('state', 'in', ['draft', 'to_process', 'error_sgh']),
@@ -278,6 +277,8 @@ class ONSCLegajoAltaCS(models.Model):
                     ('regime_id.presupuesto', '=', True),
                     ('operating_unit_id', '=', rec.operating_unit_origin_id.id)])
                 if len(contracts) == 1:
+                    rec.is_edit_contract = False
+                else:
                     rec.is_edit_contract = True
                 rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
             else:
@@ -492,11 +493,10 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
-        # TODO da error set_extra_data
-        # self.set_extra_data()
         contracts = self.env['hr.contract'].sudo().search([
             ("legajo_state", "=", 'active'),
             ('employee_id', '=', self.employee_id.id),
+            ('regime_id.presupuesto', '=', True),
             ('operating_unit_id', '=', self.operating_unit_origin_id.id)])
         if len(contracts) == 1:
             self.contract_id = contracts.id
