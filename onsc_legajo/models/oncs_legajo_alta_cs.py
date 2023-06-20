@@ -432,7 +432,7 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_is_available_send_to_sgh(self):
         for record in self:
             # AC2AC siendo tu mismo inciso origen y destino
-            if record.state in ['draft', 'error_sgh'] and self.env.user.has_group(
+            if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and self.env.user.has_group(
                     'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
                 record.is_available_send_to_sgh = True
             elif record.state in ['draft', 'to_process',
