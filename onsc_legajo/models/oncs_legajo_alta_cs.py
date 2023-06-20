@@ -520,11 +520,11 @@ class ONSCLegajoAltaCS(models.Model):
     def onchange_operating_unit_origin_id(self):
         self.operating_unit_destination_id = False
         self.inciso_destination_id = False
+        self.partner_id = False
+        self.contract_id = False
 
     @api.onchange('operating_unit_origin_id', 'operating_unit_destination_id')
     def onchange_operating_units(self):
-        self.partner_id = False
-        self.contract_id = False
         self.program_project_origin_id = False
         self.program_origin = False
         self.project_origin = False
