@@ -247,7 +247,7 @@ class ONSCLegajoAltaCS(models.Model):
         for record in self:
             inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
             if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and self.user_has_groups(
-                    'onsc_legajo.group_onsc_legajo_administrador'):
+                    'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
                 record.should_disable_form_edit = False
             elif record.state not in ['draft', 'to_process', 'returned', 'error_sgh']:
                 record.should_disable_form_edit = True
