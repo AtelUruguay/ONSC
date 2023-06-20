@@ -81,7 +81,7 @@
                                    context="{'show_descriptors':True}"
                                    attrs="{'invisible': [('is_inciso_origin_ac', '=', False)],'readonly': ['|',('is_edit_contract', '=', False),('state', '!=', 'draft')],'required': [('is_inciso_origin_ac', '=', True)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="employee_id" invisible="1"/>
+                            <field name="employee_id" invisible="1" force_save="1"/>
                             <field name="is_edit_contract" invisible="1"/>
                         </group>
                     </group>
