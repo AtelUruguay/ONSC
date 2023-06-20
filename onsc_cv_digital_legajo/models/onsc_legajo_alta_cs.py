@@ -15,7 +15,7 @@ class ONSCLegajoAltaCS(models.Model):
     _inherit = 'onsc.legajo.alta.cs'
 
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital",
-                                    string="Legajo Digital",
+                                    string="CV Digital",
                                     compute='_compute_employee_id',
                                     store=True)
 
@@ -53,7 +53,7 @@ class ONSCLegajoAltaCS(models.Model):
     def _get_legajo_employee(self):
         employee = super(ONSCLegajoAltaCS, self.with_context(is_alta_vl=True))._get_legajo_employee()
         cv = employee.cv_digital_id
-        vals = employee._get_info_fromcv()
+        vals = employee.with_context(exclusive_validated_info = True)._get_info_fromcv()
         if cv.partner_id.user_ids:
             user_id = cv.partner_id.user_ids[0]
         else:
