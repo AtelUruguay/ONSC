@@ -139,7 +139,7 @@ class ONSCLegajoAltaCS(models.Model):
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4',
                                      related='contract_id.descriptor4_id')
     type_commission_selection = fields.Selection(
-        [('0', ''), ('1', 'Comisión de Servicio'), ('2', 'Pase en Comisión')],
+        [('1', 'Comisión de Servicio'), ('2', 'Pase en Comisión')],
         string='Tipo de comisión', compute='_compute_type_commission_selection')
     # DESTINATION
     inciso_destination_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
@@ -264,7 +264,7 @@ class ONSCLegajoAltaCS(models.Model):
                 else:
                     record.type_commission_selection = '2'
             else:
-                record.type_commission_selection = '0'
+                record.type_commission_selection = False
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
@@ -555,7 +555,7 @@ class ONSCLegajoAltaCS(models.Model):
             if rec.operating_unit_destination_id and rec.operating_unit_origin_id and rec.operating_unit_origin_id == rec.operating_unit_destination_id:
                 raise ValidationError('La unidad ejecutora de origen y destino no pueden ser iguales')
 
-    def check_required_fieds_ws10(self):
+    def check_send_sgh(self):
         for record in self:
             message = []
             for required_field in REQUIRED_FIELDS:
@@ -615,7 +615,7 @@ class ONSCLegajoAltaCS(models.Model):
         self.state = 'cancelled'
 
     def action_send_sgh(self):
-        self.check_required_fieds_ws10()
+        self.check_send_sgh()
         self.env['onsc.legajo.abstract.alta.cs.ws10'].with_context(
             log_info=True, altas_cs=self).suspend_security().syncronize(self)
 
