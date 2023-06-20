@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
-        <record id="onsc_legajo_alta_cs_search" model="ir.ui.view">
+        <record id="onsc_legajo_baja_cs_search" model="ir.ui.view">
             <field name="name">onsc.legajo.baja.cs.search</field>
             <field name="model">onsc.legajo.baja.cs</field>
             <field name="arch" type="xml">
