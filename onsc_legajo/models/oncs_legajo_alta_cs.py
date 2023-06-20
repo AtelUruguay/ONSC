@@ -349,20 +349,15 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('inciso_destination_id')
     def _compute_operating_unit_destination_id_domain(self):
         for rec in self:
-            domain = [('id', 'in', [])]
             contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
             operating_unit_id = contract.operating_unit_id.id if contract else False
+            domain = [('inciso_id', '=', rec.inciso_destination_id.id),
+                      ('id', '!=', rec.operating_unit_origin_id.id)]
             if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs') and not (self.env.user.has_group(
                     'onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
                 'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')):
                 if rec.type_cs == 'out2ac':
                     domain = [('id', '=', operating_unit_id), ('id', '!=', rec.operating_unit_origin_id.id)]
-                else:
-                    domain = [('inciso_id', '=', rec.inciso_destination_id.id),
-                              ('id', '!=', rec.operating_unit_origin_id.id)]
-            else:
-                domain = [('inciso_id', '=', rec.inciso_destination_id.id),
-                          ('id', '!=', rec.operating_unit_origin_id.id)]
             self.operating_unit_destination_id_domain = json.dumps(domain)
 
     @api.depends('inciso_origin_id', 'inciso_destination_id')
