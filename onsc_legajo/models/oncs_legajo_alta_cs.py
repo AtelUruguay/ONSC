@@ -587,7 +587,7 @@ class ONSCLegajoAltaCS(models.Model):
                 message.append(record._fields['occupation_id'].string)
             if not record.cv_sex:
                 message.append(_("Sexo"))
-            if not record.regime_commission_id and not record.regime_commission_id.cgn_code:
+            if record.regime_commission_id and not record.regime_commission_id.cgn_code:
                 message.append(
                     _("Falta el Código de CGN en la configuración del Régimen de comisión seleccionado. Contactar al administrador del sistema."))
             if not record.contract_id.legajo_state == 'active':
