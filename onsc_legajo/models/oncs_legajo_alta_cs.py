@@ -429,8 +429,11 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_is_available_send_to_sgh(self):
         for record in self:
             # AC2AC siendo tu mismo inciso origen y destino
-            if record.state in ['draft', 'to_process',
-                                'error_sgh'] and record.type_cs == 'ac2ac' and record.inciso_origin_id == record.inciso_destination_id:
+            if record.state in ['draft', 'error_sgh'] and self.env.user.has_group(
+                    'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
+                record.is_available_send_to_sgh = True
+            elif record.state in ['draft', 'to_process',
+                                  'error_sgh'] and record.type_cs == 'ac2ac' and record.inciso_origin_id == record.inciso_destination_id:
                 record.is_available_send_to_sgh = True
             # No AC2AC siempre enviar a SGH
             elif record.type_cs != 'ac2ac' and record.state in ['draft',
@@ -448,6 +451,9 @@ class ONSCLegajoAltaCS(models.Model):
         for record in self:
             if record.state == 'to_process' and record.is_edit_destination and record.type_cs == 'ac2ac':
                 record.is_available_send_origin = True
+            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and self.env.user.has_group(
+                    'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
+                record.is_available_send_origin = True
             else:
                 record.is_available_send_origin = False
 
@@ -458,6 +464,9 @@ class ONSCLegajoAltaCS(models.Model):
             inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
             if record.state in ['draft',
                                 'returned'] and record.type_cs == 'ac2ac' and not record.is_edit_destination and record.inciso_origin_id == inciso_id:
+                record.is_available_send_destination = True
+            elif record.state == 'returned' and record.type_cs == 'ac2ac' and self.env.user.has_group(
+                    'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
                 record.is_available_send_destination = True
             else:
                 record.is_available_send_destination = False
@@ -587,7 +596,7 @@ class ONSCLegajoAltaCS(models.Model):
             if record.regime_commission_id and not record.regime_commission_id.cgn_code:
                 message.append(
                     _("Falta el Código de CGN en la configuración del Régimen de comisión seleccionado. Contactar al administrador del sistema."))
-            if not record.contract_id.legajo_state == 'active':
+            if record.is_inciso_origin_ac and not record.contract_id.legajo_state == 'active':
                 message.append(_("El contrato debe estar activo"))
             if record.security_job_id.is_uo_manager and record.department_id.manager_id or not self.env[
                 'hr.job'].is_job_available_for_manager(
