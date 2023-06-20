@@ -355,9 +355,11 @@ class ONSCLegajoAltaCS(models.Model):
             if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs') and not (self.env.user.has_group(
                     'onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
                 'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')):
-                if rec.inciso_destination_id and rec.inciso_origin_id and (
-                        rec.inciso_destination_id == rec.inciso_origin_id or rec.inciso_destination_id == contract.inciso_id):
+                if rec.type_cs == 'out2ac':
                     domain = [('id', '=', operating_unit_id), ('id', '!=', rec.operating_unit_origin_id.id)]
+                else:
+                    domain = [('inciso_id', '=', rec.inciso_destination_id.id),
+                              ('id', '!=', rec.operating_unit_origin_id.id)]
             else:
                 domain = [('inciso_id', '=', rec.inciso_destination_id.id),
                           ('id', '!=', rec.operating_unit_origin_id.id)]
