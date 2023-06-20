@@ -108,18 +108,18 @@ class ONSCLegajoAltaCS(models.Model):
             return self.env.user.employee_id.job_id.contract_id.operating_unit_id
         return False
 
-    partner_id = fields.Many2one('res.partner', string='CI', required=True)
+    partner_id = fields.Many2one('res.partner', string='CI', copy=False)
     partner_id_domain = fields.Char(compute='_compute_partner_id_domain')
     employee_id = fields.Many2one('hr.employee', 'Empleados', compute='_compute_employee_id', store=True)
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
     cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], string=u'Sexo', copy=False)
     # ORIGIN
-    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', required=True,
+    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso',
                                        default=lambda self: self._get_default_inciso_id(), copy=False)
     inciso_origin_id_domain = fields.Char(compute='_compute_inciso_origin_id_domain')
     is_inciso_origin_ac = fields.Boolean("El inciso de origen es AC?",
                                          related='inciso_origin_id.is_central_administration')
-    operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True,
+    operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
                                                default=lambda self: self._get_default_ue_id(), copy=False)
     operating_unit_origin_id_domain = fields.Char(compute='_compute_operating_unit_origin_id_domain')
     sequence_position_origin = fields.Char(string='Secuencia Plaza')
@@ -142,24 +142,24 @@ class ONSCLegajoAltaCS(models.Model):
         [('1', 'Comisión de Servicio'), ('2', 'Pase en Comisión')],
         string='Tipo de comisión', compute='_compute_type_commission_selection')
     # DESTINATION
-    inciso_destination_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
+    inciso_destination_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False)
     inciso_destination_id_domain = fields.Char(compute='_compute_inciso_destination_id_domain')
-    operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
+    operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     operating_unit_destination_id_domain = fields.Char(compute='_compute_operating_unit_destination_id_domain')
 
-    program_project_destination_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto',
+    program_project_destination_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto', copy=False,
                                                      domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]")
     program_destination = fields.Char(string='Programa',
                                       related='program_project_destination_id.programaDescripcion')
     project_destination = fields.Char(string='Proyecto',
                                       related='program_project_destination_id.proyectoDescripcion')
     regime_destination = fields.Char(string='Régimen', default='3001')
-    date_start_commission = fields.Date(string='Fecha desde de la Comisión')
-    department_id = fields.Many2one('hr.department', string='UO')
-    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
-    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
-    regime_commission_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen de comisión')
-    reason_description = fields.Text(string='Descripción del motivo')
+    date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False)
+    department_id = fields.Many2one('hr.department', string='UO', copy=False)
+    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", copy=False)
+    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False)
+    regime_commission_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen de comisión', copy=False)
+    reason_description = fields.Text(string='Descripción del motivo', copy=False)
     norm_id = fields.Many2one('onsc.legajo.norm', string='Norma')
     norm_type = fields.Char(string="Tipo norma", related="norm_id.tipoNorma", store=True, readonly=True)
     norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
@@ -169,21 +169,21 @@ class ONSCLegajoAltaCS(models.Model):
     norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
                                   store=True, readonly=True)
     resolution_description = fields.Text(string='Descripción de la resolución')
-    resolution_date = fields.Date(string='Fecha de la resolución')
+    resolution_date = fields.Date(string='Fecha de la resolución', copy=False)
     resolution_type = fields.Selection(
         [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
         string='Tipo de resolución')
     code_regime_start_commission_id = fields.Many2one('onsc.legajo.commission.regime',
-                                                      string='Código del régimen de Inicio de Comisión')
+                                                      string='Código del régimen de Inicio de Comisión', copy=False)
     state = fields.Selection(
         [('draft', 'Borrador'), ('to_process', 'A procesar en destino'), ('returned', 'Devuelto a origen'),
          ('cancelled', 'Cancelado'), ('error_sgh', 'Error SGH'), ('confirmed', 'Confirmado')],
         string='Estado', default='draft')
-    additional_information = fields.Text(string='Información adicional')
+    additional_information = fields.Text(string='Información adicional', copy=False)
     attached_document_ids = fields.One2many('onsc.legajo.attached.document',
-                                            'alta_cs_id',
+                                            'alta_cs_id', copy=False,
                                             string='Documentos adjuntos')
-    error_reported_integration_id = fields.Many2one('onsc.legajo.integration.error',
+    error_reported_integration_id = fields.Many2one('onsc.legajo.integration.error', copy=False,
                                                     string='Error reportado integración')
 
     type_cs = fields.Selection([
@@ -246,7 +246,10 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_should_disable_form_edit(self):
         for record in self:
             inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
-            if record.state not in ['draft', 'to_process', 'returned', 'error_sgh']:
+            if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and self.user_has_groups(
+                    'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
+                record.should_disable_form_edit = False
+            elif record.state not in ['draft', 'to_process', 'returned', 'error_sgh']:
                 record.should_disable_form_edit = True
             elif record.state == 'to_process' and record.type_cs == 'ac2ac' and record.inciso_origin_id == inciso_id:
                 record.should_disable_form_edit = True
@@ -429,7 +432,7 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_is_available_send_to_sgh(self):
         for record in self:
             # AC2AC siendo tu mismo inciso origen y destino
-            if record.state in ['draft', 'error_sgh'] and self.env.user.has_group(
+            if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and self.env.user.has_group(
                     'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
                 record.is_available_send_to_sgh = True
             elif record.state in ['draft', 'to_process',
