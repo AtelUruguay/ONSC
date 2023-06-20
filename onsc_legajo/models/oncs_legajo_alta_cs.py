@@ -589,8 +589,9 @@ class ONSCLegajoAltaCS(models.Model):
                     _("Falta el Código de CGN en la configuración del Régimen de comisión seleccionado. Contactar al administrador del sistema."))
             if not record.contract_id.legajo_state == 'active':
                 message.append(_("El contrato debe estar activo"))
-            if record.department_id.manager_id or not self.env['hr.job'].is_job_available_for_manager(
-                    record.department_id, record.security_job_id, record.date_start_commission):
+            if record.security_job_id.is_uo_manager and record.department_id.manager_id or not self.env[
+                'hr.job'].is_job_available_for_manager(
+                record.department_id, record.security_job_id, record.date_start_commission):
                 message.append("La UO ya tiene un responsable")
         if message:
             fields_str = '\n'.join(message)
