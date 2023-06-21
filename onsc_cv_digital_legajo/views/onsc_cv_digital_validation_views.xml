@@ -105,7 +105,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <field name="cv_expiration_date" required="1"/>
+                            <field name="cv_expiration_date"/>
                             <field name="document_identity_file"
                                            filename="document_identity_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"/>

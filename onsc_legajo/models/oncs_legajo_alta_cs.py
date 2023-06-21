@@ -604,7 +604,8 @@ class ONSCLegajoAltaCS(models.Model):
             if record.security_job_id.is_uo_manager and record.department_id.manager_id or not self.env[
                 'hr.job'].is_job_available_for_manager(
                 record.department_id, record.security_job_id, record.date_start_commission):
-                message.append("La UO ya tiene un responsable")
+                message.append("No se puede asignar la seguridad de puesto elegida, "
+                               "porque ya existe un responsable en la UO seleccionada.")
         if message:
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
@@ -644,6 +645,8 @@ class ONSCLegajoAltaCS(models.Model):
             date_end=date_start - relativedelta(days=1),
             legajo_state='outgoing_commission'
         )
+        if self.type_cs != 'ac2out':
+            self._get_legajo_job(new_contract)
         self.write({
             'state': 'confirmed',
             'is_error_synchronization': False,

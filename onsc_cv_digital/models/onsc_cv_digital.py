@@ -123,7 +123,7 @@ class ONSCCVDigital(models.Model):
     # is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
 
     # Raza
-    cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial", required=True,
+    cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial",
                                    domain="[('race_type','in',['race','both'])]")
     is_cv_race_option_other_enable = fields.Boolean(
         u'¿Permitir opción otra/o?',
@@ -796,21 +796,6 @@ class ONSCCVDigital(models.Model):
 
     def validate_header_documentary_validation(self):
         for record in self.filtered(lambda x: x.type == 'cv').with_context(no_update_header_documentary_validation=True):
-            # GENERO
-            if record.cv_gender_id is False or record.cv_gender_id.record is False:
-                record.gender_documentary_validation_state = 'validated'
-            # AFRODESCENDIENTES
-            if record.is_afro_descendants is False:
-                record.afro_descendant_documentary_validation_state = 'validated'
-            # CARNE SALUD LABORAL
-            if record.is_occupational_health_card is False:
-                record.occupational_health_card_documentary_validation_state = 'validated'
-            # APTITUD MEDICO DEPORTIVA
-            if record.is_medical_aptitude_certificate_status is False:
-                record.medical_aptitude_certificate_documentary_validation_state = 'validated'
-            # VICTIMA DE DELITOS VIOLENTOS
-            if record.is_victim_violent is False:
-                record.victim_violent_documentary_validation_state = 'validated'
             # DISCAPACIDAD
             if record.people_disabilitie != 'si':
                 record.disabilitie_documentary_validation_state = 'validated'
