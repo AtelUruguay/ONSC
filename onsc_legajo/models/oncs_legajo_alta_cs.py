@@ -169,7 +169,7 @@ class ONSCLegajoAltaCS(models.Model):
     norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
                                   store=True, readonly=True)
     resolution_description = fields.Text(string='Descripción de la resolución')
-    resolution_date = fields.Date(string='Fecha de la resolución', copy=False)
+    resolution_date = fields.Date(string='Fecha de la resolución')
     resolution_type = fields.Selection(
         [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
         string='Tipo de resolución')
