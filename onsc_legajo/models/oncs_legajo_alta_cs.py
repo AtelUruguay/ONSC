@@ -169,7 +169,7 @@ class ONSCLegajoAltaCS(models.Model):
     norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
                                   store=True, readonly=True)
     resolution_description = fields.Text(string='Descripción de la resolución')
-    resolution_date = fields.Date(string='Fecha de la resolución', copy=False)
+    resolution_date = fields.Date(string='Fecha de la resolución')
     resolution_type = fields.Selection(
         [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
         string='Tipo de resolución')
@@ -547,9 +547,6 @@ class ONSCLegajoAltaCS(models.Model):
         self.occupation_id = False
         self.regime_commission_id = False
         self.reason_description = False
-        self.norm_id = False
-        self.resolution_description = False
-        self.resolution_date = False
         self.code_regime_start_commission_id = False
         self.additional_information = False
 
@@ -620,6 +617,8 @@ class ONSCLegajoAltaCS(models.Model):
             raise ValidationError(_("Debe seleccionar inciso de destino"))
         if not self.operating_unit_destination_id:
             raise ValidationError(_("Debe seleccionar una unidad ejecutora de destino"))
+        if self.is_inciso_origin_ac and self.contract_id and not self.contract_id.legajo_state == 'active':
+            raise ValidationError(_("El contrato debe estar activo"))
 
     def action_send_origin(self):
         self.state = 'returned'
