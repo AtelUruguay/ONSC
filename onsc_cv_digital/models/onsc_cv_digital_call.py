@@ -61,8 +61,16 @@ class ONSCCVDigitalCall(models.Model):
         ondelete='set null',
         index=True)
 
+    @api.depends('postulation_date')
+    def _compute_postulation_date_str(self):
+        for rec in self:
+            rec.postulation_date_str = str(rec.postulation_date)
+
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
     postulation_date = fields.Datetime(string=u"Fecha de actualización", required=True, index=True)
+    postulation_date_str = fields.Char(string=u"Fecha de actualización",
+                                           compute='_compute_postulation_date_str',
+                                           store=True)
     postulation_number = fields.Char(string=u"Número de postulación", required=True, index=True)
     is_close = fields.Boolean(string="Cerrado", default=False)
     is_json_sent = fields.Boolean(string="Copia enviada", default=False)
@@ -241,20 +249,23 @@ class ONSCCVDigitalCall(models.Model):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
             record.show_race_info = (conditional_show and
-                                     record.is_cv_race_public or
-                                     record.is_afro) or not conditional_show
+                                     (record.is_cv_race_public or
+                                     record.is_afro) and record.is_afro_descendants) or not conditional_show
 
     def _compute_show_disabilitie_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
-            record.show_disabilitie_info = (conditional_show and record.allow_content_public == 'si' or
-                                            record.is_disabilitie) or not conditional_show
+            _disabilitie = record.allow_content_public == 'si' or record.is_disabilitie
+            record.show_disabilitie_info = (conditional_show and
+                                            _disabilitie and
+                                            record.people_disabilitie == 'si') or not conditional_show
 
     def _compute_show_gender_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
-            record.show_gender_info = (conditional_show and record.is_cv_gender_public or
-                                       record.is_trans) or not conditional_show
+            record.show_gender_info = (conditional_show and
+                                       (record.is_cv_gender_public or record.is_trans) and
+                                       record.cv_gender_id.record) or not conditional_show
 
     def button_update_documentary_validation_sections_tovalidate(self):
         self._compute_gral_info_documentary_validation_state()
