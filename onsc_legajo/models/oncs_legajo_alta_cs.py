@@ -147,20 +147,38 @@ class ONSCLegajoAltaCS(models.Model):
     operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     operating_unit_destination_id_domain = fields.Char(compute='_compute_operating_unit_destination_id_domain')
 
-    program_project_destination_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto', copy=False,
-                                                     domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]")
+    program_project_destination_id = fields.Many2one('onsc.legajo.office',
+                                                     string='Programa - Proyecto',
+                                                     copy=False,
+                                                     domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
+                                                     readonly=False, states={'confirmed': [('readonly', True)],
+                                                                             'cancelled': [('readonly', True)]})
     program_destination = fields.Char(string='Programa',
                                       related='program_project_destination_id.programaDescripcion')
     project_destination = fields.Char(string='Proyecto',
                                       related='program_project_destination_id.proyectoDescripcion')
     regime_destination = fields.Char(string='Régimen', default='3001')
-    date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False)
-    department_id = fields.Many2one('hr.department', string='UO', copy=False)
-    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", copy=False)
-    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False)
-    regime_commission_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen de comisión', copy=False)
-    reason_description = fields.Text(string='Descripción del motivo', copy=False)
-    norm_id = fields.Many2one('onsc.legajo.norm', string='Norma')
+    date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False,
+                                        readonly=False, states={'confirmed': [('readonly', True)],
+                                                                'cancelled': [('readonly', True)]})
+    department_id = fields.Many2one('hr.department', string='UO', copy=False,
+                                    readonly=False, states={'confirmed': [('readonly', True)],
+                                                            'cancelled': [('readonly', True)]})
+    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", copy=False,
+                                      readonly=False, states={'confirmed': [('readonly', True)],
+                                                              'cancelled': [('readonly', True)]})
+    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False,
+                                    readonly=False, states={'confirmed': [('readonly', True)],
+                                                            'cancelled': [('readonly', True)]})
+    regime_commission_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen de comisión', copy=False,
+                                           readonly=False, states={'confirmed': [('readonly', True)],
+                                                                   'cancelled': [('readonly', True)]})
+    reason_description = fields.Text(string='Descripción del motivo', copy=False,
+                                     readonly=False, states={'confirmed': [('readonly', True)],
+                                                             'cancelled': [('readonly', True)]})
+    norm_id = fields.Many2one('onsc.legajo.norm', string='Norma',
+                              readonly=False, states={'confirmed': [('readonly', True)],
+                                                      'cancelled': [('readonly', True)]})
     norm_type = fields.Char(string="Tipo norma", related="norm_id.tipoNorma", store=True, readonly=True)
     norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
                                  store=True, readonly=True)
@@ -168,21 +186,31 @@ class ONSCLegajoAltaCS(models.Model):
                                readonly=True)
     norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
                                   store=True, readonly=True)
-    resolution_description = fields.Text(string='Descripción de la resolución')
-    resolution_date = fields.Date(string='Fecha de la resolución')
+    resolution_description = fields.Text(string='Descripción de la resolución',
+                                         readonly=False, states={'confirmed': [('readonly', True)],
+                                                                 'cancelled': [('readonly', True)]})
+    resolution_date = fields.Date(string='Fecha de la resolución',
+                                  readonly=False, states={'confirmed': [('readonly', True)],
+                                                          'cancelled': [('readonly', True)]})
     resolution_type = fields.Selection(
         [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
-        string='Tipo de resolución')
+        string='Tipo de resolución',
+        readonly=False, states={'confirmed': [('readonly', True)],
+                                'cancelled': [('readonly', True)]})
     code_regime_start_commission_id = fields.Many2one('onsc.legajo.commission.regime',
                                                       string='Código del régimen de Inicio de Comisión', copy=False)
     state = fields.Selection(
         [('draft', 'Borrador'), ('to_process', 'A procesar en destino'), ('returned', 'Devuelto a origen'),
          ('cancelled', 'Cancelado'), ('error_sgh', 'Error SGH'), ('confirmed', 'Confirmado')],
         string='Estado', default='draft')
-    additional_information = fields.Text(string='Información adicional', copy=False)
+    additional_information = fields.Text(string='Información adicional', copy=False,
+                                         readonly=False, states={'confirmed': [('readonly', True)],
+                                                                 'cancelled': [('readonly', True)]})
     attached_document_ids = fields.One2many('onsc.legajo.attached.document',
                                             'alta_cs_id', copy=False,
-                                            string='Documentos adjuntos')
+                                            string='Documentos adjuntos',
+                                            readonly=False, states={'confirmed': [('readonly', True)],
+                                                                    'cancelled': [('readonly', True)]})
     error_reported_integration_id = fields.Many2one('onsc.legajo.integration.error', copy=False,
                                                     string='Error reportado integración')
 
@@ -601,9 +629,8 @@ class ONSCLegajoAltaCS(models.Model):
                     _("Falta el Código de CGN en la configuración del Régimen de comisión seleccionado. Contactar al administrador del sistema."))
             if record.is_inciso_origin_ac and record.contract_id and not record.contract_id.legajo_state == 'active':
                 message.append(_("El contrato debe estar activo"))
-            if record.security_job_id.is_uo_manager and record.department_id.manager_id or not self.env[
-                'hr.job'].is_job_available_for_manager(
-                record.department_id, record.security_job_id, record.date_start_commission):
+            if record.security_job_id.is_uo_manager and not self.env['hr.job'].is_job_available_for_manager(
+                    record.department_id, record.security_job_id, record.date_start_commission):
                 message.append("No se puede asignar la seguridad de puesto elegida, "
                                "porque ya existe un responsable en la UO seleccionada.")
         if message:
@@ -633,20 +660,20 @@ class ONSCLegajoAltaCS(models.Model):
             log_info=True, altas_cs=self).suspend_security().syncronize(self)
 
     def action_aprobado_cgn(self):
-        if self.type_cs == 'out2ac':
-            employee = self._get_legajo_employee()
-            self._get_legajo(employee)
-        else:
-            employee = self.employee_id
-        new_contract = self._get_legajo_contract(employee)
-        self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
-        date_start = fields.Date.from_string(self.date_start_commission)
-        self.contract_id.deactivate_legajo_contract(
-            date_end=date_start - relativedelta(days=1),
-            legajo_state='outgoing_commission'
-        )
-        if self.type_cs != 'ac2out':
-            self._get_legajo_job(new_contract)
+        # if self.type_cs == 'out2ac':
+        #     employee = self._get_legajo_employee()
+        #     self._get_legajo(employee)
+        # else:
+        #     employee = self.employee_id
+        # new_contract = self._get_legajo_contract(employee)
+        # self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
+        # date_start = fields.Date.from_string(self.date_start_commission or fields.Date.today())
+        # self.contract_id.deactivate_legajo_contract(
+        #     date_end=date_start - relativedelta(days=1),
+        #     legajo_state='outgoing_commission'
+        # )
+        # if self.type_cs != 'ac2out':
+        #     self._get_legajo_job(new_contract)
         self.write({
             'state': 'confirmed',
             'is_error_synchronization': False,

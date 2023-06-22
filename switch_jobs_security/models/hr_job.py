@@ -6,7 +6,7 @@ from odoo import fields, models
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
-    start_date = fields.Date(string="Fecha desde", default=fields.Date.today(), tracking=True)
+    start_date = fields.Date(string="Fecha desde", default=lambda *a: fields.Date.today(), tracking=True)
     end_date = fields.Date(string="Fecha hasta", tracking=True)
     role_ids = fields.One2many('hr.job.role.line', inverse_name='job_id', string="Roles",
                                domain=[('type', '=', 'system')])
@@ -24,7 +24,7 @@ class HrJobRoleLine(models.Model):
 
     job_id = fields.Many2one('hr.job', string='Puesto', ondelete='cascade')
     user_role_id = fields.Many2one('res.users.role', string='Rol', required=True, ondelete='restrict')
-    start_date = fields.Date(string="Fecha desde", default=fields.Date.today())
+    start_date = fields.Date(string="Fecha desde", default=lambda *a: fields.Date.today())
     end_date = fields.Date(string="Fecha hasta")
     type = fields.Selection([('manual', 'Manual'), ('system', 'Seguridad de puesto')],
                             string='Modo de creación', default='manual')

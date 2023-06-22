@@ -7,7 +7,7 @@
         <field name="type">form</field>
         <field name="arch" type="xml">
             <field name="employee_id" position="after">
-                <field name="cv_digital_id" force_save="1"/>
+                <field name="cv_digital_id" force_save="1" invisible="1"/>
             </field>
         </field>
     </record>
