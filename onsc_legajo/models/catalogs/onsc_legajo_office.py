@@ -7,18 +7,10 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
-class ONSCLegajoOfficeHistory(models.Model):
-    _inherit = ['model.history.data']
-    _name = 'onsc.legajo.office.history'
-    _parent_model = 'onsc.legajo.office'
-
-    def read(self, fields=None, load="_classic_read"):
-        return super().read(fields=fields, load=load)
 
 class ONSCLegajoOffice(models.Model):
     _name = 'onsc.legajo.office'
-    _inherit = ['onsc.legajo.abstract.sync','model.history']
-    _history_model = 'onsc.legajo.office.history'
+    _inherit = ['onsc.legajo.abstract.sync']
     _description = 'Oficina'
     _rec_name = 'code'
 
@@ -28,14 +20,13 @@ class ONSCLegajoOffice(models.Model):
     unidadEjecutora = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True)
     unidadEjecutora_budget_code = fields.Char(u"Unidad ejecutora - Código presupuestal (SIIF)",
                                               related='unidadEjecutora.budget_code', store=True)
-    programa = fields.Char(string="Código del programa", history=True)
+    programa = fields.Char(string="Código del programa")
     programaDescripcion = fields.Char(string="Descripción del programa")
     proyecto = fields.Char(string="Código del proyecto")
     proyectoDescripcion = fields.Char(string="Descripción del proyecto")
 
     jornada_retributiva_ids = fields.One2many("onsc.legajo.jornada.retributiva",
                                               inverse_name="office_id",
-                                              history_fields="codigoJornada",
                                               string="Jornadas retributivas")
 
     active = fields.Boolean(string="Activo", default=True)
