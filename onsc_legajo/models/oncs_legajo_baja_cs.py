@@ -245,16 +245,18 @@ class ONSCLegajoBajaCS(models.Model):
             ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
-            Puesto = self.contract_id.job_ids.sorted("end_date", reverse=True)[0]
-            Job.suspend_security().create_job(ContratoOrigen, Puesto.department_id,
-                                              self.end_date - relativedelta(days=1), Puesto.security_job_id)
+            # REUNION 21/06/23 QUEDA SIN EFECTO LA CREACION DEL PUESTO, EL PUSETO SE ASIGNA POR LA ACCION CAMBIO UO
+            # Puesto = self.contract_id.job_ids.sorted("end_date", reverse=True)[0]
+            # Job.suspend_security().create_job(ContratoOrigen, Puesto.department_id,
+            #                                   self.end_date - relativedelta(days=1), Puesto.security_job_id)
 
         elif not self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
             ContratoOrigen.suspend_security().activate_legajo_contract()
             ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
-            Puesto = self.contract_id.job_ids.sorted("end_date", reverse=True)[0]
-            Job.suspend_security().create_job(ContratoOrigen, Puesto.department_id,
-                                              self.end_date - relativedelta(days=1), Puesto.security_job_id)
+            # REUNION 21/06/23 QUEDA SIN EFECTO LA CREACION DEL PUESTO, EL PUSETO SE ASIGNA POR LA ACCION CAMBIO UO
+            # Puesto = self.contract_id.job_ids.sorted("end_date", reverse=True)[0]
+            # Job.suspend_security().create_job(ContratoOrigen, Puesto.department_id,
+            #                                   self.end_date - relativedelta(days=1), Puesto.security_job_id)
 
         elif self.contract_id.inciso_id.is_central_administration and not ContratoOrigen.inciso_id.is_central_administration:
 
