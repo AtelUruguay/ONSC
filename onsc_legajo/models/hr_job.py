@@ -124,6 +124,26 @@ class HrJob(models.Model):
         job.onchange_security_job_id()
         return job
 
+    def is_job_available_for_manager(self, department, security_job, date):
+        if not security_job.is_uo_manager:
+            return True
+        return self.search_count([
+            ('department_id', '=', department.id),
+            ('security_job_id.is_uo_manager', '=', True),
+            ('start_date', '<=', date),
+            '|', ('end_date', '=', False), ('end_date', '>=', date)
+        ]) == 0
+
+    def update_managers(self):
+        self.env['hr.department'].search([]).write({'manager_id': False})
+        date = fields.Date.today()
+        for record in self.search([
+            ('security_job_id.is_uo_manager', '=', True),
+            ('contract_id.legajo_state', '!=', 'baja'),
+            ('start_date', '<=', date),
+            '|', ('end_date', '=', False), ('end_date', '>=', date)]):
+            record.department_id.write({'manager_id': record.employee_id.id})
+
 
 class HrJobRoleLine(models.Model):
     _inherit = 'hr.job.role.line'
@@ -212,4 +232,3 @@ class HrJobRoleLine(models.Model):
             rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
                                     tracking_value_ids=tracking_value_ids)
         return True
-

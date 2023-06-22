@@ -497,7 +497,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     error = self.validate_cv_fields(data)
                     if error:
                         raise ValidationError(''.join(error))
-                    cv_digital = CVDigital.suspend_security().create(data)
+                    CVDigital.suspend_security().create(data)
                 line.write({'message_error': ''})
                 self.env.cr.commit()
             except Exception as e:
@@ -820,8 +820,17 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
         elif len(value) == 0:
             return False
         else:
-            message_error.append(
-                'No se encontró el valor %s en el catálogo de %s' % (value, self._fields[field].string))
+            if field in ['address_location_id']:
+                message_error.append(
+                    'No se encontró el valor %s en el catálogo de %s para ese valor de Departamento' %
+                    (value, self._fields[field].string))
+            elif field in ['address_street_id', 'address_street2_id', 'address_street3_id']:
+                message_error.append(
+                    'No se encontró el valor %s en el catálogo de %s para esa Localidad' % (
+                    value, self._fields[field].string))
+            else:
+                message_error.append(
+                    'No se encontró el valor %s en el catálogo de %s' % (value, self._fields[field].string))
 
     def create_line(self, values):
         return self.create(values)

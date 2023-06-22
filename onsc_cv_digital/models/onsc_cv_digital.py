@@ -123,7 +123,7 @@ class ONSCCVDigital(models.Model):
     # is_cv_gender_record = fields.Boolean(u'Constancia', related='cv_gender_id.record')
 
     # Raza
-    cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial", required=True,
+    cv_race_ids = fields.Many2many("onsc.cv.race", string=u"Identidad étnico-racial",
                                    domain="[('race_type','in',['race','both'])]")
     is_cv_race_option_other_enable = fields.Boolean(
         u'¿Permitir opción otra/o?',
@@ -782,31 +782,23 @@ class ONSCCVDigital(models.Model):
             formatted_response = "Servidor no encontrado."
         return formatted_response
 
-    # @api.model
-    # def create(self, values):
-    #     record = super(ONSCCVDigital, self).create(values)
-    #     if values.get('cv_address_street_id'):
-    #         record.partner_id.suspend_security().write(
-    #             {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
-    #              'cv_street3': record.cv_address_street3_id.street})
-    #     return record
+    @api.model
+    def create(self, values):
+        record = super(ONSCCVDigital, self).create(values)
+        record.validate_header_documentary_validation()
+        return record
 
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
         if not self._context.get('no_update_header_documentary_validation'):
             self.update_header_documentary_validation(values)
-        # if values.get('country_code') == 'UY' or values.get('cv_address_street_id') or values.get(
-        #         'cv_address_street2_id') or values.get('cv_address_street3_id'):
-        #     for record in self:
-        #         record.partner_id.suspend_security().write(
-        #             {'street': record.cv_address_street_id.street, 'street2': record.cv_address_street2_id.street,
-        #              'cv_street3': record.cv_address_street3_id.street})
-        # else:
-        #     self.filtered(lambda x: x.country_code != 'UY').mapped('partner_id').suspend_security().write({
-        #         'street2': False,
-        #         'cv_street3': False
-        #     })
         return records
+
+    def validate_header_documentary_validation(self):
+        for record in self.filtered(lambda x: x.type == 'cv').with_context(no_update_header_documentary_validation=True):
+            # DISCAPACIDAD
+            if record.people_disabilitie != 'si':
+                record.disabilitie_documentary_validation_state = 'validated'
 
     def update_header_documentary_validation(self, values):
         cv_expiration_date_value = values.get('cv_expiration_date')

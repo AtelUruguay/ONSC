@@ -247,85 +247,12 @@ class HrEmployee(models.Model):
     def _get_info_fromcv(self):
         record = self.sudo()
         vals = {
-            # 'image_1920': record.cv_digital_id.partner_id.image_1920,
-            # 'photo_updated_date': record.cv_digital_id.partner_id.cv_photo_updated_date,
-            # 'cv_expiration_date': record.cv_digital_id.cv_expiration_date,
-            # 'document_identity_file': record.cv_digital_id.document_identity_file,
-            # 'document_identity_filename': record.cv_digital_id.document_identity_filename,
-            # 'cv_sex_updated_date': record.cv_sex_updated_date,
             'country_of_birth_id': record.cv_digital_id.country_of_birth_id.id,
-            # ESTADO CIVIL
-            # 'marital_status_id': record.cv_digital_id.marital_status_id.id,
-            # CREDENCIAL CIVICA
-            # 'crendencial_serie': record.cv_digital_id.crendencial_serie,
-            # 'credential_number': record.cv_digital_id.credential_number,
-            # 'civical_credential_file': record.cv_digital_id.civical_credential_file,
-            # 'civical_credential_filename': record.cv_digital_id.civical_credential_filename,
             'drivers_license_ids': record._get_driver_licences_orm(),
-            'status_civil_date': record.cv_digital_id.status_civil_date,
-            # GENERO
-            # 'cv_gender_id': record.cv_digital_id.cv_gender_id.id,
-            # 'cv_gender2': record.cv_digital_id.cv_gender2,
-            # 'cv_gender_record_file': record.cv_digital_id.cv_gender_record_file,
-            # 'cv_gender_record_filename': record.cv_digital_id.cv_gender_record_filename,
-            # # 'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
-            # 'gender_date': record.cv_digital_id.gender_date,
-            # RAZA
-            # 'cv_race2': record.cv_digital_id.cv_race2,
-            # 'cv_race_ids': record.cv_digital_id.cv_race_ids,
-            # 'cv_first_race_id': record.cv_digital_id.cv_first_race_id,
-            # 'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
-            # 'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
-            # 'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
-            # 'afro_descendant_date': record.cv_digital_id.afro_descendant_date,
-
-            # SALUD LABORAL
-            # 'is_occupational_health_card': record.cv_digital_id.is_occupational_health_card,
-            # 'occupational_health_card_date': record.cv_digital_id.occupational_health_card_date,
-            # 'occupational_health_card_file': record.cv_digital_id.occupational_health_card_file,
-            # 'occupational_health_card_filename': record.cv_digital_id.occupational_health_card_filename,
-            # APTITUD MEDICA DEPORTIVA
-            # 'is_medical_aptitude_certificate_status': record.cv_digital_id.is_medical_aptitude_certificate_status,
-            # 'medical_aptitude_certificate_date': record.cv_digital_id.medical_aptitude_certificate_date,
-            # 'medical_aptitude_certificate_file': record.cv_digital_id.medical_aptitude_certificate_file,
-            # 'medical_aptitude_certificate_filename': record.cv_digital_id.medical_aptitude_certificate_filename,
-            # Victima de Delitos violentos
-            # 'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
-            # 'is_victim_violent': record.cv_digital_id.is_victim_violent,
-            # 'relationship_victim_violent_filename': record.cv_digital_id.relationship_victim_violent_filename,
-            # Domicilio
-            'country_id': record.cv_digital_id.country_id.id,
-            'cv_address_street': record.cv_digital_id.cv_address_street,
-            'cv_address_street_id': record.cv_digital_id.cv_address_street_id.id,
-            'cv_address_street2_id': record.cv_digital_id.cv_address_street2_id.id,
-            'cv_address_street3_id': record.cv_digital_id.cv_address_street3_id.id,
-            'cv_address_state_id': record.cv_digital_id.cv_address_state_id.id,
-            'cv_address_location_id': record.cv_digital_id.cv_address_location_id.id,
-            'cv_address_nro_door': record.cv_digital_id.cv_address_nro_door,
-            'cv_address_apto': record.cv_digital_id.cv_address_apto,
-            'cv_address_zip': record.cv_digital_id.cv_address_zip,
-            'cv_address_is_cv_bis': record.cv_digital_id.cv_address_is_cv_bis,
-            'cv_address_amplification': record.cv_digital_id.cv_address_amplification,
-            'cv_address_place': record.cv_digital_id.cv_address_place,
-            'cv_address_block': record.cv_digital_id.cv_address_block,
-            'cv_address_sandlot': record.cv_digital_id.cv_address_sandlot,
-            'address_receipt_file': record.cv_digital_id.partner_id.address_receipt_file,
-            'address_info_date': record.cv_digital_id.partner_id.address_info_date,
-            'address_receipt_file_name': record.cv_digital_id.partner_id.address_receipt_file_name,
-
-            # Discapacidad
-            # 'people_disabilitie': record.cv_digital_id.people_disabilitie,
-            # 'document_certificate_file': record.cv_digital_id.document_certificate_file,
-            # 'document_certificate_filename': record.cv_digital_id.document_certificate_filename,
-            # 'certificate_date': record.cv_digital_id.certificate_date,
-            # 'to_date': record.cv_digital_id.to_date,
-            # 'disability_date': record.cv_digital_id.disability_date,
-            # 'type_support_ids': record._get_type_support_orm(),
             # Datos del legajo
             'emergency_service_id': record.cv_digital_id.emergency_service_id.id,
             'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
             'emergency_service_telephone': record.cv_digital_id.emergency_service_telephone,
-            # 'other_information_official': record.cv_digital_id.other_information_official,
             'institutional_email': record.cv_digital_id.institutional_email,
             'digitized_document_file': record.cv_digital_id.digitized_document_file,
             'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
@@ -333,6 +260,29 @@ class HrEmployee(models.Model):
             'health_department_id': record.cv_digital_id.health_department_id.id,
             'health_provider_id': record.cv_digital_id.health_provider_id.id,
         }
+        cv_address_documentary_validated = record.cv_digital_id.cv_address_documentary_validation_state == 'validated'
+        if not self._context.get('exclusive_validated_info') or cv_address_documentary_validated:
+            vals.update({
+                # Domicilio
+                'country_id': record.cv_digital_id.country_id.id,
+                'cv_address_street': record.cv_digital_id.cv_address_street,
+                'cv_address_street_id': record.cv_digital_id.cv_address_street_id.id,
+                'cv_address_street2_id': record.cv_digital_id.cv_address_street2_id.id,
+                'cv_address_street3_id': record.cv_digital_id.cv_address_street3_id.id,
+                'cv_address_state_id': record.cv_digital_id.cv_address_state_id.id,
+                'cv_address_location_id': record.cv_digital_id.cv_address_location_id.id,
+                'cv_address_nro_door': record.cv_digital_id.cv_address_nro_door,
+                'cv_address_apto': record.cv_digital_id.cv_address_apto,
+                'cv_address_zip': record.cv_digital_id.cv_address_zip,
+                'cv_address_is_cv_bis': record.cv_digital_id.cv_address_is_cv_bis,
+                'cv_address_amplification': record.cv_digital_id.cv_address_amplification,
+                'cv_address_place': record.cv_digital_id.cv_address_place,
+                'cv_address_block': record.cv_digital_id.cv_address_block,
+                'cv_address_sandlot': record.cv_digital_id.cv_address_sandlot,
+                'address_receipt_file': record.cv_digital_id.partner_id.address_receipt_file,
+                'address_info_date': record.cv_digital_id.partner_id.address_info_date,
+                'address_receipt_file_name': record.cv_digital_id.partner_id.address_receipt_file_name,
+            })
         # NRO DOCUMENTO
         if record.cv_digital_id.nro_doc_documentary_validation_state == 'validated':
             vals.update({
@@ -353,6 +303,7 @@ class HrEmployee(models.Model):
                 'marital_status_id': record.cv_digital_id.marital_status_id.id,
                 'digitized_document_file': record.cv_digital_id.digitized_document_file,
                 'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
+                'status_civil_date': record.cv_digital_id.status_civil_date,
             })
         # CREDENCIAL CIVICA
         if record.cv_digital_id.civical_credential_documentary_validation_state == 'validated':
