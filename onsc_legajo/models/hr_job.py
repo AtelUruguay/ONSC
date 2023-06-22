@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
 
-from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 

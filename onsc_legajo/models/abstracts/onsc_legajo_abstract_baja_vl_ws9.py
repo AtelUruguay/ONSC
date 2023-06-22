@@ -30,7 +30,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
             'cedula': int(record.employee_id.cv_nro_doc[:-1], 16),
             'secPlaza': int(record.contract_id.sec_position),
             'estadoLaboralBaja': int(record.causes_discharge_id.code_cgn),
-            'causalEgreso':record.causes_discharge_id.is_require_extended  and record.causes_discharge_extended_id.description or None
+            'causalEgreso': record.causes_discharge_id.is_require_extended and record.causes_discharge_extended_id.description or None
         }
         _logger.info('******************WS9')
         _logger.info(data)
@@ -113,7 +113,6 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
             integration_error,
             long_description
         )
-
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
         IntegrationError = self.env['onsc.legajo.integration.error']

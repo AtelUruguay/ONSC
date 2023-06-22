@@ -137,5 +137,5 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
             'is_error_synchronization': True,
             'state': 'error_sgh',
             'error_message_synchronization': "Error devuelto por SGH: " + (
-                        long_description or "No se puedo conectar con el servicio web")
+                    long_description or "No se puedo conectar con el servicio web")
         })
