@@ -660,20 +660,20 @@ class ONSCLegajoAltaCS(models.Model):
             log_info=True, altas_cs=self).suspend_security().syncronize(self)
 
     def action_aprobado_cgn(self):
-        # if self.type_cs == 'out2ac':
-        #     employee = self._get_legajo_employee()
-        #     self._get_legajo(employee)
-        # else:
-        #     employee = self.employee_id
-        # new_contract = self._get_legajo_contract(employee)
-        # self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
-        # date_start = fields.Date.from_string(self.date_start_commission or fields.Date.today())
-        # self.contract_id.deactivate_legajo_contract(
-        #     date_end=date_start - relativedelta(days=1),
-        #     legajo_state='outgoing_commission'
-        # )
-        # if self.type_cs != 'ac2out':
-        #     self._get_legajo_job(new_contract)
+        if self.type_cs == 'out2ac':
+            employee = self._get_legajo_employee()
+            self._get_legajo(employee)
+        else:
+            employee = self.employee_id
+        new_contract = self._get_legajo_contract(employee)
+        self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
+        date_start = fields.Date.from_string(self.date_start_commission or fields.Date.today())
+        self.contract_id.deactivate_legajo_contract(
+            date_end=date_start - relativedelta(days=1),
+            legajo_state='outgoing_commission'
+        )
+        if self.type_cs != 'ac2out':
+            self._get_legajo_job(new_contract)
         self.write({
             'state': 'confirmed',
             'is_error_synchronization': False,
