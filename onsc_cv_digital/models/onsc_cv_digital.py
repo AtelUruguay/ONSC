@@ -339,6 +339,18 @@ class ONSCCVDigital(models.Model):
         compute=lambda s: s._get_help('cv_help_reference'),
         default=lambda s: s._get_help('cv_help_reference', True)
     )
+    is_cv_user_acceptance_active = fields.Boolean(
+        compute=lambda s: s._get_is_cv_user_acceptance('is_cv_user_acceptance_active'),
+        default=lambda s: s._get_is_cv_user_acceptance('is_cv_user_acceptance_active', True)
+    )
+    cv_user_acceptance = fields.Text(
+        compute=lambda s: s._get_cv_user_acceptance('cv_user_acceptance'),
+        default=lambda s: s._get_cv_user_acceptance('cv_user_acceptance', True)
+    )
+    is_cv_user_acceptance_ok = fields.Boolean(
+        "Consentimiento al uso del CV-D aprobado")
+    is_cv_user_acceptance_ok_date = fields.Datetime(
+        "Fecha de consentimiento al uso del CV-D")
 
     # VALIDACION DOCUMENTAL
     # DISCAPACIDAD
@@ -389,6 +401,20 @@ class ONSCCVDigital(models.Model):
             return eval("_html2construct")
         for rec in self:
             setattr(rec, help_field, _html2construct)
+
+    def _get_cv_user_acceptance(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
+
+    def _get_is_cv_user_acceptance(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
 
     @api.depends('cv_race_ids')
     def _compute_cv_race_values(self):
@@ -625,25 +651,22 @@ class ONSCCVDigital(models.Model):
         action['domain'] = "[('type','=','call'),('cv_digital_origin_id','in',%s)]" % self.ids
         return action
 
+    def button_cv_user_acceptance_ok(self):
+        self.write({
+            "is_cv_user_acceptance_ok": True,
+            "is_cv_user_acceptance_ok_date": fields.Datetime.now()
+        })
+
     def _action_open_user_cv(self):
-        ctx = self.env.context.copy()
-        ctx['user_cv'] = True
-        vals = {
-            'type': 'ir.actions.act_window',
-            'view_mode': 'form',
-            'res_model': self._name,
-            'name': 'Curriculum vitae',
-            'context': ctx,
-            "target": "main",
-        }
+        action = self.sudo().env.ref('onsc_cv_digital.onsc_cv_digital_user_client_action').read()[0]
         if self.env.user.has_group('onsc_cv_digital.group_user_cv'):
             my_cv = self._context.get('my_cv', False) or self.search(
                 [('partner_id', '=', self.env.user.partner_id.id), ('active', 'in', [False, True]),
                  ('type', '=', 'cv')], limit=1)
             if my_cv and my_cv.active is False:
-                vals.update({'views': [(self.get_readonly_formview_id(), 'form')]})
-            vals.update({'res_id': my_cv.id})
-        return vals
+                action.update({'views': [(self.get_readonly_formview_id(), 'form')]})
+            action.update({'res_id': my_cv.id})
+        return action
 
     def get_readonly_formview_id(self):
         """
@@ -853,18 +876,21 @@ class ONSCCVDigital(models.Model):
             cv_call_id = self.env['onsc.cv.digital.call'].search([('cv_digital_id', '=', self.id)], limit=1)
             is_call_documentary_validation = self._context.get('is_call_documentary_validation', False)
             is_cv_copy = self._context.get('is_cv_copy', False)
+            people_disabilitie = cv_call_id.people_disabilitie == 'si'
             if cv_call_id.allow_content_public == 'si' or is_cv_copy or (is_call_documentary_validation and (
-                    cv_call_id.allow_content_public == 'si' or cv_call_id.is_disabilitie)):
+                    cv_call_id.allow_content_public == 'si' or cv_call_id.is_disabilitie) and people_disabilitie):
                 show_disabilitie = True
             else:
                 show_disabilitie = False
-            if cv_call_id.is_cv_race_public or is_cv_copy or (
-                    is_call_documentary_validation and (cv_call_id.is_cv_race_public or cv_call_id.is_afro)):
+            call_doc_val_afro_show = (is_call_documentary_validation and (
+                        cv_call_id.is_cv_race_public or cv_call_id.is_afro) and cv_call_id.is_afro_descendants)
+            if cv_call_id.is_cv_race_public or is_cv_copy or call_doc_val_afro_show:
                 show_afro = True
             else:
                 show_afro = False
             if cv_call_id.is_cv_gender_public or is_cv_copy or (
-                    is_call_documentary_validation and (cv_call_id.is_cv_gender_public or cv_call_id.is_trans)):
+                    is_call_documentary_validation and (
+                    cv_call_id.is_cv_gender_public or cv_call_id.is_trans) and cv_call_id.cv_gender_id.record):
                 show_gender_info = True
             else:
                 show_gender_info = False
@@ -879,12 +905,17 @@ class ONSCCVDigital(models.Model):
                 'show_gender_info': show_gender_info,
                 'show_victim': show_victim,
             }
-        return {
-            'show_disabilitie': False,
-            'show_afro': False,
-            'show_trans': False,
-            'show_victim': False
-        }
+        else:
+            show_disabilitie = self.allow_content_public == 'si'
+            show_afro = self.is_cv_race_public
+            show_gender_info = self.is_cv_gender_public
+            show_victim = self.is_public_information_victim_violent
+            return {
+                'show_disabilitie': show_disabilitie,
+                'show_afro': show_afro,
+                'show_gender_info': show_gender_info,
+                'show_victim': show_victim,
+            }
 
 
 class ONSCCVOtherRelevantInformation(models.Model):
