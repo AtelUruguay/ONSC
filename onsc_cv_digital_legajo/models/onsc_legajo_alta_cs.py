@@ -1,11 +1,6 @@
 # -*- coding: utf-8 -*-
-import json
 
-from dateutil.relativedelta import relativedelta
-from lxml import etree
-from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
-from odoo.osv import expression
+from odoo import models, fields, api
 
 REQUIRED_FIELDS = ['date_start_commission', 'reason_description', 'norm_id', 'resolution_description',
                    'resolution_date', 'resolution_type', 'regime_commission_id']
@@ -53,7 +48,7 @@ class ONSCLegajoAltaCS(models.Model):
     def _get_legajo_employee(self):
         employee = super(ONSCLegajoAltaCS, self.with_context(is_alta_vl=True))._get_legajo_employee()
         cv = employee.cv_digital_id
-        vals = employee.with_context(exclusive_validated_info = True)._get_info_fromcv()
+        vals = employee.with_context(exclusive_validated_info=True)._get_info_fromcv()
         if cv.partner_id.user_ids:
             user_id = cv.partner_id.user_ids[0]
         else:

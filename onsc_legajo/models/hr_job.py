@@ -146,7 +146,8 @@ class HrJob(models.Model):
             ('security_job_id.is_uo_manager', '=', True),
             ('contract_id.legajo_state', '!=', 'baja'),
             ('start_date', '<=', date),
-            '|', ('end_date', '=', False), ('end_date', '>=', date)]):
+            '|', ('end_date', '=', False),
+            ('end_date', '>=', date)]):
             if record.department_id.manager_id.id != record.employee_id.id:
                 record.department_id.write({'manager_id': record.employee_id.id})
 

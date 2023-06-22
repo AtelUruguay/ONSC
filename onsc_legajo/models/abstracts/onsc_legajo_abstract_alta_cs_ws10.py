@@ -23,11 +23,12 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
         _logger.info('******************WS10')
         _logger.info(data)
         _logger.info('******************WS10')
-        return self.with_context(altas_cs=records, log_info=log_info).suspend_security()._syncronize(wsclient,
-                                                                                                     parameter,
-                                                                                                     'WS10',
-                                                                                                     integration_error,
-                                                                                                     data)
+        return self.with_context(altas_cs=records, log_info=log_info).suspend_security()._syncronize(
+            wsclient,
+            parameter,
+            'WS10',
+            integration_error,
+            data)
 
     def _get_data(self, record):
         altaDetalle = {'cedula': record.partner_id.cv_nro_doc[:-1],
@@ -133,9 +134,9 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
 
     def _process_error_alta_cs(self, long_description):
         altas_cs = self._context.get('altas_cs')
+        _error = long_description or "No se puedo conectar con el servicio web"
         altas_cs.write({
             'is_error_synchronization': True,
             'state': 'error_sgh',
-            'error_message_synchronization': "Error devuelto por SGH: " + (
-                    long_description or "No se puedo conectar con el servicio web")
+            'error_message_synchronization': "Error devuelto por SGH: %s" % _error
         })
