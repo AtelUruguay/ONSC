@@ -3,12 +3,12 @@
 import logging
 
 from lxml import etree
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
 from zeep import Client
 from zeep.exceptions import Fault
 
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 from .abstracts.onsc_cv_abstract_documentary_validation import DOCUMENTARY_VALIDATION_STATES
 
 _logger = logging.getLogger(__name__)
@@ -818,7 +818,8 @@ class ONSCCVDigital(models.Model):
         return records
 
     def validate_header_documentary_validation(self):
-        for record in self.filtered(lambda x: x.type == 'cv').with_context(no_update_header_documentary_validation=True):
+        for record in self.filtered(lambda x: x.type == 'cv').with_context(
+                no_update_header_documentary_validation=True):
             # DISCAPACIDAD
             if record.people_disabilitie != 'si':
                 record.disabilitie_documentary_validation_state = 'validated'
@@ -883,7 +884,7 @@ class ONSCCVDigital(models.Model):
             else:
                 show_disabilitie = False
             call_doc_val_afro_show = (is_call_documentary_validation and (
-                        cv_call_id.is_cv_race_public or cv_call_id.is_afro) and cv_call_id.is_afro_descendants)
+                    cv_call_id.is_cv_race_public or cv_call_id.is_afro) and cv_call_id.is_afro_descendants)
             if cv_call_id.is_cv_race_public or is_cv_copy or call_doc_val_afro_show:
                 show_afro = True
             else:

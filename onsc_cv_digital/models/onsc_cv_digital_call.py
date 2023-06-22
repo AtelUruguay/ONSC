@@ -6,8 +6,9 @@ import zipfile
 from os import remove
 from os.path import join
 
-from odoo import fields, models, api, _
 from odoo.addons.onsc_base.soap import soap_error_codes as onsc_error_codes
+
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from .abstracts.onsc_cv_abstract_common import SELECTION_RADIO
@@ -69,8 +70,8 @@ class ONSCCVDigitalCall(models.Model):
     call_number = fields.Char(string=u"Llamado", required=True, index=True)
     postulation_date = fields.Datetime(string=u"Fecha de actualización", required=True, index=True)
     postulation_date_str = fields.Char(string=u"Fecha de actualización",
-                                           compute='_compute_postulation_date_str',
-                                           store=True)
+                                       compute='_compute_postulation_date_str',
+                                       store=True)
     postulation_number = fields.Char(string=u"Número de postulación", required=True, index=True)
     is_close = fields.Boolean(string="Cerrado", default=False)
     is_json_sent = fields.Boolean(string="Copia enviada", default=False)
@@ -250,7 +251,7 @@ class ONSCCVDigitalCall(models.Model):
         for record in self:
             record.show_race_info = (conditional_show and
                                      (record.is_cv_race_public or
-                                     record.is_afro) and record.is_afro_descendants) or not conditional_show
+                                      record.is_afro) and record.is_afro_descendants) or not conditional_show
 
     def _compute_show_disabilitie_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
