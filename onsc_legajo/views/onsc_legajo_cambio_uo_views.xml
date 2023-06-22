@@ -5,65 +5,51 @@
             <field name="name">onsc.legajo.cambio.uo.search</field>
             <field name="model">onsc.legajo.cambio.uo</field>
             <field name="arch" type="xml">
-                <search string="Baja VL">
+                <search string="Cambio UO">
                     <field name="employee_id" string="Funcionario"/>
-                    <field name="contract_id"/>
-                    <field name="operating_unit_id"/>
                     <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
                             context="{'group_by': 'employee_id'}"/>
-                    <filter string="Unidades ejecutoras" name="groupby_operating_unit_id" domain="[]"
-                            context="{'group_by': 'operating_unit_id'}"/>
+                    <filter string="Mis subordinados" name="mis_subordinados"  domain="[('subordinados_directos', '=', True)]"
+                            context="{'group_by': 'employee_id'}"/>
+
+
                 </search>
             </field>
         </record>
 
-        <record id="onsc_legajo_baja_vl_tree" model="ir.ui.view">
-            <field name="name">onsc.legajo.baja.vl.tree</field>
-            <field name="model">onsc.legajo.baja.vl</field>
+        <record id="onsc_legajo_cambio_uo_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.cambio.uo.tree</field>
+            <field name="model">onsc.legajo.cambio.uo</field>
             <field name="arch" type="xml">
-                <tree string="Baja VL">
+                <tree string="Cambio UO">
                     <field name="employee_id" string="Funcionario"/>
-                    <field name="contract_id"/>
+
                     <field name="state"/>
                 </tree>
             </field>
         </record>
 
-        <record id="onsc_legajo_baja_vl_form" model="ir.ui.view">
-            <field name="name">onsc.legajo.baja.vl.form</field>
-            <field name="model">onsc.legajo.baja.vl</field>
+        <record id="onsc_legajo_cambio_uo_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.cambio.uo.form</field>
+            <field name="model">onsc.legajo.cambio.uo</field>
             <field name="arch" type="xml">
-                <form string="Baja VL">
+                <form string="Cambio UO">
                     <header>
-                        <button name="action_call_ws9" class="btn btn-primary"
-                                type="object" string="Enviar SGH"
-                                groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas"
-                                states="borrador,error_sgh"
-                                attrs="{'invisible': ['|',('is_ready_send_sgh', '=', False)]}"/>
+                         <button name="action_confirm" class="btn btn-primary"
+                                type="object" string="Confirmar"
+                                states="borrador"/>
                         <field name="state" widget="statusbar"
-                               statusbar_visible="borrador,error_sgh,pendiente_auditoria_cgn,aprobado_cgn,rechazado_cgn,gafi_ok,gafi_error"/>
+                               statusbar_visible="borrador,confirmado"/>
                     </header>
                     <sheet>
                         <div name="oe_tittle" class="oe_title"></div>
-                        <field name="is_error_synchronization" invisible="1"/>
-                        <field name="is_ready_send_sgh" invisible="1"/>
+
                         <field name="should_disable_form_edit" invisible="1"/>
-                        <div class="alert alert-danger"
-                             role="alert"
-                             attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
-                             style="margin-bottom:0px;">
-                            <p>
-                                <i class="fa fa-info-circle" role="alert" aria-label="Warning" title="Warning"/>
-                                <field name="error_message_synchronization" readonly="1"/>
-                            </p>
-                        </div>
+
                         <group name="main_group">
                             <group name="main_group_left">
-                                <field name="is_require_extended" invisible="1"/>
+
                                 <field name="employee_id_domain" invisible="1"/>
-                                <field name="contract_id_domain" invisible="1"/>
-                                <field name="operating_unit_id" invisible="1" force_save="1"/>
-                                <field name="inciso_id" invisible="1" force_save="1"/>
                                 <field name="cv_emissor_country_id"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                        readonly="1"
@@ -80,55 +66,34 @@
 
                             </group>
                             <group name="main_group_right">
+                                    <field name="cv_birthdate"
+                                       readonly="1"
+                                       force_save="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                    <field name="cv_sex"
+                                       readonly="1"
+                                       force_save="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
 
 
                             </group>
                         </group>
-                        <group name="contract">
-                            <group name="contract_left">
-
-                                <field name="contract_id" domain="contract_id_domain"
-                                       context="{'show_descriptors':True}"
-                                       attrs="{'readonly': [('state', '!=', 'borrador')]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                />
-                                <field name="end_date"/>
-                            </group>
-                            <group name="contract_right">
-                                <button name="button_open_contract" class="fa fa-external-link "
-                                        type="object"/>
-                            </group>
-                        </group>
-
-                        <group name="motivo" string="Ingreso de motivo">
-                            <group name="motivo_left">
-                                <field name="reason_description" colspan="4"/>
-
-                                <field name="norm_id" colspan="3"
-                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
+                        <group name="uo" string="Datos del Traslado">
+                            <group name="uo_left">
+                                <field name="date_start"/>
+                                <field name="department_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="norm_type" colspan="2"/>
-                                <field name="norm_number" colspan="2"/>
-                                <field name="norm_year" colspan="2"/>
-                                <field name="norm_article" colspan="1"/>
-                                <div class="alert alert-info" colspan="6"
-                                     role="alert"
-                                     style="margin-bottom:0px;">
-                                    <p>
-                                        <i class="fa fa-info-circle" role="alert"/>
-                                        En caso de no encontrar la norma de referencia para el movimiento,
-                                        comunicarse con el
-                                        área de puesto de trabajos de CGN al siguiente correo
-                                        <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
-                                    </p>
-                                </div>
+                                <field name="security_job_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="occupation_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+
                             </group>
-                            <group name="motivo_right">
-                                <field name="resolution_description" colspan="4"/>
-                                <field name="resolution_date" colspan="4"/>
-                                <field name="resolution_type" colspan="4"/>
+                            <group name="uo_right">
+
                             </group>
                         </group>
+
+
                         <group name="documentacion" string="Documentación">
                             <field name="attached_document_discharge_ids" nolabel="1">
                                 <tree editable="top">
@@ -141,19 +106,7 @@
                                 </tree>
                             </field>
                         </group>
-                        <group name="group6">
-                            <group>
-                                <field name="causes_discharge_id"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="causes_discharge_extended_id"
-                                       attrs="{'invisible': [('is_require_extended', '=', False)]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            </group>
-                        </group>
-                        <group name="adicional" string="Información Adicional">
-                            <field name="additional_information" nolabel="1"
-                                   placeholder="Información Adicional"/>
-                        </group>
+
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" groups="base.group_user"/>
@@ -164,19 +117,19 @@
             </field>
         </record>
 
-        <record id='onsc_legajo_baja_vl_action' model='ir.actions.act_window'>
-            <field name="name">Baja Vínculo Laboral</field>
-            <field name="res_model">onsc.legajo.baja.vl</field>
+        <record id='onsc_legajo_cambio_uo_action' model='ir.actions.act_window'>
+            <field name="name">Cambio UO</field>
+            <field name="res_model">onsc.legajo.cambio.uo</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'is_from_menu': True,'show_descriptors':True}</field>
+            <field name="context">{'search_default_mis_subordinados': True,'is_from_menu': True,'show_descriptors':True}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Crear una Baja de VL
                 </p>
             </field>
             <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_baja_vl_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_baja_vl_form')})]"/>
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_cambio_uo_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_cambio_uo_form')})]"/>
         </record>
 
     </data>

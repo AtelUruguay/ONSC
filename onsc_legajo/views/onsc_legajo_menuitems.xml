@@ -197,14 +197,8 @@
             id="onsc_cambio_uo_menu"
             name="Cambio de UO"
             parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
-            action="onsc_legajo.onsc_legajo_baja_cd_action"
-            groups="onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue,onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso"
+            action="onsc_legajo.onsc_legajo_cambio_uo_action"
+            groups="onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue,onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_cambio_uo_responsable_uo"
             sequence="20"/>
-    <menuitem
-            id="onsc_cambio_uo_responsable_menu"
-            name="Cambio de UO"
-            parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
-            action="onsc_legajo.onsc_legajo_baja_cd_action"
-            groups="group_legajo_cambio_uo_responsable_uo"
-            sequence="21"/>
+
 </odoo>
