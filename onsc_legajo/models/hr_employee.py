@@ -59,10 +59,11 @@ class HrEmployee(models.Model):
                 name = record.cv_nro_doc + " - " + record.full_name or record.name
             res.append((record.id, name))
         return res
+
     def _custom_display_name(self):
         return self.cv_nro_doc + " - " + self.full_name or self.name
 
-    @api.depends('cv_emissor_country_id','cv_document_type_id','cv_nro_doc')
+    @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_partner_id(self):
         Partner = self.env['res.partner'].sudo()
         for record in self:
@@ -71,7 +72,6 @@ class HrEmployee(models.Model):
                 ('cv_document_type_id', '=', record.cv_document_type_id.id),
                 ('cv_nro_doc', '=', record.cv_nro_doc),
             ], limit=1)
-
 
     @api.depends('cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2')
     def _compute_full_name(self):

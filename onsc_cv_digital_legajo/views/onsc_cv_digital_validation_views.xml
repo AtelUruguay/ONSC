@@ -19,7 +19,7 @@
                                     type="object"
                                     icon="fa-thumbs-o-up"
                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                    attrs="{'invisible': [('photo_documentary_validation_state', '=', 'validated')]}"
+                                    attrs="{'invisible': ['|',('image_1920','=',False),('photo_documentary_validation_state', '=', 'validated')]}"
                                     class="btn btn-sm btn-outline-success"/>
                             <button name="button_documentary_reject"
                                     groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
@@ -27,7 +27,7 @@
                                     type="object"
                                     icon="fa-thumbs-o-down"
                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                    attrs="{'invisible': [('photo_documentary_validation_state', '=', 'rejected')]}"
+                                    attrs="{'invisible': ['|',('image_1920','=',False),('photo_documentary_validation_state', '=', 'rejected')]}"
                                     class="btn btn-sm btn-outline-danger"/>
                         </span>
                     </div>
@@ -41,7 +41,7 @@
                     </div>
                     <div class="row" nolabel="1" colspan="2">
                         <div class="alert alert-danger" role="alert" style="width:70%"
-                            attrs="{'invisible': [('photo_documentary_validation_state', '!=', 'rejected')]}">
+                            attrs="{'invisible': ['|',('image_1920','=',False),('photo_documentary_validation_state', '!=', 'rejected')]}">
                             <p class="mb-0">
                                 <strong>
                                     La sección foto ha sido rechazada. Motivo del rechazo: <field name="photo_documentary_reject_reason" class="oe_inline"/>
@@ -52,7 +52,7 @@
                         </div>
                         <div class="alert alert-success" role="alert"  style="width:70%"
                              invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                             attrs="{'invisible': [('photo_documentary_validation_state', '!=', 'validated')]}">
+                             attrs="{'invisible': ['|',('image_1920','=',False),('photo_documentary_validation_state', '!=', 'validated')]}">
                             <p class="mb-0">
                                 <strong>
                                     La sección foto ha sido validada
@@ -105,7 +105,7 @@
                                     </span>
                                 </div>
                             </div>
-                            <field name="cv_expiration_date" required="1"/>
+                            <field name="cv_expiration_date"/>
                             <field name="document_identity_file"
                                            filename="document_identity_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
@@ -339,13 +339,13 @@
                                         <button name="button_documentary_approve"
                                                 groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': [('cv_race_documentary_validation_state', '=', 'validated')]}"
+                                                attrs="{'invisible': ['|',('cv_race_documentary_validation_state', '=', 'validated'),('is_cv_race_defined', '=', False)]}"
                                                 context="{'documentary_validation':'cv_race'}"
                                                 type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': [('cv_race_documentary_validation_state', '=', 'rejected')]}"
+                                                attrs="{'invisible': ['|',('cv_race_documentary_validation_state', '=', 'rejected'),('is_cv_race_defined', '=', False)]}"
                                                 context="{'documentary_validation':'cv_race'}"
                                                 type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                     </div>
@@ -356,9 +356,10 @@
                                     <field name="is_cv_race_public"/>
                                     <field name="is_cv_race_option_other_enable" invisible="1"/>
                                     <field name="is_multiple_cv_race_selected" invisible="1"/>
+                                    <field name="is_cv_race_defined" invisible="1"/>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
-                                            attrs="{'invisible': [('cv_race_documentary_validation_state', '!=', 'rejected')]}">
+                                            attrs="{'invisible': ['|',('cv_race_documentary_validation_state', '!=', 'rejected'),('is_cv_race_defined', '=', False)]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La sección identidad étnico racial ha sido rechazada. Motivo del rechazo: <field name="cv_race_documentary_reject_reason" class="oe_inline"/>
@@ -369,7 +370,7 @@
                                         </div>
                                         <div class="alert alert-success" role="alert" style="width:70%"
                                              invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                             attrs="{'invisible': [('cv_race_documentary_validation_state', '!=', 'validated')]}">
+                                             attrs="{'invisible': ['|',('cv_race_documentary_validation_state', '!=', 'validated'),('is_cv_race_defined', '=', False)]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La sección identidad étnico racial ha sido validada

@@ -112,6 +112,11 @@ class ONSCCVDigital(models.Model):
     cv_race_documentary_user_id = fields.Many2one(comodel_name="res.users",
                                                   string="Usuario validación documental",
                                                   tracking=True)
+    is_cv_race_defined = fields.Boolean(
+        string='Tiene definida al menos una Identidad étnico-racial',
+        compute='_compute_is_cv_race_defined',
+        store=True
+    )
 
     afro_descendant_documentary_validation_state = fields.Selection(
         string="Estado de validación documental",
@@ -217,10 +222,15 @@ class ONSCCVDigital(models.Model):
                 ('cv_nro_doc', '=', record.cv_nro_doc),
             ], limit=1)
 
-    @api.depends('employee_id', 'employee_id.legajo_state')
+    @api.depends('employee_id', 'employee_id.legajo_state', 'is_docket')
     def _compute_is_docket_active(self):
         for record in self:
             record.is_docket_active = record.employee_id and record.employee_id.legajo_state == 'active'
+
+    @api.depends('cv_race_ids')
+    def _compute_is_cv_race_defined(self):
+        for record in self:
+            record.is_cv_race_defined = len(record.cv_race_ids) > 0
 
     @api.depends(lambda self: self._get_legajo_documentary_validation_models())
     def _compute_legajo_gral_info_documentary_validation_state(self):
@@ -678,9 +688,36 @@ class ONSCCVDigital(models.Model):
                 custom_vals = vals.copy()
                 custom_vals['%s_write_date' % documentary_field] = fields.Datetime.now()
                 calls.filtered(lambda x: x.create_date >= last_write_date).write(custom_vals)
-                # calls.filtered(lambda x: (eval('x.%s_write_date' % (documentary_field)) <= last_write_date or eval('x.%s_write_date' % (documentary_field)) is False) and x.gral_info_documentary_validation_state != 'validated').write(custom_vals)
-                # calls.filtered(lambda x: (eval('x.%s_write_date' % (documentary_field)) <= last_write_date or eval('x.%s_write_date' % (documentary_field)) is False) and x.gral_info_documentary_validation_state != 'validated').write(custom_vals)
         self.write(vals)
+
+    def validate_header_documentary_validation(self):
+        for record in self.filtered(lambda x: x.type == 'cv').with_context(
+                no_update_header_documentary_validation=True):
+            # GENERO
+            if record.gender_documentary_validation_state != 'validated' and (
+                    record.cv_gender_id is False or record.cv_gender_id.record is False):
+                record.gender_documentary_validation_state = 'validated'
+            # PHOTO
+            if record.photo_documentary_validation_state != 'validated' and record.image_1920 is False:
+                record.photo_documentary_validation_state = 'validated'
+            # RAZA
+            if record.cv_race_documentary_validation_state != 'validated' and len(record.cv_race_ids.ids) == 0:
+                record.cv_race_documentary_validation_state = 'validated'
+            # AFRO
+            if record.afro_descendant_documentary_validation_state != 'validated' and record.is_afro_descendants is False:
+                record.afro_descendant_documentary_validation_state = 'validated'
+            # CARNE SALUD LABORAL
+            if record.occupational_health_card_documentary_validation_state != 'validated' and record.is_occupational_health_card is False:
+                record.occupational_health_card_documentary_validation_state = 'validated'
+            # APTITUD MEDICO DEPORTIVA
+            if record.medical_aptitude_certificate_documentary_validation_state != 'validated' and record.is_medical_aptitude_certificate_status is False:
+                record.medical_aptitude_certificate_documentary_validation_state = 'validated'
+            # VICTIMA DE DELITOS VIOLENTOS
+            if record.victim_violent_documentary_validation_state != 'validated' and record.is_victim_violent is False:
+                record.victim_violent_documentary_validation_state = 'validated'
+            # DISCAPACIDAD
+            if record.disabilitie_documentary_validation_state != 'validated' and record.people_disabilitie != 'si':
+                record.disabilitie_documentary_validation_state = 'validated'
 
     def _update_cv_digital_origin_documentary_values(self, documentary_field, vals):
         for record in self:

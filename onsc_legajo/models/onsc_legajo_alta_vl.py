@@ -91,17 +91,17 @@ class ONSCLegajoAltaVL(models.Model):
         res['cv_emissor_country_id'] = self.env.ref('base.uy').id
         res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
                                                                                      limit=1).id or False
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl') or self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
-            'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
+        is_group_administrator = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
+        is_group_inciso = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')
+        is_group_ue = self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')
+        if is_group_administrator or is_group_inciso or is_group_ue:
             res['inciso_id'] = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_administrar_altas_vl') or self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
+        if is_group_administrator or is_group_ue:
             res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
 
     # partner_id = fields.Many2one("res.partner", string="Contacto")
-    date_start = fields.Date(string="Fecha de alta", default=fields.Date.today(), copy=False, readonly=True,
+    date_start = fields.Date(string="Fecha de alta", default=lambda *a: fields.Date.today(), copy=False, readonly=True,
                              states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False,
                                           readonly=True,

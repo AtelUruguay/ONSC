@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital - Legajo',
-    'version': '15.0.7.0.0',
+    'version': '15.0.9.0.0',
     'summary': 'ONSC CV Digital - Legajo',
     'sequence': 11,
     'description': """
@@ -24,6 +24,7 @@ ONSC CV Digital - Legajo
         'views/onsc_legajo_views.xml',
         'views/onsc_legajo_alta_vl_views.xml',
         'views/onsc_legajo_mass_upload_alta_vl.xml',
+        'views/onsc_legajo_alta_cs_view.xml',
         'views/onsc_cv_digital_legajo_menuitems.xml',
         'report/onsc_cv_digital_report.xml'
     ],

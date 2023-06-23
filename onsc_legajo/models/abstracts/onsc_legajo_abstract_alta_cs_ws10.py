@@ -23,11 +23,12 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
         _logger.info('******************WS10')
         _logger.info(data)
         _logger.info('******************WS10')
-        return self.with_context(altas_vl=records, log_info=log_info).suspend_security()._syncronize(wsclient,
-                                                                                                     parameter,
-                                                                                                     'WS10',
-                                                                                                     integration_error,
-                                                                                                     data)
+        return self.with_context(altas_cs=records, log_info=log_info).suspend_security()._syncronize(
+            wsclient,
+            parameter,
+            'WS10',
+            integration_error,
+            data)
 
     def _get_data(self, record):
         altaDetalle = {'cedula': record.partner_id.cv_nro_doc[:-1],
@@ -103,15 +104,12 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
             altas_cs = self._context.get('altas_cs')
             onsc_legajo_integration_error_WS10_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_WS10_9004")
-            # if hasattr(response, 'AltaComisionRespuesta') and response.AltaComisionRespuesta:
+
             try:
                 altas_cs.write({
                     'secPlaza': response['secPlazaDestino'] if 'secPlazaDestino' in response else False,
                     'nroPuesto': response['idPuestoDestino'] if 'idPuestoDestino' in response else False,
                     'nroPlaza': response['nroPlazaDestino'] if 'nroPlazaDestino' in response else False,
-                    'is_error_synchronization': False,
-                    'state': 'confirmed',
-                    'error_message_synchronization': ''
                 })
                 altas_cs.action_aprobado_cgn()
             except Exception as e:
@@ -123,8 +121,22 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
                     integration_log=onsc_legajo_integration_error_WS10_9004,
                     long_description=long_description
                 )
-                altas_cs.write({
-                    'is_error_synchronization': True,
-                    'state': 'error_sgh',
-                    'error_message_synchronization': long_description
-                })
+                self._process_error_alta_cs(long_description)
+
+    def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
+        self._process_error_alta_cs(long_description)
+        return super()._process_response_witherror(response, origin_name, integration_error,
+                                                   long_description=long_description)
+
+    def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
+        self._process_error_alta_cs(long_description + tools.ustr(exception))
+        super()._process_servicecall_error(exception, origin_name, integration_error, long_description=long_description)
+
+    def _process_error_alta_cs(self, long_description):
+        altas_cs = self._context.get('altas_cs')
+        _error = long_description or "No se puedo conectar con el servicio web"
+        altas_cs.write({
+            'is_error_synchronization': True,
+            'state': 'error_sgh',
+            'error_message_synchronization': "Error devuelto por SGH: %s" % _error
+        })

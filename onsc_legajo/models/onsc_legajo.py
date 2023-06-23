@@ -42,7 +42,7 @@ class ONSCLegajo(models.Model):
     last_name_1 = fields.Char(u'Primer apellido', related='employee_id.cv_last_name_1', store=True)
     last_name_2 = fields.Char(u'Segundo apellido', related='employee_id.cv_last_name_2', store=True)
 
-    image_1920 = fields.Image(string='Image', max_width=1920, max_height=1920,
+    image_1920 = fields.Image(string='Foto', max_width=1920, max_height=1920,
                               related='employee_id.image_1920', store=True)
     avatar_128 = fields.Image(string='Avatar 128', max_width=128, max_height=128,
                               related='employee_id.avatar_128', store=True)

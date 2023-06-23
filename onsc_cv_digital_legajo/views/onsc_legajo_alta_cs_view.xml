@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_onsc_legajo_alta_cs_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.digital.alta.cs.form</field>
+        <field name="model">onsc.legajo.alta.cs</field>
+        <field name="inherit_id" ref="onsc_legajo.view_onsc_legajo_alta_cs_form"/>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <field name="employee_id" position="after">
+                <field name="cv_digital_id" force_save="1" invisible="1"/>
+            </field>
+        </field>
+    </record>
+</odoo>
