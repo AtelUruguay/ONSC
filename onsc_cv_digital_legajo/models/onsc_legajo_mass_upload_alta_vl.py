@@ -311,7 +311,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     [('state_id', '=', address_state_id)]
                 )
                 address_street_id = MassLine.find_by_code_name_many2one(
-                    'address_street_id', 'code','street', line[self.get_position(column_names, 'address_street_id')],
+                    'address_street_id', 'code', 'street', line[self.get_position(column_names, 'address_street_id')],
                     [('cv_location_id', '=', address_location_id)]
                 )
                 address_street2_id = MassLine.find_by_code_name_many2one(
@@ -827,7 +827,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
             elif field in ['address_street_id', 'address_street2_id', 'address_street3_id']:
                 message_error.append(
                     'No se encontró el valor %s en el catálogo de %s para esa Localidad' % (
-                    value, self._fields[field].string))
+                        value, self._fields[field].string))
             else:
                 message_error.append(
                     'No se encontró el valor %s en el catálogo de %s' % (value, self._fields[field].string))

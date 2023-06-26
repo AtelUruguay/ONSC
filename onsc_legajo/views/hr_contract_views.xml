@@ -53,8 +53,7 @@
                             <field name="program"  required="1"/>
                             <field name="project"  required="1"/>
                             <field name="regime_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   required="1"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="commission_regime_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="occupation_id"

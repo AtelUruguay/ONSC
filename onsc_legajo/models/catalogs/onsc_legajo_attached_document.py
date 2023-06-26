@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models,api,_
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+
 
 class ONSCLegajoAttachedDocument(models.Model):
     _name = 'onsc.legajo.attached.document'
@@ -18,14 +19,11 @@ class ONSCLegajoAttachedDocument(models.Model):
     baja_cs_id = fields.Many2one("onsc.legajo.baja.cs", string="Baja de vínculo laboral")
 
     @api.constrains('document_file_name')
-    def _check_filename(self):
-        self.ensure_one()
-        if self.document_file:
-            if not self.document_file_name:
+    def _check_document_file_name(self):
+        for record in self.filtered(lambda x: x.document_file):
+            if not record.document_file_name:
                 raise ValidationError(_("El archivo es incorrecto"))
-                raise exceptions.ValidationError(_(""))
             else:
-                # Check the file's extension
                 tmp = self.document_file_name.split('.')
                 ext = tmp[len(tmp) - 1]
                 if ext != 'pdf':

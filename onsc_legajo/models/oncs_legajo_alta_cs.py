@@ -3,6 +3,7 @@ import json
 
 from dateutil.relativedelta import relativedelta
 from lxml import etree
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -147,20 +148,38 @@ class ONSCLegajoAltaCS(models.Model):
     operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     operating_unit_destination_id_domain = fields.Char(compute='_compute_operating_unit_destination_id_domain')
 
-    program_project_destination_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto', copy=False,
-                                                     domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]")
+    program_project_destination_id = fields.Many2one('onsc.legajo.office',
+                                                     string='Programa - Proyecto',
+                                                     copy=False,
+                                                     domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
+                                                     readonly=False, states={'confirmed': [('readonly', True)],
+                                                                             'cancelled': [('readonly', True)]})
     program_destination = fields.Char(string='Programa',
                                       related='program_project_destination_id.programaDescripcion')
     project_destination = fields.Char(string='Proyecto',
                                       related='program_project_destination_id.proyectoDescripcion')
     regime_destination = fields.Char(string='Régimen', default='3001')
-    date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False)
-    department_id = fields.Many2one('hr.department', string='UO', copy=False)
-    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", copy=False)
-    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False)
-    regime_commission_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen de comisión', copy=False)
-    reason_description = fields.Text(string='Descripción del motivo', copy=False)
-    norm_id = fields.Many2one('onsc.legajo.norm', string='Norma')
+    date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False,
+                                        readonly=False, states={'confirmed': [('readonly', True)],
+                                                                'cancelled': [('readonly', True)]})
+    department_id = fields.Many2one('hr.department', string='UO', copy=False,
+                                    readonly=False, states={'confirmed': [('readonly', True)],
+                                                            'cancelled': [('readonly', True)]})
+    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", copy=False,
+                                      readonly=False, states={'confirmed': [('readonly', True)],
+                                                              'cancelled': [('readonly', True)]})
+    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False,
+                                    readonly=False, states={'confirmed': [('readonly', True)],
+                                                            'cancelled': [('readonly', True)]})
+    regime_commission_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen de comisión', copy=False,
+                                           readonly=False, states={'confirmed': [('readonly', True)],
+                                                                   'cancelled': [('readonly', True)]})
+    reason_description = fields.Text(string='Descripción del motivo', copy=False,
+                                     readonly=False, states={'confirmed': [('readonly', True)],
+                                                             'cancelled': [('readonly', True)]})
+    norm_id = fields.Many2one('onsc.legajo.norm', string='Norma',
+                              readonly=False, states={'confirmed': [('readonly', True)],
+                                                      'cancelled': [('readonly', True)]})
     norm_type = fields.Char(string="Tipo norma", related="norm_id.tipoNorma", store=True, readonly=True)
     norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
                                  store=True, readonly=True)
@@ -168,21 +187,31 @@ class ONSCLegajoAltaCS(models.Model):
                                readonly=True)
     norm_article = fields.Integer(string='Artículo de norma', related="norm_id.articuloNorma",
                                   store=True, readonly=True)
-    resolution_description = fields.Text(string='Descripción de la resolución')
-    resolution_date = fields.Date(string='Fecha de la resolución')
+    resolution_description = fields.Text(string='Descripción de la resolución',
+                                         readonly=False, states={'confirmed': [('readonly', True)],
+                                                                 'cancelled': [('readonly', True)]})
+    resolution_date = fields.Date(string='Fecha de la resolución',
+                                  readonly=False, states={'confirmed': [('readonly', True)],
+                                                          'cancelled': [('readonly', True)]})
     resolution_type = fields.Selection(
         [('M', 'Inciso'), ('P', 'Presidencia o Poder ejecutivo'), ('U', 'Unidad ejecutora')],
-        string='Tipo de resolución')
+        string='Tipo de resolución',
+        readonly=False, states={'confirmed': [('readonly', True)],
+                                'cancelled': [('readonly', True)]})
     code_regime_start_commission_id = fields.Many2one('onsc.legajo.commission.regime',
                                                       string='Código del régimen de Inicio de Comisión', copy=False)
     state = fields.Selection(
         [('draft', 'Borrador'), ('to_process', 'A procesar en destino'), ('returned', 'Devuelto a origen'),
          ('cancelled', 'Cancelado'), ('error_sgh', 'Error SGH'), ('confirmed', 'Confirmado')],
         string='Estado', default='draft')
-    additional_information = fields.Text(string='Información adicional', copy=False)
+    additional_information = fields.Text(string='Información adicional', copy=False,
+                                         readonly=False, states={'confirmed': [('readonly', True)],
+                                                                 'cancelled': [('readonly', True)]})
     attached_document_ids = fields.One2many('onsc.legajo.attached.document',
                                             'alta_cs_id', copy=False,
-                                            string='Documentos adjuntos')
+                                            string='Documentos adjuntos',
+                                            readonly=False, states={'confirmed': [('readonly', True)],
+                                                                    'cancelled': [('readonly', True)]})
     error_reported_integration_id = fields.Many2one('onsc.legajo.integration.error', copy=False,
                                                     string='Error reportado integración')
 
@@ -240,7 +269,7 @@ class ONSCLegajoAltaCS(models.Model):
     def _check_date(self):
         for record in self:
             if record.date_start_commission and record.date_start_commission > fields.Date.today():
-                raise ValidationError("La fecha debe ser menor o igual al día de alta")
+                raise ValidationError(_("La fecha debe ser menor o igual al día de alta"))
 
     @api.depends('state', 'type_cs', 'inciso_origin_id')
     def _compute_should_disable_form_edit(self):
@@ -318,15 +347,13 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('inciso_origin_id')
     def _compute_inciso_destination_id_domain(self):
+        contract = self.env.user.employee_id.job_id.contract_id
         for rec in self:
-            domain = [('id', 'in', [])]
-            # Si el inciso origen es AC, el destino puede ser cualquier inciso
             if rec.inciso_origin_id and rec.inciso_origin_id.is_central_administration:
                 domain = []
             else:
                 if not self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
                     # si no eres admin CSC y el inciso origen es No es AC, el inciso destino es el del contrato del usuario: unico que es AC
-                    contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
                     inciso_id = contract.inciso_id.id if contract else False
                     domain = [('id', '=', inciso_id)]
                 else:
@@ -336,29 +363,29 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('inciso_origin_id')
     def _compute_operating_unit_origin_id_domain(self):
+        contract = self.env.user.employee_id.job_id.contract_id
         for rec in self:
-            domain = [('id', 'in', [])]
-            if rec.inciso_origin_id:
-                domain = [('inciso_id', '=', rec.inciso_origin_id.id)]
-                if rec.inciso_origin_id.is_central_administration and self.user_has_groups(
-                        'onsc_legajo.group_legajo_hr_ue_alta_cs') and not (self.env.user.has_group(
-                    'onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
+            if rec.inciso_origin_id.is_central_administration and self.user_has_groups(
+                    'onsc_legajo.group_legajo_hr_ue_alta_cs') and not (
+                    self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
                     'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')):
-                    contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
-                    operating_unit = contract.operating_unit_id.id if contract else False
-                    domain = [('id', '=', operating_unit)]
-            self.operating_unit_origin_id_domain = json.dumps(domain)
+                domain = [('id', '=', contract.operating_unit_id.id)]
+            elif rec.inciso_origin_id:
+                domain = [('inciso_id', '=', rec.inciso_origin_id.id)]
+            else:
+                domain = [('id', 'in', [])]
+            rec.operating_unit_origin_id_domain = json.dumps(domain)
 
     @api.depends('inciso_destination_id')
     def _compute_operating_unit_destination_id_domain(self):
+        contract = self.env.user.employee_id.job_id.contract_id
         for rec in self:
-            contract = self.env.user.employee_id.job_id.contract_id if self.env.user.employee_id and self.env.user.employee_id.job_id else False
             operating_unit_id = contract.operating_unit_id.id if contract else False
             domain = [('inciso_id', '=', rec.inciso_destination_id.id),
                       ('id', '!=', rec.operating_unit_origin_id.id)]
-            if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs') and not (self.env.user.has_group(
-                    'onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
-                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')):
+            group2 = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
+                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+            if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs') and not group2:
                 if rec.type_cs == 'out2ac':
                     domain = [('id', '=', operating_unit_id), ('id', '!=', rec.operating_unit_origin_id.id)]
             self.operating_unit_destination_id_domain = json.dumps(domain)
@@ -562,7 +589,7 @@ class ONSCLegajoAltaCS(models.Model):
     def onchange_operating_unit(self):
         for rec in self:
             if rec.operating_unit_destination_id and rec.operating_unit_origin_id and rec.operating_unit_origin_id == rec.operating_unit_destination_id:
-                raise ValidationError('La unidad ejecutora de origen y destino no pueden ser iguales')
+                raise ValidationError(_('La unidad ejecutora de origen y destino no pueden ser iguales'))
 
     def check_send_sgh(self):
         for record in self:
@@ -601,9 +628,8 @@ class ONSCLegajoAltaCS(models.Model):
                     _("Falta el Código de CGN en la configuración del Régimen de comisión seleccionado. Contactar al administrador del sistema."))
             if record.is_inciso_origin_ac and record.contract_id and not record.contract_id.legajo_state == 'active':
                 message.append(_("El contrato debe estar activo"))
-            if record.security_job_id.is_uo_manager and record.department_id.manager_id or not self.env[
-                'hr.job'].is_job_available_for_manager(
-                record.department_id, record.security_job_id, record.date_start_commission):
+            if record.security_job_id.is_uo_manager and not self.env['hr.job'].is_job_available_for_manager(
+                    record.department_id, record.security_job_id, record.date_start_commission):
                 message.append("No se puede asignar la seguridad de puesto elegida, "
                                "porque ya existe un responsable en la UO seleccionada.")
         if message:
@@ -640,7 +666,7 @@ class ONSCLegajoAltaCS(models.Model):
             employee = self.employee_id
         new_contract = self._get_legajo_contract(employee)
         self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
-        date_start = fields.Date.from_string(self.date_start_commission)
+        date_start = fields.Date.from_string(self.date_start_commission or fields.Date.today())
         self.contract_id.deactivate_legajo_contract(
             date_end=date_start - relativedelta(days=1),
             legajo_state='outgoing_commission'

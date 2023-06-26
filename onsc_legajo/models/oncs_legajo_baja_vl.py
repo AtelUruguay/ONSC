@@ -2,11 +2,12 @@
 import json
 
 from lxml import etree
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
@@ -105,7 +106,7 @@ class ONSCLegajoBajaVL(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string="Funcionario")
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
-    contract_id = fields.Many2one('hr.contract', 'Contrato', required=True,copy=False)
+    contract_id = fields.Many2one('hr.contract', 'Contrato', required=True, copy=False)
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     end_date = fields.Date(string="Fecha de Baja", default=lambda *a: fields.Date.today(), required=True, copy=False)
 
@@ -124,7 +125,6 @@ class ONSCLegajoBajaVL(models.Model):
                                               compute='_compute_should_disable_form_edit')
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
     full_name = fields.Char('Nombre', compute='_compute_full_name')
-
 
     @api.constrains("end_date")
     def _check_date(self):
@@ -170,6 +170,7 @@ class ONSCLegajoBajaVL(models.Model):
                 rec.is_require_extended = rec.causes_discharge_id.is_require_extended
             else:
                 rec.is_require_extended = False
+
     @api.depends('employee_id')
     def _compute_full_name(self):
         for record in self:
@@ -206,7 +207,7 @@ class ONSCLegajoBajaVL(models.Model):
             if not record.employee_id.cv_nro_doc:
                 message.append(_("Debe tener numero de documento"))
 
-            if record.contract_id.legajo_state !='active':
+            if record.contract_id.legajo_state != 'active':
                 message.append(_("El contrato debe estar activo "))
 
             if not record.attached_document_discharge_ids:
@@ -259,7 +260,7 @@ class ONSCLegajoBajaVL(models.Model):
             action.update({
                 'res_id': self.contract_id.id
             })
-        else :
+        else:
             return True
         return action
 
