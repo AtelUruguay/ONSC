@@ -33,7 +33,7 @@
             <field name="name">onsc.legajo.baja.cs.form</field>
             <field name="model">onsc.legajo.baja.cs</field>
             <field name="arch" type="xml">
-                <form string="Baja VL">
+                <form string="Baja CS">
                     <header>
                         <button name="action_call_ws11" class="btn btn-primary"
                                 type="object" string="Enviar SGH"
@@ -77,22 +77,23 @@
                             <group name="main_group_right">
                             </group>
                         </group>
-                        <group name="puesto" string="Datos del Contrato">
+                        <group name="puesto" string="Datos del Contrato Origen">
                             <group name="puesto_left">
                                 <field name="show_contract" invisible="1" />
                                 <field name="contract_id_domain" invisible="1"/>
+                                <field name="inciso_id" invisible="1" force_save="1"/>
+                                <field name="operating_unit_id" invisible="1" force_save="1"/>
 
                                 <field name="contract_id" context="{'show_descriptors':True}"
                                        domain="contract_id_domain"  attrs="{'invisible': [('show_contract', '=', False)]}"
                                 options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                <field name="inciso_id" readonly="1"
+                                <field name="inciso_origen_id" readonly="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                <field name="operating_unit_id" readonly="1"
+                                <field name="operating_unit_origen_id" readonly="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="program" readonly="1"/>
                                 <field name="project" readonly="1"/>
-                                <field name="position" readonly="1"/>
-                                <field name="workplace" readonly="1"/>
+
                             </group>
                             <group name="puesto_right">
                                 <field name="regime_origin_id" readonly="1"
@@ -168,7 +169,7 @@
         </record>
 
         <record id='onsc_legajo_baja_cd_action' model='ir.actions.act_window'>
-            <field name="name">Baja comisión de servicio</field>
+            <field name="name">Baja comisiones</field>
             <field name="res_model">onsc.legajo.baja.cs</field>
             <field name="view_mode">tree,form</field>
             <field name="context">{'search_default_to_process': True,'is_from_menu': True}</field>
