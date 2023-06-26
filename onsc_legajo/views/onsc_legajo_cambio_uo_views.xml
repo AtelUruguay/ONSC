@@ -7,9 +7,9 @@
             <field name="arch" type="xml">
                 <search string="Cambio UO">
                     <field name="employee_id" string="Funcionario"/>
+                    <field name="department_id" string="UO"/>
+
                     <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
-                            context="{'group_by': 'employee_id'}"/>
-                    <filter string="Mis subordinados" name="mis_subordinados"  domain="[('subordinados_directos', '=', True)]"
                             context="{'group_by': 'employee_id'}"/>
 
 
@@ -35,15 +35,18 @@
             <field name="arch" type="xml">
                 <form string="Cambio UO">
                     <header>
-                         <button name="action_confirm" class="btn btn-primary"
+                        <button name="action_confirm" class="btn btn-primary"
                                 type="object" string="Confirmar"
+                                groups="onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue,
+                                onsc_legajo.group_legajo_cambio_uo_responsable_uo,onsc_legajo.group_legajo_cambio_uo_administrar"
                                 states="borrador"/>
                         <field name="state" widget="statusbar"
                                statusbar_visible="borrador,confirmado"/>
                     </header>
                     <sheet>
                         <div name="oe_tittle" class="oe_title"></div>
-
+                        <field name="operating_unit_id" invisible="1" force_save="1"/>
+                        <field name="inciso_id" invisible="1" force_save="1"/>
                         <field name="should_disable_form_edit" invisible="1"/>
 
                         <group name="main_group">
@@ -66,11 +69,11 @@
 
                             </group>
                             <group name="main_group_right">
-                                    <field name="cv_birthdate"
+                                <field name="cv_birthdate"
                                        readonly="1"
                                        force_save="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                    <field name="cv_sex"
+                                <field name="cv_sex"
                                        readonly="1"
                                        force_save="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
@@ -80,10 +83,18 @@
                         </group>
                         <group name="uo" string="Datos del Traslado">
                             <group name="uo_left">
+                                <field name="show_contract" invisible="1" />
+                                <field name="contract_id_domain" invisible="1"/>
+
+                                <field name="contract_id" context="{'show_descriptors':True}"
+                                       domain="contract_id_domain"  attrs="{'invisible': [('show_contract', '=', False)]}"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="department_id_domain" invisible="1"/>
                                 <field name="date_start"/>
-                                <field name="department_id"
+                                <field name="department_id" domain = "department_id_domain"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="security_job_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="security_job_id"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="occupation_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
 
@@ -121,10 +132,12 @@
             <field name="name">Cambio UO</field>
             <field name="res_model">onsc.legajo.cambio.uo</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'search_default_mis_subordinados': True,'is_from_menu': True,'show_descriptors':True}</field>
+            <field name="context">{'search_default_mi_uo': True,'is_from_menu':
+                True,'show_descriptors':True}
+            </field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
-                    Crear una Baja de VL
+                    Crear un Cambio UO
                 </p>
             </field>
             <field name="view_ids" eval="[(5, 0, 0),

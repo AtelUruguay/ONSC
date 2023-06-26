@@ -7,6 +7,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+from dateutil.relativedelta import relativedelta
 
 
 class ONSCLegajoCambioUO(models.Model):
@@ -18,20 +19,27 @@ class ONSCLegajoCambioUO(models.Model):
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCLegajoCambioUO, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
-                                                            submenu=submenu)
+                                                              submenu=submenu)
         doc = etree.XML(res['arch'])
-        is_responsable= self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
+        is_user_consulta = self.env.user.has_group('onsc_legajo.group_legajo__cambio_uo_consulta')
+        is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_baja_vl_administrar_bajas')
+        is_responsable = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
+        if view_type in ['form', 'tree', 'kanban'] and is_user_consulta and not is_user_administrar:
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('create', '0')
+                node_form.set('edit', '0')
+                node_form.set('copy', '0')
+                node_form.set('delete', '0')
         if view_type in ['search'] and not is_responsable:
 
-            for node_form in doc.xpath("//filter[@name='mis_subordinados']"):
+            for node_form in doc.xpath("//filter[@name='mi_uo']"):
                 node_form.getparent().remove(node_form)
         res['arch'] = etree.tostring(doc)
+
         return res
 
     def _get_domain(self, args):
-        args = expression.AND([[
-            ('employee_id', '!=', self.env.user.employee_id.id)
-        ], args])
+
 
         if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
@@ -52,8 +60,6 @@ class ONSCLegajoCambioUO(models.Model):
                     ('operating_unit_id', '=', operating_unit_id.id)
                 ], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo'):
-            # contract_id = self.env.user.employee_id.job_id.contract_id
-            # department_id = contract_id.job_ids.filtered(lambda x: x.end_date is False)
             Employees = self.env.user.employee_id.obtener_subordinados()
             if Employees:
                 args = expression.AND([[
@@ -67,7 +73,7 @@ class ONSCLegajoCambioUO(models.Model):
         if self._context.get('is_from_menu'):
             args = self._get_domain(args)
         return super(ONSCLegajoCambioUO, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-                                                     access_rights_uid=access_rights_uid)
+                                                       access_rights_uid=access_rights_uid)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -107,20 +113,10 @@ class ONSCLegajoCambioUO(models.Model):
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
     full_name = fields.Char('Nombre', compute='_compute_full_name')
-
-    subordinados_directos = fields.Boolean('Busqueda por subordinados directos', search='_search_subordinados_directos',
-                                           store=False)
-    hr_departmen_ids = []
-
-
-    def _search_subordinados_directos(self, operator, operand):
-        subordinados_result = self.env.user.employee_id.obtener_subordinados()
-        subordinados_ids = subordinados_result['subordinados_directos_ids']
-        if not subordinados_ids:
-            return [('id', '=', '0')]
-        return [('employee_id', 'in', subordinados_ids)]
-
-
+    contract_id = fields.Many2one('hr.contract', 'Contrato', required=True, copy=False)
+    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
+    show_contract = fields.Boolean('Show Contract')
+    department_ids = []
     @api.constrains("date_start")
     def _check_date(self):
         for record in self:
@@ -150,44 +146,123 @@ class ONSCLegajoCambioUO(models.Model):
                 record.employee_id.cv_last_name_1,
                 record.employee_id.cv_last_name_2) + ' - ' + record.date_start.strftime('%Y%m%d')
 
+    @api.depends('employee_id')
+    def _compute_contract_id_domain(self):
+        Contract = self.env['hr.contract']
+        for rec in self:
+
+            if rec.employee_id:
+                rec.show_contract = False
+                args = [("legajo_state", "in", ("incoming_commission","active")), ('employee_id', '=', rec.employee_id.id)]
+                args = self._get_domain(args)
+                contract = Contract.search(args)
+                if contract:
+                    if len(contract) > 1:
+                        rec.show_contract = True
+
+                    rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
+                    rec.contract_id = contract[0].id
+
+                else:
+                    rec.contract_id_domain = json.dumps([('id', '=', False)])
+
+            else:
+                rec.contract_id_domain = json.dumps([('id', '=', False)])
     @api.model
     def _domain_uo_ids(self):
-        self.get_uo_hijas( self.env.user.employee_id.department_id)
-        self.department_ids = []
+        self.department_ids.clear()
+        self.get_uo_hijas()
         ids = []
-        uo_hijas = self.env['hr.department'].search([('id', 'in', self.hr_departmen_ids)])
+        uo_hijas = self.env['hr.department'].search([('id', 'in', self.department_ids)])
         for uo in uo_hijas:
             ids.append(uo.id)
-        return ids
+        return json.dumps([('id', 'in', ids)])
+
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
         for record in self.sudo():
             if record.employee_id:
                 record.cv_birthdate = record.employee_id.cv_birthdate
-                record.cv_sex =record.employee_id.cv_sex
+                record.cv_sex = record.employee_id.cv_sex
 
-    def get_uo_hijas(self, department):
-        hijas = self.env['hr.department'].search([('parent_id', '=', department.id)])
-        if hijas:
-            self.hr_departmen_ids.append(department.id)
-            for hija in hijas:
-                self.get_uo_hijas(hija)
-        else:
-            self.hr_departmen_ids.append(department.id)
+    @api.onchange('department_id')
+    def onchange_department_id(self):
+        self.operating_unit_id = self.department_id.operating_unit_id.id
+        self.inciso_id = self.department_id.inciso_id.id
+
+
+    def get_uo_hijas(self, department = False):
+        if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso'):
+            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
+            if inciso_id:
+                Uos = self.env['hr.department'].sudo().search([('inciso_id', '=', inciso_id.id)])
+                if Uos:
+                    self.department_ids.append(department.id)
+                    for uo in Uos:
+                        self.department_ids.append(uo.id)
+
+        elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue'):
+            contract_id = self.env.user.employee_id.job_id.contract_id
+            inciso_id = contract_id.inciso_id
+            operating_unit_id = contract_id.operating_unit_id
+            args =[]
+            if inciso_id:
+                args = expression.AND([[
+                    ('inciso_id', '=', inciso_id.id)
+                ], args])
+            if operating_unit_id:
+                args = expression.AND([[
+                    ('operating_unit_id', '=', operating_unit_id.id)
+                ], args])
+
+            UOs = self.env['hr.department'].sudo().search(args)
+            if UOs:
+
+                for uo in UOs:
+                    self.department_ids.append(uo.id)
+
+        elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo'):
+            if not department:
+               hijas = self.env['hr.department'].sudo().search([('parent_id', '=',  self.env.user.employee_id.job_id.department_id.id)])
+               self.department_ids.append(self.env.user.employee_id.job_id.department_id.id)
+            else:
+                hijas = self.env['hr.department'].sudo().search(
+                    [('parent_id', '=', department.id)])
+                self.department_ids.append(department.id)
+
+            if hijas:
+                for hija in hijas:
+                    self.get_uo_hijas(hija)
+            else:
+                self.department_ids.append(department.id)
 
     def _get_domain_employee_ids(self):
-        args = [("legajo_state", "=", 'active')]
+        args = [("legajo_state", "in", ('active','incoming_commission'))]
         args = self._get_domain(args)
 
-        employees = self.env['hr.contract'].search(args).mapped('employee_id')
+        employees = self.env['hr.contract'].sudo().search(args).mapped('employee_id')
         if employees:
             return json.dumps([('id', 'in', employees.ids)])
         else:
             return json.dumps([('id', '=', False)])
 
-
     def action_confirm(self):
+        if self.env.user.employee_id.id == self.employee_id.id:
+            raise ValidationError(_("No se puede confirmar un traslado a si mismo"))
+
+        if self.security_job_id.is_uo_manager:
+            cant = self.env['hr.job'].sudo().search_count([('department_id','=',self.department_id.id),('security_job_id','=',self.security_job_id.id)])
+            if cant > 1:
+                raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
+        self.contract_id.suspend_security().write({'eff_date': self.date_start,'occupation_id': self.occupation_id.id } )
+        Job = self.env['hr.job']
+        self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
+            {'end_date': self.date_start - relativedelta(days=1) })
+
+        Job.suspend_security().create_job(self.contract_id, self.department_id,
+                                          self.date_start , self.security_job_id)
+
         self.write({'state': 'confirmado'})
 
     def unlink(self):
