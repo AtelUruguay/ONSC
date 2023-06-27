@@ -56,7 +56,9 @@ class ONSCLegajoCambioUO(models.Model):
                     ('operating_unit_id', '=', operating_unit_id.id)
                 ], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo'):
-            Employees = self.env.user.employee_id.obtener_subordinados()
+            Employees = self.env['hr.department'].sudo().search(
+                [('id', 'child_of', int(self.env.user.employee_id.job_id.department_id.id)), ]).jobs_ids.mapped(
+                'employee_id').filtered(lambda x: x.id != self.env.user.employee_id.id)
             if Employees:
                 args = expression.AND([[
                     ('employee_id', '=', Employees.ids)
@@ -109,7 +111,6 @@ class ONSCLegajoCambioUO(models.Model):
     contract_id = fields.Many2one('hr.contract', 'Contrato', required=True, copy=False)
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     show_contract = fields.Boolean('Show Contract')
-    department_ids = []
 
     @api.constrains("date_start")
     def _check_date(self):
@@ -148,25 +149,19 @@ class ONSCLegajoCambioUO(models.Model):
         Contract = self.env['hr.contract']
         for rec in self:
             if rec.employee_id:
-                args = self._get_domain([
-                    ("legajo_state", "in", ("incoming_commission", "active")),
-                    ('employee_id', '=', rec.employee_id.id)
-                ])
-                contract = Contract.search(args)
+                contract = Contract.search([("legajo_state", "in", ("incoming_commission", "active")),
+                                            ('employee_id', '=', rec.employee_id.id),
+                                            ("job_ids.department_id", "in", self.get_uo_tree())])
                 rec.show_contract = len(contract) > 1
                 rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
+                rec.contract_id = contract and contract[0].id
             else:
                 rec.show_contract = False
                 rec.contract_id_domain = json.dumps([('id', 'in', [])])
 
     @api.model
     def _get_domain_uo_ids(self):
-        self.department_ids.clear()
-        self.get_uo_hijas()
-        ids = []
-        uo_hijas = self.env['hr.department'].search([('id', 'in', self.department_ids)])
-        for uo in uo_hijas:
-            ids.append(uo.id)
+        ids = self.get_uo_tree()
         return json.dumps([('id', 'in', ids)])
 
     @api.onchange('employee_id')
@@ -181,15 +176,16 @@ class ONSCLegajoCambioUO(models.Model):
         self.operating_unit_id = self.department_id.operating_unit_id.id
         self.inciso_id = self.department_id.inciso_id.id
 
-    def get_uo_hijas(self, department=False):
+    def get_uo_tree(self, department=False):
+        ids = []
         if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 Uos = self.env['hr.department'].sudo().search([('inciso_id', '=', inciso_id.id)])
                 if Uos:
-                    self.department_ids.append(department.id)
                     for uo in Uos:
-                        self.department_ids.append(uo.id)
+                        ids.append(uo.id)
+            return ids
 
         elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
@@ -208,23 +204,21 @@ class ONSCLegajoCambioUO(models.Model):
             UOs = self.env['hr.department'].sudo().search(args)
             if UOs:
                 for uo in UOs:
-                    self.department_ids.append(uo.id)
+                    ids.append(uo.id)
+            return ids
 
         elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo'):
             if not department:
-                hijas = self.env['hr.department'].sudo().search(
-                    [('parent_id', '=', self.env.user.employee_id.job_id.department_id.id)])
-                self.department_ids.append(self.env.user.employee_id.job_id.department_id.id)
-            else:
-                hijas = self.env['hr.department'].sudo().search(
-                    [('parent_id', '=', department.id)])
-                self.department_ids.append(department.id)
+                ids = self.env['hr.department'].sudo().search(
+                    ['|', ('id', 'child_of', int(self.env.user.employee_id.job_id.department_id.id)),
+                     ('id', '=', int(self.env.user.employee_id.job_id.department_id.id))]).ids
 
-            if hijas:
-                for hija in hijas:
-                    self.get_uo_hijas(hija)
             else:
-                self.department_ids.append(department.id)
+                ids = self.env['hr.department'].sudo().search(
+                    ['|', ('id', 'child_of', int(department.id)),
+                     ('id', '=', int(department.id))])
+                self.department_ids.append(department.id).ids
+            return ids
 
     def _get_domain_employee_ids(self):
         args = self._get_domain([("legajo_state", "in", ('active', 'incoming_commission'))])

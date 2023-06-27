@@ -232,15 +232,6 @@ class HrEmployee(models.Model):
             })
         return employee
 
-    def obtener_subordinados(self):
-
-        """
-        :return: todos los subordinados del empleado, tanto los que lo son directamente de la misma UO, como aquellos
-        que lo son por transitivdad de UOs dependientes.
-        """
-        return self.search([('id', 'child_of', self.id), ('id', '!=', self.id)])
-
-
 class HrEmployeeHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.employee.history'
