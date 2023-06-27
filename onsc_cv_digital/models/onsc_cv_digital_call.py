@@ -32,6 +32,12 @@ class ONSCCVDigitalCall(models.Model):
             args = expression.AND([[
                 ('partner_id', '!=', self.env.user.partner_id.id),
             ], args])
+        if self._context.get('is_mypostulations') and not self._context.get('from_cv_action'):
+            args = expression.AND([[
+                ('type', '=', 'call'),
+                ('cv_digital_origin_id.partner_id', 'in', [self.env.user.partner_id.id]),
+            ], args])
+
         return super(ONSCCVDigitalCall, self)._search(
             args, offset=offset, limit=limit, order=order,
             count=count,
