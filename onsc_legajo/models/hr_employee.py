@@ -100,13 +100,6 @@ class HrEmployee(models.Model):
 
     @api.model
     def create(self, values):
-        full_name = calc_full_name(values.get('cv_first_name'), values.get('cv_second_name'),
-                                   values.get('cv_last_name_1'), values.get('cv_last_name_2'))
-        if full_name:
-            values['name'] = full_name
-        elif self.env.context.get('is_legajo'):
-            values['name'] = 'dummy'
-
         if self.env.context.get('is_legajo'):
             return super(HrEmployee, self.suspend_security()).create(values)
         else:
