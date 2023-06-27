@@ -1,13 +1,13 @@
 # -*- coding:utf-8 -*-
 import json
 
+from dateutil.relativedelta import relativedelta
 from lxml import etree
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-from dateutil.relativedelta import relativedelta
 
 
 class ONSCLegajoCambioUO(models.Model):
@@ -31,16 +31,12 @@ class ONSCLegajoCambioUO(models.Model):
                 node_form.set('copy', '0')
                 node_form.set('delete', '0')
         if view_type in ['search'] and not is_responsable:
-
             for node_form in doc.xpath("//filter[@name='mi_uo']"):
                 node_form.getparent().remove(node_form)
         res['arch'] = etree.tostring(doc)
-
         return res
 
     def _get_domain(self, args):
-
-
         if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
@@ -65,7 +61,6 @@ class ONSCLegajoCambioUO(models.Model):
                 args = expression.AND([[
                     ('employee_id', '=', Employees.ids)
                 ], args])
-
         return args
 
     @api.model
@@ -85,8 +80,7 @@ class ONSCLegajoCambioUO(models.Model):
     def default_get(self, fields):
         res = super(ONSCLegajoCambioUO, self).default_get(fields)
         res['cv_emissor_country_id'] = self.env.ref('base.uy').id
-        res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
-                                                                                     limit=1).id or False
+        res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')], limit=1).id
         return res
 
     def read(self, fields=None, load="_classic_read"):
@@ -96,7 +90,6 @@ class ONSCLegajoCambioUO(models.Model):
             if item.get('employee_id'):
                 employee_id = item['employee_id'][0]
                 item['employee_id'] = (item['employee_id'][0], Employee.browse(employee_id)._custom_display_name())
-
         return result
 
     employee_id = fields.Many2one("hr.employee", string="Funcionario")
@@ -117,6 +110,7 @@ class ONSCLegajoCambioUO(models.Model):
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     show_contract = fields.Boolean('Show Contract')
     department_ids = []
+
     @api.constrains("date_start")
     def _check_date(self):
         for record in self:
@@ -136,40 +130,37 @@ class ONSCLegajoCambioUO(models.Model):
     @api.depends('employee_id')
     def _compute_department_id_domain(self):
         for rec in self:
-            rec.department_id_domain = self._domain_uo_ids()
+            rec.department_id_domain = self._get_domain_uo_ids()
 
     @api.depends('employee_id')
     def _compute_full_name(self):
         for record in self:
-            record.full_name = record.employee_id.cv_nro_doc + ' - ' + calc_full_name(
-                record.employee_id.cv_first_name, record.employee_id.cv_second_name,
-                record.employee_id.cv_last_name_1,
-                record.employee_id.cv_last_name_2) + ' - ' + record.date_start.strftime('%Y%m%d')
+            record.full_name = '%s-%s-%s' % (
+                record.employee_id.cv_nro_doc,
+                calc_full_name(
+                    record.employee_id.cv_first_name, record.employee_id.cv_second_name,
+                    record.employee_id.cv_last_name_1,
+                    record.employee_id.cv_last_name_2),
+                record.date_start.strftime('%Y%m%d'))
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
         Contract = self.env['hr.contract']
         for rec in self:
-
             if rec.employee_id:
-                rec.show_contract = False
-                args = [("legajo_state", "in", ("incoming_commission","active")), ('employee_id', '=', rec.employee_id.id)]
-                args = self._get_domain(args)
+                args = self._get_domain([
+                    ("legajo_state", "in", ("incoming_commission", "active")),
+                    ('employee_id', '=', rec.employee_id.id)
+                ])
                 contract = Contract.search(args)
-                if contract:
-                    if len(contract) > 1:
-                        rec.show_contract = True
-
-                    rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
-                    rec.contract_id = contract[0].id
-
-                else:
-                    rec.contract_id_domain = json.dumps([('id', '=', False)])
-
+                rec.show_contract = len(contract) > 1
+                rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
             else:
-                rec.contract_id_domain = json.dumps([('id', '=', False)])
+                rec.show_contract = False
+                rec.contract_id_domain = json.dumps([('id', 'in', [])])
+
     @api.model
-    def _domain_uo_ids(self):
+    def _get_domain_uo_ids(self):
         self.department_ids.clear()
         self.get_uo_hijas()
         ids = []
@@ -177,7 +168,6 @@ class ONSCLegajoCambioUO(models.Model):
         for uo in uo_hijas:
             ids.append(uo.id)
         return json.dumps([('id', 'in', ids)])
-
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -191,8 +181,7 @@ class ONSCLegajoCambioUO(models.Model):
         self.operating_unit_id = self.department_id.operating_unit_id.id
         self.inciso_id = self.department_id.inciso_id.id
 
-
-    def get_uo_hijas(self, department = False):
+    def get_uo_hijas(self, department=False):
         if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
@@ -206,7 +195,7 @@ class ONSCLegajoCambioUO(models.Model):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
-            args =[]
+            args = []
             if inciso_id:
                 args = expression.AND([[
                     ('inciso_id', '=', inciso_id.id)
@@ -218,14 +207,14 @@ class ONSCLegajoCambioUO(models.Model):
 
             UOs = self.env['hr.department'].sudo().search(args)
             if UOs:
-
                 for uo in UOs:
                     self.department_ids.append(uo.id)
 
         elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo'):
             if not department:
-               hijas = self.env['hr.department'].sudo().search([('parent_id', '=',  self.env.user.employee_id.job_id.department_id.id)])
-               self.department_ids.append(self.env.user.employee_id.job_id.department_id.id)
+                hijas = self.env['hr.department'].sudo().search(
+                    [('parent_id', '=', self.env.user.employee_id.job_id.department_id.id)])
+                self.department_ids.append(self.env.user.employee_id.job_id.department_id.id)
             else:
                 hijas = self.env['hr.department'].sudo().search(
                     [('parent_id', '=', department.id)])
@@ -238,30 +227,27 @@ class ONSCLegajoCambioUO(models.Model):
                 self.department_ids.append(department.id)
 
     def _get_domain_employee_ids(self):
-        args = [("legajo_state", "in", ('active','incoming_commission'))]
-        args = self._get_domain(args)
-
+        args = self._get_domain([("legajo_state", "in", ('active', 'incoming_commission'))])
         employees = self.env['hr.contract'].sudo().search(args).mapped('employee_id')
-        if employees:
-            return json.dumps([('id', 'in', employees.ids)])
-        else:
-            return json.dumps([('id', '=', False)])
+        return json.dumps([('id', 'in', employees.ids)])
 
     def action_confirm(self):
+        self.ensure_one()
+        Job = self.env['hr.job']
+
         if self.env.user.employee_id.id == self.employee_id.id:
             raise ValidationError(_("No se puede confirmar un traslado a si mismo"))
-
         if self.security_job_id.is_uo_manager:
-            cant = self.env['hr.job'].sudo().search_count([('department_id','=',self.department_id.id),('security_job_id','=',self.security_job_id.id)])
-            if cant > 1:
+            if self.env['hr.job'].sudo().search_count([
+                ('department_id', '=', self.department_id.id),
+                ('security_job_id', '=', self.security_job_id.id)
+            ]) > 1:
                 raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
-        self.contract_id.suspend_security().write({'eff_date': self.date_start,'occupation_id': self.occupation_id.id } )
-        Job = self.env['hr.job']
+        self.contract_id.suspend_security().write({'eff_date': self.date_start, 'occupation_id': self.occupation_id.id})
         self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
-            {'end_date': self.date_start - relativedelta(days=1) })
-
+            {'end_date': self.date_start - relativedelta(days=1)})
         Job.suspend_security().create_job(self.contract_id, self.department_id,
-                                          self.date_start , self.security_job_id)
+                                          self.date_start, self.security_job_id)
 
         self.write({'state': 'confirmado'})
 
