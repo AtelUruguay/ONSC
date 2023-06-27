@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import json
 
-from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 
@@ -124,15 +125,19 @@ class HrJob(models.Model):
         job.onchange_security_job_id()
         return job
 
-    def is_job_available_for_manager(self, department, security_job, date):
+    def is_job_available_for_manager(self, department, security_job, date, date_end=False):
         if not security_job.is_uo_manager:
             return True
-        return self.search_count([
-            ('department_id', '=', department.id),
-            ('security_job_id.is_uo_manager', '=', True),
-            ('start_date', '<=', date),
-            '|', ('end_date', '=', False), ('end_date', '>=', date)
-        ]) == 0
+        # TODO definir para periodos cerrados, no se precisa por ahora
+        if not date_end:
+            args = [
+                ('department_id', '=', department.id),
+                ('security_job_id.is_uo_manager', '=', True),
+                '|',
+                ('start_date', '>=', date),
+                '&', ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date)
+            ]
+        return self.search_count(args) == 0
 
     def update_managers(self):
         self.env['hr.department'].search([]).write({'manager_id': False})
@@ -141,8 +146,10 @@ class HrJob(models.Model):
             ('security_job_id.is_uo_manager', '=', True),
             ('contract_id.legajo_state', '!=', 'baja'),
             ('start_date', '<=', date),
-            '|', ('end_date', '=', False), ('end_date', '>=', date)]):
-            record.department_id.write({'manager_id': record.employee_id.id})
+            '|', ('end_date', '=', False),
+            ('end_date', '>=', date)]):
+            if record.department_id.manager_id.id != record.employee_id.id:
+                record.department_id.write({'manager_id': record.employee_id.id})
 
 
 class HrJobRoleLine(models.Model):

@@ -72,7 +72,6 @@ class ResUser(models.Model):
     def _clean_role_lines(self):
         self.role_line_ids.filtered(lambda x: x.is_job_role_line).unlink()
 
-
     def get_roleline_one_job(self):
         role_line_ids = []
         domain = self.get_jobs_domain()

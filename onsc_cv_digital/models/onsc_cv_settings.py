@@ -28,6 +28,11 @@ class ONSCCVSettings(models.TransientModel):
     cv_help_reference = fields.Char(
         related="company_id.cv_help_reference", readonly=False, related_sudo=True)
 
+    is_cv_user_acceptance_active = fields.Boolean(
+        related="company_id.is_cv_user_acceptance_active", readonly=False, related_sudo=True)
+    cv_user_acceptance = fields.Text(
+        related="company_id.cv_user_acceptance", readonly=False, related_sudo=True)
+
     def execute(self):
         return {
             'type': 'ir.actions.client',

@@ -188,7 +188,7 @@
             sequence="5"/>
     <menuitem
             id="onsc_baja_cs_menu"
-            name="Baja de comisión de servicio"
+            name="Baja de comisiones"
             parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
             action="onsc_legajo.onsc_legajo_baja_cd_action"
             groups="onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue,onsc_legajo.group_legajo_baja_cs_administrar_bajas,onsc_legajo.group_legajo_baja_cs_consulta_bajas"

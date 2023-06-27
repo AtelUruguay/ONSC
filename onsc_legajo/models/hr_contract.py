@@ -85,7 +85,7 @@ class HrContract(models.Model):
     reason_description = fields.Char(string='Descripción del motivo alta', history=True)
     norm_code_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
     type_norm_discharge = fields.Char(string='Tipo de norma alta', related='norm_code_id.tipoNorma')
-    workplace_state = fields.Char( string='Estado de la plaza' ,history=True)
+    workplace_state = fields.Char(string='Estado de la plaza', history=True)
     reason_discharge = fields.Char(string='Descripción del motivo alta', history=True)
     norm_code_discharge_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
     norm_number_discharge = fields.Integer(string='Número de norma alta',
@@ -144,15 +144,19 @@ class HrContract(models.Model):
     def name_get(self):
         res = []
         for record in self:
-            name = record.legajo_name
             if self._context.get('show_descriptors', False):
                 descriptor1 = record.descriptor1_id and " - " + record.descriptor1_id.name or ''
                 descriptor2 = record.descriptor2_id and " - " + record.descriptor2_id.name or ''
-                descriptor3 = record.descriptor3_id and " - " +  record.descriptor3_id.name or ''
-                descriptor4 = record.descriptor4_id and  " - " + record.descriptor4_id.name or ''
-
-                name = record.legajo_name + descriptor1 + descriptor2 + \
-                       descriptor3 + descriptor4
+                descriptor3 = record.descriptor3_id and " - " + record.descriptor3_id.name or ''
+                descriptor4 = record.descriptor4_id and " - " + record.descriptor4_id.name or ''
+                name = "%s %s %s %s %s" % (
+                    record.legajo_name,
+                    descriptor1,
+                    descriptor2,
+                    descriptor3,
+                    descriptor4)
+            else:
+                name = record.legajo_name
             res.append((record.id, name))
         return res
 
@@ -205,8 +209,6 @@ class HrContract(models.Model):
         return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
             'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
 
-
-
     def button_update_occupation(self):
         ctx = self._context.copy()
         ctx['default_contract_id'] = self.id
@@ -233,11 +235,11 @@ class HrContract(models.Model):
 
     @api.model
     def create(self, vals):
-       if not vals.get('name',False) and vals.get('employee_id',False) and vals.get('sec_position',False):
-         employee = self.env['hr.employee'].browse(vals.get('employee_id'))
-         vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
+        if not vals.get('name', False) and vals.get('employee_id', False) and vals.get('sec_position', False):
+            employee = self.env['hr.employee'].browse(vals.get('employee_id'))
+            vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
 
-       return super(HrContract, self).create(vals)
+        return super(HrContract, self).create(vals)
 
 
 class HrContractHistory(models.Model):
