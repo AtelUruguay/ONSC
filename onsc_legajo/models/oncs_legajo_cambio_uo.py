@@ -131,7 +131,7 @@ class ONSCLegajoCambioUO(models.Model):
     @api.depends('employee_id')
     def _compute_department_id_domain(self):
         for rec in self:
-            rec.department_id_domain = self._get_domain_uo_ids()
+            rec.department_id_domain = json.dumps([('id', 'in', self.get_uo_tree())])
 
     @api.depends('employee_id')
     def _compute_full_name(self):
@@ -159,11 +159,6 @@ class ONSCLegajoCambioUO(models.Model):
                 rec.show_contract = False
                 rec.contract_id_domain = json.dumps([('id', 'in', [])])
 
-    @api.model
-    def _get_domain_uo_ids(self):
-        ids = self.get_uo_tree()
-        return json.dumps([('id', 'in', ids)])
-
     @api.onchange('employee_id')
     def onchange_employee_id(self):
         for record in self.sudo():
@@ -177,16 +172,13 @@ class ONSCLegajoCambioUO(models.Model):
         self.inciso_id = self.department_id.inciso_id.id
 
     def get_uo_tree(self, department=False):
-        ids = []
+        Department = self.env['hr.department'].sudo()
         if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
-                Uos = self.env['hr.department'].sudo().search([('inciso_id', '=', inciso_id.id)])
-                if Uos:
-                    for uo in Uos:
-                        ids.append(uo.id)
-            return ids
-
+                department_ids = Department.search([('inciso_id', '=', inciso_id.id)]).ids
+            else:
+                department_ids = []
         elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
@@ -200,25 +192,14 @@ class ONSCLegajoCambioUO(models.Model):
                 args = expression.AND([[
                     ('operating_unit_id', '=', operating_unit_id.id)
                 ], args])
-
-            UOs = self.env['hr.department'].sudo().search(args)
-            if UOs:
-                for uo in UOs:
-                    ids.append(uo.id)
-            return ids
-
+            department_ids = Department.search(args).ids
         elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo'):
-            if not department:
-                ids = self.env['hr.department'].sudo().search(
-                    ['|', ('id', 'child_of', int(self.env.user.employee_id.job_id.department_id.id)),
-                     ('id', '=', int(self.env.user.employee_id.job_id.department_id.id))]).ids
-
-            else:
-                ids = self.env['hr.department'].sudo().search(
-                    ['|', ('id', 'child_of', int(department.id)),
-                     ('id', '=', int(department.id))])
-                self.department_ids.append(department.id).ids
-            return ids
+            _department_id = department.id or self.env.user.employee_id.job_id.department_id.id
+            department_ids = Department.search([
+                '|', ('id', 'child_of', _department_id), ('id', '=', _department_id)])
+        else:
+            department_ids = []
+        return department_ids
 
     def _get_domain_employee_ids(self):
         args = self._get_domain([("legajo_state", "in", ('active', 'incoming_commission'))])
@@ -228,7 +209,6 @@ class ONSCLegajoCambioUO(models.Model):
     def action_confirm(self):
         self.ensure_one()
         Job = self.env['hr.job']
-
         if self.env.user.employee_id.id == self.employee_id.id:
             raise ValidationError(_("No se puede confirmar un traslado a si mismo"))
         if self.security_job_id.is_uo_manager:
