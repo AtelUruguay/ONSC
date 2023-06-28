@@ -11,7 +11,7 @@
                     <field name="operating_unit_id"/>
                     <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
                             context="{'group_by': 'employee_id'}"/>
-                    <filter string="Para Procesado" name="to_process"
+                    <filter string="Para Procesar" name="to_process"
                             domain="[('state','in',['borrador','error_sgh'])]"/>
                 </search>
             </field>
@@ -77,7 +77,7 @@
                             <group name="main_group_right">
                             </group>
                         </group>
-                        <group name="puesto" string="Datos del Contrato Origen">
+                        <group name="puesto" string="Datos del Contrato">
                             <group name="puesto_left">
                                 <field name="show_contract" invisible="1" />
                                 <field name="contract_id_domain" invisible="1"/>
