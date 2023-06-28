@@ -201,10 +201,14 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.depends('inciso_id')
     def _compute_partner_id_domain(self):
+        partner_ids = self.env['onsc.cv.digital'].search([
+            ('type', '=', 'cv'),
+            ('partner_id.is_partner_cv', '=', True),
+            ('partner_id.is_cv_uruguay', '=', True),
+            ('partner_id.id', '!=', self.env.user.partner_id.id)
+        ]).mapped('partner_id.id')
         for record in self:
-            domain = [('is_partner_cv', '=', True), ('is_cv_uruguay', '=', True),
-                      ('id', '!=', self.env.user.partner_id.id)]
-            record.partner_id_domain = json.dumps(domain)
+            record.partner_id_domain = json.dumps([('id', 'in', partner_ids)])
 
     @api.onchange('regime_id')
     def onchange_regimen(self):

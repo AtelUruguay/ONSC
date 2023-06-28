@@ -43,6 +43,7 @@
                                 <group name="group3">
                                     <group name="group3_left">
                                         <field name="inciso_id"
+                                               domain="[('is_central_administration','=',True)]"
                                                attrs="{'readonly': ['|',('state', 'not in', ['borrador', 'error_sgh']),('is_inciso_readonly', '=', True)]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="operating_unit_id"

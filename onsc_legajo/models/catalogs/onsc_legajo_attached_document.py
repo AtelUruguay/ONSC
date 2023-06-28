@@ -17,6 +17,7 @@ class ONSCLegajoAttachedDocument(models.Model):
     baja_vl_id = fields.Many2one("onsc.legajo.baja.vl", string="Baja de vínculo laboral")
     alta_cs_id = fields.Many2one('onsc.legajo.alta.cs', 'Alta CS')
     baja_cs_id = fields.Many2one("onsc.legajo.baja.cs", string="Baja de vínculo laboral")
+    cambio_uo_id = fields.Many2one("onsc.legajo.cambio.uo", string="Cambio UO")
 
     @api.constrains('document_file_name')
     def _check_document_file_name(self):
