@@ -186,11 +186,19 @@
             action="onsc_legajo.onsc_legajo_baja_vl_action"
             groups="onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue,onsc_legajo.group_legajo_baja_vl_administrar_bajas,onsc_legajo.group_legajo_baja_vl_consulta_bajas_vl"
             sequence="5"/>
-      <menuitem
+    <menuitem
             id="onsc_baja_cs_menu"
             name="Baja de comisiones"
             parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
             action="onsc_legajo.onsc_legajo_baja_cd_action"
             groups="onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue,onsc_legajo.group_legajo_baja_cs_administrar_bajas,onsc_legajo.group_legajo_baja_cs_consulta_bajas"
             sequence="15"/>
+    <menuitem
+            id="onsc_cambio_uo_menu"
+            name="Cambio de UO"
+            parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
+            action="onsc_legajo.onsc_legajo_cambio_uo_action"
+            groups="onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue,onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_cambio_uo_responsable_uo"
+            sequence="20"/>
+
 </odoo>
