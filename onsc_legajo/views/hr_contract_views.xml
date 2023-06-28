@@ -56,6 +56,12 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="commission_regime_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="inciso_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="occupation_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="descriptor1_id"

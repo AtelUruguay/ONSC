@@ -724,6 +724,8 @@ class ONSCLegajoAltaCS(models.Model):
             'wage': 1,
             'cs_contract_id': origin_contract_id.id,
             'commission_regime_id': self.regime_commission_id.id,
+            'inciso_origin_id': self.inciso_origin_id.id,
+            'operating_unit_origin_id': self.operating_unit_origin_id.id,
         }
         contract = Contract.suspend_security().create(vals)
 
