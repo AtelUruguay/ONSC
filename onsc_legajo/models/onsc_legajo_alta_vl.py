@@ -231,6 +231,13 @@ class ONSCLegajoAltaVL(models.Model):
             if record.date_start and record.date_start > fields.Date.today():
                 raise ValidationError(_("La fecha debe ser menor o igual al día de alta"))
 
+    @api.constrains("date_start", "contract_expiration_date")
+    def _check_contract_expiration_date(self):
+        for record in self:
+            if record.contract_expiration_date and record.date_start and record.date_start > record.contract_expiration_date:
+                raise ValidationError(
+                    _("La fecha de Vencimiento del contrato no puede ser anterior a la Fecha de alta"))
+
     @api.constrains("graduation_date", "date_start")
     def _check_graduation_date(self):
         for record in self:

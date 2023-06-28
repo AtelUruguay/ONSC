@@ -38,6 +38,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button class="oe_stat_button" name="button_copy_cv"
                                 string="Mis postulaciones"
+                                context="{'from_cv_action': True}"
                                 groups="onsc_cv_digital.group_user_cv"
                                 type="object" icon="fa-copy"/>
                         <button class="oe_stat_button" name="%(onsc_cv_digital.onsc_cv_report_wizard_action)d"
