@@ -24,36 +24,17 @@ class ONSCCVDigital(models.Model):
     employee_id = fields.Many2one("hr.employee", string="Empleado", compute='_compute_employee_id', store=True)
     is_docket = fields.Boolean(string="Tiene legajo")
     is_docket_active = fields.Boolean(string="Tiene legajo activo", compute='_compute_is_docket_active', store=True)
-    # gender_date = fields.Date(string="Fecha de información género")
     gender_public_visualization_date = fields.Date(string="Fecha información visualización pública de género",
                                                    compute='_compute_gender_public_visualization_date', store=True)
-    # afro_descendant_date = fields.Date(string="Fecha de información afrodescendencia")
-    # status_civil_date = fields.Date(string="Fecha de información estado civil")
     address_info_date = fields.Date(string="Fecha de información domicilio",
                                     related='partner_id.address_info_date',
                                     readonly=False,
                                     store=True)
-    # disability_date = fields.Date(string="Fecha de información discapacidad")
-    # Datos del Legajo ----<Page>
-    # institutional_email = fields.Char(string=u'Correo electrónico institucional', readonly=True)
-    # digitized_document_file = fields.Binary(string=digitized_document_full_name)
-    # digitized_document_filename = fields.Char('Nombre del documento Digitalizado')
     address_receipt_file = fields.Binary(related='partner_id.address_receipt_file', readonly=False)
     address_receipt_file_name = fields.Char(related='partner_id.address_receipt_file_name', readonly=False)
 
-    # mergency_service_id = fields.Many2one("onsc.legajo.emergency", u"Servicio de emergencia móvil")
-    # prefix_emergency_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
-    #                                             domain=domain_prefix_emergency_phone_id,
-    #                                             default=lambda self: self.env['res.country.phone'].search(
-    #                                                 [('country_id.code', '=', 'UY')]))
-    # emergency_service_telephone = fields.Char(related=mergency_service_id.phone,string=u'Teléfono del servicio de emergencia')
-    # # TO-DO: Revisar este campo, No esta en catalogo
-    # # health_provider_id = fields.Many2one("model", u"Prestador de Salud")
-    # blood_type = fields.Selection(BLOOD_TYPE, string=u'Tipo de sangre')
     information_contact_ids = fields.One2many('onsc.cv.information.contact', 'cv_digital_id',
                                               string=u'Información de Contacto')
-
-    # other_information_official = fields.Text(string="Otra información del funcionario/a")
 
     # LEGAJO VALIDACION DOCUMENTAL
     # Estado civil
@@ -180,6 +161,9 @@ class ONSCCVDigital(models.Model):
                                                          tracking=True)
 
     # Domicilio
+    is_cv_address_populated = fields.Boolean(
+        "¿Está el domicilio con al menos una información?",
+        compute='_compute_is_cv_address_populated')
     cv_address_documentary_validation_state = fields.Selection(
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
@@ -277,6 +261,23 @@ class ONSCCVDigital(models.Model):
             sections_tovalidate.sort()
             record.legajo_documentary_validation_sections_tovalidate = ', '.join(sections_tovalidate)
 
+    @api.depends('country_id', 'address_receipt_file', 'address_info_date', 'cv_address_state_id',
+                 'cv_address_location_id', 'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id',
+                 'cv_address_nro_door', 'cv_address_street', 'cv_address_is_cv_bis', 'cv_address_apto',
+                 'cv_address_zip', 'cv_address_place', 'cv_address_block', 'cv_address_sandlot',
+                 'cv_address_amplification')
+    def _compute_is_cv_address_populated(self):
+        for record in self:
+            record.is_cv_address_populated = record.country_id.id or record.address_receipt_file or \
+                                             record.address_info_date or record.cv_address_state_id.id or \
+                                             record.cv_address_location_id.id or record.cv_address_street_id.id or \
+                                             record.cv_address_street2_id.id or record.cv_address_street3_id.id or \
+                                             record.cv_address_nro_door or record.cv_address_street or \
+                                             record.cv_address_is_cv_bis or record.cv_address_apto or \
+                                             record.cv_address_zip or record.cv_address_place or \
+                                             record.cv_address_block or record.cv_address_sandlot or \
+                                             record.cv_address_amplification
+
     def _get_legajo_documentary_validation_models(self, only_fields=False):
         if not bool(self._context):
             return ['marital_status_documentary_validation_state',
@@ -323,7 +324,6 @@ class ONSCCVDigital(models.Model):
             self.gender_date = False
             self.afro_descendant_date = False
             self.status_civil_date = False
-            # self.address_info_date = False
             self.disability_date = False
 
     def button_legajo_update_documentary_validation_sections_tovalidate(self):
