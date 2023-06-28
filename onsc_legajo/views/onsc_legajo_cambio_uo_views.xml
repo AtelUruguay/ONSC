@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+        <record id="onsc_legajo_cambio_uo_search" model="ir.ui.view">
+            <field name="name">onsc.legajo.cambio.uo.search</field>
+            <field name="model">onsc.legajo.cambio.uo</field>
+            <field name="arch" type="xml">
+                <search string="Cambio UO">
+                    <field name="employee_id" string="Funcionario"/>
+                    <field name="department_id" string="UO"/>
+                    <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
+                            context="{'group_by': 'employee_id'}"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_cambio_uo_tree" model="ir.ui.view">
+            <field name="name">onsc.legajo.cambio.uo.tree</field>
+            <field name="model">onsc.legajo.cambio.uo</field>
+            <field name="arch" type="xml">
+                <tree string="Cambio UO">
+                    <field name="employee_id" string="Funcionario"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_cambio_uo_form" model="ir.ui.view">
+            <field name="name">onsc.legajo.cambio.uo.form</field>
+            <field name="model">onsc.legajo.cambio.uo</field>
+            <field name="arch" type="xml">
+                <form string="Cambio UO">
+                    <header>
+                        <button name="action_confirm" class="btn btn-primary"
+                                type="object" string="Confirmar"
+                                groups="onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue,
+                                onsc_legajo.group_legajo_cambio_uo_responsable_uo,onsc_legajo.group_legajo_cambio_uo_administrar"
+                                states="borrador"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="borrador,confirmado"/>
+                    </header>
+                    <sheet>
+                        <div name="oe_tittle" class="oe_title"/>
+                        <field name="operating_unit_id" invisible="1" force_save="1"/>
+                        <field name="inciso_id" invisible="1" force_save="1"/>
+                        <field name="should_disable_form_edit" invisible="1"/>
+                        <group name="main_group">
+                            <group name="main_group_left">
+                                <field name="employee_id_domain" invisible="1"/>
+                                <field name="cv_emissor_country_id"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                       readonly="1"
+                                       force_save="1"
+                                       string="País"/>
+                                <field name="cv_document_type_id"
+                                       readonly="1"
+                                       force_save="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="employee_id" string="C.I." required="1"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
+                                       attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            </group>
+                            <group name="main_group_right">
+                                <field name="cv_birthdate"
+                                       readonly="1"
+                                       force_save="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="cv_sex"
+                                       readonly="1"
+                                       force_save="1"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </group>
+                        </group>
+                        <group name="uo" string="Datos del Traslado">
+                            <group name="uo_left">
+                                <field name="show_contract" invisible="1" />
+                                <field name="contract_id_domain" invisible="1"/>
+                                <field name="contract_id" context="{'show_descriptors':True}"
+                                       domain="contract_id_domain"  attrs="{'invisible': [('show_contract', '=', False)]}"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="department_id_domain" invisible="1"/>
+                                <field name="date_start"/>
+                                <field name="department_id" domain = "department_id_domain"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="security_job_id"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="occupation_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+
+                            </group>
+                            <group name="uo_right"/>
+                        </group>
+                        <group name="documentacion" string="Documentación">
+                            <field name="attached_document_discharge_ids" nolabel="1">
+                                <tree editable="top">
+                                    <field name="name" required="1"/>
+                                    <field name="document_type_id" required="1"/>
+                                    <field name="document_file" required="1" widget="binary"
+                                           filename="document_file_name"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="document_file_name" invisible="1"/>
+                                </tree>
+                            </field>
+                        </group>
+                    </sheet>
+                    <div class="oe_chatter">
+                        <field name="message_follower_ids" groups="base.group_user"/>
+                        <field name="activity_ids"/>
+                        <field name="message_ids"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id='onsc_legajo_cambio_uo_action' model='ir.actions.act_window'>
+            <field name="name">Cambio UO</field>
+            <field name="res_model">onsc.legajo.cambio.uo</field>
+            <field name="view_mode">tree,form</field>
+            <field name="context">{'search_default_mi_uo': True,'is_from_menu': True,'show_descriptors':True}</field>
+            <field name="help" type="html">
+                <p class="o_view_nocontent_smiling_face">
+                    Crear un Cambio UO
+                </p>
+            </field>
+            <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_legajo.onsc_legajo_cambio_uo_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_cambio_uo_form')})]"/>
+        </record>
+
+    </data>
+</odoo>
