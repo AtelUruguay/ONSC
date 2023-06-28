@@ -183,27 +183,26 @@ class ONSCLegajoBajaCS(models.Model):
     employee_id = fields.Many2one("hr.employee", string="Funcionario" ,copy=False)
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain',copy=False)
 
-    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
+    contract_id = fields.Many2one('hr.contract', 'Contrato',copy=False)
 
-    position = fields.Char(string='Puesto', related='contract_id.cs_contract_id.position' ,copy=False)
-    workplace = fields.Char(string='Plaza', related='contract_id.cs_contract_id.workplace' ,copy=False)
+
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id')
-    inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.cs_contract_id.inciso_id' )
+    inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_origin_id' )
     operating_unit_origen_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
-                                        related='contract_id.cs_contract_id.operating_unit_id')
+                                        related='contract_id.operating_unit_origin_id')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
                                         related='contract_id.operating_unit_id')
-    program = fields.Char(string='Programa ', related='contract_id.cs_contract_id.program')
-    project = fields.Char(string='Proyecto ', related='contract_id.cs_contract_id.project')
-    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.cs_contract_id.regime_id')
+    program = fields.Char(string='Programa ', related='contract_id.program')
+    project = fields.Char(string='Proyecto ', related='contract_id.project')
+    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.regime_id')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
-                                     related='contract_id.cs_contract_id.descriptor1_id')
+                                     related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
-                                     related='contract_id.cs_contract_id.descriptor2_id')
-    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', related='contract_id.cs_contract_id.descriptor3_id'
+                                     related='contract_id.descriptor2_id')
+    descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', related='contract_id.descriptor3_id'
                                      )
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4',
-                                     related='contract_id.cs_contract_id.descriptor4_id')
+                                     related='contract_id.descriptor4_id')
     end_date = fields.Date(string="Fecha hasta de  la Comisión", default=lambda *a: fields.Date.today(), required=True,
                            copy=False)
     extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
@@ -212,7 +211,7 @@ class ONSCLegajoBajaCS(models.Model):
                                                       string='Documentos adjuntos',copy=False)
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
+    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain',store = True)
     show_contract = fields.Boolean('Show Contract')
 
     @api.constrains("end_date")
