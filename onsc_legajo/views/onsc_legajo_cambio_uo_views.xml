@@ -8,11 +8,8 @@
                 <search string="Cambio UO">
                     <field name="employee_id" string="Funcionario"/>
                     <field name="department_id" string="UO"/>
-
                     <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
                             context="{'group_by': 'employee_id'}"/>
-
-
                 </search>
             </field>
         </record>
@@ -23,7 +20,6 @@
             <field name="arch" type="xml">
                 <tree string="Cambio UO">
                     <field name="employee_id" string="Funcionario"/>
-
                     <field name="state"/>
                 </tree>
             </field>
@@ -44,14 +40,12 @@
                                statusbar_visible="borrador,confirmado"/>
                     </header>
                     <sheet>
-                        <div name="oe_tittle" class="oe_title"></div>
+                        <div name="oe_tittle" class="oe_title"/>
                         <field name="operating_unit_id" invisible="1" force_save="1"/>
                         <field name="inciso_id" invisible="1" force_save="1"/>
                         <field name="should_disable_form_edit" invisible="1"/>
-
                         <group name="main_group">
                             <group name="main_group_left">
-
                                 <field name="employee_id_domain" invisible="1"/>
                                 <field name="cv_emissor_country_id"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
@@ -66,7 +60,6 @@
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-
                             </group>
                             <group name="main_group_right">
                                 <field name="cv_birthdate"
@@ -77,15 +70,12 @@
                                        readonly="1"
                                        force_save="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-
-
                             </group>
                         </group>
                         <group name="uo" string="Datos del Traslado">
                             <group name="uo_left">
                                 <field name="show_contract" invisible="1" />
                                 <field name="contract_id_domain" invisible="1"/>
-
                                 <field name="contract_id" context="{'show_descriptors':True}"
                                        domain="contract_id_domain"  attrs="{'invisible': [('show_contract', '=', False)]}"
                                 options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
@@ -99,12 +89,8 @@
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
 
                             </group>
-                            <group name="uo_right">
-
-                            </group>
+                            <group name="uo_right"/>
                         </group>
-
-
                         <group name="documentacion" string="Documentación">
                             <field name="attached_document_discharge_ids" nolabel="1">
                                 <tree editable="top">
@@ -117,7 +103,6 @@
                                 </tree>
                             </field>
                         </group>
-
                     </sheet>
                     <div class="oe_chatter">
                         <field name="message_follower_ids" groups="base.group_user"/>
@@ -132,9 +117,7 @@
             <field name="name">Cambio UO</field>
             <field name="res_model">onsc.legajo.cambio.uo</field>
             <field name="view_mode">tree,form</field>
-            <field name="context">{'search_default_mi_uo': True,'is_from_menu':
-                True,'show_descriptors':True}
-            </field>
+            <field name="context">{'search_default_mi_uo': True,'is_from_menu': True,'show_descriptors':True}</field>
             <field name="help" type="html">
                 <p class="o_view_nocontent_smiling_face">
                     Crear un Cambio UO
