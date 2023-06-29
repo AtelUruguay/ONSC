@@ -5,6 +5,7 @@ import logging
 from odoo import models, tools, api
 _logger = logging.getLogger(__name__)
 
+
 class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
     _name = 'onsc.legajo.abstract.baja.vl.ws11'
     _inherit = 'onsc.legajo.abstract.sync'
@@ -15,7 +16,8 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS11_bajaCS')
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS11_9005")
         wsclient = self._get_client(parameter, '', integration_error)
-        data = {'fechaVigencia': record.end_date.strftime('%d/%m/%Y'),
+        data = {
+            'fechaVigencia': record.end_date.strftime('%d/%m/%Y'),
             'cedula': int(record.employee_id.cv_nro_doc[:-1], 16), 'descripcionMotivo': record.reason_description,
             'numeroNorma': record.norm_number, 'articuloNorma': record.norm_article,
             'tipoNormaSigla': record.norm_id.tipoNormaSigla, 'anioNorma': record.norm_year,
@@ -41,12 +43,14 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
                 _logger.warning(long_description)
                 self.create_new_log(origin='WS10', type='error',
                     integration_log=onsc_legajo_integration_error_WS11_9004, long_description=long_description)
-                baja_cs.write({'is_error_synchronization': True, 'state': 'error_sgh',
+                baja_cs.write({
+                    'is_error_synchronization': True, 'state': 'error_sgh',
                     'error_message_synchronization': long_description})
 
     def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
         baja_cs = self._context.get('baja_cs')
-        baja_cs.write({'is_error_synchronization': True, 'state': 'error_sgh',
+        baja_cs.write({
+            'is_error_synchronization': True, 'state': 'error_sgh',
             'error_message_synchronization': integration_error.description})
         super(ONSCLegajoAbstractSyncWS11, self)._process_servicecall_error(exception, origin_name, integration_error,
             long_description)
@@ -60,11 +64,13 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
                 ('code_error', '=', str(result_error_code))], limit=1)
             self.create_new_log(origin=origin_name, type='error', integration_log=error or integration_error,
                 ws_tuple=False, long_description=response.mensaje)
-            baja_cs.write({'is_error_synchronization': True, 'state': 'error_sgh',
+            baja_cs.write({
+                'is_error_synchronization': True, 'state': 'error_sgh',
                 'error_message_synchronization': response.mensaje, })
         else:
             long_description = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
-            baja_cs.write({'is_error_synchronization': True, 'state': 'error_sgh',
+            baja_cs.write({
+                'is_error_synchronization': True, 'state': 'error_sgh',
                 'error_message_synchronization': long_description, })
             super(ONSCLegajoAbstractSyncWS11, self)._process_response_witherror(response, origin_name,
                 integration_error, long_description)
