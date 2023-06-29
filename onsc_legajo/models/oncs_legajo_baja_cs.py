@@ -8,7 +8,6 @@ from odoo.osv import expression
 
 REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
                    'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id']
-
 class ONSCLegajoBajaCS(models.Model):
     _name = 'onsc.legajo.baja.cs'
     _inherit = ['onsc.legajo.actions.common.data', 'onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
@@ -47,6 +46,7 @@ class ONSCLegajoBajaCS(models.Model):
                     args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id)], args])
         return args
     def _get_domain_contract(self, args, employee_id):
+
         args = expression.AND([[('employee_id', '!=', self.env.user.employee_id.id)], args])
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
@@ -80,6 +80,7 @@ class ONSCLegajoBajaCS(models.Model):
                 [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
         return args
     def _get_domain_employee(self, args):
+
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
