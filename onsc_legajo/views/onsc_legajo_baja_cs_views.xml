@@ -11,7 +11,7 @@
                     <field name="operating_unit_id"/>
                     <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
                             context="{'group_by': 'employee_id'}"/>
-                    <filter string="Para Procesado" name="to_process"
+                    <filter string="Para Procesar" name="to_process"
                             domain="[('state','in',['borrador','error_sgh'])]"/>
                 </search>
             </field>
@@ -35,6 +35,8 @@
             <field name="arch" type="xml">
                 <form string="Baja CS">
                     <header>
+                        <button name="action_actualizar_puesto" class="btn btn-primary"
+                                type="object" string="Confirmar" />
                         <button name="action_call_ws11" class="btn btn-primary"
                                 type="object" string="Enviar SGH"
                                 groups="onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue,onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_cs_administrar_bajas"
@@ -77,7 +79,7 @@
                             <group name="main_group_right">
                             </group>
                         </group>
-                        <group name="puesto" string="Datos del Contrato Origen">
+                        <group name="puesto" string="Datos del Contrato">
                             <group name="puesto_left">
                                 <field name="show_contract" invisible="1" />
                                 <field name="contract_id_domain" invisible="1"/>
