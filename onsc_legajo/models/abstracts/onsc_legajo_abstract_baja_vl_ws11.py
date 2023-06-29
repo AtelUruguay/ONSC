@@ -29,7 +29,7 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
             'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y'),
             'tipoResolucion': record.resolution_type,
             'CodigoExtincionComision': int(record.extinction_commission_id.code),
-                }
+        }
         _logger.info('******************WS11')
         _logger.info(data)
         _logger.info('******************WS11')
@@ -64,7 +64,7 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
                 })
 
     def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
-        baja_cs= self._context.get('baja_cs')
+        baja_cs = self._context.get('baja_cs')
         baja_cs.write({
             'is_error_synchronization': True,
             'state': 'error_sgh',
@@ -76,6 +76,7 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
             integration_error,
             long_description
         )
+
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
         IntegrationError = self.env['onsc.legajo.integration.error']
         baja_cs = self._context.get('baja_cs')
