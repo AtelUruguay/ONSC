@@ -106,7 +106,6 @@ class ONSCLegajoBajaCS(models.Model):
         return args
 
     def _get_domain_employee(self, args):
-
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
@@ -167,7 +166,6 @@ class ONSCLegajoBajaCS(models.Model):
             if item.get('employee_id'):
                 employee_id = item['employee_id'][0]
                 item['employee_id'] = (item['employee_id'][0], Employee.browse(employee_id)._custom_display_name())
-
         return result
 
     @api.model
@@ -233,7 +231,6 @@ class ONSCLegajoBajaCS(models.Model):
     def _compute_contract_id_domain(self):
         Contract = self.env['hr.contract']
         for rec in self:
-
             if rec.employee_id:
                 rec.show_contract = False
                 args = []
@@ -242,13 +239,10 @@ class ONSCLegajoBajaCS(models.Model):
                 if contract:
                     if len(contract) > 1:
                         rec.show_contract = True
-
                     rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
                     rec.contract_id = contract[0].id
-
                 else:
                     rec.contract_id_domain = json.dumps([('id', '=', False)])
-
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
 
@@ -257,15 +251,9 @@ class ONSCLegajoBajaCS(models.Model):
         self.env['onsc.legajo.abstract.baja.vl.ws11'].suspend_security().syncronize(self)
 
     def _get_domain_employee_ids(self):
-
         args = []
         args = self._get_domain_employee(args)
-
-        employees = self.env['hr.contract'].search(args).mapped('employee_id')
-        if employees:
-            return json.dumps([('id', 'in', employees.ids)])
-        else:
-            return json.dumps([('id', '=', False)])
+        return json.dumps([('id', 'in', self.env['hr.contract'].search(args).mapped('employee_id').ids)])
 
     def _check_required_fieds_ws11(self):
         for record in self:
@@ -273,19 +261,14 @@ class ONSCLegajoBajaCS(models.Model):
             for required_field in REQUIRED_FIELDS:
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
-
         if not record.employee_id.cv_nro_doc:
             message.append(_("Debe tener numero de documento"))
-
         if not record.contract_id or not record.contract_id.sec_position:
             message.append(_("El contrato debe tener Sec. Plaza definido"))
-
         if not record.extinction_commission_id or not record.extinction_commission_id.code:
             message.append(_("El contrato debe tener Sec. Plaza definido"))
-
         if not record.attached_document_discharge_ids:
             message.append(_("Debe haber al menos un documento adjunto"))
-
         if message:
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
@@ -298,31 +281,18 @@ class ONSCLegajoBajaCS(models.Model):
         return super(ONSCLegajoBajaCS, self).unlink()
 
     def action_actualizar_puesto(self):
-        Job = self.env['hr.job']
         ContratoOrigen = self.env['hr.contract'].sudo().search([("cs_contract_id", "=", self.contract_id.id)])
         if self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
             ContratoOrigen.suspend_security().activate_legajo_contract()
             ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
-            # REUNION 21/06/23 QUEDA SIN EFECTO LA CREACION DEL PUESTO, EL PUESTO SE ASIGNA POR LA ACCION CAMBIO UO
-            # Puesto = self.contract_id.job_ids.sorted("end_date", reverse=True)[0]
-            # Job.suspend_security().create_job(ContratoOrigen, Puesto.department_id,
-            #                                   self.end_date - relativedelta(days=1), Puesto.security_job_id)
-
         elif not self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
             ContratoOrigen.suspend_security().activate_legajo_contract()
             ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
-            # REUNION 21/06/23 QUEDA SIN EFECTO LA CREACION DEL PUESTO, EL PUESTO SE ASIGNA POR LA ACCION CAMBIO UO
-            # Puesto = self.contract_id.job_ids.sorted("end_date", reverse=True)[0]
-            # Job.suspend_security().create_job(ContratoOrigen, Puesto.department_id,
-            #                                   self.end_date - relativedelta(days=1), Puesto.security_job_id)
-
         elif self.contract_id.inciso_id.is_central_administration and not ContratoOrigen.inciso_id.is_central_administration:
-
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
-
         self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
         self.suspend_security().write({'state': 'confirmado',
                                        'is_error_synchronization': False,
