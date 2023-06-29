@@ -1,6 +1,8 @@
 # -*- coding:utf-8 -*-
 import json
+
 from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -8,6 +10,7 @@ from odoo.osv import expression
 
 REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
                    'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id']
+
 class ONSCLegajoBajaCS(models.Model):
     _name = 'onsc.legajo.baja.cs'
     _inherit = ['onsc.legajo.actions.common.data', 'onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
@@ -81,6 +84,7 @@ class ONSCLegajoBajaCS(models.Model):
             args = expression.AND(
                 [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
         return args
+
     def _get_domain_employee(self, args):
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
@@ -107,17 +111,20 @@ class ONSCLegajoBajaCS(models.Model):
                                      ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
             args = expression.OR([args2, args])
         return args
+
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu'):
             args = self._get_domain(args)
         return super(ONSCLegajoBajaCS, self)._search(args, offset=offset, limit=limit, order=order, count=count,
                                                      access_rights_uid=access_rights_uid)
+
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         if self._context.get('is_from_menu'):
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+
     def read(self, fields=None, load="_classic_read"):
         Employee = self.env['hr.employee'].sudo()
         result = super(ONSCLegajoBajaCS, self).read(fields, load)
@@ -126,6 +133,7 @@ class ONSCLegajoBajaCS(models.Model):
                 employee_id = item['employee_id'][0]
                 item['employee_id'] = (item['employee_id'][0], Employee.browse(employee_id)._custom_display_name())
         return result
+
     @api.model
     def default_get(self, fields):
         res = super(ONSCLegajoBajaCS, self).default_get(fields)
@@ -134,6 +142,7 @@ class ONSCLegajoBajaCS(models.Model):
                                                                                      limit=1).id or False
         res['show_contract'] = False
         return res
+
     employee_id = fields.Many2one("hr.employee", string="Funcionario", copy=False)
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain', copy=False)
     contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
@@ -164,19 +173,23 @@ class ONSCLegajoBajaCS(models.Model):
                                               compute='_compute_should_disable_form_edit')
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain', store=True)
     show_contract = fields.Boolean('Show Contract')
+
     @api.constrains("end_date")
     def _check_date(self):
         for record in self:
             if record.end_date > fields.Date.today():
                 raise ValidationError(_("La Fecha hasta de  la Comisión debe ser menor o igual  al día de baja"))
+
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
             record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
+
     @api.depends('cv_emissor_country_id')
     def _compute_employee_id_domain(self):
         for rec in self:
             rec.employee_id_domain = self._get_domain_employee_ids()
+
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
         Contract = self.env['hr.contract']
@@ -195,9 +208,11 @@ class ONSCLegajoBajaCS(models.Model):
                     rec.contract_id_domain = json.dumps([('id', '=', False)])
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
+
     def action_call_ws11(self):
         self._check_required_fieds_ws11()
         self.env['onsc.legajo.abstract.baja.vl.ws11'].suspend_security().syncronize(self)
+
     def _get_domain_employee_ids(self):
         args = []
         args = self._get_domain_employee(args)
@@ -206,6 +221,7 @@ class ONSCLegajoBajaCS(models.Model):
             return json.dumps([('id', 'in', employees.ids)])
         else:
             return json.dumps([('id', '=', False)])
+
     def _check_required_fieds_ws11(self):
         message = []
         for record in self:
@@ -230,10 +246,12 @@ class ONSCLegajoBajaCS(models.Model):
                 message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
                 raise ValidationError(_(message))
         return True
+
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
             raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
         return super(ONSCLegajoBajaCS, self).unlink()
+
     def action_actualizar_puesto(self):
         ContratoOrigen = self.env['hr.contract'].sudo().search([("cs_contract_id", "=", self.contract_id.id)])
         if self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
