@@ -232,6 +232,7 @@ class HrEmployee(models.Model):
             })
         return employee
 
+
 class HrEmployeeHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.employee.history'

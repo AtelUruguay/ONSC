@@ -7,5 +7,5 @@ def migrate(cr, version):
     try:
         for record in env['onsc.cv.work.experience'].search([('causes_discharge_id', '!=', False)]):
             record.causes_discharge = record.causes_discharge_id.name
-    except Exception as e:
+    except Exception:
         pass

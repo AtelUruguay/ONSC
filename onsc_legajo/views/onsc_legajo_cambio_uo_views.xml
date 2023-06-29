@@ -81,8 +81,15 @@
                                 options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="department_id_domain" invisible="1"/>
                                 <field name="date_start"/>
-                                <field name="department_id" domain = "department_id_domain"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <label for="department_id" string="UO"/>
+                                <div class="oe_inline">
+                                    <field name="department_id" domain="department_id_domain"
+                                           class="oe_inline"
+                                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                    <button name="action_show_organigram" type="object" icon="fa-cubes"
+                                            class="oe_inline"
+                                            attrs="{'invisible': [('department_id', '=', False)]}"/>
+                                </div>
                                 <field name="security_job_id"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="occupation_id"

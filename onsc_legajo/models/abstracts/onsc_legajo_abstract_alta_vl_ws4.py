@@ -29,6 +29,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                                                                                      integration_error,
                                                                                                      data)
 
+    # flake8: noqa: C901
     def _get_data_multi(self, records):
         data = {
             'inciso': records[0].inciso_id.budget_code,

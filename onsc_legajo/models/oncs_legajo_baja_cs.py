@@ -6,10 +6,11 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+
 # campos requeridos para la sincronización
 
 REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
-    'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id']
+                   'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id']
 
 
 class ONSCLegajoBajaCS(models.Model):
@@ -21,7 +22,7 @@ class ONSCLegajoBajaCS(models.Model):
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCLegajoBajaCS, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
-            submenu=submenu)
+                                                            submenu=submenu)
         doc = etree.XML(res['arch'])
         is_user_baja_cs = self.env.user.has_group('onsc_legajo.group_legajo_baja_cs_consulta_bajas_cs')
         is_user_administrar_baja_cs = self.env.user.has_group('onsc_legajo.group_legajo_baja_cs_administrar_bajas')
@@ -58,11 +59,13 @@ class ONSCLegajoBajaCS(models.Model):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'incoming_commission'),
-                    ('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
+                                        ('employee_id', '=', employee_id),
+                                        ('employee_id', '!=', self.env.user.employee_id.id)], args])
 
                 args = expression.OR([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'outgoing_commission'),
-                    ('cs_contract_id.inciso_id.is_central_administration', '=', False),
-                    ('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
+                                       ('cs_contract_id.inciso_id.is_central_administration', '=', False),
+                                       ('employee_id', '=', employee_id),
+                                       ('employee_id', '!=', self.env.user.employee_id.id)], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
@@ -77,7 +80,7 @@ class ONSCLegajoBajaCS(models.Model):
             args2 = args
             args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
             args2 = expression.AND([[('legajo_state', '=', 'outgoing_commission'),
-                ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
+                                     ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
             args = expression.OR([args2, args])
         else:
             args = expression.AND(
@@ -89,11 +92,11 @@ class ONSCLegajoBajaCS(models.Model):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'incoming_commission'),
-                    ('employee_id', '!=', self.env.user.employee_id.id)], args])
+                                        ('employee_id', '!=', self.env.user.employee_id.id)], args])
 
                 args = expression.OR([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'outgoing_commission'),
-                    ('cs_contract_id.inciso_id.is_central_administration', '=', False),
-                    ('employee_id', '!=', self.env.user.employee_id.id)], args])
+                                       ('cs_contract_id.inciso_id.is_central_administration', '=', False),
+                                       ('employee_id', '!=', self.env.user.employee_id.id)], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
@@ -107,7 +110,7 @@ class ONSCLegajoBajaCS(models.Model):
             args2 = args
             args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
             args2 = expression.AND([[('legajo_state', '=', 'outgoing_commission'),
-                ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
+                                     ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
             args = expression.OR([args2, args])
         return args
 
@@ -116,7 +119,7 @@ class ONSCLegajoBajaCS(models.Model):
         if self._context.get('is_from_menu'):
             args = self._get_domain(args)
         return super(ONSCLegajoBajaCS, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-            access_rights_uid=access_rights_uid)
+                                                     access_rights_uid=access_rights_uid)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -138,7 +141,7 @@ class ONSCLegajoBajaCS(models.Model):
         res = super(ONSCLegajoBajaCS, self).default_get(fields)
         res['cv_emissor_country_id'] = self.env.ref('base.uy').id
         res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
-            limit=1).id or False
+                                                                                     limit=1).id or False
         res['show_contract'] = False
         return res
 
@@ -148,28 +151,28 @@ class ONSCLegajoBajaCS(models.Model):
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id')
     inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_origin_id')
     operating_unit_origen_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
-        related='contract_id.operating_unit_origin_id')
+                                               related='contract_id.operating_unit_origin_id')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
-        related='contract_id.operating_unit_id')
+                                        related='contract_id.operating_unit_id')
     program = fields.Char(string='Programa ', related='contract_id.program')
     project = fields.Char(string='Proyecto ', related='contract_id.project')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.regime_id')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
-        related='contract_id.descriptor1_id')
+                                     related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
-        related='contract_id.descriptor2_id')
+                                     related='contract_id.descriptor2_id')
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3',
-        related='contract_id.descriptor3_id')
+                                     related='contract_id.descriptor3_id')
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4',
-        related='contract_id.descriptor4_id')
+                                     related='contract_id.descriptor4_id')
     end_date = fields.Date(string="Fecha hasta de  la Comisión", default=lambda *a: fields.Date.today(), required=True,
-        copy=False)
+                           copy=False)
     extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
-        string="Motivo extinción de la comisión", copy=False)
+                                               string="Motivo extinción de la comisión", copy=False)
     attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'baja_cs_id',
-        string='Documentos adjuntos', copy=False)
+                                                      string='Documentos adjuntos', copy=False)
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
-        compute='_compute_should_disable_form_edit')
+                                              compute='_compute_should_disable_form_edit')
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain', store=True)
     show_contract = fields.Boolean('Show Contract')
 

@@ -225,6 +225,23 @@ class ONSCLegajoCambioUO(models.Model):
 
         self.write({'state': 'confirmado'})
 
+    def action_show_organigram(self):
+        return {
+            'type': 'ir.actions.client',
+            'target': 'current',
+            'tag': 'organization_dashboard',
+            'params': {
+                'title': 'Organigrama',
+                'operating_unit_id': self.department_id.operating_unit_id.id,
+                'department_id': self.department_id.id,
+                'short_name': False,
+                'responsible': True,
+                'end_date': fields.Date.today(),
+                'inciso': self.department_id.operating_unit_id.inciso_id.display_name,
+                'ue': self.department_id.operating_unit_id.display_name,
+            },
+        }
+
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
             raise ValidationError(_("Solo se pueden eliminar registros en estado borrador"))
