@@ -3,6 +3,7 @@
 import logging
 
 from odoo import models, tools, api
+
 _logger = logging.getLogger(__name__)
 
 
@@ -28,7 +29,9 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
         _logger.info(data)
         _logger.info('******************WS11')
         return self.with_context(baja_cs=record, log_info=log_info).suspend_security()._syncronize(wsclient, parameter,
-            'WS11', integration_error, data)
+                                                                                                   'WS11',
+                                                                                                   integration_error,
+                                                                                                   data)
 
     def _populate_from_syncronization(self, response):
         with self._cr.savepoint():
@@ -42,7 +45,8 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
                 long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
                 _logger.warning(long_description)
                 self.create_new_log(origin='WS10', type='error',
-                    integration_log=onsc_legajo_integration_error_WS11_9004, long_description=long_description)
+                                    integration_log=onsc_legajo_integration_error_WS11_9004,
+                                    long_description=long_description)
                 baja_cs.write({
                     'is_error_synchronization': True, 'state': 'error_sgh',
                     'error_message_synchronization': long_description})
@@ -53,7 +57,7 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
             'is_error_synchronization': True, 'state': 'error_sgh',
             'error_message_synchronization': integration_error.description})
         super(ONSCLegajoAbstractSyncWS11, self)._process_servicecall_error(exception, origin_name, integration_error,
-            long_description)
+                                                                           long_description)
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
         IntegrationError = self.env['onsc.legajo.integration.error']
@@ -61,9 +65,9 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
         if hasattr(response, 'codigo'):
             result_error_code = response.codigo
             error = IntegrationError.search([('integration_code', '=', integration_error.integration_code),
-                ('code_error', '=', str(result_error_code))], limit=1)
+                                             ('code_error', '=', str(result_error_code))], limit=1)
             self.create_new_log(origin=origin_name, type='error', integration_log=error or integration_error,
-                ws_tuple=False, long_description=response.mensaje)
+                                ws_tuple=False, long_description=response.mensaje)
             baja_cs.write({
                 'is_error_synchronization': True, 'state': 'error_sgh',
                 'error_message_synchronization': response.mensaje, })
@@ -73,4 +77,4 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
                 'is_error_synchronization': True, 'state': 'error_sgh',
                 'error_message_synchronization': long_description, })
             super(ONSCLegajoAbstractSyncWS11, self)._process_response_witherror(response, origin_name,
-                integration_error, long_description)
+                                                                                integration_error, long_description)
