@@ -255,14 +255,14 @@
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
          <record id="group_legajo_cambio_uo_responsable_uo" model="res.groups">
-            <field name="name">Cambio UO - Resppnsable UO</field>
-            <field name="comment">Cambio UO Resppnsable UO</field>
+            <field name="name">Cambio UO - Responsable UO</field>
+            <field name="comment">Cambio UO Responsable UO</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
              <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
       </record>
          <record id="group_legajo_cambio_uo_administrar" model="res.groups">
-            <field name="name">Cambio UO- Administrar Cambio UO</field>
+            <field name="name">Cambio UO - Administrar Cambio UO</field>
             <field name="comment">Cambio UO Administrar Cambio UO</field>
             <field name="category_id" ref="module_category_onsc_legajo"/>
              <field name="implied_ids"
