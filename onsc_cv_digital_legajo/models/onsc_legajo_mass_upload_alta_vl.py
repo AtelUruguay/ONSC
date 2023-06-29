@@ -216,6 +216,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         else:
             return message_error.append("La columna %s no corresponde al formato esperado" % field_string)
 
+    # flake8: noqa: C901
     def action_process_excel(self):
         try:
             fp = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
@@ -223,7 +224,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             fp.seek(0)
             workbook = xlrd.open_workbook(fp.name)
             sheet = workbook.sheet_by_name('Datos')
-        except Exception as e:
+        except Exception:
             raise UserError(_("Archivo inválido"))
         MassLine = self.env['onsc.legajo.mass.upload.line.alta.vl']
         LegajoOffice = self.env['onsc.legajo.office']
@@ -422,7 +423,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     existing_record.update_line(values)
                 if not existing_record:
                     MassLine.create_line(values)
-        except Exception as e:
+        except Exception:
             raise ValidationError(_('El archivo no es válido o no tiene el formato correcto.'))
 
     def action_process(self):
@@ -838,6 +839,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     def update_line(self, values):
         return self.write(values)
 
+    # flake8: noqa: C901
     def validate_fields(self, values):
         error = []
         for key, value in values.items():
@@ -867,7 +869,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                             values[key] = False
                     if values[key] is False:
                         raise
-            except Exception as e:
+            except Exception:
                 type_field = ""
                 if field[key].type == 'float':
                     type_field = "numérico"

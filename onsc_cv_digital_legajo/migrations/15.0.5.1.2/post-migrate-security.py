@@ -7,5 +7,5 @@ def migrate(cr, version):
     try:
         env['onsc.cv.digital'].search(
             [('type', '=', 'cv')]).with_context(is_legajo=True).button_legajo_update_documentary_validation_sections_tovalidate()
-    except Exception as e:
+    except Exception:
         pass

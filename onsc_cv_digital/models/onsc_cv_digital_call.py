@@ -248,31 +248,29 @@ class ONSCCVDigitalCall(models.Model):
     def _compute_show_victim_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
-            record.show_victim_info = (conditional_show and
-                                       record.is_public_information_victim_violent or
-                                       record.is_victim) or not conditional_show
+            first_condition = conditional_show and record.is_public_information_victim_violent or record.is_victi
+            record.show_victim_info = first_condition or not conditional_show
 
     def _compute_show_race_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
-            record.show_race_info = (conditional_show and
-                                     (record.is_cv_race_public or
-                                      record.is_afro) and record.is_afro_descendants) or not conditional_show
+            _first_condition = record.is_cv_race_public or record.is_afro
+            first_condition = conditional_show and _first_condition and record.is_afro_descendants
+            record.show_race_info = first_condition or not conditional_show
 
     def _compute_show_disabilitie_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
             _disabilitie = record.allow_content_public == 'si' or record.is_disabilitie
-            record.show_disabilitie_info = (conditional_show and
-                                            _disabilitie and
-                                            record.people_disabilitie == 'si') or not conditional_show
+            first_condition = conditional_show and _disabilitie and record.people_disabilitie == 'si'
+            record.show_disabilitie_info = first_condition or not conditional_show
 
     def _compute_show_gender_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
-            record.show_gender_info = (conditional_show and
-                                       (record.is_cv_gender_public or record.is_trans) and
-                                       record.cv_gender_id.record) or not conditional_show
+            _first_condition = record.is_cv_gender_public or record.is_trans
+            first_condition = conditional_show and _first_condition and record.cv_gender_id.record
+            record.show_gender_info = first_condition or not conditional_show
 
     def button_update_documentary_validation_sections_tovalidate(self):
         self._compute_gral_info_documentary_validation_state()
@@ -399,7 +397,7 @@ class ONSCCVDigitalCall(models.Model):
             zip_archive = zipfile.ZipFile(cv_zip_url, "w")
             try:
                 compression = zipfile.ZIP_DEFLATED
-            except:
+            except Exception:
                 compression = zipfile.ZIP_STORED
             try:
                 for pdfname, pdf_url in pdf_list.items():

@@ -181,13 +181,13 @@ class ONSCCVDigital(models.Model):
     legajo_gral_info_documentary_validation_state = fields.Selection(
         selection=DOCUMENTARY_VALIDATION_STATES,
         string="Estado de validación documental",
-        compute='_compute_legajo_gral_info_documentary_validation_state',
+        compute='_compute_legajo_documentary_validation_state',
         store=True
     )
 
     legajo_documentary_validation_sections_tovalidate = fields.Char(
         string="Secciones por validar",
-        compute='_compute_legajo_gral_info_documentary_validation_state',
+        compute='_compute_legajo_documentary_validation_state',
         store=True
     )
 
@@ -217,7 +217,21 @@ class ONSCCVDigital(models.Model):
             record.is_cv_race_defined = len(record.cv_race_ids) > 0
 
     @api.depends(lambda self: self._get_legajo_documentary_validation_models())
-    def _compute_legajo_gral_info_documentary_validation_state(self):
+    def _compute_legajo_documentary_validation_state(self):
+        documentary_values = {
+            'civical_credential_documentary_validation_state': _('Credencial cívica'),
+            'nro_doc_documentary_validation_state': _('Documento de identidad'),
+            'disabilitie_documentary_validation_state': _('Discapacidad'),
+            'marital_status_documentary_validation_state': _('Estado civil'),
+            'photo_documentary_validation_state': _('Foto'),
+            'gender_documentary_validation_state': _('Género'),
+            'cv_race_documentary_validation_state': _('Identidad étnico racial'),
+            'afro_descendant_documentary_validation_state': _('Afrodescendiente'),
+            'occupational_health_card_documentary_validation_state': _('Carné de salud laboral'),
+            'medical_aptitude_certificate_documentary_validation_state': _('Certificado de aptitud médico-deportiva'),
+            'victim_violent_documentary_validation_state': _('Víctima de delitos violento'),
+            'cv_address_documentary_validation_state': _('Domicilio'),
+        }
         field_documentary_validation_models = self._get_legajo_documentary_validation_models()
         for record in self:
             sections_tovalidate = []
@@ -228,30 +242,13 @@ class ONSCCVDigital(models.Model):
                     if len(documentary_validation_model_split) == 2:
                         sections_tovalidate.append(
                             eval("record.%s._description" % documentary_validation_model_split[0]))
-                    elif documentary_validation_model == 'civical_credential_documentary_validation_state':
-                        sections_tovalidate.append(_('Credencial cívica'))
-                    elif documentary_validation_model == 'nro_doc_documentary_validation_state':
-                        sections_tovalidate.append(_('Documento de identidad'))
-                    elif documentary_validation_model == 'disabilitie_documentary_validation_state' and record.situation_disability == 'si':
-                        sections_tovalidate.append(_('Discapacidad'))
-                    elif documentary_validation_model == 'marital_status_documentary_validation_state':
-                        sections_tovalidate.append(_('Estado civil'))
-                    elif documentary_validation_model == 'photo_documentary_validation_state':
-                        sections_tovalidate.append(_('Foto'))
-                    elif documentary_validation_model == 'gender_documentary_validation_state':
-                        sections_tovalidate.append(_('Género'))
-                    elif documentary_validation_model == 'cv_race_documentary_validation_state':
-                        sections_tovalidate.append(_('Identidad étnico racial'))
-                    elif documentary_validation_model == 'afro_descendant_documentary_validation_state':
-                        sections_tovalidate.append(_('Afrodescendiente'))
-                    elif documentary_validation_model == 'occupational_health_card_documentary_validation_state':
-                        sections_tovalidate.append(_('Carné de salud laboral'))
-                    elif documentary_validation_model == 'medical_aptitude_certificate_documentary_validation_state':
-                        sections_tovalidate.append(_('Certificado de aptitud médico-deportiva'))
-                    elif documentary_validation_model == 'victim_violent_documentary_validation_state':
-                        sections_tovalidate.append(_('Víctima de delitos violentos'))
-                    elif documentary_validation_model == 'cv_address_documentary_validation_state':
-                        sections_tovalidate.append(_('Domicilio'))
+                    else:
+                        section_value = documentary_values.get(documentary_validation_model, '')
+                        if documentary_validation_model != 'disabilitie_documentary_validation_state':
+                            sections_tovalidate.append(section_value)
+                        elif documentary_validation_model == 'disabilitie_documentary_validation_state' and \
+                                record.situation_disability == 'si':
+                            sections_tovalidate.append(section_value)
             if len(sections_tovalidate) > 0:
                 documentary_validation_state = 'to_validate'
             else:
@@ -266,6 +263,7 @@ class ONSCCVDigital(models.Model):
                  'cv_address_nro_door', 'cv_address_street', 'cv_address_is_cv_bis', 'cv_address_apto',
                  'cv_address_zip', 'cv_address_place', 'cv_address_block', 'cv_address_sandlot',
                  'cv_address_amplification')
+    # flake8: noqa: E126
     def _compute_is_cv_address_populated(self):
         for record in self:
             record.is_cv_address_populated = record.country_id.id or record.address_receipt_file or \
@@ -327,7 +325,7 @@ class ONSCCVDigital(models.Model):
             self.disability_date = False
 
     def button_legajo_update_documentary_validation_sections_tovalidate(self):
-        self._compute_legajo_gral_info_documentary_validation_state()
+        self._compute_legajo_documentary_validation_state()
 
     def update_header_documentary_validation(self, values):
         image_1920 = values.get('image_1920')
@@ -341,12 +339,6 @@ class ONSCCVDigital(models.Model):
         if marital_status_id or status_civil_date or digitized_document_file:
             self.marital_status_documentary_validation_state = 'to_validate'
             self.marital_status_write_date = fields.Datetime.now()
-
-        # NRO DOCUMENTO
-        # cv_expiration_date = values.get('cv_expiration_date')
-        # document_identity_file = values.get('document_identity_file')
-        # if cv_expiration_date or document_identity_file:
-        #     self.nro_doc_documentary_validation_state = 'to_validate'
 
         # GENERO
         cv_gender_id = values.get('cv_gender_id')

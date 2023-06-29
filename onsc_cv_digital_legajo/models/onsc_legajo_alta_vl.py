@@ -311,7 +311,8 @@ class ONSCLegajoAltaVL(models.Model):
             AltaVLWS4.with_context(
                 log_info=False).syncronize_multi(altas_vl)
 
-    def check_required_fieds_ws4(self):
+    # flake8: noqa: C901
+    def check_required_fields_ws4(self):
         for record in self:
             message = []
             for required_field in REQUIRED_FIELDS:
