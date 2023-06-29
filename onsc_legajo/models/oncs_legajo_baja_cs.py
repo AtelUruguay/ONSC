@@ -8,11 +8,13 @@ from odoo.osv import expression
 
 REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
                    'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id']
+
 class ONSCLegajoBajaCS(models.Model):
     _name = 'onsc.legajo.baja.cs'
     _inherit = ['onsc.legajo.actions.common.data', 'onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin']
     _description = 'Baja de Comisión  Servicio'
     _rec_name = 'employee_id'
+
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCLegajoBajaCS, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
@@ -30,6 +32,7 @@ class ONSCLegajoBajaCS(models.Model):
                 node_form.getparent().remove(node_form)
         res['arch'] = etree.tostring(doc)
         return res
+
     def _get_domain(self, args):
         args = expression.AND([[('employee_id', '!=', self.env.user.employee_id.id)], args])
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
