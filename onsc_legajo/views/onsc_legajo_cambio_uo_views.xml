@@ -84,7 +84,7 @@
                                 <label for="department_id" string="UO"/>
                                 <div class="oe_inline">
                                     <field name="department_id" domain="department_id_domain"
-                                           class="oe_inline"
+                                           style="width:94% !important"
                                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                     <button name="action_show_organigram" type="object" icon="fa-cubes"
                                             class="oe_inline"
