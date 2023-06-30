@@ -814,7 +814,7 @@ class ONSCCVDigital(models.Model):
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
         if not self._context.get('no_update_header_documentary_validation'):
-            self.update_header_documentary_validation(values)
+            self.with_context(no_update_header_documentary_validation=True).update_header_documentary_validation(values)
         return records
 
     def validate_header_documentary_validation(self):

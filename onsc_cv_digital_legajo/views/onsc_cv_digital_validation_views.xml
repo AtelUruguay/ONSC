@@ -585,13 +585,13 @@
                                         <button name="button_documentary_approve"
                                                 groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': [('cv_address_documentary_validation_state', '=', 'validated')]}"
+                                                attrs="{'invisible': ['|',('is_cv_address_populated','=',False),('cv_address_documentary_validation_state', '=', 'validated')]}"
                                                 context="{'documentary_validation':'cv_address'}"
                                                 type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': [('cv_address_documentary_validation_state', '=', 'rejected')]}"
+                                                attrs="{'invisible': ['invisible': ['|',('is_cv_address_populated','=',False),('cv_address_documentary_validation_state', '=', 'rejected')]}"
                                                 context="{'documentary_validation':'cv_address'}"
                                                 type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                     </div>
@@ -608,6 +608,7 @@
                                            domain="[('state_id', '=?', cv_address_state_id)]"
                                            attrs="{'readonly': [('cv_address_state_id', '=', False)]}"
                                            context="{'default_country_id': country_id, 'default_state_id': cv_address_state_id, 'is_readonly': True}"/>
+                                    <field name="is_cv_address_populated" invisible="1"/>
                                 </group>
                                 <group>
                                 </group>
@@ -640,7 +641,7 @@
                             </group>
                             <div class="row" nolabel="1" colspan="2">
                                 <div class="alert alert-danger" role="alert" style="width:70%"
-                                    attrs="{'invisible': [('cv_address_documentary_validation_state', '!=', 'rejected')]}">
+                                    attrs="{'invisible': ['invisible': ['|',('is_cv_address_populated','=',False),('cv_address_documentary_validation_state', '!=', 'rejected')]}">
                                     <p class="mb-0">
                                         <strong>
                                             La sección domicilio ha sido rechazada. Motivo del rechazo: <field name="cv_address_documentary_reject_reason" class="oe_inline"/>
@@ -651,7 +652,7 @@
                                 </div>
                                 <div class="alert alert-success" role="alert" style="width:70%"
                                      invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                     attrs="{'invisible': [('cv_address_documentary_validation_state', '!=', 'validated')]}">
+                                     attrs="{'invisible': ['invisible': ['|',('is_cv_address_populated','=',False),('cv_address_documentary_validation_state', '!=', 'validated')]}">
                                     <p class="mb-0">
                                         <strong>
                                             La sección domicilio ha sido validada
