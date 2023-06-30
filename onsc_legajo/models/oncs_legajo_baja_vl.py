@@ -52,7 +52,6 @@ class ONSCLegajoBajaVL(models.Model):
         args = expression.AND([[
             ('employee_id', '!=', self.env.user.employee_id.id)
         ], args])
-
         if self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
@@ -101,7 +100,6 @@ class ONSCLegajoBajaVL(models.Model):
             if item.get('employee_id'):
                 employee_id = item['employee_id'][0]
                 item['employee_id'] = (item['employee_id'][0], Employee.browse(employee_id)._custom_display_name())
-
         return result
 
     employee_id = fields.Many2one("hr.employee", string="Funcionario")
@@ -126,12 +124,6 @@ class ONSCLegajoBajaVL(models.Model):
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
     full_name = fields.Char('Nombre', compute='_compute_full_name')
 
-    @api.constrains("end_date")
-    def _check_date(self):
-        for record in self:
-            if record.end_date > fields.Date.today():
-                raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
-
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
@@ -149,12 +141,8 @@ class ONSCLegajoBajaVL(models.Model):
             if rec.employee_id:
                 args = [("legajo_state", "=", 'active'), ('employee_id', '=', rec.employee_id.id)]
                 args = self._get_domain(args)
-
                 contracts = Contract.search(args)
-                if contracts:
-                    rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
-                else:
-                    rec.contract_id_domain = json.dumps([('id', '=', False)])
+                rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
 
@@ -179,6 +167,12 @@ class ONSCLegajoBajaVL(models.Model):
                 record.employee_id.cv_last_name_1,
                 record.employee_id.cv_last_name_2) + ' - ' + record.end_date.strftime('%Y%m%d')
 
+    @api.constrains("end_date")
+    def _check_date(self):
+        for record in self:
+            if record.end_date > fields.Date.today():
+                raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
+
     @api.onchange('contract_id')
     def onchange_contract_id(self):
         self.operating_unit_id = self.contract_id.operating_unit_id.id
@@ -187,37 +181,6 @@ class ONSCLegajoBajaVL(models.Model):
     def action_call_ws9(self):
         self._check_required_fieds_ws9()
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
-
-    def _get_domain_employee_ids(self):
-        args = [("legajo_state", "=", 'active')]
-        args = self._get_domain(args)
-
-        employees = self.env['hr.contract'].search(args).mapped('employee_id')
-        if employees:
-            return json.dumps([('id', 'in', employees.ids)])
-        else:
-            return json.dumps([('id', '=', False)])
-
-    def _check_required_fieds_ws9(self):
-        for record in self:
-            message = []
-            for required_field in REQUIRED_FIELDS:
-                if not eval('record.%s' % required_field):
-                    message.append(record._fields[required_field].string)
-            if not record.employee_id.cv_nro_doc:
-                message.append(_("Debe tener numero de documento"))
-
-            if record.contract_id.legajo_state != 'active':
-                message.append(_("El contrato debe estar activo "))
-
-            if not record.attached_document_discharge_ids:
-                message.append(_("Debe haber al menos un documento adjunto"))
-
-        if message:
-            fields_str = '\n'.join(message)
-            message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
-            raise ValidationError(_(message))
-        return True
 
     def action_aprobado_cgn(self):
         data = {
@@ -257,12 +220,41 @@ class ONSCLegajoBajaVL(models.Model):
         self.ensure_one()
         if self.contract_id:
             action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_one_hr_contract_action')
-            action.update({
-                'res_id': self.contract_id.id
-            })
+            action.update({'res_id': self.contract_id.id})
+            return action
         else:
             return True
-        return action
+
+    def _get_domain_employee_ids(self):
+        args = [("legajo_state", "=", 'active')]
+        args = self._get_domain(args)
+
+        employees = self.env['hr.contract'].search(args).mapped('employee_id')
+        if employees:
+            return json.dumps([('id', 'in', employees.ids)])
+        else:
+            return json.dumps([('id', '=', False)])
+
+    def _check_required_fieds_ws9(self):
+        for record in self:
+            message = []
+            for required_field in REQUIRED_FIELDS:
+                if not eval('record.%s' % required_field):
+                    message.append(record._fields[required_field].string)
+            if not record.employee_id.cv_nro_doc:
+                message.append(_("Debe tener numero de documento"))
+
+            if record.contract_id.legajo_state != 'active':
+                message.append(_("El contrato debe estar activo "))
+
+            if not record.attached_document_discharge_ids:
+                message.append(_("Debe haber al menos un documento adjunto"))
+
+        if message:
+            fields_str = '\n'.join(message)
+            message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
+            raise ValidationError(_(message))
+        return True
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
