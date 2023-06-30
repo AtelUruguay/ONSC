@@ -163,7 +163,7 @@ class ONSCCVDigital(models.Model):
     # Domicilio
     is_cv_address_populated = fields.Boolean(
         "¿Está el domicilio con al menos una información?",
-        compute='_compute_is_cv_address_populated')
+        compute='_compute_is_cv_address_populated', store=True)
     cv_address_documentary_validation_state = fields.Selection(
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
@@ -331,7 +331,6 @@ class ONSCCVDigital(models.Model):
         image_1920 = values.get('image_1920')
         if image_1920:
             self.photo_documentary_validation_state = 'to_validate'
-
         # ESTADO CIVIL
         marital_status_id = values.get('marital_status_id')
         status_civil_date = values.get('status_civil_date')
@@ -458,27 +457,12 @@ class ONSCCVDigital(models.Model):
             self.disabilitie_write_date = fields.Datetime.now()
 
         # DOMICILIO
-        country_id = values.get('country_id')
-        address_receipt_file = values.get('address_receipt_file')
-        address_info_date = values.get('address_info_date')
-        cv_address_state_id = values.get('cv_address_state_id')
-        cv_address_location_id = values.get('cv_address_location_id')
-        cv_address_street = values.get('cv_address_street')
-        cv_address_street_id = values.get('cv_address_street_id')
-        cv_address_street2_id = values.get('cv_address_street2_id')
-        cv_address_street3_id = values.get('cv_address_street3_id')
-        cv_address_nro_door = values.get('cv_address_nro_door')
-        cv_address_is_cv_bis = 'cv_address_is_cv_bis' in values
-        cv_address_apto = values.get('cv_address_apto')
-        cv_address_amplification = values.get('cv_address_amplification')
-        cv_addres_apto = values.get('cv_addres_apto')
-        cv_address_zip = values.get('cv_address_zip')
-        cv_address_place = values.get('cv_address_place')
-        cv_address_block = values.get('cv_address_block')
-        cv_address_sandlot = values.get('cv_address_sandlot')
-        if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or address_info_date or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot or cv_address_street:
-            self.cv_address_write_date = fields.Datetime.now()
-            self.cv_address_documentary_validation_state = 'to_validate'
+        for record in self.with_context(no_update_header_documentary_validation=True):
+            if not record.is_cv_address_populated and record.cv_address_documentary_validation_state != 'validated':
+                record.with_context(documentary_validation='cv_address').button_documentary_approve()
+            else:
+                record.cv_address_documentary_validation_state = 'to_validate'
+                record.cv_address_write_date = fields.Datetime.now()
 
         super(ONSCCVDigital, self).update_header_documentary_validation(values)
 
