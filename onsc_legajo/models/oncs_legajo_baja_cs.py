@@ -9,8 +9,8 @@ from odoo.osv import expression
 
 # campos requeridos para la sincronización
 
-REQUIRED_FIELDS = {'end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
-                   'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id'}
+REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
+                   'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id']
 
 
 class ONSCLegajoBajaCS(models.Model):
@@ -264,8 +264,7 @@ class ONSCLegajoBajaCS(models.Model):
         elif not self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
             ContratoOrigen.suspend_security().activate_legajo_contract()
             ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
-        elif self.contract_id.inciso_id.is_central_administration and not \
-                ContratoOrigen.inciso_id.is_central_administration:
+        elif self.contract_id.inciso_id.is_central_administration and not ContratoOrigen.inciso_id.is_central_administration:
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
 

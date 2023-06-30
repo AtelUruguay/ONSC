@@ -7,5 +7,5 @@ def migrate(cr, version):
     try:
         offices = env['onsc.legajo.office'].search([('proyectoDescripcion', '!=', False), ('proyecto', '=', False)])
         offices.write({'proyecto': '0'})
-    except Exception as e:
+    except Exception:
         pass

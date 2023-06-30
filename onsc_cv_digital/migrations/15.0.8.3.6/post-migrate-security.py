@@ -25,5 +25,5 @@ def migrate(cr, version):
                 'cv_address_sandlot': cv.partner_id.cv_address_sandlot,
             })
         _logger.info('************MIGRACION OK CV 15.0.8.3.6')
-    except Exception as e:
+    except Exception:
         pass

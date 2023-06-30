@@ -365,10 +365,11 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_operating_unit_origin_id_domain(self):
         contract = self.env.user.employee_id.job_id.contract_id
         for rec in self:
-            if rec.inciso_origin_id.is_central_administration and self.user_has_groups(
-                    'onsc_legajo.group_legajo_hr_ue_alta_cs') and not (
-                    self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
-                    'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')):
+            is_ac = rec.inciso_origin_id.is_central_administration
+            condition1 = self.env.user.has_group(
+                'onsc_legajo.group_legajo_hr_inciso_alta_cs') or self.env.user.has_group(
+                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+            if is_ac and self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs') and not condition1:
                 domain = [('id', '=', contract.operating_unit_id.id)]
             elif rec.inciso_origin_id:
                 domain = [('inciso_id', '=', rec.inciso_origin_id.id)]
@@ -591,6 +592,7 @@ class ONSCLegajoAltaCS(models.Model):
             if rec.operating_unit_destination_id and rec.operating_unit_origin_id and rec.operating_unit_origin_id == rec.operating_unit_destination_id:
                 raise ValidationError(_('La unidad ejecutora de origen y destino no pueden ser iguales'))
 
+    # flake8: noqa: C901
     def check_send_sgh(self):
         for record in self:
             message = []

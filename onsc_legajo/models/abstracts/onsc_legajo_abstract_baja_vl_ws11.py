@@ -76,5 +76,7 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
             baja_cs.write({
                 'is_error_synchronization': True, 'state': 'error_sgh',
                 'error_message_synchronization': long_description, })
-            super(ONSCLegajoAbstractSyncWS11, self)._process_response_witherror(response, origin_name,
-                                                                                integration_error, long_description)
+            super(ONSCLegajoAbstractSyncWS11, self)._process_response_witherror(response,
+                                                                                origin_name,
+                                                                                integration_error,
+                                                                                long_description)

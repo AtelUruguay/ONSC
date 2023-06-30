@@ -142,12 +142,9 @@ class HrJob(models.Model):
     def update_managers(self):
         self.env['hr.department'].search([]).write({'manager_id': False})
         date = fields.Date.today()
-        for record in self.search([
-            ('security_job_id.is_uo_manager', '=', True),
-            ('contract_id.legajo_state', '!=', 'baja'),
-            ('start_date', '<=', date),
-            '|', ('end_date', '=', False),
-            ('end_date', '>=', date)]):
+        for record in self.search(
+                [('security_job_id.is_uo_manager', '=', True), ('contract_id.legajo_state', '!=', 'baja'),
+                 ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date)]):
             if record.department_id.manager_id.id != record.employee_id.id:
                 record.department_id.write({'manager_id': record.employee_id.id})
 
@@ -165,12 +162,12 @@ class HrJobRoleLine(models.Model):
             job_roles |= record.job_id.role_extra_ids
             job_roles = job_roles.filtered(
                 lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
-            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and
-                                             (record.end_date is False or record.end_date >= x.start_date)) or
-                                            (x.end_date and x.end_date >= record.start_date and
-                                             (record.end_date is False or record.end_date >= x.start_date))):
-                raise ValidationError(
-                    _("El rol configurado no puede repetirse para el mismo puesto en el mismo periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
+            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (
+                    record.end_date is False or record.end_date >= x.start_date)) or (
+                                                    x.end_date and x.end_date >= record.start_date and ( # noqa
+                                                    record.end_date is False or record.end_date >= x.start_date))): # noqa
+                raise ValidationError(_("El rol configurado no puede repetirse para el mismo puesto en el mismo "
+                                        "periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
 
     @api.constrains("end_date")
     def _check_end_date(self):

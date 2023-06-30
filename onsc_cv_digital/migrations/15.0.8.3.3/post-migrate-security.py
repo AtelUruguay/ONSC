@@ -17,6 +17,5 @@ def migrate(cr, version):
                     (0, 0, {'role_id': role_base.id}),
                     (0, 0, {'role_id': role_user_cv.id})
                 ]})
-
-    except Exception as e:
+    except Exception:
         pass
