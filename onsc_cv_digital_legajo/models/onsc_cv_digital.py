@@ -323,7 +323,7 @@ class ONSCCVDigital(models.Model):
             # PHOTO
             if record.photo_documentary_validation_state != 'validated' and record.image_1920 is False:
                 record.photo_documentary_validation_state = 'validated'
-            # RAZA
+            # IDENTIDAD ETNICO RACIAL
             if record.cv_race_documentary_validation_state != 'validated' and len(record.cv_race_ids.ids) == 0:
                 record.cv_race_documentary_validation_state = 'validated'
             # AFRO
@@ -341,6 +341,10 @@ class ONSCCVDigital(models.Model):
             # DISCAPACIDAD
             if record.disabilitie_documentary_validation_state != 'validated' and record.people_disabilitie != 'si':
                 record.disabilitie_documentary_validation_state = 'validated'
+            # DOMICILIO
+            if not record.is_cv_address_populated and record.cv_address_documentary_validation_state != 'validated':
+                record.cv_address_documentary_validation_state = 'validated'
+
 
     def update_header_documentary_validation(self, values):
         image_1920 = values.get('image_1920')
