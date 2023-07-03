@@ -23,13 +23,12 @@ class ONSCLegajoAbstractSyncWS6_2(models.AbstractModel):
         for record in Contract.suspend_security().search([('notify_sgh', '=', True)]):
             Job = record.job_ids.filtered(lambda x: x.end_date is False)
             data = {
-
-                'cedula':  int(record.employee_id.cv_nro_doc[:-1], 16),
+                'cedula': int(record.employee_id.cv_nro_doc[:-1], 16),
                 'secPlaza': int(record.sec_position),
                 'nroPlaza': record.workplace,
-                'uo':Job.department_id and Job.department_id.code or None,
+                'uo': Job.department_id and Job.department_id.code or None,
                 'responsableUO': Job.security_job_id and 'S' if Job.security_job_id.is_uo_manager else 'N' or None,
-                'codigoOcupacion':record.occupation_id and record.occupation_id.code or None,
+                'codigoOcupacion': record.occupation_id and record.occupation_id.code or None,
             }
             return self.with_context(contract=record, log_info=log_info).suspend_security()._syncronize(
                 wsclient,
