@@ -273,12 +273,12 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.model
     def syncronize_ws4(self, log_info=False):
-        self.check_required_fieds_ws4()
+        self.check_required_fields_ws4()
         self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
             log_info=log_info).suspend_security().syncronize_multi(self)
 
     def action_call_multi_ws4(self):
-        self.check_required_fieds_ws4()
+        self.check_required_fields_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
             raise ValidationError(_("Solo se pueden enviar altas en estado borrador o error SGH"))
         altas_presupuestales = self.filtered(lambda x: x.is_presupuestado)
