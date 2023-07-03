@@ -79,7 +79,7 @@
                             <group name="main_group_right">
                             </group>
                         </group>
-                        <group name="puesto" string="Datos del Contrato">
+                        <group name="puesto" string="Datos del Origen">
                             <group name="puesto_left">
                                 <field name="show_contract" invisible="1" />
                                 <field name="contract_id_domain" invisible="1"/>

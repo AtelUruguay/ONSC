@@ -16,11 +16,6 @@ class ONSCCVDigital(models.Model):
         res = super().prefix_by_phones
         return res + [('prefix_emergency_phone_id', 'emergency_service_telephone')]
 
-    @api.model
-    def domain_prefix_emergency_phone_id(self):
-        country_id = self.env['res.country'].search([('code', '=', 'UY')])
-        return [('country_id', 'in', country_id.ids)]
-
     employee_id = fields.Many2one("hr.employee", string="Empleado", compute='_compute_employee_id', store=True)
     is_docket = fields.Boolean(string="Tiene legajo")
     is_docket_active = fields.Boolean(string="Tiene legajo activo", compute='_compute_is_docket_active', store=True)
@@ -276,46 +271,6 @@ class ONSCCVDigital(models.Model):
                                              record.cv_address_block or record.cv_address_sandlot or \
                                              record.cv_address_amplification
 
-    def _get_legajo_documentary_validation_models(self, only_fields=False):
-        if not bool(self._context):
-            return ['marital_status_documentary_validation_state',
-                    'photo_documentary_validation_state',
-                    'gender_documentary_validation_state',
-                    'cv_race_documentary_validation_state',
-                    'afro_descendant_documentary_validation_state',
-                    'occupational_health_card_documentary_validation_state',
-                    'medical_aptitude_certificate_documentary_validation_state',
-                    'victim_violent_documentary_validation_state',
-                    'cv_address_documentary_validation_state',
-                    'civical_credential_documentary_validation_state',
-                    'nro_doc_documentary_validation_state',
-                    'disabilitie_documentary_validation_state']
-        configs = self.env['onsc.cv.documentary.validation.config'].with_context(is_legajo=True).get_config()
-        if only_fields:
-            validation_models = []
-            for config in configs.filtered(lambda x: x.field_id):
-                validation_models.append('%s' % config.field_id.name)
-        else:
-            validation_models = ['marital_status_documentary_validation_state',
-                                 'photo_documentary_validation_state',
-                                 'gender_documentary_validation_state',
-                                 'cv_race_documentary_validation_state',
-                                 'afro_descendant_documentary_validation_state',
-                                 'occupational_health_card_documentary_validation_state',
-                                 'medical_aptitude_certificate_documentary_validation_state',
-                                 'victim_violent_documentary_validation_state',
-                                 'cv_address_documentary_validation_state',
-                                 'civical_credential_documentary_validation_state',
-                                 'nro_doc_documentary_validation_state',
-                                 'disabilitie_documentary_validation_state']
-            for config in configs.filtered(lambda x: x.field_id):
-                if config.model_id.model == 'onsc.cv.course.certificate':
-                    validation_models.extend(['course_ids.documentary_validation_state',
-                                              'certificate_ids.documentary_validation_state'])
-                else:
-                    validation_models.append('%s.documentary_validation_state' % config.field_id.name)
-        return validation_models
-
     @api.onchange('is_docket')
     def onchange_is_docket(self):
         if self.is_docket is False:
@@ -326,6 +281,70 @@ class ONSCCVDigital(models.Model):
 
     def button_legajo_update_documentary_validation_sections_tovalidate(self):
         self._compute_legajo_documentary_validation_state()
+
+    def button_documentary_tovalidate(self):
+        if self._context.get('documentary_validation'):
+            self.suspend_security()._legajo_update_documentary(
+                self._context.get('documentary_validation'),
+                'to_validate', '')
+
+    def button_documentary_approve(self):
+        if self._context.get('documentary_validation'):
+            self.suspend_security()._legajo_update_documentary(
+                self._context.get('documentary_validation'),
+                'validated',
+                '')
+            self.suspend_security()._update_legajo_atdocumentary_validation()
+
+    def button_documentary_reject(self):
+        ctx = self._context.copy()
+        ctx.update({
+            'default_model_name': self._name,
+            'default_res_id': len(self.ids) == 1 and self.id or 0,
+            'is_documentary_reject': True
+        })
+        return {
+            'name': _('Rechazo de validación documental'),
+            'view_mode': 'form',
+            'res_model': 'onsc.cv.reject.wizard',
+            'target': 'new',
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'context': ctx,
+        }
+
+    def validate_header_documentary_validation(self):
+        for record in self.filtered(lambda x: x.type == 'cv').with_context(
+                no_update_header_documentary_validation=True):
+            # GENERO
+            if record.gender_documentary_validation_state != 'validated' and (
+                    record.cv_gender_id is False or record.cv_gender_id.record is False):
+                record.gender_documentary_validation_state = 'validated'
+            # PHOTO
+            if record.photo_documentary_validation_state != 'validated' and record.image_1920 is False:
+                record.photo_documentary_validation_state = 'validated'
+            # IDENTIDAD ETNICO RACIAL
+            if record.cv_race_documentary_validation_state != 'validated' and len(record.cv_race_ids.ids) == 0:
+                record.cv_race_documentary_validation_state = 'validated'
+            # AFRO
+            if record.afro_descendant_documentary_validation_state != 'validated' and record.is_afro_descendants is False:
+                record.afro_descendant_documentary_validation_state = 'validated'
+            # CARNE SALUD LABORAL
+            if record.occupational_health_card_documentary_validation_state != 'validated' and record.is_occupational_health_card is False:
+                record.occupational_health_card_documentary_validation_state = 'validated'
+            # APTITUD MEDICO DEPORTIVA
+            if record.medical_aptitude_certificate_documentary_validation_state != 'validated' and record.is_medical_aptitude_certificate_status is False:
+                record.medical_aptitude_certificate_documentary_validation_state = 'validated'
+            # VICTIMA DE DELITOS VIOLENTOS
+            if record.victim_violent_documentary_validation_state != 'validated' and record.is_victim_violent is False:
+                record.victim_violent_documentary_validation_state = 'validated'
+            # DISCAPACIDAD
+            if record.disabilitie_documentary_validation_state != 'validated' and record.people_disabilitie != 'si':
+                record.disabilitie_documentary_validation_state = 'validated'
+            # DOMICILIO
+            if not record.is_cv_address_populated and record.cv_address_documentary_validation_state != 'validated':
+                record.cv_address_documentary_validation_state = 'validated'
+
 
     def update_header_documentary_validation(self, values):
         image_1920 = values.get('image_1920')
@@ -466,41 +485,10 @@ class ONSCCVDigital(models.Model):
 
         super(ONSCCVDigital, self).update_header_documentary_validation(values)
 
-    def _check_todisable_dynamic_fields(self):
-        return super(ONSCCVDigital, self)._check_todisable_dynamic_fields() or self.is_docket
+    def documentary_reject(self, reject_reason):
+        self._legajo_update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)
 
     #   VALIDACION DOCUMENTAL DE LEGAJO
-    def button_documentary_tovalidate(self):
-        if self._context.get('documentary_validation'):
-            self.suspend_security()._legajo_update_documentary(
-                self._context.get('documentary_validation'),
-                'to_validate', '')
-
-    def button_documentary_approve(self):
-        if self._context.get('documentary_validation'):
-            self.suspend_security()._legajo_update_documentary(
-                self._context.get('documentary_validation'),
-                'validated',
-                '')
-            self.suspend_security()._update_legajo_atdocumentary_validation()
-
-    def button_documentary_reject(self):
-        ctx = self._context.copy()
-        ctx.update({
-            'default_model_name': self._name,
-            'default_res_id': len(self.ids) == 1 and self.id or 0,
-            'is_documentary_reject': True
-        })
-        return {
-            'name': _('Rechazo de validación documental'),
-            'view_mode': 'form',
-            'res_model': 'onsc.cv.reject.wizard',
-            'target': 'new',
-            'view_id': False,
-            'type': 'ir.actions.act_window',
-            'context': ctx,
-        }
-
     def _update_legajo_atdocumentary_validation(self):
         seccion = self._context.get('documentary_validation', '')
         for record in self.filtered(lambda x: x.is_docket_active):
@@ -666,35 +654,6 @@ class ONSCCVDigital(models.Model):
                 calls.filtered(lambda x: x.create_date >= last_write_date).write(custom_vals)
         self.write(vals)
 
-    def validate_header_documentary_validation(self):
-        for record in self.filtered(lambda x: x.type == 'cv').with_context(
-                no_update_header_documentary_validation=True):
-            # GENERO
-            if record.gender_documentary_validation_state != 'validated' and (
-                    record.cv_gender_id is False or record.cv_gender_id.record is False):
-                record.gender_documentary_validation_state = 'validated'
-            # PHOTO
-            if record.photo_documentary_validation_state != 'validated' and record.image_1920 is False:
-                record.photo_documentary_validation_state = 'validated'
-            # RAZA
-            if record.cv_race_documentary_validation_state != 'validated' and len(record.cv_race_ids.ids) == 0:
-                record.cv_race_documentary_validation_state = 'validated'
-            # AFRO
-            if record.afro_descendant_documentary_validation_state != 'validated' and record.is_afro_descendants is False:
-                record.afro_descendant_documentary_validation_state = 'validated'
-            # CARNE SALUD LABORAL
-            if record.occupational_health_card_documentary_validation_state != 'validated' and record.is_occupational_health_card is False:
-                record.occupational_health_card_documentary_validation_state = 'validated'
-            # APTITUD MEDICO DEPORTIVA
-            if record.medical_aptitude_certificate_documentary_validation_state != 'validated' and record.is_medical_aptitude_certificate_status is False:
-                record.medical_aptitude_certificate_documentary_validation_state = 'validated'
-            # VICTIMA DE DELITOS VIOLENTOS
-            if record.victim_violent_documentary_validation_state != 'validated' and record.is_victim_violent is False:
-                record.victim_violent_documentary_validation_state = 'validated'
-            # DISCAPACIDAD
-            if record.disabilitie_documentary_validation_state != 'validated' and record.people_disabilitie != 'si':
-                record.disabilitie_documentary_validation_state = 'validated'
-
     def _update_cv_digital_origin_documentary_values(self, documentary_field, vals):
         for record in self:
             cv_digital_origin_id = record.cv_digital_origin_id
@@ -702,8 +661,48 @@ class ONSCCVDigital(models.Model):
                     'cv_digital_origin_id.%s_write_date' % documentary_field) < record.create_date:
                 cv_digital_origin_id.write(vals)
 
-    def documentary_reject(self, reject_reason):
-        self._legajo_update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)
+    def _check_todisable_dynamic_fields(self):
+        return super(ONSCCVDigital, self)._check_todisable_dynamic_fields() or self.is_docket
+
+    def _get_legajo_documentary_validation_models(self, only_fields=False):
+        if not bool(self._context):
+            return ['marital_status_documentary_validation_state',
+                    'photo_documentary_validation_state',
+                    'gender_documentary_validation_state',
+                    'cv_race_documentary_validation_state',
+                    'afro_descendant_documentary_validation_state',
+                    'occupational_health_card_documentary_validation_state',
+                    'medical_aptitude_certificate_documentary_validation_state',
+                    'victim_violent_documentary_validation_state',
+                    'cv_address_documentary_validation_state',
+                    'civical_credential_documentary_validation_state',
+                    'nro_doc_documentary_validation_state',
+                    'disabilitie_documentary_validation_state']
+        configs = self.env['onsc.cv.documentary.validation.config'].with_context(is_legajo=True).get_config()
+        if only_fields:
+            validation_models = []
+            for config in configs.filtered(lambda x: x.field_id):
+                validation_models.append('%s' % config.field_id.name)
+        else:
+            validation_models = ['marital_status_documentary_validation_state',
+                                 'photo_documentary_validation_state',
+                                 'gender_documentary_validation_state',
+                                 'cv_race_documentary_validation_state',
+                                 'afro_descendant_documentary_validation_state',
+                                 'occupational_health_card_documentary_validation_state',
+                                 'medical_aptitude_certificate_documentary_validation_state',
+                                 'victim_violent_documentary_validation_state',
+                                 'cv_address_documentary_validation_state',
+                                 'civical_credential_documentary_validation_state',
+                                 'nro_doc_documentary_validation_state',
+                                 'disabilitie_documentary_validation_state']
+            for config in configs.filtered(lambda x: x.field_id):
+                if config.model_id.model == 'onsc.cv.course.certificate':
+                    validation_models.extend(['course_ids.documentary_validation_state',
+                                              'certificate_ids.documentary_validation_state'])
+                else:
+                    validation_models.append('%s.documentary_validation_state' % config.field_id.name)
+        return validation_models
 
     def _get_abstract_config_security(self):
         return self.user_has_groups(
