@@ -9,8 +9,8 @@ from odoo.osv import expression
 
 # campos requeridos para la sincronización
 
-REQUIRED_FIELDS = ['end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
-                   'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id']
+REQUIRED_FIELDS = {'end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
+                   'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id'}
 
 
 class ONSCLegajoBajaCS(models.Model):
@@ -148,13 +148,12 @@ class ONSCLegajoBajaCS(models.Model):
     employee_id = fields.Many2one("hr.employee", string="Funcionario", copy=False)
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain', copy=False)
     contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_origin_id')
-    inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', compute='_compute_inciso_ue_origen_id',
-                                       copy=False, store=True)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id', store=True)
+    inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_origin_id')
     operating_unit_origen_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
-                                               compute='_compute_inciso_ue_origen_id', copy=False, store=True)
+                                               related='contract_id.operating_unit_origin_id')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
-                                        related='contract_id.operating_unit_id')
+                                        related='contract_id.operating_unit_id', store=True)
     program = fields.Char(string='Programa ', related='contract_id.program')
     project = fields.Char(string='Proyecto ', related='contract_id.project')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.regime_id')
@@ -212,16 +211,6 @@ class ONSCLegajoBajaCS(models.Model):
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
 
-    @api.depends('contract_id')
-    def _compute_inciso_ue_origen_id(self):
-        for rec in self:
-            if rec.contract_id and rec.contract_id.cs_contract_id and rec.contract_id.legajo_state == "outgoing_commission":
-                rec.inciso_origen_id = rec.contract_id.cs_contract_id.inciso_origin_id and rec.contract_id.cs_contract_id.inciso_origin_id.id
-                rec.operating_unit_origen_id = rec.contract_id.cs_contract_id.operating_unit_origin_id and rec.contract_id.cs_contract_id.operating_unit_origin_id.id
-            elif rec.contract_id:
-                rec.inciso_origen_id = rec.contract_id.inciso_origin_id.id
-                rec.operating_unit_origen_id = rec.contract_id.operating_unit_origin_id.id
-
     def action_call_ws11(self):
         self._check_required_fieds_ws11()
         self.env['onsc.legajo.abstract.baja.vl.ws11'].suspend_security().syncronize(self)
@@ -272,10 +261,12 @@ class ONSCLegajoBajaCS(models.Model):
             ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
-        elif not self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
+        elif self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'outgoing_commission' \
+                and not ContratoOrigen.inciso_id.is_central_administration:
             ContratoOrigen.suspend_security().activate_legajo_contract()
             ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
-        elif self.contract_id.inciso_id.is_central_administration and not ContratoOrigen.inciso_id.is_central_administration:
+        elif self.contract_id.inciso_id.is_central_administration and self.inciso_id.legajo_state == 'incoming_commission'\
+                and not ContratoOrigen:
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
 
