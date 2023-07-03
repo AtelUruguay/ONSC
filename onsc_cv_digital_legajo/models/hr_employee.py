@@ -215,6 +215,10 @@ class HrEmployee(models.Model):
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
 
+    def button_get_info_fromcv(self):
+        for record in self:
+            record.suspend_security().write(record._get_info_fromcv())
+
     def _get_driver_licences_orm(self):
         driver_licences_orm = [(5,)]
         for drivers_license in self.cv_digital_id.drivers_license_ids.filtered(
@@ -262,124 +266,161 @@ class HrEmployee(models.Model):
         }
         cv_address_documentary_validated = record.cv_digital_id.cv_address_documentary_validation_state == 'validated'
         if not self._context.get('exclusive_validated_info') or cv_address_documentary_validated:
-            vals.update({
-                # Domicilio
-                'country_id': record.cv_digital_id.country_id.id,
-                'cv_address_street': record.cv_digital_id.cv_address_street,
-                'cv_address_street_id': record.cv_digital_id.cv_address_street_id.id,
-                'cv_address_street2_id': record.cv_digital_id.cv_address_street2_id.id,
-                'cv_address_street3_id': record.cv_digital_id.cv_address_street3_id.id,
-                'cv_address_state_id': record.cv_digital_id.cv_address_state_id.id,
-                'cv_address_location_id': record.cv_digital_id.cv_address_location_id.id,
-                'cv_address_nro_door': record.cv_digital_id.cv_address_nro_door,
-                'cv_address_apto': record.cv_digital_id.cv_address_apto,
-                'cv_address_zip': record.cv_digital_id.cv_address_zip,
-                'cv_address_is_cv_bis': record.cv_digital_id.cv_address_is_cv_bis,
-                'cv_address_amplification': record.cv_digital_id.cv_address_amplification,
-                'cv_address_place': record.cv_digital_id.cv_address_place,
-                'cv_address_block': record.cv_digital_id.cv_address_block,
-                'cv_address_sandlot': record.cv_digital_id.cv_address_sandlot,
-                'address_receipt_file': record.cv_digital_id.partner_id.address_receipt_file,
-                'address_info_date': record.cv_digital_id.partner_id.address_info_date,
-                'address_receipt_file_name': record.cv_digital_id.partner_id.address_receipt_file_name,
-            })
+            vals.update(record._get_info_fromcv_cv_address())
         # NRO DOCUMENTO
         if record.cv_digital_id.nro_doc_documentary_validation_state == 'validated':
-            vals.update({
-                'cv_expiration_date': record.cv_digital_id.cv_expiration_date,
-                'document_identity_file': record.cv_digital_id.document_identity_file,
-                'document_identity_filename': record.cv_digital_id.document_identity_filename,
-            })
+            vals.update(record._get_info_fromcv_nrodoc())
         # PHOTO
         if record.cv_digital_id.photo_documentary_validation_state == 'validated':
-            vals.update({
-                'image_1920': record.cv_digital_id.partner_id.image_1920,
-                'photo_updated_date': record.cv_digital_id.partner_id.cv_photo_updated_date,
-            })
-
+            vals.update(record._get_info_fromcv_photo())
         # ESTADO CIVIL
         if record.cv_digital_id.marital_status_documentary_validation_state == 'validated':
-            vals.update({
-                'marital_status_id': record.cv_digital_id.marital_status_id.id,
-                'digitized_document_file': record.cv_digital_id.digitized_document_file,
-                'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
-                'status_civil_date': record.cv_digital_id.status_civil_date,
-            })
+            vals.update(record._get_info_fromcv_marital_status())
         # CREDENCIAL CIVICA
         if record.cv_digital_id.civical_credential_documentary_validation_state == 'validated':
-            vals.update({
-                'uy_citizenship': record.cv_digital_id.uy_citizenship,
-                'crendencial_serie': record.cv_digital_id.crendencial_serie,
-                'credential_number': record.cv_digital_id.credential_number,
-                'civical_credential_file': record.cv_digital_id.civical_credential_file,
-                'civical_credential_filename': record.cv_digital_id.civical_credential_filename,
-            })
+            vals.update(record._get_info_fromcv_civical_credential())
         # GENERO
         if record.cv_digital_id.gender_documentary_validation_state == 'validated':
-            vals.update({
-                'cv_gender_id': record.cv_digital_id.cv_gender_id.id,
-                'cv_gender2': record.cv_digital_id.cv_gender2,
-                'cv_gender_record_file': record.cv_digital_id.cv_gender_record_file,
-                'cv_gender_record_filename': record.cv_digital_id.cv_gender_record_filename,
-                # 'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
-                'gender_date': record.cv_digital_id.gender_date,
-            })
+            vals.update(record._get_info_fromcv_gender())
         # IDENTIDAD ÉTNICO RACIAL
         if record.cv_digital_id.cv_race_documentary_validation_state == 'validated':
-            vals.update({
-                'cv_race2': record.cv_digital_id.cv_race2,
-                'cv_race_ids': record.cv_digital_id.cv_race_ids,
-                'cv_first_race_id': record.cv_digital_id.cv_first_race_id,
-                'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
-                'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
-                'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
-                'afro_descendant_date': record.cv_digital_id.afro_descendant_date,
-            })
+            vals.update(record._get_info_fromcv_race())
         # CARNET DE SALUD
         if record.cv_digital_id.occupational_health_card_documentary_validation_state == 'validated':
-            vals.update({
-                'is_occupational_health_card': record.cv_digital_id.is_occupational_health_card,
-                'occupational_health_card_date': record.cv_digital_id.occupational_health_card_date,
-                'occupational_health_card_file': record.cv_digital_id.occupational_health_card_file,
-                'occupational_health_card_filename': record.cv_digital_id.occupational_health_card_filename,
-            })
+            vals.update(record._get_info_fromcv_occupational_health_card())
         # APTITUD MEDICA
         if record.cv_digital_id.medical_aptitude_certificate_documentary_validation_state == 'validated':
-            vals.update({
-                'is_medical_aptitude_certificate_status': record.cv_digital_id.is_medical_aptitude_certificate_status,
-                'medical_aptitude_certificate_date': record.cv_digital_id.medical_aptitude_certificate_date,
-                'medical_aptitude_certificate_file': record.cv_digital_id.medical_aptitude_certificate_file,
-                'medical_aptitude_certificate_filename': record.cv_digital_id.medical_aptitude_certificate_filename,
-            })
+            vals.update(record._get_info_fromcv_occupational_medical_aptitud())
         # VICTIMA DELITOS VIOLENTOS
         if record.cv_digital_id.victim_violent_documentary_validation_state == 'validated':
-            vals.update({
-                'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
-                'is_victim_violent': record.cv_digital_id.is_victim_violent,
-                'relationship_victim_violent_filename': record.cv_digital_id.relationship_victim_violent_filename,
-            })
+            vals.update(record._get_info_fromcv_victim_violent())
         # DISCAPACIDAD
         if record.cv_digital_id.disabilitie_documentary_validation_state == 'validated':
-            vals.update({
-                'people_disabilitie': record.cv_digital_id.people_disabilitie,
-                'document_certificate_file': record.cv_digital_id.document_certificate_file,
-                'document_certificate_filename': record.cv_digital_id.document_certificate_filename,
-                'certificate_date': record.cv_digital_id.certificate_date,
-                'to_date': record.cv_digital_id.to_date,
-                'disability_date': record.cv_digital_id.disability_date,
-                'type_support_ids': record._get_type_support_orm(),
-            })
+            vals.update(record._get_info_fromcv_disabilitie())
         return vals
+
+    def _get_info_fromcv_cv_address(self):
+        # Domicilio
+        return {
+            'country_id': self.cv_digital_id.country_id.id,
+            'cv_address_street': self.cv_digital_id.cv_address_street,
+            'cv_address_street_id': self.cv_digital_id.cv_address_street_id.id,
+            'cv_address_street2_id': self.cv_digital_id.cv_address_street2_id.id,
+            'cv_address_street3_id': self.cv_digital_id.cv_address_street3_id.id,
+            'cv_address_state_id': self.cv_digital_id.cv_address_state_id.id,
+            'cv_address_location_id': self.cv_digital_id.cv_address_location_id.id,
+            'cv_address_nro_door': self.cv_digital_id.cv_address_nro_door,
+            'cv_address_apto': self.cv_digital_id.cv_address_apto,
+            'cv_address_zip': self.cv_digital_id.cv_address_zip,
+            'cv_address_is_cv_bis': self.cv_digital_id.cv_address_is_cv_bis,
+            'cv_address_amplification': self.cv_digital_id.cv_address_amplification,
+            'cv_address_place': self.cv_digital_id.cv_address_place,
+            'cv_address_block': self.cv_digital_id.cv_address_block,
+            'cv_address_sandlot': self.cv_digital_id.cv_address_sandlot,
+            'address_receipt_file': self.cv_digital_id.partner_id.address_receipt_file,
+            'address_info_date': self.cv_digital_id.partner_id.address_info_date,
+            'address_receipt_file_name': self.cv_digital_id.partner_id.address_receipt_file_name,
+        }
+
+    def _get_info_fromcv_nrodoc(self):
+        # NRO DOCUMENTO
+        return {
+            'cv_expiration_date': self.cv_digital_id.cv_expiration_date,
+            'document_identity_file': self.cv_digital_id.document_identity_file,
+            'document_identity_filename': self.cv_digital_id.document_identity_filename,
+        }
+
+    def _get_info_fromcv_photo(self):
+        # FOTO
+        return {
+            'image_1920': self.cv_digital_id.partner_id.image_1920,
+            'photo_updated_date': self.cv_digital_id.partner_id.cv_photo_updated_date,
+        }
+
+    def _get_info_fromcv_marital_status(self):
+        # ESTADO CIVIL
+        return {
+            'marital_status_id': self.cv_digital_id.marital_status_id.id,
+            'digitized_document_file': self.cv_digital_id.digitized_document_file,
+            'digitized_document_filename': self.cv_digital_id.digitized_document_filename,
+            'status_civil_date': self.cv_digital_id.status_civil_date,
+        }
+
+    def _get_info_fromcv_civical_credential(self):
+        # CREDENCIAL CIVICA
+        return {
+            'uy_citizenship': self.cv_digital_id.uy_citizenship,
+            'crendencial_serie': self.cv_digital_id.crendencial_serie,
+            'credential_number': self.cv_digital_id.credential_number,
+            'civical_credential_file': self.cv_digital_id.civical_credential_file,
+            'civical_credential_filename': self.cv_digital_id.civical_credential_filename,
+        }
+
+    def _get_info_fromcv_gender(self):
+        # GENERO
+        return {
+            'cv_gender_id': self.cv_digital_id.cv_gender_id.id,
+            'cv_gender2': self.cv_digital_id.cv_gender2,
+            'cv_gender_record_file': self.cv_digital_id.cv_gender_record_file,
+            'cv_gender_record_filename': self.cv_digital_id.cv_gender_record_filename,
+            'gender_date': self.cv_digital_id.gender_date,
+        }
+
+    def _get_info_fromcv_race(self):
+        # IDENTIDAD ÉTNICO RACIAL
+        return {
+            'cv_race2': self.cv_digital_id.cv_race2,
+            'cv_race_ids': self.cv_digital_id.cv_race_ids,
+            'cv_first_race_id': self.cv_digital_id.cv_first_race_id,
+            'afro_descendants_filename': self.cv_digital_id.afro_descendants_filename,
+            'afro_descendants_file': self.cv_digital_id.afro_descendants_file,
+            'is_afro_descendants': self.cv_digital_id.is_afro_descendants,
+            'afro_descendant_date': self.cv_digital_id.afro_descendant_date,
+        }
+
+    def _get_info_fromcv_occupational_health_card(self):
+        # CARNET DE SALUD
+        return {
+            'is_occupational_health_card': self.cv_digital_id.is_occupational_health_card,
+            'occupational_health_card_date': self.cv_digital_id.occupational_health_card_date,
+            'occupational_health_card_file': self.cv_digital_id.occupational_health_card_file,
+            'occupational_health_card_filename': self.cv_digital_id.occupational_health_card_filename,
+        }
+
+    def _get_info_fromcv_occupational_medical_aptitud(self):
+        # APTITUD MEDICA
+        return {
+            'is_medical_aptitude_certificate_status': self.cv_digital_id.is_medical_aptitude_certificate_status,
+            'medical_aptitude_certificate_date': self.cv_digital_id.medical_aptitude_certificate_date,
+            'medical_aptitude_certificate_file': self.cv_digital_id.medical_aptitude_certificate_file,
+            'medical_aptitude_certificate_filename': self.cv_digital_id.medical_aptitude_certificate_filename,
+        }
+
+    def _get_info_fromcv_victim_violent(self):
+        # VICTIMA DELITOS VIOLENTOS
+        return {
+            'relationship_victim_violent_file': self.cv_digital_id.relationship_victim_violent_file,
+            'is_victim_violent': self.cv_digital_id.is_victim_violent,
+            'relationship_victim_violent_filename': self.cv_digital_id.relationship_victim_violent_filename,
+        }
+
+    def _get_info_fromcv_disabilitie(self):
+        # DISCAPACIDAD
+        return {
+            'people_disabilitie': self.cv_digital_id.people_disabilitie,
+            'document_certificate_file': self.cv_digital_id.document_certificate_file,
+            'document_certificate_filename': self.cv_digital_id.document_certificate_filename,
+            'certificate_date': self.cv_digital_id.certificate_date,
+            'to_date': self.cv_digital_id.to_date,
+            'disability_date': self.cv_digital_id.disability_date,
+            'type_support_ids': self._get_type_support_orm(),
+        }
 
     def _sync_user(self, user, employee_has_image=False):
         vals = super(HrEmployee, self)._sync_user(user, employee_has_image)
         if self._context.get('is_alta_vl') and vals.get('image_1920'):
             vals.pop('image_1920')
         return vals
-
-    def button_get_info_fromcv(self):
-        for record in self:
-            record.suspend_security().write(record._get_info_fromcv())
 
 
 class ONSCLegajoDriverLicense(models.Model):
