@@ -362,15 +362,12 @@ class ONSCCVDigital(models.Model):
         cv_gender_id = values.get('cv_gender_id')
         cv_gender_record_file = values.get('cv_gender_record_file')
         gender_date = values.get('gender_date')
-        if cv_gender_id or cv_gender_record_file or gender_date:
+        update_employee_gender = cv_gender_id or cv_gender_record_file or gender_date
+        if update_employee_gender:
             for record in self.with_context(no_update_header_documentary_validation=True):
                 employee_id = record.employee_id.suspend_security()
                 if record.cv_gender_id.record is False:
                     record.gender_documentary_validation_state = 'validated'
-                    employee_id.cv_gender_id = record.cv_gender_id.id
-                    employee_id.cv_gender_record_file = record.cv_gender_record_file
-                    employee_id.cv_gender_record_filename = record.cv_gender_record_filename
-                    employee_id.gender_date = record.gender_date
                 else:
                     record.gender_documentary_validation_state = 'to_validate'
             self.gender_write_date = fields.Datetime.now()
@@ -387,17 +384,13 @@ class ONSCCVDigital(models.Model):
         is_afro_descendants_in_values = 'is_afro_descendants' in values
         afro_descendant_date = values.get('afro_descendant_date')
         afro_descendant_file = values.get('afro_descendants_file')
-        if is_afro_descendants_in_values or afro_descendant_date or afro_descendant_file:
+        update_employee_afro = is_afro_descendants_in_values or afro_descendant_date or afro_descendant_file
+        if update_employee_afro:
             for record in self.with_context(no_update_header_documentary_validation=True):
-                employee_id = record.employee_id.suspend_security()
                 is_afro_descendants = is_afro_descendants_in_values and values.get(
                     'is_afro_descendants') or record.is_afro_descendants
                 if is_afro_descendants is False:
                     record.afro_descendant_documentary_validation_state = 'validated'
-                    employee_id.is_afro_descendants = False
-                    employee_id.afro_descendants_file = False
-                    employee_id.afro_descendants_filename = False
-                    employee_id.afro_descendant_date = record.afro_descendant_date
                 else:
                     record.afro_descendant_documentary_validation_state = 'to_validate'
             self.afro_descendant_write_date = fields.Datetime.now()
@@ -482,8 +475,34 @@ class ONSCCVDigital(models.Model):
             else:
                 record.cv_address_documentary_validation_state = 'to_validate'
                 record.cv_address_write_date = fields.Datetime.now()
-
         super(ONSCCVDigital, self).update_header_documentary_validation(values)
+        self._update_employee_atheader_documentary_validation(update_employee_gender, update_employee_afro)
+
+    def _update_employee_atheader_documentary_validation(self,
+                                                      update_employee_gender = False,
+                                                      update_employee_afro = False):
+        # ACUALIZANDO EMPLEADO SEGUN ESTADO DE VALIDACION DOCUMENTAL
+        if not update_employee_afro and not update_employee_gender:
+            return
+        for record in self.with_context(no_update_header_documentary_validation=True):
+            employee_id = record.employee_id.suspend_security()
+            employee_vals = {}
+            if update_employee_gender and record.cv_gender_id.record is False:
+                employee_vals = {
+                    'cv_gender_id': record.cv_gender_id.id,
+                    'cv_gender_record_file': record.cv_gender_record_file,
+                    'cv_gender_record_filename': record.cv_gender_record_filename,
+                    'gender_date': record.gender_date,
+                }
+            if update_employee_afro and not record.is_afro_descendants:
+                employee_vals.update({
+                    'is_afro_descendants': False,
+                    'afro_descendants_file': False,
+                    'afro_descendants_filename': False,
+                    'afro_descendant_date': False,
+                })
+            if employee_vals:
+                employee_id.write(employee_vals)
 
     def documentary_reject(self, reject_reason):
         self._legajo_update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)
