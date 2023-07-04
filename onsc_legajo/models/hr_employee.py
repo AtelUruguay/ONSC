@@ -166,6 +166,8 @@ class HrEmployee(models.Model):
                      'res_id': rec.id, 'type': 'binary'})
 
     def write(self, values):
+        if not self._context.get('consolidate_history_version'):
+            self = self.with_context(consolidate_history_version=str(fields.Datetime.now()))
         history_fields = self.get_history_fields()
         if not values.get('eff_date') and set(list(values)).intersection(set(history_fields)):
             values.update({
