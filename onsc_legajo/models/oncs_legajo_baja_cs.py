@@ -149,9 +149,10 @@ class ONSCLegajoBajaCS(models.Model):
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain', copy=False)
     contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id', store=True)
-    inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_origin_id')
+    inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', compute='_compute_inciso_ue_origen_id',
+                                       copy=False, store=True)
     operating_unit_origen_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
-                                               related='contract_id.operating_unit_origin_id')
+                                               compute='_compute_inciso_ue_origen_id', copy=False, store=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
                                         related='contract_id.operating_unit_id', store=True)
     program = fields.Char(string='Programa ', related='contract_id.program')
@@ -210,6 +211,16 @@ class ONSCLegajoBajaCS(models.Model):
                     rec.contract_id_domain = json.dumps([('id', '=', False)])
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
+
+    @api.depends('contract_id')
+    def _compute_inciso_ue_origen_id(self):
+        for rec in self:
+            if rec.contract_id and rec.contract_id.cs_contract_id and rec.contract_id.legajo_state == "outgoing_commission":
+                rec.inciso_origen_id = rec.contract_id.cs_contract_id.inciso_origin_id and rec.contract_id.cs_contract_id.inciso_origin_id.id
+                rec.operating_unit_origen_id = rec.contract_id.cs_contract_id.operating_unit_origin_id and rec.contract_id.cs_contract_id.operating_unit_origin_id.id
+            elif rec.contract_id:
+                rec.inciso_origen_id = rec.contract_id.inciso_origin_id.id
+                rec.operating_unit_origen_id = rec.contract_id.operating_unit_origin_id.id
 
     def action_call_ws11(self):
         self._check_required_fieds_ws11()
