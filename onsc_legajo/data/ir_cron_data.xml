@@ -59,4 +59,23 @@
         <field name='interval_type'>days</field>
         <field name="numbercall">-1</field>
     </record>
+
+    <record id="legajo_ws6_1" model="ir.cron">
+        <field name="name">Legajo: WS6.1 Modificación Datos Personales</field>
+        <field name="model_id" ref="model_onsc_legajo_abstract_ws6_1"/>
+        <field name="state">code</field>
+        <field name="code">model.syncronize()</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+    </record>
+    <record id="legajo_ws6_2" model="ir.cron">
+        <field name="name">Legajo: WS6.2 Modificación Datos Funcionario</field>
+        <field name="model_id" ref="model_onsc_legajo_abstract_ws6_2"/>
+        <field name="state">code</field>
+        <field name="code">model.syncronize()</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+    </record>
 </odoo>

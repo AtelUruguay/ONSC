@@ -25,8 +25,8 @@
         <field name="is_system_required">True</field>
         <field name="description">Error de comunicación</field>
     </record>
-    
-    
+
+
     <!--    WS2 Partida-->
     <record id="onsc_legajo_integration_error_WS2_9000" model="onsc.legajo.integration.error">
         <field name="integration_code">WS2</field>
@@ -216,7 +216,7 @@
         <field name="description">Error de comunicación</field>
     </record>
 
-     <!--    WS11-->
+    <!--    WS11-->
     <record id="onsc_legajo_integration_error_WS11_9000" model="onsc.legajo.integration.error">
         <field name="integration_code">WS11</field>
         <field name="code_error">9000</field>
@@ -231,6 +231,45 @@
     </record>
     <record id="onsc_legajo_integration_error_WS11_9005" model="onsc.legajo.integration.error">
         <field name="integration_code">WS11</field>
+        <field name="code_error">9005</field>
+        <field name="is_system_required">True</field>
+        <field name="description">Error de comunicación</field>
+    </record>
+
+    <!--    WS6.1-->
+    <record id="onsc_legajo_integration_error_WS6_1_9000" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS6.1</field>
+        <field name="code_error">9000</field>
+        <field name="is_system_required">True</field>
+        <field name="description">Ok</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS6_1_9004" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS6.1</field>
+        <field name="code_error">9004</field>
+        <field name="is_system_required">True</field>
+        <field name="description">Error de lógica</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS6_1_9005" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS6.1</field>
+        <field name="code_error">9005</field>
+        <field name="is_system_required">True</field>
+        <field name="description">Error de comunicación</field>
+    </record>
+     <!--    WS6.2-->
+    <record id="onsc_legajo_integration_error_WS6_2_9000" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS6.2</field>
+        <field name="code_error">9000</field>
+        <field name="is_system_required">True</field>
+        <field name="description">Ok</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS6_2_9004" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS6.2</field>
+        <field name="code_error">9004</field>
+        <field name="is_system_required">True</field>
+        <field name="description">Error de lógica</field>
+    </record>
+    <record id="onsc_legajo_integration_error_WS6_2_9005" model="onsc.legajo.integration.error">
+        <field name="integration_code">WS6.2</field>
         <field name="code_error">9005</field>
         <field name="is_system_required">True</field>
         <field name="description">Error de comunicación</field>

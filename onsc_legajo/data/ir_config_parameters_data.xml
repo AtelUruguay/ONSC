@@ -45,6 +45,15 @@
             <field name="key">onsc_legajo_WS11_bajaCS</field>
             <field name="value"></field>
         </record>
+        <record id="parameter_onsc_legajo_WS6_1" model="ir.config_parameter">
+            <field name="key">onsc_legajo_WS6_1_modificacionDatosPersonales</field>
+            <field name="value"></field>
+        </record>
+
+          <record id="parameter_onsc_legajo_WS6_2" model="ir.config_parameter">
+            <field name="key">onsc_legajo_WS6_2_modificacionDatosFuncionario</field>
+            <field name="value"></field>
+        </record>
 
     </data>
 </odoo>
