@@ -14,8 +14,8 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
 
     @api.model
     def syncronize(self, log_info=False):
-        parameter = self.env['ir.config_parameter'].sudo().get_param('parameter_onsc_legajo_WS6_1')
-        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_errorWS6_1_9005")
+        parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS6_1_modificacionDatosPersonales')
+        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS6_1_9005")
 
         wsclient = self._get_client(parameter, 'WS6.1', integration_error)
 

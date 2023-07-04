@@ -143,6 +143,7 @@ class HrContract(models.Model):
 
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
     is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
+    notify_sgh = fields.Boolean("Notificar SGH")
 
     def name_get(self):
         res = []
@@ -243,6 +244,14 @@ class HrContract(models.Model):
             vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
 
         return super(HrContract, self).create(vals)
+
+    def write(self, values):
+        for modified_field in ['sec_position', 'workplace', 'occupation_id']:
+            if modified_field in values:
+                values.update({
+                    'notify_sgh': True
+                })
+        return super(HrContract, self.suspend_security()).write(values)
 
 
 class HrContractHistory(models.Model):

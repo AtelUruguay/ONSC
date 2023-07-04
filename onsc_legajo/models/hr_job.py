@@ -148,6 +148,12 @@ class HrJob(models.Model):
             if record.department_id.manager_id.id != record.employee_id.id:
                 record.department_id.write({'manager_id': record.employee_id.id})
 
+    def write(self, values):
+        for modified_field in ['department_id', 'security_job_id']:
+            if modified_field in values:
+                self.contract_id.notify_sgh = True
+        return super(HrJob, self.suspend_security()).write(values)
+
 
 class HrJobRoleLine(models.Model):
     _inherit = 'hr.job.role.line'
@@ -164,8 +170,8 @@ class HrJobRoleLine(models.Model):
                 lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
             if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (
                     record.end_date is False or record.end_date >= x.start_date)) or (
-                                                    x.end_date and x.end_date >= record.start_date and ( # noqa
-                                                    record.end_date is False or record.end_date >= x.start_date))): # noqa
+                                                    x.end_date and x.end_date >= record.start_date and (  # noqa
+                                                    record.end_date is False or record.end_date >= x.start_date))):  # noqa
                 raise ValidationError(_("El rol configurado no puede repetirse para el mismo puesto en el mismo "
                                         "periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
 
