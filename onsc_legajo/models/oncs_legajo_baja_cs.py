@@ -272,15 +272,17 @@ class ONSCLegajoBajaCS(models.Model):
             ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
+            self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
         elif self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'outgoing_commission' \
                 and not ContratoOrigen.inciso_id.is_central_administration:
-            ContratoOrigen.suspend_security().activate_legajo_contract()
-            ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
-        elif self.contract_id.inciso_id.is_central_administration and self.inciso_id.legajo_state == 'incoming_commission'\
+            self.contract_id.suspend_security().activate_legajo_contract()
+            self.contract_id.cs_contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
+            self.contract_id.suspend_security().write({'cs_contract_id': False, })
+        elif self.contract_id.inciso_id.is_central_administration and self.inciso_id.legajo_state == 'incoming_commission' \
                 and not ContratoOrigen:
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
+            self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
 
-        self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
         self.write({'state': 'confirmado', 'is_error_synchronization': False, 'error_message_synchronization': ''})
         return True
