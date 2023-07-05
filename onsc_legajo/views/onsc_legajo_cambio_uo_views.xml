@@ -74,11 +74,12 @@
                         </group>
                         <group name="uo" string="Datos del Traslado">
                             <group name="uo_left">
-                                <field name="show_contract" invisible="1" />
+                                <field name="show_contract" invisible="1"/>
                                 <field name="contract_id_domain" invisible="1"/>
                                 <field name="contract_id" context="{'show_descriptors':True}"
-                                       domain="contract_id_domain"  attrs="{'invisible': [('show_contract', '=', False)]}"
-                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                       domain="contract_id_domain"
+                                       attrs="{'invisible': [('show_contract', '=', False)]}"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="department_id_domain" invisible="1"/>
                                 <field name="date_start"/>
                                 <label for="department_id" string="UO"/>
@@ -121,7 +122,7 @@
         </record>
 
         <record id='onsc_legajo_cambio_uo_action' model='ir.actions.act_window'>
-            <field name="name">Cambio UO</field>
+            <field name="name">Cambio de UO</field>
             <field name="res_model">onsc.legajo.cambio.uo</field>
             <field name="view_mode">tree,form</field>
             <field name="context">{'search_default_mi_uo': True,'is_from_menu': True,'show_descriptors':True}</field>
