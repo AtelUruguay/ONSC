@@ -37,6 +37,9 @@ class ONSCLegajoCambioUO(models.Model):
         return res
 
     def _get_domain(self, args):
+        args = expression.AND([[
+            ('employee_id', '!=', self.env.user.employee_id.id)
+        ], args])
         if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
@@ -56,8 +59,10 @@ class ONSCLegajoCambioUO(models.Model):
                     ('operating_unit_id', '=', operating_unit_id.id)
                 ], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo'):
+            id_department = self.env.user.employee_id.job_id.contract_id.job_ids.filtered(
+                lambda x: x.end_date is False).department_id.id
             Employees = self.env['hr.department'].sudo().search(
-                [('id', 'child_of', int(self.env.user.employee_id.job_id.department_id.id)), ]).jobs_ids.mapped(
+                [('id', 'child_of', id_department), ]).jobs_ids.mapped(
                 'employee_id').filtered(lambda x: x.id != self.env.user.employee_id.id)
             if Employees:
                 args = expression.AND([[
@@ -118,6 +123,13 @@ class ONSCLegajoCambioUO(models.Model):
             if record.date_start > fields.Date.today():
                 raise ValidationError(_("La fecha desde debe ser menor o igual a la fecha de registro"))
 
+    @api.constrains("department_id")
+    def _check_department_id(self):
+        for record in self:
+            if record.department_id.id == record.contract_id.job_ids.filtered(
+                    lambda x: x.end_date is False).department_id.id:
+                raise ValidationError(_("La UO destino tiene que se distinta a la actual"))
+
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
@@ -128,10 +140,10 @@ class ONSCLegajoCambioUO(models.Model):
         for rec in self:
             rec.employee_id_domain = self._get_domain_employee_ids()
 
-    @api.depends('employee_id')
+    @api.depends('contract_id')
     def _compute_department_id_domain(self):
         for rec in self:
-            rec.department_id_domain = json.dumps([('id', 'in', self.get_uo_tree())])
+            rec.department_id_domain = json.dumps([('id', 'in', self.get_uo_tree(rec.contract_id))])
 
     @api.depends('employee_id')
     def _compute_full_name(self):
@@ -151,7 +163,10 @@ class ONSCLegajoCambioUO(models.Model):
             if rec.employee_id:
                 contract = Contract.search([("legajo_state", "in", ("incoming_commission", "active")),
                                             ('employee_id', '=', rec.employee_id.id),
-                                            ("job_ids.department_id", "in", self.get_uo_tree())])
+                                            ('inciso_id', '=',
+                                             self.env.user.employee_id.job_id.contract_id.inciso_id.id),
+                                            ('operating_unit_id', '=',
+                                             self.env.user.employee_id.job_id.contract_id.operating_unit_id.id)])
                 rec.show_contract = len(contract) > 1
                 rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
                 rec.contract_id = contract and contract[0].id
@@ -171,34 +186,29 @@ class ONSCLegajoCambioUO(models.Model):
         self.operating_unit_id = self.department_id.operating_unit_id.id
         self.inciso_id = self.department_id.inciso_id.id
 
-    def get_uo_tree(self, department=False):
+    def get_uo_tree(self, contract=False):
         Department = self.env['hr.department'].sudo()
-        if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso'):
-            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
-            if inciso_id:
-                department_ids = Department.search([('inciso_id', '=', inciso_id.id)]).ids
-            else:
-                department_ids = []
-        elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue'):
-            contract_id = self.env.user.employee_id.job_id.contract_id
+        department_ids = []
+        if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso') or \
+                self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue') or \
+                self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar'):
+            contract_id = contract or self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
-            args = []
             if inciso_id:
-                args = expression.AND([[
-                    ('inciso_id', '=', inciso_id.id)
-                ], args])
+                args = [('inciso_id', '=', inciso_id.id)]
             if operating_unit_id:
                 args = expression.AND([[
                     ('operating_unit_id', '=', operating_unit_id.id)
                 ], args])
             department_ids = Department.search(args).ids
         elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo'):
-            _department_id = department.id or self.env.user.employee_id.job_id.department_id.id
+            if contract and contract.job_ids.filtered(lambda x: x.end_date is False):
+                id_department = contract.job_ids.filtered(lambda x: x.end_date is False).department_id.id
+            _department_id = id_department and id_department or self.env.user.employee_id.job_id.contract_id.job_ids.filtered(
+                lambda x: x.end_date is False).department_id.id
             department_ids = Department.search([
                 '|', ('id', 'child_of', _department_id), ('id', '=', _department_id)])
-        else:
-            department_ids = []
         return department_ids
 
     def _get_domain_employee_ids(self):
