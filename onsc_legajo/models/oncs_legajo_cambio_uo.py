@@ -173,8 +173,9 @@ class ONSCLegajoCambioUO(models.Model):
         Contract = self.env['hr.contract']
         for rec in self:
             if rec.employee_id:
-                args =[("legajo_state", "in", ("incoming_commission", "active")), ('employee_id', '=', rec.employee_id.id)]
-                contract = Contract.search(self._get_domain( args))
+                args = [("legajo_state", "in", ("incoming_commission", "active")),
+                        ('employee_id', '=', rec.employee_id.id)]
+                contract = Contract.search(self._get_domain(args))
                 rec.show_contract = len(contract) > 1
                 rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
                 rec.contract_id = contract and contract[0].id
