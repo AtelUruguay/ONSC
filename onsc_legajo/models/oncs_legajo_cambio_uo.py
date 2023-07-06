@@ -142,7 +142,7 @@ class ONSCLegajoCambioUO(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas'):
+            if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta'):
                 record.should_disable_form_edit = False
             else:
                 record.should_disable_form_edit = record.state not in ['borrador']
