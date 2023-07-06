@@ -187,7 +187,7 @@ class ONSCLegajoBajaCS(models.Model):
     def _compute_should_disable_form_edit(self):
         for record in self:
             if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas'):
-                record.should_disable_form_edit = False
+                record.should_disable_form_edit = True
             else:
                 record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
 
