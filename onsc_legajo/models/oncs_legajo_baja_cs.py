@@ -186,7 +186,10 @@ class ONSCLegajoBajaCS(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
+            if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas'):
+                record.should_disable_form_edit = False
+            else:
+                record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
 
     @api.depends('cv_emissor_country_id')
     def _compute_employee_id_domain(self):
