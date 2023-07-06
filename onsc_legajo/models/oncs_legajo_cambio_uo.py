@@ -130,13 +130,11 @@ class ONSCLegajoCambioUO(models.Model):
                     lambda x: x.end_date is False).department_id.id:
                 raise ValidationError(_("La UO destino tiene que ser distinta a la actual"))
 
-    @api.constrains("security_job_id")
+    @api.constrains("security_job_id", "department_id", "date_start", "legajo_state")
     def _check_security_job_id(self):
         for record in self:
-            if record.security_job_id.is_uo_manager and self.env['hr.job'].sudo().search_count(
-                    [('department_id', '=', record.department_id.id),
-                     ('security_job_id', '=', record.security_job_id.id), '|', ('end_date', '=', False),
-                     ('end_date', '>=', record.date_start)]) > 1:
+            if not self.env['hr.job'].sudo().is_job_available_for_manager(record.department_id, record.security_job_id,
+                                                                          record.date_start):
                 raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
 
     @api.depends('state')
