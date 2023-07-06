@@ -58,6 +58,10 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                 'solar': record.cv_address_sandlot or None,
                 'mutuCod': record.health_provider_id and record.health_provider_id.code or '99'
             }
+
+            _logger.info('******************WS6.1')
+            _logger.info(data)
+            _logger.info('******************WS6.1')
             return self.with_context(employee=record, log_info=log_info).suspend_security()._syncronize(
                 wsclient,
                 parameter, 'WS6.1',

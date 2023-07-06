@@ -128,12 +128,22 @@ class ONSCLegajoCambioUO(models.Model):
         for record in self:
             if record.department_id.id == record.contract_id.job_ids.filtered(
                     lambda x: x.end_date is False).department_id.id:
-                raise ValidationError(_("La UO destino tiene que se distinta a la actual"))
+                raise ValidationError(_("La UO destino tiene que ser distinta a la actual"))
+
+    @api.constrains("security_job_id", "department_id", "date_start", "legajo_state")
+    def _check_security_job_id(self):
+        for record in self:
+            if not self.env['hr.job'].sudo().is_job_available_for_manager(record.department_id, record.security_job_id,
+                                                                          record.date_start):
+                raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state not in ['borrador']
+            if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta'):
+                record.should_disable_form_edit = False
+            else:
+                record.should_disable_form_edit = record.state not in ['borrador']
 
     @api.depends('cv_emissor_country_id')
     def _compute_employee_id_domain(self):
@@ -161,12 +171,9 @@ class ONSCLegajoCambioUO(models.Model):
         Contract = self.env['hr.contract']
         for rec in self:
             if rec.employee_id:
-                contract = Contract.search([("legajo_state", "in", ("incoming_commission", "active")),
-                                            ('employee_id', '=', rec.employee_id.id),
-                                            ('inciso_id', '=',
-                                             self.env.user.employee_id.job_id.contract_id.inciso_id.id),
-                                            ('operating_unit_id', '=',
-                                             self.env.user.employee_id.job_id.contract_id.operating_unit_id.id)])
+                args = [("legajo_state", "in", ("incoming_commission", "active")),
+                        ('employee_id', '=', rec.employee_id.id)]
+                contract = Contract.search(self._get_domain(args))
                 rec.show_contract = len(contract) > 1
                 rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
                 rec.contract_id = contract and contract[0].id
@@ -221,12 +228,7 @@ class ONSCLegajoCambioUO(models.Model):
         Job = self.env['hr.job']
         if self.env.user.employee_id.id == self.employee_id.id:
             raise ValidationError(_("No se puede confirmar un traslado a si mismo"))
-        if self.security_job_id.is_uo_manager:
-            if self.env['hr.job'].sudo().search_count([
-                ('department_id', '=', self.department_id.id),
-                ('security_job_id', '=', self.security_job_id.id)
-            ]) > 1:
-                raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
+
         self.contract_id.suspend_security().write({'eff_date': self.date_start, 'occupation_id': self.occupation_id.id})
         self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
             {'end_date': self.date_start - relativedelta(days=1)})

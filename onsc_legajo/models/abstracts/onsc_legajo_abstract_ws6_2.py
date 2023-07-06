@@ -30,6 +30,10 @@ class ONSCLegajoAbstractSyncWS6_2(models.AbstractModel):
                 'responsableUO': Job.security_job_id and 'S' if Job.security_job_id.is_uo_manager else 'N' or None,
                 'codigoOcupacion': record.occupation_id and record.occupation_id.code or None,
             }
+            _logger.info('******************WS6.2')
+            _logger.info(data)
+            _logger.info('******************WS6.2')
+
             return self.with_context(contract=record, log_info=log_info).suspend_security()._syncronize(
                 wsclient,
                 parameter, 'WS6.2',
