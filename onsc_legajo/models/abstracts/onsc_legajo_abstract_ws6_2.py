@@ -26,10 +26,15 @@ class ONSCLegajoAbstractSyncWS6_2(models.AbstractModel):
                 'cedula': int(record.employee_id.cv_nro_doc[:-1], 16),
                 'secPlaza': int(record.sec_position),
                 'nroPlaza': record.workplace,
-                'uo': Job.department_id and Job.department_id.code or None,
-                'responsableUO': Job.security_job_id and 'S' if Job.security_job_id.is_uo_manager else 'N' or None,
-                'codigoOcupacion': record.occupation_id and record.occupation_id.code or None,
+                'idPuesto': record.position
             }
+            if Job.department_id:
+                data.update({'uo': Job.department_id.code})
+            if Job.security_job_id:
+                data.update({'responsableUO': 'S' if Job.security_job_id.is_uo_manager else 'N'})
+            if record.occupation_id:
+                data.update({'codigoOcupacion': record.occupation_id.code})
+
             _logger.info('******************WS6.2')
             _logger.info(data)
             _logger.info('******************WS6.2')

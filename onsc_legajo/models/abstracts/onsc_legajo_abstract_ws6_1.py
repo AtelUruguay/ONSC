@@ -18,47 +18,48 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS6_1_9005")
 
         wsclient = self._get_client(parameter, 'WS6.1', integration_error)
-
         Employee = self.env['hr.employee']
         for record in Employee.suspend_security().search([('notify_sgh', '=', True)]):
+
             if record.cv_address_street_id:
-                calleCod = record.cv_address_street_id.code
+                calleCod = int(record.cv_address_street_id.code)
             elif record.cv_address_street:
-                calleCod = record.cv_address_street
+                calleCod = int(record.cv_address_street)
             else:
-                calleCod = '9999999999'
+                calleCod = 9999999999
+
             data = {
-                'cedula': record.cv_nro_doc[:-1],
-                'digitoVerificador': record.cv_nro_doc[-1],
+                'cedula': int(record.cv_nro_doc[:-1]),
+                'digitoVerificador': int(record.cv_nro_doc[-1]),
                 'primerApellido': record.cv_last_name_1[:20],
-                'segundoApellido': record.cv_last_name_2 and record.cv_last_name_2[:20] or None,
                 'primerNombre': record.cv_first_name[:20],
-                'segundoNombre': record.cv_second_name and record.cv_second_name[:20] or None,
-                'codigoEstadoCivil': record.marital_status_id and record.marital_status_id.code or None,
-                'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y'),
                 'sexo': 'M' if record.cv_sex == 'male' else 'F',
-                'lugarDeNacimiento': record.country_of_birth_id and record.country_of_birth_id.name or None,
+                'codigoEstadoCivil': record.marital_status_id and int(record.marital_status_id.code) or 99,
                 'tipoCiudadania': 'N',
                 'serieCredencial': record.crendencial_serie,
-                'numeroCredencial': record.credential_number,
-                'telefonoAlternativo': record.personal_phone or None,
-                'telefonoMovil': record.mobile_phone or None,
-                'eMail': record.email or None,
-                'deptoCod': record.cv_address_state_id and record.cv_address_state_id.code or '99',
-                'localidadCod': record.cv_address_location_id and record.cv_address_location_id.other_code or '9999999999',
+                'numeroCredencial': int(record.credential_number),
+                'localidadCod': record.cv_address_location_id and int(
+                    record.cv_address_location_id.other_code) or 9999999999,
                 'calleCod': calleCod,
-                'numeroDePuerta': record.cv_address_nro_door,
-                'callCodEntre1': record.cv_address_street2_id and record.cv_address_street2_id.code or None,
-                'callCodEntre2': record.cv_address_street3_id and record.cv_address_street3_id.code or None,
-                'bis': '1' if record.cv_address_is_cv_bis else '0',
-                'apto': record.cv_address_apto or None,
-                'paraje': record.cv_address_place or None,
-                'codigoPostal': record.cv_address_zip or None,
-                'manzana': record.cv_address_block or None,
-                'solar': record.cv_address_sandlot or None,
-                'mutuCod': record.health_provider_id and record.health_provider_id.code or '99'
+                'mutuCod': record.health_provider_id and int(record.health_provider_id.code) or 99,
+                'bis': 1 if record.cv_address_is_cv_bis else 0
             }
 
+            if record.cv_last_name_2:
+                data.update({'segundoApellido': record.cv_last_name_2[:20]})
+            if record.cv_second_name:
+                data.update({'segundoNombre': record.cv_second_name[:20]})
+            if record.cv_birthdate:
+                data.update({'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y')})
+            if record.country_of_birth_id:
+                data.update({'lugarDeNacimiento': record.country_of_birth_id.name})
+            if record.personal_phone:
+                data.update({'telefonoAlternativo': record.personal_phone})
+            if record.mobile_phone:
+                data.update({'telefonoMovil': record.mobile_phone})
+            if record.email:
+                data.update({'eMail': record.email})
+            data = self._get_data_address(record, data)
             _logger.info('******************WS6.1')
             _logger.info(data)
             _logger.info('******************WS6.1')
@@ -67,6 +68,29 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                 parameter, 'WS6.1',
                 integration_error,
                 data)
+
+    def _get_data_address(self, record, data):
+
+        if record.cv_address_street2_id:
+            data.update({'callCodEntre1': int(record.cv_address_street2_id.code)})
+        if record.cv_address_street3_id:
+            data.update({'callCodEntre2': int(record.cv_address_street3_id.code)})
+        if record.cv_address_apto:
+            data.update({'apto': record.cv_address_apto})
+        if record.cv_address_place:
+            data.update({'paraje': record.cv_address_place})
+        if record.cv_address_zip:
+            data.update({'codigoPostal': int(record.cv_address_zip)})
+        if record.cv_address_block:
+            data.update({'manzana': int(record.cv_address_block)})
+        if record.cv_address_sandlot:
+            data.update({'solar': int(record.cv_address_sandlot)})
+        if record.cv_address_nro_door:
+            data.update({'numeroDePuerta': record.cv_address_sandlot})
+        if record.cv_address_state_id:
+            data.update({'deptoCod': int(record.cv_address_state_id.code)})
+
+        return data
 
     def _populate_from_syncronization(self, response):
         with self._cr.savepoint():
