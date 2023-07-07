@@ -27,14 +27,7 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                 calleCod = int(record.cv_address_street)
             else:
                 calleCod = 9999999999
-            if record.cv_address_street2_id and record.cv_address_street2_id.code:
-                callCodEntre1 = int(record.cv_address_street2_id.code)
-            else:
-                callCodEntre1 = 9999999999
-            if record.cv_address_street3_id and record.cv_address_street3_id.code:
-                callCodEntre2 = int(record.cv_address_street2_id.code)
-            else:
-                callCodEntre2 = 9999999999
+
             data = {
                 'cedula': int(record.cv_nro_doc[:-1]),
                 'digitoVerificador': int(record.cv_nro_doc[-1]),
@@ -48,8 +41,6 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                 'localidadCod': record.cv_address_location_id and int(
                     record.cv_address_location_id.other_code) or 9999999999,
                 'calleCod': calleCod,
-                'callCodEntre1': callCodEntre1,
-                'callCodEntre2': callCodEntre2,
                 'mutuCod': record.health_provider_id and int(record.health_provider_id.code) or 99,
                 'bis': 1 if record.cv_address_is_cv_bis else 0
             }
@@ -82,8 +73,12 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
 
         if record.cv_address_street2_id:
             data.update({'callCodEntre1': int(record.cv_address_street2_id.code)})
+        else:
+            data.update({'callCodEntre1': 9999999999})
         if record.cv_address_street3_id:
             data.update({'callCodEntre2': int(record.cv_address_street3_id.code)})
+        else:
+            data.update({'callCodEntre2': 9999999999})
         if record.cv_address_apto:
             data.update({'apto': record.cv_address_apto})
         if record.cv_address_place:
@@ -98,7 +93,8 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
             data.update({'numeroDePuerta': record.cv_address_nro_door})
         if record.cv_address_state_id:
             data.update({'deptoCod': int(record.cv_address_state_id.code)})
-
+        else:
+            data.update({'deptoCod': 99})
         return data
 
     def _populate_from_syncronization(self, response):
