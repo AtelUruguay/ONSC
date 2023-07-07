@@ -87,7 +87,7 @@
                                 <field name="operating_unit_id" invisible="1" force_save="1"/>
 
                                 <field name="contract_id" context="{'show_descriptors':True}"
-                                       domain="contract_id_domain"  attrs="{'invisible': [('show_contract', '=', False)]}"
+                                       domain="contract_id_domain"  attrs="{'readonly': [('show_contract', '=', False)]}"
                                 options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="inciso_origen_id" readonly="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
