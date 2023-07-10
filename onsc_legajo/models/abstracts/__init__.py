@@ -11,3 +11,4 @@ from . import onsc_legajo_abstract_alta_cs_ws10
 from . import onsc_legajo_abstract_baja_vl_ws11
 from . import onsc_legajo_abstract_ws6_1
 from . import onsc_legajo_abstract_ws6_2
+from . import onsc_legajo_abstract_ws7

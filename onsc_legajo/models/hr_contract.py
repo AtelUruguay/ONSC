@@ -234,8 +234,7 @@ class HrContract(models.Model):
         if legajo_state == 'baja':
             vals.update({'date_end': date_end})
         self.suspend_security().write(vals)
-        self.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write({'end_date': date_end})
-        self.suspend_security().job_ids.onchange_end_date()
+        self.suspend_security().job_ids.deactivate(date_end)
 
     @api.model
     def create(self, vals):

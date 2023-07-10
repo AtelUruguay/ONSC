@@ -231,10 +231,10 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             if hasattr(response, 'altaSGHMovimientoRespuesta') and response.altaSGHMovimientoRespuesta:
                 for response in response.altaSGHMovimientoRespuesta:
                     try:
-                        altas_vl_id = altas_vl.filtered(
+                        altas_vl = altas_vl.filtered(
                             lambda x: x.partner_id.cv_nro_doc[:-1] == str(response['cedula']))
-                        if altas_vl_id:
-                            altas_vl_id.write({
+                        if altas_vl:
+                            altas_vl.write({
                                 'id_alta': response['pdaId'] if 'pdaId' in response else False,
                                 'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
                                 'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
@@ -248,6 +248,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                 'state': 'pendiente_auditoria_cgn',
                                 'error_message_synchronization': ''
                             })
+                            altas_vl.filtered(lambda x: x.is_responsable_uo).mapped('department_id').write(
+                                {'is_manager_reserved'})
                     except Exception as e:
                         long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
                         _logger.warning(long_description)

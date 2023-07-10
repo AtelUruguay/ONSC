@@ -49,9 +49,12 @@
             <field name="key">onsc_legajo_WS6_1_modificacionDatosPersonales</field>
             <field name="value"></field>
         </record>
-
-          <record id="parameter_onsc_legajo_WS6_2" model="ir.config_parameter">
+        <record id="parameter_onsc_legajo_WS6_2" model="ir.config_parameter">
             <field name="key">onsc_legajo_WS6_2_modificacionDatosFuncionario</field>
+            <field name="value"></field>
+        </record>
+        <record id="parameter_onsc_legajo_WS7" model="ir.config_parameter">
+            <field name="key">onsc_legajo_WS7_F_PU_RVE_MOVIMIENTOS</field>
             <field name="value"></field>
         </record>
 
