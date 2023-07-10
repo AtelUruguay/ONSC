@@ -123,7 +123,21 @@ class HrJob(models.Model):
             'security_job_id': security_job.id,
         })
         job.onchange_security_job_id()
+        if job.security_job_id.is_uo_manager and job.start_date <= fields.Date.today():
+            job.department_id.write({
+                'manager_id': job.employee_id.id,
+                'is_manager_reserved': False
+            })
         return job
+
+    def deactivate(self, date_end):
+        self.suspend_security().filtered(lambda x: x.end_date is False).write({'end_date': date_end})
+        self.suspend_security().onchange_end_date()
+        if date_end < fields.Date.today():
+            self.mapped('department_id').filtered(lambda x: x.manager_id.id or x.is_manager_reserved).write({
+                'manager_id': False,
+                'is_manager_reserved': False
+            })
 
     def is_job_available_for_manager(self, department, security_job, date, date_end=False):
         if not security_job.is_uo_manager:
@@ -134,13 +148,15 @@ class HrJob(models.Model):
                 ('department_id', '=', department.id),
                 ('security_job_id.is_uo_manager', '=', True),
                 '|',
+                '|',
                 ('start_date', '>=', date),
-                '&', ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date)
+                '&', ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date),
+                ('department_id.is_manager_reserved', '=', True)
             ]
         return self.search_count(args) == 0
 
     def update_managers(self):
-        self.env['hr.department'].search([]).write({'manager_id': False})
+        self.env['hr.department'].search([('manager_id', '!=', False)]).write({'manager_id': False})
         date = fields.Date.today()
         for record in self.search(
                 [('security_job_id.is_uo_manager', '=', True), ('contract_id.legajo_state', '!=', 'baja'),
