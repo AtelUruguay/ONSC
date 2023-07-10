@@ -14,97 +14,29 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
 
     @api.model
     def syncronize(self, log_info=False):
-        parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS7_modificacionDatosPersonales')
+        parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS7_F_PU_RVE_MOVIMIENTOS')
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS7_9005")
-
         wsclient = self._get_client(parameter, 'WS7', integration_error)
-        Employee = self.env['hr.employee']
-        for record in Employee.suspend_security().search([('notify_sgh', '=', True)]):
-
-            if record.cv_address_street_id:
-                calleCod = int(record.cv_address_street_id.code)
-            elif record.cv_address_street:
-                calleCod = int(record.cv_address_street)
-            else:
-                calleCod = 9999999999
-
-            data = {
-                'cedula': int(record.cv_nro_doc[:-1]),
-                'digitoVerificador': int(record.cv_nro_doc[-1]),
-                'primerApellido': record.cv_last_name_1[:20],
-                'primerNombre': record.cv_first_name[:20],
-                'sexo': 'M' if record.cv_sex == 'male' else 'F',
-                'codigoEstadoCivil': record.marital_status_id and int(record.marital_status_id.code) or 99,
-                'tipoCiudadania': 'N',
-                'serieCredencial': record.crendencial_serie,
-                'numeroCredencial': int(record.credential_number),
-                'localidadCod': record.cv_address_location_id and int(
-                    record.cv_address_location_id.other_code) or 9999999999,
-                'calleCod': calleCod,
-                'mutuCod': record.health_provider_id and int(record.health_provider_id.code) or 99,
-                'bis': 1 if record.cv_address_is_cv_bis else 0
-            }
-
-            if record.cv_last_name_2:
-                data.update({'segundoApellido': record.cv_last_name_2[:20]})
-            if record.cv_second_name:
-                data.update({'segundoNombre': record.cv_second_name[:20]})
-            if record.cv_birthdate:
-                data.update({'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y')})
-            if record.country_of_birth_id:
-                data.update({'lugarDeNacimiento': record.country_of_birth_id.name})
-            if record.personal_phone:
-                data.update({'telefonoAlternativo': record.personal_phone})
-            if record.mobile_phone:
-                data.update({'telefonoMovil': record.mobile_phone})
-            if record.email:
-                data.update({'eMail': record.email})
-            data = self._get_data_address(record, data)
-            _logger.info('******************WS7')
-            _logger.info(data)
-            _logger.info('******************WS7')
-            return self.with_context(employee=record, log_info=log_info).suspend_security()._syncronize(
-                wsclient,
-                parameter, 'WS7',
-                integration_error,
-                data)
-
-    def _get_data_address(self, record, data):
-
-        if record.cv_address_street2_id:
-            data.update({'callCodEntre1': int(record.cv_address_street2_id.code)})
-        else:
-            data.update({'callCodEntre1': 9999999999})
-        if record.cv_address_street3_id:
-            data.update({'callCodEntre2': int(record.cv_address_street3_id.code)})
-        else:
-            data.update({'callCodEntre2': 9999999999})
-        if record.cv_address_apto:
-            data.update({'apto': record.cv_address_apto})
-        if record.cv_address_place:
-            data.update({'paraje': record.cv_address_place})
-        if record.cv_address_zip:
-            data.update({'codigoPostal': int(record.cv_address_zip)})
-        if record.cv_address_block:
-            data.update({'manzana': int(record.cv_address_block)})
-        if record.cv_address_sandlot:
-            data.update({'solar': int(record.cv_address_sandlot)})
-        if record.cv_address_nro_door:
-            data.update({'numeroDePuerta': record.cv_address_nro_door})
-        if record.cv_address_state_id:
-            data.update({'deptoCod': int(record.cv_address_state_id.code)})
-        else:
-            data.update({'deptoCod': 99})
-        return data
+        data = {
+            'paFechaDesde': '03/05/2022 00:00:00',
+            'paFechaHasta': '05/05/2022 00:00:00'
+        }
+        return self.with_context(log_info=log_info, simpleWsdl=True).suspend_security()._syncronize(
+            wsclient,
+            parameter,
+            'WS7',
+            integration_error,
+            data)
 
     def _populate_from_syncronization(self, response):
         with self._cr.savepoint():
-            employee = self._context.get('employee')
             onsc_legajo_integration_error_WS7_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_WS7_9004")
+            Contract = self.env['hr.contract'].sudo()
             try:
-                employee.write({'notify_sgh': False})
-
+                for operation in response[:2]:
+                    if operation.tipo_mov == 'ALTA':
+                        self._check_alta(Contract, operation, onsc_legajo_integration_error_WS7_9004)
             except Exception as e:
                 long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
                 _logger.warning(long_description)
@@ -112,10 +44,22 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                                     integration_log=onsc_legajo_integration_error_WS7_9004,
                                     long_description=long_description)
 
-    def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
-
-        super(ONSCLegajoAbstractSyncWS7, self)._process_servicecall_error(exception, origin_name, integration_error,
-                                                                            long_description)
+    def _check_alta(self, Contract, operation, error):
+        if Contract.search_count([
+            ('inciso_id.budget_code', '=', str(operation.inciso)),
+            ('operating_unit_id.budget_code', '=', str(operation.ue)),
+            ('position', '=', str(operation.idPuesto)),
+            ('workplace', '=', operation.nroPlaza),
+            ('sec_position', '=', operation.secPlaza),
+            # ('emissor_country_id.code_rve', '=', str(operation.ue)),
+            # ('document_type_id.code', '=', str(tipo_doc)),
+            ('nro_doc', '=', str(operation.doc)),
+        ]) == 0:
+            self.create_new_log(origin='WS7',
+                                type='error',
+                                integration_log=error,
+                                ws_tuple=str(operation),
+                                long_description='Alta no encontrada')
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
         IntegrationError = self.env['onsc.legajo.integration.error']
@@ -130,6 +74,6 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             long_description = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
 
             super(ONSCLegajoAbstractSyncWS7, self)._process_response_witherror(response,
-                                                                                 origin_name,
-                                                                                 integration_error,
-                                                                                 long_description)
+                                                                               origin_name,
+                                                                               integration_error,
+                                                                               long_description)
