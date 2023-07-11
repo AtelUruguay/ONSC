@@ -64,16 +64,16 @@ class HrContract(models.Model):
     legajo_state = fields.Selection(
         [('active', 'Activo'), ('baja', 'Baja'), ('outgoing_commission', 'Comisión saliente'),
          ('incoming_commission', 'Comisión entrante')], string='Estado', history=True)
-    cs_contract_id = fields.Many2one('hr.contract', string='Contrato comisión', history=True)
-    first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name')
-    second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name')
-    last_name_1 = fields.Char(string=u'Primer apellido', related='employee_id.cv_last_name_1')
-    last_name_2 = fields.Char(string=u'Segundo apellido', related='employee_id.cv_last_name_2')
+    cs_contract_id = fields.Many2one('hr.contract', string='Contrato relacionado', history=True)
+    first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name', store=True)
+    second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name', store=True)
+    last_name_1 = fields.Char(string=u'Primer apellido', related='employee_id.cv_last_name_1', store=True)
+    last_name_2 = fields.Char(string=u'Segundo apellido', related='employee_id.cv_last_name_2', store=True)
     emissor_country_id = fields.Many2one('res.country', string=u'País emisor del documento',
-                                         related='employee_id.cv_emissor_country_id')
+                                         related='employee_id.cv_emissor_country_id', store=True)
     document_type_id = fields.Many2one('onsc.cv.document.type', string=u'Tipo de documento',
-                                       related='employee_id.cv_document_type_id')
-    nro_doc = fields.Char(u'Número de documento', related='employee_id.cv_nro_doc')
+                                       related='employee_id.cv_document_type_id', store=True)
+    nro_doc = fields.Char(u'Número de documento', related='employee_id.cv_nro_doc', store=True)
     program = fields.Char(string='Programa', history=True)
     project = fields.Char(string='Proyecto', history=True)
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', history=True)

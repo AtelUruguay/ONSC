@@ -26,7 +26,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
         IntegrationError = self.env['onsc.legajo.integration.error']
         ONSCLegajoClient = soap_client.ONSCLegajoClient()
         try:
-            response = ONSCLegajoClient.get_response(client, parameter, values)
+            response = ONSCLegajoClient.get_response(client, parameter, values, self._context.get('simpleWsdl', False))
         except Exception as e:
             self._process_servicecall_error(e, origin_name, integration_error)
             altas_vl = self._context.get('altas_vl', self.env['onsc.legajo.alta.vl'])
@@ -87,6 +87,8 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                     long_description
                 )
                 return long_description
+        elif len(response) > 0 and isinstance(response, list):
+            return self._populate_from_syncronization(response)
         return "No se obtuvo respuesta del WS"
 
     def _populate_from_syncronization(self, response):
