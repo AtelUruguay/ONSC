@@ -4,6 +4,7 @@ import json
 from dateutil.relativedelta import relativedelta
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -226,16 +227,23 @@ class ONSCLegajoCambioUO(models.Model):
     def action_confirm(self):
         self.ensure_one()
         Job = self.env['hr.job']
-        if self.env.user.employee_id.id == self.employee_id.id:
-            raise ValidationError(_("No se puede confirmar un traslado a si mismo"))
-
+        self._validate_confirm()
         self.contract_id.suspend_security().write({'eff_date': self.date_start, 'occupation_id': self.occupation_id.id})
-        self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
-            {'end_date': self.date_start - relativedelta(days=1)})
+        job = self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False)
+        notify = False
+        if job:
+            if job.start_date == self.date_start:
+                Job.write({'end_date': self.date_start, 'active': False})
+                notify = True
+            else:
+                Job.write({'end_date': self.date_start - relativedelta(days=1)})
+
         Job.suspend_security().create_job(self.contract_id, self.department_id,
                                           self.date_start, self.security_job_id)
-
         self.write({'state': 'confirmado'})
+        if notify:
+            return warning_response(
+                _(u"No pueden existir dos puestos activos para el mismo contrato, se inactivará el puesto anterior"))
 
     def action_show_organigram(self):
         return {
@@ -253,6 +261,23 @@ class ONSCLegajoCambioUO(models.Model):
                 'ue': self.department_id.operating_unit_id.display_name,
             },
         }
+
+    def _validate_confirm(self):
+        message = []
+        if self.env.user.employee_id.id == self.employee_id.id:
+            raise ValidationError(_("No se puede confirmar un traslado a si mismo"))
+
+        for required_field in ['department_id', 'security_job_id', 'occupation_id']:
+            if not eval('self.%s' % required_field):
+                message.append(self._fields[required_field].string)
+
+        if message:
+            fields_str = '\n'.join(message)
+            message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
+            raise ValidationError(_(message))
+
+        if self.date_start < self.contract_id.date_start:
+            raise ValidationError(_("La fecha desde está fuera del rango de fechas del contrato"))
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
