@@ -19,58 +19,57 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
 
         wsclient = self._get_client(parameter, 'WS6.1', integration_error)
         Employee = self.env['hr.employee']
-        for record in Employee.suspend_security().search([('notify_sgh', '=', True)]):
+        with self._cr.savepoint():
+            for record in Employee.suspend_security().search([('notify_sgh', '=', True)]):
+                if record.cv_address_street_id:
+                    calleCod = int(record.cv_address_street_id.code)
+                elif record.cv_address_street:
+                    calleCod = int(record.cv_address_street)
+                else:
+                    calleCod = 9999999999
 
-            if record.cv_address_street_id:
-                calleCod = int(record.cv_address_street_id.code)
-            elif record.cv_address_street:
-                calleCod = int(record.cv_address_street)
-            else:
-                calleCod = 9999999999
+                data = {
+                    'cedula': int(record.cv_nro_doc[:-1]),
+                    'digitoVerificador': int(record.cv_nro_doc[-1]),
+                    'primerApellido': record.cv_last_name_1[:20],
+                    'primerNombre': record.cv_first_name[:20],
+                    'sexo': 'M' if record.cv_sex == 'male' else 'F',
+                    'codigoEstadoCivil': record.marital_status_id and int(record.marital_status_id.code) or 99,
+                    'tipoCiudadania': 'N',
+                    'serieCredencial': record.crendencial_serie,
+                    'numeroCredencial': int(record.credential_number),
+                    'localidadCod': record.cv_address_location_id and int(
+                        record.cv_address_location_id.other_code) or 9999999999,
+                    'calleCod': calleCod,
+                    'mutuCod': record.health_provider_id and int(record.health_provider_id.code) or 99,
+                    'bis': 1 if record.cv_address_is_cv_bis else 0
+                }
 
-            data = {
-                'cedula': int(record.cv_nro_doc[:-1]),
-                'digitoVerificador': int(record.cv_nro_doc[-1]),
-                'primerApellido': record.cv_last_name_1[:20],
-                'primerNombre': record.cv_first_name[:20],
-                'sexo': 'M' if record.cv_sex == 'male' else 'F',
-                'codigoEstadoCivil': record.marital_status_id and int(record.marital_status_id.code) or 99,
-                'tipoCiudadania': 'N',
-                'serieCredencial': record.crendencial_serie,
-                'numeroCredencial': int(record.credential_number),
-                'localidadCod': record.cv_address_location_id and int(
-                    record.cv_address_location_id.other_code) or 9999999999,
-                'calleCod': calleCod,
-                'mutuCod': record.health_provider_id and int(record.health_provider_id.code) or 99,
-                'bis': 1 if record.cv_address_is_cv_bis else 0
-            }
-
-            if record.cv_last_name_2:
-                data.update({'segundoApellido': record.cv_last_name_2[:20]})
-            if record.cv_second_name:
-                data.update({'segundoNombre': record.cv_second_name[:20]})
-            if record.cv_birthdate:
-                data.update({'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y')})
-            if record.country_of_birth_id:
-                data.update({'lugarDeNacimiento': record.country_of_birth_id.name})
-            if record.personal_phone:
-                data.update({'telefonoAlternativo': record.personal_phone})
-            if record.mobile_phone:
-                data.update({'telefonoMovil': record.mobile_phone})
-            if record.email:
-                data.update({'eMail': record.email})
-            data = self._get_data_address(record, data)
-            _logger.info('******************WS6.1')
-            _logger.info(data)
-            _logger.info('******************WS6.1')
-            return self.with_context(employee=record, log_info=log_info).suspend_security()._syncronize(
-                wsclient,
-                parameter, 'WS6.1',
-                integration_error,
-                data)
+                if record.cv_last_name_2:
+                    data.update({'segundoApellido': record.cv_last_name_2[:20]})
+                if record.cv_second_name:
+                    data.update({'segundoNombre': record.cv_second_name[:20]})
+                if record.cv_birthdate:
+                    data.update({'fechaDeNacimiento': record.cv_birthdate.strftime('%d/%m/%Y')})
+                if record.country_of_birth_id:
+                    data.update({'lugarDeNacimiento': record.country_of_birth_id.name})
+                if record.personal_phone:
+                    data.update({'telefonoAlternativo': record.personal_phone})
+                if record.mobile_phone:
+                    data.update({'telefonoMovil': record.mobile_phone})
+                if record.email:
+                    data.update({'eMail': record.email})
+                data = self._get_data_address(record, data)
+                _logger.info('******************WS6.1')
+                _logger.info(data)
+                _logger.info('******************WS6.1')
+                self.with_context(employee=record, log_info=log_info).suspend_security()._syncronize(
+                    wsclient,
+                    parameter, 'WS6.1',
+                    integration_error,
+                    data)
 
     def _get_data_address(self, record, data):
-
         if record.cv_address_street2_id:
             data.update({'callCodEntre1': int(record.cv_address_street2_id.code)})
         else:
@@ -113,7 +112,6 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                                     long_description=long_description)
 
     def _process_servicecall_error(self, exception, origin_name, integration_error, long_description=''):
-
         super(ONSCLegajoAbstractSyncWS6_1, self)._process_servicecall_error(exception, origin_name, integration_error,
                                                                             long_description)
 
@@ -128,7 +126,6 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
 
         else:
             long_description = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
-
             super(ONSCLegajoAbstractSyncWS6_1, self)._process_response_witherror(response,
                                                                                  origin_name,
                                                                                  integration_error,
