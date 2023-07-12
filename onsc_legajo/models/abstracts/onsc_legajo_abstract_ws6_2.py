@@ -43,7 +43,7 @@ class ONSCLegajoAbstractSyncWS6_2(models.AbstractModel):
                     _logger.info(data)
                     _logger.info('******************WS6.2')
 
-                    return self.with_context(contract=record, log_info=log_info).suspend_security()._syncronize(
+                    self.with_context(contract=record, log_info=log_info).suspend_security()._syncronize(
                         wsclient,
                         parameter, 'WS6.2',
                         WS6_2_9004,
