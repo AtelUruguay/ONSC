@@ -15,35 +15,48 @@ class ONSCLegajoAbstractSyncWS6_2(models.AbstractModel):
     @api.model
     def syncronize(self, log_info=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS6_2_modificacionDatosFuncionario')
-        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS6_2_9005")
-
-        wsclient = self._get_client(parameter, 'WS6.2', integration_error)
+        WS6_2_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS6_2_9004")
+        WS6_2_9005 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS6_2_9005")
+        wsclient = self._get_client(parameter, 'WS6.2', WS6_2_9005)
 
         Contract = self.env['hr.contract']
-        for record in Contract.suspend_security().search([('notify_sgh', '=', True)]):
-            Job = record.job_ids.filtered(lambda x: x.end_date is False)
-            data = {
-                'cedula': int(record.employee_id.cv_nro_doc[:-1], 16),
-                'secPlaza': int(record.sec_position),
-                'nroPlaza': record.workplace,
-                'idPuesto': record.position
-            }
-            if Job.department_id:
-                data.update({'uo': Job.department_id.code})
-            if Job.security_job_id:
-                data.update({'responsableUO': 'S' if Job.security_job_id.is_uo_manager else 'N'})
-            if record.occupation_id:
-                data.update({'codigoOcupacion': record.occupation_id.code})
+        with self._cr.savepoint():
+            for record in Contract.suspend_security().search([('notify_sgh', '=', True)]):
+                try:
+                    job = record.job_ids.filtered(lambda x: x.end_date is False)
+                    if len(job) > 1:
+                        job = job[0]
+                    data = {
+                        'cedula': int(record.employee_id.cv_nro_doc),
+                        'secPlaza': int(record.sec_position),
+                        'nroPlaza': record.workplace,
+                        'idPuesto': record.position
+                    }
+                    if job.department_id:
+                        data.update({'uo': job.department_id.code})
+                    if job.security_job_id:
+                        data.update({'responsableUO': job.security_job_id.is_uo_manager and 'S' or 'N'})
+                    if record.occupation_id:
+                        data.update({'codigoOcupacion': record.occupation_id.code})
 
-            _logger.info('******************WS6.2')
-            _logger.info(data)
-            _logger.info('******************WS6.2')
+                    _logger.info('******************WS6.2')
+                    _logger.info(data)
+                    _logger.info('******************WS6.2')
 
-            return self.with_context(contract=record, log_info=log_info).suspend_security()._syncronize(
-                wsclient,
-                parameter, 'WS6.2',
-                integration_error,
-                data)
+                    return self.with_context(contract=record, log_info=log_info).suspend_security()._syncronize(
+                        wsclient,
+                        parameter, 'WS6.2',
+                        WS6_2_9004,
+                        data)
+                except Exception as e:
+                    long_description = "Contrato: %s, Error al sincronizar WS6.2: %s" % (
+                        record.display_name,
+                        tools.ustr(e)
+                    )
+                    _logger.warning(long_description)
+                    self.create_new_log(origin='WS6.2', type='error',
+                                        integration_log=WS6_2_9004,
+                                        long_description=long_description)
 
     def _populate_from_syncronization(self, response):
         with self._cr.savepoint():
@@ -52,11 +65,10 @@ class ONSCLegajoAbstractSyncWS6_2(models.AbstractModel):
                 "onsc_legajo.onsc_legajo_integration_error_WS6_2_9004")
             try:
                 contract.write({'notify_sgh': False})
-
             except Exception as e:
                 long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
                 _logger.warning(long_description)
-                self.create_new_log(origin='WS6.1', type='error',
+                self.create_new_log(origin='WS6.2', type='error',
                                     integration_log=onsc_legajo_integration_error_WS6_2_9004,
                                     long_description=long_description)
 
@@ -71,8 +83,10 @@ class ONSCLegajoAbstractSyncWS6_2(models.AbstractModel):
             result_error_code = response.codigo
             error = IntegrationError.search([('integration_code', '=', integration_error.integration_code),
                                              ('code_error', '=', str(result_error_code))], limit=1)
+            contract = self._context.get('contract')
+            _long_description = 'Funcionario %s, %s' % (contract.display_name, response.mensaje)
             self.create_new_log(origin=origin_name, type='error', integration_log=error or integration_error,
-                                ws_tuple=False, long_description=response.mensaje)
+                                ws_tuple=False, long_description=_long_description)
 
         else:
             long_description = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."

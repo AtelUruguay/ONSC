@@ -203,8 +203,11 @@ class ONSCLegajoCambioUO(models.Model):
             contract_id = contract or self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
+            args = []
             if inciso_id:
-                args = [('inciso_id', '=', inciso_id.id)]
+                args = expression.AND([[
+                    ('inciso_id', '=', inciso_id.id)
+                ], args])
             if operating_unit_id:
                 args = expression.AND([[
                     ('operating_unit_id', '=', operating_unit_id.id)
