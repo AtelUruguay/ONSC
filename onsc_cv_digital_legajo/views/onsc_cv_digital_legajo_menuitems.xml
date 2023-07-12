@@ -12,7 +12,7 @@
               groups="onsc_cv_digital_legajo.group_legajo_validador_doc_config"
               action="onsc_cv_digital.onsc_cv_documentary_validation_config_action"
               parent="onsc_legajo.onsc_legajo_settings_menu"
-              sequence="1"/>
+              sequence="3"/>
 
     <menuitem id="onsc_legajo_mass_upload_alta_vl_menu"
               name="Alta masiva VL"

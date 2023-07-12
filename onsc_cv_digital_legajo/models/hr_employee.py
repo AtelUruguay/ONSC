@@ -53,6 +53,10 @@ class HrEmployee(models.Model):
                                  store=True,
                                  history=True)
     # TODO: SI ERES EMPLEADO SACAR DE AHÍ LA INFO
+    country_of_birth_id = fields.Many2one("res.country",
+                                          string="País de nacimiento",
+                                          related='cv_digital_id.country_of_birth_id',
+                                          store=True)
     cv_birthdate = fields.Date(u'Fecha de nacimiento',
                                related='cv_digital_id.partner_id.cv_birthdate',
                                store=True,

@@ -50,13 +50,20 @@ class ONSCLegajoClient():
             raise ValidationError(_("No se pudo establecer la conexión con el servicio"))
         return client
 
-    def get_response(self, client, ws_url, values):
+    def get_response(self, client, ws_url, values, simpleWsdl=False):
         """
         """
         ws_url_splitted = ws_url.split(';')
         method = ws_url_splitted[1]
-        if len(values):
+        if len(values) and not simpleWsdl:
             url = 'client.service.%s(values)' % method
+        elif len(values):
+            simple_params = []
+            for key, value in values.items():
+                if isinstance(value, str):
+                    simple_params.append("%s = '%s'" % (key, value))
+            simple_param_str = ', '.join(simple_params)
+            url = "client.service.%s(%s)" % (method, simple_param_str)
         else:
             url = 'client.service.%s()' % method
         _logger.warning('*********WS Request**********')
