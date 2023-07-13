@@ -14,3 +14,7 @@ class ResCompany(models.Model):
         "onsc.legajo.causes.discharge",
         string="Causal de egreso por Transformación",
         ondelete='restrict')
+    reestructura_causes_discharge_id = fields.Many2one(
+        "onsc.legajo.causes.discharge",
+        string="Causal de egreso por Reestructura",
+        ondelete='restrict')

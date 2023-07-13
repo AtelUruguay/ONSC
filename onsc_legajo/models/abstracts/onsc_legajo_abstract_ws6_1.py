@@ -30,6 +30,11 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                     else:
                         calleCod = 9999999999
 
+                    if record.cv_address_location_id:
+                        localidadCod = int(record.cv_address_location_id.other_code)
+                    else:
+                        localidadCod = 9999999999
+
                     data = {
                         'cedula': int(record.cv_nro_doc[:-1]),
                         'digitoVerificador': int(record.cv_nro_doc[-1]),
@@ -40,13 +45,11 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                         'tipoCiudadania': 'N',
                         'serieCredencial': record.crendencial_serie,
                         'numeroCredencial': int(record.credential_number),
-                        'localidadCod': record.cv_address_location_id and int(
-                            record.cv_address_location_id.other_code) or 9999999999,
+                        'localidadCod': localidadCod,
                         'calleCod': calleCod,
                         'mutuCod': record.health_provider_id and int(record.health_provider_id.code) or 99,
                         'bis': 1 if record.cv_address_is_cv_bis else 0
                     }
-
                     if record.cv_last_name_2:
                         data.update({'segundoApellido': record.cv_last_name_2[:20]})
                     if record.cv_second_name:

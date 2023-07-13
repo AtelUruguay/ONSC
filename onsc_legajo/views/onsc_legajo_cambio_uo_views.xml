@@ -77,6 +77,7 @@
                                 <field name="show_contract" invisible="1"/>
                                 <field name="contract_id_domain" invisible="1"/>
                                 <field name="contract_id" context="{'show_descriptors':True}"
+                                       force_save="1"
                                        domain="contract_id_domain"
                                        attrs="{'readonly': [('show_contract', '=', False)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>

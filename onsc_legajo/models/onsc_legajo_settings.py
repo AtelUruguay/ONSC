@@ -22,6 +22,13 @@ class ONSCCVSettings(models.TransientModel):
         readonly=False,
         related_sudo=True
     )
+    reestructura_causes_discharge_id = fields.Many2one(
+        "onsc.legajo.causes.discharge",
+        related="company_id.reestructura_causes_discharge_id",
+        string="Causal de egreso por Reestructura",
+        readonly=False,
+        related_sudo=True
+    )
 
     def execute(self):
         return {
