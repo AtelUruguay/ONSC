@@ -23,9 +23,21 @@ STATES = [
 
 class ONSCLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.alta.vl'
-    _inherit = ['onsc.partner.common.data', 'mail.thread', 'mail.activity.mixin', 'onsc.legajo.actions.common.data']
+    _inherit = [
+        'onsc.partner.common.data',
+        'mail.thread',
+        'mail.activity.mixin',
+        'onsc.legajo.actions.common.data',
+        'onsc.legajo.abstract.opbase.security'
+    ]
     _description = 'Alta de vínculo laboral'
     _order = 'create_date DESC'
+
+    def _is_group_inciso_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')
+
+    def _is_group_ue_security(self):
+        self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -47,43 +59,6 @@ class ONSCLegajoAltaVL(models.Model):
                 res[field]['searchable'] = False
                 res[field]['sortable'] = False
         return res
-
-    def _get_domain(self, args):
-        args = expression.AND([[
-            ('partner_id', '!=', self.env.user.partner_id.id)
-        ], args])
-        if self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso'):
-            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
-            if inciso_id:
-                args = expression.AND([[
-                    ('inciso_id', '=', inciso_id.id)
-                ], args])
-        elif self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue'):
-            contract_id = self.env.user.employee_id.job_id.contract_id
-            inciso_id = contract_id.inciso_id
-            operating_unit_id = contract_id.operating_unit_id
-            if inciso_id:
-                args = expression.AND([[
-                    ('inciso_id', '=', inciso_id.id)
-                ], args])
-            if operating_unit_id:
-                args = expression.AND([[
-                    ('operating_unit_id', '=', operating_unit_id.id)
-                ], args])
-        return args
-
-    @api.model
-    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_from_menu'):
-            args = self._get_domain(args)
-        return super(ONSCLegajoAltaVL, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-                                                     access_rights_uid=access_rights_uid)
-
-    @api.model
-    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_from_menu'):
-            domain = self._get_domain(domain)
-        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     @api.model
     def default_get(self, fields):
