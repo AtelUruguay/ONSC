@@ -183,8 +183,12 @@ class HrEmployee(models.Model):
                 'eff_date': fields.Date.today()
             })
 
+        if len(self) == 1:
+            values_filtered = self._get_really_values_changed(values)
+        else:
+            values_filtered = values
         for modified_field in MODIFIED_FIELDS:
-            if modified_field in values:
+            if modified_field in values_filtered:
                 values.update({
                     'notify_sgh': True
                 })
@@ -204,14 +208,9 @@ class HrEmployee(models.Model):
         else:
             return super(HrEmployee, self).unlink()
 
-    @api.model
-    def get_history_record_action(self, history_id, res_id):
-        return super(HrEmployee, self.with_context(model_view_form_id=self.env.ref(
-            'onsc_legajo.onsc_legajo_hr_employee_form').id)).get_history_record_action(history_id, res_id)
-
     def action_view_attachment(self):
         self.ensure_one()
-        vals = {
+        return {
             'type': 'ir.actions.act_window',
             'view_mode': 'tree,form',
             'res_model': 'ir.attachment',
@@ -222,7 +221,32 @@ class HrEmployee(models.Model):
                 [self.env.ref('onsc_legajo.view_attachment_history_form').id, 'form'],
             ]
         }
-        return vals
+    @api.model
+    def get_history_record_action(self, history_id, res_id):
+        return super(HrEmployee, self.with_context(model_view_form_id=self.env.ref(
+            'onsc_legajo.onsc_legajo_hr_employee_form').id)).get_history_record_action(history_id, res_id)
+
+    def _get_really_values_changed(self, values):
+        """
+        FILTRA DE TODOS LOS VALORES QUE SE MANDAN A CAMBIAR EN UN EMPLEADO CUALES REALMENTE TIENEN DIFERENCIA
+        :param values: Dict of values, ejemplo: los que vienen en un write
+        :return: Dict of values: los que realmente cambiaron
+        """
+        values_filtered = {}
+        _fields_get = self.fields_get()
+        for key, value in values.items():
+            field_type = _fields_get.get(key).get('type')
+            if field_type in ('integer', 'binary', 'date', 'datetime'):
+                eval_str = "self.%s"
+            elif field_type == 'many2one':
+                eval_str = "self.%s.id"
+            elif field_type in ['many2many', 'one2many']:
+                eval_str = "self.%s.ids"
+            else:
+                eval_str = "self.%s"
+            if eval(eval_str % (key)) != value:
+                values_filtered.update({key: value})
+        return values_filtered
 
     # INTELIGENCIA DE ENTIDAD
     def _get_legajo_employee(self, emissor_country, document_type, partner_id):
