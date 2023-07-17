@@ -75,13 +75,21 @@
                         <group name="uo" string="Datos del Traslado">
                             <group name="uo_left">
                                 <field name="show_contract" invisible="1"/>
+                                <field name="show_job" invisible="1"/>
                                 <field name="contract_id_domain" invisible="1"/>
+                                <field name="job_id_domain" invisible="1"/>
                                 <field name="contract_id" context="{'show_descriptors':True}"
                                        force_save="1"
                                        domain="contract_id_domain"
                                        attrs="{'readonly': [('show_contract', '=', False)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="department_id_domain" invisible="1"/>
+                                <field name="job_id"
+                                       context="{'custom_display_name':True}"
+                                       force_save="1"
+                                       attrs="{'readonly': [('show_job', '=', False)],'required': [('show_job', '=', True)]}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                       domain="job_id_domain"/>
                                 <field name="date_start"/>
                                 <label for="department_id" string="UO"/>
                                 <div class="oe_inline">

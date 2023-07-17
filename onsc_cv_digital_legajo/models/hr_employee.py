@@ -14,7 +14,7 @@ class HrEmployee(models.Model):
     _name = "hr.employee"
     _inherit = ['hr.employee', 'onsc.cv.common.data', 'onsc.cv.legajo.abstract.common']
     _history_columns = [
-        'image_1920', 'avatar_128', 'photo_updated_date', 'cv_nro_doc', 'cv_expiration_date', 'document_identity_file',
+        'cv_nro_doc', 'cv_expiration_date', 'document_identity_file',
         'document_identity_filename', 'marital_status_id', 'digitized_document_file', 'digitized_document_filename',
         'status_civil_date',
         'cv_gender_id', 'gender_date',

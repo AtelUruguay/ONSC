@@ -26,10 +26,15 @@ class ONSCLegajoAbstractOpBaseSecurity(models.AbstractModel):
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
-    def _get_domain(self, args):
-        args = expression.AND([[
-            ('partner_id', '!=', self.env.user.partner_id.id)
-        ], args])
+    def _get_domain(self, args, use_employee=False):
+        if use_employee:
+            args = expression.AND([[
+                ('employee_id', '!=', self.env.user.employee_id.id)
+            ], args])
+        else:
+            args = expression.AND([[
+                ('partner_id', '!=', self.env.user.partner_id.id)
+            ], args])
         if self._is_group_inciso_security():
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:

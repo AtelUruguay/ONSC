@@ -114,6 +114,45 @@ class HrEmployee(models.Model):
         else:
             return super(HrEmployee, self).create(values)
 
+    def write(self, values):
+        if not self._context.get('consolidate_history_version'):
+            self = self.with_context(consolidate_history_version=str(fields.Datetime.now()))
+        history_fields = self.get_history_fields()
+        if not values.get('eff_date') and set(list(values)).intersection(set(history_fields)):
+            values.update({
+                'eff_date': fields.Date.today()
+            })
+
+        self._set_binary_history(values)
+        if self.env.context.get('is_legajo'):
+            res = super(HrEmployee, self.suspend_security()).write(values)
+        else:
+            res = super(HrEmployee, self).write(values)
+        for rec in self.filtered(lambda x: x.name != x.full_name and x.full_name):
+            rec.name = rec.full_name
+        self._notify_sgh(values)
+        return res
+    
+    def unlink(self):
+        if self.env.context.get('is_legajo'):
+            return super(HrEmployee, self.suspend_security()).unlink()
+        else:
+            return super(HrEmployee, self).unlink()
+
+    def action_view_attachment(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'tree,form',
+            'res_model': 'ir.attachment',
+            'domain': [('res_model', '=', 'hr.employee'), ('res_id', '=', self.id)],
+            'name': 'Histórico de archivos',
+            'views': [
+                [self.env.ref('onsc_legajo.view_attachment_history_tree').id, 'tree'],
+                [self.env.ref('onsc_legajo.view_attachment_history_form').id, 'form'],
+            ]
+        }
+
     def _set_binary_history(self, values):
         for rec in self:
             today = fields.Date.today()
@@ -173,54 +212,13 @@ class HrEmployee(models.Model):
                      'datas': rec.digitized_document_file, 'res_model': 'hr.employee',
                      'name_field': self._fields['digitized_document_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
-
-    def write(self, values):
-        if not self._context.get('consolidate_history_version'):
-            self = self.with_context(consolidate_history_version=str(fields.Datetime.now()))
-        history_fields = self.get_history_fields()
-        if not values.get('eff_date') and set(list(values)).intersection(set(history_fields)):
-            values.update({
-                'eff_date': fields.Date.today()
-            })
-
-        if len(self) == 1:
-            values_filtered = self._get_really_values_changed(values)
-        else:
-            values_filtered = values
-        for modified_field in MODIFIED_FIELDS:
-            if modified_field in values_filtered:
-                values.update({
-                    'notify_sgh': True
-                })
-
-        self._set_binary_history(values)
-        if self.env.context.get('is_legajo'):
-            res = super(HrEmployee, self.suspend_security()).write(values)
-        else:
-            res = super(HrEmployee, self).write(values)
-        for rec in self.filtered(lambda x: x.name != x.full_name and x.full_name):
-            rec.name = rec.full_name
-        return res
-
-    def unlink(self):
-        if self.env.context.get('is_legajo'):
-            return super(HrEmployee, self.suspend_security()).unlink()
-        else:
-            return super(HrEmployee, self).unlink()
-
-    def action_view_attachment(self):
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'view_mode': 'tree,form',
-            'res_model': 'ir.attachment',
-            'domain': [('res_model', '=', 'hr.employee'), ('res_id', '=', self.id)],
-            'name': 'Histórico de archivos',
-            'views': [
-                [self.env.ref('onsc_legajo.view_attachment_history_tree').id, 'tree'],
-                [self.env.ref('onsc_legajo.view_attachment_history_form').id, 'form'],
-            ]
-        }
+    
+    def _notify_sgh(self, values):
+        for record in self.filtered(lambda x: x.legajo_state == 'active'):
+            values_filtered = record._get_really_values_changed(values)
+            for modified_field in MODIFIED_FIELDS:
+                if modified_field in values_filtered:
+                    record.notify_sgh = True
     @api.model
     def get_history_record_action(self, history_id, res_id):
         return super(HrEmployee, self.with_context(model_view_form_id=self.env.ref(
