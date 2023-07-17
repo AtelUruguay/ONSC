@@ -164,10 +164,6 @@ class HrContract(models.Model):
             res.append((record.id, name))
         return res
 
-    @api.onchange('inciso_id')
-    def onchange_inciso(self):
-        self.operating_unit_id = False
-
     @api.depends('employee_id', 'position', 'workplace', 'sec_position', )
     def _compute_legajo_name(self):
         for rec in self:
@@ -208,10 +204,22 @@ class HrContract(models.Model):
         for rec in self:
             rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
 
+    @api.onchange('inciso_id')
+    def onchange_inciso(self):
+        self.operating_unit_id = False
+
     @api.model
-    def get_history_record_action(self, history_id, res_id):
-        return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
-            'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
+    def create(self, vals):
+        if not vals.get('name', False) and vals.get('employee_id', False) and vals.get('sec_position', False):
+            employee = self.env['hr.employee'].browse(vals.get('employee_id'))
+            vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
+
+        return super(HrContract, self).create(vals)
+
+    def write(self, values):
+        result = super(HrContract, self.suspend_security()).write(values)
+        self._notify_sgh(values)
+        return result
 
     def button_update_occupation(self):
         ctx = self._context.copy()
@@ -226,6 +234,11 @@ class HrContract(models.Model):
             'context': ctx,
         }
 
+    @api.model
+    def get_history_record_action(self, history_id, res_id):
+        return super(HrContract, self.with_context(model_view_form_id=self.env.ref(
+            'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
+
     def activate_legajo_contract(self, legajo_state='active'):
         self.write({'legajo_state': legajo_state})
 
@@ -236,21 +249,10 @@ class HrContract(models.Model):
         self.suspend_security().write(vals)
         self.suspend_security().job_ids.deactivate(date_end)
 
-    @api.model
-    def create(self, vals):
-        if not vals.get('name', False) and vals.get('employee_id', False) and vals.get('sec_position', False):
-            employee = self.env['hr.employee'].browse(vals.get('employee_id'))
-            vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
-
-        return super(HrContract, self).create(vals)
-
-    def write(self, values):
+    def _notify_sgh(self, values):
         for modified_field in ['sec_position', 'workplace', 'occupation_id']:
             if modified_field in values:
-                values.update({
-                    'notify_sgh': True
-                })
-        return super(HrContract, self.suspend_security()).write(values)
+                self.filtered(lambda x: x.legajo_state != 'baja').write({'notify_sgh': True})
 
 
 class HrContractHistory(models.Model):

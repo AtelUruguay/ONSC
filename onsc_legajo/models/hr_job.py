@@ -9,6 +9,22 @@ from odoo.exceptions import ValidationError
 
 class HrJob(models.Model):
     _inherit = 'hr.job'
+    _order = 'start_date desc'
+
+    def name_get(self):
+        res = []
+        for record in self:
+            if self._context.get('custom_display_name', False):
+                _custom_name = record._custom_display_name()
+            else:
+                _custom_name = record.name
+            res.append((record.id, _custom_name))
+        return res
+
+    def _custom_display_name(self):
+        return 'UO Origen: %s, Seg de puesto: %s ' % (
+            self.department_id.display_name,
+            self.security_job_id.display_name)
 
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict',
                                       tracking=True)
@@ -133,8 +149,9 @@ class HrJob(models.Model):
     def deactivate(self, date_end):
         self.suspend_security().filtered(lambda x: x.end_date is False).write({'end_date': date_end})
         self.suspend_security().onchange_end_date()
-        if date_end < fields.Date.today():
-            self.mapped('department_id').filtered(lambda x: x.manager_id.id or x.is_manager_reserved).write({
+        if date_end < fields.Date.today() and self.security_job_id.is_uo_manager:
+            self.suspend_security().mapped('department_id').filtered(
+                lambda x: x.manager_id.id or x.is_manager_reserved).write({
                 'manager_id': False,
                 'is_manager_reserved': False
             })
