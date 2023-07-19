@@ -21,7 +21,8 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
         wsclient = self._get_client(parameter, 'WS6.1', WS6_1_9005)
         Employee = self.env['hr.employee'].suspend_security()
         with self._cr.savepoint():
-            for record in Employee.search([('notify_sgh', '=', True)]):
+            Employee.search([('notify_sgh', '=', True), ('legajo_state', '!=', 'active')]).write({'notify_sgh': False})
+            for record in Employee.search([('notify_sgh', '=', True), ('legajo_state', '=', 'active')]):
                 try:
                     if record.cv_address_street_id:
                         calleCod = int(record.cv_address_street_id.code)
