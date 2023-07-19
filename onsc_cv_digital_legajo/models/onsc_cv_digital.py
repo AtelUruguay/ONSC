@@ -3,6 +3,7 @@
 
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_documentary_validation import \
     DOCUMENTARY_VALIDATION_STATES
+from odoo.addons.onsc_legajo.models.hr_employee import MODIFIED_FIELDS
 
 from odoo import fields, models, api, _
 
@@ -278,6 +279,21 @@ class ONSCCVDigital(models.Model):
             self.afro_descendant_date = False
             self.status_civil_date = False
             self.disability_date = False
+
+    def write(self, vals):
+        result = super(ONSCCVDigital, self).write(vals)
+        self._notify_sgh(vals)
+        return result
+
+    def _notify_sgh(self, values):
+        BaseUtils = self.env['onsc.base.utils'].sudo()
+        employees = self.env['hr.employee']
+        for record in self.filtered(lambda x: x.is_docket_active and x.employee_id):
+            values_filtered = BaseUtils.get_really_values_changed(record, values)
+            for modified_field in MODIFIED_FIELDS:
+                if modified_field in values_filtered:
+                    employees |= record.employee_id
+        employees.suspend_security().write({'notify_sgh': True})
 
     def button_legajo_update_documentary_validation_sections_tovalidate(self):
         self._compute_legajo_documentary_validation_state()
@@ -765,8 +781,6 @@ class ONSCCVInformationContact(models.Model):
 
     cv_digital_id = fields.Many2one('onsc.cv.digital', string=u'CV', required=True, index=True, ondelete='cascade')
     name_contact = fields.Char(string=u'Nombre de persona de contacto', required=True)
-    # TO-DO: Revisar este campo, No esta en catalogo
-    # link_people_contact_id = fields.Many2one("model", u"Vínculo con persona de contacto", required=True)
     prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
                                       default=lambda self: self.env['res.country.phone'].search(
                                           [('country_id.code', '=', 'UY')]), required=True)
