@@ -132,7 +132,7 @@ class HrEmployee(models.Model):
             rec.name = rec.full_name
         self._notify_sgh(values)
         return res
-    
+
     def unlink(self):
         if self.env.context.get('is_legajo'):
             return super(HrEmployee, self.suspend_security()).unlink()
@@ -212,13 +212,14 @@ class HrEmployee(models.Model):
                      'datas': rec.digitized_document_file, 'res_model': 'hr.employee',
                      'name_field': self._fields['digitized_document_file'].string,
                      'res_id': rec.id, 'type': 'binary'})
-    
+
     def _notify_sgh(self, values):
         for record in self.filtered(lambda x: x.legajo_state == 'active'):
             values_filtered = record._get_really_values_changed(values)
             for modified_field in MODIFIED_FIELDS:
                 if modified_field in values_filtered:
                     record.notify_sgh = True
+
     @api.model
     def get_history_record_action(self, history_id, res_id):
         return super(HrEmployee, self.with_context(model_view_form_id=self.env.ref(

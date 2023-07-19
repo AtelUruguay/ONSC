@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+     <record id="onsc_desempeno_skill_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.skill.tree</field>
+        <field name="model">onsc.desempeno.skill</field>
+        <field name="arch" type="xml">
+            <tree string="Competencias">
+                <field name="name"/>
+                <field name="definition"/>
+                <field name="behavior"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_desempeno_skill_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.skill.form</field>
+        <field name="model">onsc.desempeno.skill</field>
+        <field name="arch" type="xml">
+            <form string="Competencias">
+                <header/>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name"/>
+                            <field name="definition"/>
+                            <field name="behavior"/>
+                            <field name="dimension_id"/>
+                            <field name="level_id" />
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group/>
+                    </group>
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_desempeno_skill_action' model='ir.actions.act_window'>
+        <field name="name">Competencias</field>
+        <field name="res_model">onsc.desempeno.skill</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una nueva competencia
+            </p>
+        </field>
+    </record>
+</odoo>

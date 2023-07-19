@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <menuitem id="onsc_desempeno_root_menu"
+              name="Legajos"
+              web_icon="onsc_catalog,static/description/icon.png"
+              sequence="4"/>
+
+    <menuitem id="onsc_desempeno_catalog_menu"
+              name="Catálogos"
+              parent="onsc_desempeno_root_menu"
+              sequence="50"/>
+    <menuitem id="onsc_desempeno_skill_action"
+              name="Competencias"
+              action="onsc_legajo_office_action"
+              parent="onsc_desempeno_catalog_menu"
+              groups="onsc_desempeno.group_desempeno_administrador"
+              sequence="1"/>
+    <menuitem id="onsc_desempeno_dimension_menu"
+              name="Dimensiones"
+              action="onsc_desempeno_dimension_action"
+              parent="onsc_desempeno_catalog_menu"
+              groups="onsc_desempeno.group_desempeno_administrador"
+              sequence="5"/>
+     <menuitem id="onsc_desempeno_degree_progress_menu"
+              name="Grados de avance"
+              action="onsc_desempeno_degree_action"
+              parent="onsc_desempeno_catalog_menu"
+              groups="onsc_desempeno.group_desempeno_administrador"
+              sequence="10"/>
+    <menuitem id="onsc_desempeno_degree_menu"
+              name="Grados de desarrollo"
+              action="onsc_desempeno_degree_action"
+              parent="onsc_desempeno_catalog_menu"
+              groups="onsc_desempeno.group_desempeno_administrador"
+              sequence="10"/>
+    <menuitem id="onsc_desempeno_level_menu"
+              name="Niveles"
+              action="onsc_desempeno_level_action"
+              parent="onsc_desempeno_catalog_menu"
+              groups="onsc_desempeno.group_desempeno_administrador"
+              sequence="15"/>
+
+
+</odoo>
