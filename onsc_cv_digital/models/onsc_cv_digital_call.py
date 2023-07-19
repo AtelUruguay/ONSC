@@ -248,7 +248,7 @@ class ONSCCVDigitalCall(models.Model):
     def _compute_show_victim_info(self):
         conditional_show = self._context.get('is_call_documentary_validation', False)
         for record in self:
-            first_condition = conditional_show and record.is_public_information_victim_violent or record.is_victi
+            first_condition = conditional_show and record.is_public_information_victim_violent or record.is_victim_violent
             record.show_victim_info = first_condition or not conditional_show
 
     def _compute_show_race_info(self):
