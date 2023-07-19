@@ -21,7 +21,11 @@ class ONSCLegajoAbstractSyncWS6_2(models.AbstractModel):
 
         Contract = self.env['hr.contract']
         with self._cr.savepoint():
-            for record in Contract.suspend_security().search([('notify_sgh', '=', True)]):
+            Contract.suspend_security().search([
+                ('notify_sgh', '=', True),
+                ('legajo_state', '=', 'baja')]).write({'notify_sgh': False})
+            for record in Contract.suspend_security().search(
+                    [('notify_sgh', '=', True), ('legajo_state', '!=', 'baja')]):
                 try:
                     job = record.job_ids.filtered(lambda x: x.end_date is False)
                     if len(job) > 1:
