@@ -214,8 +214,9 @@ class HrEmployee(models.Model):
                      'res_id': rec.id, 'type': 'binary'})
 
     def _notify_sgh(self, values):
+        BaseUtils = self.env['onsc.base.utils'].sudo()
         for record in self.filtered(lambda x: x.legajo_state == 'active'):
-            values_filtered = record._get_really_values_changed(values)
+            values_filtered = BaseUtils.get_really_values_changed(record, values)
             for modified_field in MODIFIED_FIELDS:
                 if modified_field in values_filtered:
                     record.notify_sgh = True
