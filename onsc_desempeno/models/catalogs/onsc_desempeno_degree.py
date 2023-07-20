@@ -16,7 +16,7 @@ class ONSCDesempenoDegree(models.Model):
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
-        ('description_uniq', 'unique(description")', u'El nombre del grado de desarrollo debe ser único'),
+        ('description_uniq', 'unique(description)', u'El nombre del grado de desarrollo debe ser único'),
     ]
 
     @api.depends('description', 'frecuency')

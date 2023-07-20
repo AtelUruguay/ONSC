@@ -10,12 +10,12 @@ class ONSCDesempenoDevelopmentMeans(models.Model):
     _name = 'onsc.desempeno.development_means'
     _description = 'Medios de desarrollo'
 
-    name = fields.Char(string="Medios de desarrollo", requiered=True)
-    description = fields.String(string="Descripción")
+    name = fields.Char(string="Medios de desarrollo", required=True)
+    description = fields.Char(string="Descripción")
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name")', u'El nombre del medios de desarrollo debe ser único'),
+        ('name_uniq', 'unique(name)', u'El nombre del medios de desarrollo debe ser único'),
     ]
 
     def toggle_active(self):

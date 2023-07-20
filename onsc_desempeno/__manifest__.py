@@ -11,12 +11,15 @@ ONSC - Gestión de Desempeño
     'category': 'ONSC',
     'depends': ['hr', 'mail', 'operating_unit', 'model_history', 'base_suspend_security', 'onsc_base', 'onsc_catalog'],
     'data': [
-        'views/catalogs/onsc_desempeno_dimension_views.xml'
-        'views/catalogs/onsc_desempeno_skill_views.xml'
-        'views/catalogs/onsc_desempeno_level_views.xml'
-        'views/catalogs/onsc_desempeno_degree_views.xml'
-        'views/catalogs/onsc_desempeno_degree_progress_views.xml'
-        'views/catalogs/onsc_desempeno_development_means_views.xml'
+        'security/onsc_desempeno_security.xml',
+        'security/ir.model.access.csv',
+        'views/catalogs/onsc_desempeno_dimension_views.xml',
+        'views/catalogs/onsc_desempeno_skill_views.xml',
+        'views/catalogs/onsc_desempeno_level_views.xml',
+        'views/catalogs/onsc_desempeno_degree_views.xml',
+        'views/catalogs/onsc_desempeno_degree_progress_views.xml',
+        'views/catalogs/onsc_desempeno_development_means_views.xml',
+        'views/catalogs/onsc_desempeno_reason_change_evaluator_views.xml',
         'views/onsc_desempeno_menuitems.xml'
     ],
     'demo': [],

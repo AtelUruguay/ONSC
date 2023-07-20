@@ -8,12 +8,13 @@ _logger = logging.getLogger(__name__)
 
 class ONSCDesempenoDimension(models.Model):
     _name = 'onsc.desempeno.degree_progress'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Grados de avance'
 
     name = fields.Char(string="Nombre grado de avance", compute="_compute_name", store=True)
-    description = fields.String(string="Grados de avance", tracking=True, requierd=True)
+    description = fields.Char(string="Grados de avance", tracking=True, required=True)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
-    porcent = fields.Float(string="Porcentaje", tracking=True, requierd=True)
+    porcent = fields.Float(string="Porcentaje", tracking=True, required=True)
     active = fields.Boolean(string="Activo", tracking=True, default=True)
 
     _sql_constraints = [
@@ -23,7 +24,7 @@ class ONSCDesempenoDimension(models.Model):
     @api.depends('description', 'porcent')
     def _compute_name(self):
         for record in self:
-            if record.description and record.frecuency:
+            if record.description and record.porcent:
                 record.name = '%s ( %s )' % (record.description, record.porcent)
             else:
                 record.name = ''

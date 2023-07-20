@@ -19,7 +19,7 @@
             <form string="Dimensiones">
                 <header/>
                 <sheet>
-                    <group>
+                     <group>
                         <group>
                             <field name="name"/>
                             <field name="definition"/>

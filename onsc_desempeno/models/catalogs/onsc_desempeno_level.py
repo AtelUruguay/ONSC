@@ -10,12 +10,12 @@ class ONSCDesempenoLevel(models.Model):
     _name = 'onsc.desempeno.level'
     _description = 'Niveles'
 
-    name = fields.Char(string="Niveles", requiered=True)
-    definition = fields.String(string="Definición del nivel")
+    name = fields.Char(string="Niveles", required=True)
+    definition = fields.Char(string="Definición del nivel")
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
-        ('name_uniq', 'unique(name")', u'El nombre del nivel debe ser único'),
+        ('name_uniq', 'unique(name)', u'El nombre del nivel debe ser único'),
     ]
 
     def toggle_active(self):

@@ -5,9 +5,9 @@
         <field name="model">onsc.desempeno.skill</field>
         <field name="arch" type="xml">
             <tree string="Competencias">
-                <field name="name"/>
-                <field name="definition"/>
-                <field name="behavior"/>
+                   <field name="name"/>
+                   <field name="definition"/>
+                   <field name="behavior"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -25,8 +25,8 @@
                             <field name="name"/>
                             <field name="definition"/>
                             <field name="behavior"/>
-                            <field name="dimension_id"/>
-                            <field name="level_id" />
+                            <field name="dimension_id"   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="level_id"   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                             <field name="active" invisible="1"/>
                         </group>
                         <group/>
