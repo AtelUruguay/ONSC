@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-     <record id="onsc_desempeno_reason_change_evaluator_tree" model="ir.ui.view">
+    <record id="onsc_desempeno_reason_change_evaluator_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.reason_change_evaluator.search</field>
+        <field name="model">onsc.desempeno.reason_change_evaluator</field>
+        <field name="arch" type="xml">
+            <search string="Motivos de cambio de evaluador">
+                <field name="name"/>
+                <field name="agree"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_desempeno_reason_change_evaluator_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.reason_change_evaluator.tree</field>
         <field name="model">onsc.desempeno.reason_change_evaluator</field>
         <field name="arch" type="xml">
@@ -31,7 +41,6 @@
             </form>
         </field>
     </record>
-
 
 
     <record id='onsc_desempeno_reason_change_evaluator_action' model='ir.actions.act_window'>

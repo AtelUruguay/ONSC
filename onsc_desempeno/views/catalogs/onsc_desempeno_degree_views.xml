@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-     <record id="onsc_desempeno_degree_tree" model="ir.ui.view">
+    <record id="onsc_desempeno_degree_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.degree.search</field>
+        <field name="model">onsc.desempeno.degree</field>
+        <field name="arch" type="xml">
+            <search string="Grados de desarrollo">
+                <field name="description"/>
+                <field name="frecuency"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_desempeno_degree_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.degree.tree</field>
         <field name="model">onsc.desempeno.degree</field>
         <field name="arch" type="xml">

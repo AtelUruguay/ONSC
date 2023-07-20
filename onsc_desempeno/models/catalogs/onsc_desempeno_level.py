@@ -22,7 +22,7 @@ class ONSCDesempenoLevel(models.Model):
         return super(ONSCDesempenoLevel, self.with_context(no_check_write=True)).toggle_active()
 
 
-class OperatingUnit(models.Model):
+class ONSCCatalogOccupationDesempeno(models.Model):
     _inherit = ['onsc.catalog.occupation']
     _name = 'onsc.catalog.occupation'
 

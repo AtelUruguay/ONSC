@@ -6,7 +6,7 @@ from odoo import fields, models, api
 _logger = logging.getLogger(__name__)
 
 
-class ONSCDesempenoDimension(models.Model):
+class ONSCDesempenoDegreeProgress(models.Model):
     _name = 'onsc.desempeno.degree_progress'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Grados de avance'
@@ -30,4 +30,4 @@ class ONSCDesempenoDimension(models.Model):
                 record.name = ''
 
     def toggle_active(self):
-        return super(ONSCDesempenoDimension, self.with_context(no_check_write=True)).toggle_active()
+        return super(ONSCDesempenoDegreeProgress, self.with_context(no_check_write=True)).toggle_active()

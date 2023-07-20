@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-     <record id="onsc_desempeno_dimension_tree" model="ir.ui.view">
+    <record id="onsc_desempeno_dimension_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.dimension.search</field>
+        <field name="model">onsc.desempeno.dimension</field>
+        <field name="arch" type="xml">
+            <search string="Dimensiones">
+                <field name="name"/>
+                <field name="definition"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_desempeno_dimension_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.dimension.tree</field>
         <field name="model">onsc.desempeno.dimension</field>
         <field name="arch" type="xml">
@@ -19,7 +29,7 @@
             <form string="Dimensiones">
                 <header/>
                 <sheet>
-                     <group>
+                    <group>
                         <group>
                             <field name="name"/>
                             <field name="definition"/>

@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-     <record id="onsc_desempeno_development_means_tree" model="ir.ui.view">
+    <record id="onsc_desempeno_development_means_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.development_means.search</field>
+        <field name="model">onsc.desempeno.development_means</field>
+        <field name="arch" type="xml">
+            <search string="Medios de desarrollo">
+                <field name="name"/>
+                <field name="description"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_desempeno_development_means_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.development_means.tree</field>
         <field name="model">onsc.desempeno.development_means</field>
         <field name="arch" type="xml">

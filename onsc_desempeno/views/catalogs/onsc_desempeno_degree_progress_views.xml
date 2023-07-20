@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <record id="onsc_desempeno_degree_progress_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.degree_progress.search</field>
+        <field name="model">onsc.desempeno.degree_progress</field>
+        <field name="arch" type="xml">
+            <search string="Grados de avance">
+                <field name="description"/>
+                <field name="porcent"/>
+            </search>
+        </field>
+    </record>
     <record id="onsc_desempeno_degree_progress_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.degree_progress.tree</field>
         <field name="model">onsc.desempeno.degree_progress</field>

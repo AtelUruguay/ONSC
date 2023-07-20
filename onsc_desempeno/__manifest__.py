@@ -9,7 +9,7 @@ ONSC - Gestión de Desempeño
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['hr', 'mail', 'operating_unit', 'model_history', 'base_suspend_security', 'onsc_base', 'onsc_catalog'],
+    'depends': ['mail',  'model_history', 'base_suspend_security', 'onsc_base', 'onsc_catalog'],
     'data': [
         'security/onsc_desempeno_security.xml',
         'security/ir.model.access.csv',
