@@ -6,7 +6,6 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-from odoo.osv import expression
 
 STATES = [
     ('borrador', 'Borrador'),

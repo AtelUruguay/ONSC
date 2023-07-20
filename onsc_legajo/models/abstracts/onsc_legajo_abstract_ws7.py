@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-import logging
 import datetime
+import logging
 
-from odoo import models, api, tools, fields
+from odoo import models, api, tools
 
 _logger = logging.getLogger(__name__)
 
@@ -163,7 +163,6 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             contract.deactivate_legajo_contract(contract_date_end + datetime.timedelta(days=-1))
 
             new_contract = self._get_contract_copy(contract, second_movement, error)
-            job_ids = self._copy_jobs(contract, new_contract, second_movement)
             contract.write({
                 'causes_discharge_id': transforma_causes_discharge_id.id,
                 'cs_contract_id': new_contract.id
@@ -201,7 +200,6 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             contract.deactivate_legajo_contract(contract_date_end + datetime.timedelta(days=-1))
 
             new_contract = self._get_contract_copy(contract, second_movement, error)
-            job_ids = self._copy_jobs(contract, new_contract, second_movement)
             contract.write({
                 'causes_discharge_id': causes_discharge_id.id,
                 'cs_contract_id': new_contract.id

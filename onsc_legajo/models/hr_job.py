@@ -151,10 +151,9 @@ class HrJob(models.Model):
         self.suspend_security().onchange_end_date()
         if date_end < fields.Date.today() and self.security_job_id.is_uo_manager:
             self.suspend_security().mapped('department_id').filtered(
-                lambda x: x.manager_id.id or x.is_manager_reserved).write({
-                'manager_id': False,
-                'is_manager_reserved': False
-            })
+                lambda x: x.manager_id.id or x.is_manager_reserved).write(
+                {'manager_id': False, 'is_manager_reserved': False
+                 })
 
     def is_job_available_for_manager(self, department, security_job, date, date_end=False):
         if not security_job.is_uo_manager:
