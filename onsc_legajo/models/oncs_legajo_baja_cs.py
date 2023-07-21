@@ -94,7 +94,7 @@ class ONSCLegajoBajaCS(models.Model):
             args = expression.OR([args2, args])
         else:
             args = expression.AND(
-                [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id),
+                [[('employee_id', '=', employee_id),
                   ('legajo_state', 'in', ('incoming_commission', 'outgoing_commission'))], args])
         return args
 
@@ -204,7 +204,10 @@ class ONSCLegajoBajaCS(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas') and not self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso') and not self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue') and not self.user_has_groups('onsc_legajo.group_legajo_baja_cs_administrar_bajas'):
+            if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas') and not self.user_has_groups(
+                    'onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso') and not self.user_has_groups(
+                    'onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue') and not self.user_has_groups(
+                    'onsc_legajo.group_legajo_baja_cs_administrar_bajas'):
                 record.should_disable_form_edit = True
             else:
                 record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
@@ -247,7 +250,7 @@ class ONSCLegajoBajaCS(models.Model):
 
     def action_call_ws11(self):
         self._check_required_fieds_ws11()
-        self.env['onsc.legajo.abstract.baja.vl.ws 11'].suspend_security().syncronize(self)
+        self.env['onsc.legajo.abstract.baja.vl.ws11'].suspend_security().syncronize(self)
 
     def _get_domain_employee_ids(self):
         args = []
