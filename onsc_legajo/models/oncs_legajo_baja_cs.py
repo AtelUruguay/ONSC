@@ -11,6 +11,16 @@ from odoo.osv import expression
 
 REQUIRED_FIELDS = {'end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
                    'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id'}
+STATES = [
+    ('borrador', 'Borrador'),
+    ('error_sgh', 'Error SGH'),
+    ('pendiente_auditoria_cgn', 'Pendiente Auditoría CGN'),
+    ('aprobado_cgn', 'Aprobado CGN'),
+    ('rechazado_cgn', 'Rechazado CGN'),
+    ('gafi_ok', 'GAFI OK'),
+    ('gafi_error', 'GAFI Error'),
+    ('confirmado', 'Confirmado'),
+]
 
 
 class ONSCLegajoBajaCS(models.Model):
@@ -84,7 +94,8 @@ class ONSCLegajoBajaCS(models.Model):
             args = expression.OR([args2, args])
         else:
             args = expression.AND(
-                [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
+                [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id),
+                  ('legajo_state', 'in', ('incoming_commission', 'outgoing_commission'))], args])
         return args
 
     def _get_domain_employee(self, args):
@@ -112,6 +123,10 @@ class ONSCLegajoBajaCS(models.Model):
             args2 = expression.AND([[('legajo_state', '=', 'outgoing_commission'),
                                      ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
             args = expression.OR([args2, args])
+        else:
+            args = expression.AND(
+                [[('employee_id', '!=', self.env.user.employee_id.id),
+                  ('legajo_state', 'in', ('incoming_commission', 'outgoing_commission'))], args])
         return args
 
     @api.model
@@ -147,25 +162,27 @@ class ONSCLegajoBajaCS(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string="Funcionario", copy=False)
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain', copy=False)
-    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id', store=True)
+    contract_id = fields.Many2one('hr.contract', u'Contrato comisión', copy=False)
+    contract_origen_id = fields.Many2one('hr.contract', u'Contrato origen', copy=False)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso comisión', related='contract_id.inciso_id',
+                                store=True)
     inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', compute='_compute_inciso_ue_origen_id',
                                        copy=False, store=True)
     operating_unit_origen_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
                                                compute='_compute_inciso_ue_origen_id', copy=False, store=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
                                         related='contract_id.operating_unit_id', store=True)
-    program = fields.Char(string='Programa ', related='contract_id.program')
-    project = fields.Char(string='Proyecto ', related='contract_id.project')
-    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.regime_id')
+    program = fields.Char(string='Programa ', related='contract_origen_id.program')
+    project = fields.Char(string='Proyecto ', related='contract_origen_id.project')
+    regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_origen_id.regime_id')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
-                                     related='contract_id.descriptor1_id')
+                                     related='contract_origen_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
-                                     related='contract_id.descriptor2_id')
+                                     related='contract_origen_id.descriptor2_id')
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3',
-                                     related='contract_id.descriptor3_id')
+                                     related='contract_origen_id.descriptor3_id')
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4',
-                                     related='contract_id.descriptor4_id')
+                                     related='contract_origen_id.descriptor4_id')
     end_date = fields.Date(string="Fecha hasta de  la Comisión", default=lambda *a: fields.Date.today(), required=True,
                            copy=False)
     extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
@@ -176,6 +193,7 @@ class ONSCLegajoBajaCS(models.Model):
                                               compute='_compute_should_disable_form_edit')
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain', store=True)
     show_contract = fields.Boolean('Show Contract')
+    state = fields.Selection(STATES, string='Estado', default='borrador', tracking=True, copy=False)
 
     @api.constrains("end_date")
     def _check_date(self):
@@ -186,7 +204,7 @@ class ONSCLegajoBajaCS(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas'):
+            if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas') and not self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso') and not self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue') and not self.user_has_groups('onsc_legajo.group_legajo_baja_cs_administrar_bajas'):
                 record.should_disable_form_edit = True
             else:
                 record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
@@ -218,16 +236,18 @@ class ONSCLegajoBajaCS(models.Model):
     @api.depends('contract_id')
     def _compute_inciso_ue_origen_id(self):
         for rec in self:
-            if rec.contract_id and rec.contract_id.cs_contract_id and rec.contract_id.legajo_state == "outgoing_commission":
+            if rec.contract_id and rec.contract_id.cs_contract_id:
                 rec.inciso_origen_id = rec.contract_id.cs_contract_id.inciso_origin_id and rec.contract_id.cs_contract_id.inciso_origin_id.id
                 rec.operating_unit_origen_id = rec.contract_id.cs_contract_id.operating_unit_origin_id and rec.contract_id.cs_contract_id.operating_unit_origin_id.id
-            elif rec.contract_id:
-                rec.inciso_origen_id = rec.contract_id.inciso_origin_id.id
-                rec.operating_unit_origen_id = rec.contract_id.operating_unit_origin_id.id
+                rec.contract_origen_id = rec.contract_id.cs_contract_id.id
+            else:
+                rec.inciso_origen_id = False
+                rec.operating_unit_origen_id = False
+                rec.contract_origen_id = False
 
     def action_call_ws11(self):
         self._check_required_fieds_ws11()
-        self.env['onsc.legajo.abstract.baja.vl.ws11'].suspend_security().syncronize(self)
+        self.env['onsc.legajo.abstract.baja.vl.ws 11'].suspend_security().syncronize(self)
 
     def _get_domain_employee_ids(self):
         args = []
@@ -281,7 +301,7 @@ class ONSCLegajoBajaCS(models.Model):
             self.contract_id.suspend_security().activate_legajo_contract()
             self.contract_id.cs_contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
             self.contract_id.suspend_security().write({'cs_contract_id': False, })
-        elif self.contract_id.inciso_id.is_central_administration and self.inciso_id.legajo_state == 'incoming_commission' \
+        elif self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission' \
                 and not ContratoOrigen:
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})

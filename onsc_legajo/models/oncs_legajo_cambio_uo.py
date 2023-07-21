@@ -4,7 +4,6 @@ import json
 from dateutil.relativedelta import relativedelta
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -150,8 +149,18 @@ class ONSCLegajoCambioUO(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
+            for record in self:
+                if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta') \
+                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso') \
+                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue') \
+                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo') \
+                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar'):
+                    record.should_disable_form_edit = True
+                else:
+                    record.should_disable_form_edit = record.state not in ['borrador']
+
             record.should_disable_form_edit = record.state not in ['borrador'] or self.user_has_groups(
-                'onsc_legajo.group_legajo_cambio_uo_consulta')
+                'onsc_legajo.')
 
     @api.depends('cv_emissor_country_id')
     def _compute_employee_id_domain(self):
@@ -175,8 +184,7 @@ class ONSCLegajoCambioUO(models.Model):
         department_ids = self.get_uo_tree()
         for rec in self:
             if is_responsable_uo:
-                job_ids = rec.contract_id.job_ids.filtered(
-                    lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
+                job_ids = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
             else:
                 job_ids = rec.contract_id.job_ids.filtered(
                     lambda x: x.end_date is False or x.end_date >= fields.Date.today())
@@ -210,8 +218,7 @@ class ONSCLegajoCambioUO(models.Model):
     def onchange_department_id_contract_id(self):
         if self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
-            job_ids = self.contract_id.job_ids.filtered(
-                lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
+            job_ids = self.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
         else:
             job_ids = self.contract_id.job_ids.filtered(
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
@@ -280,21 +287,21 @@ class ONSCLegajoCambioUO(models.Model):
         Job = self.env['hr.job']
         self._validate_confirm()
         self.contract_id.suspend_security().write({'eff_date': self.date_start, 'occupation_id': self.occupation_id.id})
-        notify = False
+        warning_message = False
+        show_warning = False
         if self.job_id.start_date == self.date_start:
             self.suspend_security().job_id.deactivate(self.date_start)
             self.suspend_security().job_id.write({'active': False})
-            notify = True
+            show_warning = True
+            warning_message = u"No pueden existir dos puestos activos para el mismo contrato, se inactivará el puesto anterior"
         else:
             self.suspend_security().job_id.deactivate(self.date_start - relativedelta(days=1))
         Job.suspend_security().create_job(self.contract_id,
                                           self.department_id,
                                           self.date_start,
                                           self.security_job_id)
-        self.write({'state': 'confirmado'})
-        if notify:
-            return warning_response(
-                _(u"No pueden existir dos puestos activos para el mismo contrato, se inactivará el puesto anterior"))
+        self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
+                    'error_message_synchronization': warning_message})
 
     def action_show_organigram(self):
         return {

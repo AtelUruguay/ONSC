@@ -58,7 +58,7 @@
                         </div>
                         <group name="main_group">
                             <group name="main_group_left">
-
+                                <field name="contract_id_domain" invisible="1"/>
                                 <field name="employee_id_domain" invisible="1"/>
                                 <field name="cv_emissor_country_id"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
@@ -72,9 +72,12 @@
                                 <field name="employee_id" string="C.I." required="1"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
 
                                 <field name="end_date"/>
+                                <field name="contract_id" context="{'show_descriptors':True}"
+                                       domain="contract_id_domain"  attrs="{'readonly': [('show_contract', '=', False)]}"
+                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             </group>
                             <group name="main_group_right">
                             </group>
@@ -82,13 +85,10 @@
                         <group name="puesto" string="Datos del Origen">
                             <group name="puesto_left">
                                 <field name="show_contract" invisible="1" />
-                                <field name="contract_id_domain" invisible="1"/>
                                 <field name="inciso_id" invisible="1" force_save="1"/>
                                 <field name="operating_unit_id" invisible="1" force_save="1"/>
-
-                                <field name="contract_id" context="{'show_descriptors':True}"
-                                       domain="contract_id_domain"  attrs="{'readonly': [('show_contract', '=', False)]}"
-                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="contract_origen_id" context="{'show_descriptors':True}"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
                                 <field name="inciso_origen_id" readonly="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="operating_unit_origen_id" readonly="1"
