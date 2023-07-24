@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 _logger = logging.getLogger(__name__)
 
@@ -11,10 +11,10 @@ class ONSCDesempenoDegreeProgress(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Grados de avance'
 
-    name = fields.Char(string="Nombre grado de avance", compute="_compute_name", store=True)
-    description = fields.Char(string="Grados de avance", tracking=True, required=True)
+    name = fields.Char(string="Nombre-Porcentaje de avance", compute="_compute_name", store=True)
+    description = fields.Char(string="Nombre grado de avance", tracking=True, required=True)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
-    porcent = fields.Float(string="Porcentaje", tracking=True, required=True)
+    porcent = fields.Float(string="Porcentaje de avance", tracking=True, required=True)
     active = fields.Boolean(string="Activo", tracking=True, default=True)
 
     _sql_constraints = [
@@ -28,6 +28,12 @@ class ONSCDesempenoDegreeProgress(models.Model):
                 record.name = '%s ( %s )' % (record.description, record.porcent)
             else:
                 record.name = ''
+
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        default = dict(default or {})
+        default['description'] = _("%s (Copia)") % self.description
+        return super(ONSCDesempenoDegreeProgress, self).copy(default=default)
 
     def toggle_active(self):
         return super(ONSCDesempenoDegreeProgress, self.with_context(no_check_write=True)).toggle_active()

@@ -7,7 +7,7 @@
             <search string="Competencias">
                 <field name="name"/>
                 <field name="definition"/>
-                <field name="behavior"/>
+
             </search>
         </field>
     </record>
@@ -18,7 +18,6 @@
             <tree string="Competencias">
                 <field name="name"/>
                 <field name="definition"/>
-                <field name="behavior"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -35,14 +34,23 @@
                         <group>
                             <field name="name"/>
                             <field name="definition"/>
-                            <field name="behavior"/>
-                            <field name="dimension_id"
-                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="level_id"
-                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group/>
+                    </group>
+                    <group>
+                        <notebook>
+                            <field name="skill_line_ids" nolabel="1">
+                                <tree editable="bottom">
+
+                                    <field name="dimension_id"
+                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                    <field name="level_id"
+                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                    <field name="behavior"/>
+                                </tree>
+                            </field>
+                        </notebook>
                     </group>
 
                 </sheet>
