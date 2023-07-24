@@ -52,15 +52,18 @@ class ONSCLegajoBajaCS(models.Model):
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
-                args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
+                args = expression.AND(
+                    [['|', ('inciso_id', '=', inciso_id.id), ('inciso_origen_id', '=', inciso_id.id)], args])
             elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
                 contract_id = self.env.user.employee_id.job_id.contract_id
                 inciso_id = contract_id.inciso_id
                 operating_unit_id = contract_id.operating_unit_id
                 if inciso_id:
-                    args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
+                    args = expression.AND(
+                        [['|', ('inciso_id', '=', inciso_id.id), ('inciso_origen_id', '=', inciso_id.id)], args])
                 if operating_unit_id:
-                    args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id)], args])
+                    args = expression.AND([['|'('operating_unit_id', '=', operating_unit_id.id),
+                                            ('operating_unit_origen_id', '=', inciso_id.id)], args])
         return args
 
     def _get_domain_contract(self, args, employee_id):
@@ -68,30 +71,33 @@ class ONSCLegajoBajaCS(models.Model):
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
-                args = expression.AND([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'incoming_commission'),
+                args = expression.AND([['|', ('inciso_id', '=', inciso_id.id), ('inciso_origin_id', '=', inciso_id.id),
+                                        ('legajo_state', '=', 'incoming_commission'),
                                         ('employee_id', '=', employee_id),
                                         ('employee_id', '!=', self.env.user.employee_id.id)], args])
 
-                args = expression.OR([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'outgoing_commission'),
-                                       ('cs_contract_id.inciso_id.is_central_administration', '=', False),
-                                       ('employee_id', '=', employee_id),
-                                       ('employee_id', '!=', self.env.user.employee_id.id)], args])
+                # args = expression.OR([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'outgoing_commission'),
+                #                        ('cs_contract_id.inciso_id.is_central_administration', '=', False),
+                #                        ('employee_id', '=', employee_id),
+                #                        ('employee_id', '!=', self.env.user.employee_id.id)], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
             if inciso_id:
-                args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
+                args = expression.AND(
+                    [['|', ('inciso_id', '=', inciso_id.id), ('inciso_origin_id', '=', inciso_id.id)], args])
             if operating_unit_id:
-                args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id)], args])
+                args = expression.AND([['|', ('operating_unit_id', '=', operating_unit_id.id),
+                                        ('operating_unit_origin_id', '=', inciso_id.id)], args])
             if employee_id:
                 args = expression.AND(
                     [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
-            args2 = args
-            args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
-            args2 = expression.AND([[('legajo_state', '=', 'outgoing_commission'),
-                                     ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
-            args = expression.OR([args2, args])
+            # args2 = args
+            # args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
+            # args2 = expression.AND([[('legajo_state', '=', 'outgoing_commission'),
+            #                          ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
+            # args = expression.OR([args2, args])
         else:
             args = expression.AND(
                 [[('employee_id', '=', employee_id),
@@ -163,13 +169,14 @@ class ONSCLegajoBajaCS(models.Model):
     employee_id = fields.Many2one("hr.employee", string="Funcionario", copy=False)
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain', copy=False)
     contract_id = fields.Many2one('hr.contract', u'Contrato comisión', copy=False)
-    contract_origen_id = fields.Many2one('hr.contract', u'Contrato origen', copy=False)
+    contract_origen_id = fields.Many2one('hr.contract', u'Contrato origen', related='contract_id.cs_contract_id',
+                                         store=True, copy=False)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso comisión', related='contract_id.inciso_id',
                                 store=True)
-    inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', compute='_compute_inciso_ue_origen_id',
+    inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_origin_id',
                                        copy=False, store=True)
     operating_unit_origen_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
-                                               compute='_compute_inciso_ue_origen_id', copy=False, store=True)
+                                               related='contract_id.operating_unit_origin_id', copy=False, store=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
                                         related='contract_id.operating_unit_id', store=True)
     program = fields.Char(string='Programa ', related='contract_origen_id.program')
@@ -236,18 +243,6 @@ class ONSCLegajoBajaCS(models.Model):
             else:
                 rec.contract_id_domain = json.dumps([('id', '=', False)])
 
-    @api.depends('contract_id')
-    def _compute_inciso_ue_origen_id(self):
-        for rec in self:
-            if rec.contract_id and rec.contract_id.cs_contract_id:
-                rec.inciso_origen_id = rec.contract_id.cs_contract_id.inciso_origin_id and rec.contract_id.cs_contract_id.inciso_origin_id.id
-                rec.operating_unit_origen_id = rec.contract_id.cs_contract_id.operating_unit_origin_id and rec.contract_id.cs_contract_id.operating_unit_origin_id.id
-                rec.contract_origen_id = rec.contract_id.cs_contract_id.id
-            else:
-                rec.inciso_origen_id = False
-                rec.operating_unit_origen_id = False
-                rec.contract_origen_id = False
-
     def action_call_ws11(self):
         self._check_required_fieds_ws11()
         self.env['onsc.legajo.abstract.baja.vl.ws11'].suspend_security().syncronize(self)
@@ -274,6 +269,12 @@ class ONSCLegajoBajaCS(models.Model):
             if not record.contract_id or not record.contract_id.sec_position:
                 message.append(_("El contrato debe tener Sec. Plaza definido"))
 
+            if record.contract_id and record.contract_id.legajo_state != 'incoming_commission':
+                message.append(_("El contrato debe estar en comision entrante "))
+
+            if record.contract_id and record.employee_id and record.employee_id.cv_nro_doc != record.contract_id.nro_doc:
+                message.append(_(u"El funcionario de la baja de comisión deber ser el mismo del  contrato"))
+
             if not record.extinction_commission_id or not record.extinction_commission_id.code:
                 message.append(_("El contrato debe tener Sec. Plaza definido"))
 
@@ -299,16 +300,16 @@ class ONSCLegajoBajaCS(models.Model):
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
             self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
-        elif self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'outgoing_commission' \
-                and not ContratoOrigen.inciso_id.is_central_administration:
-            self.contract_id.suspend_security().activate_legajo_contract()
-            self.contract_id.cs_contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
-            self.contract_id.suspend_security().write({'cs_contract_id': False, })
+        elif not self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission':
+            self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
+            self.contract_id.cs_contract_id.suspend_security().activate_legajo_contract()
+            ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
         elif self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission' \
                 and not ContratoOrigen:
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
             self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
 
-        self.write({'state': 'confirmado', 'is_error_synchronization': False, 'error_message_synchronization': ''})
+        self.write({'state': 'confirmado', 'is_error_synchronization': False, 'error_message_synchronization': '',
+                    'cs_contract_id': False, })
         return True

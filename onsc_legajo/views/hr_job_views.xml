@@ -25,6 +25,7 @@
             <form string="Puestos de trabajo">
                 <header/>
                 <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_button_box" name="button_box"/>
                     <div class="oe_title">
                         <label for="name"/>
