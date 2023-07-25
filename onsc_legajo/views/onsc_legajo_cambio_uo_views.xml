@@ -40,7 +40,6 @@
                                statusbar_visible="borrador,confirmado"/>
                     </header>
                     <sheet>
-                         <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                         <field name="is_error_synchronization" invisible="1"/>
                         <field name="active" invisible="1" force_save="1"/>
                         <div name="oe_tittle" class="oe_title"/>
@@ -93,38 +92,38 @@
                                 <field name="contract_id" context="{'show_descriptors':True}"
                                        force_save="1"
                                        domain="contract_id_domain"
-                                       attrs="{'readonly': [('show_contract', '=', False)]}"
+                                       attrs="{'readonly': ['|', ('should_disable_form_edit', '=', True),('show_contract', '=', False)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="department_id_domain" invisible="1"/>
                                 <field name="job_id"
                                        context="{'custom_display_name':True}"
                                        force_save="1"
-                                       attrs="{'invisible': [('show_job', '=', False)],'required': [('show_job', '=', True)]}"
+                                       attrs="{'invisible': [('show_job', '=', False)],'required': [('show_job', '=', True)],'readonly': [('should_disable_form_edit', '=', True)]}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                        domain="job_id_domain"/>
-                                <field name="date_start"/>
+                                <field name="date_start"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"/>
                                 <label for="department_id" string="UO"/>
                                 <div class="oe_inline">
                                     <field name="department_id" domain="department_id_domain"
-                                           style="width:94% !important"
+                                           style="width:94% !important"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
                                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                     <button name="action_show_organigram" type="object" icon="fa-cubes"
                                             class="oe_inline"
                                             attrs="{'invisible': [('department_id', '=', False)]}"/>
                                 </div>
-                                <field name="security_job_id"
+                                <field name="security_job_id"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                <field name="occupation_id"
+                                <field name="occupation_id"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
 
                             </group>
                             <group name="uo_right"/>
                         </group>
                         <group name="documentacion" string="Documentación">
-                            <field name="attached_document_discharge_ids" nolabel="1">
+                            <field name="attached_document_discharge_ids" nolabel="1"  attrs="{'readonly': [('should_disable_form_edit', '=', True),]}">
                                 <tree editable="top">
-                                    <field name="name" required="1"/>
-                                    <field name="document_type_id" required="1"/>
+                                    <field name="name" required="1"  />
+                                    <field name="document_type_id" required="1" />
                                     <field name="document_file" required="1" widget="binary"
                                            filename="document_file_name"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
