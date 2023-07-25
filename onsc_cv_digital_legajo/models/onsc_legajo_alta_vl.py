@@ -93,7 +93,7 @@ class ONSCLegajoAltaVL(models.Model):
     address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
     employee_id = fields.Many2one('hr.employee', 'Employee')
-    cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="Legajo Digital", copy=False)
+    cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="CV Digital", copy=False)
     is_docket = fields.Boolean(string="Tiene legajo", related='cv_digital_id.is_docket')
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
@@ -475,3 +475,40 @@ class ONSCLegajoAltaVL(models.Model):
     # MAIL TEMPLATE UTILS
     def get_altavl_name(self):
         return self.with_context(show_cv_nro_doc=True).partner_id.name_get()[0][1]
+
+    def _is_employee_notify_sgh_nedeed(self):
+        values = {
+            'country_of_birth_id': self.cv_digital_id.country_of_birth_id,
+            'health_provider_id': self.cv_digital_id.health_provider_id,
+            'uy_citizenship': self.cv_digital_id.uy_citizenship,
+            'personal_phone': self.cv_digital_id.personal_phone,
+            'mobile_phone': self.cv_digital_id.mobile_phone,
+            'email': self.cv_digital_id.email
+        }
+        if self.cv_digital_id.civical_credential_documentary_validation_state == 'validated':
+            values.update({
+                'crendencial_serie': self.cv_digital_id.crendencial_serie,
+                'credential_number': self.cv_digital_id.credential_number
+            })
+        if self.cv_digital_id.marital_status_documentary_validation_state == 'validated':
+            values.update({
+                'marital_status_id': self.cv_digital_id.marital_status_id.id,
+            })
+        if self.cv_digital_id.cv_address_documentary_validation_state == 'validated':
+            values.update({
+                'cv_address_location_id': self.cv_digital_id.cv_address_location_id.id,
+                'cv_address_street': self.cv_digital_id.cv_address_street,
+                'cv_address_street_id': self.cv_digital_id.cv_address_street_id.id,
+                'cv_address_street2_id': self.cv_digital_id.cv_address_street2_id.id,
+                'cv_address_street3_id': self.cv_digital_id.cv_address_street3_id.id,
+                'cv_address_nro_door': self.cv_digital_id.cv_address_nro_door,
+                'cv_address_is_cv_bis': self.cv_digital_id.cv_address_is_cv_bis,
+                'cv_address_apto': self.cv_digital_id.cv_address_apto,
+                'cv_address_place': self.cv_digital_id.cv_address_place,
+                'cv_address_zip': self.cv_digital_id.cv_address_zip,
+                'cv_address_block': self.cv_digital_id.cv_address_block,
+                'cv_address_sandlot': self.cv_digital_id.cv_address_sandlot,
+            })
+        values_filtered = self.env['onsc.base.utils'].sudo().get_really_values_changed(self, values)
+        return len(values_filtered.keys()) > 0
+
