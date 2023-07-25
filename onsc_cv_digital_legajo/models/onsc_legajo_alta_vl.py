@@ -478,8 +478,8 @@ class ONSCLegajoAltaVL(models.Model):
 
     def _is_employee_notify_sgh_nedeed(self):
         values = {
-            'country_of_birth_id': self.cv_digital_id.country_of_birth_id,
-            'health_provider_id': self.cv_digital_id.health_provider_id,
+            'country_of_birth_id': self.cv_digital_id.country_of_birth_id.id,
+            'health_provider_id': self.cv_digital_id.health_provider_id.id,
             'uy_citizenship': self.cv_digital_id.uy_citizenship,
             'personal_phone': self.cv_digital_id.personal_phone,
             'mobile_phone': self.cv_digital_id.mobile_phone,

@@ -122,8 +122,9 @@
                         <group name="documentacion" string="Documentación">
                             <field name="attached_document_discharge_ids" nolabel="1"  attrs="{'readonly': [('should_disable_form_edit', '=', True),]}">
                                 <tree editable="top">
-                                    <field name="name" required="1"  />
-                                    <field name="document_type_id" required="1" />
+                                    <field name="name" required="1"/>
+                                    <field name="document_type_id" required="1"
+                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                     <field name="document_file" required="1" widget="binary"
                                            filename="document_file_name"
                                            options="{'accepted_file_extensions': '.pdf'}"/>

@@ -2,8 +2,16 @@
 
 from odoo import models, fields
 
-MODIFIED_FIELDS = ['name', 'cv_last_name_1', 'cv_last_name_2', 'cv_first_name',
-                   'cv_second_name', 'cv_birthdate', 'cv_sex', 'email']
+MODIFIED_FIELDS = [
+    'name',
+    'cv_last_name_1',
+    'cv_last_name_2',
+    'cv_first_name',
+    'cv_second_name',
+    'cv_birthdate',
+    'cv_sex',
+    'email'
+]
 
 
 class ResPartner(models.Model):
