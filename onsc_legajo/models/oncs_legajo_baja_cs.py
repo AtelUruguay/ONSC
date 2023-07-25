@@ -219,8 +219,8 @@ class ONSCLegajoBajaCS(models.Model):
         for record in self:
             if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas') and not self.user_has_groups(
                     'onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso') and not self.user_has_groups(
-                'onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue') and not self.user_has_groups(
-                'onsc_legajo.group_legajo_baja_cs_administrar_bajas'):
+                    'onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue') and not self.user_has_groups(
+                    'onsc_legajo.group_legajo_baja_cs_administrar_bajas'):
                 record.should_disable_form_edit = True
             else:
                 record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
