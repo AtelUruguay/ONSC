@@ -7,6 +7,7 @@ from odoo.exceptions import ValidationError
 class ONSCCatalogHierarchicalLevel(models.Model):
     _name = 'onsc.catalog.hierarchical.level'
     _description = 'Nivel jerárquico'
+    _order = 'order ASC'
 
     code = fields.Char(string=u"Código", required=True)
     name = fields.Char(string='Nombre del nivel jerárquico', required=True)
