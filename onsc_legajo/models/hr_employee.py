@@ -4,13 +4,39 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 from odoo import models, fields, api
 
-MODIFIED_FIELDS = ['cv_nro_doc', 'full_name', 'cv_full_name', 'cv_last_name_1', 'cv_last_name_2', 'cv_first_name',
-                   'cv_second_name', 'marital_status_id', 'cv_birthdate', 'cv_sex',
-                   'country_of_birth_id', 'crendencial_serie', 'credential_number', 'personal_phone',
-                   'mobile_phone', 'email', 'cv_address_state_id', 'cv_address_location_id',
-                   'cv_address_street', 'cv_address_street_id', 'cv_address_nro_door', 'cv_address_street2_id',
-                   'cv_address_street3_id', 'cv_address_is_cv_bis', 'cv_address_apto', 'cv_address_place',
-                   'uy_citizenship', 'cv_address_zip', 'cv_address_block', 'cv_address_sandlot', 'health_provider_id']
+MODIFIED_FIELDS = [
+    'cv_nro_doc',
+    'full_name',
+    'cv_full_name',
+    'cv_last_name_1',
+    'cv_last_name_2',
+    'cv_first_name',
+    'cv_second_name',
+    'marital_status_id',
+    'cv_birthdate',
+    'cv_sex',
+    'country_of_birth_id',
+    'crendencial_serie',
+    'credential_number',
+    'personal_phone',
+    'mobile_phone',
+    'email',
+    'cv_address_state_id',
+    'cv_address_location_id',
+    'cv_address_street',
+    'cv_address_street_id',
+    'cv_address_nro_door',
+    'cv_address_street2_id',
+    'cv_address_street3_id',
+    'cv_address_is_cv_bis',
+    'cv_address_apto',
+    'cv_address_place',
+    'uy_citizenship',
+    'cv_address_zip',
+    'cv_address_block',
+    'cv_address_sandlot',
+    'health_provider_id'
+]
 
 
 class HrEmployee(models.Model):
