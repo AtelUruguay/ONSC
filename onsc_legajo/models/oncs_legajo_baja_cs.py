@@ -54,17 +54,20 @@ class ONSCLegajoBajaCS(models.Model):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND(
-                    [['|', ('inciso_id', '=', inciso_id.id), ('inciso_origen_id', '=', inciso_id.id)], args])
+                    [['|', ('inciso_id', '=', inciso_id.id), ('inciso_id.is_central_administration', '=', False),
+                      ('inciso_origen_id', '=', inciso_id.id)], args])
             elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
                 contract_id = self.env.user.employee_id.job_id.contract_id
                 inciso_id = contract_id.inciso_id
                 operating_unit_id = contract_id.operating_unit_id
                 if inciso_id:
                     args = expression.AND(
-                        [['|', ('inciso_id', '=', inciso_id.id), ('inciso_origen_id', '=', inciso_id.id)], args])
+                        [['|', ('inciso_id', '=', inciso_id.id), ('inciso_id.is_central_administration', '=', False),
+                          ('inciso_origen_id', '=', inciso_id.id)], args])
                 if operating_unit_id:
                     args = expression.AND([['|'('operating_unit_id', '=', operating_unit_id.id),
-                                            ('operating_unit_origen_id', '=', inciso_id.id)], args])
+                                            ('inciso_id.is_central_administration', '=', False),
+                                            ('operating_unit_origen_id', '=', operating_unit_id.id)], args])
         return args
 
     def _get_domain_contract(self, args, employee_id):
@@ -72,15 +75,16 @@ class ONSCLegajoBajaCS(models.Model):
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
-                args = expression.AND([['|', ('inciso_id', '=', inciso_id.id), ('inciso_origin_id', '=', inciso_id.id),
+                args = expression.AND([['|', ('inciso_id', '=', inciso_id.id),
                                         ('legajo_state', '=', 'incoming_commission'),
                                         ('employee_id', '=', employee_id),
                                         ('employee_id', '!=', self.env.user.employee_id.id)], args])
 
-                # args = expression.OR([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'outgoing_commission'),
-                #                        ('cs_contract_id.inciso_id.is_central_administration', '=', False),
-                #                        ('employee_id', '=', employee_id),
-                #                        ('employee_id', '!=', self.env.user.employee_id.id)], args])
+                args = expression.OR(
+                    [[('inciso_origin_id', '=', inciso_id.id), ('legajo_state', '=', 'incoming_commission'),
+                      ('inciso_id.is_central_administration', '=', False),
+                      ('employee_id', '=', employee_id),
+                      ('employee_id', '!=', self.env.user.employee_id.id)], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
@@ -94,11 +98,11 @@ class ONSCLegajoBajaCS(models.Model):
             if employee_id:
                 args = expression.AND(
                     [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
-            # args2 = args
-            # args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
-            # args2 = expression.AND([[('legajo_state', '=', 'outgoing_commission'),
-            #                          ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
-            # args = expression.OR([args2, args])
+
+            args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
+            args2 = args
+            args2 = expression.AND([[('inciso_id.is_central_administration', '=', False)], args2])
+            args = expression.OR([args2, args])
         else:
             args = expression.AND(
                 [[('employee_id', '=', employee_id),
@@ -214,8 +218,8 @@ class ONSCLegajoBajaCS(models.Model):
         for record in self:
             if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas') and not self.user_has_groups(
                     'onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso') and not self.user_has_groups(
-                    'onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue') and not self.user_has_groups(
-                    'onsc_legajo.group_legajo_baja_cs_administrar_bajas'):
+                'onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue') and not self.user_has_groups(
+                'onsc_legajo.group_legajo_baja_cs_administrar_bajas'):
                 record.should_disable_form_edit = True
             else:
                 record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
@@ -233,9 +237,9 @@ class ONSCLegajoBajaCS(models.Model):
                 rec.show_contract = len(contracts) > 1
                 rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
 
-            #     if contract:
-            #         if len(contract) > 1:
-            #             rec.show_contract = True
+                if contracts:
+                    if len(contracts) > 1:
+                        rec.show_contract = True
             #         rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
             #         rec.contract_id = contract[0].id
             #     else:
@@ -253,7 +257,6 @@ class ONSCLegajoBajaCS(models.Model):
                 self.contract_id = False
         else:
             self.contract_id = False
-
 
     def _get_employee_contracts(self):
         Contract = self.env['hr.contract']
@@ -292,9 +295,6 @@ class ONSCLegajoBajaCS(models.Model):
             if record.contract_id and record.employee_id and record.employee_id.cv_nro_doc != record.contract_id.nro_doc:
                 message.append(_(u"El funcionario de la baja de comisión deber ser el mismo del  contrato"))
 
-            if not record.extinction_commission_id or not record.extinction_commission_id.code:
-                message.append(_("El contrato debe tener Sec. Plaza definido"))
-
             if not record.attached_document_discharge_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
 
@@ -327,6 +327,5 @@ class ONSCLegajoBajaCS(models.Model):
                 {'end_date': self.end_date})
             self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
 
-        self.write({'state': 'confirmado', 'is_error_synchronization': False, 'error_message_synchronization': '',
-                    'cs_contract_id': False, })
+        self.write({'state': 'confirmado', 'is_error_synchronization': False, 'error_message_synchronization': '' })
         return True
