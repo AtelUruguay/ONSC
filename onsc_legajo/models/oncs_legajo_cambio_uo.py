@@ -54,6 +54,9 @@ class ONSCLegajoCambioUO(models.Model):
     def _is_group_responsable_uo_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
 
+    def _is_group_legajo_cambio_uo_administrar(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar')
+
     def _get_domain(self, args, filter_by_departments=False):
         args = super(ONSCLegajoCambioUO, self)._get_domain(args, use_employee=True)
         not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security()
@@ -65,7 +68,7 @@ class ONSCLegajoCambioUO(models.Model):
                     ('department_id', 'in', department_ids)
                 ], args])
             else:
-                job_ids = Job.with_context(active_test = False).search([('department_id', 'in', department_ids)]).ids
+                job_ids = Job.with_context(active_test=False).search([('department_id', 'in', department_ids)]).ids
                 args = expression.AND([[
                     ('job_id', 'in', job_ids)
                 ], args])
@@ -187,11 +190,9 @@ class ONSCLegajoCambioUO(models.Model):
         department_ids = self.get_uo_tree()
         for rec in self:
             if is_responsable_uo:
-                job_ids = rec.contract_id.job_ids.filtered(lambda
-                                                               x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
+                job_ids = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
             else:
-                job_ids = rec.contract_id.job_ids.filtered(
-                    lambda x: x.end_date is False or x.end_date >= fields.Date.today())
+                job_ids = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today())
             rec.job_id_domain = json.dumps([('id', 'in', job_ids.ids)])
             rec.show_job = len(job_ids) > 1
 
@@ -222,8 +223,7 @@ class ONSCLegajoCambioUO(models.Model):
     def onchange_department_id_contract_id(self):
         if self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
-            job_ids = self.contract_id.job_ids.filtered(lambda
-                                                            x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
+            job_ids = self.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
         else:
             job_ids = self.contract_id.job_ids.filtered(
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
@@ -258,7 +258,8 @@ class ONSCLegajoCambioUO(models.Model):
         return department_ids
 
     def _get_domain_employee_ids(self):
-        if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security():
+        if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security() \
+                or self._is_group_legajo_cambio_uo_administrar():
             args = self._get_domain([("legajo_state", "in", ('active', 'incoming_commission'))],
                                     filter_by_departments=True)
             employee_ids = self.env['hr.contract'].sudo().search(args).mapped('employee_id').ids
