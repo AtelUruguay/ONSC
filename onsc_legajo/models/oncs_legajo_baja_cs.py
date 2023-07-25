@@ -238,16 +238,6 @@ class ONSCLegajoBajaCS(models.Model):
                 rec.show_contract = len(contracts) > 1
                 rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
 
-                if contracts:
-                    if len(contracts) > 1:
-                        rec.show_contract = True
-            #         rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
-            #         rec.contract_id = contract[0].id
-            #     else:
-            #         rec.contract_id_domain = json.dumps([('id', '=', False)])
-            # else:
-            #     rec.contract_id_domain = json.dumps([('id', '=', False)])
-
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         if self.employee_id:
