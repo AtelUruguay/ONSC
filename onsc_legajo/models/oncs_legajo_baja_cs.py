@@ -9,8 +9,9 @@ from odoo.osv import expression
 
 # campos requeridos para la sincronización
 
-REQUIRED_FIELDS = {'end_date', 'reason_description', 'norm_number', 'norm_article', 'norm_type', 'norm_year',
+REQUIRED_FIELDS = {'end_date', 'reason_description', 'norm_id', 'norm_article', 'norm_type', 'norm_year',
                    'resolution_description', 'resolution_date', 'resolution_type', 'extinction_commission_id'}
+
 STATES = [
     ('borrador', 'Borrador'),
     ('error_sgh', 'Error SGH'),
