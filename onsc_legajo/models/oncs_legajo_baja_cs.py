@@ -54,20 +54,21 @@ class ONSCLegajoBajaCS(models.Model):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND(
-                    [['|', ('inciso_id', '=', inciso_id.id), ('inciso_id.is_central_administration', '=', False),
-                      ('inciso_origen_id', '=', inciso_id.id)], args])
+                    [[('inciso_id', '=', inciso_id.id)], args])
+                args = expression.OR([[('inciso_id.is_central_administration', '=', False),
+                                       ('inciso_origen_id', '=', inciso_id.id)], args])
             elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
                 contract_id = self.env.user.employee_id.job_id.contract_id
                 inciso_id = contract_id.inciso_id
                 operating_unit_id = contract_id.operating_unit_id
                 if inciso_id:
-                    args = expression.AND(
-                        [['|', ('inciso_id', '=', inciso_id.id), ('inciso_id.is_central_administration', '=', False),
-                          ('inciso_origen_id', '=', inciso_id.id)], args])
+                    args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
+                    args = expression.OR([[('inciso_id.is_central_administration', '=', False),
+                                           ('inciso_origen_id', '=', inciso_id.id)], args])
                 if operating_unit_id:
-                    args = expression.AND([['|'('operating_unit_id', '=', operating_unit_id.id),
-                                            ('inciso_id.is_central_administration', '=', False),
-                                            ('operating_unit_origen_id', '=', operating_unit_id.id)], args])
+                    args = expression.AND([['|'('operating_unit_id', '=', operating_unit_id.id), ], args])
+                    args = expression.OR([[('inciso_id.is_central_administration', '=', False),
+                                           ('operating_unit_origen_id', '=', operating_unit_id.id)], args])
         return args
 
     def _get_domain_contract(self, args, employee_id):
