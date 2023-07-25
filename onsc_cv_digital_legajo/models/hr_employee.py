@@ -85,6 +85,8 @@ class HrEmployee(models.Model):
                                       related='cv_digital_id.uy_citizenship', store=True, history=True,
                                       selection=[('legal', 'Legal'), ('natural', 'Natural'),
                                                  ('extranjero', 'Extranjero')])
+    marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil",
+                                        related='cv_digital_id.marital_status_id', store=True, history=True)
 
     cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU",
                                             related='cv_digital_id.cjppu_affiliate_number', store=True, history=True)
@@ -344,7 +346,7 @@ class HrEmployee(models.Model):
     def _get_info_fromcv_marital_status(self):
         # ESTADO CIVIL
         return {
-            'marital_status_id': self.cv_digital_id.marital_status_id.id,
+            # 'marital_status_id': self.cv_digital_id.marital_status_id.id,
             'digitized_document_file': self.cv_digital_id.digitized_document_file,
             'digitized_document_filename': self.cv_digital_id.digitized_document_filename,
             'status_civil_date': self.cv_digital_id.status_civil_date,
@@ -352,6 +354,15 @@ class HrEmployee(models.Model):
 
     def _get_info_fromcv_civical_credential(self):
         # CREDENCIAL CIVICA
+        BaseUtils = self.env['onsc.base.utils'].sudo()
+        potential_vals = {
+            'uy_citizenship': self.cv_digital_id.uy_citizenship,
+            'crendencial_serie': self.cv_digital_id.crendencial_serie,
+            'credential_number': self.cv_digital_id.credential_number,
+            'civical_credential_file': self.cv_digital_id.civical_credential_file,
+            'civical_credential_filename': self.cv_digital_id.civical_credential_filename
+        }
+        values_filtered = BaseUtils.get_really_values_changed(self, potential_vals)
         return {
             'uy_citizenship': self.cv_digital_id.uy_citizenship,
             'crendencial_serie': self.cv_digital_id.crendencial_serie,

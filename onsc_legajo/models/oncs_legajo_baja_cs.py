@@ -226,22 +226,38 @@ class ONSCLegajoBajaCS(models.Model):
 
     @api.depends('employee_id')
     def _compute_contract_id_domain(self):
-        Contract = self.env['hr.contract']
         for rec in self:
             if rec.employee_id:
-                rec.show_contract = False
-                args = []
-                args = self._get_domain_contract(args, rec.employee_id.id)
-                contract = Contract.search(args)
-                if contract:
-                    if len(contract) > 1:
-                        rec.show_contract = True
-                    rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
-                    rec.contract_id = contract[0].id
-                else:
-                    rec.contract_id_domain = json.dumps([('id', '=', False)])
+                contracts = rec._get_employee_contracts()
+                rec.show_contract = len(contracts) > 1
+                rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
+
+            #     if contract:
+            #         if len(contract) > 1:
+            #             rec.show_contract = True
+            #         rec.contract_id_domain = json.dumps([('id', 'in', contract.ids)])
+            #         rec.contract_id = contract[0].id
+            #     else:
+            #         rec.contract_id_domain = json.dumps([('id', '=', False)])
+            # else:
+            #     rec.contract_id_domain = json.dumps([('id', '=', False)])
+
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        if self.employee_id:
+            contracts = self._get_employee_contracts()
+            if contracts:
+                self.contract_id = contracts[0].id
             else:
-                rec.contract_id_domain = json.dumps([('id', '=', False)])
+                self.contract_id = False
+        else:
+            self.contract_id = False
+
+
+    def _get_employee_contracts(self):
+        Contract = self.env['hr.contract']
+        args = self._get_domain_contract([], self.employee_id.id)
+        return Contract.search(args)
 
     def action_call_ws11(self):
         self._check_required_fieds_ws11()

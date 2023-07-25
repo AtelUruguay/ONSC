@@ -4,13 +4,13 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 from odoo import models, fields, api
 
-MODIFIED_FIELDS = ['cv_nro_doc', 'cv_last_name_1', 'cv_last_name_2', 'cv_first_name',
+MODIFIED_FIELDS = ['cv_nro_doc', 'full_name', 'cv_full_name', 'cv_last_name_1', 'cv_last_name_2', 'cv_first_name',
                    'cv_second_name', 'marital_status_id', 'cv_birthdate', 'cv_sex',
                    'country_of_birth_id', 'crendencial_serie', 'credential_number', 'personal_phone',
                    'mobile_phone', 'email', 'cv_address_state_id', 'cv_address_location_id',
                    'cv_address_street', 'cv_address_street_id', 'cv_address_nro_door', 'cv_address_street2_id',
                    'cv_address_street3_id', 'cv_address_is_cv_bis', 'cv_address_apto', 'cv_address_place',
-                   'cv_address_zip', 'cv_address_block', 'cv_address_sandlot', 'health_provider_id']
+                   'uy_citizenship', 'cv_address_zip', 'cv_address_block', 'cv_address_sandlot', 'health_provider_id']
 
 
 class HrEmployee(models.Model):
@@ -249,12 +249,13 @@ class HrEmployee(models.Model):
         return values_filtered
 
     # INTELIGENCIA DE ENTIDAD
-    def _get_legajo_employee(self, emissor_country, document_type, partner_id):
+    def _get_legajo_employee(self, emissor_country, document_type, partner_id, notify_sgh=False):
         """
         SI EXISTE EL EMPLEADO LO DEVUELVE SINO LO CREA
         :param emissor_country: Recordset a res.country
         :param document_type: Recordset a onsc.cv.document.type
         :param partner_id: Recordset a res.partner
+        :param notify_sgh: Boolean
         :return: Recordset de hr.employee
         """
         employee = self.suspend_security().search([
@@ -271,7 +272,10 @@ class HrEmployee(models.Model):
                 'cv_emissor_country_id': emissor_country.id,
                 'cv_document_type_id': document_type.id,
                 'cv_nro_doc': partner_id.cv_nro_doc,
+                'notify_sgh': notify_sgh,
             })
+        elif notify_sgh:
+            employee.write({'notify_sgh': notify_sgh})
         return employee
 
 
