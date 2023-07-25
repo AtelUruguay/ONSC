@@ -48,6 +48,9 @@ class ONSCLegajoCambioUO(models.Model):
     def _is_group_ue_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue')
 
+    def _is_group_consulta_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta')
+
     def _is_group_responsable_uo_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
 
@@ -62,7 +65,7 @@ class ONSCLegajoCambioUO(models.Model):
                     ('department_id', 'in', department_ids)
                 ], args])
             else:
-                job_ids = Job.search([('department_id', 'in', department_ids)]).ids
+                job_ids = Job.with_context(active_test = False).search([('department_id', 'in', department_ids)]).ids
                 args = expression.AND([[
                     ('job_id', 'in', job_ids)
                 ], args])
@@ -184,7 +187,8 @@ class ONSCLegajoCambioUO(models.Model):
         department_ids = self.get_uo_tree()
         for rec in self:
             if is_responsable_uo:
-                job_ids = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
+                job_ids = rec.contract_id.job_ids.filtered(lambda
+                                                               x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
             else:
                 job_ids = rec.contract_id.job_ids.filtered(
                     lambda x: x.end_date is False or x.end_date >= fields.Date.today())
@@ -218,7 +222,8 @@ class ONSCLegajoCambioUO(models.Model):
     def onchange_department_id_contract_id(self):
         if self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
-            job_ids = self.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
+            job_ids = self.contract_id.job_ids.filtered(lambda
+                                                            x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
         else:
             job_ids = self.contract_id.job_ids.filtered(
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
@@ -253,7 +258,11 @@ class ONSCLegajoCambioUO(models.Model):
         return department_ids
 
     def _get_domain_employee_ids(self):
-        if self._is_group_responsable_uo_security():
+        if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security():
+            args = self._get_domain([("legajo_state", "in", ('active', 'incoming_commission'))],
+                                    filter_by_departments=True)
+            employee_ids = self.env['hr.contract'].sudo().search(args).mapped('employee_id').ids
+        elif self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
             employee_ids = self.env['hr.job'].search([
                 ('contract_id.legajo_state', 'in', ('active', 'incoming_commission')),
@@ -263,24 +272,24 @@ class ONSCLegajoCambioUO(models.Model):
                 ('end_date', '>=', fields.Date.today()),
             ]).mapped('employee_id').ids
         else:
-            args = self._get_domain([("legajo_state", "in", ('active', 'incoming_commission'))],
-                                    filter_by_departments=True)
-            employee_ids = self.env['hr.contract'].sudo().search(args).mapped('employee_id').ids
+            employee_ids = []
         return json.dumps([('id', 'in', employee_ids), ('id', '!=', self.env.user.employee_id.id)])
 
     def _get_contracts(self):
-        if self._is_group_responsable_uo_security():
+        if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security():
+            args = [
+                ("legajo_state", "in", ("incoming_commission", "active")),
+                ('employee_id', '=', self.employee_id.id)
+            ]
+            return self.env['hr.contract'].search(self._get_domain(args))
+        elif self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
             return self.env['hr.job'].search([
                 ('employee_id', '=', self.employee_id.id),
                 ('contract_id.legajo_state', 'in', ('active', 'incoming_commission')),
                 ('department_id', 'in', department_ids)]).mapped('contract_id')
         else:
-            args = [
-                ("legajo_state", "in", ("incoming_commission", "active")),
-                ('employee_id', '=', self.employee_id.id)
-            ]
-            return self.env['hr.contract'].search(self._get_domain(args))
+            return self.env['hr.contract']
 
     def action_confirm(self):
         self.ensure_one()
