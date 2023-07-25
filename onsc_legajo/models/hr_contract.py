@@ -144,6 +144,8 @@ class HrContract(models.Model):
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
     is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
     notify_sgh = fields.Boolean("Notificar SGH")
+    extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
+                                               string="Motivo extinción de la comisión")
 
     def name_get(self):
         res = []
