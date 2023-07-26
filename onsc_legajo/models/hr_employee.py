@@ -300,8 +300,6 @@ class HrEmployee(models.Model):
                 'cv_nro_doc': partner_id.cv_nro_doc,
                 'notify_sgh': notify_sgh,
             })
-        elif notify_sgh:
-            employee.write({'notify_sgh': notify_sgh})
         return employee
 
 
