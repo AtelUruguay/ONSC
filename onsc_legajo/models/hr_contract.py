@@ -56,7 +56,10 @@ class HrContract(models.Model):
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
 
     inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso origen', history=True)
-    operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora origen", history=True)
+    operating_unit_origin_id = fields.Many2one("operating.unit",
+                                               string="Unidad ejecutora origen",
+                                               domain="[('inciso_id','=', inciso_origin_id)]",
+                                               history=True)
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
     sec_position = fields.Char(string="Sec Plaza", required=True, history=True)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', history=True)
