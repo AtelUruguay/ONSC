@@ -28,7 +28,7 @@ class ONSCLegajoCambioUO(models.Model):
                                                               submenu=submenu)
         doc = etree.XML(res['arch'])
         is_user_consulta = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_consulta')
-        is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
+        is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_administrar')
         is_responsable = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
         if view_type in ['form', 'tree', 'kanban'] and is_user_consulta and not is_user_administrar:
             for node_form in doc.xpath("//%s" % (view_type)):
@@ -155,18 +155,12 @@ class ONSCLegajoCambioUO(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            for record in self:
-                if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta') \
-                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso') \
-                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue') \
-                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo') \
-                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar'):
-                    record.should_disable_form_edit = True
-                else:
-                    record.should_disable_form_edit = record.state not in ['borrador']
-
-            record.should_disable_form_edit = record.state not in ['borrador'] or self.user_has_groups(
-                'onsc_legajo.')
+            is_only_consulta = self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta') \
+                    and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso') \
+                    and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue') \
+                    and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo') \
+                    and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar')
+            record.should_disable_form_edit = record.state not in ['borrador'] or is_only_consulta
 
     @api.depends('cv_emissor_country_id')
     def _compute_employee_id_domain(self):

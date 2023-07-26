@@ -49,26 +49,33 @@ class ONSCLegajoBajaCS(models.Model):
         return res
 
     def _get_domain(self, args):
+        apply_filter = not self.user_has_groups(
+            'onsc_legajo.group_legajo_baja_cs_consulta_bajas') and not self.user_has_groups(
+            'onsc_legajo.group_legajo_baja_cs_administrar_bajas')
         args = expression.AND([[('employee_id', '!=', self.env.user.employee_id.id)], args])
-        if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
+        if apply_filter and self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
+                args2 = args
                 args = expression.AND(
                     [[('inciso_id', '=', inciso_id.id)], args])
-                args = expression.OR([[('inciso_id.is_central_administration', '=', False),
-                                       ('inciso_origen_id', '=', inciso_id.id)], args])
-            elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
-                contract_id = self.env.user.employee_id.job_id.contract_id
-                inciso_id = contract_id.inciso_id
-                operating_unit_id = contract_id.operating_unit_id
-                if inciso_id:
-                    args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
-                    args = expression.OR([[('inciso_id.is_central_administration', '=', False),
-                                           ('inciso_origen_id', '=', inciso_id.id)], args])
-                if operating_unit_id:
-                    args = expression.AND([['|'('operating_unit_id', '=', operating_unit_id.id), ], args])
-                    args = expression.OR([[('inciso_id.is_central_administration', '=', False),
-                                           ('operating_unit_origen_id', '=', operating_unit_id.id)], args])
+                args2 = expression.AND([[('inciso_id.is_central_administration', '=', False),
+                                         ('inciso_origen_id', '=', inciso_id.id)], args2])
+                args = expression.OR([args2, args])
+        elif apply_filter and self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
+            contract_id = self.env.user.employee_id.job_id.contract_id
+            inciso_id = contract_id.inciso_id
+            operating_unit_id = contract_id.operating_unit_id
+            args2 = args
+            if inciso_id:
+                args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
+                args2 = expression.AND([[('inciso_id.is_central_administration', '=', False),
+                                         ('inciso_origen_id', '=', inciso_id.id)], args2])
+            if operating_unit_id:
+                args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id), ], args])
+                args2 = expression.AND([[('inciso_id.is_central_administration', '=', False),
+                                         ('operating_unit_origen_id', '=', operating_unit_id.id)], args2])
+            args = expression.OR([args2, args])
         return args
 
     def _get_domain_contract(self, args, employee_id):
