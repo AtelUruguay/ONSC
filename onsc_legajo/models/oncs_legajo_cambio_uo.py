@@ -28,7 +28,7 @@ class ONSCLegajoCambioUO(models.Model):
                                                               submenu=submenu)
         doc = etree.XML(res['arch'])
         is_user_consulta = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_consulta')
-        is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
+        is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_administrar')
         is_responsable = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
         if view_type in ['form', 'tree', 'kanban'] and is_user_consulta and not is_user_administrar:
             for node_form in doc.xpath("//%s" % (view_type)):
