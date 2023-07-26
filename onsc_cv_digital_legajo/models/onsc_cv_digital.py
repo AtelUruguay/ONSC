@@ -484,24 +484,24 @@ class ONSCCVDigital(models.Model):
             self.disabilitie_write_date = fields.Datetime.now()
 
         # DOMICILIO
-        country_id = values.get('country_id')
-        address_receipt_file = values.get('address_receipt_file')
-        address_info_date = values.get('address_info_date')
-        cv_address_state_id = values.get('cv_address_state_id')
-        cv_address_location_id = values.get('cv_address_location_id')
-        cv_address_street = values.get('cv_address_street')
-        cv_address_street_id = values.get('cv_address_street_id')
-        cv_address_street2_id = values.get('cv_address_street2_id')
-        cv_address_street3_id = values.get('cv_address_street3_id')
-        cv_address_nro_door = values.get('cv_address_nro_door')
+        country_id = 'country_id' in values
+        address_receipt_file = 'address_receipt_file' in values
+        address_info_date = 'address_info_date' in values
+        cv_address_state_id = 'cv_address_state_id' in values
+        cv_address_location_id = 'cv_address_location_id' in values
+        cv_address_street = 'cv_address_street' in values
+        cv_address_street_id = 'cv_address_street_id' in values
+        cv_address_street2_id = 'cv_address_street2_id' in values
+        cv_address_street3_id = 'cv_address_street3_id' in values
+        cv_address_nro_door = 'cv_address_nro_door' in values
         cv_address_is_cv_bis = 'cv_address_is_cv_bis' in values
-        cv_address_apto = values.get('cv_address_apto')
-        cv_address_amplification = values.get('cv_address_amplification')
-        cv_addres_apto = values.get('cv_addres_apto')
-        cv_address_zip = values.get('cv_address_zip')
-        cv_address_place = values.get('cv_address_place')
-        cv_address_block = values.get('cv_address_block')
-        cv_address_sandlot = values.get('cv_address_sandlot')
+        cv_address_apto = 'cv_address_apto' in values
+        cv_address_amplification = 'cv_address_amplification' in values
+        cv_addres_apto = 'cv_addres_apto' in values
+        cv_address_zip = 'cv_address_zip' in values
+        cv_address_place = 'cv_address_place' in values
+        cv_address_block = 'cv_address_block' in values
+        cv_address_sandlot = 'cv_address_sandlot' in values
         if cv_address_nro_door or cv_address_is_cv_bis or cv_address_apto or cv_address_amplification or country_id or address_receipt_file or address_info_date or cv_address_state_id or cv_address_location_id or cv_address_street_id or cv_address_street2_id or cv_address_street3_id or cv_addres_apto or cv_address_zip or cv_address_place or cv_address_block or cv_address_sandlot or cv_address_street:
             for record in self.with_context(no_update_header_documentary_validation=True):
                 if not record.is_cv_address_populated and record.cv_address_documentary_validation_state != 'validated':

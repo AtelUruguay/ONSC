@@ -80,6 +80,11 @@
                     <field name="is_docket" invisible="1"/>
                     <field name="employee_id" invisible="1"/>
                     <field name="cv_digital_id" invisible="1"/>
+                    <field name="cv_first_name" invisible="1"/>
+                    <field name="cv_second_name" invisible="1"/>
+                    <field name="cv_last_name_1" invisible="1"/>
+                    <field name="cv_last_name_2" invisible="1"/>
+                    <field name="full_name" invisible="1"/>
                     <button type="object" name="action_update_binary_fields" string="Cargar documentos adjuntos"
                             groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
                             states="borrador,error_sgh"
