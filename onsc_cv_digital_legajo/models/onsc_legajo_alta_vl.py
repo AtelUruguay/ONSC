@@ -65,7 +65,7 @@ class ONSCLegajoAltaVL(models.Model):
                 item['norm_id'] = (item['norm_id'][0], LegajoNorm.browse(norm_id)._custom_display_name())
         return result
 
-    full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
+    full_name = fields.Char('Nombre')
     partner_id = fields.Many2one("res.partner", string="Contacto", readonly=True,
                                  states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
@@ -192,12 +192,11 @@ class ONSCLegajoAltaVL(models.Model):
                 record.email = cv_digital_id.email
                 record.health_provider_id = cv_digital_id.health_provider_id
 
-    @api.depends('partner_id')
-    def _compute_full_name(self):
-        for record in self:
-            record.full_name = calc_full_name(
-                record.partner_id.cv_first_name, record.partner_id.cv_second_name,
-                record.partner_id.cv_last_name_1, record.partner_id.cv_last_name_2)
+                record.cv_first_name = record.partner_id.cv_first_name
+                record.cv_second_name = record.partner_id.cv_second_name
+                record.cv_last_name_1 = record.partner_id.cv_last_name_1
+                record.cv_last_name_2 = record.partner_id.cv_last_name_2
+                record.full_name = record.partner_id.cv_full_name
 
     @api.depends('inciso_id')
     def _compute_partner_id_domain(self):
@@ -383,11 +382,6 @@ class ONSCLegajoAltaVL(models.Model):
         self.inactivity_years = False
         self.graduation_date = False
         self.contract_expiration_date = False
-        # self.reason_description = False
-        # self.norm_id = False
-        # self.resolution_description = False
-        # self.resolution_date = False
-        # self.resolution_type = False
         self.health_provider_id = False
         self.additional_information = False
         self.attached_document_ids = False
@@ -396,6 +390,12 @@ class ONSCLegajoAltaVL(models.Model):
         self.cv_sex = False
         self.cv_birthdate = False
         self.cv_address_street_id = False
+        self.cv_first_name = False
+        self.cv_second_name = False
+        self.cv_last_name_1 = False
+        self.cv_last_name_2 = False
+        self.full_name = False
+
 
     def _get_legajo_employee(self):
         employee = super(ONSCLegajoAltaVL, self.with_context(is_alta_vl=True))._get_legajo_employee()
@@ -483,7 +483,11 @@ class ONSCLegajoAltaVL(models.Model):
             'uy_citizenship': self.cv_digital_id.uy_citizenship,
             'personal_phone': self.cv_digital_id.personal_phone,
             'mobile_phone': self.cv_digital_id.mobile_phone,
-            'email': self.cv_digital_id.email
+            'email': self.cv_digital_id.email,
+            'cv_first_name': self.partner_id.cv_first_name,
+            'cv_second_name': self.partner_id.cv_second_name,
+            'cv_last_name_1': self.partner_id.cv_last_name_1,
+            'cv_last_name_2': self.partner_id.cv_last_name_2,
         }
         if self.cv_digital_id.civical_credential_documentary_validation_state == 'validated':
             values.update({
