@@ -63,7 +63,7 @@ class HrContract(models.Model):
     call_number = fields.Char(string='Número de llamado', history=True)
     legajo_state = fields.Selection(
         [('active', 'Activo'), ('baja', 'Baja'), ('outgoing_commission', 'Comisión saliente'),
-         ('incoming_commission', 'Comisión entrante')], string='Estado', history=True)
+         ('incoming_commission', 'Comisión entrante')], tracking=True, string='Estado', history=True)
     cs_contract_id = fields.Many2one('hr.contract', string='Contrato relacionado', history=True)
     first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name', store=True)
     second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name', store=True)
