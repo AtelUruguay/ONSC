@@ -32,14 +32,6 @@ class HrJob(models.Model):
     role_extra_is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')
 
-    @api.constrains("contract_id", "start_date", "end_date")
-    def _check_date_range_into_contract(self):
-        for record in self:
-            if record.start_date < record.contract_id.date_start:
-                raise ValidationError(_("La fecha desde está fuera del rango de fechas del contrato"))
-            if record.end_date and record.contract_id.date_end and record.end_date > record.contract_id.date_end:
-                raise ValidationError(_("La fecha hasta está fuera del rango de fechas del contrato"))
-
     @api.depends('contract_id')
     def _compute_department_domain(self):
         UOs = self.env['hr.department']
@@ -53,6 +45,14 @@ class HrJob(models.Model):
             record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto')
             record.role_extra_is_readonly = not self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto') and record.end_date and record.end_date <= fields.Date.today()
+
+    @api.constrains("contract_id", "start_date", "end_date")
+    def _check_date_range_into_contract(self):
+        for record in self:
+            if record.start_date < record.contract_id.date_start:
+                raise ValidationError(_("La fecha desde está fuera del rango de fechas del contrato"))
+            if record.end_date and record.contract_id.date_end and record.end_date > record.contract_id.date_end:
+                raise ValidationError(_("La fecha hasta está fuera del rango de fechas del contrato"))
 
     @api.onchange('start_date')
     def onchange_start_date(self):
@@ -98,6 +98,12 @@ class HrJob(models.Model):
     @api.onchange('contract_id')
     def onchange_contract_id(self):
         self.department_id = False
+
+    def write(self, values):
+        for modified_field in ['department_id', 'security_job_id']:
+            if modified_field in values:
+                self.contract_id.notify_sgh = True
+        return super(HrJob, self.suspend_security()).write(values)
 
     def get_available_jobs(self, user=False):
         today = fields.Date.today()
@@ -179,12 +185,6 @@ class HrJob(models.Model):
                  ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date)]):
             if record.department_id.manager_id.id != record.employee_id.id:
                 record.department_id.write({'manager_id': record.employee_id.id})
-
-    def write(self, values):
-        for modified_field in ['department_id', 'security_job_id']:
-            if modified_field in values:
-                self.contract_id.notify_sgh = True
-        return super(HrJob, self.suspend_security()).write(values)
 
 
 class HrJobRoleLine(models.Model):
