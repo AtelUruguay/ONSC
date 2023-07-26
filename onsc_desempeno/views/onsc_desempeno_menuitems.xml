@@ -10,6 +10,10 @@
               name="Catálogos"
               parent="onsc_desempeno_root_menu"
               sequence="50"/>
+     <menuitem id="onsc_desempeno_config_menu"
+              name="Configuración"
+              parent="onsc_desempeno_root_menu"
+              sequence="60"/>
     <menuitem id="onsc_desempeno_skill_menu"
               name="Competencias"
               action="onsc_desempeno_skill_action"
@@ -52,6 +56,11 @@
               parent="onsc_desempeno_catalog_menu"
               groups="onsc_desempeno.group_desempeno_administrador"
               sequence="20"/>
-
+    <menuitem id="onsc_desempeno_general_cycle_menu"
+              name="Ciclo General de Evaluación de Desempeño"
+              action="onsc_desempeno_general_cycle_action"
+              parent="onsc_desempeno_catalog_menu"
+              groups="onsc_desempeno.group_desempeno_administrador,onsc_desempeno.group_desempeno_configurador_gh_ue"
+                sequence="1"/>
 
 </odoo>
