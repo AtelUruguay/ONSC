@@ -35,8 +35,6 @@
             <field name="arch" type="xml">
                 <form string="Baja CS">
                     <header>
-                        <button name="action_actualizar_puesto" class="btn btn-primary"
-                                type="object" string="Confirmar" />
                         <button name="action_call_ws11" class="btn btn-primary"
                                 type="object" string="Enviar SGH"
                                 groups="onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue,onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso,onsc_legajo.group_legajo_baja_cs_administrar_bajas"
