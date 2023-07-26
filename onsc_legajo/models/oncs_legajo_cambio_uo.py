@@ -116,6 +116,63 @@ class ONSCLegajoCambioUO(models.Model):
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     show_contract = fields.Boolean('Mostrar contrato', compute='_compute_contract_id_domain')
 
+    @api.depends('employee_id')
+    def _compute_full_name(self):
+        for record in self:
+            record.full_name = '%s-%s-%s' % (
+                record.employee_id.cv_nro_doc,
+                calc_full_name(
+                    record.employee_id.cv_first_name, record.employee_id.cv_second_name,
+                    record.employee_id.cv_last_name_1,
+                    record.employee_id.cv_last_name_2),
+                record.date_start.strftime('%Y%m%d'))
+
+    @api.depends('state')
+    def _compute_should_disable_form_edit(self):
+        is_consulta = self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta')
+        is_superior = self.user_has_groups(
+            'onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue,onsc_legajo.group_legajo_cambio_uo_responsable_uo,onsc_legajo.group_legajo_cambio_uo_administrar')
+        for record in self:
+            is_only_consulta = is_consulta and not is_superior
+            record.should_disable_form_edit = record.state not in ['borrador'] or is_only_consulta
+
+    @api.depends('cv_emissor_country_id')
+    def _compute_employee_id_domain(self):
+        for rec in self:
+            rec.employee_id_domain = self._get_domain_employee_ids()
+
+    @api.depends('employee_id')
+    def _compute_contract_id_domain(self):
+        for rec in self:
+            if rec.employee_id:
+                contracts = rec._get_contracts()
+                rec.show_contract = len(contracts) > 1
+                rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
+            else:
+                rec.show_contract = False
+                rec.contract_id_domain = json.dumps([('id', 'in', [])])
+
+    @api.depends('contract_id')
+    def _compute_job_id_domain(self):
+        is_responsable_uo = self._is_group_responsable_uo_security()
+        department_ids = self.get_uo_tree()
+        for rec in self:
+            if is_responsable_uo:
+                job_ids = rec.contract_id.job_ids.filtered(lambda x:
+                                                           x.end_date is False
+                                                           or x.end_date >= fields.Date.today()
+                                                           and x.department_id.id in department_ids)
+            else:
+                job_ids = rec.contract_id.job_ids.filtered(
+                    lambda x: x.end_date is False or x.end_date >= fields.Date.today())
+            rec.job_id_domain = json.dumps([('id', 'in', job_ids.ids)])
+            rec.show_job = len(job_ids) > 1
+
+    @api.depends('contract_id')
+    def _compute_department_id_domain(self):
+        for rec in self:
+            rec.department_id_domain = json.dumps([('id', 'in', self.get_uo_tree(rec.contract_id))])
+
     @api.constrains("date_start", "contract_id", "job_id")
     def _check_date(self):
         for record in self:
@@ -141,61 +198,6 @@ class ONSCLegajoCambioUO(models.Model):
                                                     record.date_start):
                 raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
 
-    @api.depends('employee_id')
-    def _compute_full_name(self):
-        for record in self:
-            record.full_name = '%s-%s-%s' % (
-                record.employee_id.cv_nro_doc,
-                calc_full_name(
-                    record.employee_id.cv_first_name, record.employee_id.cv_second_name,
-                    record.employee_id.cv_last_name_1,
-                    record.employee_id.cv_last_name_2),
-                record.date_start.strftime('%Y%m%d'))
-
-    @api.depends('state')
-    def _compute_should_disable_form_edit(self):
-        for record in self:
-            is_only_consulta = self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta') \
-                    and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso') \
-                    and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue') \
-                    and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo') \
-                    and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar')
-            record.should_disable_form_edit = record.state not in ['borrador'] or is_only_consulta
-
-    @api.depends('cv_emissor_country_id')
-    def _compute_employee_id_domain(self):
-        for rec in self:
-            rec.employee_id_domain = self._get_domain_employee_ids()
-
-    @api.depends('employee_id')
-    def _compute_contract_id_domain(self):
-        for rec in self:
-            if rec.employee_id:
-                contracts = rec._get_contracts()
-                rec.show_contract = len(contracts) > 1
-                rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
-            else:
-                rec.show_contract = False
-                rec.contract_id_domain = json.dumps([('id', 'in', [])])
-
-    @api.depends('contract_id')
-    def _compute_job_id_domain(self):
-        is_responsable_uo = self._is_group_responsable_uo_security()
-        department_ids = self.get_uo_tree()
-        for rec in self:
-            if is_responsable_uo:
-                job_ids = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
-            else:
-                job_ids = rec.contract_id.job_ids.filtered(
-                    lambda x: x.end_date is False or x.end_date >= fields.Date.today())
-            rec.job_id_domain = json.dumps([('id', 'in', job_ids.ids)])
-            rec.show_job = len(job_ids) > 1
-
-    @api.depends('contract_id')
-    def _compute_department_id_domain(self):
-        for rec in self:
-            rec.department_id_domain = json.dumps([('id', 'in', self.get_uo_tree(rec.contract_id))])
-
     @api.onchange('employee_id')
     def onchange_employee_id(self):
         for record in self.sudo():
@@ -218,7 +220,10 @@ class ONSCLegajoCambioUO(models.Model):
     def onchange_department_id_contract_id(self):
         if self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
-            job_ids = self.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
+            job_ids = self.contract_id.job_ids.filtered(lambda x:
+                                                        x.end_date is False
+                                                        or x.end_date >= fields.Date.today()
+                                                        and x.department_id.id in department_ids)
         else:
             job_ids = self.contract_id.job_ids.filtered(
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
@@ -226,6 +231,11 @@ class ONSCLegajoCambioUO(models.Model):
             self.job_id = job_ids[0].id
         else:
             self.job_id = False
+
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'borrador'):
+            raise ValidationError(_("Solo se pueden eliminar registros en estado borrador"))
+        return super(ONSCLegajoCambioUO, self).unlink()
 
     def get_uo_tree(self, contract=False):
         Department = self.env['hr.department'].sudo()
@@ -299,7 +309,8 @@ class ONSCLegajoCambioUO(models.Model):
             self.suspend_security().job_id.deactivate(self.date_start)
             self.suspend_security().job_id.write({'active': False})
             show_warning = True
-            warning_message = u"No pueden existir dos puestos activos para el mismo contrato, se inactivará el puesto anterior"
+            warning_message = u"No pueden existir dos puestos activos para el mismo contrato, " \
+                              u"se inactivará el puesto anterior"
         else:
             self.suspend_security().job_id.deactivate(self.date_start - relativedelta(days=1))
         Job.suspend_security().create_job(self.contract_id,
@@ -341,8 +352,3 @@ class ONSCLegajoCambioUO(models.Model):
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
-
-    def unlink(self):
-        if self.filtered(lambda x: x.state != 'borrador'):
-            raise ValidationError(_("Solo se pueden eliminar registros en estado borrador"))
-        return super(ONSCLegajoCambioUO, self).unlink()

@@ -195,73 +195,6 @@ class ONSCLegajoAltaVL(models.Model):
         for record in self:
             record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
 
-    @api.constrains("attached_document_ids")
-    def _check_attached_document_ids(self):
-        for record in self:
-            if not record.attached_document_ids and record.state != 'borrador':
-                raise ValidationError(_("Debe haber al menos un documento adjunto"))
-
-    @api.constrains("date_start")
-    def _check_date(self):
-        for record in self:
-            if record.date_start and record.date_start > fields.Date.today():
-                raise ValidationError(_("La fecha debe ser menor o igual al día de alta"))
-
-    @api.constrains("date_start", "contract_expiration_date")
-    def _check_contract_expiration_date(self):
-        for record in self:
-            if record.contract_expiration_date and record.date_start and record.date_start > record.contract_expiration_date:
-                raise ValidationError(
-                    _("La fecha de Vencimiento del contrato no puede ser anterior a la Fecha de alta"))
-
-    @api.constrains("graduation_date", "date_start")
-    def _check_graduation_date(self):
-        for record in self:
-            if record.date_start and record.graduation_date and record.graduation_date > record.date_start:
-                raise ValidationError(_("La fecha de graduación debe ser menor o igual al día de alta"))
-
-    @api.onchange('inciso_id')
-    def onchange_inciso(self):
-        # TODO: terminar los demas campos a setear
-        if self.operating_unit_id and self.operating_unit_id.inciso_id.id != self.inciso_id.id:
-            self.operating_unit_id = False
-            self.department_id = False
-            self.program_project_id = False
-            self.retributive_day_id = False
-
-    @api.onchange('operating_unit_id')
-    def onchange_operating_unit(self):
-        self.department_id = False
-        self.program_project_id = False
-        self.retributive_day_id = False
-
-    @api.onchange('descriptor1_id')
-    def onchange_descriptor1(self):
-        self.descriptor2_id = False
-        self.descriptor3_id = False
-        self.descriptor4_id = False
-
-    @api.onchange('descriptor2_id')
-    def onchange_descriptor2(self):
-        self.descriptor3_id = False
-        self.descriptor4_id = False
-
-    @api.onchange('descriptor3_id')
-    def onchange_descriptor3(self):
-        self.descriptor4_id = False
-
-    @api.onchange('nroPuesto')
-    def onchange_nroPuesto(self):
-        if self.nroPuesto and not self.nroPuesto.isnumeric():
-            self.nroPuesto = ''
-            return warning_response(_("El campo Puesto debe ser numérico"))
-
-    @api.onchange('nroPlaza')
-    def onchange_nroPlaza(self):
-        if self.nroPlaza and not self.nroPlaza.isnumeric():
-            self.nroPlaza = ''
-            return warning_response(_("El campo Plaza debe ser numérico"))
-
     @api.depends('descriptor1_id', 'descriptor2_id', 'descriptor3_id', 'descriptor4_id')
     def _compute_partida(self):
         for rec in self:
@@ -362,6 +295,78 @@ class ONSCLegajoAltaVL(models.Model):
             if dsc4Id:
                 domain = [('id', 'in', dsc4Id.ids)]
             rec.descriptor4_domain_id = json.dumps(domain)
+
+    @api.constrains("attached_document_ids")
+    def _check_attached_document_ids(self):
+        for record in self:
+            if not record.attached_document_ids and record.state != 'borrador':
+                raise ValidationError(_("Debe haber al menos un documento adjunto"))
+
+    @api.constrains("date_start")
+    def _check_date(self):
+        for record in self:
+            if record.date_start and record.date_start > fields.Date.today():
+                raise ValidationError(_("La fecha debe ser menor o igual al día de alta"))
+
+    @api.constrains("date_start", "contract_expiration_date")
+    def _check_contract_expiration_date(self):
+        for record in self:
+            if record.contract_expiration_date and record.date_start and record.date_start > record.contract_expiration_date:
+                raise ValidationError(
+                    _("La fecha de Vencimiento del contrato no puede ser anterior a la Fecha de alta"))
+
+    @api.constrains("graduation_date", "date_start")
+    def _check_graduation_date(self):
+        for record in self:
+            if record.date_start and record.graduation_date and record.graduation_date > record.date_start:
+                raise ValidationError(_("La fecha de graduación debe ser menor o igual al día de alta"))
+
+    @api.onchange('inciso_id')
+    def onchange_inciso(self):
+        # TODO: terminar los demas campos a setear
+        if self.operating_unit_id and self.operating_unit_id.inciso_id.id != self.inciso_id.id:
+            self.operating_unit_id = False
+            self.department_id = False
+            self.program_project_id = False
+            self.retributive_day_id = False
+
+    @api.onchange('operating_unit_id')
+    def onchange_operating_unit(self):
+        self.department_id = False
+        self.program_project_id = False
+        self.retributive_day_id = False
+
+    @api.onchange('descriptor1_id')
+    def onchange_descriptor1(self):
+        self.descriptor2_id = False
+        self.descriptor3_id = False
+        self.descriptor4_id = False
+
+    @api.onchange('descriptor2_id')
+    def onchange_descriptor2(self):
+        self.descriptor3_id = False
+        self.descriptor4_id = False
+
+    @api.onchange('descriptor3_id')
+    def onchange_descriptor3(self):
+        self.descriptor4_id = False
+
+    @api.onchange('nroPuesto')
+    def onchange_nroPuesto(self):
+        if self.nroPuesto and not self.nroPuesto.isnumeric():
+            self.nroPuesto = ''
+            return warning_response(_("El campo Puesto debe ser numérico"))
+
+    @api.onchange('nroPlaza')
+    def onchange_nroPlaza(self):
+        if self.nroPlaza and not self.nroPlaza.isnumeric():
+            self.nroPlaza = ''
+            return warning_response(_("El campo Plaza debe ser numérico"))
+
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'borrador'):
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
+        return super(ONSCLegajoAltaVL, self).unlink()
 
     def action_error_sgh(self):
         for rec in self:
@@ -477,11 +482,6 @@ class ONSCLegajoAltaVL(models.Model):
 
     def _get_legajo_job(self, contract):
         return self.env['hr.job'].create_job(contract, self.department_id, self.date_start, self.security_job_id)
-
-    def unlink(self):
-        if self.filtered(lambda x: x.state != 'borrador'):
-            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
-        return super(ONSCLegajoAltaVL, self).unlink()
 
     # MAIL TEMPLATE UTILS
     def get_followers_mails(self):

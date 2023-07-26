@@ -2,7 +2,6 @@
 import json
 
 from lxml import etree
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -105,10 +104,18 @@ class ONSCLegajoAltaVL(models.Model):
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
         for record in self:
-            if record.mass_upload_id:
-                record.origin_type = 'P'
-            else:
-                record.origin_type = 'M'
+            record.origin_type = record.mass_upload_id and 'P' or 'M'
+
+    @api.depends('inciso_id')
+    def _compute_partner_id_domain(self):
+        partner_ids = self.env['onsc.cv.digital'].search([
+            ('type', '=', 'cv'),
+            ('partner_id.is_partner_cv', '=', True),
+            ('partner_id.is_cv_uruguay', '=', True),
+            ('partner_id.id', '!=', self.env.user.partner_id.id)
+        ]).mapped('partner_id.id')
+        for record in self:
+            record.partner_id_domain = json.dumps([('id', 'in', partner_ids)])
 
     def action_call_ws1(self):
         return self.syncronize_ws1(log_info=True)
@@ -197,17 +204,6 @@ class ONSCLegajoAltaVL(models.Model):
                 record.cv_last_name_1 = record.partner_id.cv_last_name_1
                 record.cv_last_name_2 = record.partner_id.cv_last_name_2
                 record.full_name = record.partner_id.cv_full_name
-
-    @api.depends('inciso_id')
-    def _compute_partner_id_domain(self):
-        partner_ids = self.env['onsc.cv.digital'].search([
-            ('type', '=', 'cv'),
-            ('partner_id.is_partner_cv', '=', True),
-            ('partner_id.is_cv_uruguay', '=', True),
-            ('partner_id.id', '!=', self.env.user.partner_id.id)
-        ]).mapped('partner_id.id')
-        for record in self:
-            record.partner_id_domain = json.dumps([('id', 'in', partner_ids)])
 
     @api.onchange('regime_id')
     def onchange_regimen(self):
@@ -396,7 +392,6 @@ class ONSCLegajoAltaVL(models.Model):
         self.cv_last_name_2 = False
         self.full_name = False
 
-
     def _get_legajo_employee(self):
         employee = super(ONSCLegajoAltaVL, self.with_context(is_alta_vl=True))._get_legajo_employee()
         cv = employee.cv_digital_id
@@ -476,7 +471,7 @@ class ONSCLegajoAltaVL(models.Model):
     def get_altavl_name(self):
         return self.with_context(show_cv_nro_doc=True).partner_id.name_get()[0][1]
 
-    def is_employee_notify_sgh_nedeed(self):
+    def _is_employee_notify_sgh_nedeed(self):
         values = {
             'country_of_birth_id': self.cv_digital_id.country_of_birth_id.id,
             'health_provider_id': self.cv_digital_id.health_provider_id.id,
@@ -515,4 +510,3 @@ class ONSCLegajoAltaVL(models.Model):
             })
         values_filtered = self.env['onsc.base.utils'].sudo().get_really_values_changed(self, values)
         return len(values_filtered.keys()) > 0
-

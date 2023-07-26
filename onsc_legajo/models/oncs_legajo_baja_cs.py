@@ -215,12 +215,6 @@ class ONSCLegajoBajaCS(models.Model):
     show_contract = fields.Boolean('Show Contract')
     state = fields.Selection(STATES, string='Estado', default='borrador', tracking=True, copy=False)
 
-    @api.constrains("end_date")
-    def _check_date(self):
-        for record in self:
-            if record.end_date > fields.Date.today():
-                raise ValidationError(_("La Fecha hasta de  la Comisión debe ser menor o igual  al día de baja"))
-
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
@@ -245,6 +239,12 @@ class ONSCLegajoBajaCS(models.Model):
                 rec.show_contract = len(contracts) > 1
                 rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
 
+    @api.constrains("end_date")
+    def _check_date(self):
+        for record in self:
+            if record.end_date > fields.Date.today():
+                raise ValidationError(_("La Fecha hasta de  la Comisión debe ser menor o igual  al día de baja"))
+
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         if self.employee_id:
@@ -256,14 +256,63 @@ class ONSCLegajoBajaCS(models.Model):
         else:
             self.contract_id = False
 
-    def _get_employee_contracts(self):
-        Contract = self.env['hr.contract']
-        args = self._get_domain_contract([], self.employee_id.id)
-        return Contract.search(args)
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'borrador'):
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
+        return super(ONSCLegajoBajaCS, self).unlink()
 
     def action_call_ws11(self):
         self._check_required_fieds_ws11()
         self.env['onsc.legajo.abstract.baja.vl.ws11'].suspend_security().syncronize(self)
+
+    def action_update_contract(self):
+        data = {
+            'reason_deregistration': self.reason_description or False,
+            'norm_code_deregistration_id': self.norm_id and self.norm_id.id or False,
+            'type_norm_deregistration': self.norm_type or False,
+            'norm_number_deregistration': self.norm_number or False,
+            'norm_year_deregistration': self.norm_year or False,
+            'norm_article_deregistration': self.norm_article or False,
+            'resolution_description_deregistration': self.resolution_description or False,
+            'resolution_date_deregistration': self.resolution_date or False,
+            'resolution_type_deregistration': self.resolution_type or False,
+            'additional_information_deregistration': self.additional_information,
+            'extinction_commission_id': self.extinction_commission_id and self.extinction_commission_id.id or False
+        }
+
+        for attach in self.attached_document_discharge_ids:
+            attach.write({
+                'contract_id': self.contract_id.id,
+                'type': 'deregistration'
+            })
+        self.contract_id.suspend_security().write(data)
+        return True
+
+    def action_actualizar_puesto(self):
+        ContratoOrigen = self.env['hr.contract'].sudo().search([("cs_contract_id", "=", self.contract_id.id)])
+        if self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
+            ContratoOrigen.suspend_security().activate_legajo_contract()
+            ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
+            self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
+                {'end_date': self.end_date})
+            self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
+        elif not self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission':
+            self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
+            self.contract_id.cs_contract_id.suspend_security().activate_legajo_contract()
+            ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
+        elif self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission' \
+                and not ContratoOrigen:
+            self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
+                {'end_date': self.end_date})
+            self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
+        self.action_update_contract()
+        self.write({'state': 'confirmado', 'is_error_synchronization': False, 'error_message_synchronization': '', })
+        return True
+
+    def _get_employee_contracts(self):
+        Contract = self.env['hr.contract']
+        args = self._get_domain_contract([], self.employee_id.id)
+        return Contract.search(args)
 
     def _get_domain_employee_ids(self):
         args = []
@@ -300,54 +349,4 @@ class ONSCLegajoBajaCS(models.Model):
                 fields_str = '\n'.join(message)
                 message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
                 raise ValidationError(_(message))
-        return True
-
-    def unlink(self):
-        if self.filtered(lambda x: x.state != 'borrador'):
-            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
-        return super(ONSCLegajoBajaCS, self).unlink()
-
-    def action_actualizar_puesto(self):
-        ContratoOrigen = self.env['hr.contract'].sudo().search([("cs_contract_id", "=", self.contract_id.id)])
-        if self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
-            ContratoOrigen.suspend_security().activate_legajo_contract()
-            ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
-            self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
-                {'end_date': self.end_date})
-            self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
-        elif not self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission':
-            self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
-            self.contract_id.cs_contract_id.suspend_security().activate_legajo_contract()
-            ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
-        elif self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission' \
-                and not ContratoOrigen:
-            self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
-                {'end_date': self.end_date})
-            self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
-        self.action_update_contract()
-        self.write({'state': 'confirmado', 'is_error_synchronization': False, 'error_message_synchronization': '', })
-        return True
-
-    def action_update_contract(self):
-        data = {
-            'reason_deregistration': self.reason_description or False,
-            'norm_code_deregistration_id': self.norm_id and self.norm_id.id or False,
-            'type_norm_deregistration': self.norm_type or False,
-            'norm_number_deregistration': self.norm_number or False,
-            'norm_year_deregistration': self.norm_year or False,
-            'norm_article_deregistration': self.norm_article or False,
-            'resolution_description_deregistration': self.resolution_description or False,
-            'resolution_date_deregistration': self.resolution_date or False,
-            'resolution_type_deregistration': self.resolution_type or False,
-            'additional_information_deregistration': self.additional_information,
-            'extinction_commission_id': self.extinction_commission_id and self.extinction_commission_id.id or False
-        }
-
-        for attach in self.attached_document_discharge_ids:
-            attach.write({
-                'contract_id': self.contract_id.id,
-                'type': 'deregistration'
-            })
-        self.contract_id.suspend_security().write(data)
-
         return True

@@ -149,6 +149,11 @@ class ONSCLegajoBajaVL(models.Model):
         self.operating_unit_id = self.contract_id.operating_unit_id.id
         self.inciso_id = self.contract_id.inciso_id.id
 
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'borrador'):
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
+        return super(ONSCLegajoBajaVL, self).unlink()
+
     def action_call_ws9(self):
         self._check_required_fieds_ws9()
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
@@ -226,8 +231,3 @@ class ONSCLegajoBajaVL(models.Model):
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
         return True
-
-    def unlink(self):
-        if self.filtered(lambda x: x.state != 'borrador'):
-            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
-        return super(ONSCLegajoBajaVL, self).unlink()

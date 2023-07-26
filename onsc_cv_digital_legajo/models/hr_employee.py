@@ -354,15 +354,6 @@ class HrEmployee(models.Model):
 
     def _get_info_fromcv_civical_credential(self):
         # CREDENCIAL CIVICA
-        BaseUtils = self.env['onsc.base.utils'].sudo()
-        potential_vals = {
-            'uy_citizenship': self.cv_digital_id.uy_citizenship,
-            'crendencial_serie': self.cv_digital_id.crendencial_serie,
-            'credential_number': self.cv_digital_id.credential_number,
-            'civical_credential_file': self.cv_digital_id.civical_credential_file,
-            'civical_credential_filename': self.cv_digital_id.civical_credential_filename
-        }
-        values_filtered = BaseUtils.get_really_values_changed(self, potential_vals)
         return {
             'uy_citizenship': self.cv_digital_id.uy_citizenship,
             'crendencial_serie': self.cv_digital_id.crendencial_serie,
