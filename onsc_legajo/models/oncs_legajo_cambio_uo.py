@@ -59,8 +59,7 @@ class ONSCLegajoCambioUO(models.Model):
 
     def _get_domain(self, args, filter_by_departments=False):
         args = super(ONSCLegajoCambioUO, self)._get_domain(args, use_employee=True)
-        not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() \
-                                and not self._is_group_legajo_cambio_uo_administrar()
+        not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() and not self._is_group_legajo_cambio_uo_administrar()
         if not_abstract_security and self._is_group_responsable_uo_security():
             Job = self.env['hr.job'].sudo()
             department_ids = self.get_uo_tree()
@@ -193,7 +192,8 @@ class ONSCLegajoCambioUO(models.Model):
             if is_responsable_uo:
                 job_ids = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
             else:
-                job_ids = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today())
+                job_ids = rec.contract_id.job_ids.filtered(
+                    lambda x: x.end_date is False or x.end_date >= fields.Date.today())
             rec.job_id_domain = json.dumps([('id', 'in', job_ids.ids)])
             rec.show_job = len(job_ids) > 1
 
