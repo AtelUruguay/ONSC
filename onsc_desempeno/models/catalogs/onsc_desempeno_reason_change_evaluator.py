@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ONSCDesempenoReasonChangeEvaluator(models.Model):
-    _name = 'onsc.desempeno.reason_change_evaluator'
+    _name = 'onsc.desempeno.reason.change.evaluator'
     _description = 'Motivos cambio de evaluador'
 
     name = fields.Char(string="Nombre del motivo del cambio de evaluador", required=True)

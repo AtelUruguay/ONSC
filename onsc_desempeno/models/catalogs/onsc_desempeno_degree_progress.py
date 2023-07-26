@@ -7,7 +7,7 @@ _logger = logging.getLogger(__name__)
 
 
 class ONSCDesempenoDegreeProgress(models.Model):
-    _name = 'onsc.desempeno.degree_progress'
+    _name = 'onsc.desempeno.degree.progress'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Grados de avance'
 
