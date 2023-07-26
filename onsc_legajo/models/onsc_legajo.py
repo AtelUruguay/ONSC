@@ -26,7 +26,7 @@ class ONSCLegajo(models.Model):
 
     employee_id = fields.Many2one(
         comodel_name="hr.employee",
-        string="Empleado",
+        string="Funcionario",
         required=True,
         index=True)
 

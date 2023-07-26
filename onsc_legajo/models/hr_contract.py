@@ -56,14 +56,17 @@ class HrContract(models.Model):
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
 
     inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso origen', history=True)
-    operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora origen", history=True)
+    operating_unit_origin_id = fields.Many2one("operating.unit",
+                                               string="Unidad ejecutora origen",
+                                               domain="[('inciso_id','=', inciso_origin_id)]",
+                                               history=True)
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
     sec_position = fields.Char(string="Sec Plaza", required=True, history=True)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', history=True)
     call_number = fields.Char(string='Número de llamado', history=True)
     legajo_state = fields.Selection(
         [('active', 'Activo'), ('baja', 'Baja'), ('outgoing_commission', 'Comisión saliente'),
-         ('incoming_commission', 'Comisión entrante')], string='Estado', history=True)
+         ('incoming_commission', 'Comisión entrante')], tracking=True, string='Estado', history=True)
     cs_contract_id = fields.Many2one('hr.contract', string='Contrato relacionado', history=True)
     first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name', store=True)
     second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name', store=True)
@@ -144,6 +147,8 @@ class HrContract(models.Model):
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
     is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
     notify_sgh = fields.Boolean("Notificar SGH")
+    extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
+                                               string="Motivo extinción de la comisión")
 
     def name_get(self):
         res = []
@@ -247,7 +252,8 @@ class HrContract(models.Model):
         if legajo_state == 'baja':
             vals.update({'date_end': date_end})
         self.suspend_security().write(vals)
-        self.suspend_security().job_ids.deactivate(date_end)
+        for job in self.suspend_security().job_ids.filtered(lambda x: x.end_date is False):
+            job.deactivate(date_end)
 
     def _notify_sgh(self, values):
         for modified_field in ['sec_position', 'workplace', 'occupation_id']:

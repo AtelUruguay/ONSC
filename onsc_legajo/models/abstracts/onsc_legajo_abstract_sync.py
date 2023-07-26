@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, tools, _
+import logging
 
+from odoo import models, tools, _
 from ...soap import soap_client
+
+_logger = logging.getLogger(__name__)
 
 
 class ONSCLegajoAbstractSync(models.AbstractModel):
@@ -26,6 +29,9 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
         IntegrationError = self.env['onsc.legajo.integration.error']
         ONSCLegajoClient = soap_client.ONSCLegajoClient()
         try:
+            _logger.info('******************SYNC BASE COMPONENT******************')
+            _logger.info(parameter)
+            _logger.info(values)
             response = ONSCLegajoClient.get_response(client, parameter, values, self._context.get('simpleWsdl', False))
         except Exception as e:
             self._process_servicecall_error(e, origin_name, integration_error)

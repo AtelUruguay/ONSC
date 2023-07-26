@@ -48,6 +48,7 @@ class ONSCActionsCommonData(models.AbstractModel):
 
     is_error_synchronization = fields.Boolean(copy=False)
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
+    active = fields.Boolean(default=True)
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):

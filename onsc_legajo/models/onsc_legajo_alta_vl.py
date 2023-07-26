@@ -285,7 +285,7 @@ class ONSCLegajoAltaVL(models.Model):
                 'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
             rec.is_operating_unit_readonly = self.user_has_groups(
                 'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue') and not self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
+                'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl,onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')
 
     @api.depends('inciso_id')
     def _compute_operating_unit_id_domain(self):
@@ -413,10 +413,20 @@ class ONSCLegajoAltaVL(models.Model):
             self.inactivity_years)
 
     def _get_legajo_employee(self):
+        notify_sgh = self._is_employee_notify_sgh_nedeed()
         return self.env['hr.employee']._get_legajo_employee(
             self.cv_emissor_country_id,
             self.cv_document_type_id,
-            self.partner_id)
+            self.partner_id,
+            notify_sgh
+        )
+
+    def _is_employee_notify_sgh_nedeed(self):
+        """
+        Para herencia, si retorna True, se notifica a SGH mediante el ws6.1
+        :return: Boolean
+        """
+        return False
 
     def _get_legajo_contract(self, employee):
         Contract = self.env['hr.contract']

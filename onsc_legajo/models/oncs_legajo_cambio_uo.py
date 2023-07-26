@@ -4,7 +4,6 @@ import json
 from dateutil.relativedelta import relativedelta
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -28,8 +27,8 @@ class ONSCLegajoCambioUO(models.Model):
         res = super(ONSCLegajoCambioUO, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                               submenu=submenu)
         doc = etree.XML(res['arch'])
-        is_user_consulta = self.env.user.has_group('onsc_legajo.group_legajo__cambio_uo_consulta')
-        is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_baja_vl_administrar_bajas')
+        is_user_consulta = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_consulta')
+        is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
         is_responsable = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
         if view_type in ['form', 'tree', 'kanban'] and is_user_consulta and not is_user_administrar:
             for node_form in doc.xpath("//%s" % (view_type)):
@@ -49,12 +48,18 @@ class ONSCLegajoCambioUO(models.Model):
     def _is_group_ue_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue')
 
+    def _is_group_consulta_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta')
+
     def _is_group_responsable_uo_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
 
+    def _is_group_legajo_cambio_uo_administrar(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar')
+
     def _get_domain(self, args, filter_by_departments=False):
         args = super(ONSCLegajoCambioUO, self)._get_domain(args, use_employee=True)
-        not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security()
+        not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() and not self._is_group_legajo_cambio_uo_administrar()
         if not_abstract_security and self._is_group_responsable_uo_security():
             Job = self.env['hr.job'].sudo()
             department_ids = self.get_uo_tree()
@@ -63,7 +68,7 @@ class ONSCLegajoCambioUO(models.Model):
                     ('department_id', 'in', department_ids)
                 ], args])
             else:
-                job_ids = Job.search([('department_id', 'in', department_ids)]).ids
+                job_ids = Job.with_context(active_test=False).search([('department_id', 'in', department_ids)]).ids
                 args = expression.AND([[
                     ('job_id', 'in', job_ids)
                 ], args])
@@ -150,8 +155,18 @@ class ONSCLegajoCambioUO(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
+            for record in self:
+                if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta') \
+                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso') \
+                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue') \
+                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo') \
+                        and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar'):
+                    record.should_disable_form_edit = True
+                else:
+                    record.should_disable_form_edit = record.state not in ['borrador']
+
             record.should_disable_form_edit = record.state not in ['borrador'] or self.user_has_groups(
-                'onsc_legajo.group_legajo_cambio_uo_consulta')
+                'onsc_legajo.')
 
     @api.depends('cv_emissor_country_id')
     def _compute_employee_id_domain(self):
@@ -175,8 +190,7 @@ class ONSCLegajoCambioUO(models.Model):
         department_ids = self.get_uo_tree()
         for rec in self:
             if is_responsable_uo:
-                job_ids = rec.contract_id.job_ids.filtered(
-                    lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
+                job_ids = rec.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
             else:
                 job_ids = rec.contract_id.job_ids.filtered(
                     lambda x: x.end_date is False or x.end_date >= fields.Date.today())
@@ -210,8 +224,7 @@ class ONSCLegajoCambioUO(models.Model):
     def onchange_department_id_contract_id(self):
         if self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
-            job_ids = self.contract_id.job_ids.filtered(
-                lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
+            job_ids = self.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= fields.Date.today() and x.department_id.id in department_ids)
         else:
             job_ids = self.contract_id.job_ids.filtered(
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
@@ -246,7 +259,12 @@ class ONSCLegajoCambioUO(models.Model):
         return department_ids
 
     def _get_domain_employee_ids(self):
-        if self._is_group_responsable_uo_security():
+        if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security() \
+                or self._is_group_legajo_cambio_uo_administrar():
+            args = self._get_domain([("legajo_state", "in", ('active', 'incoming_commission'))],
+                                    filter_by_departments=True)
+            employee_ids = self.env['hr.contract'].sudo().search(args).mapped('employee_id').ids
+        elif self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
             employee_ids = self.env['hr.job'].search([
                 ('contract_id.legajo_state', 'in', ('active', 'incoming_commission')),
@@ -256,45 +274,46 @@ class ONSCLegajoCambioUO(models.Model):
                 ('end_date', '>=', fields.Date.today()),
             ]).mapped('employee_id').ids
         else:
-            args = self._get_domain([("legajo_state", "in", ('active', 'incoming_commission'))],
-                                    filter_by_departments=True)
-            employee_ids = self.env['hr.contract'].sudo().search(args).mapped('employee_id').ids
+            employee_ids = []
         return json.dumps([('id', 'in', employee_ids), ('id', '!=', self.env.user.employee_id.id)])
 
     def _get_contracts(self):
-        if self._is_group_responsable_uo_security():
+        if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security() \
+                or self._is_group_legajo_cambio_uo_administrar():
+            args = [
+                ("legajo_state", "in", ("incoming_commission", "active")),
+                ('employee_id', '=', self.employee_id.id)
+            ]
+            return self.env['hr.contract'].search(self._get_domain(args))
+        elif self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
             return self.env['hr.job'].search([
                 ('employee_id', '=', self.employee_id.id),
                 ('contract_id.legajo_state', 'in', ('active', 'incoming_commission')),
                 ('department_id', 'in', department_ids)]).mapped('contract_id')
         else:
-            args = [
-                ("legajo_state", "in", ("incoming_commission", "active")),
-                ('employee_id', '=', self.employee_id.id)
-            ]
-            return self.env['hr.contract'].search(self._get_domain(args))
+            return self.env['hr.contract']
 
     def action_confirm(self):
         self.ensure_one()
         Job = self.env['hr.job']
         self._validate_confirm()
         self.contract_id.suspend_security().write({'eff_date': self.date_start, 'occupation_id': self.occupation_id.id})
-        notify = False
+        warning_message = False
+        show_warning = False
         if self.job_id.start_date == self.date_start:
             self.suspend_security().job_id.deactivate(self.date_start)
             self.suspend_security().job_id.write({'active': False})
-            notify = True
+            show_warning = True
+            warning_message = u"No pueden existir dos puestos activos para el mismo contrato, se inactivará el puesto anterior"
         else:
             self.suspend_security().job_id.deactivate(self.date_start - relativedelta(days=1))
         Job.suspend_security().create_job(self.contract_id,
                                           self.department_id,
                                           self.date_start,
                                           self.security_job_id)
-        self.write({'state': 'confirmado'})
-        if notify:
-            return warning_response(
-                _(u"No pueden existir dos puestos activos para el mismo contrato, se inactivará el puesto anterior"))
+        self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
+                    'error_message_synchronization': warning_message})
 
     def action_show_organigram(self):
         return {

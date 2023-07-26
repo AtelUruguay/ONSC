@@ -281,9 +281,8 @@ class ONSCCVDigital(models.Model):
             self.disability_date = False
 
     def write(self, vals):
-        result = super(ONSCCVDigital, self).write(vals)
         self._notify_sgh(vals)
-        return result
+        return super(ONSCCVDigital, self).write(vals)
 
     def _notify_sgh(self, values):
         BaseUtils = self.env['onsc.base.utils'].sudo()

@@ -65,7 +65,7 @@ class ONSCLegajoAltaVL(models.Model):
                 item['norm_id'] = (item['norm_id'][0], LegajoNorm.browse(norm_id)._custom_display_name())
         return result
 
-    full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
+    full_name = fields.Char('Nombre')
     partner_id = fields.Many2one("res.partner", string="Contacto", readonly=True,
                                  states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     partner_id_domain = fields.Char(string="Dominio Cliente", compute='_compute_partner_id_domain')
@@ -93,7 +93,7 @@ class ONSCLegajoAltaVL(models.Model):
     address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
     employee_id = fields.Many2one('hr.employee', 'Employee')
-    cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="Legajo Digital", copy=False)
+    cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="CV Digital", copy=False)
     is_docket = fields.Boolean(string="Tiene legajo", related='cv_digital_id.is_docket')
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
@@ -192,12 +192,11 @@ class ONSCLegajoAltaVL(models.Model):
                 record.email = cv_digital_id.email
                 record.health_provider_id = cv_digital_id.health_provider_id
 
-    @api.depends('partner_id')
-    def _compute_full_name(self):
-        for record in self:
-            record.full_name = calc_full_name(
-                record.partner_id.cv_first_name, record.partner_id.cv_second_name,
-                record.partner_id.cv_last_name_1, record.partner_id.cv_last_name_2)
+                record.cv_first_name = record.partner_id.cv_first_name
+                record.cv_second_name = record.partner_id.cv_second_name
+                record.cv_last_name_1 = record.partner_id.cv_last_name_1
+                record.cv_last_name_2 = record.partner_id.cv_last_name_2
+                record.full_name = record.partner_id.cv_full_name
 
     @api.depends('inciso_id')
     def _compute_partner_id_domain(self):
@@ -257,9 +256,9 @@ class ONSCLegajoAltaVL(models.Model):
                 _("Los campos Fecha de alta, Programa - Proyecto, Nro. de Puesto y Nro. de Plaza son obligatorios para buscar vacantes"))
 
         if not self.is_reserva_sgh and not (
-                self.date_start and self.program_project_id and self.regime_id and self.descriptor1_id and self.descriptor2_id and self.partner_id):
+                self.date_start and self.program_project_id and self.regime_id and self.partner_id):
             raise ValidationError(
-                _("Los campos Fecha de alta, Programa - Proyecto, Régimen, Descriptor 1 ,Descriptor 2 y CI son obligatorios para buscar vacantes"))
+                _("Los campos Fecha de alta, Programa - Proyecto, Régimen y CI son obligatorios para buscar vacantes"))
 
         response = self.env['onsc.legajo.abstract.alta.vl.ws1'].with_context(
             log_info=log_info).suspend_security().syncronize(self)
@@ -383,11 +382,6 @@ class ONSCLegajoAltaVL(models.Model):
         self.inactivity_years = False
         self.graduation_date = False
         self.contract_expiration_date = False
-        # self.reason_description = False
-        # self.norm_id = False
-        # self.resolution_description = False
-        # self.resolution_date = False
-        # self.resolution_type = False
         self.health_provider_id = False
         self.additional_information = False
         self.attached_document_ids = False
@@ -396,6 +390,12 @@ class ONSCLegajoAltaVL(models.Model):
         self.cv_sex = False
         self.cv_birthdate = False
         self.cv_address_street_id = False
+        self.cv_first_name = False
+        self.cv_second_name = False
+        self.cv_last_name_1 = False
+        self.cv_last_name_2 = False
+        self.full_name = False
+
 
     def _get_legajo_employee(self):
         employee = super(ONSCLegajoAltaVL, self.with_context(is_alta_vl=True))._get_legajo_employee()
@@ -475,3 +475,44 @@ class ONSCLegajoAltaVL(models.Model):
     # MAIL TEMPLATE UTILS
     def get_altavl_name(self):
         return self.with_context(show_cv_nro_doc=True).partner_id.name_get()[0][1]
+
+    def _is_employee_notify_sgh_nedeed(self):
+        values = {
+            'country_of_birth_id': self.cv_digital_id.country_of_birth_id.id,
+            'health_provider_id': self.cv_digital_id.health_provider_id.id,
+            'uy_citizenship': self.cv_digital_id.uy_citizenship,
+            'personal_phone': self.cv_digital_id.personal_phone,
+            'mobile_phone': self.cv_digital_id.mobile_phone,
+            'email': self.cv_digital_id.email,
+            'cv_first_name': self.partner_id.cv_first_name,
+            'cv_second_name': self.partner_id.cv_second_name,
+            'cv_last_name_1': self.partner_id.cv_last_name_1,
+            'cv_last_name_2': self.partner_id.cv_last_name_2,
+        }
+        if self.cv_digital_id.civical_credential_documentary_validation_state == 'validated':
+            values.update({
+                'crendencial_serie': self.cv_digital_id.crendencial_serie,
+                'credential_number': self.cv_digital_id.credential_number
+            })
+        if self.cv_digital_id.marital_status_documentary_validation_state == 'validated':
+            values.update({
+                'marital_status_id': self.cv_digital_id.marital_status_id.id,
+            })
+        if self.cv_digital_id.cv_address_documentary_validation_state == 'validated':
+            values.update({
+                'cv_address_location_id': self.cv_digital_id.cv_address_location_id.id,
+                'cv_address_street': self.cv_digital_id.cv_address_street,
+                'cv_address_street_id': self.cv_digital_id.cv_address_street_id.id,
+                'cv_address_street2_id': self.cv_digital_id.cv_address_street2_id.id,
+                'cv_address_street3_id': self.cv_digital_id.cv_address_street3_id.id,
+                'cv_address_nro_door': self.cv_digital_id.cv_address_nro_door,
+                'cv_address_is_cv_bis': self.cv_digital_id.cv_address_is_cv_bis,
+                'cv_address_apto': self.cv_digital_id.cv_address_apto,
+                'cv_address_place': self.cv_digital_id.cv_address_place,
+                'cv_address_zip': self.cv_digital_id.cv_address_zip,
+                'cv_address_block': self.cv_digital_id.cv_address_block,
+                'cv_address_sandlot': self.cv_digital_id.cv_address_sandlot,
+            })
+        values_filtered = self.env['onsc.base.utils'].sudo().get_really_values_changed(self, values)
+        return len(values_filtered.keys()) > 0
+
