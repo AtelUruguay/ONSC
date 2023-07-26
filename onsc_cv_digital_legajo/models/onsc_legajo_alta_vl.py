@@ -476,7 +476,7 @@ class ONSCLegajoAltaVL(models.Model):
     def get_altavl_name(self):
         return self.with_context(show_cv_nro_doc=True).partner_id.name_get()[0][1]
 
-    def _is_employee_notify_sgh_nedeed(self):
+    def is_employee_notify_sgh_nedeed(self):
         values = {
             'country_of_birth_id': self.cv_digital_id.country_of_birth_id.id,
             'health_provider_id': self.cv_digital_id.health_provider_id.id,

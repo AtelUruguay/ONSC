@@ -6,14 +6,18 @@
             <field name="model">onsc.legajo.alta.vl</field>
             <field name="arch" type="xml">
                 <search string="Altas VL">
+                    <field name="partner_id" string="CI" context="{'show_cv_nro_doc':True}"/>
+                    <field name="state"/>
                     <filter string="Borrador" name="filter_altas_draft"
                             domain="[('state','=','borrador')]"/>
                     <filter string="Error SGH" name="filter_altas_error_sgh"
                             domain="[('state','=','error_sgh')]"/>
+                    <group string="Agrupar por">
+                        <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    </group>
                 </search>
             </field>
         </record>
-
 
         <record id="onsc_legajo_alta_vl_form" model="ir.ui.view">
             <field name="name">onsc.legajo.alta.vl.form</field>
