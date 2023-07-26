@@ -27,8 +27,8 @@ class ONSCLegajoCambioUO(models.Model):
         res = super(ONSCLegajoCambioUO, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                               submenu=submenu)
         doc = etree.XML(res['arch'])
-        is_user_consulta = self.env.user.has_group('onsc_legajo.group_legajo__cambio_uo_consulta')
-        is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_baja_vl_administrar_bajas')
+        is_user_consulta = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_consulta')
+        is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
         is_responsable = self.env.user.has_group('onsc_legajo.group_legajo_cambio_uo_responsable_uo')
         if view_type in ['form', 'tree', 'kanban'] and is_user_consulta and not is_user_administrar:
             for node_form in doc.xpath("//%s" % (view_type)):
@@ -59,7 +59,8 @@ class ONSCLegajoCambioUO(models.Model):
 
     def _get_domain(self, args, filter_by_departments=False):
         args = super(ONSCLegajoCambioUO, self)._get_domain(args, use_employee=True)
-        not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security()
+        not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() \
+                                and not self._is_group_legajo_cambio_uo_administrar()
         if not_abstract_security and self._is_group_responsable_uo_security():
             Job = self.env['hr.job'].sudo()
             department_ids = self.get_uo_tree()
@@ -277,7 +278,8 @@ class ONSCLegajoCambioUO(models.Model):
         return json.dumps([('id', 'in', employee_ids), ('id', '!=', self.env.user.employee_id.id)])
 
     def _get_contracts(self):
-        if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security():
+        if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security() \
+                or self._is_group_legajo_cambio_uo_administrar():
             args = [
                 ("legajo_state", "in", ("incoming_commission", "active")),
                 ('employee_id', '=', self.employee_id.id)
