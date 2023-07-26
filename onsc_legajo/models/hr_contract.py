@@ -66,7 +66,7 @@ class HrContract(models.Model):
     call_number = fields.Char(string='Número de llamado', history=True)
     legajo_state = fields.Selection(
         [('active', 'Activo'), ('baja', 'Baja'), ('outgoing_commission', 'Comisión saliente'),
-         ('incoming_commission', 'Comisión entrante')], string='Estado', history=True)
+         ('incoming_commission', 'Comisión entrante')], tracking=True, string='Estado', history=True)
     cs_contract_id = fields.Many2one('hr.contract', string='Contrato relacionado', history=True)
     first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name', store=True)
     second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name', store=True)
@@ -147,6 +147,8 @@ class HrContract(models.Model):
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
     is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
     notify_sgh = fields.Boolean("Notificar SGH")
+    extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
+                                               string="Motivo extinción de la comisión")
 
     def name_get(self):
         res = []

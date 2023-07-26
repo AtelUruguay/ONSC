@@ -72,11 +72,11 @@ class ONSCLegajoBajaCS(models.Model):
         return args
 
     def _get_domain_contract(self, args, employee_id):
-        args = expression.AND([[('employee_id', '!=', self.env.user.employee_id.id)], args])
+
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
-                args = expression.AND([['|', ('inciso_id', '=', inciso_id.id),
+                args = expression.AND([[('inciso_id', '=', inciso_id.id),
                                         ('legajo_state', '=', 'incoming_commission'),
                                         ('employee_id', '=', employee_id),
                                         ('employee_id', '!=', self.env.user.employee_id.id)], args])
@@ -91,19 +91,19 @@ class ONSCLegajoBajaCS(models.Model):
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
             if inciso_id:
-                args = expression.AND(
-                    [['|', ('inciso_id', '=', inciso_id.id), ('inciso_origin_id', '=', inciso_id.id)], args])
+                args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
+                args = expression.OR([[('inciso_id.is_central_administration', '=', False),
+                                       ('inciso_origen_id', '=', inciso_id.id)], args])
             if operating_unit_id:
-                args = expression.AND([['|', ('operating_unit_id', '=', operating_unit_id.id),
-                                        ('operating_unit_origin_id', '=', inciso_id.id)], args])
+                args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id)], args])
+                args = expression.OR([[('inciso_id.is_central_administration', '=', False),
+                                       ('operating_unit_origin_id', '=', operating_unit_id.id)], args])
             if employee_id:
                 args = expression.AND(
                     [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
 
             args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
-            args2 = args
-            args2 = expression.AND([[('inciso_id.is_central_administration', '=', False)], args2])
-            args = expression.OR([args2, args])
+
         else:
             args = expression.AND(
                 [[('employee_id', '=', employee_id),
@@ -217,10 +217,10 @@ class ONSCLegajoBajaCS(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas') and not self.user_has_groups(
-                    'onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso') and not self.user_has_groups(
-                    'onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue') and not self.user_has_groups(
-                    'onsc_legajo.group_legajo_baja_cs_administrar_bajas'):
+            if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_consulta_bajas') \
+                    and not self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso') \
+                    and not self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue') \
+                    and not self.user_has_groups('onsc_legajo.group_legajo_baja_cs_administrar_bajas'):
                 record.should_disable_form_edit = True
             else:
                 record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
@@ -317,6 +317,30 @@ class ONSCLegajoBajaCS(models.Model):
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
             self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
-
+        self.action_update_contract()
         self.write({'state': 'confirmado', 'is_error_synchronization': False, 'error_message_synchronization': '', })
+        return True
+
+    def action_update_contract(self):
+        data = {
+            'reason_deregistration': self.reason_description or False,
+            'norm_code_deregistration_id': self.norm_id and self.norm_id.id or False,
+            'type_norm_deregistration': self.norm_type or False,
+            'norm_number_deregistration': self.norm_number or False,
+            'norm_year_deregistration': self.norm_year or False,
+            'norm_article_deregistration': self.norm_article or False,
+            'resolution_description_deregistration': self.resolution_description or False,
+            'resolution_date_deregistration': self.resolution_date or False,
+            'resolution_type_deregistration': self.resolution_type or False,
+            'additional_information_deregistration': self.additional_information,
+            'extinction_commission_id': self.extinction_commission_id and self.extinction_commission_id.id or False
+        }
+
+        for attach in self.attached_document_discharge_ids:
+            attach.write({
+                'contract_id': self.contract_id.id,
+                'type': 'deregistration'
+            })
+        self.contract_id.suspend_security().write(data)
+
         return True
