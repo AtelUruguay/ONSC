@@ -144,12 +144,10 @@ class ResPartner(models.Model):
         if args is None:
             args = []
         by_name = super(ResPartner, self).name_search(name, args=args, operator=operator, limit=limit)
-        if self._context.get('show_cv_nro_doc', False):
-            by_cv_nro_doc_domain = [('cv_nro_doc', operator, name)]
-            by_cv_nro_doc_domain += args
-            by_cv_nro_doc = self.search(by_cv_nro_doc_domain, limit=limit)
-            return list(set(by_name + by_cv_nro_doc.name_get()))
-        return by_name
+        by_cv_nro_doc_domain = [('cv_nro_doc', operator, name)]
+        by_cv_nro_doc_domain += args
+        by_cv_nro_doc = self.search(by_cv_nro_doc_domain, limit=limit)
+        return list(set(by_name + by_cv_nro_doc.name_get()))
 
     def _custom_display_name(self):
         return self.cv_nro_doc + " - " + self.cv_full_name or self.name
