@@ -129,13 +129,11 @@ class ONSCLegajoCambioUO(models.Model):
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
+        is_consulta = self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta')
+        is_superior = self.user_has_groups(
+            'onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue,onsc_legajo.group_legajo_cambio_uo_responsable_uo,onsc_legajo.group_legajo_cambio_uo_administrar')
         for record in self:
-            is_only_consulta = self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_consulta') \
-                               and not self.user_has_groups(
-                'onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso') \
-                               and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue') \
-                               and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo') \
-                               and not self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar')
+            is_only_consulta = is_consulta and not is_superior
             record.should_disable_form_edit = record.state not in ['borrador'] or is_only_consulta
 
     @api.depends('cv_emissor_country_id')
@@ -161,9 +159,9 @@ class ONSCLegajoCambioUO(models.Model):
         for rec in self:
             if is_responsable_uo:
                 job_ids = rec.contract_id.job_ids.filtered(lambda x:
-                                                           x.end_date is False or
-                                                           x.end_date >= fields.Date.today() and
-                                                           x.department_id.id in department_ids)
+                                                           x.end_date is False
+                                                           or x.end_date >= fields.Date.today()
+                                                           and x.department_id.id in department_ids)
             else:
                 job_ids = rec.contract_id.job_ids.filtered(
                     lambda x: x.end_date is False or x.end_date >= fields.Date.today())
@@ -223,9 +221,9 @@ class ONSCLegajoCambioUO(models.Model):
         if self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
             job_ids = self.contract_id.job_ids.filtered(lambda x:
-                                                        x.end_date is False or
-                                                        x.end_date >= fields.Date.today() and
-                                                        x.department_id.id in department_ids)
+                                                        x.end_date is False
+                                                        or x.end_date >= fields.Date.today()
+                                                        and x.department_id.id in department_ids)
         else:
             job_ids = self.contract_id.job_ids.filtered(
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
