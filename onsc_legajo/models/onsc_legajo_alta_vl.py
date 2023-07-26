@@ -285,7 +285,7 @@ class ONSCLegajoAltaVL(models.Model):
                 'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
             rec.is_operating_unit_readonly = self.user_has_groups(
                 'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue') and not self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
+                'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl,onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')
 
     @api.depends('inciso_id')
     def _compute_operating_unit_id_domain(self):
