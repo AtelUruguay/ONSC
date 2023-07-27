@@ -8,11 +8,11 @@ _logger = logging.getLogger(__name__)
 
 class ONSCDesempenoDegree(models.Model):
     _name = 'onsc.desempeno.degree'
-    _description = 'Grados de desarrollo'
+    _description = 'Grado de necesidad de desarrollo'
 
-    name = fields.Char(string="Nombre grados de desarrollo", compute="_compute_name", store=True)
-    description = fields.Char(string="Grados de desarrollo", required=True)
-    frecuency = fields.Char(string="Frecuencia", required=True)
+    name = fields.Char(string="Nombre-Frecuencia del comportamiento", compute="_compute_name", store=True)
+    description = fields.Char(string="Nombre de la necesidad de desarrollo", required=True)
+    frecuency = fields.Char(string="Frecuencia de comportamiento", required=True)
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
@@ -26,6 +26,12 @@ class ONSCDesempenoDegree(models.Model):
                 record.name = '%s - %s' % (record.description, record.frecuency)
             else:
                 record.name = ''
+
+    @api.returns('self', lambda value: value.id)
+    def copy(self, default=None):
+        default = dict(default or {})
+        default['description'] = _("%s (Copia)") % self.description
+        return super(ONSCDesempenoDegree, self).copy(default=default)
 
     def toggle_active(self):
         return super(ONSCDesempenoDegree, self.with_context(no_check_write=True)).toggle_active()
