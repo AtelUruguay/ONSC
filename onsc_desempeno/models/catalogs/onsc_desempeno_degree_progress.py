@@ -12,7 +12,7 @@ class ONSCDesempenoDegreeProgress(models.Model):
     _description = 'Grados de avance'
 
     name = fields.Char(string="Nombre-Porcentaje de avance", compute="_compute_name", store=True)
-    description = fields.Char(string="Nombre grado de avance", tracking=True, required=True)
+    description = fields.Char(string="Nombre del grado de avance", tracking=True, required=True)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
     porcent = fields.Float(string="Porcentaje de avance", tracking=True, required=True)
     active = fields.Boolean(string="Activo", tracking=True, default=True)
