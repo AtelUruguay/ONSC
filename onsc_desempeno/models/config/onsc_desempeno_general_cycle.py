@@ -1,14 +1,15 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 
 _logger = logging.getLogger(__name__)
 
 
-class ONSCDesempenoDegree(models.Model):
+class ONSCDesempenoGeneralCycle(models.Model):
     _name = 'onsc.desempeno.general.cycle'
     _description = 'Ciclo General de Evaluación de Desempeño'
+    _rec_name = 'year'
 
     year = fields.Integer(u'Año')
     start_date = fields.Date(string=u'Fecha inicio')
@@ -21,19 +22,11 @@ class ONSCDesempenoDegree(models.Model):
         ('year_uniq', 'unique(year)', u'Solo se puede tener una configuración para el año'),
     ]
 
-    @api.depends('description', 'frecuency')
-    def _compute_name(self):
-        for record in self:
-            if record.description and record.frecuency:
-                record.name = '%s - %s' % (record.description, record.frecuency)
-            else:
-                record.name = ''
-
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         default = dict(default or {})
-        default['description'] = _("%s (Copia)") % self.description
-        return super(ONSCDesempenoDegree, self).copy(default=default)
+        default['year'] = _("%s (Copia)") % self.year
+        return super(ONSCDesempenoGeneralCycle, self).copy(default=default)
 
     def toggle_active(self):
-        return super(ONSCDesempenoDegree, self.with_context(no_check_write=True)).toggle_active()
+        return super(ONSCDesempenoGeneralCycle, self.with_context(no_check_write=True)).toggle_active()
