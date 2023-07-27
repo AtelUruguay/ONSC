@@ -20,7 +20,7 @@ ONSC - Gestión de Desempeño
         'views/catalogs/onsc_desempeno_degree_progress_views.xml',
         'views/catalogs/onsc_desempeno_development_means_views.xml',
         'views/catalogs/onsc_desempeno_reason_change_evaluator_views.xml',
-        'views/config/onsc_desempeno_general_cycle_views.xml',
+        'views/onsc_desempeno_general_cycle_views.xml',
         'views/onsc_desempeno_menuitems.xml'
     ],
     'demo': [],
