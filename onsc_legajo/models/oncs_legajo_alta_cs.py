@@ -634,6 +634,11 @@ class ONSCLegajoAltaCS(models.Model):
             raise ValidationError(_(message))
         return True
 
+    def unlink(self):
+        if self.filtered(lambda x: x.state != 'draft'):
+            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
+        return super().unlink()
+
     def action_send_destination(self):
         self.state = 'to_process'
         if not self.inciso_destination_id:
@@ -741,8 +746,3 @@ class ONSCLegajoAltaCS(models.Model):
     def _get_legajo_job(self, contract):
         return self.env['hr.job'].create_job(contract, self.department_id, self.date_start_commission,
                                              self.security_job_id)
-
-    def unlink(self):
-        if self.filtered(lambda x: x.state != 'draft'):
-            raise ValidationError(_("Solo se pueden eliminar transacciones en estado borrador"))
-        return super().unlink()

@@ -79,6 +79,8 @@ class ResUser(models.Model):
         job_id = jobs[0].id if len(jobs) == 1 else False
         self.employee_id.job_id = job_id
         if len(jobs):
+            self.action_id = False
+        else:
             self.action_id = self._get_default_action_id()
         job_id = self.env['hr.job'].sudo().browse(job_id)
         _roles = job_id.role_ids
