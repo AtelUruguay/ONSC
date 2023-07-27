@@ -38,11 +38,10 @@
                         </group>
                         <group/>
                     </group>
-                    <group>
-                        <notebook>
+                    <notebook>
+                        <page string="Dimensiones">
                             <field name="skill_line_ids" nolabel="1">
                                 <tree editable="bottom">
-
                                     <field name="dimension_id"
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="level_id"
@@ -50,9 +49,8 @@
                                     <field name="behavior"/>
                                 </tree>
                             </field>
-                        </notebook>
-                    </group>
-
+                        </page>
+                    </notebook>
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" groups="base.group_user"/>
