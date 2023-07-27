@@ -23,6 +23,3 @@ class ONSCDesempenoReasonChangeEvaluator(models.Model):
         default = dict(default or {})
         default['name'] = _("%s (Copia)") % self.name
         return super(ONSCDesempenoReasonChangeEvaluator, self).copy(default=default)
-
-    def toggle_active(self):
-        return super(ONSCDesempenoReasonChangeEvaluator, self.with_context(no_check_write=True)).toggle_active()

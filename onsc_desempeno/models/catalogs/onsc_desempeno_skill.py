@@ -12,7 +12,7 @@ class ONSCDesempenoSkill(models.Model):
     _description = 'Competencias'
 
     name = fields.Char(string="Nombre de la competencia", required=True)
-    definition = fields.Char(string="Definición")
+    definition = fields.Text(string="Definición")
     active = fields.Boolean(string="Activo", tracking=True, default=True)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
     skill_line_ids = fields.One2many("onsc.desempeno.skill.line", inverse_name="skill_id",
@@ -21,9 +21,6 @@ class ONSCDesempenoSkill(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', u'El nombre de la competencia debe ser único'),
     ]
-
-    def toggle_active(self):
-        return super(ONSCDesempenoSkill, self.with_context(no_check_write=True)).toggle_active()
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -34,7 +31,6 @@ class ONSCDesempenoSkill(models.Model):
 
 class ONSCDesempenoSkillLine(models.Model):
     _name = 'onsc.desempeno.skill.line'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Competencias linea'
 
     dimension_id = fields.Many2one('onsc.desempeno.dimension', string="Dimensión", required=True)

@@ -24,7 +24,7 @@ class ONSCDesempenoDegreeProgress(models.Model):
     @api.depends('description', 'porcent')
     def _compute_name(self):
         for record in self:
-            if record.description and record.porcent:
+            if record.description:
                 record.name = '%s ( %s )' % (record.description, record.porcent)
             else:
                 record.name = ''
@@ -34,6 +34,3 @@ class ONSCDesempenoDegreeProgress(models.Model):
         default = dict(default or {})
         default['description'] = _("%s (Copia)") % self.description
         return super(ONSCDesempenoDegreeProgress, self).copy(default=default)
-
-    def toggle_active(self):
-        return super(ONSCDesempenoDegreeProgress, self.with_context(no_check_write=True)).toggle_active()
