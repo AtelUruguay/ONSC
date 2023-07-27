@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_desempeno_development.means_search" model="ir.ui.view">
+    <record id="onsc_desempeno_development_means_search" model="ir.ui.view">
         <field name="name">onsc.desempeno.development.means.search</field>
         <field name="model">onsc.desempeno.development.means</field>
         <field name="arch" type="xml">
@@ -10,7 +10,7 @@
             </search>
         </field>
     </record>
-    <record id="onsc_desempeno_development.means_tree" model="ir.ui.view">
+    <record id="onsc_desempeno_development_means_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.development.means.tree</field>
         <field name="model">onsc.desempeno.development.means</field>
         <field name="arch" type="xml">
@@ -22,7 +22,7 @@
         </field>
     </record>
 
-    <record id="onsc_desempeno_development.means_form" model="ir.ui.view">
+    <record id="onsc_desempeno_development_means_form" model="ir.ui.view">
         <field name="name">onsc.desempeno.development.means.form</field>
         <field name="model">onsc.desempeno.development.means</field>
         <field name="arch" type="xml">
@@ -42,7 +42,7 @@
         </field>
     </record>
 
-    <record id='onsc_desempeno_development.means_action' model='ir.actions.act_window'>
+    <record id='onsc_desempeno_development_means_action' model='ir.actions.act_window'>
         <field name="name">Medios de desarrollo</field>
         <field name="res_model">onsc.desempeno.development.means</field>
         <field name="view_mode">tree,form</field>
