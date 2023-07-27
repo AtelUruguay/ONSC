@@ -42,8 +42,8 @@
         </field>
     </record>
 
-    <record id="view_onsc_catalog_occupation_form_inherit" model="ir.ui.view">
-        <field name="name">onsc_catalog_occupation_form.inherit</field>
+    <record id="onsc_catalog_occupation_form" model="ir.ui.view">
+        <field name="name">onsc.catalog.occupation.form.desempeno.inherit</field>
         <field name="model">onsc.catalog.occupation</field>
         <field name="inherit_id" ref="onsc_catalog.onsc_catalog_occupation_form"/>
         <field name="arch" type="xml">
@@ -52,6 +52,7 @@
             </field>
         </field>
     </record>
+
     <record id='onsc_desempeno_level_action' model='ir.actions.act_window'>
         <field name="name">Niveles</field>
         <field name="res_model">onsc.desempeno.level</field>

@@ -23,12 +23,12 @@ class ONSCDesempenoLevel(models.Model):
         default = dict(default or {})
         default['name'] = _("%s (Copia)") % self.name
         return super(ONSCDesempenoLevel, self).copy(default=default)
+
     def toggle_active(self):
         return super(ONSCDesempenoLevel, self.with_context(no_check_write=True)).toggle_active()
 
 
-class ONSCCatalogOccupationDesempeno(models.Model):
-    _inherit = ['onsc.catalog.occupation']
-    _name = 'onsc.catalog.occupation'
+class ONSCCatalogOccupation(models.Model):
+    _inherit = 'onsc.catalog.occupation'
 
     level_id = fields.Many2one('onsc.desempeno.level', string="Nivel de requerimiento")

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_desempeno_degree_progress_search" model="ir.ui.view">
-        <field name="name">onsc.desempeno.degree_progress.search</field>
+    <record id="onsc_desempeno_degree.progress_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.degree.progress.search</field>
         <field name="model">onsc.desempeno.degree.progress</field>
         <field name="arch" type="xml">
             <search string="Grados de avance">
@@ -10,8 +10,8 @@
             </search>
         </field>
     </record>
-    <record id="onsc_desempeno_degree_progress_tree" model="ir.ui.view">
-        <field name="name">onsc.desempeno.degree_progress.tree</field>
+    <record id="onsc_desempeno_degree.progress_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.degree.progress.tree</field>
         <field name="model">onsc.desempeno.degree.progress</field>
         <field name="arch" type="xml">
             <tree string="Grados de avance">
@@ -23,8 +23,8 @@
         </field>
     </record>
 
-    <record id="onsc_desempeno_degree_progress_form" model="ir.ui.view">
-        <field name="name">onsc.desempeno.degree_progress.form</field>
+    <record id="onsc_desempeno_degree.progress_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.degree.progress.form</field>
         <field name="model">onsc.desempeno.degree.progress</field>
         <field name="arch" type="xml">
             <form string="Grados de avance">
@@ -39,7 +39,6 @@
                         </group>
                         <group/>
                     </group>
-
                 </sheet>
                 <div class="oe_chatter">
                     <field name="message_follower_ids" groups="base.group_user"/>
@@ -49,7 +48,7 @@
         </field>
     </record>
 
-    <record id='onsc_desempeno_degree_progress_action' model='ir.actions.act_window'>
+    <record id='onsc_desempeno_degree.progress_action' model='ir.actions.act_window'>
         <field name="name">Grados de avance</field>
         <field name="res_model">onsc.desempeno.degree.progress</field>
         <field name="view_mode">tree,form</field>

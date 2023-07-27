@@ -16,7 +16,7 @@ class ONSCDesempenoSkill(models.Model):
     active = fields.Boolean(string="Activo", tracking=True, default=True)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
     skill_line_ids = fields.One2many("onsc.desempeno.skill.line", inverse_name="skill_id",
-                                      string="Lineas de competencia")
+                                     string="Lineas de competencia")
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)', u'El nombre de la competencia debe ser único'),

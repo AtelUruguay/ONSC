@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_desempeno_reason_change_evaluator_search" model="ir.ui.view">
-        <field name="name">onsc.desempeno.reason_change_evaluator.search</field>
+    <record id="onsc_desempeno_reason.change.evaluator_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.reason.change.evaluator.search</field>
         <field name="model">onsc.desempeno.reason.change.evaluator</field>
         <field name="arch" type="xml">
             <search string="Motivos de cambio de evaluador">
@@ -10,8 +10,8 @@
             </search>
         </field>
     </record>
-    <record id="onsc_desempeno_reason_change_evaluator_tree" model="ir.ui.view">
-        <field name="name">onsc.desempeno.reason_change_evaluator.tree</field>
+    <record id="onsc_desempeno_reason.change.evaluator_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.reason.change.evaluator.tree</field>
         <field name="model">onsc.desempeno.reason.change.evaluator</field>
         <field name="arch" type="xml">
             <tree string="Motivos de cambio de evaluador">
@@ -22,8 +22,8 @@
         </field>
     </record>
 
-    <record id="onsc_desempeno_reason_change_evaluator_form" model="ir.ui.view">
-        <field name="name">onsc.desempeno.reason_change_evaluator.form</field>
+    <record id="onsc_desempeno_reason.change.evaluator_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.reason.change.evaluator.form</field>
         <field name="model">onsc.desempeno.reason.change.evaluator</field>
         <field name="arch" type="xml">
             <form string="Motivos de cambio de evaluador">
@@ -43,7 +43,7 @@
     </record>
 
 
-    <record id='onsc_desempeno_reason_change_evaluator_action' model='ir.actions.act_window'>
+    <record id='onsc_desempeno_reason.change.evaluator_action' model='ir.actions.act_window'>
         <field name="name">Motivos de cambio de evaluador</field>
         <field name="res_model">onsc.desempeno.reason.change.evaluator</field>
         <field name="view_mode">tree,form</field>
