@@ -76,6 +76,7 @@
         <field name="arch" type="xml">
             <form string="Legajos">
                 <header>
+                    <button name="button_rve_history_test" type="object" string="Historia Laboral – RVE (valores fijos SACAR)" class="oe_highlight"/>
                     <field name="legajo_state" widget="statusbar"/>
                 </header>
                 <sheet>
@@ -89,13 +90,20 @@
                                 </span>
                             </div>
                         </button>
-                        <button name="button_open_contract" class="oe_stat_button" icon="fa-book" type="object">
+                        <button name="button_open_contract" style="width:210px!important" class="oe_stat_button" icon="fa-book" type="object">
                             <div class="o_stat_info">
                                 <span class="o_stat_value">
                                    <field name="contracts_count"/>
                                 </span>
                                 <span class="o_stat_text">
                                     Información funcional
+                                </span>
+                            </div>
+                        </button>
+                        <button name="button_rve_history" style="width:210px!important" class="oe_stat_button" icon="fa-folder-open" type="object">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">
+                                    Historia laboral – RVE
                                 </span>
                             </div>
                         </button>

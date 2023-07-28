@@ -14,7 +14,7 @@ class ONSCDesempenoDegreeProgress(models.Model):
     name = fields.Char(string="Nombre-Porcentaje de avance", compute="_compute_name", store=True)
     description = fields.Char(string="Nombre del grado de avance", tracking=True, required=True)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
-    porcent = fields.Float(string="Porcentaje de avance", tracking=True, required=True)
+    porcent = fields.Float(string="Grado de avance", tracking=True, required=True)
     active = fields.Boolean(string="Activo", tracking=True, default=True)
 
     _sql_constraints = [
@@ -25,7 +25,7 @@ class ONSCDesempenoDegreeProgress(models.Model):
     def _compute_name(self):
         for record in self:
             if record.description:
-                record.name = '%s ( %s )' % (record.description, record.porcent)
+                record.name = '%s (%s' % (record.description, record.porcent * 100) + '%)'
             else:
                 record.name = ''
 
