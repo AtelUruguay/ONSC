@@ -4,9 +4,10 @@
 import logging
 import ssl
 
+from suds.client import Client
+
 from odoo import _
 from odoo.exceptions import ValidationError
-from suds.client import Client
 
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
 
@@ -45,7 +46,7 @@ class ONSCLegajoClient():
                   "El formato esperado es: wsdl;método") % (
                     ws_url, name))
         wsdl = ws_url_splitted[0]
-        client = Client(wsdl, timeout=self.timeout)
+        client = Client(wsdl, location=wsdl, timeout=self.timeout)
         if not client:
             raise ValidationError(_("No se pudo establecer la conexión con el servicio"))
         return client
@@ -62,6 +63,8 @@ class ONSCLegajoClient():
             for key, value in values.items():
                 if isinstance(value, str):
                     simple_params.append("%s = '%s'" % (key, value))
+                elif isinstance(value, int):
+                    simple_params.append("%s = %s" % (key, value))
             simple_param_str = ', '.join(simple_params)
             url = "client.service.%s(%s)" % (method, simple_param_str)
         else:

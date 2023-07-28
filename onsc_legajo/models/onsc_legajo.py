@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
 
-from odoo import api, models, fields
+from odoo import api, models, fields, tools, _
+from odoo.exceptions import ValidationError
 
 
 class ONSCLegajo(models.Model):
@@ -97,6 +98,20 @@ class ONSCLegajo(models.Model):
         action = self.env["ir.actions.actions"]._for_xml_id('onsc_legajo.onsc_legajo_one_employee_action')
         action['res_id'] = self.employee_id.id
         return action
+
+    def button_rve_history(self):
+        try:
+            self.ensure_one()
+            return self.env['onsc.legajo.abstract.ws.rve'].suspend_security().syncronize(self)
+        except Exception as e:
+            raise ValidationError(_("Error al obtener la Historia laboral. Detalle: %s" % tools.ustr(e)))
+
+    def button_rve_history_test(self):
+        try:
+            self.ensure_one()
+            return self.env['onsc.legajo.abstract.ws.rve'].with_context(test=True).suspend_security().syncronize(self)
+        except Exception as e:
+            raise ValidationError(_("Error al obtener la Historia laboral. Detalle: %s" % tools.ustr(e)))
 
     def _action_milegajo(self):
         ctx = self.env.context.copy()

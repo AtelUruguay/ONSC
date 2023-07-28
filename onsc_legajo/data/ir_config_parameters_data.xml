@@ -58,5 +58,18 @@
             <field name="value"></field>
         </record>
 
+        <record id="parameter_onsc_legajo_RVE" model="ir.config_parameter">
+            <field name="key">onsc_legajo_WS_RVE_historialegajo</field>
+            <field name="value"></field>
+        </record>
+        <record id="parameter_ws_rve_user" model="ir.config_parameter">
+            <field name="key">parameter_ws_rve_user</field>
+            <field name="value"></field>
+        </record>
+        <record id="parameter_ws_rve_pass" model="ir.config_parameter">
+            <field name="key">parameter_ws_rve_pass</field>
+            <field name="value"></field>
+        </record>
+
     </data>
 </odoo>

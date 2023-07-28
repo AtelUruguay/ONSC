@@ -8,7 +8,7 @@ from odoo import models, tools, api
 _logger = logging.getLogger(__name__)
 
 
-class ONSCLegajoAbstractSyncW1(models.AbstractModel):
+class ONSCLegajoAbstractSyncWS1(models.AbstractModel):
     _name = 'onsc.legajo.abstract.alta.vl.ws1'
     _inherit = 'onsc.legajo.abstract.sync'
     _description = 'Modelo abstracto para la sincronización de legajo con WS1'
