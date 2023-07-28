@@ -468,6 +468,12 @@ class ONSCCVDigital(models.Model):
         for record in self:
             record.is_cv_uruguay_ci = record.cv_emissor_country_id.code == 'UY' and record.cv_document_type_id.code == 'ci'
 
+    @api.constrains('partner_id')
+    def _check_partner_id_unique(self):
+        for record in self:
+            if self.search_count([('partner_id', '=', record.partner_id.id), ('id', '!=', record.id)]) > 0:
+                raise ValidationError(_("Ya existe un CV ingresado para este usuario"))
+
     @api.constrains('cv_birthdate')
     def _check_valid_dates(self):
         today = fields.Date.from_string(fields.Date.today())
