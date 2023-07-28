@@ -104,14 +104,14 @@ class ONSCLegajo(models.Model):
             self.ensure_one()
             return self.env['onsc.legajo.abstract.ws.rve'].suspend_security().syncronize(self)
         except Exception as e:
-            raise ValidationError(_("Error al obtener el PDF. Detalle: %s" % tools.ustr(e)))
+            raise ValidationError(_("Error al obtener la Historia laboral. Detalle: %s" % tools.ustr(e)))
 
     def button_rve_history_test(self):
         try:
             self.ensure_one()
             return self.env['onsc.legajo.abstract.ws.rve'].with_context(test=True).suspend_security().syncronize(self)
         except Exception as e:
-            raise ValidationError(_("Error al obtener el PDF. Detalle: %s" % tools.ustr(e)))
+            raise ValidationError(_("Error al obtener la Historia laboral. Detalle: %s" % tools.ustr(e)))
 
     def _action_milegajo(self):
         ctx = self.env.context.copy()
