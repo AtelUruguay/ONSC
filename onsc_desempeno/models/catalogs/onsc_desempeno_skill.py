@@ -24,7 +24,7 @@ class ONSCDesempenoSkill(models.Model):
     ]
 
     @api.constrains("skill_line_ids")
-    def _check_date(self):
+    def _check_skill_line_ids(self):
         for record in self:
             if not record.skill_line_ids:
                 raise ValidationError(_("Debe haber al menos una dimension"))
