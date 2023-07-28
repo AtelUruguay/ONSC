@@ -32,6 +32,3 @@ class ONSCDesempenoDegree(models.Model):
         default = dict(default or {})
         default['description'] = _("%s (Copia)") % self.description
         return super(ONSCDesempenoDegree, self).copy(default=default)
-
-    def toggle_active(self):
-        return super(ONSCDesempenoDegree, self.with_context(no_check_write=True)).toggle_active()

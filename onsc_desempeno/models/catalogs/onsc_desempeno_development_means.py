@@ -11,7 +11,7 @@ class ONSCDesempenoDevelopmentMeans(models.Model):
     _description = 'Medios de desarrollo'
 
     name = fields.Char(string="Nombre del medio de desarrollo", required=True)
-    description = fields.Char(string="Descripción")
+    description = fields.Text(string="Descripción")
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
@@ -23,6 +23,3 @@ class ONSCDesempenoDevelopmentMeans(models.Model):
         default = dict(default or {})
         default['name'] = _("%s (Copia)") % self.name
         return super(ONSCDesempenoDevelopmentMeans, self).copy(default=default)
-
-    def toggle_active(self):
-        return super(ONSCDesempenoDevelopmentMeans, self.with_context(no_check_write=True)).toggle_active()
