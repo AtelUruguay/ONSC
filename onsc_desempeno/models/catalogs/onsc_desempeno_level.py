@@ -11,7 +11,7 @@ class ONSCDesempenoLevel(models.Model):
     _description = 'Niveles'
 
     name = fields.Char(string="Nombre del nivel", required=True)
-    definition = fields.Char(string="Descripción")
+    definition = fields.Text(string="Descripción")
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
@@ -23,9 +23,6 @@ class ONSCDesempenoLevel(models.Model):
         default = dict(default or {})
         default['name'] = _("%s (Copia)") % self.name
         return super(ONSCDesempenoLevel, self).copy(default=default)
-
-    def toggle_active(self):
-        return super(ONSCDesempenoLevel, self.with_context(no_check_write=True)).toggle_active()
 
 
 class ONSCCatalogOccupation(models.Model):

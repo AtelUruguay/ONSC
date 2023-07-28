@@ -11,7 +11,7 @@ class ONSCDesempenoDimension(models.Model):
     _description = 'Dimensiones'
 
     name = fields.Char(string="Nombre de la dimensión", required=True)
-    definition = fields.Char(string="Definición")
+    definition = fields.Text(string="Definición")
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
@@ -23,6 +23,3 @@ class ONSCDesempenoDimension(models.Model):
         default = dict(default or {})
         default['name'] = _("%s (Copia)") % self.name
         return super(ONSCDesempenoDimension, self).copy(default=default)
-
-    def toggle_active(self):
-        return super(ONSCDesempenoDimension, self.with_context(no_check_write=True)).toggle_active()
