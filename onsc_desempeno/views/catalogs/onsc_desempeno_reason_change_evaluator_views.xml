@@ -4,7 +4,7 @@
         <field name="name">onsc.desempeno.reason.change.evaluator.search</field>
         <field name="model">onsc.desempeno.reason.change.evaluator</field>
         <field name="arch" type="xml">
-            <search string="Motivos de cambio de evaluador">
+            <search string="Motivos cambio de evaluador">
                 <field name="name"/>
                 <field name="agree"/>
             </search>
@@ -14,7 +14,7 @@
         <field name="name">onsc.desempeno.reason.change.evaluator.tree</field>
         <field name="model">onsc.desempeno.reason.change.evaluator</field>
         <field name="arch" type="xml">
-            <tree string="Motivos de cambio de evaluador">
+            <tree string="Motivos cambio de evaluador">
                 <field name="name"/>
                 <field name="agree"/>
                 <field name="active" invisible="1"/>
@@ -26,7 +26,7 @@
         <field name="name">onsc.desempeno.reason.change.evaluator.form</field>
         <field name="model">onsc.desempeno.reason.change.evaluator</field>
         <field name="arch" type="xml">
-            <form string="Motivos de cambio de evaluador">
+            <form string="Motivos cambio de evaluador">
                 <header/>
                 <sheet>
                     <group>
