@@ -25,7 +25,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 long_description=tools.ustr(e))
             return
 
-    def _syncronize(self, client, parameter, origin_name, integration_error, values=False):
+    def _syncronize(self, client, parameter, origin_name, integration_error, values=False, always_return_result = False):
         IntegrationError = self.env['onsc.legajo.integration.error']
         ONSCLegajoClient = soap_client.ONSCLegajoClient()
         try:
@@ -94,6 +94,8 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
                 )
                 return long_description
         elif len(response) > 0 and isinstance(response, list):
+            return self._populate_from_syncronization(response)
+        elif always_return_result:
             return self._populate_from_syncronization(response)
         return "No se obtuvo respuesta del WS"
 
