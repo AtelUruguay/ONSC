@@ -472,7 +472,9 @@ class ONSCCVDigital(models.Model):
     def _check_partner_id_unique(self):
         for record in self:
             if self.search_count([('partner_id', '=', record.partner_id.id), ('id', '!=', record.id)]) > 0:
-                raise ValidationError(_("Ya existe un CV ingresado para este usuario"))
+                raise ValidationError(_("Ya existe un CV ingresado para este usuario. "
+                                        "Solo debe tener una sesión abierta en el navegador."
+                                        "Cierre sesión y vuelva a ingresar"))
 
     @api.constrains('cv_birthdate')
     def _check_valid_dates(self):
