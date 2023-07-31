@@ -100,7 +100,7 @@ class ONSCLegajoBajaCS(models.Model):
             if inciso_id:
                 args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
                 args = expression.OR([[('inciso_id.is_central_administration', '=', False),
-                                       ('inciso_origen_id', '=', inciso_id.id)], args])
+                                       ('inciso_origin_id', '=', inciso_id.id)], args])
             if operating_unit_id:
                 args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id)], args])
                 args = expression.OR([[('inciso_id.is_central_administration', '=', False),
