@@ -27,16 +27,16 @@ class ONSCLegajoAbstractSyncWSRVE(models.AbstractModel):
             data = {
                 'Pe_user': pe_user,
                 'Pe_pass': pe_pass,
-                'Pe_pais': 858,
-                'Pe_tpodoc': '1',
+                'Pe_pais': record.emissor_country_id.code_rve,
+                'Pe_tpodoc': record.document_type_id.code_other,
                 'Pe_docnum': '56043721',
             }
         else:
             data = {
                 'Pe_user': pe_user,
                 'Pe_pass': pe_pass,
-                'Pe_pais': 858,
-                'Pe_tpodoc': '1',
+                'Pe_pais': record.emissor_country_id.code_rve,
+                'Pe_tpodoc': record.document_type_id.code_other,
                 'Pe_docnum': record.nro_doc,
             }
         return self.with_context(legajo=record, log_info=log_info, simpleWsdl=True).suspend_security()._syncronize(
