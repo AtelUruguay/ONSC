@@ -29,7 +29,7 @@ class ONSCLegajoClient():
             # Handle target environment that doesn't support HTTPS verification
             ssl._create_default_https_context = _create_unverified_https_context
 
-    def get_client(self, name, ws_url):
+    def get_client(self, name, ws_url, pass_location=False):
         """
         """
         self._create_unverified_https_context()
@@ -46,7 +46,10 @@ class ONSCLegajoClient():
                   "El formato esperado es: wsdl;método") % (
                     ws_url, name))
         wsdl = ws_url_splitted[0]
-        client = Client(wsdl, location=wsdl, timeout=self.timeout)
+        if pass_location:
+            client = Client(wsdl, location=wsdl, timeout=self.timeout)
+        else:
+            client = Client(wsdl, timeout=self.timeout)
         if not client:
             raise ValidationError(_("No se pudo establecer la conexión con el servicio"))
         return client

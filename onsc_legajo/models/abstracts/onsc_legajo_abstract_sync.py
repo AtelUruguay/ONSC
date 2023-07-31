@@ -12,10 +12,10 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
     _name = 'onsc.legajo.abstract.sync'
     _description = 'Modelo abstracto para la sincronización de legajo con WS externos'
 
-    def _get_client(self, parameter, origin_name, integration_error):
+    def _get_client(self, parameter, origin_name, integration_error, pass_location=False):
         ONSCLegajoClient = soap_client.ONSCLegajoClient()
         try:
-            return ONSCLegajoClient.get_client(origin_name, parameter)
+            return ONSCLegajoClient.get_client(origin_name, parameter, pass_location=pass_location)
         except Exception as e:
             self.create_new_log(
                 origin=origin_name,
