@@ -59,12 +59,6 @@
               groups="onsc_desempeno.group_desempeno_administrador"
               sequence="20"/>
 
-     <menuitem id="onsc_general_cycle_skill_menu"
-              name="Ciclo General de Evaluación de Desempeño "
-              action="onsc_desempeno_general_cycle_action"
-              parent="onsc_desempeno_config_menu"
-              groups="onsc_desempeno.group_desempeno_administrador,onsc_desempeno.group_desempeno_configurador_gh_ue"
-              sequence="1"/>
 
 
 </odoo>
