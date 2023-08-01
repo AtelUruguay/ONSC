@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_desempeno_onsc_desempeno_evaluation_stage_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.stage.search</field>
+        <field name="model">onsc.desempeno.evaluation.stage</field>
+        <field name="arch" type="xml">
+            <search string="Etapa de evaluaciones">
+                <field name="operating_unit_id"/>
+                <field name="general_cycle_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="end_date_environment"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_desempeno_onsc_desempeno_evaluation_stage_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.stage.tree</field>
+        <field name="model">onsc.desempeno.evaluation.stage</field>
+        <field name="arch" type="xml">
+            <tree string="Etapa de evaluaciones">
+                <field name="operating_unit_id"/>
+                <field name="general_cycle_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="end_date_environment"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_desempeno_onsc_desempeno_evaluation_stage_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.stage.form</field>
+        <field name="model">onsc.desempeno.evaluation.stage</field>
+        <field name="arch" type="xml">
+            <form string="Etapa de evaluaciones">
+                <header>
+                    <field name="show_buttons" invisible="1"/>
+                    <field name="is_edit_start_date" invisible="1"/>
+                    <field name="is_edit_end_date_environment" invisible="1"/>
+                    <field name="is_edit_end_date" invisible="1"/>
+                    <button name="action_extend_deadline" class="btn btn-primary" type="object"
+                            string="Extender plazo"
+                            attrs="{'invisible': [('show_buttons', '=', False)]}"/>
+                    <button name="action_close_stage" class="btn btn-primary" type="object" string="Cerrar etapa"
+                            attrs="{'invisible': [('show_buttons', '=', False)]}"/>
+
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
+                    <group>
+                        <group>
+                            <field name="operating_unit_id" readonly ="1" force_save="1"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="general_cycle_id" required="1"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="start_date" required="1"  attrs="{'readonly': [('is_edit_start_date', '=', False)]}"/>
+                            <field name="end_date" required="1"  attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
+                            <field name="end_date_environment" required="1"  attrs="{'readonly': [('is_edit_end_date_environment', '=', False)]}"/>
+                            <field name="closed_stage" readonly ="1" force_save="1"/>
+                            <field name="active" invisible="1" />
+                        </group>
+                        <group/>
+                    </group>
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_desempeno_onsc_desempeno_evaluation_stage_action' model='ir.actions.act_window'>
+        <field name="name">Etapa de evaluaciones 360° por UE</field>
+        <field name="res_model">onsc.desempeno.evaluation.stage</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una configuración de etapa de evaluaciones 360° por UE
+            </p>
+        </field>
+    </record>
+</odoo>
