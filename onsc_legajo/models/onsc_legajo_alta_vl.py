@@ -197,28 +197,27 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.depends('descriptor1_id', 'descriptor2_id', 'descriptor3_id', 'descriptor4_id')
     def _compute_partida(self):
+        BudgetItem = self.env['onsc.legajo.budget.item']
         for rec in self:
-            domain = []
-            if rec.descriptor1_id:
-                domain = expression.AND([domain, [("dsc1Id", "=", rec.descriptor1_id.id)]])
-            if rec.descriptor2_id:
-                domain = expression.AND([domain, [("dsc2Id", "=", rec.descriptor2_id.id)]])
-            if rec.descriptor3_id:
-                domain = expression.AND([domain, [("dsc3Id", "=", rec.descriptor3_id.id)]])
-            if rec.descriptor4_id:
-                domain = expression.AND([domain, [("dsc4Id", "=", rec.descriptor4_id.id)]])
-            rec.partida_id = self.env['onsc.legajo.budget.item'].search(domain, limit=1) if domain else False
+            rec.partida_id = BudgetItem.search([
+                ('dsc1Id', '=', rec.descriptor1_id.id),
+                ('dsc2Id', '=', rec.descriptor2_id.id),
+                ('dsc3Id', '=', rec.descriptor3_id.id),
+                ('dsc4Id', '=', rec.descriptor4_id.id),
+            ], limit=1)
 
     @api.depends('inciso_id')
     def _compute_is_readonly(self):
+        is_inciso_readonly = (self.user_has_groups(
+            'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
+            'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')) and not self.user_has_groups(
+            'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
+        is_operating_unit_readonly = self.user_has_groups(
+            'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue') and not self.user_has_groups(
+            'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl,onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')
         for rec in self:
-            rec.is_inciso_readonly = (self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso') or self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')) and not self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl')
-            rec.is_operating_unit_readonly = self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue') and not self.user_has_groups(
-                'onsc_legajo.group_legajo_alta_vl_administrar_altas_vl,onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')
+            rec.is_inciso_readonly = is_inciso_readonly
+            rec.is_operating_unit_readonly = is_operating_unit_readonly
 
     @api.depends('inciso_id')
     def _compute_operating_unit_id_domain(self):
@@ -244,56 +243,45 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.depends('inciso_id', 'operating_unit_id', 'is_reserva_sgh')
     def _compute_descriptor1_domain_id(self):
-        domain = [('id', 'in', [])]
+        descriptor1_ids = self.env['onsc.legajo.budget.item'].search([]).mapped('dsc1Id').ids
         for rec in self:
             if not rec.is_reserva_sgh:
-                dsc1Id = self.env['onsc.legajo.budget.item'].search([]).mapped(
-                    'dsc1Id')
-                if dsc1Id:
-                    domain = [('id', 'in', dsc1Id.ids)]
+                domain = [('id', 'in', descriptor1_ids)]
+            else:
+                domain = [('id', 'in', [])]
             rec.descriptor1_domain_id = json.dumps(domain)
 
     @api.depends('descriptor1_id')
     def _compute_descriptor2_domain_id(self):
+        BudgetItem = self.env['onsc.legajo.budget.item']
         for rec in self:
-            args = []
-            domain = [('id', 'in', [])]
-            if rec.descriptor1_id:
-                args = [('dsc1Id', '=', rec.descriptor1_id.id)]
-            dsc2Id = self.env['onsc.legajo.budget.item'].search(args).mapped('dsc2Id')
-            if dsc2Id:
-                domain = [('id', 'in', dsc2Id.ids)]
+            args = [
+                ('dsc1Id', '=', rec.descriptor1_id.id),
+            ]
+            domain = [('id', 'in', BudgetItem.search(args).mapped('dsc2Id').ids)]
             rec.descriptor2_domain_id = json.dumps(domain)
 
-    @api.depends('descriptor2_id')
+    @api.depends('descriptor1_id', 'descriptor2_id')
     def _compute_descriptor3_domain_id(self):
+        BudgetItem = self.env['onsc.legajo.budget.item']
         for rec in self:
-            args = []
-            domain = [('id', 'in', [])]
-            if rec.descriptor1_id:
-                args = [('dsc1Id', '=', rec.descriptor1_id.id)]
-            if rec.descriptor2_id:
-                args = expression.AND([[('dsc2Id', '=', rec.descriptor2_id.id)], args])
-            dsc3Id = self.env['onsc.legajo.budget.item'].search(args).mapped('dsc3Id')
-            if dsc3Id:
-                domain = [('id', 'in', dsc3Id.ids)]
+            args = [
+                ('dsc1Id', '=', rec.descriptor1_id.id),
+                ('dsc2Id', '=', rec.descriptor2_id.id),
+            ]
+            domain = [('id', 'in', BudgetItem.search(args).mapped('dsc3Id').ids)]
             rec.descriptor3_domain_id = json.dumps(domain)
 
-    @api.depends('descriptor3_id')
+    @api.depends('descriptor1_id', 'descriptor2_id', 'descriptor3_id')
     def _compute_descriptor4_domain_id(self):
+        BudgetItem = self.env['onsc.legajo.budget.item']
         for rec in self:
-            args = []
-            domain = [('id', 'in', [])]
-            if rec.descriptor1_id:
-                args = [('dsc1Id', '=', rec.descriptor1_id.id)]
-            if rec.descriptor2_id:
-                args = expression.AND([[('dsc2Id', '=', rec.descriptor2_id.id)], args])
-
-            if rec.descriptor3_id:
-                args = expression.AND([[('dsc3Id', '=', rec.descriptor3_id.id)], args])
-            dsc4Id = self.env['onsc.legajo.budget.item'].search(args).mapped('dsc4Id')
-            if dsc4Id:
-                domain = [('id', 'in', dsc4Id.ids)]
+            args = [
+                ('dsc1Id', '=', rec.descriptor1_id.id),
+                ('dsc2Id', '=', rec.descriptor2_id.id),
+                ('dsc3Id', '=', rec.descriptor3_id.id),
+            ]
+            domain = [('id', 'in', BudgetItem.search(args).mapped('dsc4Id').ids)]
             rec.descriptor4_domain_id = json.dumps(domain)
 
     @api.constrains("attached_document_ids")
