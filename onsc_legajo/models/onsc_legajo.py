@@ -102,14 +102,53 @@ class ONSCLegajo(models.Model):
     def button_rve_history(self):
         try:
             self.ensure_one()
-            return self.env['onsc.legajo.abstract.ws.rve'].suspend_security().syncronize(self)
+            rve_document = self.env['onsc.legajo.abstract.ws.rve'].suspend_security().syncronize(self)
+            attachment_name = _("Historial RVE Funcionario %s.pdf") % self.full_name
+            attachment = self.env["ir.attachment"].create({
+                "name": attachment_name,
+                "datas": bytes(rve_document, 'utf-8'),
+                "type": "binary",
+                "mimetype": "application/pdf",
+                "res_model": self._name,
+                "res_id": self.id,
+            })
+            url = "{}/web/content/ir.attachment/{}/datas/{}?download=true".format(
+                self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
+                attachment.id,
+                attachment.name,
+            )
+            return {
+                "type": "ir.actions.act_url",
+                "target": "new",
+                "url": url,
+            }
         except Exception as e:
             raise ValidationError(_("Error al obtener la Historia laboral. Detalle: %s" % tools.ustr(e)))
 
     def button_rve_history_test(self):
         try:
             self.ensure_one()
-            return self.env['onsc.legajo.abstract.ws.rve'].with_context(test=True).suspend_security().syncronize(self)
+            rve_document = self.env['onsc.legajo.abstract.ws.rve'].with_context(
+                test=True).suspend_security().syncronize(self)
+            attachment_name = _("Historial RVE Funcionario %s.pdf") % self.full_name
+            attachment = self.env["ir.attachment"].create({
+                "name": attachment_name,
+                "datas": bytes(rve_document, 'utf-8'),
+                "type": "binary",
+                "mimetype": "application/pdf",
+                "res_model": self._name,
+                "res_id": self.id,
+            })
+            url = "{}/web/content/ir.attachment/{}/datas/{}?download=true".format(
+                self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
+                attachment.id,
+                attachment.name,
+            )
+            return {
+                "type": "ir.actions.act_url",
+                "target": "new",
+                "url": url,
+            }
         except Exception as e:
             raise ValidationError(_("Error al obtener la Historia laboral. Detalle: %s" % tools.ustr(e)))
 
