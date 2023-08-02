@@ -27,5 +27,5 @@ class ONSCCatalogDescriptor1(models.Model):
     _description = u'Descriptor 1'
     _inherit = ['onsc.catalog.descriptor1']
 
-    desempeno_settings_id = fields.Many2one("onsc.desempeno.settings", string="Mapeo Configuración Desempeño ",
+    company_id = fields.Many2one("res.company", string="Mapeo Configuración Desempeño ",
                                             ondelete='restrict', )

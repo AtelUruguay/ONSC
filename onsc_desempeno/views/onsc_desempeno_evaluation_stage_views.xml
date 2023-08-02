@@ -49,10 +49,10 @@
                     <group>
                         <group>
                             <field name="operating_unit_id" readonly ="1" force_save="1"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="general_cycle_id" required="1"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="start_date" required="1"  attrs="{'readonly': [('is_edit_start_date', '=', False)]}"/>
-                            <field name="end_date" required="1"  attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
-                            <field name="end_date_environment" required="1"  attrs="{'readonly': [('is_edit_end_date_environment', '=', False)]}"/>
+                            <field name="general_cycle_id"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="start_date"  attrs="{'readonly': [('is_edit_start_date', '=', False)]}"/>
+                            <field name="end_date"   attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
+                            <field name="end_date_environment"  attrs="{'readonly': [('is_edit_end_date_environment', '=', False)]}"/>
                             <field name="closed_stage" readonly ="1" force_save="1"/>
                             <field name="active" invisible="1" />
                         </group>
@@ -68,6 +68,7 @@
     <record id='onsc_desempeno_onsc_desempeno_evaluation_stage_action' model='ir.actions.act_window'>
         <field name="name">Etapa de evaluaciones 360° por UE</field>
         <field name="res_model">onsc.desempeno.evaluation.stage</field>
+         <field name="context">{'is_from_menu': True}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

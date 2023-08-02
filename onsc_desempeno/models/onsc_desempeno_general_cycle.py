@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class ONSCDesempenoGeneralCycle(models.Model):
     _name = 'onsc.desempeno.general.cycle'
-    _description = u'Ciclo General de Evaluación de Desempeño'
+    _description = u'Ciclo general de evaluación de desempeño'
     _rec_name = 'year'
 
     year = fields.Integer(u'Año')
@@ -24,7 +24,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
         ('year_uniq', 'unique(year)', u'Solo se puede tener una configuración para el año'),
     ]
 
-    @api.constrains("start_date", "end_date", "start_date_max", "end_date_max")
+    @api.constrains("start_date", "end_date", "start_date_max", "end_date_max", "year")
     def _check_date(self):
         for record in self:
             if record.start_date >= record.end_date:
@@ -35,21 +35,25 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 raise ValidationError(_(u"La fecha inicio máxima debe ser mayor o igual a la fecha de inicio"))
             if record.end_date_max >= record.end_date:
                 raise ValidationError(_(u"La fecha fin máxima debe ser menor o igual a la fecha de fin "))
+            if int(record.start_date.strftime('%Y')) != record.year:
+                raise ValidationError(
+                    _("La fecha inicio debe  estar dentro del año %s") % record.year)
+            if int(record.end_date.strftime('%Y')) != record.year:
+                raise ValidationError(
+                    _("La fecha fin debe  estar dentro del año %s") % record.year)
+            if int(record.end_date_max.strftime('%Y')) != record.year:
+                raise ValidationError(
+                    _("La fecha fin máxima debe  estar dentro del año %s") % record.year)
+            if int(record.start_date_max.strftime('%Y')) != record.year:
+                raise ValidationError(
+                    _("La fecha inicio máxima debe  estar dentro del año %s") % record.year)
 
-    @api.onchange('start_date')
-    def onchange_start_date(self):
-        Evaluation = self.env['onsc.desempeno.evaluation.stage'].suspend_security().search(
-            [("general_cycle_id", "=", self.id)])
-        if Evaluation:
-            if Evaluation.start_date > self.start_date_max:
+            evaluations_qty = self.env['onsc.desempeno.evaluation.stage'].suspend_security().search_count(
+                [("general_cycle_id", "=", record.id), ("start_date", "=", record.start_date_max),
+                 ("start_date", "=", record.start_date), ("end_date", "=", record.end_date_max)])
+            if evaluations_qty > 0:
                 raise ValidationError(
-                    _(u"La fecha inicio maxima debe ser menor o igual a la fecha de inicio de la evaluacion ya existente"))
-            if Evaluation.start_date < self.start_date:
-                raise ValidationError(
-                    _(u"La fecha inicio debe ser menor o igual a la fecha de inicio de la evaluacion ya existente"))
-            if Evaluation.end_date > self.end_date_max:
-                raise ValidationError(
-                    _(u"La fecha fin maxima debe ser mayor o igual a la fecha de fin de la evaluacion ya existente"))
+                    _(u"No se cumple las condiciones de la etapa de evaluaciones 360° por UE que esta asociada a ciclo general de evaluación de desempeño"))
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -58,11 +62,9 @@ class ONSCDesempenoGeneralCycle(models.Model):
         return super(ONSCDesempenoGeneralCycle, self).copy(default=default)
 
     def disable_evaluation(self):
-        for record in self.search([('end_date', '<', fields.Date.today())]):
-            record.write({'active': False})
-        for record in self.env('onsc.desempeno.evaluation.stage').suspend_security().search(
-                [('end_date', '<', fields.Date.today())]):
-            record.write({'active': False, 'closed_stage': True})
+        self.search([('end_date', '<', fields.Date.today())]).write({'active': False})
+        self.env('onsc.desempeno.evaluation.stage').suspend_security().search(
+            [('end_date', '<', fields.Date.today())]).write({'active': False, 'closed_stage': True})
 
     def write(self, vals):
         if vals.get('start_date') and datetime.datetime.strptime(vals.get('start_date'),
