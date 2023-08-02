@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 import logging
 
 from odoo import fields, models, api, _
@@ -40,7 +39,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
         return res
 
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año', domain=[("active", "=", True)],
                                        required=True)
     start_date = fields.Date(string=u'Fecha inicio', required=True)
@@ -83,7 +82,13 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.depends('operating_unit_id', 'general_cycle_id')
     def _compute_name(self):
         for record in self:
-            record.name = record.operating_unit_id.name + ' - ' + str(record.general_cycle_id.year)
+            record.name = "%s - %s" % (record.operating_unit_id.name or '', record.general_cycle_id.year)
+
+    @api.constrains('start_date')
+    def _check_start_date(self):
+        for record in self:
+            if record.start_date < fields.Date.today():
+                raise ValidationError(_("La fecha inicio debe ser mayor o igual a la fecha actual"))
 
     @api.constrains("start_date", "end_date", "end_date_environment", "general_cycle_id.start_date_max",
                     "general_cycle_id.end_date_max", "general_cycle_id.year")
@@ -124,15 +129,3 @@ class ONSCDesempenoEvaluationStage(models.Model):
         default = dict(default or {})
         default['year'] = _("%s (Copia)") % self.year
         return super(ONSCDesempenoEvaluationStage, self).copy(default=default)
-
-    def write(self, vals):
-        if vals.get('start_date') and datetime.datetime.strptime(vals.get('start_date'),
-                                                                 '%Y-%m-%d').date() > fields.Date.today():
-            raise ValidationError(_("La fecha inicio debe ser mayor a la fecha actual"))
-        return super(ONSCDesempenoEvaluationStage, self).write(vals)
-
-    @api.model
-    def create(self, vals):
-        if datetime.datetime.strptime(vals.get('start_date'), '%Y-%m-%d').date() > fields.Date.today():
-            raise ValidationError(_("La fecha inicio debe ser mayor a la fecha actual"))
-        return super(ONSCDesempenoEvaluationStage, self).create(vals)

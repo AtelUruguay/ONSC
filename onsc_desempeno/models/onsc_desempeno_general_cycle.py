@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 import logging
 
 from odoo import fields, models, api, _
@@ -13,16 +12,22 @@ class ONSCDesempenoGeneralCycle(models.Model):
     _description = u'Ciclo general de evaluación de desempeño'
     _rec_name = 'year'
 
-    year = fields.Integer(u'Año')
-    start_date = fields.Date(string=u'Fecha inicio')
-    end_date = fields.Date(string=u'Fecha fin')
-    start_date_max = fields.Date(string=u'Fecha inicio máx.')
-    end_date_max = fields.Date(string=u'Fecha fin máx.')
+    year = fields.Integer(u'Año', required=True)
+    start_date = fields.Date(string=u'Fecha inicio', required=True)
+    end_date = fields.Date(string=u'Fecha fin', required=True)
+    start_date_max = fields.Date(string=u'Fecha inicio máx.', required=True)
+    end_date_max = fields.Date(string=u'Fecha fin máx.', required=True)
     active = fields.Boolean(string="Activo", default=True)
 
     _sql_constraints = [
         ('year_uniq', 'unique(year)', u'Solo se puede tener una configuración para el año'),
     ]
+
+    @api.constrains('start_date')
+    def _check_start_date(self):
+        for record in self:
+            if record.start_date < fields.Date.today():
+                raise ValidationError(_("La fecha inicio debe ser mayor o igual a la fecha actual"))
 
     @api.constrains("start_date", "end_date", "start_date_max", "end_date_max", "year")
     def _check_date(self):
@@ -53,7 +58,8 @@ class ONSCDesempenoGeneralCycle(models.Model):
                  ("start_date", "=", record.start_date), ("end_date", "=", record.end_date_max)])
             if evaluations_qty > 0:
                 raise ValidationError(
-                    _(u"No se cumple las condiciones de la etapa de evaluaciones 360° por UE que esta asociada a ciclo general de evaluación de desempeño"))
+                    _(u"No se cumple las condiciones de la etapa de evaluaciones 360° por UE "
+                      u"que esta asociada a ciclo general de evaluación de desempeño"))
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -65,15 +71,3 @@ class ONSCDesempenoGeneralCycle(models.Model):
         self.search([('end_date', '<', fields.Date.today())]).write({'active': False})
         self.env('onsc.desempeno.evaluation.stage').suspend_security().search(
             [('end_date', '<', fields.Date.today())]).write({'active': False, 'closed_stage': True})
-
-    def write(self, vals):
-        if vals.get('start_date') and datetime.datetime.strptime(vals.get('start_date'),
-                                                                 '%Y-%m-%d').date() < fields.Date.today():
-            raise ValidationError(_("Solo puede editar si la fecha inicio es mayor a la fecha actual"))
-        return super(ONSCDesempenoGeneralCycle, self).write(vals)
-
-    @api.model
-    def create(self, vals):
-        if datetime.datetime.strptime(vals.get('start_date'), '%Y-%m-%d').date() < fields.Date.today():
-            raise ValidationError(_("Solo puede crear si la fecha inicio es mayor a la fecha actual"))
-        return super(ONSCDesempenoGeneralCycle, self).create(vals)

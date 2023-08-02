@@ -29,12 +29,11 @@
                                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                                    class="col-12 col-lg-12"/>
                                         </div>
-
                                     </div>
                                 </div>
                             </div>
                         </div>
-
+                        <field name="company_id" invisible="1"/>
                     </div>
                 </form>
             </field>
