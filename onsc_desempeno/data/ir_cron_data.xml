@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+    <record id="sync_legajo_regime" model="ir.cron">
+        <field name="name">Inactivar ciclo general de evaluación de desempeño y etapa de evaluación 360°</field>
+        <field name="model_id" ref="model_onsc_desempeno_general_cycle"/>
+        <field name="state">code</field>
+        <field name="code">model.disable_evaluation()</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+    </record>
+
+</odoo>
