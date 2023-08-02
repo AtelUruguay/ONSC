@@ -4,6 +4,39 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 from odoo import models, fields, api
 
+MODIFIED_FIELDS_TO_NOTIFY_SGH = [
+    'cv_nro_doc',
+    'full_name',
+    'cv_full_name',
+    'cv_last_name_1',
+    'cv_last_name_2',
+    'cv_first_name',
+    'cv_second_name',
+    'marital_status_id',
+    'cv_birthdate',
+    'cv_sex',
+    'country_of_birth_id',
+    'crendencial_serie',
+    'credential_number',
+    'personal_phone',
+    'mobile_phone',
+    'email',
+    'cv_address_state_id',
+    'cv_address_location_id',
+    'cv_address_street',
+    'cv_address_street_id',
+    'cv_address_nro_door',
+    'cv_address_street2_id',
+    'cv_address_street3_id',
+    'cv_address_is_cv_bis',
+    'cv_address_apto',
+    'cv_address_place',
+    'uy_citizenship',
+    'cv_address_zip',
+    'cv_address_block',
+    'cv_address_sandlot',
+]
+
 MODIFIED_FIELDS = [
     'cv_nro_doc',
     'full_name',
@@ -35,7 +68,22 @@ MODIFIED_FIELDS = [
     'cv_address_zip',
     'cv_address_block',
     'cv_address_sandlot',
-    'health_provider_id'
+    'health_provider_id',
+    'allow_content_public',
+    'situation_disability',
+    'see',
+    'hear',
+    'walk',
+    'speak',
+    'realize',
+    'lear',
+    'interaction',
+    'need_other_support',
+    'is_need_other_support',
+    'emergency_service_telephone',
+    'emergency_service_id',
+    'health_department_id',
+    'health_provider_id',
 ]
 
 
@@ -74,6 +122,13 @@ class HrEmployee(models.Model):
                                                  [('country_id.code', '=', 'UY')]))
     mobile_phone = fields.Char(string="Teléfono celular")
     email = fields.Char(string="Email")
+
+
+    cv_sex_updated_date = fields.Date(u'Fecha de información sexo', history=True)
+    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo', history=True)
+    personal_phone = fields.Char(string="Teléfono particular", history=True)
+    prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil', history=True)
+    mobile_phone = fields.Char(string="Teléfono celular", history=True)
 
     attachment_ids = fields.One2many('ir.attachment', compute='_compute_attachment_ids', string="Archivos adjuntos")
     attachment_count = fields.Integer(compute='_compute_attachment_ids', string="Cantidad de archivos adjuntos")
@@ -243,7 +298,7 @@ class HrEmployee(models.Model):
         BaseUtils = self.env['onsc.base.utils'].sudo()
         for record in self.filtered(lambda x: x.legajo_state == 'active'):
             values_filtered = BaseUtils.get_really_values_changed(record, values)
-            for modified_field in MODIFIED_FIELDS:
+            for modified_field in MODIFIED_FIELDS_TO_NOTIFY_SGH:
                 if modified_field in values_filtered:
                     record.notify_sgh = True
 

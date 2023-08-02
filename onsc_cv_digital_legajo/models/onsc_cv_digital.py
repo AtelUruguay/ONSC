@@ -3,7 +3,7 @@
 
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_documentary_validation import \
     DOCUMENTARY_VALIDATION_STATES
-from odoo.addons.onsc_legajo.models.hr_employee import MODIFIED_FIELDS
+from odoo.addons.onsc_legajo.models.hr_employee import MODIFIED_FIELDS_TO_NOTIFY_SGH, MODIFIED_FIELDS
 
 from odoo import fields, models, api, _
 
@@ -281,17 +281,24 @@ class ONSCCVDigital(models.Model):
             self.disability_date = False
 
     def write(self, vals):
-        self._notify_sgh(vals)
+        self._update_employee_status(vals)
         return super(ONSCCVDigital, self).write(vals)
 
-    def _notify_sgh(self, values):
+    def _update_employee_status(self, values):
         BaseUtils = self.env['onsc.base.utils'].sudo()
         employees = self.env['hr.employee']
         for record in self.filtered(lambda x: x.is_docket_active and x.employee_id):
+            employee_values_to_write = {}
             values_filtered = BaseUtils.get_really_values_changed(record, values)
-            for modified_field in MODIFIED_FIELDS:
+            for modified_field in MODIFIED_FIELDS_TO_NOTIFY_SGH:
                 if modified_field in values_filtered:
                     employees |= record.employee_id
+
+            for key, value in values_filtered.items():
+                if key in MODIFIED_FIELDS:
+                    employee_values_to_write[key] = value
+            if len(employee_values_to_write.keys()):
+                record.employee_id.suspend_security().write(employee_values_to_write)
         employees.suspend_security().write({'notify_sgh': True})
 
     def button_legajo_update_documentary_validation_sections_tovalidate(self):

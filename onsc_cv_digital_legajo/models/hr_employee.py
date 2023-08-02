@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from odoo.addons.onsc_base.models.onsc_abstract_contact_common_data import CV_SEX as CV_SEX
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SELECTION_RADIO as SELECTION_RADIO
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_common import SITUATION as SITUATION
 
@@ -27,7 +26,9 @@ class HrEmployee(models.Model):
         'health_department_id', 'name_contact', 'contact_person_telephone',
         'remark_contact_person', 'disability_date', 'cv_first_race_id',
         'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
-        'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2'
+        'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2',
+        'cv_sex', 'cv_birthdate', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2', 'email',
+        'cv_sex_updated_date'
     ]
 
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital",
@@ -36,60 +37,68 @@ class HrEmployee(models.Model):
                                     store=True)
 
     # -------- INFO DE CV QUE PASA DIRECTO AL LEGAJO SIN VALIDACION
-    cv_first_name = fields.Char(u'Primer nombre',
-                                related='cv_digital_id.partner_id.cv_first_name',
-                                store=True,
-                                history=True)
-    cv_second_name = fields.Char(u'Segundo nombre',
-                                 related='cv_digital_id.partner_id.cv_second_name',
-                                 store=True,
-                                 history=True)
-    cv_last_name_1 = fields.Char(u'Primer apellido',
-                                 related='cv_digital_id.partner_id.cv_last_name_1',
-                                 store=True,
-                                 history=True)
-    cv_last_name_2 = fields.Char(u'Segundo apellido',
-                                 related='cv_digital_id.partner_id.cv_last_name_2',
-                                 store=True,
-                                 history=True)
+    # cv_first_name = fields.Char(u'Primer nombre',
+    #                             related='cv_digital_id.partner_id.cv_first_name',
+    #                             store=True,
+    #                             history=True)
+    # cv_second_name = fields.Char(u'Segundo nombre',
+    #                              related='cv_digital_id.partner_id.cv_second_name',
+    #                              store=True,
+    #                              history=True)
+    # cv_last_name_1 = fields.Char(u'Primer apellido',
+    #                              related='cv_digital_id.partner_id.cv_last_name_1',
+    #                              store=True,
+    #                              history=True)
+    # cv_last_name_2 = fields.Char(u'Segundo apellido',
+    #                              related='cv_digital_id.partner_id.cv_last_name_2',
+    #                              store=True,
+    #                              history=True)
     # TODO: SI ERES EMPLEADO SACAR DE AHÍ LA INFO
     country_of_birth_id = fields.Many2one("res.country",
                                           string="País de nacimiento",
-                                          related='cv_digital_id.country_of_birth_id',
-                                          store=True)
-    cv_birthdate = fields.Date(u'Fecha de nacimiento',
-                               related='cv_digital_id.partner_id.cv_birthdate',
-                               store=True,
-                               history=True)
-    cv_sex = fields.Selection(CV_SEX, u'Sexo',
-                              related='cv_digital_id.partner_id.cv_sex',
-                              store=True,
-                              history=True)
-    cv_sex_updated_date = fields.Date(u'Fecha de información sexo',
-                                      related='cv_digital_id.partner_id.cv_sex_updated_date',
-                                      store=True,
-                                      history=True)
+                                          # related='cv_digital_id.country_of_birth_id',
+                                          store=True,
+                                          history=True)
+    # cv_birthdate = fields.Date(u'Fecha de nacimiento',
+    #                            related='cv_digital_id.partner_id.cv_birthdate',
+    #                            store=True,
+    #                            history=True)
+    # cv_sex = fields.Selection(CV_SEX, u'Sexo',
+    #                           history=True)
+    # cv_sex_updated_date = fields.Date(u'Fecha de información sexo',
+    #                                   related='cv_digital_id.partner_id.cv_sex_updated_date',
+    #                                   store=True,
+    #                                   history=True)
     # TODO: SI ERES EMPLEADO SACAR DE AHÍ LA INFO
 
-    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
-                                      related='cv_digital_id.partner_id.prefix_phone_id', store=True, history=True)
-    personal_phone = fields.Char(string="Teléfono particular", related='cv_digital_id.partner_id.phone', store=True,
-                                 history=True)
-    prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil',
-                                             related='cv_digital_id.partner_id.prefix_mobile_phone_id', store=True,
-                                             history=True)
-    mobile_phone = fields.Char(string="Teléfono celular", related='cv_digital_id.partner_id.mobile', store=True,
-                               history=True)
-    email = fields.Char(string="Email", related='cv_digital_id.partner_id.email', store=True, history=True)
-    uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
-                                      related='cv_digital_id.uy_citizenship', store=True, history=True,
-                                      selection=[('legal', 'Legal'), ('natural', 'Natural'),
-                                                 ('extranjero', 'Extranjero')])
-    marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil",
-                                        related='cv_digital_id.marital_status_id', store=True, history=True)
+    # prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
+    #                                   related='cv_digital_id.partner_id.prefix_phone_id', store=True, history=True)
+    # personal_phone = fields.Char(string="Teléfono particular", related='cv_digital_id.partner_id.phone', store=True,
+    #                              history=True)
+    # prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil',
+    #                                          related='cv_digital_id.partner_id.prefix_mobile_phone_id', store=True,
+    #                                          history=True)
+    # mobile_phone = fields.Char(string="Teléfono celular", related='cv_digital_id.partner_id.mobile', store=True,
+    #                            history=True)
+    # email = fields.Char(string="Email", related='cv_digital_id.partner_id.email', store=True, history=True)
+    uy_citizenship = fields.Selection(
+        string="Ciudadanía uruguaya",
+        # related='cv_digital_id.uy_citizenship', store=True, history=True,
+        selection=[
+            ('legal', 'Legal'), ('natural', 'Natural'),
+            ('extranjero', 'Extranjero')],
+        history=True)
+    marital_status_id = fields.Many2one(
+        "onsc.cv.status.civil", string="Estado civil",
+        related='cv_digital_id.marital_status_id',
+        store=True,
+        history=True)
 
-    cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU",
-                                            related='cv_digital_id.cjppu_affiliate_number', store=True, history=True)
+    cjppu_affiliate_number = fields.Integer(
+        string="Numero de afiliado a la CJPPU",
+        related='cv_digital_id.cjppu_affiliate_number',
+        store=True,
+        history=True)
     professional_resume = fields.Text(string="Resumen profesional", related='cv_digital_id.professional_resume',
                                       store=True, history=True)
     user_linkedIn = fields.Char(string="Usuario en LinkedIn", related='cv_digital_id.user_linkedIn', store=True,
@@ -109,30 +118,27 @@ class HrEmployee(models.Model):
     is_cv_race_public = fields.Boolean(string="¿Permite que su identidad étnico-racial se visualice en su CV?",
                                        related='cv_digital_id.is_cv_race_public', store=True, history=True)
 
-    allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')],
-                                            string=u'¿Permite que el contenido de esta sección se visualice en su CV?',
-                                            related='cv_digital_id.allow_content_public', store=True, history=True)
-    situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION,
-                                            related='cv_digital_id.situation_disability', store=True, history=True)
-    see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes',
-                           related='cv_digital_id.see', store=True, history=True)
-    hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, aún si usa audífono', related='cv_digital_id.hear',
-                            store=True, history=True)
-    walk = fields.Selection(selection=SELECTION_RADIO, string=u'Caminar o subir escalones',
-                            related='cv_digital_id.walk', store=True, history=True)
-    speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas',
-                             related='cv_digital_id.speak', store=True, history=True)
+    allow_content_public = fields.Selection(
+        selection=[('si', u'Si'), ('no', u'No')],
+        string=u'¿Permite que el contenido de esta sección se visualice en su CV?',
+        history=True)
+    situation_disability = fields.Selection(
+        selection=[('si', u'Si'), ('no', u'No')],
+        string=SITUATION,
+        history=True)
+    see = fields.Selection(
+        selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes',
+                           history=True)
+    hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, aún si usa audífono', history=True)
+    walk = fields.Selection(selection=SELECTION_RADIO, string=u'Caminar o subir escalones', history=True)
+    speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas', history=True)
     realize = fields.Selection(selection=SELECTION_RADIO,
-                               string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo',
-                               related='cv_digital_id.realize', store=True, history=True)
-    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender', related='cv_digital_id.lear',
-                            store=True, history=True)
-    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas',
-                                   related='cv_digital_id.interaction', store=True, history=True)
-    need_other_support = fields.Text(string=u"¿Necesita otro apoyo?", related='cv_digital_id.need_other_support',
-                                     store=True, history=True)
-    is_need_other_support = fields.Boolean(compute='_compute_cv_type_support_domain',
-                                           related='cv_digital_id.is_need_other_support', store=True, history=True)
+                               string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo', history=True)
+    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender', related='cv_digital_id.lear', history=True)
+    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas', history=True)
+    need_other_support = fields.Text(string=u"¿Necesita otro apoyo?", history=True)
+    is_need_other_support = fields.Boolean(related='cv_digital_id.is_need_other_support', store=True, history=True)
+
     type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo',
                                         related='cv_digital_id.type_support_ids')
     last_modification_date = fields.Date(string=u'Fecha última modificación',
@@ -140,14 +146,10 @@ class HrEmployee(models.Model):
     institutional_email = fields.Char(string=u'Correo electrónico institucional',
                                       related='cv_digital_id.institutional_email', store=True, history=True)
     emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia',
-                                              related='cv_digital_id.emergency_service_telephone', store=True,
                                               history=True)
-    health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
-                                           related='cv_digital_id.health_department_id', store=True, history=True)
-    health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud",
-                                         related='cv_digital_id.health_provider_id', store=True, history=True)
-    emergency_service_id = fields.Many2one("onsc.legajo.emergency", u"Servicio de emergencia móvil",
-                                           related='cv_digital_id.emergency_service_id', store=True, history=True)
+    health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud', history=True)
+    health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud", history=True)
+    emergency_service_id = fields.Many2one("onsc.legajo.emergency", u"Servicio de emergencia móvil", history=True)
     blood_type = fields.Selection(BLOOD_TYPE,
                                   string=u'Tipo de sangre',
                                   related='cv_digital_id.blood_type', store=True, history=True)

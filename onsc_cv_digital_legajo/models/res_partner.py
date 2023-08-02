@@ -2,7 +2,7 @@
 
 from odoo import models, fields
 
-MODIFIED_FIELDS = [
+MODIFIED_FIELDS_TO_NOTIFY_SGH = [
     'name',
     'cv_last_name_1',
     'cv_last_name_2',
@@ -13,6 +13,25 @@ MODIFIED_FIELDS = [
     'email'
 ]
 
+MODIFIED_FIELDS = [
+    'cv_last_name_1',
+    'cv_last_name_2',
+    'cv_first_name',
+    'cv_second_name',
+    'cv_birthdate',
+    'cv_sex',
+    'email',
+    'cv_sex_updated_date',
+
+    'prefix_phone_id',
+    'prefix_mobile_phone_id',
+]
+
+MODIFIED_FIELDS_WITH_TRANSFORMATION = {
+    'phone': 'personal_phone',
+    'mobile': 'mobile_phone',
+}
+
 
 class ResPartner(models.Model):
     _inherit = 'res.partner'
@@ -22,10 +41,10 @@ class ResPartner(models.Model):
     address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
     def write(self, vals):
-        self.suspend_security()._notify_sgh(vals)
+        self.suspend_security()._update_employee_status(vals)
         return super(ResPartner, self).write(vals)
 
-    def _notify_sgh(self, values):
+    def _update_employee_status(self, values):
         BaseUtils = self.env['onsc.base.utils'].sudo()
         employees = self.env['hr.employee']
         valid_cvs = self.env['onsc.cv.digital'].search([
@@ -34,8 +53,16 @@ class ResPartner(models.Model):
             ('employee_id', '!=', False),
             ('partner_id', 'in', self.ids)])
         for cv in valid_cvs:
+            employee_values_to_write = {}
             values_filtered = BaseUtils.get_really_values_changed(cv.partner_id, values)
-            for modified_field in MODIFIED_FIELDS:
+            for modified_field in MODIFIED_FIELDS_TO_NOTIFY_SGH:
                 if modified_field in values_filtered:
                     employees |= cv.employee_id
+            for key, value in values_filtered.items():
+                if key in MODIFIED_FIELDS:
+                    employee_values_to_write[key] = value
+                if key in MODIFIED_FIELDS_WITH_TRANSFORMATION.keys():
+                    employee_values_to_write[MODIFIED_FIELDS_WITH_TRANSFORMATION.get(key)] = value
+            if len(employee_values_to_write.keys()):
+                cv.employee_id.suspend_security().write(employee_values_to_write)
         employees.suspend_security().write({'notify_sgh': True})
