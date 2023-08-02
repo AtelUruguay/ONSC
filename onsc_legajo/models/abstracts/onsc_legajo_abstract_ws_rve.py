@@ -48,29 +48,8 @@ class ONSCLegajoAbstractSyncWSRVE(models.AbstractModel):
         )
 
     def _populate_from_syncronization(self, response):
-        legajo = self._context.get('legajo')
         if not hasattr(response, 'Ps_datoshcopdf'):
             raise ValidationError(_("Error al obtener el PDF"))
         if hasattr(response, 'Ps_errnum') and response['Ps_errnum'] != 0:
             raise ValidationError(response['Ps_errdsc'])
-        attachment_name = _("Historial RVE Funcionario %s.pdf") % legajo.full_name
-        attachment = self.env["ir.attachment"].create(
-            {
-                "name": attachment_name,
-                "datas": bytes(response['Ps_datoshcopdf'], 'utf-8'),
-                "type": "binary",
-                "mimetype": "application/pdf",
-                "res_model": legajo._name,
-                "res_id": legajo.id,
-            }
-        )
-        url = "{}/web/content/ir.attachment/{}/datas/{}?download=true".format(
-            self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
-            attachment.id,
-            attachment.name,
-        )
-        return {
-            "type": "ir.actions.act_url",
-            "target": "new",
-            "url": url,
-        }
+        return response['Ps_datoshcopdf']
