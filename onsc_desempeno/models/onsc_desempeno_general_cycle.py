@@ -69,5 +69,5 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
     def disable_evaluation(self):
         self.search([('end_date', '<', fields.Date.today())]).write({'active': False})
-        self.env('onsc.desempeno.evaluation.stage').suspend_security().search(
+        self.env['onsc.desempeno.evaluation.stage'].suspend_security().search(
             [('end_date', '<', fields.Date.today())]).write({'active': False, 'closed_stage': True})
