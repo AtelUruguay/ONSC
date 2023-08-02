@@ -249,7 +249,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                 'error_message_synchronization': ''
                             })
                             altas_vl.filtered(lambda x: x.is_responsable_uo).mapped('department_id').write(
-                                {'is_manager_reserved'})
+                                {'is_manager_reserved': True})
                     except Exception as e:
                         long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
                         _logger.warning(long_description)

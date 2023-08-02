@@ -20,23 +20,23 @@ class ONSCLegajoAbstractSyncWSRVE(models.AbstractModel):
         pe_pass = self.env['ir.config_parameter'].sudo().get_param('parameter_ws_rve_pass')
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS_RVE_9005")
 
-        wsclient = self._get_client(parameter, '', integration_error)
+        wsclient = self._get_client(parameter, '', integration_error, pass_location=True)
 
         if self._context.get('test'):
             # FIXME: Hardcoded
             data = {
                 'Pe_user': pe_user,
                 'Pe_pass': pe_pass,
-                'Pe_pais': 858,
-                'Pe_tpodoc': '1',
+                'Pe_pais': record.emissor_country_id.code_rve,
+                'Pe_tpodoc': record.document_type_id.code_other,
                 'Pe_docnum': '56043721',
             }
         else:
             data = {
                 'Pe_user': pe_user,
                 'Pe_pass': pe_pass,
-                'Pe_pais': 858,
-                'Pe_tpodoc': '1',
+                'Pe_pais': record.emissor_country_id.code_rve,
+                'Pe_tpodoc': record.document_type_id.code_other,
                 'Pe_docnum': record.nro_doc,
             }
         return self.with_context(legajo=record, log_info=log_info, simpleWsdl=True).suspend_security()._syncronize(
