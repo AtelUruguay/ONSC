@@ -139,7 +139,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
 
     @api.onchange('inciso_id')
     def onchange_inciso_id(self):
-        self.operating_unit_id = False
+        if self.operating_unit_id.inciso_id != self.inciso_id:
+            self.operating_unit_id = False
 
     @api.onchange('document_file')
     def onchange_document_file(self):
