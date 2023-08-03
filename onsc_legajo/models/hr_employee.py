@@ -3,6 +3,7 @@ from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import models, fields, api
+import json
 
 MODIFIED_FIELDS_TO_NOTIFY_SGH = [
     'cv_nro_doc',
@@ -107,6 +108,14 @@ class HrEmployee(models.Model):
                 node_form.set('edit', '0')
                 node_form.set('copy', '0')
                 node_form.set('delete', '0')
+        # OCULTANDO BINARIOS DE FORMULARIO DE HISTORICOS EN FUNCIONARIO
+        if view_type == 'form' and self._context.get('model_history', False):
+            for potential_file_field in doc.xpath("//field"):
+                if '_file' in potential_file_field.get('name') and potential_file_field.get('filename'):
+                    potential_file_field.set('invisible', '1')
+                    modifiers = json.loads(potential_file_field.get("modifiers") or "{}")
+                    modifiers['invisible'] = True
+                    potential_file_field.set("modifiers", json.dumps(modifiers))
         res['arch'] = etree.tostring(doc)
         return res
 
