@@ -84,6 +84,9 @@ MODIFIED_FIELDS = [
     'emergency_service_id',
     'health_department_id',
     'health_provider_id',
+    'is_cv_gender_public',
+    'is_cv_race_public',
+    'other_information_official',
 ]
 
 

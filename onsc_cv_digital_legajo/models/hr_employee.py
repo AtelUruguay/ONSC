@@ -57,7 +57,7 @@ class HrEmployee(models.Model):
     country_of_birth_id = fields.Many2one("res.country",
                                           string="País de nacimiento",
                                           # related='cv_digital_id.country_of_birth_id',
-                                          store=True,
+                                          # store=True,
                                           history=True)
     # cv_birthdate = fields.Date(u'Fecha de nacimiento',
     #                            related='cv_digital_id.partner_id.cv_birthdate',
@@ -107,16 +107,18 @@ class HrEmployee(models.Model):
                                        store=True, history=True)
     is_cv_gender_public = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?",
-        related='cv_digital_id.is_cv_gender_public', store=True, history=True)
+        history=True)
     gender_public_visualization_date = fields.Date(
         string="Fecha información visualización pública de género",
-        related='cv_digital_id.gender_public_visualization_date', store=True,
+        related='cv_digital_id.gender_public_visualization_date',
+        store=True,
         history=True)
     is_public_information_victim_violent = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?",
         related='cv_digital_id.is_public_information_victim_violent', store=True, history=True)
-    is_cv_race_public = fields.Boolean(string="¿Permite que su identidad étnico-racial se visualice en su CV?",
-                                       related='cv_digital_id.is_cv_race_public', store=True, history=True)
+    is_cv_race_public = fields.Boolean(
+        string="¿Permite que su identidad étnico-racial se visualice en su CV?",
+        history=True)
 
     allow_content_public = fields.Selection(
         selection=[('si', u'Si'), ('no', u'No')],
@@ -155,7 +157,7 @@ class HrEmployee(models.Model):
                                   related='cv_digital_id.blood_type', store=True, history=True)
     other_information_official = fields.Text(
         string="Otra información del funcionario/a",
-        related='cv_digital_id.other_information_official', store=True, history=True)
+        history=True)
     # -------- INFO DE CV QUE PASA DIRECTO AL LEGAJO SIN VALIDACION
 
     drivers_license_ids = fields.One2many("onsc.legajo.driver.license",
