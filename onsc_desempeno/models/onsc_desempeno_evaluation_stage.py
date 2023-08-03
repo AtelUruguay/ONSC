@@ -153,4 +153,3 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     def action_close_stage(self):
         return True
-
