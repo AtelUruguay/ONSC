@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -11,6 +13,20 @@ _logger = logging.getLogger(__name__)
 class ONSCDesempenoEvaluationStage(models.Model):
     _name = 'onsc.desempeno.evaluation.stage'
     _description = u'Etapa de evaluaciones 360° por UE'
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super(ONSCDesempenoEvaluationStage, self).fields_view_get(view_id=view_id, view_type=view_type,
+                                                                        toolbar=toolbar,
+                                                                        submenu=submenu)
+        doc = etree.XML(res['arch'])
+        if view_type in ['form', 'tree', 'kanban']:
+            for node_form in doc.xpath("//%s" % view_type):
+                node_form.set('copy', '0')
+
+        res['arch'] = etree.tostring(doc)
+
+        return res
 
     def _get_domain(self, args):
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
@@ -40,7 +56,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
         return res
 
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True)
-    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año', domain=[("active", "=", True)],
+    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año a evalua',
+                                       domain=[("active", "=", True)],
                                        required=True)
     start_date = fields.Date(string=u'Fecha inicio', required=True)
     end_date_environment = fields.Date(string=u'Fecha fin def. entorno', required=True)
@@ -53,11 +70,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
                                                   compute='_compute_is_edit_end_date_environment')
     is_edit_end_date = fields.Boolean(string="Editar datos de origen", compute='_compute_is_edit_end_date')
     name = fields.Char('Nombre', compute='_compute_name')
-
-    _sql_constraints = [
-        ('stage_uniq', 'unique(general_cycle_id,operating_unit_id)',
-         u'Solo se puede tener una configuración para el año'),
-    ]
 
     @api.depends('end_date')
     def _compute_show_buttons(self):
@@ -83,6 +95,18 @@ class ONSCDesempenoEvaluationStage(models.Model):
     def _compute_name(self):
         for record in self:
             record.name = "%s - %s" % (record.operating_unit_id.name or '', record.general_cycle_id.year)
+
+    @api.constrains('general_cycle_id', 'operating_unit_id')
+    def _check_unique_config(self):
+        for record in self:
+            evaluations_qty = self.env['onsc.desempeno.evaluation.stage'].suspend_security().search_count(
+                [("general_cycle_id", "=", record.general_cycle_id.id),
+                 ("operating_unit_id", "=", record.operating_unit_id.id), ("id", "!=", record.id)])
+            if evaluations_qty > 0:
+                raise ValidationError(_(u"Solo se puede tener una configuración para el año"))
+
+        if record.start_date < fields.Date.today():
+            raise ValidationError(_("La fecha inicio debe ser mayor o igual a la fecha actual"))
 
     @api.constrains('start_date')
     def _check_start_date(self):
@@ -118,14 +142,15 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 raise ValidationError(
                     _("La fecha fin def. entorno debe estar dentro del año %s") % record.general_cycle_id.year)
 
+    @api.onchange('general_cycle_id')
+    def onchange_end_date(self):
+        if self.general_cycle_id:
+            self.start_date = self.general_cycle_id.start_date
+            self.end_date = self.general_cycle_id.end_date
+
     def action_extend_deadline(self):
         return True
 
     def action_close_stage(self):
         return True
 
-    @api.returns('self', lambda value: value.id)
-    def copy(self, default=None):
-        default = dict(default or {})
-        default['year'] = _("%s (Copia)") % self.year
-        return super(ONSCDesempenoEvaluationStage, self).copy(default=default)

@@ -24,7 +24,7 @@
                                     <div class="o_setting_left_pane"/>
                                     <div class="o_setting_right_pane">
                                         <div class="text-muted content-group mt16">
-                                            <span>Escalafones excluidos</span>
+
                                             <field name="descriptor1_ids" widget="many2many_tags"
                                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                                    class="col-12 col-lg-12"/>

@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from lxml import etree
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
@@ -12,7 +14,30 @@ class ONSCDesempenoGeneralCycle(models.Model):
     _description = u'Ciclo general de evaluación de desempeño'
     _rec_name = 'year'
 
-    year = fields.Integer(u'Año', required=True)
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        res = super(ONSCDesempenoGeneralCycle, self).fields_view_get(view_id=view_id, view_type=view_type,
+                                                                     toolbar=toolbar,
+                                                                     submenu=submenu)
+        doc = etree.XML(res['arch'])
+        is_user_config = self.env.user.has_group('onsc_desempeno.group_desempeno_configurador_gh_ue')
+        is_user_admin = self.env.user.has_group('onsc_desempeno.group_desempeno_administrador')
+        if view_type in ['form', 'tree', 'kanban'] and is_user_config and not is_user_admin:
+            for node_form in doc.xpath("//%s" % (view_type)):
+                node_form.set('create', '0')
+                node_form.set('edit', '0')
+                node_form.set('copy', '0')
+                node_form.set('delete', '0')
+        res['arch'] = etree.tostring(doc)
+        return res
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super(ONSCDesempenoGeneralCycle, self).default_get(fields_list)
+        res['year'] = fields.Date.today().strftime('%Y')
+        return res
+
+    year = fields.Integer(u'Año a evalua', required=True)
     start_date = fields.Date(string=u'Fecha inicio', required=True)
     end_date = fields.Date(string=u'Fecha fin', required=True)
     start_date_max = fields.Date(string=u'Fecha inicio máx.', required=True)
@@ -32,13 +57,13 @@ class ONSCDesempenoGeneralCycle(models.Model):
     @api.constrains("start_date", "end_date", "start_date_max", "end_date_max", "year")
     def _check_date(self):
         for record in self:
-            if record.start_date >= record.end_date:
+            if record.start_date > record.end_date:
                 raise ValidationError(_(u"La fecha inicio debe ser menor o igual a la fecha de fin"))
             if record.start_date_max > record.end_date_max:
                 raise ValidationError(_(u"La fecha inicio máxima debe ser menor o igual a la fecha de fin máxima"))
             if record.start_date_max < record.start_date:
                 raise ValidationError(_(u"La fecha inicio máxima debe ser mayor o igual a la fecha de inicio"))
-            if record.end_date_max >= record.end_date:
+            if record.end_date_max > record.end_date:
                 raise ValidationError(_(u"La fecha fin máxima debe ser menor o igual a la fecha de fin "))
             if int(record.start_date.strftime('%Y')) != record.year:
                 raise ValidationError(
@@ -64,10 +89,27 @@ class ONSCDesempenoGeneralCycle(models.Model):
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
         default = dict(default or {})
-        default['year'] = _("%s (Copia)") % self.year
+        year = self.search([], limit=1, order="year desc").year + 1
+
+        default['year'] = _("%s") % year
+        default['start_date'] = _("%s") % '%s-' % year + self.start_date.strftime('%m-%d')
+        default['end_date'] = _("%s") % '%s-' % year + self.end_date.strftime('%m-%d')
+        default['start_date_max'] = _("%s") % '%s-' % year + self.start_date_max.strftime('%m-%d')
+        default['end_date_max'] = _("%s") % '%s-' % year + self.end_date_max.strftime('%m-%d')
+
         return super(ONSCDesempenoGeneralCycle, self).copy(default=default)
 
     def disable_evaluation(self):
         self.search([('end_date', '<', fields.Date.today())]).write({'active': False})
         self.env['onsc.desempeno.evaluation.stage'].suspend_security().search(
             [('end_date', '<', fields.Date.today())]).write({'active': False, 'closed_stage': True})
+
+    def unlink(self):
+        self._check_can_unlink()
+        return super(ONSCDesempenoGeneralCycle, self).unlink()
+
+    def _check_can_unlink(self):
+        if self.env['onsc.desempeno.evaluation.stage'].suspend_security().search_count(
+                [('general_cycle_id', '=', self.id)]) > 0:
+            raise ValidationError(
+                _("No se pueden eliminar la configuracion mientas se tenga una Etapa de evaluaciones 360° activa"))
