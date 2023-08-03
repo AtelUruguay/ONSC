@@ -1848,7 +1848,7 @@
                                 <span t-field="object.email"/>
                             </h4>
                         </li>
-                        <h4>
+                        <h4 t-if="object.notes">
                             Comentarios adicionales:
                             <span t-field="object.notes"/>
                         </h4>
