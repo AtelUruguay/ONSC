@@ -473,7 +473,6 @@
                                     <t t-set="objects"
                                        t-value="o.participation_event_ids"/>
                                 </t>
-
                                 <br></br>
                             </t>
                             <t t-if="'work_teaching' in env.context.get('seccions', True)">
@@ -484,7 +483,6 @@
                                     <t t-set="objects"
                                        t-value="o.work_teaching_ids"/>
                                 </t>
-
                                 <br></br>
                             </t>
                             <t t-if="'investigation' in env.context.get('seccions', True)">
@@ -583,6 +581,8 @@
                                 <!--REFERENCIAS-->
                                 <t t-call="onsc_cv_digital.cv_digital_section_reference">
                                     <t t-set="name_section" t-value="'REFERENCIAS:'"/>
+                                    <t t-set="references"
+                                       t-value="o.reference_ids"/>
                                     <t t-set="objects"
                                        t-value="o.reference_ids.filtered(lambda tx: tx.reference_type =='staff')"/>
                                     <t t-set="objects2"
@@ -1817,43 +1817,45 @@
 
     <!--Referencias-->
     <template id="cv_digital_section_reference">
-        <t t-if="objects">
-            <h3 t-if="objects" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
+        <t t-if="references">
+            <h3 t-if="references" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
                 <strong>
                     <t t-esc="name_section"/>
                 </strong>
             </h3>
-            <ul style="list-style:none">
-                <li>
-                    <h4 t-if="objects">
-                        <u>
-                            Personales:
-                        </u>
-                    </h4>
-                </li>
-            </ul>
-            <t t-foreach="objects" t-as="object">
-                <ul>
+            <t t-if="objects">
+                <ul style="list-style:none">
                     <li>
-                        <h4>
-                            Nombre de la referencia:
-                            <span t-field="object.name"/>
-                            /
-                            Teléfono:
-                            <span t-field="object.prefix_phone_id"/>
-                            <span t-field="object.phone"/>
-                            /
-                            Mail:
-                            <span t-field="object.email"/>
+                        <h4 t-if="objects">
+                            <u>
+                                Personales:
+                            </u>
                         </h4>
                     </li>
-                    <h4>
-                        Comentarios adicionales:
-                        <span t-field="object.notes"/>
-                    </h4>
                 </ul>
-                <t t-call="onsc_cv_digital.cv_documentary_validation"/>
-                <br></br>
+                <t t-foreach="objects" t-as="object">
+                    <ul>
+                        <li>
+                            <h4>
+                                Nombre de la referencia:
+                                <span t-field="object.name"/>
+                                /
+                                Teléfono:
+                                <span t-field="object.prefix_phone_id"/>
+                                <span t-field="object.phone"/>
+                                /
+                                Mail:
+                                <span t-field="object.email"/>
+                            </h4>
+                        </li>
+                        <h4 t-if="object.notes">
+                            Comentarios adicionales:
+                            <span t-field="object.notes"/>
+                        </h4>
+                    </ul>
+                    <t t-call="onsc_cv_digital.cv_documentary_validation"/>
+                    <br></br>
+                </t>
             </t>
         </t>
         <t t-if="objects2">
