@@ -3,6 +3,40 @@ from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import models, fields, api
+import json
+
+MODIFIED_FIELDS_TO_NOTIFY_SGH = [
+    'cv_nro_doc',
+    'full_name',
+    'cv_full_name',
+    'cv_last_name_1',
+    'cv_last_name_2',
+    'cv_first_name',
+    'cv_second_name',
+    'marital_status_id',
+    'cv_birthdate',
+    'cv_sex',
+    'country_of_birth_id',
+    'crendencial_serie',
+    'credential_number',
+    'personal_phone',
+    'mobile_phone',
+    'email',
+    'cv_address_state_id',
+    'cv_address_location_id',
+    'cv_address_street',
+    'cv_address_street_id',
+    'cv_address_nro_door',
+    'cv_address_street2_id',
+    'cv_address_street3_id',
+    'cv_address_is_cv_bis',
+    'cv_address_apto',
+    'cv_address_place',
+    'uy_citizenship',
+    'cv_address_zip',
+    'cv_address_block',
+    'cv_address_sandlot',
+]
 
 MODIFIED_FIELDS = [
     'cv_nro_doc',
@@ -35,7 +69,25 @@ MODIFIED_FIELDS = [
     'cv_address_zip',
     'cv_address_block',
     'cv_address_sandlot',
-    'health_provider_id'
+    'health_provider_id',
+    'allow_content_public',
+    'situation_disability',
+    'see',
+    'hear',
+    'walk',
+    'speak',
+    'realize',
+    'lear',
+    'interaction',
+    'need_other_support',
+    'is_need_other_support',
+    'emergency_service_telephone',
+    'emergency_service_id',
+    'health_department_id',
+    'health_provider_id',
+    'is_cv_gender_public',
+    'is_cv_race_public',
+    'other_information_official',
 ]
 
 
@@ -56,24 +108,68 @@ class HrEmployee(models.Model):
                 node_form.set('edit', '0')
                 node_form.set('copy', '0')
                 node_form.set('delete', '0')
+        # OCULTANDO BINARIOS DE FORMULARIO DE HISTORICOS EN FUNCIONARIO
+        if view_type == 'form' and self._context.get('model_history', False):
+            for potential_file_field in doc.xpath("//field"):
+                if '_file' in potential_file_field.get('name') and potential_file_field.get('filename'):
+                    potential_file_field.set('invisible', '1')
+                    modifiers = json.loads(potential_file_field.get("modifiers") or "{}")
+                    modifiers['invisible'] = True
+                    potential_file_field.set("modifiers", json.dumps(modifiers))
         res['arch'] = etree.tostring(doc)
         return res
 
     partner_id = fields.Many2one('res.partner', string='Contacto', compute='_compute_partner_id', store=True)
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
-
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
-
-    prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
-                                      default=lambda self: self.env['res.country.phone'].search(
-                                          [('country_id.code', '=', 'UY')]))
-    personal_phone = fields.Char(string="Teléfono particular")
-    prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil',
-                                             default=lambda self: self.env['res.country.phone'].search(
-                                                 [('country_id.code', '=', 'UY')]))
-    mobile_phone = fields.Char(string="Teléfono celular")
+    country_of_birth_id = fields.Many2one("res.country",
+                                          string="País de nacimiento",
+                                          history=True)
+    uy_citizenship = fields.Selection(
+        string="Ciudadanía uruguaya",
+        selection=[
+            ('legal', 'Legal'), ('natural', 'Natural'),
+            ('extranjero', 'Extranjero')],
+        history=True)
+    prefix_phone_id = fields.Many2one(
+        'res.country.phone', 'Prefijo',
+        default=lambda self: self.env['res.country.phone'].search([('country_id.code', '=', 'UY')]),
+        history=True)
+    personal_phone = fields.Char(string="Teléfono particular", history=True)
+    prefix_mobile_phone_id = fields.Many2one(
+        'res.country.phone', 'Prefijo del móvil',
+        default=lambda self: self.env['res.country.phone'].search([('country_id.code', '=', 'UY')]),
+        history=True)
+    mobile_phone = fields.Char(string="Teléfono celular", history=True)
     email = fields.Char(string="Email")
+    cv_sex_updated_date = fields.Date(u'Fecha de información sexo', history=True)
+
+    professional_resume = fields.Text(string="Resumen profesional", history=True)
+    user_linkedIn = fields.Char(string="Usuario en LinkedIn", history=True)
+
+    # Domicilio
+    country_id = fields.Many2one(
+        'res.country', 'Nationality (Country)',
+        groups="hr.group_hr_user,onsc_legajo.group_legajo_configurador_empleado,onsc_base.group_base_onsc",
+        tracking=True,
+        history=True)
+    country_code = fields.Char("Código", related="country_id.code", readonly=True)
+    cv_address_state_id = fields.Many2one('res.country.state', string='Departamento', history=True)
+    cv_address_nro_door = fields.Char(u'Número', history=True)
+    cv_address_apto = fields.Char(u'Apto', history=True)
+    cv_address_street = fields.Char(u'Calle', history=True)
+    cv_address_zip = fields.Char(u'Código postal', history=True)
+    cv_address_is_cv_bis = fields.Boolean(u'BIS', history=True)
+    cv_address_amplification = fields.Text(u"Aclaraciones")
+    cv_address_place = fields.Text(string="Paraje", size=200, history=True)
+    cv_address_block = fields.Char(string="Manzana", size=5, history=True)
+    cv_address_sandlot = fields.Char(string="Solar", size=5, history=True)
+    address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
+    address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
+    address_info_date = fields.Date(string="Fecha de información domicilio",
+                                    readonly=False,
+                                    store=True)
 
     attachment_ids = fields.One2many('ir.attachment', compute='_compute_attachment_ids', string="Archivos adjuntos")
     attachment_count = fields.Integer(compute='_compute_attachment_ids', string="Cantidad de archivos adjuntos")
@@ -243,7 +339,7 @@ class HrEmployee(models.Model):
         BaseUtils = self.env['onsc.base.utils'].sudo()
         for record in self.filtered(lambda x: x.legajo_state == 'active'):
             values_filtered = BaseUtils.get_really_values_changed(record, values)
-            for modified_field in MODIFIED_FIELDS:
+            for modified_field in MODIFIED_FIELDS_TO_NOTIFY_SGH:
                 if modified_field in values_filtered:
                     record.notify_sgh = True
 

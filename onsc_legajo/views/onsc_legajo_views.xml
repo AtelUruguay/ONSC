@@ -76,7 +76,6 @@
         <field name="arch" type="xml">
             <form string="Legajos">
                 <header>
-                    <button name="button_rve_history_test" type="object" string="Historia Laboral – RVE (valores fijos SACAR)" class="oe_highlight"/>
                     <field name="legajo_state" widget="statusbar"/>
                 </header>
                 <sheet>
