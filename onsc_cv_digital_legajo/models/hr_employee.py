@@ -79,14 +79,18 @@ class HrEmployee(models.Model):
         history=True)
     see = fields.Selection(
         selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes',
-                           history=True)
+        history=True)
     hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, aún si usa audífono', history=True)
     walk = fields.Selection(selection=SELECTION_RADIO, string=u'Caminar o subir escalones', history=True)
-    speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas', history=True)
+    speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas',
+                             history=True)
     realize = fields.Selection(selection=SELECTION_RADIO,
-                               string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo', history=True)
-    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender', related='cv_digital_id.lear', history=True)
-    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas', history=True)
+                               string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo',
+                               history=True)
+    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender', related='cv_digital_id.lear',
+                            history=True)
+    interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas',
+                                   history=True)
     need_other_support = fields.Text(string=u"¿Necesita otro apoyo?", history=True)
     is_need_other_support = fields.Boolean(related='cv_digital_id.is_need_other_support', store=True, history=True)
 
@@ -98,7 +102,8 @@ class HrEmployee(models.Model):
                                       related='cv_digital_id.institutional_email', store=True, history=True)
     emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia',
                                               history=True)
-    health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud', history=True)
+    health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
+                                           history=True)
     health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud", history=True)
     emergency_service_id = fields.Many2one("onsc.legajo.emergency", u"Servicio de emergencia móvil", history=True)
     blood_type = fields.Selection(BLOOD_TYPE,
