@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from lxml import etree
-
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -12,21 +10,8 @@ _logger = logging.getLogger(__name__)
 
 class ONSCDesempenoEvaluationStage(models.Model):
     _name = 'onsc.desempeno.evaluation.stage'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = u'Etapa de evaluaciones 360° por UE'
-
-    @api.model
-    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
-        res = super(ONSCDesempenoEvaluationStage, self).fields_view_get(view_id=view_id, view_type=view_type,
-                                                                        toolbar=toolbar,
-                                                                        submenu=submenu)
-        doc = etree.XML(res['arch'])
-        if view_type in ['form', 'tree', 'kanban']:
-            for node_form in doc.xpath("//%s" % view_type):
-                node_form.set('copy', '0')
-
-        res['arch'] = etree.tostring(doc)
-
-        return res
 
     def _get_domain(self, args):
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
@@ -56,14 +41,14 @@ class ONSCDesempenoEvaluationStage(models.Model):
         return res
 
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True)
-    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año a evalua',
+    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año a evaluar',
                                        domain=[("active", "=", True)],
-                                       required=True)
-    start_date = fields.Date(string=u'Fecha inicio', required=True)
-    end_date_environment = fields.Date(string=u'Fecha fin def. entorno', required=True)
-    end_date = fields.Date(string=u'Fecha fin', required=True)
-    active = fields.Boolean(string="Activo", default=True)
-    closed_stage = fields.Boolean(string="Etapa cerrada", default=False)
+                                       required=True, tracking=True)
+    start_date = fields.Date(string=u'Fecha inicio', required=True, tracking=True)
+    end_date_environment = fields.Date(string=u'Fecha fin def. entorno', required=True, tracking=True)
+    end_date = fields.Date(string=u'Fecha fin', required=True, tracking=True)
+    active = fields.Boolean(string="Activo", default=True, tracking=True)
+    closed_stage = fields.Boolean(string="Etapa cerrada", default=False, tracking=True)
     show_buttons = fields.Boolean(string="Editar datos de contrato", compute='_compute_show_buttons')
     is_edit_start_date = fields.Boolean(string="Editar datos de destino", compute='_compute_is_edit_start_date')
     is_edit_end_date_environment = fields.Boolean(string="Editar datos de origen",
@@ -98,15 +83,13 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     @api.constrains('general_cycle_id', 'operating_unit_id')
     def _check_unique_config(self):
+        EvalutionStage = self.env['onsc.desempeno.evaluation.stage'].suspend_security()
         for record in self:
-            evaluations_qty = self.env['onsc.desempeno.evaluation.stage'].suspend_security().search_count(
+            evaluations_qty = EvalutionStage.search_count(
                 [("general_cycle_id", "=", record.general_cycle_id.id),
                  ("operating_unit_id", "=", record.operating_unit_id.id), ("id", "!=", record.id)])
             if evaluations_qty > 0:
                 raise ValidationError(_(u"Solo se puede tener una configuración para el año"))
-
-        if record.start_date < fields.Date.today():
-            raise ValidationError(_("La fecha inicio debe ser mayor o igual a la fecha actual"))
 
     @api.constrains('start_date')
     def _check_start_date(self):
@@ -152,4 +135,5 @@ class ONSCDesempenoEvaluationStage(models.Model):
         return True
 
     def action_close_stage(self):
+        self.write({'closed_stage': True})
         return True

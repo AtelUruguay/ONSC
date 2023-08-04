@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class ONSCDesempenoGeneralCycle(models.Model):
     _name = 'onsc.desempeno.general.cycle'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = u'Ciclo general de evaluación de desempeño'
     _rec_name = 'year'
 
@@ -37,12 +38,12 @@ class ONSCDesempenoGeneralCycle(models.Model):
         res['year'] = fields.Date.today().strftime('%Y')
         return res
 
-    year = fields.Integer(u'Año a evalua', required=True)
-    start_date = fields.Date(string=u'Fecha inicio', required=True)
-    end_date = fields.Date(string=u'Fecha fin', required=True)
-    start_date_max = fields.Date(string=u'Fecha inicio máx.', required=True)
-    end_date_max = fields.Date(string=u'Fecha fin máx.', required=True)
-    active = fields.Boolean(string="Activo", default=True)
+    year = fields.Integer(u'Año a evalua', required=True, tracking=True)
+    start_date = fields.Date(string=u'Fecha inicio', required=True, tracking=True)
+    end_date = fields.Date(string=u'Fecha fin', required=True, tracking=True)
+    start_date_max = fields.Date(string=u'Fecha inicio máx.', required=True, tracking=True)
+    end_date_max = fields.Date(string=u'Fecha fin máx.', required=True, tracking=True)
+    active = fields.Boolean(string="Activo", default=True, tracking=True)
 
     _sql_constraints = [
         ('year_uniq', 'unique(year)', u'Solo se puede tener una configuración para el año'),
@@ -103,6 +104,16 @@ class ONSCDesempenoGeneralCycle(models.Model):
         self.search([('end_date', '<', fields.Date.today())]).write({'active': False})
         self.env['onsc.desempeno.evaluation.stage'].suspend_security().search(
             [('end_date', '<', fields.Date.today())]).write({'active': False, 'closed_stage': True})
+
+    def toggle_active(self):
+        self._check_toggle_active()
+        return super(ONSCDesempenoGeneralCycle, self.with_context(no_check_write=True)).toggle_active()
+
+    def _check_toggle_active(self):
+        if not self.env.user.has_group('onsc_desempeno.group_desempeno_administrador'):
+            raise ValidationError(
+                _("No tiene permiso para archivar o desarchivar "))
+        return True
 
     def unlink(self):
         self._check_can_unlink()
