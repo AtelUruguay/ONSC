@@ -37,57 +37,6 @@ class HrEmployee(models.Model):
                                     store=True)
 
     # -------- INFO DE CV QUE PASA DIRECTO AL LEGAJO SIN VALIDACION
-    # cv_first_name = fields.Char(u'Primer nombre',
-    #                             related='cv_digital_id.partner_id.cv_first_name',
-    #                             store=True,
-    #                             history=True)
-    # cv_second_name = fields.Char(u'Segundo nombre',
-    #                              related='cv_digital_id.partner_id.cv_second_name',
-    #                              store=True,
-    #                              history=True)
-    # cv_last_name_1 = fields.Char(u'Primer apellido',
-    #                              related='cv_digital_id.partner_id.cv_last_name_1',
-    #                              store=True,
-    #                              history=True)
-    # cv_last_name_2 = fields.Char(u'Segundo apellido',
-    #                              related='cv_digital_id.partner_id.cv_last_name_2',
-    #                              store=True,
-    #                              history=True)
-    # TODO: SI ERES EMPLEADO SACAR DE AHÍ LA INFO
-    country_of_birth_id = fields.Many2one("res.country",
-                                          string="País de nacimiento",
-                                          # related='cv_digital_id.country_of_birth_id',
-                                          # store=True,
-                                          history=True)
-    # cv_birthdate = fields.Date(u'Fecha de nacimiento',
-    #                            related='cv_digital_id.partner_id.cv_birthdate',
-    #                            store=True,
-    #                            history=True)
-    # cv_sex = fields.Selection(CV_SEX, u'Sexo',
-    #                           history=True)
-    # cv_sex_updated_date = fields.Date(u'Fecha de información sexo',
-    #                                   related='cv_digital_id.partner_id.cv_sex_updated_date',
-    #                                   store=True,
-    #                                   history=True)
-    # TODO: SI ERES EMPLEADO SACAR DE AHÍ LA INFO
-
-    # prefix_phone_id = fields.Many2one('res.country.phone', 'Prefijo',
-    #                                   related='cv_digital_id.partner_id.prefix_phone_id', store=True, history=True)
-    # personal_phone = fields.Char(string="Teléfono particular", related='cv_digital_id.partner_id.phone', store=True,
-    #                              history=True)
-    # prefix_mobile_phone_id = fields.Many2one('res.country.phone', 'Prefijo del móvil',
-    #                                          related='cv_digital_id.partner_id.prefix_mobile_phone_id', store=True,
-    #                                          history=True)
-    # mobile_phone = fields.Char(string="Teléfono celular", related='cv_digital_id.partner_id.mobile', store=True,
-    #                            history=True)
-    # email = fields.Char(string="Email", related='cv_digital_id.partner_id.email', store=True, history=True)
-    uy_citizenship = fields.Selection(
-        string="Ciudadanía uruguaya",
-        # related='cv_digital_id.uy_citizenship', store=True, history=True,
-        selection=[
-            ('legal', 'Legal'), ('natural', 'Natural'),
-            ('extranjero', 'Extranjero')],
-        history=True)
     marital_status_id = fields.Many2one(
         "onsc.cv.status.civil", string="Estado civil",
         related='cv_digital_id.marital_status_id',
@@ -179,28 +128,7 @@ class HrEmployee(models.Model):
                                        domain="[('id','in',cv_race_ids)]")
 
     # Domicilio
-    country_id = fields.Many2one(
-        'res.country', 'Nationality (Country)',
-        groups="hr.group_hr_user,onsc_legajo.group_legajo_configurador_empleado,onsc_base.group_base_onsc",
-        tracking=True,
-        history=True)
-    country_code = fields.Char("Código", related="country_id.code", readonly=True)
-    cv_address_state_id = fields.Many2one('res.country.state', string='Departamento', history=True)
     cv_address_location_id = fields.Many2one('onsc.cv.location', u'Localidad/Ciudad', history=True)
-    cv_address_nro_door = fields.Char(u'Número', history=True)
-    cv_address_apto = fields.Char(u'Apto', history=True)
-    cv_address_street = fields.Char(u'Calle', history=True)
-    cv_address_zip = fields.Char(u'Código postal', history=True)
-    cv_address_is_cv_bis = fields.Boolean(u'BIS', history=True)
-    cv_address_amplification = fields.Text(u"Aclaraciones")
-    cv_address_place = fields.Text(string="Paraje", size=200, history=True)
-    cv_address_block = fields.Char(string="Manzana", size=5, history=True)
-    cv_address_sandlot = fields.Char(string="Solar", size=5, history=True)
-    address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
-    address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
-    address_info_date = fields.Date(string="Fecha de información domicilio",
-                                    readonly=False,
-                                    store=True)
 
     # Datos del legajo
     information_contact_ids = fields.One2many('onsc.cv.legajo.information.contact', 'employee_id',
