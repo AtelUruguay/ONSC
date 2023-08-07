@@ -112,7 +112,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
     def _check_toggle_active(self):
         if not self.env.user.has_group('onsc_desempeno.group_desempeno_administrador'):
             raise ValidationError(
-                _("No tiene permiso para archivar o desarchivar "))
+                _("No tiene permiso para archivar o desarchivar"))
         return True
 
     def unlink(self):
@@ -121,6 +121,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
     def _check_can_unlink(self):
         if self.env['onsc.desempeno.evaluation.stage'].suspend_security().search_count(
-                [('general_cycle_id', '=', self.id)]) > 0:
+                [('general_cycle_id', 'in', self.ids)]) > 0:
             raise ValidationError(
-                _("No se pueden eliminar la configuracion mientas se tenga una Etapa de evaluaciones 360° activa"))
+                _("No se pueden eliminar configuraciones mientas se tenga una Etapa de evaluaciones 360° activa"))
