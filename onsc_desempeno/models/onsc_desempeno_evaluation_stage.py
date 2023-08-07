@@ -10,6 +10,7 @@ _logger = logging.getLogger(__name__)
 
 class ONSCDesempenoEvaluationStage(models.Model):
     _name = 'onsc.desempeno.evaluation.stage'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = u'Etapa de evaluaciones 360° por UE'
 
     def _get_domain(self, args):
@@ -40,24 +41,20 @@ class ONSCDesempenoEvaluationStage(models.Model):
         return res
 
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True)
-    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año', domain=[("active", "=", True)],
-                                       required=True)
-    start_date = fields.Date(string=u'Fecha inicio', required=True)
-    end_date_environment = fields.Date(string=u'Fecha fin def. entorno', required=True)
-    end_date = fields.Date(string=u'Fecha fin', required=True)
-    active = fields.Boolean(string="Activo", default=True)
-    closed_stage = fields.Boolean(string="Etapa cerrada", default=False)
+    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año a evaluar',
+                                       domain=[("active", "=", True)],
+                                       required=True, tracking=True)
+    start_date = fields.Date(string=u'Fecha inicio', required=True, tracking=True)
+    end_date_environment = fields.Date(string=u'Fecha fin def. entorno', required=True, tracking=True)
+    end_date = fields.Date(string=u'Fecha fin', required=True, tracking=True)
+    active = fields.Boolean(string="Activo", default=True, tracking=True)
+    closed_stage = fields.Boolean(string="Etapa cerrada", default=False, tracking=True)
     show_buttons = fields.Boolean(string="Editar datos de contrato", compute='_compute_show_buttons')
     is_edit_start_date = fields.Boolean(string="Editar datos de destino", compute='_compute_is_edit_start_date')
     is_edit_end_date_environment = fields.Boolean(string="Editar datos de origen",
                                                   compute='_compute_is_edit_end_date_environment')
     is_edit_end_date = fields.Boolean(string="Editar datos de origen", compute='_compute_is_edit_end_date')
     name = fields.Char('Nombre', compute='_compute_name')
-
-    _sql_constraints = [
-        ('stage_uniq', 'unique(general_cycle_id,operating_unit_id)',
-         u'Solo se puede tener una configuración para el año'),
-    ]
 
     @api.depends('end_date')
     def _compute_show_buttons(self):
@@ -83,6 +80,16 @@ class ONSCDesempenoEvaluationStage(models.Model):
     def _compute_name(self):
         for record in self:
             record.name = "%s - %s" % (record.operating_unit_id.name or '', record.general_cycle_id.year)
+
+    @api.constrains('general_cycle_id', 'operating_unit_id')
+    def _check_unique_config(self):
+        EvalutionStage = self.env['onsc.desempeno.evaluation.stage'].suspend_security()
+        for record in self:
+            evaluations_qty = EvalutionStage.search_count(
+                [("general_cycle_id", "=", record.general_cycle_id.id),
+                 ("operating_unit_id", "=", record.operating_unit_id.id), ("id", "!=", record.id)])
+            if evaluations_qty > 0:
+                raise ValidationError(_(u"Solo se puede tener una configuración para el año"))
 
     @api.constrains('start_date')
     def _check_start_date(self):
@@ -118,14 +125,15 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 raise ValidationError(
                     _("La fecha fin def. entorno debe estar dentro del año %s") % record.general_cycle_id.year)
 
+    @api.onchange('general_cycle_id')
+    def onchange_end_date(self):
+        if self.general_cycle_id:
+            self.start_date = self.general_cycle_id.start_date
+            self.end_date = self.general_cycle_id.end_date
+
     def action_extend_deadline(self):
         return True
 
     def action_close_stage(self):
+        self.write({'closed_stage': True})
         return True
-
-    @api.returns('self', lambda value: value.id)
-    def copy(self, default=None):
-        default = dict(default or {})
-        default['year'] = _("%s (Copia)") % self.year
-        return super(ONSCDesempenoEvaluationStage, self).copy(default=default)
