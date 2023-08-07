@@ -213,6 +213,22 @@ class Department(models.Model):
         return super(Department, self.with_context(model_view_form_id=self.env.ref(
             'onsc_catalog.onsc_catalog_department_form').id)).get_history_record_action(history_id, res_id)
 
+    def get_first_department_withmanager_in_tree(self):
+        """
+        :return: UO con responsable o primer UO con responsable en el arbol hacia arriba
+        """
+        def recursive_search(department):
+            if department.manager_id:
+                return department
+            if department.parent_id:
+                return recursive_search(department.parent_id)
+            return self.env['hr.department']
+
+        if self.manager_id:
+            return self
+        else:
+            return recursive_search(self.parent_id)
+
 
 class DepartmentResponsability(models.Model):
     _name = "hr.department.responsability"

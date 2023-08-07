@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_desempeno_evaluation_list_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.list.search</field>
+        <field name="model">onsc.desempeno.evaluation.list</field>
+        <field name="arch" type="xml">
+            <search string="Lista de participantes">
+                <field name="evaluation_stage_id"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="end_date_environment"/>
+                <field name="manager_id"/>
+                <field name="department_id"/>
+                <field name="manager_id"/>
+            </search>
+        </field>
+    </record>
+    
+    <record id="onsc_desempeno_evaluation_list_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.list.tree</field>
+        <field name="model">onsc.desempeno.evaluation.list</field>
+        <field name="arch" type="xml">
+            <tree string="Lista de participantes">
+                <field name="evaluation_stage_id"/>
+                <field name="operating_unit_id"/>
+                <field name="department_id"/>
+                <field name="manager_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_desempeno_evaluation_list_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.list.form</field>
+        <field name="model">onsc.desempeno.evaluation.list</field>
+        <field name="arch" type="xml">
+            <form string="Lista de participantes">
+                <header>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="evaluation_stage_id" 
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="manager_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="start_date"/>
+                            <field name="end_date"/>
+                            <field name="end_date_environment"/>
+                        </group>
+                        <group>
+                            <field name="operating_unit_id"/>
+                            <field name="department_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Colaboradores">
+                            <field name="line_ids" nolabel="1">
+                                <tree string="Colaboradores" editanle="top">
+                                    <field name="employee_id" readonly="1"/>
+                                    <field name="regime_id" readonly="1"/>
+                                    <field name="contract_date_start"/>
+                                    <field name="is_included"/>
+                                    <field name="excluded_cause"
+                                        attrs="{'required': [('is_included', '=', False)]}"/>
+                                    <field name="state" readonly="1" force_save="1"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_desempeno_evaluation_list_action' model='ir.actions.act_window'>
+        <field name="name">Lista de participantes 360° por UE</field>
+        <field name="res_model">onsc.desempeno.evaluation.list</field>
+         <field name="context">{'is_from_menu': True}</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una Lista de participantes 360°
+            </p>
+        </field>
+    </record>
+</odoo>
