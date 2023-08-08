@@ -24,5 +24,23 @@
             <field name="category_id" ref="module_category_onsc_desempeno"/>
         </record>
 
+        <record id="group_desempeno_usuario_gh_ue" model="res.groups">
+            <field name="name">Usuario de GH-UE</field>
+            <field name="comment">Usuario de GH-UE</field>
+            <field name="category_id" ref="module_category_onsc_desempeno"/>
+        </record>
+
+        <record id="group_desempeno_usuario_gh_inciso" model="res.groups">
+            <field name="name">Usuario de GH-Inciso</field>
+            <field name="comment">Usuario de GH-Inciso</field>
+            <field name="category_id" ref="module_category_onsc_desempeno"/>
+        </record>
+
+        <record id="group_desempeno_responsable_uo" model="res.groups">
+            <field name="name">Responsable de UO</field>
+            <field name="comment">Responsable de UO</field>
+            <field name="category_id" ref="module_category_onsc_desempeno"/>
+        </record>
+
     </data>
 </odoo>

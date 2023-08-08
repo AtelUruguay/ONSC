@@ -22,7 +22,6 @@
         <field name="arch" type="xml">
             <tree string="Lista de participantes">
                 <field name="evaluation_stage_id"/>
-                <field name="operating_unit_id"/>
                 <field name="department_id"/>
                 <field name="manager_id"/>
             </tree>
@@ -38,37 +37,78 @@
                     <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="button_generate_forms" type="object" class="oe_stat_button"
+                                attrs="{'invisible': [('state', '=', 'closed')]}"
+                                string="Generar formularios"
+                                icon="fa-address-card-o"/>
+                    </div>
                     <div class="oe_title">
-                        <h1>
-                            <field name="evaluation_stage_id" 
+                        <label for="evaluation_stage_id"/>
+                        <h4>
+                            <field name="evaluation_stage_id"
+                                   readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="manager_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                        </h1>
+                        </h4>
                     </div>
                     <group>
+                        <group>
+                            <field name="operating_unit_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="department_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="manager_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="should_disable_form_edit" invisible="1"/>
+                        </group>
                         <group>
                             <field name="start_date"/>
                             <field name="end_date"/>
                             <field name="end_date_environment"/>
                         </group>
-                        <group>
-                            <field name="operating_unit_id"/>
-                            <field name="department_id"/>
-                        </group>
                     </group>
                     <notebook>
                         <page string="Colaboradores">
                             <field name="line_ids" nolabel="1">
-                                <tree string="Colaboradores" editanle="top">
+                                <tree string="Colaboradores" editable="top" create="0" delete="0">
+                                    <field name="id" readonly="1"/>
                                     <field name="employee_id" readonly="1"/>
+                                    <field name="contract_id" readonly="1"/>
                                     <field name="regime_id" readonly="1"/>
                                     <field name="contract_date_start"/>
-                                    <field name="is_included"/>
+                                    <field name="is_included"
+                                        attrs="{'readonly': [('state', '=', 'generated')]}"/>
                                     <field name="excluded_cause"
-                                        attrs="{'required': [('is_included', '=', False)]}"/>
+                                        attrs="{'required': [('is_included', '=', False)],'readonly': [('is_included', '=', False)]}"
+                                        force_save="1"/>
                                     <field name="state" readonly="1" force_save="1"/>
+                                    <field name="active"/>
+                                    <button type="object"
+                                            string="Ver contrato"
+                                            name="button_open_current_contract"
+                                            context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form'}"
+                                            groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
+                                            icon="fa-edit"/>
                                 </tree>
+                                <form string="Colaboradores">
+                                    <group>
+                                        <group>
+                                            <field name="employee_id" readonly="1"
+                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                            <field name="regime_id" readonly="1"
+                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                            <field name="contract_date_start"/>
+                                        </group>
+                                        <group>
+                                            <field name="is_included" readonly="1"/>
+                                            <field name="excluded_cause" readonly="1"/>
+                                            <field name="state" readonly="1"/>
+                                        </group>
+                                    </group>
+                                </form>
                             </field>
                         </page>
                     </notebook>
