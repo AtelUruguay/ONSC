@@ -94,8 +94,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.constrains('start_date')
     def _check_start_date(self):
         for record in self:
-            if record.start_date < fields.Date.today():
-                raise ValidationError(_("La fecha inicio debe ser mayor o igual a la fecha actual"))
+            if record.start_date > fields.Date.today():
+                raise ValidationError(_("La fecha inicio debe ser menor o igual a la fecha actual"))
 
     @api.constrains("start_date", "end_date", "end_date_environment", "general_cycle_id.start_date_max",
                     "general_cycle_id.end_date_max", "general_cycle_id.year")
