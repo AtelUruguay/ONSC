@@ -128,8 +128,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.onchange('general_cycle_id')
     def onchange_end_date(self):
         if self.general_cycle_id:
-            self.start_date = self.general_cycle_id.start_date
-            self.end_date = self.general_cycle_id.end_date
+            self.start_date = self.general_cycle_id.start_date_max
+            self.end_date = self.general_cycle_id.end_date_max
 
     def toggle_active(self):
         self._check_toggle_active()
@@ -143,8 +143,11 @@ class ONSCDesempenoEvaluationStage(models.Model):
         return True
 
     def _check_toggle_active(self):
-        if not self.active and self.env['onsc.desempeno.general.cycle'].suspend_security().search_count(
-                [('id', '=', self.general_cycle_id.id)]) == 0:
-            raise ValidationError(
-                _("No se pueden desarchivar Etapa de evaluaciones 360° si no esta activa la configuración"))
+        if not self.active:
+            if self.env['onsc.desempeno.general.cycle'].suspend_security().search_count(
+                    [('id', '=', self.general_cycle_id.id)]) == 0:
+                raise ValidationError(
+                    _("No se pueden desarchivar Etapa de evaluaciones 360° si no esta activa la configuración"))
+            self._check_unique_config()
+            self._check_date()
         return True
