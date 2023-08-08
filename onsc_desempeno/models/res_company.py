@@ -7,7 +7,7 @@ class ResCompany(models.Model):
     _inherit = 'res.company'
 
     descriptor1_ids = fields.Many2many('onsc.catalog.descriptor1',
-                                      string='Escalafones excluidos', ondelete='restrict')
+                                       string='Escalafones excluidos', ondelete='restrict')
 
     def write(self, vals):
         if len(vals) == 1 and 'descriptor1_ids' in vals:

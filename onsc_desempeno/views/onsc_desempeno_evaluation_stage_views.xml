@@ -31,7 +31,7 @@
         <field name="name">onsc.desempeno.evaluation.stage.form</field>
         <field name="model">onsc.desempeno.evaluation.stage</field>
         <field name="arch" type="xml">
-            <form string="Etapa de evaluaciones">
+            <form string="Etapa de evaluaciones" copy = "0">
                 <header>
                     <field name="show_buttons" invisible="1"/>
                     <field name="is_edit_start_date" invisible="1"/>
