@@ -22,6 +22,7 @@ STATE = [
     ('canceled', 'Cancelado')
 ]
 
+
 class ONSCDesempenoEvaluation(models.Model):
     _name = 'onsc.desempeno.evaluation'
     _description = u'Evaluación'
@@ -30,18 +31,22 @@ class ONSCDesempenoEvaluation(models.Model):
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
     evaluator_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
     original_evaluator_id = fields.Many2one('hr.employee', string='Evaluador Original', readonly=True)
-    environment_evaluation_ids = fields.Many2many('hr.employee', 'enviroment_evaluator_evaluation_rel','evaluation_id','enviroment_evaluator_id',string='Evaluación de Entorno', readonly=True)
-    environment_ids = fields.Many2many('hr.employee', 'enviroment_evaluation_rel','evaluation_id','enviroment_id', string='Entorno')
+    environment_evaluation_ids = fields.Many2many('hr.employee', 'enviroment_evaluator_evaluation_rel', 'evaluation_id',
+                                                  'enviroment_evaluator_id', string='Evaluación de Entorno',
+                                                  readonly=True)
+    environment_ids = fields.Many2many('hr.employee', 'enviroment_evaluation_rel', 'evaluation_id', 'enviroment_id',
+                                       string='Entorno')
     uo_id = fields.Many2one('hr.department', string='UO', readonly=True)
-    inciso_id= fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
-    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle',string='Año a Evaluar', readonly=True)
+    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
     evaluation_start_date = fields.Date(string='Fecha de Inicio de la Evaluación', readonly=True)
     evaluation_end_date = fields.Date(string='Fecha de Fin de la Evaluación', readonly=True)
     environment_definition_end_date = fields.Date(string='Fecha de Fin de la Definición de Entorno', readonly=True)
-    evaluation_compentecy_ids = fields.One2many('onsc.desempeno.evaluation.compentency','evaluation_id', string='Evaluación de Competencias')
+    evaluation_compentecy_ids = fields.One2many('onsc.desempeno.evaluation.compentency', 'evaluation_id',
+                                                string='Evaluación de Competencias')
     general_comments = fields.Text(string='Comentarios Generales', readonly=True,
                                    states={'in_progress': [('readonly', False)]})
     state = fields.Selection(STATE, string='Estado', default='draft', readonly=True)
