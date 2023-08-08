@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_desempeno_evaluation_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.search</field>
+        <field name="model">onsc.desempeno.evaluation</field>
+        <field name="arch" type="xml">
+            <search string="Evaluación de Desempeño">
+                <field name="evaluation_type"/>
+                <field name="general_cycle_id"/>
+                <field name="evaluator_id"/>
+                 <field name="evaluated_id" />
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="uo_id"/>
+                <field name="level_id"/>
+                <field name="original_evaluator_id"/>
+                <field name="occupation_id"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_desempeno_evaluation_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.tree</field>
+        <field name="model">onsc.desempeno.evaluation</field>
+        <field name="arch" type="xml">
+            <tree string="Evaluación de Desempeño">
+                <field name="evaluation_type"/>
+                <field name="general_cycle_id"/>
+                <field name="evaluator_id"/>
+                <field name="evaluated_id" />
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="uo_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_desempeno_evaluation_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.form</field>
+        <field name="model">onsc.desempeno.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="Evaluación de Desempeño">
+                <header>
+                     <field name="state" widget="statusbar" statusbar_visible="draft,in_process,completed,finished,uncompleted,canceled"/>
+                </header>
+                <sheet>
+                   <group name="main_group">
+                        <group name="main_group_left">
+                            <field name="should_disable_form_edit" invisible="1" />
+                            <field name="evaluation_type" />
+                            <field name="evaluator_id"/>
+                            <field name="uo_id"/>
+                            <field name="operating_unit_id"/>
+                             <field name="level_id"/>
+                            <field name="evaluation_start_date"/>
+                            <field name="environment_definition_end_date"/>
+                        </group>
+                        <group name="main_group_right">
+                            <field name="evaluated_id" />
+                            <field name="original_evaluator_id"/>
+                            <field name="inciso_id"/>
+                            <field name="occupation_id"/>
+                            <field name="general_cycle_id"/>
+                            <field name="evaluation_end_date"/>
+                        </group>
+                    </group>
+
+                    <group name="entorno"  string="Entorno" attrs="{'readonly': [('state', '!=', 'environment_definition')],'invisible': [('evaluation_type', '!=', 'environment_definition')]}">
+                        <field name="environment_ids" nolabel="1" >
+                            <tree editable="top">
+                                <field name="name" />
+                                <field name="cv_emissor_country_id" />
+                                <field name="cv_document_type_id" />
+                                <field name="cv_nro_doc" />
+                            </tree>
+                        </field>
+                    </group>
+                    <group name="entorno_ev" string="Evaluación de entorno" readonly="1" attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}" >
+                        <field name="environment_evaluation_ids" nolabel="1" >
+                            <tree>
+                                <field name="name" />
+                                <field name="cv_emissor_country_id" />
+                                <field name="cv_document_type_id" />
+                                <field name="cv_nro_doc" />
+                            </tree>
+                        </field>
+                    </group>
+                    <group name="competencia"  string="Evaluación de Competencias"  attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')]}">
+                        <field name="evaluation_compentecy_ids" nolabel="1"  >
+                            <tree editable="top" >
+                                <field name="skill_id" />
+                                <field name="dimension"  />
+                                <field name="degree_id" />
+                                <field name="improvement_areas"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group name="general_comments">
+                        <field name="general_comments" nolabel="1" attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
+                               placeholder="omentarios Generales"/>
+                        <field name="locked" attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"/>
+                    </group>
+
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_desempeno_evaluation_action' model='ir.actions.act_window'>
+        <field name="name"> Evaluación de Desempeño</field>
+        <field name="res_model">onsc.desempeno.evaluation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+               Evaluación de desempeño
+            </p>
+        </field>
+    </record>
+</odoo>

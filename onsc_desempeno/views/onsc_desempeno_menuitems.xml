@@ -58,7 +58,7 @@
           parent="onsc_desempeno_root_menu"
           sequence="60"/>
     <menuitem id="onsc_general_cycle_menu"
-              name="Ciclo General de Evaluación de Desempeño "
+              name="Ciclo General de Evaluación de Desempeño"
               action="onsc_desempeno_general_cycle_action"
               parent="onsc_desempeno_config_menu"
               groups="onsc_desempeno.group_desempeno_administrador,onsc_desempeno.group_desempeno_configurador_gh_ue"
@@ -75,6 +75,19 @@
               parent="onsc_desempeno_config_menu"
               groups="onsc_desempeno.group_desempeno_configurador_gh_ue"
               sequence="10"/>
+
+    <menuitem id="onsc_desempeno_evaluaciones_menu"
+          name="Evaluaciones"
+          parent="onsc_desempeno_root_menu"
+          sequence="30"/>
+
+    <menuitem id="onsc_desempeno_self_evaluation_menu"
+              name="Autoevaluación"
+              action="onsc_desempeno_evaluation_action"
+              parent="onsc_desempeno_evaluaciones_menu"
+              sequence="1"/>
+
+
 
 
 
