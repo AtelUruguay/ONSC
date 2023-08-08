@@ -31,7 +31,7 @@
         <field name="name">onsc.desempeno.evaluation.stage.form</field>
         <field name="model">onsc.desempeno.evaluation.stage</field>
         <field name="arch" type="xml">
-            <form string="Etapa de evaluaciones" copy = "0">
+            <form string="Etapa de evaluaciones" duplicate="0">
                 <header>
                     <field name="show_buttons" invisible="1"/>
                     <field name="is_edit_start_date" invisible="1"/>
@@ -60,6 +60,12 @@
                     </group>
 
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+
 
             </form>
         </field>

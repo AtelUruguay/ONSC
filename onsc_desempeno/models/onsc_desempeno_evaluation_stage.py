@@ -114,7 +114,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     _(u"La fecha fin debe ser menor o igual a la fecha de fin máxima del ciclo general"))
             if record.end_date_environment > record.end_date:
                 raise ValidationError(
-                    _(u"La Fecha fin def. entorno debe ser menor o igual a la fecha de fin máxima del ciclo general"))
+                    _(u"La Fecha fin def. entorno debe ser menor o igual a la fecha de fin del ciclo general"))
             if int(record.start_date.strftime('%Y')) != record.general_cycle_id.year:
                 raise ValidationError(
                     _("La fecha inicio debe estar dentro del año %s") % record.general_cycle_id.year)
@@ -131,9 +131,20 @@ class ONSCDesempenoEvaluationStage(models.Model):
             self.start_date = self.general_cycle_id.start_date
             self.end_date = self.general_cycle_id.end_date
 
+    def toggle_active(self):
+        self._check_toggle_active()
+        return super(ONSCDesempenoEvaluationStage, self.with_context(no_check_write=True)).toggle_active()
+
     def action_extend_deadline(self):
         return True
 
     def action_close_stage(self):
         self.write({'closed_stage': True})
+        return True
+
+    def _check_toggle_active(self):
+        if not self.active and self.env['onsc.desempeno.general.cycle'].suspend_security().search_count(
+                [('id', '=', self.general_cycle_id.id)]) == 0:
+            raise ValidationError(
+                _("No se pueden desarchivar Etapa de evaluaciones 360° si no esta activa la configuración"))
         return True
