@@ -8,7 +8,7 @@
                 <field name="evaluation_type"/>
                 <field name="general_cycle_id"/>
                 <field name="evaluator_id"/>
-                <field name="evaluated_id"/>
+                 <field name="evaluated_id" />
                 <field name="inciso_id"/>
                 <field name="operating_unit_id"/>
                 <field name="uo_id"/>
@@ -26,7 +26,7 @@
                 <field name="evaluation_type"/>
                 <field name="general_cycle_id"/>
                 <field name="evaluator_id"/>
-                <field name="evaluated_id"/>
+                <field name="evaluated_id" />
                 <field name="inciso_id"/>
                 <field name="operating_unit_id"/>
                 <field name="uo_id"/>
@@ -40,8 +40,7 @@
         <field name="arch" type="xml">
             <form string="Evaluación de Desempeño">
                 <header>
-                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,finished,uncompleted,canceled"/>
+                     <field name="state" widget="statusbar" statusbar_visible="draft,in_process,completed,finished,uncompleted,canceled"/>
                 </header>
                 <sheet>
                     <field name="is_evaluation_form_active" invisible="1"/>
@@ -49,16 +48,24 @@
                     <div class="alert alert-info" role="alert"
                          name="div_alert_form"
                          style="overflow:hidden;"
-                         attrs="{'invisible': [('is_environment_evaluation_form_active', '=', False),('is_evaluation_form_active', '=', False)]}">
+                         attrs="{'invisible':['|',('is_evaluation_form_active', '=', False),('evaluation_type', '=', 'environment_definition')]}">
                         <div class="oe_left">
                             <p class="mb-0">
                                 <strong>
-                                    <field name="evaluation_form_text"
-                                           attrs="{'invisible': ['|',('is_evaluation_form_active', '=', True),('evaluation_type', '=', 'environment_definition')]}"/>
-
-                                    <field name="environment_evaluation_text"
-                                           attrs="{'invisible': ['|',('is_environment_evaluation_form_active', '=', True),('evaluation_type', '!=', 'environment_definition')]}"/>
-
+                                    <field name="evaluation_form_text"/>
+                                </strong>
+                                <newline/>
+                                 </p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         name="div_alert_env_form"
+                         style="overflow:hidden;"
+                         attrs="{'invisible': ['|',('is_environment_evaluation_form_active', '=', False),('evaluation_type', '!=', 'environment_definition')]}">
+                        <div class="oe_left">
+                            <p class="mb-0">
+                                <strong>
+                                    <field name="environment_evaluation_text"/>
                                 </strong>
                                 <newline/>
                                  </p>
@@ -66,18 +73,19 @@
                     </div>
                     <group name="main_group">
                         <group name="main_group_left">
-                            <field name="should_disable_form_edit" invisible="1"/>
-                            <field name="evaluation_type"/>
-                            <field name="evaluator_id"/>
+                            <field name="change_evaluator" invisible="1" />
+                            <field name="should_disable_form_edit" invisible="1" />
+                            <field name="evaluation_type" />
+                            <field name="evaluator_id" attrs="{'invisible': [('evaluation_type', 'in',['self_evaluation', 'environment_definition'])]}"/>
                             <field name="uo_id"/>
                             <field name="operating_unit_id"/>
-                            <field name="level_id"/>
+                             <field name="level_id"/>
                             <field name="evaluation_start_date"/>
-                            <field name="environment_definition_end_date"/>
+                            <field name="environment_definition_end_date" attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
                         </group>
                         <group name="main_group_right">
-                            <field name="evaluated_id"/>
-                            <field name="original_evaluator_id"/>
+                            <field name="evaluated_id" />
+                            <field name="original_evaluator_id" attrs="{'invisible': [('change_evaluator', '=', True)]}"/>
                             <field name="inciso_id"/>
                             <field name="occupation_id"/>
                             <field name="general_cycle_id"/>
@@ -85,44 +93,40 @@
                         </group>
                     </group>
 
-                    <group name="entorno" string="Entorno"
-                           attrs="{'readonly': [('state', '!=', 'environment_definition')],'invisible': [('evaluation_type', '!=', 'environment_definition')]}">
-                        <field name="environment_ids" nolabel="1">
+                    <group name="entorno"  string="Entorno" attrs="{'readonly': [('state', '!=', 'environment_definition')],'invisible': [('evaluation_type', '!=', 'environment_definition')]}">
+                        <field name="environment_ids" nolabel="1" >
                             <tree editable="top">
-                                <field name="name"/>
-                                <field name="cv_emissor_country_id"/>
-                                <field name="cv_document_type_id"/>
-                                <field name="cv_nro_doc"/>
+                                <field name="name" />
+                                <field name="cv_emissor_country_id" />
+                                <field name="cv_document_type_id" />
+                                <field name="cv_nro_doc" />
                             </tree>
                         </field>
                     </group>
-                    <group name="entorno_ev" string="Evaluación de entorno" readonly="1"
-                           attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}">
-                        <field name="environment_evaluation_ids" nolabel="1">
+                    <group name="entorno_ev" string="Evaluación de entorno" readonly="1" attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}" >
+                        <field name="environment_evaluation_ids" nolabel="1" >
                             <tree>
-                                <field name="name"/>
-                                <field name="cv_emissor_country_id"/>
-                                <field name="cv_document_type_id"/>
-                                <field name="cv_nro_doc"/>
+                                <field name="name" />
+                                <field name="cv_emissor_country_id" />
+                                <field name="cv_document_type_id" />
+                                <field name="cv_nro_doc" />
                             </tree>
                         </field>
                     </group>
-                    <group name="competencia" string="Evaluación de Competencias"
-                           attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')]}">
-                        <field name="evaluation_compentecy_ids" nolabel="1">
-                            <tree editable="top">
-                                <field name="skill_id"/>
-                                <field name="dimension"/>
-                                <field name="degree_id"/>
+                    <group name="competencia"  string="Evaluación de Competencias"  attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')]}">
+                        <field name="evaluation_compentecy_ids" nolabel="1"  >
+                            <tree editable="top" >
+                                <field name="skill_id" />
+                                <field name="dimension"  />
+                                <field name="degree_id" />
                                 <field name="improvement_areas"/>
                             </tree>
                         </field>
                     </group>
                     <group name="general_comments">
-                        <field name="general_comments" nolabel="1"
-                               attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
-                               placeholder="omentarios Generales"/>
-                        <field name="locked" attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"/>
+                        <field name="general_comments" nolabel="1" attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly': [('should_disable_form_edit', '=', True)]}"
+                               placeholder="Comentarios Generales"/>
+                        <field name="locked" attrs="{'readonly': [('should_disable_form_edit', '=', True)],'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
                     </group>
 
 
@@ -133,12 +137,12 @@
     </record>
 
     <record id='onsc_desempeno_evaluation_action' model='ir.actions.act_window'>
-        <field name="name">Evaluación de Desempeño</field>
+        <field name="name"> Evaluación de Desempeño</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
-                Evaluación de desempeño
+               Evaluación de desempeño
             </p>
         </field>
     </record>
