@@ -54,6 +54,52 @@ class ONSCDesempenoEvaluation(models.Model):
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
 
+    is_evaluation_form_active = fields.Boolean(
+        compute=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active'),
+        default=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active', True)
+    )
+    evaluation_form_text = fields.Text(
+        compute=lambda s: s._get_evaluation_form_text('evaluation_form_text'),
+        default=lambda s: s._get_evaluation_form_text('evaluation_form_text', True)
+    )
+    is_environment_evaluation_form_active = fields.Boolean(
+        compute=lambda s: s._get_is_environment_evaluation_form_active('is_environment_evaluation_form_active'),
+        default=lambda s: s._get_is_environment_evaluation_form_active('is_environment_evaluation_form_active', True)
+    )
+    environment_evaluation_text = fields.Text(
+        compute=lambda s: s._get_environment_evaluation_text('environment_evaluation_text'),
+        default=lambda s: s._get_environment_evaluation_text('environment_evaluation_text', True)
+    )
+
+    def _get_evaluation_form_text(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
+
+    def _get_is_evaluation_form_active(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
+
+    def _get_environment_evaluation_text(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
+
+    def _get_is_environment_evaluation_form_active(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
+
+
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
