@@ -44,6 +44,11 @@ class ONSCDesempenoEvaluationStage(models.Model):
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año a evaluar',
                                        domain=[("active", "=", True)],
                                        required=True, tracking=True)
+    inciso_id = fields.Many2one(
+        "onsc.catalog.inciso",
+        string="Inciso",
+        related="operating_unit_id.inciso_id",
+        store=True)
     start_date = fields.Date(string=u'Fecha inicio', required=True, tracking=True)
     end_date_environment = fields.Date(string=u'Fecha fin def. entorno', required=True, tracking=True)
     end_date = fields.Date(string=u'Fecha fin', required=True, tracking=True)
@@ -94,7 +99,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.constrains('start_date')
     def _check_start_date(self):
         for record in self:
-            if record.start_date < fields.Date.today():
+            if record.start_date > fields.Date.today():
                 raise ValidationError(_("La fecha inicio debe ser menor o igual a la fecha actual"))
 
     @api.constrains("start_date", "end_date", "end_date_environment", "general_cycle_id.start_date_max",

@@ -24,13 +24,10 @@
                                     <div class="o_setting_left_pane"/>
                                     <div class="o_setting_right_pane">
                                         <div class="text-muted content-group mt16">
-
                                             <field name="descriptor1_ids" widget="many2many_tags"
-                                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                                    class="col-12 col-lg-12"
-                                                    context="{'tree_view_ref': 'onsc_desempeno.onsc_desempeno_onsc_catalog_descriptor1_tree'}"
-                                  >
-
+                                                    context="{'tree_view_ref': 'onsc_desempeno.onsc_desempeno_onsc_catalog_descriptor1_tree'}">
                                             </field>
                                         </div>
                                     </div>
@@ -64,7 +61,7 @@
             <field name="name">onsc.desempeno.onsc.catalog.descriptor1.tree</field>
             <field name="model">onsc.catalog.descriptor1</field>
             <field name="arch" type="xml">
-                <tree string="Escalafones">
+                <tree string="Escalafones" create="0" edit="0" delete="0">
                     <field name="name"/>
                 </tree>
             </field>
