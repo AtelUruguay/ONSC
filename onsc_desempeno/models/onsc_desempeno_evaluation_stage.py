@@ -60,7 +60,13 @@ class ONSCDesempenoEvaluationStage(models.Model):
                                                   compute='_compute_is_edit_end_date_environment')
     is_edit_end_date = fields.Boolean(string="Editar datos de origen", compute='_compute_is_edit_end_date')
     name = fields.Char('Nombre', compute='_compute_name')
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
 
+    @api.depends('start_date')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit = record.start_date and record.start_date >= fields.Date.today()
     @api.depends('end_date')
     def _compute_show_buttons(self):
         for record in self:
@@ -69,17 +75,17 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.depends('start_date')
     def _compute_is_edit_start_date(self):
         for record in self:
-            record.is_edit_start_date = not record.id or record.end_date <= fields.Date.today()
+            record.is_edit_start_date = not record.id or record.start_date < fields.Date.today()
 
     @api.depends('end_date_environment')
     def _compute_is_edit_end_date_environment(self):
         for record in self:
-            record.is_edit_end_date_environment = not record.id or record.end_date_environment <= fields.Date.today()
+            record.is_edit_end_date_environment = not record.id or record.end_date_environment < fields.Date.today()
 
     @api.depends('end_date')
     def _compute_is_edit_end_date(self):
         for record in self:
-            record.is_edit_end_date = not record.id or record.end_date <= fields.Date.today()
+            record.is_edit_end_date = not record.id or record.end_date < fields.Date.today()
 
     @api.depends('operating_unit_id', 'general_cycle_id')
     def _compute_name(self):
@@ -99,7 +105,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.constrains('start_date')
     def _check_start_date(self):
         for record in self:
-            if record.start_date > fields.Date.today():
+            if record.start_date < fields.Date.today():
                 raise ValidationError(_("La fecha inicio debe ser menor o igual a la fecha actual"))
 
     @api.constrains("start_date", "end_date", "end_date_environment", "general_cycle_id.start_date_max",

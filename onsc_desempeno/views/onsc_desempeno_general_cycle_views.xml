@@ -35,6 +35,7 @@
                     <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
                         <group>
+                            <field name="should_disable_form_edit" invisible="1"/>
                             <field name="year" required="1"/>
                             <field name="start_date" required="1"/>
                             <field name="start_date_max" required="1"/>

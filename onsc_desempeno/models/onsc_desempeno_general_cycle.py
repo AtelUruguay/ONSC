@@ -44,11 +44,17 @@ class ONSCDesempenoGeneralCycle(models.Model):
     start_date_max = fields.Date(string=u'Fecha inicio máx.', required=True, tracking=True)
     end_date_max = fields.Date(string=u'Fecha fin máx.', required=True, tracking=True)
     active = fields.Boolean(string="Activo", default=True, tracking=True)
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_should_disable_form_edit')
 
+    @api.depends('start_date')
+    def _compute_should_disable_form_edit(self):
+        for record in self:
+            record.should_disable_form_edit =record.start_date and record.start_date >= fields.Date.today()
     @api.constrains('start_date')
     def _check_start_date(self):
         for record in self:
-            if record.start_date > fields.Date.today():
+            if record.start_date < fields.Date.today():
                 raise ValidationError(_("La fecha inicio debe ser mayor o igual a la fecha actual"))
 
     @api.constrains("start_date", "end_date", "start_date_max", "end_date_max", "year")
@@ -65,9 +71,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
             if int(record.start_date.strftime('%Y')) != record.year:
                 raise ValidationError(
                     _("La fecha inicio debe  estar dentro del año %s") % record.year)
-            if int(record.end_date.strftime('%Y')) != record.year:
-                raise ValidationError(
-                    _("La fecha fin debe  estar dentro del año %s") % record.year)
             if int(record.end_date_max.strftime('%Y')) != record.year:
                 raise ValidationError(
                     _("La fecha fin máxima debe  estar dentro del año %s") % record.year)
