@@ -34,7 +34,24 @@
                                 </div>
                             </div>
                         </div>
-                        <field name="company_id" invisible="1"/>
+                         <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Ayuda para formulario de evaluación<field name="is_evaluation_form_active" style="margin-left:10px" helph="Activar|Desactivar el Consentimiento al uso del CV-D"/></h6>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="col-12 col-lg-12 o_setting_box" id="evaluation_form_settings">
+                                    <field name="evaluation_form_text" class="col-12 col-lg-12"/>
+                                </div>
+                            </div>
+                        </div>
+                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Ayuda para formulario de definición de entorno<field name="is_environment_evaluation_form_active" style="margin-left:10px" helph="Activar|Desactivar el Consentimiento al uso del CV-D"/></h6>
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-xs-12 col-md-6 o_setting_box">
+                                <div class="col-12 col-lg-12 o_setting_box" id="environment_evaluation_settings">
+                                    <field name="environment_evaluation_text" class="col-12 col-lg-12"/>
+                                </div>
+                            </div>
+                        </div>
+
+                     <field name="company_id" invisible="1"/>
                     </div>
                 </form>
             </field>
