@@ -99,7 +99,6 @@ class ONSCDesempenoEvaluation(models.Model):
         for rec in self:
             setattr(rec, help_field, _url)
 
-
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
