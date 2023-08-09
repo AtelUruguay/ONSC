@@ -2,7 +2,7 @@
 import logging
 from collections import defaultdict
 
-from odoo import fields, models, api
+from odoo import fields, models, api, tools
 from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
@@ -79,7 +79,15 @@ class ONSCDesempenoEvaluationList(models.Model):
         "hr.employee",
         string="Líder",
         compute='_compute_manager_id',
+        search='_search_manager_id',
         store=False)
+
+    is_imanager = fields.Boolean(
+        string=' Responsable',
+        search='_search_is_imanager',
+        store=False,
+        required=False)
+
     state = fields.Selection(
         string='Formulario',
         selection=[('in_progress', 'En proceso'),
@@ -111,12 +119,50 @@ class ONSCDesempenoEvaluationList(models.Model):
         for rec in self:
             rec.manager_id = rec.department_id.get_first_department_withmanager_in_tree().manager_id.id
 
+    def _search_is_imanager(self, operator, value):
+        all_evaluation_list = self.search([])
+        evaluation_list_filtered = self.env['onsc.desempeno.evaluation.list']
+        for evaluation_list in all_evaluation_list:
+            manager_id = evaluation_list.department_id.get_first_department_withmanager_in_tree().manager_id.id
+            if manager_id == self.env.user.employee_id.id:
+                evaluation_list_filtered |= evaluation_list
+        return [('id', 'in', evaluation_list_filtered.ids)]
+
+    def _search_manager_id(self, operator, value):
+        all_evaluation_list = self.search([])
+        evaluation_list_filtered = self.env['onsc.desempeno.evaluation.list']
+        for evaluation_list in all_evaluation_list:
+            manager = evaluation_list.department_id.get_first_department_withmanager_in_tree().manager_id
+            if isinstance(value, int) and manager.id == value:
+                evaluation_list_filtered |= evaluation_list
+            elif isinstance(value, str) and value.lower() in manager.display_name.lower():
+                evaluation_list_filtered |= evaluation_list
+        return [('id', 'in', evaluation_list_filtered.ids)]
+
     @api.depends('end_date', 'state')
     def _compute_should_disable_form_edit(self):
         for record in self:
             record.should_disable_form_edit = record.state == 'closed' or record.end_date < fields.Date.today()
 
-    def button_generate_forms(self):
+    def button_generate_evaluations(self):
+        self.ensure_one()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        evaluation = self.env['onsc.desempeno.evaluation']
+        lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
+        valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
+        manager_id = self.manager_id.id
+        with self._cr.savepoint():
+            for line in valid_lines:
+                try:
+                    evaluation |= Evaluation.create({
+                        'evaluated_id': line.employee_id.id,
+                        'evaluator_id': manager_id,
+                        'evaluation_type': 'self_evaluation'
+                    })
+                    lines_evaluated |= line
+                except Exception as e:
+                    line.write({'state': 'error', 'error_log': tools.ustr(e)})
+            lines_evaluated.write({'state': 'generated', 'error_log': False})
         return True
 
     # INTELIGENCIA
@@ -142,7 +188,6 @@ class ONSCDesempenoEvaluationList(models.Model):
 
         exluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
         jobs = Jobs.search([
-            ('department_id.hierarchical_level_id.order', '!=', 1),
             ('department_id.operating_unit_id', '=', evaluation_stage.operating_unit_id.id),
             ('contract_id.legajo_state', 'in', ['active', 'incoming_commission']),
             ('contract_id.descriptor1_id', 'not in', exluded_descriptor1_ids),
@@ -152,12 +197,21 @@ class ONSCDesempenoEvaluationList(models.Model):
         ])
         # Creamos un diccionario con defaultdict para evitar comprobaciones de existencia
         departments_grouped_info = defaultdict(lambda: {'job_ids': set()})
+        # departments_responsible_grouped_info = defaultdict(lambda: {'job_ids': set()})
         for job in jobs:
-            # manager = job.department_id.get_first_department_withmanager_in_tree().manager_id
-            # if manager:
-            departments_grouped_info[job.department_id]['department_id'] = job.department_id
-            # departments_grouped_info[job.department_id]['manager_id'] = manager
-            departments_grouped_info[job.department_id]['job_ids'].add(job)
+            manager = job.department_id.get_first_department_withmanager_in_tree().manager_id
+            parent_manager = job.department_id.parent_id.get_first_department_withmanager_in_tree().manager_id
+            eval1 = not (job.department_id.hierarchical_level_id.order == 1 and job.department_id.manager_id.id == job.employee_id.id)
+            eval2 = job.employee_id.id != manager.id
+            if eval1 and eval2:
+                departments_grouped_info[job.department_id]['department_id'] = job.department_id
+                departments_grouped_info[job.department_id]['job_ids'].add(job)
+            elif eval1 and not eval2 and job.department_id.parent_id.id and parent_manager.id != job.employee_id.id:
+                # departments_responsible_grouped_info[job.department_id.parent_id]['department_id'] = job.department_id.parent_id
+                # departments_responsible_grouped_info[job.department_id.parent_id]['job_ids'].add(job)
+                departments_grouped_info[job.department_id.parent_id]['department_id'] = job.department_id.parent_id
+                departments_grouped_info[job.department_id.parent_id]['job_ids'].add(job)
+
 
         # Convertimos el diccionario de defaultdict a un diccionario estándar
         departments_grouped_info = dict(departments_grouped_info)
@@ -165,8 +219,10 @@ class ONSCDesempenoEvaluationList(models.Model):
             evaluation_vals = {
                 'evaluation_stage_id': evaluation_stage.id,
                 'department_id': department.id,
-                # 'manager_id': info.get('manager_id', self.env['hr.employee']).id,
             }
+            # for department_responsible,info_responsible in departments_responsible_grouped_info.items():
+            #     if department_responsible.id == department.id:
+            #         info['job_ids'] |= info_responsible['job_ids']
             line_vals = []
             for job in info.get('job_ids', []):
                 line_vals.append([0, 0, {
@@ -229,6 +285,7 @@ class ONSCDesempenoEvaluationListLine(models.Model):
 
     is_included = fields.Boolean(string='Incluir en el ciclo', default=True)
     excluded_cause = fields.Text(string='Motivo exclusión')
+    error_log = fields.Text(string='Log')
     state = fields.Selection(
         string='Formulario',
         selection=[('stand', 'Pendiente'),
@@ -261,6 +318,4 @@ class ONSCDesempenoEvaluationListLine(models.Model):
     def button_open_current_contract(self):
         action = self.sudo().env.ref('onsc_legajo.onsc_legajo_one_hr_contract_action').read()[0]
         action.update({'res_id': self.contract_id.id})
-        ctx = self.env.context.copy()
-        ctx.update({'edit': False})
         return action

@@ -12,6 +12,11 @@
                 <field name="manager_id"/>
                 <field name="department_id"/>
                 <field name="manager_id"/>
+                <filter
+                    string="Mis listas"
+                    name="filter_is_imanager"
+                    domain="[('is_imanager','=',True)]"
+                />
             </search>
         </field>
     </record>
@@ -38,10 +43,15 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="button_generate_forms" type="object" class="oe_stat_button"
+                        <button name="button_generate_evaluations" type="object" class="oe_stat_button"
                                 attrs="{'invisible': [('state', '=', 'closed')]}"
                                 string="Generar formularios"
-                                icon="fa-address-card-o"/>
+                                icon="fa-address-card-o"
+                                confirm="Recuerde que antes de generar los formularios debe revisar la lista de los
+                                colaboradores incluidos, en caso de ser necesario puede excluir participantes del ciclo.
+                                Si selecciona Aceptar se generarán los formularios para todos los
+                                colaboradores seleccionados, si selecciona Cancelar puede regresar a revisar la lista"
+                        />
                     </div>
                     <div class="oe_title">
                         <label for="evaluation_stage_id"/>
@@ -74,15 +84,13 @@
                         <page string="Colaboradores">
                             <field name="line_ids" nolabel="1">
                                 <tree string="Colaboradores" editable="top" create="0" delete="0">
-                                    <field name="id" readonly="1"/>
                                     <field name="employee_id" readonly="1"/>
-                                    <field name="contract_id" readonly="1"/>
                                     <field name="regime_id" readonly="1"/>
                                     <field name="contract_date_start"/>
                                     <field name="is_included"
                                         attrs="{'readonly': [('state', '=', 'generated')]}"/>
                                     <field name="excluded_cause"
-                                        attrs="{'required': [('is_included', '=', False)],'readonly': [('is_included', '=', False)]}"
+                                        attrs="{'required': [('is_included', '=', False)],'readonly': [('is_included', '=', True)]}"
                                         force_save="1"/>
                                     <field name="state" readonly="1" force_save="1"/>
                                     <field name="active"/>
@@ -90,7 +98,6 @@
                                             string="Ver contrato"
                                             name="button_open_current_contract"
                                             context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form'}"
-                                            groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                             icon="fa-edit"/>
                                 </tree>
                                 <form string="Colaboradores">
@@ -106,6 +113,7 @@
                                             <field name="is_included" readonly="1"/>
                                             <field name="excluded_cause" readonly="1"/>
                                             <field name="state" readonly="1"/>
+                                            <field name="error_log" readonly="1"/>
                                         </group>
                                     </group>
                                 </form>
@@ -120,7 +128,7 @@
     <record id='onsc_desempeno_evaluation_list_action' model='ir.actions.act_window'>
         <field name="name">Lista de participantes 360° por UE</field>
         <field name="res_model">onsc.desempeno.evaluation.list</field>
-         <field name="context">{'is_from_menu': True}</field>
+         <field name="context">{'is_from_menu': True, 'search_default_filter_is_imanager': 1}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
