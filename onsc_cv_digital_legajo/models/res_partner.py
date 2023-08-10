@@ -40,9 +40,9 @@ class ResPartner(models.Model):
     address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
     address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
-    def write(self, vals):
-        self.suspend_security()._update_employee_status(vals)
-        return super(ResPartner, self).write(vals)
+    def _check_entities_values_before_write(self, values):
+        self.suspend_security()._update_employee_status(values)
+        return super(ResPartner, self)._check_entities_values_before_write(values)
 
     def _update_employee_status(self, values):
         BaseUtils = self.env['onsc.base.utils'].sudo()
