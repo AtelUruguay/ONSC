@@ -66,7 +66,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.depends('start_date')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.start_date and record.start_date >= fields.Date.today()
+            record.should_disable_form_edit = record.start_date and record.start_date < fields.Date.today()
     @api.depends('end_date')
     def _compute_show_buttons(self):
         for record in self:
