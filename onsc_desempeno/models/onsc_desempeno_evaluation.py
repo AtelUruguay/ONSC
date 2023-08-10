@@ -45,7 +45,7 @@ class ONSCDesempenoEvaluation(models.Model):
     evaluation_start_date = fields.Date(string='Fecha de Inicio de la Evaluación', readonly=True)
     evaluation_end_date = fields.Date(string='Fecha de Fin de la Evaluación', readonly=True)
     environment_definition_end_date = fields.Date(string='Fecha de Fin de la Definición de Entorno', readonly=True)
-    evaluation_compentecy_ids = fields.One2many('onsc.desempeno.evaluation.compentency', 'evaluation_id',
+    evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'evaluation_id',
                                                 string='Evaluación de Competencias')
     general_comments = fields.Text(string='Comentarios Generales', readonly=True,
                                    states={'in_progress': [('readonly', False)]})
@@ -54,7 +54,6 @@ class ONSCDesempenoEvaluation(models.Model):
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
     change_evaluator = fields.Boolean(string="Cambio de evaluador")
-
     is_evaluation_form_active = fields.Boolean(
         compute=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active'),
         default=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active', True)

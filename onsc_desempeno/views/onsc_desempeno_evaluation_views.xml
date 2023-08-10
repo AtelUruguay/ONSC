@@ -114,7 +114,7 @@
                         </field>
                     </group>
                     <group name="competencia"  string="Evaluación de Competencias"  attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')]}">
-                        <field name="evaluation_compentecy_ids" nolabel="1"  >
+                        <field name="evaluation_competency_ids" nolabel="1"  >
                             <tree editable="top" >
                                 <field name="skill_id" />
                                 <field name="dimension"  />
