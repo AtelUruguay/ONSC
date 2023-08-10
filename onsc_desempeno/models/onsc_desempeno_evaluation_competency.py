@@ -17,8 +17,8 @@ STATE = [
 ]
 
 
-class ONSCDesempenoEvaluationCompentency(models.Model):
-    _name = 'onsc.desempeno.evaluation.compentency'
+class ONSCDesempenoEvaluationCompetency(models.Model):
+    _name = 'onsc.desempeno.evaluation.competency'
     _description = u'Evaluación'
 
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)

@@ -8,28 +8,50 @@ from .abstracts.onsc_cv_legajo_abstract_common import BLOOD_TYPE as BLOOD_TYPE
 
 DISABILITE = u'¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social?'
 
+HISTORY_COLUMNS = [
+    'cv_nro_doc',
+    'cv_expiration_date',
+    'marital_status_id',
+    'status_civil_date',
+    'cv_gender_id',
+    'gender_date',
+    'is_afro_descendants',
+    'afro_descendant_date',
+    'is_occupational_health_card',
+    'occupational_health_card_date',
+    'medical_aptitude_certificate_date',
+    'people_disabilitie',
+    'certificate_date',
+    'to_date',
+    'health_department_id',
+    'name_contact',
+    'contact_person_telephone',
+    'remark_contact_person',
+    'disability_date',
+    'cv_first_race_id',
+    'cv_address_street_id',
+    'cv_address_street2_id',
+    'cv_address_street3_id',
+    'is_victim_violent',
+    'type_support_ids',
+    'remark_contact_person',
+    'cv_race_ids',
+    'cv_race2',
+    'cv_sex',
+    'cv_birthdate',
+    'cv_first_name',
+    'cv_second_name',
+    'cv_last_name_1',
+    'cv_last_name_2',
+    'email',
+    'cv_sex_updated_date'
+]
+
 
 class HrEmployee(models.Model):
     _name = "hr.employee"
     _inherit = ['hr.employee', 'onsc.cv.common.data', 'onsc.cv.legajo.abstract.common']
-    _history_columns = [
-        'cv_nro_doc', 'cv_expiration_date', 'document_identity_file',
-        'document_identity_filename', 'marital_status_id', 'digitized_document_file', 'digitized_document_filename',
-        'status_civil_date',
-        'cv_gender_id', 'gender_date',
-        'is_afro_descendants', 'afro_descendant_date', 'afro_descendants_file',
-        'afro_descendants_filename', 'is_occupational_health_card',
-        'occupational_health_card_date',
-        'medical_aptitude_certificate_date',
-        'people_disabilitie', 'certificate_date',
-        'to_date',
-        'health_department_id', 'name_contact', 'contact_person_telephone',
-        'remark_contact_person', 'disability_date', 'cv_first_race_id',
-        'cv_address_street_id', 'cv_address_street2_id', 'cv_address_street3_id', 'is_victim_violent',
-        'type_support_ids', 'remark_contact_person', 'cv_race_ids', 'cv_race2',
-        'cv_sex', 'cv_birthdate', 'cv_first_name', 'cv_second_name', 'cv_last_name_1', 'cv_last_name_2', 'email',
-        'cv_sex_updated_date'
-    ]
+    _history_columns = HISTORY_COLUMNS
 
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital",
                                     string="CV Digital",
@@ -52,8 +74,9 @@ class HrEmployee(models.Model):
                                       store=True, history=True)
     user_linkedIn = fields.Char(string="Usuario en LinkedIn", related='cv_digital_id.user_linkedIn', store=True,
                                 history=True)
-    is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir?", related='cv_digital_id.is_driver_license',
-                                       store=True, history=True)
+    is_driver_license = fields.Boolean(
+        string="¿Tiene licencia de conducir?",
+        history=True)
     is_cv_gender_public = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?",
         history=True)
@@ -64,7 +87,7 @@ class HrEmployee(models.Model):
         history=True)
     is_public_information_victim_violent = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?",
-        related='cv_digital_id.is_public_information_victim_violent', store=True, history=True)
+        history=True)
     is_cv_race_public = fields.Boolean(
         string="¿Permite que su identidad étnico-racial se visualice en su CV?",
         history=True)
@@ -206,6 +229,36 @@ class HrEmployee(models.Model):
             'information_contact_ids': record._get_information_contact_orm(),
             'health_department_id': record.cv_digital_id.health_department_id.id,
             'health_provider_id': record.cv_digital_id.health_provider_id.id,
+            'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
+            'cv_second_name': record.cv_digital_id.partner_id.cv_second_name,
+            'cv_last_name_1': record.cv_digital_id.partner_id.cv_last_name_1,
+            'cv_last_name_2': record.cv_digital_id.partner_id.cv_last_name_2,
+            'cv_birthdate': record.cv_digital_id.partner_id.cv_birthdate,
+            'cv_sex': record.cv_digital_id.partner_id.cv_sex,
+            'cv_sex_updated_date': record.cv_digital_id.cv_sex_updated_date,
+            'prefix_phone_id': record.cv_digital_id.prefix_phone_id.id,
+            'prefix_mobile_phone_id': record.cv_digital_id.prefix_mobile_phone_id.id,
+            'personal_phone': record.cv_digital_id.personal_phone,
+            'mobile_phone': record.cv_digital_id.mobile_phone,
+            'email': record.cv_digital_id.email,
+            'cv_nro_doc': record.cv_digital_id.cv_nro_doc,
+            'uy_citizenship': record.cv_digital_id.uy_citizenship,
+            'allow_content_public': record.cv_digital_id.allow_content_public,
+            'situation_disability': record.cv_digital_id.situation_disability,
+            'see': record.cv_digital_id.see,
+            'hear': record.cv_digital_id.hear,
+            'walk': record.cv_digital_id.walk,
+            'speak': record.cv_digital_id.speak,
+            'realize': record.cv_digital_id.realize,
+            'lear': record.cv_digital_id.lear,
+            'interaction': record.cv_digital_id.interaction,
+            'need_other_support': record.cv_digital_id.need_other_support,
+            'is_need_other_support': record.cv_digital_id.is_need_other_support,
+            'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
+            'is_cv_race_public': record.cv_digital_id.is_cv_race_public,
+            'other_information_official': record.cv_digital_id.other_information_official,
+            'is_driver_license': record.cv_digital_id.is_driver_license,
+            'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
         }
         cv_address_documentary_validated = record.cv_digital_id.cv_address_documentary_validation_state == 'validated'
         if not self._context.get('exclusive_validated_info') or cv_address_documentary_validated:

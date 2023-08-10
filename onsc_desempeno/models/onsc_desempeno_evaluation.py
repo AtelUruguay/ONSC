@@ -27,7 +27,7 @@ class ONSCDesempenoEvaluation(models.Model):
     _name = 'onsc.desempeno.evaluation'
     _description = u'Evaluación'
 
-    evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', required=True, readonly=True)
+    evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', required=True)
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
     evaluator_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
     original_evaluator_id = fields.Many2one('hr.employee', string='Evaluador Original', readonly=True)
@@ -45,7 +45,7 @@ class ONSCDesempenoEvaluation(models.Model):
     evaluation_start_date = fields.Date(string='Fecha de Inicio de la Evaluación', readonly=True)
     evaluation_end_date = fields.Date(string='Fecha de Fin de la Evaluación', readonly=True)
     environment_definition_end_date = fields.Date(string='Fecha de Fin de la Definición de Entorno', readonly=True)
-    evaluation_compentecy_ids = fields.One2many('onsc.desempeno.evaluation.compentency', 'evaluation_id',
+    evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'evaluation_id',
                                                 string='Evaluación de Competencias')
     general_comments = fields.Text(string='Comentarios Generales', readonly=True,
                                    states={'in_progress': [('readonly', False)]})
@@ -53,6 +53,51 @@ class ONSCDesempenoEvaluation(models.Model):
     locked = fields.Boolean(string='Bloqueado')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
+    change_evaluator = fields.Boolean(string="Cambio de evaluador")
+    is_evaluation_form_active = fields.Boolean(
+        compute=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active'),
+        default=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active', True)
+    )
+    evaluation_form_text = fields.Text(
+        compute=lambda s: s._get_evaluation_form_text('evaluation_form_text'),
+        default=lambda s: s._get_evaluation_form_text('evaluation_form_text', True)
+    )
+    is_environment_evaluation_form_active = fields.Boolean(
+        compute=lambda s: s._get_is_environment_evaluation_form_active('is_environment_evaluation_form_active'),
+        default=lambda s: s._get_is_environment_evaluation_form_active('is_environment_evaluation_form_active', True)
+    )
+    environment_evaluation_text = fields.Text(
+        compute=lambda s: s._get_environment_evaluation_text('environment_evaluation_text'),
+        default=lambda s: s._get_environment_evaluation_text('environment_evaluation_text', True)
+    )
+
+    def _get_evaluation_form_text(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
+
+    def _get_is_evaluation_form_active(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
+
+    def _get_environment_evaluation_text(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
+
+    def _get_is_environment_evaluation_form_active(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):

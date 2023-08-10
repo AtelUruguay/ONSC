@@ -115,14 +115,13 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
     def toggle_active(self):
         self._check_toggle_active()
-
         return super(ONSCDesempenoGeneralCycle, self.with_context(no_check_write=True)).toggle_active()
 
     def _check_toggle_active(self):
         if not self.env.user.has_group('onsc_desempeno.group_desempeno_administrador'):
             raise ValidationError(
                 _("No tiene permiso para archivar o desarchivar"))
-        self._check_can_unlink()
+
         if not self.active:
             self._check_unique_config()
         return True
