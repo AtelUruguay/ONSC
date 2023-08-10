@@ -146,19 +146,16 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     def button_generate_evaluations(self):
         self.ensure_one()
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        evaluation = self.env['onsc.desempeno.evaluation']
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         manager_id = self.manager_id.id
         with self._cr.savepoint():
             for line in valid_lines:
                 try:
-                    evaluation |= Evaluation.create({
-                        'evaluated_id': line.employee_id.id,
-                        'evaluator_id': manager_id,
-                        'evaluation_type': 'self_evaluation'
-                    })
+
+                    self._create_self_evaluation_data(line)
+                    self._create_leader_evaluation_data(line)
+                    if fields.Date.today() <=
                     lines_evaluated |= line
                 except Exception as e:
                     line.write({'state': 'error', 'error_log': tools.ustr(e)})
@@ -238,6 +235,19 @@ class ONSCDesempenoEvaluationList(models.Model):
                 ('department_id', '=', job.department_id.id),
                 ('state', '=', 'in_progress')]).write({'line_ids': [(0, 0, {'job_id': job.id})]})
         return True
+
+    def _create_self_evaluation_data(self, data):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+
+        Evaluation.create({
+            'evaluated_id': data.employee_id.id,
+            'evaluator_id':  self.manager_id.id,
+            'evaluation_type': 'self_evaluation'
+        })
+
+    def _create_leader_evaluation_data(self, data):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+
 
 
 class ONSCDesempenoEvaluationListLine(models.Model):
