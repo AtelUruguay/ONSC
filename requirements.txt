@@ -9,3 +9,4 @@ basicauth==0.4.1
 phonenumbers==8.12.54
 suds==1.1.2
 html2text==2020.1.16
+email_validator==2.0.0.post2

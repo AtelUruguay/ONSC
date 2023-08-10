@@ -2,6 +2,7 @@
 import json
 import logging
 
+from email_validator import EmailNotValidError, validate_email
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 from odoo import fields, models, api, _
@@ -473,7 +474,16 @@ class ONSCLegajoAltaVL(models.Model):
 
     # MAIL TEMPLATE UTILS
     def get_followers_mails(self):
-        return ','.join(self.message_follower_ids.mapped('partner_id.email'))
+        followers_emails = []
+        for follower in self.message_follower_ids:
+            try:
+                partner_email = follower.partner_id.email
+                validate_email(partner_email)
+                followers_emails.append(partner_email)
+            except EmailNotValidError:
+                # Si el email no es válido, se captura la excepción
+                _logger.info(_("Mail de Contacto no válido: %s") % follower.partner_id.email)
+        return ','.join(followers_emails)
 
     def get_altavl_name(self):
         return self.partner_id.display_name
