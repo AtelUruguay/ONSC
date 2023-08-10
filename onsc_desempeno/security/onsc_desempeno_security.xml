@@ -41,6 +41,11 @@
             <field name="comment">Responsable de UO</field>
             <field name="category_id" ref="module_category_onsc_desempeno"/>
         </record>
+        <record id="group_desempeno_usuario_evaluacion" model="res.groups">
+            <field name="name">Usuario de Evaluación</field>
+            <field name="comment">Usuario de Evaluación</field>
+            <field name="category_id" ref="module_category_onsc_desempeno"/>
+        </record>
 
     </data>
 </odoo>

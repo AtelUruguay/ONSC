@@ -45,7 +45,7 @@ class ONSCDesempenoEvaluation(models.Model):
     evaluation_start_date = fields.Date(string='Fecha de Inicio de la Evaluación', readonly=True)
     evaluation_end_date = fields.Date(string='Fecha de Fin de la Evaluación', readonly=True)
     environment_definition_end_date = fields.Date(string='Fecha de Fin de la Definición de Entorno', readonly=True)
-    evaluation_compentecy_ids = fields.One2many('onsc.desempeno.evaluation.compentency', 'evaluation_id',
+    evaluation_compentecy_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'evaluation_id',
                                                 string='Evaluación de Competencias')
     general_comments = fields.Text(string='Comentarios Generales', readonly=True,
                                    states={'in_progress': [('readonly', False)]})
