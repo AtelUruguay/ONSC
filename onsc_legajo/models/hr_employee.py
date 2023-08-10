@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
+import json
+
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import models, fields, api
-import json
 
 MODIFIED_FIELDS_TO_NOTIFY_SGH = [
     'cv_nro_doc',
@@ -88,6 +89,8 @@ MODIFIED_FIELDS = [
     'is_cv_gender_public',
     'is_cv_race_public',
     'other_information_official',
+    'is_driver_license',
+    'is_public_information_victim_violent',
 ]
 
 
@@ -123,9 +126,9 @@ class HrEmployee(models.Model):
 
     full_name = fields.Char('Nombre', compute='_compute_full_name', store=True)
     photo_updated_date = fields.Date(string="Fecha de foto de la/del funcionaria/o")
-    country_of_birth_id = fields.Many2one("res.country",
-                                          string="País de nacimiento",
-                                          history=True)
+    country_of_birth_id = fields.Many2one(
+        "res.country",
+        string="País de nacimiento")
     uy_citizenship = fields.Selection(
         string="Ciudadanía uruguaya",
         selection=[
@@ -134,14 +137,13 @@ class HrEmployee(models.Model):
         history=True)
     prefix_phone_id = fields.Many2one(
         'res.country.phone', 'Prefijo',
-        default=lambda self: self.env['res.country.phone'].search([('country_id.code', '=', 'UY')]),
-        history=True)
-    personal_phone = fields.Char(string="Teléfono particular", history=True)
+        default=lambda self: self.env['res.country.phone'].search([('country_id.code', '=', 'UY')]))
+    personal_phone = fields.Char(string="Teléfono particular")
     prefix_mobile_phone_id = fields.Many2one(
         'res.country.phone', 'Prefijo del móvil',
-        default=lambda self: self.env['res.country.phone'].search([('country_id.code', '=', 'UY')]),
-        history=True)
-    mobile_phone = fields.Char(string="Teléfono celular", history=True)
+        default=lambda self: self.env['res.country.phone'].search([('country_id.code', '=', 'UY')])
+    )
+    mobile_phone = fields.Char(string="Teléfono celular")
     email = fields.Char(string="Email")
     cv_sex_updated_date = fields.Date(u'Fecha de información sexo', history=True)
 

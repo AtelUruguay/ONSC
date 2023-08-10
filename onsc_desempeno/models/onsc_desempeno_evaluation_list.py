@@ -201,8 +201,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         for job in jobs:
             manager = job.department_id.get_first_department_withmanager_in_tree().manager_id
             parent_manager = job.department_id.parent_id.get_first_department_withmanager_in_tree().manager_id
-            eval1 = not (job.department_id.hierarchical_level_id.order == 1 and
-                         job.department_id.manager_id.id == job.employee_id.id)
+            eval1 = not (job.department_id.hierarchical_level_id.order == 1
+                         and job.department_id.manager_id.id == job.employee_id.id)
             eval2 = job.employee_id.id != manager.id
             if eval1 and eval2:
                 departments_grouped_info[job.department_id]['department_id'] = job.department_id
