@@ -80,7 +80,7 @@
                   name="Configuración"
                   action="onsc_desempeno_config_action"
                   parent="onsc_desempeno_config_menu"
-                  groups="onsc_desempeno.group_desempeno_configurador_escalafones"
+                  groups="onsc_desempeno.group_desempeno_configurador_escalafones,onsc_desempeno.group_desempeno_administrador"
                   sequence="10"/><menuitem id="onsc_desempeno_evaluaciones_menu"
           name="Evaluaciones"
           parent="onsc_desempeno_root_menu"
