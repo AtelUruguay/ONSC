@@ -118,6 +118,9 @@ class ONSCDesempenoGeneralCycle(models.Model):
         if not self.env.user.has_group('onsc_desempeno.group_desempeno_administrador'):
             raise ValidationError(
                 _("No tiene permiso para archivar o desarchivar"))
+
+        if not self.active:
+            self._check_unique_config()
         return True
 
     def unlink(self):

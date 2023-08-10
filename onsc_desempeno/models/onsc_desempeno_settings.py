@@ -19,7 +19,7 @@ class ONSCDesempenoSettings(models.Model):
                                               related_sudo=True)
     is_edit_help = fields.Boolean(string="Editar datos de ayuda", compute='_compute_is_edit_help')
 
-    @api.depends('is_evaluation_form_active','is_environment_evaluation_form_active')
+    @api.depends('is_evaluation_form_active', 'is_environment_evaluation_form_active')
     def _compute_is_edit_help(self):
         for record in self:
             record.is_edit_help = self.env.user.has_group('onsc_desempeno.group_desempeno_administrador')
