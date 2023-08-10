@@ -51,6 +51,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
     def _compute_should_disable_form_edit(self):
         for record in self:
             record.should_disable_form_edit = record.start_date and record.start_date < fields.Date.today()
+
     @api.constrains('start_date')
     def _check_start_date(self):
         for record in self:
