@@ -44,6 +44,10 @@ class ONSCDesempenoEvaluationStage(models.Model):
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año a evaluar',
                                        domain=[("active", "=", True)],
                                        required=True, tracking=True)
+    year = fields.Integer(
+        u'Año a evaluar',
+        related="general_cycle_id.year",
+        store=True)
     inciso_id = fields.Many2one(
         "onsc.catalog.inciso",
         string="Inciso",
@@ -104,29 +108,42 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 raise ValidationError(_(u"Solo se puede tener una configuración para el año"))
 
     @api.constrains('start_date')
-    def _check_start_date(self):
+    def _check_start_date_today(self):
         for record in self:
             if record.start_date < fields.Date.today():
                 raise ValidationError(_("La fecha inicio debe ser menor o igual a la fecha actual"))
 
-    @api.constrains("start_date", "end_date", "end_date_environment", "general_cycle_id.start_date_max",
-                    "general_cycle_id.end_date_max", "general_cycle_id.year")
-    def _check_date(self):
+    @api.constrains('end_date')
+    def _check_end_date_today(self):
+        for record in self:
+            if record.end_date < fields.Date.today():
+                raise ValidationError(_("La fecha fin debe ser mayor o igual a la fecha actual"))
+
+    @api.constrains("start_date", "general_cycle_id.start_date", "general_cycle_id.start_date_max")
+    def _check_start_dates(self):
+        for record in self:
+            if record.start_date < record.general_cycle_id.start_date:
+                raise ValidationError(
+                    _(u"La fecha inicio de las Etapas de evaluaciones 360° por UE de debe ser mayor o igual a la fecha de inicio del Ciclo General"))
+            if record.start_date < record.general_cycle_id.start_date_max:
+                raise ValidationError(
+                    _(u"La fecha inicio de las Etapas de evaluaciones 360° por UE de debe ser mayor o igual a la fecha de inicio máxima del Ciclo General"))
+
+    @api.constrains("end_date", "general_cycle_id.end_date_max")
+    def _check_end_dates(self):
+        for record in self:
+            if record.end_date > record.general_cycle_id.end_date_max:
+                raise ValidationError(
+                    _(u"La fecha de fin de las Etapas de evaluaciones 360° por UE de debe ser menor o igual a la fecha de fin máxima del Ciclo General"))
+
+    @api.constrains("start_date", "end_date", "end_date_environment")
+    def _check_dates(self):
         for record in self:
             if record.start_date > record.end_date:
                 raise ValidationError(_(u"La fecha inicio debe ser menor o igual a la fecha de fin"))
-            if record.start_date > record.general_cycle_id.start_date_max:
-                raise ValidationError(
-                    _(u"La fecha inicio debe ser menor o igual a la fecha de inicio máxima del ciclo general"))
-            if record.start_date < record.general_cycle_id.start_date:
-                raise ValidationError(
-                    _(u"La fecha inicio debe ser mayor o igual a la fecha de inicio del ciclo general"))
-            if record.end_date > record.general_cycle_id.end_date_max:
-                raise ValidationError(
-                    _(u"La fecha fin debe ser menor o igual a la fecha de fin máxima del ciclo general"))
             if record.end_date_environment > record.end_date:
                 raise ValidationError(
-                    _(u"La Fecha fin def. entorno debe ser menor o igual a la fecha de fin del ciclo general"))
+                    _(u"La Fecha fin def. entorno debe ser menor o igual a la fecha de fin"))
             if int(record.start_date.strftime('%Y')) != record.general_cycle_id.year:
                 raise ValidationError(
                     _("La fecha inicio debe estar dentro del año %s") % record.general_cycle_id.year)
@@ -138,7 +155,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     _("La fecha fin def. entorno debe estar dentro del año %s") % record.general_cycle_id.year)
 
     @api.onchange('general_cycle_id')
-    def onchange_end_date(self):
+    def onchange_general_cycle_id(self):
         if self.general_cycle_id:
             self.start_date = self.general_cycle_id.start_date_max
             self.end_date = self.general_cycle_id.end_date_max

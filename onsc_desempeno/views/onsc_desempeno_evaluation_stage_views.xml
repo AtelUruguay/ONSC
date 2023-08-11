@@ -56,6 +56,11 @@
                             <field name="end_date_environment"  attrs="{'readonly': [('is_edit_end_date_environment', '=', False)]}"/>
                             <field name="closed_stage" readonly ="1" force_save="1"/>
                             <field name="active" invisible="1" />
+                            <field name="show_buttons" invisible="1"/>
+                            <field name="is_edit_end_date_environment" invisible="1"/>
+                            <field name="is_edit_end_date" invisible="1"/>
+                            <field name="is_edit_start_date" invisible="1"/>
+                            <field name="is_edit_general_cycle_id" invisible="1"/>
                         </group>
                         <group/>
                     </group>

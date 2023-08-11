@@ -82,6 +82,7 @@
               parent="onsc_desempeno_config_menu"
               groups="onsc_desempeno.group_desempeno_configurador_escalafones,onsc_desempeno.group_desempeno_administrador"
               sequence="10"/>
+
     <menuitem id="onsc_desempeno_evaluaciones_menu"
           name="Evaluaciones"
           parent="onsc_desempeno_root_menu"
@@ -90,7 +91,7 @@
     <menuitem id="onsc_desempeno_self_evaluation_menu"
               name="Autoevaluación"
               action="onsc_desempeno_evaluation_action"
-             groups="onsc_desempeno.group_desempeno_usuario_evaluacion"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion"
               parent="onsc_desempeno_evaluaciones_menu"
               sequence="1"/>
 

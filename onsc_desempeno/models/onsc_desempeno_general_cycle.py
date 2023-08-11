@@ -52,11 +52,50 @@ class ONSCDesempenoGeneralCycle(models.Model):
         for record in self:
             record.should_disable_form_edit = record.start_date and record.start_date < fields.Date.today()
 
+    is_edit_start_date = fields.Boolean(
+        string="Editar datos de destino",
+        compute='_compute_is_edit_start_date')
+    is_edit_start_date_max = fields.Boolean(
+        string="Editar datos de origen",
+        compute='_compute_is_edit_start_date_max')
+    is_edit_end_date_max = fields.Boolean(
+        string="Editar datos de origen",
+        compute='_compute_is_edit_end_date_max')
+    is_edit_end_date = fields.Boolean(
+        string="Editar datos de origen",
+        compute='_compute_is_edit_end_date')
+
+    @api.depends('start_date')
+    def _compute_is_edit_start_date(self):
+        for record in self:
+            record.is_edit_start_date = not record.id or record.start_date > fields.Date.today()
+
+    @api.depends('start_date_max')
+    def _compute_is_edit_start_date_max(self):
+        for record in self:
+            record.is_edit_start_date_max = not record.id or record.start_date_max > fields.Date.today()
+
+    @api.depends('end_date_max')
+    def _compute_is_edit_end_date_max(self):
+        for record in self:
+            record.is_edit_end_date_max = not record.id or record.end_date_max > fields.Date.today()
+
+    @api.depends('end_date')
+    def _compute_is_edit_end_date(self):
+        for record in self:
+            record.is_edit_end_date = not record.id or record.end_date > fields.Date.today()
+
     @api.constrains('start_date')
     def _check_start_date(self):
         for record in self:
             if record.start_date < fields.Date.today():
                 raise ValidationError(_("La fecha inicio debe ser mayor o igual a la fecha actual"))
+
+    @api.constrains('end_date')
+    def _check_end_date_today(self):
+        for record in self:
+            if record.end_date < fields.Date.today():
+                raise ValidationError(_("La fecha fin debe ser mayor o igual a la fecha actual"))
 
     @api.constrains("start_date", "end_date", "start_date_max", "end_date_max", "year")
     def _check_date(self):
@@ -68,24 +107,25 @@ class ONSCDesempenoGeneralCycle(models.Model):
             if record.start_date_max < record.start_date:
                 raise ValidationError(_(u"La fecha inicio máxima debe ser mayor o igual a la fecha de inicio"))
             if record.end_date_max > record.end_date:
-                raise ValidationError(_(u"La fecha fin máxima debe ser menor o igual a la fecha de fin "))
+                raise ValidationError(_(u"La fecha fin máxima debe ser menor o igual a la fecha de fin"))
+
             if int(record.start_date.strftime('%Y')) != record.year:
                 raise ValidationError(
                     _("La fecha inicio debe  estar dentro del año %s") % record.year)
             if int(record.end_date_max.strftime('%Y')) != record.year:
                 raise ValidationError(
-                    _("La fecha fin máxima debe  estar dentro del año %s") % record.year)
+                    _("La fecha fin máxima debe estar dentro del año %s") % record.year)
             if int(record.start_date_max.strftime('%Y')) != record.year:
                 raise ValidationError(
-                    _("La fecha inicio máxima debe  estar dentro del año %s") % record.year)
+                    _("La fecha inicio máxima debe estar dentro del año %s") % record.year)
 
-            evaluations_qty = self.env['onsc.desempeno.evaluation.stage'].suspend_security().search_count(
-                ['&', ("general_cycle_id", "=", record.id), '|', '|', ("start_date", ">", record.start_date_max),
-                 ("start_date", "<", record.start_date), ("end_date", ">", record.end_date_max)])
-            if evaluations_qty > 0:
-                raise ValidationError(
-                    _(u"No se cumple las condiciones de la etapa de evaluaciones 360° por UE "
-                      u"que esta asociada a ciclo general de evaluación de desempeño"))
+            # evaluations_qty = self.env['onsc.desempeno.evaluation.stage'].suspend_security().search_count(
+            #     ['&', ("general_cycle_id", "=", record.id), '|', '|', ("start_date", ">", record.start_date_max),
+            #      ("start_date", "<", record.start_date), ("end_date", ">", record.end_date_max)])
+            # if evaluations_qty > 0:
+            #     raise ValidationError(
+            #         _(u"No se cumple las condiciones de la etapa de evaluaciones 360° por UE "
+            #           u"que esta asociada a ciclo general de evaluación de desempeño"))
 
     @api.constrains('year')
     def _check_unique_config(self):

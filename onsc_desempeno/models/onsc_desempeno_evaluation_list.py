@@ -81,6 +81,10 @@ class ONSCDesempenoEvaluationList(models.Model):
         compute='_compute_manager_id',
         search='_search_manager_id',
         store=False)
+    year = fields.Integer(
+        u'Año a evaluar',
+        related="evaluation_stage_id.year",
+        store=True)
 
     is_imanager = fields.Boolean(
         string=' Responsable',
@@ -99,6 +103,13 @@ class ONSCDesempenoEvaluationList(models.Model):
         comodel_name='onsc.desempeno.evaluation.list.line',
         inverse_name='evaluation_list_id',
         string='Colaboradores')
+
+    evaluation_generated_line_ids = fields.One2many(
+        comodel_name='onsc.desempeno.evaluation.list.line',
+        inverse_name='evaluation_list_id',
+        context={'active_test': False},
+        domain=[('active', '=', False), ('state', '=', 'generated')],
+        string='Colaboradores con formularios')
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
@@ -142,7 +153,8 @@ class ONSCDesempenoEvaluationList(models.Model):
     @api.depends('end_date', 'state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state == 'closed' or record.end_date < fields.Date.today()
+            valid_edit = record.state == 'closed' or record.end_date < fields.Date.today() or not record.end_date
+            record.should_disable_form_edit = valid_edit
 
     def button_generate_evaluations(self):
         self.ensure_one()
@@ -159,11 +171,14 @@ class ONSCDesempenoEvaluationList(models.Model):
                         'evaluator_id': manager_id,
                         'evaluation_type': 'self_evaluation'
                     })
+                    line.write({
+                        'state': 'generated',
+                        'error_log': False,
+                        'evaluation_ids': [(6, 0, [evaluation.id])]})
                     lines_evaluated |= line
                 except Exception as e:
                     line.write({'state': 'error', 'error_log': tools.ustr(e)})
-            lines_evaluated.write({'state': 'generated', 'error_log': False})
-        return True
+        return lines_evaluated
 
     # INTELIGENCIA
     def manage_evaluations_lists(self):
@@ -296,8 +311,13 @@ class ONSCDesempenoEvaluationListLine(models.Model):
     active = fields.Boolean(
         string='',
         compute='_compute_active',
-        store=True
-    )
+        store=True)
+
+    evaluation_ids = fields.Many2many(
+        'onsc.desempeno.evaluation',
+        'desempeno_evaluation_list_line_evaluation', 'line_id', 'evaluation_id',
+        string='Evaluaciones',
+        readonly=True)
 
     @api.onchange('is_included')
     def onchange_is_included(self):
