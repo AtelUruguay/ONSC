@@ -92,6 +92,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
     @api.constrains("start_date", "end_date", "start_date_max", "end_date_max", "year")
     def _check_date(self):
+        self._check_unique_config()
         for record in self:
             if record.start_date > record.end_date:
                 raise ValidationError(_(u"La fecha inicio debe ser menor o igual a la fecha de fin"))
@@ -127,7 +128,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
             general_qty = GeneralCycle.search_count(
                 [("year", "=", record.year), ("id", "!=", record.id)])
             if general_qty > 0:
-                raise ValidationError(_(u"Solo se puede tener una configuración para el año"))
+                raise ValidationError(_(u"Solo se puede tener una configuración para el mismo año"))
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -153,8 +154,11 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
     def _check_toggle_active(self):
         if not self.env.user.has_group('onsc_desempeno.group_desempeno_administrador'):
-            raise ValidationError(
-                _("No tiene permiso para archivar o desarchivar"))
+            raise ValidationError(_("No tiene permiso para archivar o desarchivar"))
+
+        if self.active and self.env['onsc.desempeno.evaluation.stage'].search_count(
+                [('general_cycle_id', 'in', self.ids)]):
+            raise ValidationError(_("No se puede archivar si ya tiene Etapas de evaluaciones 360° por UE cargadas"))
 
         if not self.active:
             self._check_unique_config()

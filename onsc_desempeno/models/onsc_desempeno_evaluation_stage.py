@@ -144,7 +144,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
         for record in self:
             if record.end_date > record.general_cycle_id.end_date_max:
                 raise ValidationError(
-                    _(u"La fecha de fin de las Etapas de evaluaciones 360° por UE de debe ser menor o igual a la fecha de fin máxima del Ciclo General"))
+                    _(u"La fecha de fin de las Etapas de evaluaciones 360° por UE debe ser menor o igual a la fecha de fin máxima del Ciclo General"))
 
     @api.constrains("start_date", "end_date", "end_date_environment")
     def _check_dates(self):
