@@ -62,6 +62,7 @@ class HrContract(models.Model):
                                                history=True)
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
     sec_position = fields.Char(string="Sec Plaza", required=True, history=True)
+    state_square_id = fields.Many2one('onsc.legajo.state.square', string='Estado plaza', history=True)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', history=True)
     call_number = fields.Char(string='Número de llamado', history=True)
     legajo_state = fields.Selection(
