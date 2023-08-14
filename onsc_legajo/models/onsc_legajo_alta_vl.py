@@ -226,7 +226,7 @@ class ONSCLegajoAltaVL(models.Model):
             domain = [('id', 'in', [])]
             if rec.inciso_id.id:
                 domain = [('inciso_id', '=', rec.inciso_id.id)]
-            self.operating_unit_id_domain = json.dumps(domain)
+            rec.operating_unit_id_domain = json.dumps(domain)
 
     @api.depends('inciso_id', 'operating_unit_id')
     def _compute_department_id_domain(self):
