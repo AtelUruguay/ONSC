@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 
 from odoo import fields, models, api, _
@@ -14,8 +15,11 @@ class ONSCDesempenoEvaluationStage(models.Model):
     _description = u'Etapa de evaluaciones 360° por UE'
 
     def _get_domain(self, args):
-        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
-        args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id), ], args])
+        user_contract_id = self.env.user.employee_id.job_id.contract_id
+        if self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_inciso'):
+            args = expression.AND([[('inciso_id', '=', user_contract_id.inciso_id.id), ], args])
+        else:
+            args = expression.AND([[('operating_unit_id', '=', user_contract_id.operating_unit_id.id), ], args])
         return args
 
     @api.model
@@ -35,9 +39,9 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.model
     def default_get(self, fields):
         res = super(ONSCDesempenoEvaluationStage, self).default_get(fields)
-        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
-        res['operating_unit_id'] = operating_unit_id.id
-
+        if self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_ue'):
+            operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
+            res['operating_unit_id'] = operating_unit_id.id
         return res
 
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True)
@@ -75,6 +79,38 @@ class ONSCDesempenoEvaluationStage(models.Model):
         compute='_compute_is_edit_general_cycle_id')
 
     name = fields.Char('Nombre', compute='_compute_name', store=True)
+    is_operating_unit_readonly = fields.Boolean(
+        compute=lambda s: s._compute_is_operating_unit_readonly(),
+        default=lambda s: s._compute_is_operating_unit_readonly(True))
+    operating_unit_id_domain = fields.Char(
+        compute=lambda s: s._compute_operating_unit_id_domain(),
+        default=lambda s: s._compute_operating_unit_id_domain(True))
+
+    def _compute_is_operating_unit_readonly(self, is_default=False):
+        is_operating_unit_readonly = self.user_has_groups(
+            'onsc_desempeno.group_desempeno_configurador_gh_ue') and not self.user_has_groups(
+            'onsc_desempeno.group_desempeno_configurador_gh_inciso')
+        if is_default:
+            return is_operating_unit_readonly
+        for rec in self:
+            rec.is_operating_unit_readonly = is_operating_unit_readonly
+
+    def _compute_operating_unit_id_domain(self, is_default=False):
+        user_contract_id = self.env.user.employee_id.job_id.contract_id
+        is_user_inciso = self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_inciso')
+        is_user_ue = self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_ue')
+        if is_user_inciso:
+            domain = [('inciso_id', '=', user_contract_id.inciso_id.id)]
+            # operating_unit_ids = self.env['operating.unit'].search([('inciso_id', '=', user_contract_id.inciso_id.id)]).ids
+        elif is_user_ue:
+            domain = [('id', '=', user_contract_id.operating_unit_id.id)]
+            # operating_unit_ids = [user_contract_id.operating_unit_id.id]
+        else:
+            domain = [('id', 'in', [])]
+        if is_default:
+            return json.dumps(domain)
+        for rec in self:
+            rec.operating_unit_id_domain = json.dumps(domain)
 
     @api.depends('end_date')
     def _compute_show_buttons(self):

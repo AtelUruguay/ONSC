@@ -28,6 +28,7 @@ class HrJob(models.Model):
 
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict',
                                       tracking=True)
+    legajo_id = fields.Many2one('onsc.legajo', string='Legajo', related='contract_id.legajo_id', store=True)
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     role_extra_is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')

@@ -44,13 +44,17 @@
                     <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <group>
                         <group>
-                            <field name="operating_unit_id" readonly ="1" force_save="1"   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_id"
+                                   domain="operating_unit_id_domain"
+                                   attrs="{'readonly': [('is_operating_unit_readonly', '=', True)]}"
+                                   force_save="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="general_cycle_id"
                                    attrs="{'readonly': [('is_edit_general_cycle_id', '=', False)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="start_date"  attrs="{'readonly': [('is_edit_start_date', '=', False)]}"/>
-                            <field name="end_date"   attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
-                            <field name="end_date_environment"  attrs="{'readonly': [('is_edit_end_date_environment', '=', False)]}"/>
+                            <field name="start_date" attrs="{'readonly': [('is_edit_start_date', '=', False)]}"/>
+                            <field name="end_date" attrs="{'readonly': [('is_edit_end_date', '=', False)]}"/>
+                            <field name="end_date_environment" attrs="{'readonly': [('is_edit_end_date_environment', '=', False)]}"/>
                             <field name="closed_stage" readonly ="1" force_save="1"/>
                             <field name="active" invisible="1" />
                             <field name="show_buttons" invisible="1"/>
@@ -58,6 +62,8 @@
                             <field name="is_edit_end_date" invisible="1"/>
                             <field name="is_edit_start_date" invisible="1"/>
                             <field name="is_edit_general_cycle_id" invisible="1"/>
+                            <field name="is_operating_unit_readonly" invisible="1"/>
+                            <field name="operating_unit_id_domain" invisible="1"/>
                         </group>
                         <group/>
                     </group>
@@ -68,8 +74,6 @@
                     <field name="activity_ids"/>
                     <field name="message_ids"/>
                 </div>
-
-
             </form>
         </field>
     </record>
