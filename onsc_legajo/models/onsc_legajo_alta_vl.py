@@ -145,6 +145,9 @@ class ONSCLegajoAltaVL(models.Model):
     nroPlaza = fields.Char(string='Plaza', copy=False,
                            readonly=True,
                            states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    state_square_id = fields.Many2one(
+        'onsc.legajo.state.square',
+        string='Estado plaza')
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", copy=False,
                                       readonly=True,
                                       states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
@@ -458,6 +461,8 @@ class ONSCLegajoAltaVL(models.Model):
             #
             'wage': 1
         }
+        # if self.state_square_id:
+        #     vals['state_square_id'] = self.state_square_id.id
 
         contract = Contract.suspend_security().create(vals)
 

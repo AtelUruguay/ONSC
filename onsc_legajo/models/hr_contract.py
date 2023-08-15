@@ -51,6 +51,13 @@ class HrContract(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
+    @api.model
+    def _default_state_square_id(self):
+        try:
+            return self.env.ref('onsc_legajo.onsc_legajo_o')
+        except Exception:
+            return self.env['onsc.legajo.state.square']
+
     legajo_name = fields.Char(string="Nombre", compute='_compute_legajo_name', store=True)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
@@ -62,12 +69,20 @@ class HrContract(models.Model):
                                                history=True)
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
     sec_position = fields.Char(string="Sec Plaza", required=True, history=True)
-    state_square_id = fields.Many2one('onsc.legajo.state.square', string='Estado plaza', history=True)
+    state_square_id = fields.Many2one(
+        'onsc.legajo.state.square',
+        string='Estado plaza',
+        default=lambda s: s._default_state_square_id(),
+        history=True)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', history=True)
     call_number = fields.Char(string='Número de llamado', history=True)
     legajo_state = fields.Selection(
-        [('active', 'Activo'), ('baja', 'Baja'), ('outgoing_commission', 'Comisión saliente'),
-         ('incoming_commission', 'Comisión entrante')], tracking=True, string='Estado', history=True)
+        [('active', 'Activo'),
+         ('baja', 'Baja'),
+         ('reserved', 'Reservado'),
+         ('outgoing_commission', 'Comisión saliente'),
+         ('incoming_commission', 'Comisión entrante')],
+        tracking=True, string='Estado', history=True)
     cs_contract_id = fields.Many2one('hr.contract', string='Contrato relacionado', history=True)
     first_name = fields.Char(string=u'Primer nombre', related='employee_id.cv_first_name', store=True)
     second_name = fields.Char(string=u'Segundo nombre', related='employee_id.cv_second_name', store=True)
@@ -151,6 +166,8 @@ class HrContract(models.Model):
     extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
                                                string="Motivo extinción de la comisión")
 
+    legajo_id = fields.Many2one('onsc.legajo', string='Legajo', compute='_compute_legajo_id', store=True)
+
     def name_get(self):
         res = []
         for record in self:
@@ -169,6 +186,11 @@ class HrContract(models.Model):
                 name = record.legajo_name
             res.append((record.id, name))
         return res
+
+    @api.depends('employee_id')
+    def _compute_legajo_id(self):
+        for rec in self.filtered(lambda x: x.employee_id):
+            rec.legajo_id = self.env['onsc.legajo'].sudo().search([('employee_id', '=', rec.employee_id.id)], limit=1)
 
     @api.depends('employee_id', 'position', 'workplace', 'sec_position', )
     def _compute_legajo_name(self):
@@ -219,10 +241,13 @@ class HrContract(models.Model):
         if not vals.get('name', False) and vals.get('employee_id', False) and vals.get('sec_position', False):
             employee = self.env['hr.employee'].browse(vals.get('employee_id'))
             vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
-
+        if 'state' in vals.keys() and 'state_square_id' not in vals.keys():
+            vals['state_square_id'] = self._get_state_square(vals.get('state'))
         return super(HrContract, self).create(vals)
 
     def write(self, values):
+        if 'state' in values.keys() and 'state_square_id' not in values.keys():
+            values['state_square_id'] = self._get_state_square(values.get('state'))
         result = super(HrContract, self.suspend_security()).write(values)
         self._notify_sgh(values)
         return result
@@ -260,6 +285,18 @@ class HrContract(models.Model):
         for modified_field in ['sec_position', 'workplace', 'occupation_id']:
             if modified_field in values:
                 self.filtered(lambda x: x.legajo_state != 'baja').write({'notify_sgh': True})
+
+    def _get_state_square(self, legajo_state):
+        if legajo_state == 'incoming_commission':
+            return self.env.ref('onsc_legajo.onsc_legajo_e')
+        elif legajo_state == 'outgoing_commission':
+            return self.env.ref('onsc_legajo.onsc_legajo_s')
+        elif legajo_state == 'reserved':
+            return self.env.ref('onsc_legajo.onsc_legajo_r')
+        elif legajo_state == 'active':
+            return self.env.ref('onsc_legajo.onsc_legajo_o')
+        else:
+            return self.env['onsc.legajo.state.square']
 
 
 class HrContractHistory(models.Model):

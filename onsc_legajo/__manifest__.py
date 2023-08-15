@@ -27,6 +27,9 @@ ONSC - Legajo
         'data/onsc_legajo_commission_regime_data.xml',
         'data/onsc_legajo_integration_error_data.xml',
         'data/mail_template_data.xml',
+
+        'views/onsc_legajo_department_views.xml',
+
         'views/onsc_legajo_settings_view.xml',
         'views/catalogs/onsc_legajo_emergency_views.xml',
         'views/catalogs/onsc_legajo_health_provider_views.xml',
