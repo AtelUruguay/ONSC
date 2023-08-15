@@ -19,20 +19,19 @@ class ONSCLegajoDepartment(models.Model):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
 SELECT
-	row_number() OVER (ORDER BY legajo.id, contract.id, job.id) AS id,
-	legajo.id AS legajo_id,
-	legajo.legajo_state,
-	contract.id AS contract_id,
-	job.id AS job_id,
-	job.department_id,
-	employee.id AS employee_id
+    row_number() OVER (ORDER BY legajo.id, contract.id, job.id) AS id,
+    legajo.id AS legajo_id,
+    legajo.legajo_state,
+    contract.id AS contract_id,
+    job.id AS job_id,
+    job.department_id,
+    employee.id AS employee_id
 FROM
-	hr_contract contract
+    hr_contract contract
 LEFT JOIN hr_job job ON job.contract_id = contract.id
 JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
 JOIN hr_employee employee ON legajo.employee_id = employee.id
 )''' % (self._table,))
-
 
     def _get_abstract_config_security(self):
         return self.user_has_groups(
