@@ -73,6 +73,14 @@
         </record>
 
         <!--LEGAJO-->
+        <record id="group_legajo_hr_responsable_uo" model="res.groups">
+            <field name="name">Legajo - Recursos Humanos Responsable UO</field>
+            <field name="comment">Legajo - Recursos Humanos Responsable UO</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+
         <record id="group_legajo_hr_inciso" model="res.groups">
             <field name="name">Legajo - Recursos Humanos Inciso</field>
             <field name="comment">Legajo - Recursos Humanos Inciso</field>
