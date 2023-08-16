@@ -257,12 +257,21 @@ class ONSCDesempenoEvaluationList(models.Model):
             'state': 'draft',
         })
 
-        for skill in self.env['onsc.desempeno.skill.line'].suspend_security().search([('level_id', '=',evaluation.level_id.id)]):
-            Competency.create({'evaluation_id': evaluation.id,
-                               'skill_id': skill.skill_id.id,
-                               'dimension_id':skill.dimension_id.id,
-                                'behavior':skill.behavior,
 
+
+        # SKILL es la de la nota
+        # skill line son las hijas que es puro visual
+        for skill in self.env['onsc.desempeno.skill.line'].suspend_security().search([('level_id', '=',evaluation.level_id.id)]).mapped('skill_id'):
+            Competency.create({'evaluation_id': evaluation.id,
+                               'skill_id': skill.id,
+                               # 'display_type': False
+                               })
+            for skill_line in skill.skill_line_ids:
+                Competency.create({'evaluation_id': evaluation.id,
+                               'skill_id': skill.id,
+                               'dimension_id':skill_line.dimension_id.id,
+                                'name':skill_line.behavior,
+                               'display_type': 'line_section'
                                })
 
     def _create_leader_evaluation(self, data):

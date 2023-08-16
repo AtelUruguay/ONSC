@@ -22,10 +22,10 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
 
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
-    skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True)
+    skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=False)
 
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo')
-    improvement_areas = fields.Text(string='Brecha / Fortalezas / Aspectos a mejorar')
+    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar')
     skill_line_ids = fields.Many2many('onsc.desempeno.skill.line', 'skill_line_competency_rel', 'compentency_id',
                                       'skill_line_id',
                                       string='Entorno')
@@ -33,6 +33,10 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     behavior = fields.Char(string="Comportamiento esperado", readonly=True)
     name_dimension = fields.Char(string="Nombre dimension", related='dimension_id.name', store=True)
     name_skill = fields.Char(string="Nombre Competencia", related='skill_id.name', store=True)
+
+    display_type = fields.Selection([
+        ('line_section', "Section")
+    ], default=False, help="Technical field for UX purpose.")
 
     @api.onchange('degree_id')
     def onchange_degree_id(self):

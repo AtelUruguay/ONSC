@@ -133,24 +133,24 @@
                     <group name="competencia" string="Evaluación de Competencias"
                            attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
                         <field name="evaluation_competency_ids" nolabel="1" widget="section_and_note_one2many"
-                               attrs="{'readonly':[('locked', '=', True)]}" mode="tree,kanban">
-                            <tree editable="top" nolabel="1">
+                               attrs="{'readonly':[('locked', '=', True)]}" mode="tree">
+                            <tree editable="top" nolabel="1" default_order="id asc">
                                 <control>
-                                    <create name="add_line_control" string="Add a line"/>
-                                    <create name="add_section_control" string="Add a section"/>
-                                    <create name="add_note_control" string="Add a note"/>
+                                    <create name="add_product_control" string="Add a product"/>
+                                    <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                    <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
                                 </control>
                                 <field name="evaluation_id"  invisible="1"/>
                                 <field name="name_skill" invisible="1"/>
-                                <field name="name_dimension" invisible="1"/>
                                 <field name="state" invisible="1"/>
-                                <field name="skill_id" optional="show"
-                                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="dimension_id" optional="show"
-                                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                <field name="degree_id" attrs="{'readonly': [('state', '!=', 'in_process')]}"/>
-                                <field name="improvement_areas" attrs="{'readonly': [('state', '!=', 'in_process')]}"/>
-                                <field name="behavior"/>
+                                <field name="skill_id"/>
+                                <field name="behavior" widget="section_and_note_text"/>
+<!--                                <field name="degree_id" attrs="{'invisible': [('display_type','=', 'line_section')]}"/>-->
+<!--                                <field name="improvement_areas" attrs="{'invisible': [('display_type','=', 'line_section')]}"/>-->
+
+<!--                                <field name="name_dimension" widget="section_and_note_text"/>-->
+                                <field name="display_type" invisible="1"/>
+                                <field name="id" invisible="1"/>
                             </tree>
                         </field>
                     </group>
