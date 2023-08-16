@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 from collections import defaultdict
+from itertools import groupby
 
 from odoo import fields, models, api, tools
 from odoo.osv import expression
@@ -148,14 +149,15 @@ class ONSCDesempenoEvaluationList(models.Model):
         self.ensure_one()
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
-        manager_id = self.manager_id.id
         with self._cr.savepoint():
             for line in valid_lines:
                 try:
+                    self._create_self_evaluation(line)
+                    self._create_leader_evaluation(line)
+                    if fields.Date.today() <= self.end_date:
+                        self._create_environment_definition(line)
+                        self._create_collaborator_evaluation(line)
 
-                    self._create_self_evaluation_data(line)
-                    self._create_leader_evaluation_data(line)
-                    if fields.Date.today() <=
                     lines_evaluated |= line
                 except Exception as e:
                     line.write({'state': 'error', 'error_log': tools.ustr(e)})
@@ -236,18 +238,41 @@ class ONSCDesempenoEvaluationList(models.Model):
                 ('state', '=', 'in_progress')]).write({'line_ids': [(0, 0, {'job_id': job.id})]})
         return True
 
-    def _create_self_evaluation_data(self, data):
+    def _create_self_evaluation(self, data):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
 
-        Evaluation.create({
+        evaluation = Evaluation.create({
             'evaluated_id': data.employee_id.id,
-            'evaluator_id':  self.manager_id.id,
-            'evaluation_type': 'self_evaluation'
+            'evaluator_id': data.employee_id.id,
+            'evaluation_type': 'self_evaluation',
+            'uo_id': data.job_id.department_id.id,
+            'inciso_id': data.contract_id.inciso_id.id,
+            'operating_unit_id': data.contract_id.operating_unit_id.id,
+            'occupation_id': data.contract_id.occupation_id.id,
+            'level_id': data.contract_id.occupation_id.level_id.id,
+            'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
+            'evaluation_start_date': data.evaluation_list_id.start_date,
+            'evaluation_end_date': data.evaluation_list_id.end_date,
+            'state': 'draft',
         })
 
-    def _create_leader_evaluation_data(self, data):
+        for skill in self.env['onsc.desempeno.skill.line'].suspend_security().search([('level_id', '=',evaluation.level_id.id)]):
+            Competency.create({'evaluation_id': evaluation.id,
+                               'skill_id': skill.id,
+                               'dimension_id':skill.dimension_id,
+                                'behavior':skill.dimension_id,
+
+                               })
+
+    def _create_leader_evaluation(self, data):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
 
+    def _create_environment_definition(self, data):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+
+    def _create_collaborator_evaluation(self, data):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
 
 
 class ONSCDesempenoEvaluationListLine(models.Model):

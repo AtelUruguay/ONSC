@@ -21,30 +21,15 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.competency'
     _description = u'Evaluación'
 
+
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
     skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True)
-    dimension = fields.Text(string='Dimensiones', compute='_compute_dimension', store=True)
-    expected_behavior = fields.Text(string='Comportamiento Esperado', readonly=True)
-    degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo', readonly=True,
-                                states={'in_progress': [('readonly', False)]})
-    improvement_areas = fields.Text(string='Brecha / Fortalezas / Aspectos a mejorar', readonly=True,
-                                    states={'in_progress': [('readonly', False)]})
 
-    @api.depends('skill_id')
-    def _compute_dimension(self):
-        SkillLine = self.env('onsc.desempeno.skill.line').suspend_security()
-        for record in self:
+    degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo')
+    improvement_areas = fields.Text(string='Brecha / Fortalezas / Aspectos a mejorar')
+    skill_line_ids = fields.Many2many('onsc.desempeno.skill.line', 'skill_line_competency_rel', 'compentency_id', 'skill_line_id',
+                                       string='Entorno')
+    dimension_id = fields.Many2one('onsc.desempeno.dimension', string="Dimensión", readonly=True)
+    behavior = fields.Char(string="Comportamiento esperado", readonly=True)
 
-            dimensions = SkillLine.search([('id', 'in', record.skill_id.ids)]).dimension_id
-
-            html_list = '<ul>\n'
-            for dimension in dimensions:
-                html_list += f'<li>{dimension}</li>\n'
-            html_list += '</ul>'
-
-            text = html2text.html2text(html_list)
-            record.description = text
-
-        for rec in self:
-            rec.employee_id_domain = self._get_domain_employee_ids()
