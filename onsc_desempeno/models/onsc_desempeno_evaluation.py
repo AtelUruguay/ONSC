@@ -44,6 +44,7 @@ class ONSCDesempenoEvaluation(models.Model):
             args = expression.AND([[('evaluated_id', '=', self.env.user.employee_id.id)], args])
         return args
 
+    name = fields.Char(string="Nombre", compute="_compute_name", store=True)
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', required=True)
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
     evaluator_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
@@ -88,6 +89,7 @@ class ONSCDesempenoEvaluation(models.Model):
         default=lambda s: s._get_environment_evaluation_text('environment_evaluation_text', True)
     )
 
+
     def _get_evaluation_form_text(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         if is_default:
@@ -115,6 +117,14 @@ class ONSCDesempenoEvaluation(models.Model):
             return _url
         for rec in self:
             setattr(rec, help_field, _url)
+
+    @api.depends('evaluated_id', 'general_cycle_id')
+    def _compute_name(self):
+        for record in self:
+            if record.evaluated_id and record.general_cycle_id:
+                record.name = '%s - %s' % (record.evaluated_id.name, record.general_cycle_id.year)
+            else:
+                record.name = ''
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):

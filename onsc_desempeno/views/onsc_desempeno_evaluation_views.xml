@@ -24,7 +24,7 @@
                 <field name="general_cycle_id"/>
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
-               <field name="evaluation_start_date"/>
+                <field name="evaluation_start_date"/>
                 <field name="evaluation_end_date"/>
                 <field name="environment_definition_end_date"
                        attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
@@ -38,146 +38,160 @@
         <field name="model">onsc.desempeno.evaluation</field>
         <field name="arch" type="xml">
             <form string="Evaluación de Desempeño" create="0" delete="0" duplicate="0">
-            <header>
+                <header>
 
-                <button type="object"
-                        string=" Comenzar Evaluación"
-                          attrs="{'invisible': [('state', '!=', 'draft')]}"
-                        name="button_start_evaluation"/>
-                <button type="object"
-                        string=" Completar evaluación"
-                        attrs="{'invisible': [('state', '!=', 'in_process')]}"
-                        name="button_completed_evaluation"
-                   confirm="¿Está seguro de que desea dar por completado el formulario?"/>
-                <field name="state" widget="statusbar"
-                       statusbar_visible="draft,in_process,completed,finished,uncompleted,canceled"/>
-            </header>
-            <sheet>
-            <field name="should_disable_form_edit" invisible="1"/>
-            <field name="is_evaluation_form_active" invisible="1"/>
-            <field name="is_environment_evaluation_form_active" invisible="1"/>
-            <div class="alert alert-info" role="alert"
-                 name="div_alert_form"
-                 style="overflow:hidden;"
-                 attrs="{'invisible':['|',('is_evaluation_form_active', '=', False),('evaluation_type', '=', 'environment_definition')]}">
-                <div class="oe_left">
-                    <p class="mb-0">
-                        <strong>
-                            <field name="evaluation_form_text"/>
-                        </strong>
-                        <newline/>
-                    </p>
-                </div>
-            </div>
-            <div class="alert alert-info" role="alert"
-                 name="div_alert_env_form"
-                 style="overflow:hidden;"
-                 attrs="{'invisible': ['|',('is_environment_evaluation_form_active', '=', False),('evaluation_type', '!=', 'environment_definition')]}">
-                <div class="oe_left">
-                    <p class="mb-0">
-                        <strong>
-                            <field name="environment_evaluation_text"/>
-                        </strong>
-                        <newline/>
-                    </p>
-                </div>
-            </div>
-            <group name="main_group">
-                <group name="main_group_left">
-                    <field name="change_evaluator" invisible="1"/>
+                    <button type="object"
+                            string=" Comenzar Evaluación"
+                            attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            name="button_start_evaluation"/>
+                    <button type="object"
+                            string=" Completar evaluación"
+                            attrs="{'invisible': [('state', '!=', 'in_process')]}"
+                            name="button_completed_evaluation"
+                            confirm="¿Está seguro de que desea dar por completado el formulario?"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,in_process,completed,finished,uncompleted,canceled"/>
+                </header>
+                <sheet>
+                    <field name="should_disable_form_edit" invisible="1"/>
+                    <field name="is_evaluation_form_active" invisible="1"/>
+                    <field name="is_environment_evaluation_form_active" invisible="1"/>
+                    <div class="alert alert-info" role="alert"
+                         name="div_alert_form"
+                         style="overflow:hidden;"
+                         attrs="{'invisible':['|',('is_evaluation_form_active', '=', False),('evaluation_type', '=', 'environment_definition')]}">
+                        <div class="oe_left">
+                            <p class="mb-0">
+                                <strong>
+                                    <field name="evaluation_form_text"/>
+                                </strong>
+                                <newline/>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         name="div_alert_env_form"
+                         style="overflow:hidden;"
+                         attrs="{'invisible': ['|',('is_environment_evaluation_form_active', '=', False),('evaluation_type', '!=', 'environment_definition')]}">
+                        <div class="oe_left">
+                            <p class="mb-0">
+                                <strong>
+                                    <field name="environment_evaluation_text"/>
+                                </strong>
+                                <newline/>
+                            </p>
+                        </div>
+                    </div>
+                    <group name="main_group">
+                        <group name="main_group_left">
+                            <field name="change_evaluator" invisible="1"/>
 
-                    <field name="evaluation_type" />
-                    <field name="inciso_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                    <field name="uo_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                    <field name="operating_unit_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                    <field name="level_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                    <field name="occupation_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="evaluation_type"/>
+                            <field name="inciso_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="uo_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="level_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="occupation_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
 
 
-                </group>
-                <group name="main_group_right">
-                    <field name="evaluated_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}" />
-                    <field name="evaluator_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                           attrs="{'invisible': [('evaluation_type', 'in',['self_evaluation', 'environment_definition'])]}"/>
-                    <field name="original_evaluator_id"   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                           attrs="{'invisible': ['|',('change_evaluator', '=', True),('evaluation_type', 'in',['self_evaluation'])]}"/>
-                    <field name="general_cycle_id"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                    <field name="evaluation_start_date"/>
-                    <field name="evaluation_end_date"/>
-                    <field name="environment_definition_end_date"
-                           attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
+                        </group>
+                        <group name="main_group_right">
+                            <field name="evaluated_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="evaluator_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': [('evaluation_type', 'in',['self_evaluation', 'environment_definition'])]}"/>
+                            <field name="original_evaluator_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': ['|',('change_evaluator', '=', True),('evaluation_type', 'in',['self_evaluation'])]}"/>
+                            <field name="general_cycle_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="evaluation_start_date"/>
+                            <field name="evaluation_end_date"/>
+                            <field name="environment_definition_end_date"
+                                   attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
 
-                </group>
-            </group>
+                        </group>
+                    </group>
 
-            <group name="entorno">
-                <field name="environment_ids" string="Entorno"
-                       attrs="{'readonly': [('state', '!=', 'environment_definition')],'invisible': [('evaluation_type', '!=', 'environment_definition')]}"
-                       widget="many2many_tags"
-                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                <field name="environment_evaluation_ids" string="Evaluación de entorno"
-                       attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}" widget="many2many_tags"
-                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-            </group>
+                    <group name="entorno">
+                        <field name="environment_ids" string="Entorno"
+                               attrs="{'readonly': [('state', '!=', 'environment_definition')],'invisible': [('evaluation_type', '!=', 'environment_definition')]}"
+                               widget="many2many_tags"
+                               options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        <field name="environment_evaluation_ids" string="Evaluación de entorno"
+                               attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"
+                               widget="many2many_tags"
+                               options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    </group>
 
-            <group name="competencia" string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
-                 <field name="evaluation_competency_ids" nolabel="1" widget="section_and_note_one2many"  mode="tree,kanban">
-                        <tree editable="top" nolabel="1">
-                             <control>
-                                <create name="add_line_control" string="Add a line"/>
-                                <create name="add_section_control" string="Add a section" />
-                                <create name="add_note_control" string="Add a note" />
-                            </control>
-
-                            <field name="state" invisible="1"/>
-                            <field name="skill_id" optional="show" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="dimension_id"  optional="show" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="degree_id" attrs="{'readonly': ['|',('locked', '=', True),('state', '!=', 'in_process')]}"/>
-                            <field name="improvement_areas"  attrs="{'readonly': ['|',('locked', '=', True),('state', '!=', 'in_process')]}"/>
-                            <field name="behavior" />
-                     </tree>
-                </field>
-            </group>
-            <group name="general_comments"  string="Comentarios Generales"  attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':('locked', '=', True),}">
-                <field name="general_comments" nolabel="1"
+                    <group name="competencia" string="Evaluación de Competencias"
+                           attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
+                        <field name="evaluation_competency_ids" nolabel="1" widget="section_and_note_one2many"
+                               attrs="{'readonly':[('locked', '=', True)]}" mode="tree,kanban">
+                            <tree editable="top" nolabel="1">
+                                <control>
+                                    <create name="add_line_control" string="Add a line"/>
+                                    <create name="add_section_control" string="Add a section"/>
+                                    <create name="add_note_control" string="Add a note"/>
+                                </control>
+                                <field name="evaluation_id"  invisible="1"/>
+                                <field name="name_skill" invisible="1"/>
+                                <field name="name_dimension" invisible="1"/>
+                                <field name="state" invisible="1"/>
+                                <field name="skill_id" optional="show"
+                                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="dimension_id" optional="show"
+                                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="degree_id" attrs="{'readonly': [('state', '!=', 'in_process')]}"/>
+                                <field name="improvement_areas" attrs="{'readonly': [('state', '!=', 'in_process')]}"/>
+                                <field name="behavior"/>
+                            </tree>
+                        </field>
+                    </group>
+                    <group name="general_comments" string="Comentarios Generales"
+                           attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('locked', '=', True)]}">
+                        <field name="general_comments" nolabel="1"
                                placeholder="Comentarios Generales"/>
 
-            </group>
+                    </group>
+                    <group name="block">
+                        <field name="locked" string="Bloqueado"
+                               attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
+                    </group>
 
-            <field name="locked" string="Bloqueado"
-                       attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
+                </sheet>
 
-
-
-
-
-    </sheet>
-
-        </form>
+            </form>
         </field>
-        </record>
+    </record>
 
 
     <record id="onsc_desempeno_skill_line_tree" model="ir.ui.view">
-            <field name="name">onsc.desempeno.evaluation.skill.line.tree</field>
-            <field name="model">onsc.desempeno.skill.line</field>
-            <field name="arch" type="xml">
-                <tree string="Escalafones" create="0" edit="0" delete="0">
-                     <field name="dimension_id"/>
+        <field name="name">onsc.desempeno.evaluation.skill.line.tree</field>
+        <field name="model">onsc.desempeno.skill.line</field>
+        <field name="arch" type="xml">
+            <tree string="Escalafones" create="0" edit="0" delete="0">
+                <field name="dimension_id"/>
                 <field name="behavior"/>
-                </tree>
-            </field>
+            </tree>
+        </field>
     </record>
 
 
     <record id='onsc_desempeno_evaluation_action' model='ir.actions.act_window'>
-    <field name="name">Evaluación de Desempeño</field>
-    <field name="res_model">onsc.desempeno.evaluation</field>
-    <field name="view_mode">tree,form</field>
-    <field name="help" type="html">
-        <p class="o_view_nocontent_smiling_face">
-            Evaluación de desempeño
-        </p>
-    </field>
+        <field name="name">Evaluación de Desempeño</field>
+        <field name="res_model">onsc.desempeno.evaluation</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Evaluación de desempeño
+            </p>
+        </field>
     </record>
-        </odoo>
+</odoo>

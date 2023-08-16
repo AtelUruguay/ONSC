@@ -259,9 +259,9 @@ class ONSCDesempenoEvaluationList(models.Model):
 
         for skill in self.env['onsc.desempeno.skill.line'].suspend_security().search([('level_id', '=',evaluation.level_id.id)]):
             Competency.create({'evaluation_id': evaluation.id,
-                               'skill_id': skill.id,
-                               'dimension_id':skill.dimension_id,
-                                'behavior':skill.dimension_id,
+                               'skill_id': skill.skill_id.id,
+                               'dimension_id':skill.dimension_id.id,
+                                'behavior':skill.behavior,
 
                                })
 
