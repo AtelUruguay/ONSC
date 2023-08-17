@@ -51,12 +51,12 @@ class HrContract(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
-    @api.model
-    def _default_state_square_id(self):
-        try:
-            return self.env.ref('onsc_legajo.onsc_legajo_o')
-        except Exception:
-            return self.env['onsc.legajo.state.square']
+    # @api.model
+    # def _default_state_square_id(self):
+    #     try:
+    #         return self.env.ref('onsc_legajo.onsc_legajo_o')
+    #     except Exception:
+    #         return self.env['onsc.legajo.state.square']
 
     legajo_name = fields.Char(string="Nombre", compute='_compute_legajo_name', store=True)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True)
@@ -72,7 +72,7 @@ class HrContract(models.Model):
     state_square_id = fields.Many2one(
         'onsc.legajo.state.square',
         string='Estado plaza',
-        default=lambda s: s._default_state_square_id(),
+        # default=lambda s: s._default_state_square_id(),
         history=True)
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', history=True)
     call_number = fields.Char(string='Número de llamado', history=True)
@@ -241,13 +241,13 @@ class HrContract(models.Model):
         if not vals.get('name', False) and vals.get('employee_id', False) and vals.get('sec_position', False):
             employee = self.env['hr.employee'].browse(vals.get('employee_id'))
             vals.update({"name": employee.name + ' - ' + vals.get('sec_position')})
-        if 'state' in vals.keys() and 'state_square_id' not in vals.keys():
-            vals['state_square_id'] = self._get_state_square(vals.get('state'))
+        if 'legajo_state' in vals.keys() and 'state_square_id' not in vals.keys():
+            vals['state_square_id'] = self._get_state_square(vals.get('legajo_state'))
         return super(HrContract, self).create(vals)
 
     def write(self, values):
-        if 'state' in values.keys() and 'state_square_id' not in values.keys():
-            values['state_square_id'] = self._get_state_square(values.get('state'))
+        if 'legajo_state' in values.keys() and 'state_square_id' not in values.keys():
+            values['state_square_id'] = self._get_state_square(values.get('legajo_state'))
         result = super(HrContract, self.suspend_security()).write(values)
         self._notify_sgh(values)
         return result
