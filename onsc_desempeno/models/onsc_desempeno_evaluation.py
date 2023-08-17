@@ -89,7 +89,6 @@ class ONSCDesempenoEvaluation(models.Model):
         default=lambda s: s._get_environment_evaluation_text('environment_evaluation_text', True)
     )
 
-
     def _get_evaluation_form_text(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         if is_default:
@@ -130,7 +129,7 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_should_disable_form_edit(self):
         for record in self:
             record.should_disable_form_edit = record.evaluation_type == 'self_evaluation' and record.state not in [
-                    'in_process']
+                'in_process']
 
     # and record.evaluated_id.id == self.env.user.employee_id.id
     def button_start_evaluation(self):

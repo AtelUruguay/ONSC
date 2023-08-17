@@ -273,13 +273,16 @@ class ONSCDesempenoEvaluationList(models.Model):
                                    })
 
     def _create_leader_evaluation(self, data):
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        # TODO Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        return True
 
     def _create_environment_definition(self, data):
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        return True
 
     def _create_collaborator_evaluation(self, data):
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        return True
 
 
 class ONSCDesempenoEvaluationListLine(models.Model):

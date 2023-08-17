@@ -49,9 +49,7 @@ class ONSCDesempenoSkillLine(models.Model):
     name_level = fields.Char(string="Nivel", related='level_id.name', store=True)
     competency_id = fields.Many2one('onsc.desempeno.evaluation.competency', string="Competencias")
 
-
     _sql_constraints = [
         ('line_uniq', 'unique(skill_id,dimension_id,level_id)',
          u'La dimensión y nivel debe ser unico para la competencia'),
     ]
-
