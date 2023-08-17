@@ -34,5 +34,8 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     name_dimension = fields.Char(string="Nombre dimension", related='dimension_id.name', store=True)
     name_skill = fields.Char(string="Nombre Competencia", related='skill_id.name', store=True)
 
-    display_type = fields.Selection([('line_section', "Section"), ('line_note', "Section")], default=False,
-                                    help="Technical field for UX purpose.")
+    display_type = fields.Selection([
+        ('line_section', "Section"),
+        ('line_note', "Note"),
+        ('bold', "Bold")],
+        default='bold', help="Technical field for UX purpose.")

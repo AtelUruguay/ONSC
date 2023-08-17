@@ -276,7 +276,6 @@ class ONSCDesempenoEvaluationList(models.Model):
                 [('level_id', '=', evaluation.level_id.id)]).mapped('skill_id'):
             Competency.create({'evaluation_id': evaluation.id,
                                'skill_id': skill.id,
-                               # 'display_type': False
                                })
             for skill_line in skill.skill_line_ids:
                 Competency.create({'evaluation_id': evaluation.id,
