@@ -53,6 +53,12 @@ class ONSCLegajoBajaVL(models.Model):
         res['arch'] = etree.tostring(doc)
         return res
 
+    def _is_group_inciso_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso')
+
+    def _is_group_ue_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue')
+
     def _get_domain(self, args):
         return super(ONSCLegajoBajaVL, self)._get_domain(args, use_employee=True)
 
