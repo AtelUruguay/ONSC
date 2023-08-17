@@ -38,7 +38,7 @@ class ONSCLegajoAltaVL(models.Model):
         return self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso')
 
     def _is_group_ue_security(self):
-        self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')
+        return self.user_has_groups('onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue')
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
