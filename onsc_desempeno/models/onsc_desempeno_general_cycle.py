@@ -21,7 +21,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
                                                                      toolbar=toolbar,
                                                                      submenu=submenu)
         doc = etree.XML(res['arch'])
-        is_user_config = self.env.user.has_group('onsc_desempeno.group_desempeno_configurador_gh_ue')
+        is_user_config = self.env.user.has_group('onsc_desempeno.group_desempeno_configurador_gh_ue') or self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_inciso')
         is_user_admin = self.env.user.has_group('onsc_desempeno.group_desempeno_administrador')
         if view_type in ['form', 'tree', 'kanban'] and is_user_config and not is_user_admin:
             for node_form in doc.xpath("//%s" % (view_type)):
