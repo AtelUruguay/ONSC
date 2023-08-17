@@ -280,8 +280,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             for skill_line in skill.skill_line_ids:
                 Competency.create({'evaluation_id': evaluation.id,
                                    'skill_id': skill.id,
-                                   'dimension_id': skill_line.dimension_id.id,
-                                   'name': '%s - %s' % (skill_line.dimension_id.name, skill_line.behavior),
+                                    'name': '%s - %s' % (skill_line.dimension_id.name, skill_line.behavior),
                                    'display_type': 'line_note'
                                    })
         return evaluation

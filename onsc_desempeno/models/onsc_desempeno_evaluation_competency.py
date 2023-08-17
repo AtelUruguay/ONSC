@@ -18,20 +18,15 @@ STATE = [
 class ONSCDesempenoEvaluationCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.competency'
     _description = u'Evaluación'
-    _order = "name_skill,name_dimension"
+    _order = "name_skill,name"
 
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
-    skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=False)
+    skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True)
 
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo')
     improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar')
-    skill_line_ids = fields.Many2many('onsc.desempeno.skill.line', 'skill_line_competency_rel', 'compentency_id',
-                                      'skill_line_id',
-                                      string='Entorno')
-    dimension_id = fields.Many2one('onsc.desempeno.dimension', string="Dimensión", readonly=True)
     name = fields.Text(string="Dimensión-Comportamiento esperado", readonly=True)
-    name_dimension = fields.Char(string="Nombre dimension", related='dimension_id.name', store=True)
     name_skill = fields.Char(string="Nombre Competencia", related='skill_id.name', store=True)
 
     display_type = fields.Selection([
