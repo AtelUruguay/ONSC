@@ -32,5 +32,13 @@ ONSC - Gestión de Desempeño
     'installable': True,
     'application': True,
     'auto_install': False,
+    'assets': {
+        'web.assets_backend': [
+            'onsc_desempeno/static/src/scss/section_and_note_backend.scss',
+            'onsc_desempeno/static/src/js/section_and_note_fields_backend.js',
+
+        ],
+
+    },
     'license': 'LGPL-3',
 }

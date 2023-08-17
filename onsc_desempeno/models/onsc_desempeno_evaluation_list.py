@@ -158,23 +158,20 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     def button_generate_evaluations(self):
         self.ensure_one()
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        evaluation = self.env['onsc.desempeno.evaluation']
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
-        manager_id = self.manager_id.id
         with self._cr.savepoint():
             for line in valid_lines:
                 try:
-                    evaluation |= Evaluation.create({
-                        'evaluated_id': line.employee_id.id,
-                        'evaluator_id': manager_id,
-                        'evaluation_type': 'self_evaluation'
-                    })
+                    new_evaluation = self._create_self_evaluation(line)
+                    self._create_leader_evaluation(line)
+                    if fields.Date.today() <= self.end_date:
+                        self._create_environment_definition(line)
+                        self._create_collaborator_evaluation(line)
                     line.write({
                         'state': 'generated',
                         'error_log': False,
-                        'evaluation_ids': [(6, 0, [evaluation.id])]})
+                        'evaluation_ids': [(6, 0, [new_evaluation.id])]})
                     lines_evaluated |= line
                 except Exception as e:
                     line.write({'state': 'error', 'error_log': tools.ustr(e)})
@@ -252,6 +249,54 @@ class ONSCDesempenoEvaluationList(models.Model):
             self.search([
                 ('department_id', '=', job.department_id.id),
                 ('state', '=', 'in_progress')]).write({'line_ids': [(0, 0, {'job_id': job.id})]})
+        return True
+
+    def _create_self_evaluation(self, data):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+
+        evaluation = Evaluation.create({
+            'evaluated_id': data.employee_id.id,
+            'evaluator_id': data.employee_id.id,
+            'evaluation_type': 'self_evaluation',
+            'uo_id': data.job_id.department_id.id,
+            'inciso_id': data.contract_id.inciso_id.id,
+            'operating_unit_id': data.contract_id.operating_unit_id.id,
+            'occupation_id': data.contract_id.occupation_id.id,
+            'level_id': data.contract_id.occupation_id.level_id.id,
+            'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
+            'evaluation_start_date': data.evaluation_list_id.start_date,
+            'evaluation_end_date': data.evaluation_list_id.end_date,
+            'state': 'draft',
+        })
+
+        # SKILL es la de la nota
+        # skill line son las hijas que es puro visual
+        for skill in self.env['onsc.desempeno.skill.line'].suspend_security().search(
+                [('level_id', '=', evaluation.level_id.id)]).mapped('skill_id'):
+            Competency.create({'evaluation_id': evaluation.id,
+                               'skill_id': skill.id,
+                               # 'display_type': False
+                               })
+            for skill_line in skill.skill_line_ids:
+                Competency.create({'evaluation_id': evaluation.id,
+                                   'skill_id': skill.id,
+                                   'dimension_id': skill_line.dimension_id.id,
+                                   'name': '%s - %s' % (skill_line.dimension_id.name, skill_line.behavior),
+                                   'display_type': 'line_note'
+                                   })
+        return evaluation
+
+    def _create_leader_evaluation(self, data):
+        # TODO Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        return True
+
+    def _create_environment_definition(self, data):
+        # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        return True
+
+    def _create_collaborator_evaluation(self, data):
+        # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         return True
 
 

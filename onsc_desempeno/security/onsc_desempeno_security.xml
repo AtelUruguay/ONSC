@@ -53,6 +53,11 @@
             <field name="comment">Usuario de Evaluación</field>
             <field name="category_id" ref="module_category_onsc_desempeno"/>
         </record>
+        <record id="group_desempeno_admin_gh_ue" model="res.groups">
+            <field name="name">Administrador de GH-UE</field>
+            <field name="comment">Administrador de GH-UE</field>
+            <field name="category_id" ref="module_category_onsc_desempeno"/>
+        </record>
 
     </data>
 </odoo>
