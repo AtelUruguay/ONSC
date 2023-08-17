@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
@@ -11,6 +13,8 @@ EVALUATION_TYPE = [
     ('environment_evaluation', 'Evaluación de entorno'),
     ('collaborator', 'Evaluación de colaborador/a'),
     ('environment_definition', 'Definición de entorno'),
+    ('gap_deal', 'Acuerdo de Brecha'),
+
 ]
 
 STATE = [
@@ -27,6 +31,20 @@ class ONSCDesempenoEvaluation(models.Model):
     _name = 'onsc.desempeno.evaluation'
     _description = u'Evaluación'
 
+    def _get_domain_employee(self, args):
+        if self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue'):
+            contract_id = self.env.user.employee_id.job_id.contract_id
+            operating_unit_id = contract_id.operating_unit_id
+            employees = self.env['hr.contract'].suspend_security().search(
+                [('operating_unit_id', '=', operating_unit_id.id),
+                 ('legajo_state', 'in', ['active', 'incoming_commission'])]).mapped('employee_id')
+
+            args = expression.AND([[('evaluated_id', 'in', employees.ids)], args])
+        else:
+            args = expression.AND([[('evaluated_id', '=', self.env.user.employee_id.id)], args])
+        return args
+
+    name = fields.Char(string="Nombre", compute="_compute_name", store=True)
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', required=True)
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
     evaluator_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
@@ -42,18 +60,18 @@ class ONSCDesempenoEvaluation(models.Model):
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
-    evaluation_start_date = fields.Date(string='Fecha de Inicio de la Evaluación', readonly=True)
-    evaluation_end_date = fields.Date(string='Fecha de Fin de la Evaluación', readonly=True)
+    evaluation_start_date = fields.Date(string='Fecha inicio ciclo evaluación', readonly=True)
+    evaluation_end_date = fields.Date(string='Fecha fin ciclo evaluación', readonly=True)
     environment_definition_end_date = fields.Date(string='Fecha de Fin de la Definición de Entorno', readonly=True)
     evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'evaluation_id',
                                                 string='Evaluación de Competencias')
-    general_comments = fields.Text(string='Comentarios Generales', readonly=True,
-                                   states={'in_progress': [('readonly', False)]})
+    general_comments = fields.Text(string='Comentarios Generales')
     state = fields.Selection(STATE, string='Estado', default='draft', readonly=True)
     locked = fields.Boolean(string='Bloqueado')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    change_evaluator = fields.Boolean(string="Cambio de evaluador")
+    change_evaluator = fields.Boolean(string="Cambio de evaluador", default=False)
+
     is_evaluation_form_active = fields.Boolean(
         compute=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active'),
         default=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active', True)
@@ -99,7 +117,29 @@ class ONSCDesempenoEvaluation(models.Model):
         for rec in self:
             setattr(rec, help_field, _url)
 
+    @api.depends('evaluated_id', 'general_cycle_id')
+    def _compute_name(self):
+        for record in self:
+            if record.evaluated_id and record.general_cycle_id:
+                record.name = '%s - %s' % (record.evaluated_id.name, record.general_cycle_id.year)
+            else:
+                record.name = ''
+
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state not in ['in_process']
+            record.should_disable_form_edit = record.evaluation_type == 'self_evaluation' and record.state not in [
+                'in_process']
+
+    # and record.evaluated_id.id == self.env.user.employee_id.id
+    def button_start_evaluation(self):
+        self.write({'state': 'in_process'})
+
+    def button_completed_evaluation(self):
+        self._check_complete_evaluation()
+        self.write({'state': 'completed'})
+
+    def _check_complete_evaluation(self):
+
+        if self.evaluation_type != 'environment_definition' and not self.general_comments:
+            raise ValidationError(_("El campo comentarios generales es obligatorio"))

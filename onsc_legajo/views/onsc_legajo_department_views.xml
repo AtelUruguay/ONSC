@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+    <record id="onsc_legajo_department_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.department.tree</field>
+        <field name="model">onsc.legajo.department</field>
+        <field name="arch" type="xml">
+            <tree string="Legajos">
+                <field name="department_id" string="UO"/>
+                <field name="legajo_id"/>
+                <field name="job_id" string="Puesto"/>
+                <field name="legajo_state"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_department_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.department.search</field>
+        <field name="model">onsc.legajo.department</field>
+        <field name="arch" type="xml">
+            <search string="Legajos">
+                <searchpanel>
+                    <field name="department_id" string="UNIDAD ORGANIZATIVA" icon="fa-building" enable_counters="1"/>
+                </searchpanel>
+                <field name="legajo_id" string="Funcionario"/>
+                <field name="contract_id" string="Contrato"/>
+                <field name="job_id" string="Puesto"/>
+                <field name="department_id" string="UO"/>
+                <field name="legajo_state"/>
+                <group string="Agrupar por">
+                    <filter name="group_department_id" string="Unidad organizativa" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_legajo_id" string="Legajo" context="{'group_by': 'legajo_id'}"/>
+                    <filter name="group_contract_id" string="Contrato" context="{'group_by': 'contract_id'}"/>
+                    <filter name="group_legajo_state" string="Estado del funcionario" context="{'group_by': 'legajo_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id='onsc_legajo_department_action' model='ir.actions.act_window'>
+        <field name="name">Consulta de legajos por UO</field>
+        <field name="res_model">onsc.legajo.department</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{'is_legajo':True,'search_default_group_department_id':True,'active_test': False}</field>
+    </record>
+    </data>
+</odoo>

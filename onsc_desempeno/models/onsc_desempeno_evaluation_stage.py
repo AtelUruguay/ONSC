@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
 
 from odoo import fields, models, api, _
@@ -14,8 +15,11 @@ class ONSCDesempenoEvaluationStage(models.Model):
     _description = u'Etapa de evaluaciones 360° por UE'
 
     def _get_domain(self, args):
-        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
-        args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id), ], args])
+        user_contract_id = self.env.user.employee_id.job_id.contract_id
+        if self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_inciso'):
+            args = expression.AND([[('inciso_id', '=', user_contract_id.inciso_id.id), ], args])
+        else:
+            args = expression.AND([[('operating_unit_id', '=', user_contract_id.operating_unit_id.id), ], args])
         return args
 
     @api.model
@@ -35,15 +39,19 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.model
     def default_get(self, fields):
         res = super(ONSCDesempenoEvaluationStage, self).default_get(fields)
-        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
-        res['operating_unit_id'] = operating_unit_id.id
-
+        if self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_ue'):
+            operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id
+            res['operating_unit_id'] = operating_unit_id.id
         return res
 
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", required=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string=u'Año a evaluar',
                                        domain=[("active", "=", True)],
                                        required=True, tracking=True)
+    year = fields.Integer(
+        u'Año a evaluar',
+        related="general_cycle_id.year",
+        store=True)
     inciso_id = fields.Many2one(
         "onsc.catalog.inciso",
         string="Inciso",
@@ -55,18 +63,54 @@ class ONSCDesempenoEvaluationStage(models.Model):
     active = fields.Boolean(string="Activo", default=True, tracking=True)
     closed_stage = fields.Boolean(string="Etapa cerrada", default=False, tracking=True)
     show_buttons = fields.Boolean(string="Editar datos de contrato", compute='_compute_show_buttons')
-    is_edit_start_date = fields.Boolean(string="Editar datos de destino", compute='_compute_is_edit_start_date')
-    is_edit_end_date_environment = fields.Boolean(string="Editar datos de origen",
-                                                  compute='_compute_is_edit_end_date_environment')
-    is_edit_end_date = fields.Boolean(string="Editar datos de origen", compute='_compute_is_edit_end_date')
-    name = fields.Char('Nombre', compute='_compute_name')
-    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
-                                              compute='_compute_should_disable_form_edit')
 
-    @api.depends('start_date')
-    def _compute_should_disable_form_edit(self):
-        for record in self:
-            record.should_disable_form_edit = record.start_date and record.start_date < fields.Date.today()
+    is_edit_start_date = fields.Boolean(
+        string="Editar datos de destino",
+        compute='_compute_is_edit_start_date')
+    is_edit_end_date_environment = fields.Boolean(
+        string="Editar datos de origen",
+        compute='_compute_is_edit_end_date_environment')
+    is_edit_end_date = fields.Boolean(
+        string="Editar datos de origen",
+        compute='_compute_is_edit_end_date')
+    is_edit_general_cycle_id = fields.Boolean(
+        string="Editar año a evaluar",
+        default='_compute_is_edit_general_cycle_id',
+        compute='_compute_is_edit_general_cycle_id')
+
+    name = fields.Char('Nombre', compute='_compute_name', store=True)
+    is_operating_unit_readonly = fields.Boolean(
+        compute=lambda s: s._compute_is_operating_unit_readonly(),
+        default=lambda s: s._compute_is_operating_unit_readonly(True))
+    operating_unit_id_domain = fields.Char(
+        compute=lambda s: s._compute_operating_unit_id_domain(),
+        default=lambda s: s._compute_operating_unit_id_domain(True))
+
+    def _compute_is_operating_unit_readonly(self, is_default=False):
+        is_operating_unit_readonly = self.user_has_groups(
+            'onsc_desempeno.group_desempeno_configurador_gh_ue') and not self.user_has_groups(
+            'onsc_desempeno.group_desempeno_configurador_gh_inciso')
+        if is_default:
+            return is_operating_unit_readonly
+        for rec in self:
+            rec.is_operating_unit_readonly = is_operating_unit_readonly
+
+    def _compute_operating_unit_id_domain(self, is_default=False):
+        user_contract_id = self.env.user.employee_id.job_id.contract_id
+        is_user_inciso = self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_inciso')
+        is_user_ue = self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_ue')
+        if is_user_inciso:
+            domain = [('inciso_id', '=', user_contract_id.inciso_id.id)]
+            # operating_unit_ids = self.env['operating.unit'].search([('inciso_id', '=', user_contract_id.inciso_id.id)]).ids
+        elif is_user_ue:
+            domain = [('id', '=', user_contract_id.operating_unit_id.id)]
+            # operating_unit_ids = [user_contract_id.operating_unit_id.id]
+        else:
+            domain = [('id', 'in', [])]
+        if is_default:
+            return json.dumps(domain)
+        for rec in self:
+            rec.operating_unit_id_domain = json.dumps(domain)
 
     @api.depends('end_date')
     def _compute_show_buttons(self):
@@ -76,17 +120,23 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.depends('start_date')
     def _compute_is_edit_start_date(self):
         for record in self:
-            record.is_edit_start_date = not record.id or record.start_date < fields.Date.today()
+            record.is_edit_start_date = not record.id or record.start_date > fields.Date.today()
 
     @api.depends('end_date_environment')
     def _compute_is_edit_end_date_environment(self):
         for record in self:
-            record.is_edit_end_date_environment = not record.id or record.end_date_environment < fields.Date.today()
+            record.is_edit_end_date_environment = not record.id or record.end_date_environment > fields.Date.today()
 
     @api.depends('end_date')
     def _compute_is_edit_end_date(self):
         for record in self:
-            record.is_edit_end_date = not record.id or record.end_date < fields.Date.today()
+            record.is_edit_end_date = not record.id or record.end_date > fields.Date.today()
+
+    def _compute_is_edit_general_cycle_id(self):
+        EvaluationList = self.env['onsc.desempeno.evaluation.list'].sudo()
+        for record in self:
+            record.is_edit_general_cycle_id = EvaluationList.search_count(
+                [('evaluation_stage_id', '=', record.id)]) == 0
 
     @api.depends('operating_unit_id', 'general_cycle_id')
     def _compute_name(self):
@@ -104,29 +154,42 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 raise ValidationError(_(u"Solo se puede tener una configuración para el año"))
 
     @api.constrains('start_date')
-    def _check_start_date(self):
+    def _check_start_date_today(self):
         for record in self:
             if record.start_date < fields.Date.today():
-                raise ValidationError(_("La fecha inicio debe ser menor o igual a la fecha actual"))
+                raise ValidationError(_("La fecha inicio debe ser mayor o igual a la fecha actual"))
 
-    @api.constrains("start_date", "end_date", "end_date_environment", "general_cycle_id.start_date_max",
-                    "general_cycle_id.end_date_max", "general_cycle_id.year")
-    def _check_date(self):
+    @api.constrains('end_date')
+    def _check_end_date_today(self):
+        for record in self:
+            if record.end_date < fields.Date.today():
+                raise ValidationError(_("La fecha fin debe ser mayor o igual a la fecha actual"))
+
+    @api.constrains("start_date", "general_cycle_id.start_date", "general_cycle_id.start_date_max")
+    def _check_start_dates(self):
+        for record in self:
+            if record.start_date < record.general_cycle_id.start_date:
+                raise ValidationError(
+                    _(u"La fecha inicio de las Etapas de evaluaciones 360° por UE de debe ser mayor o igual a la fecha de inicio del Ciclo General"))
+            if record.start_date < record.general_cycle_id.start_date_max:
+                raise ValidationError(
+                    _(u"La fecha inicio de las Etapas de evaluaciones 360° por UE de debe ser mayor o igual a la fecha de inicio máxima del Ciclo General"))
+
+    @api.constrains("end_date", "general_cycle_id.end_date_max")
+    def _check_end_dates(self):
+        for record in self:
+            if record.end_date > record.general_cycle_id.end_date_max:
+                raise ValidationError(
+                    _(u"La fecha de fin de las Etapas de evaluaciones 360° por UE debe ser menor o igual a la fecha de fin máxima del Ciclo General"))
+
+    @api.constrains("start_date", "end_date", "end_date_environment")
+    def _check_dates(self):
         for record in self:
             if record.start_date > record.end_date:
                 raise ValidationError(_(u"La fecha inicio debe ser menor o igual a la fecha de fin"))
-            if record.start_date > record.general_cycle_id.start_date_max:
-                raise ValidationError(
-                    _(u"La fecha inicio debe ser menor o igual a la fecha de inicio máxima del ciclo general"))
-            if record.start_date < record.general_cycle_id.start_date:
-                raise ValidationError(
-                    _(u"La fecha inicio debe ser mayor o igual a la fecha de inicio del ciclo general"))
-            if record.end_date > record.general_cycle_id.end_date_max:
-                raise ValidationError(
-                    _(u"La fecha fin debe ser menor o igual a la fecha de fin máxima del ciclo general"))
             if record.end_date_environment > record.end_date:
                 raise ValidationError(
-                    _(u"La Fecha fin def. entorno debe ser menor o igual a la fecha de fin del ciclo general"))
+                    _(u"La Fecha fin def. entorno debe ser menor o igual a la fecha de fin"))
             if int(record.start_date.strftime('%Y')) != record.general_cycle_id.year:
                 raise ValidationError(
                     _("La fecha inicio debe estar dentro del año %s") % record.general_cycle_id.year)
@@ -138,7 +201,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     _("La fecha fin def. entorno debe estar dentro del año %s") % record.general_cycle_id.year)
 
     @api.onchange('general_cycle_id')
-    def onchange_end_date(self):
+    def onchange_general_cycle_id(self):
         if self.general_cycle_id:
             self.start_date = self.general_cycle_id.start_date_max
             self.end_date = self.general_cycle_id.end_date_max
