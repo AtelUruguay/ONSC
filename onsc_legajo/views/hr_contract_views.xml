@@ -79,6 +79,8 @@
                             <field name="position" required="1"/>
                             <field name="workplace" required="1"/>
                             <field name="sec_position" required="1"/>
+                            <field name="state_square_id" readonly="1"
+                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                         <group>
                             <field name="reason_description" required="1"/>

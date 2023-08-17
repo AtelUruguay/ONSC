@@ -637,7 +637,6 @@
                             </group>
                             <group>
                                 <field name="cv_address_amplification"/>
-                                <field name="is_cv_address_populated"/>
                             </group>
                             <div class="row" nolabel="1" colspan="2">
                                 <div class="alert alert-danger" role="alert" style="width:70%"

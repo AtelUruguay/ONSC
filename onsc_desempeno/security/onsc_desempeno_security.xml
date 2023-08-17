@@ -12,6 +12,12 @@
             <field name="category_id" ref="module_category_onsc_desempeno"/>
         </record>
 
+        <record id="group_desempeno_configurador_gh_inciso" model="res.groups">
+            <field name="name">Configurador GH-Inciso</field>
+            <field name="comment">Configurador GH-Inciso</field>
+            <field name="category_id" ref="module_category_onsc_desempeno"/>
+        </record>
+
         <record id="group_desempeno_configurador_gh_ue" model="res.groups">
             <field name="name">Configurador GH-UE</field>
             <field name="comment">Configurador GH-UE</field>
@@ -41,6 +47,7 @@
             <field name="comment">Responsable de UO</field>
             <field name="category_id" ref="module_category_onsc_desempeno"/>
         </record>
+
         <record id="group_desempeno_usuario_evaluacion" model="res.groups">
             <field name="name">Usuario de Evaluación</field>
             <field name="comment">Usuario de Evaluación</field>

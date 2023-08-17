@@ -70,6 +70,16 @@
         </field>
     </record>
 
+    <record id="onsc_legajo_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.search</field>
+        <field name="model">onsc.legajo</field>
+        <field name="arch" type="xml">
+            <search string="Legajos">
+                <field name="employee_id" string="Funcionario"/>
+            </search>
+        </field>
+    </record>
+
     <record id="onsc_legajo_form" model="ir.ui.view">
         <field name="name">onsc.legajo.form</field>
         <field name="model">onsc.legajo</field>
