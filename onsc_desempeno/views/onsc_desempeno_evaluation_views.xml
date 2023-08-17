@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+
+
     <record id="onsc_desempeno_evaluation_search" model="ir.ui.view">
         <field name="name">onsc.desempeno.evaluation.search</field>
         <field name="model">onsc.desempeno.evaluation</field>
@@ -134,21 +136,22 @@
                            attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
                         <field name="evaluation_competency_ids" nolabel="1" widget="section_and_note_one2many"
                                attrs="{'readonly':[('locked', '=', True)]}" mode="tree">
-                            <tree editable="top" nolabel="1" default_order="id asc">
+                            <tree  editable="bottom" nolabel="1" default_order="id asc">
                                 <control>
-                                    <create name="add_product_control" string="Add a product"/>
+                                    <create name="add_line_control" string="Add a line"/>
                                     <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
                                     <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
                                 </control>
                                 <field name="evaluation_id"  invisible="1"/>
                                 <field name="name_skill" invisible="1"/>
-                                <field name="state" invisible="1"/>
-                                <field name="skill_id"/>
-                                <field name="behavior" widget="section_and_note_text"/>
-<!--                                <field name="degree_id" attrs="{'invisible': [('display_type','=', 'line_section')]}"/>-->
-<!--                                <field name="improvement_areas" attrs="{'invisible': [('display_type','=', 'line_section')]}"/>-->
+                                <field name="state" widget="handle"/>
+                                <field name="skill_id"  attrs="{'invisible': [('display_type','=', 'line_note')]}"/>
 
-<!--                                <field name="name_dimension" widget="section_and_note_text"/>-->
+                               <field name="degree_id" attrs="{'invisible': [('display_type','=', 'line_note')]}"/>
+                                <field name="improvement_areas" attrs="{'invisible': [('display_type','=', 'line_note')]}"/>
+                                <field name="name" nolabel="1" widget="section_and_note_text" colspan="4"/>
+
+
                                 <field name="display_type" invisible="1"/>
                                 <field name="id" invisible="1"/>
                             </tree>
@@ -179,6 +182,43 @@
             <tree string="Escalafones" create="0" edit="0" delete="0">
                 <field name="dimension_id"/>
                 <field name="behavior"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             </tree>
         </field>
     </record>
@@ -194,4 +234,5 @@
             </p>
         </field>
     </record>
+
 </odoo>

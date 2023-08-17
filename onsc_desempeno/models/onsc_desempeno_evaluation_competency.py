@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models, api
+from odoo import fields, models
 
 _logger = logging.getLogger(__name__)
 
@@ -30,15 +30,9 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                                       'skill_line_id',
                                       string='Entorno')
     dimension_id = fields.Many2one('onsc.desempeno.dimension', string="Dimensión", readonly=True)
-    behavior = fields.Char(string="Comportamiento esperado", readonly=True)
+    name = fields.Text(string="Dimensión-Comportamiento esperado", readonly=True)
     name_dimension = fields.Char(string="Nombre dimension", related='dimension_id.name', store=True)
     name_skill = fields.Char(string="Nombre Competencia", related='skill_id.name', store=True)
 
-    display_type = fields.Selection([
-        ('line_section', "Section")
-    ], default=False, help="Technical field for UX purpose.")
-
-    @api.onchange('degree_id')
-    def onchange_degree_id(self):
-        self.search([('evaluation_id', '=', self.evaluation_id.id.origin), ('skill_id', '=', self.skill_id.id)]).suspend_security().write(
-            {'degree_id': self.degree_id.id})
+    display_type = fields.Selection([('line_section', "Section"), ('line_note', "Section")], default=False,
+                                    help="Technical field for UX purpose.")
