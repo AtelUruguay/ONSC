@@ -124,37 +124,47 @@
                                widget="many2many_tags"
                                options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     </group>
-
-                    <group name="competencia" string="Evaluación de Competencias"
-                           attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
-                        <field name="evaluation_competency_ids" nolabel="1" widget="section_and_note_one2many"
+                    <notebook>
+                        <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
+                            <field name="evaluation_competency_ids" nolabel="1" widget="widget_section_and_note_one2many"
                                attrs="{'readonly':[('locked', '=', True)]}" mode="tree">
-                            <tree  editable="bottom" nolabel="1" default_order="id asc">
-                                <control>
-                                    <create name="add_line_control" string="Add a line"/>
-                                    <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
-                                    <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
-                                </control>
-                                <field name="evaluation_id"  invisible="1"/>
-                                <field name="name_skill" invisible="1"/>
-                                <field name="state" widget="handle"/>
-                                <field name="skill_id"  attrs="{'invisible': [('display_type','=', 'line_note')]}"/>
-
-                               <field name="degree_id" attrs="{'invisible': [('display_type','=', 'line_note')]}"/>
-                                <field name="improvement_areas" attrs="{'invisible': [('display_type','=', 'line_note')]}"/>
-                                <field name="name" nolabel="1" widget="section_and_note_text" colspan="4"/>
+                                <tree limit="200" editable="top" nolabel="1" default_order="id asc">
+                                    <control>
+                                        <create name="add_line_control" string="Add a line"/>
+                                        <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                    </control>
+                                    <field name="evaluation_id"  invisible="1"/>
+                                    <field name="name_skill" invisible="1"/>
+                                    <field name="skill_id" />
+                                    <field name="degree_id"/>
+                                    <field name="improvement_areas"/>
+                                    <field name="name" nolabel="1" widget="widget_section_and_note_text" colspan="4"/>
 
 
-                                <field name="display_type" invisible="1"/>
-                                <field name="id" invisible="1"/>
-                            </tree>
-                        </field>
-                    </group>
+                                    <field name="display_type" invisible="0"/>
+                                    <field name="id" invisible="1"/>
+                                </tree>
+                                <form>
+                                    <field name="display_type" invisible="1"/>
+                                    <field name="skill_id"
+                                           readonly="1"
+                                           attrs="{'invisible': [('display_type','!=', 'bold')]}"/>
+                                    <field name="degree_id"
+                                           readonly="1"
+                                           attrs="{'invisible': [('display_type','!=', 'bold')]}"/>
+                                    <field name="name"
+                                           readonly="1"
+                                           nolabel="1" attrs="{'invisible': [('display_type','=', 'bold')]}"/>
+                                </form>
+                            </field>
+                        </page>
+                    </notebook>
+
                     <group name="general_comments" string="Comentarios Generales"
                            attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('locked', '=', True)]}">
                         <field name="general_comments" nolabel="1"
                                placeholder="Comentarios Generales"/>
-
                     </group>
                     <group name="block">
                         <field name="locked" string="Bloqueado"

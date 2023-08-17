@@ -107,7 +107,6 @@ class HrContract(models.Model):
     reason_description = fields.Char(string='Descripción del motivo alta', history=True)
     norm_code_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
     type_norm_discharge = fields.Char(string='Tipo de norma alta', related='norm_code_id.tipoNorma')
-    workplace_state = fields.Char(string='Estado de la plaza', history=True)
     reason_discharge = fields.Char(string='Descripción del motivo alta', history=True)
     norm_code_discharge_id = fields.Many2one('onsc.legajo.norm', string='Código de norma alta', history=True)
     norm_number_discharge = fields.Integer(string='Número de norma alta',
