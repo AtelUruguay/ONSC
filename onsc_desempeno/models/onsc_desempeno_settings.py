@@ -9,6 +9,7 @@ class ONSCDesempenoSettings(models.Model):
 
     company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
     descriptor1_ids = fields.Many2many('onsc.catalog.descriptor1', related="company_id.descriptor1_ids",
+                                       groups='onsc_desempeno.group_desempeno_configurador_escalafones',
                                        string="Escalafones excluidos", readonly=False, related_sudo=True)
     is_evaluation_form_active = fields.Boolean(related="company_id.is_evaluation_form_active", readonly=False,
                                                related_sudo=True)
@@ -17,12 +18,6 @@ class ONSCDesempenoSettings(models.Model):
                                                            readonly=False, related_sudo=True)
     environment_evaluation_text = fields.Text(related="company_id.environment_evaluation_text", readonly=False,
                                               related_sudo=True)
-    is_edit_help = fields.Boolean(string="Editar datos de ayuda", compute='_compute_is_edit_help')
-
-    @api.depends('is_evaluation_form_active', 'is_environment_evaluation_form_active')
-    def _compute_is_edit_help(self):
-        for record in self:
-            record.is_edit_help = self.env.user.has_group('onsc_desempeno.group_desempeno_administrador')
 
     def execute(self):
         return {
