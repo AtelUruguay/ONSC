@@ -54,32 +54,7 @@
                     <field name="should_disable_form_edit" invisible="1"/>
                     <field name="is_evaluation_form_active" invisible="1"/>
                     <field name="is_environment_evaluation_form_active" invisible="1"/>
-                    <div class="alert alert-info" role="alert"
-                         name="div_alert_form"
-                         style="overflow:hidden;"
-                         attrs="{'invisible':['|',('is_evaluation_form_active', '=', False),('evaluation_type', '=', 'environment_definition')]}">
-                        <div class="oe_left">
-                            <p class="mb-0">
-                                <strong>
-                                    <field name="evaluation_form_text"/>
-                                </strong>
-                                <newline/>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="alert alert-info" role="alert"
-                         name="div_alert_env_form"
-                         style="overflow:hidden;"
-                         attrs="{'invisible': ['|',('is_environment_evaluation_form_active', '=', False),('evaluation_type', '!=', 'environment_definition')]}">
-                        <div class="oe_left">
-                            <p class="mb-0">
-                                <strong>
-                                    <field name="environment_evaluation_text"/>
-                                </strong>
-                                <newline/>
-                            </p>
-                        </div>
-                    </div>
+
                     <group name="main_group">
                         <group name="main_group_left">
                             <field name="change_evaluator" invisible="1"/>
@@ -105,8 +80,7 @@
                             <field name="original_evaluator_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': ['|',('change_evaluator', '=', True),('evaluation_type', 'in',['self_evaluation'])]}"/>
-                            <field name="general_cycle_id"
-                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="year"/>
                             <field name="evaluation_start_date"/>
                             <field name="evaluation_end_date"/>
                             <field name="environment_definition_end_date"
@@ -124,31 +98,74 @@
                                widget="many2many_tags"
                                options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     </group>
+                     <div class="alert alert-info" role="alert"
+                         name="div_alert_form"
+                         style="overflow:hidden;"
+                         attrs="{'invisible':['|',('is_evaluation_form_active', '=', False),('evaluation_type', '=', 'environment_definition')]}">
+                        <div class="oe_left">
+                            <p class="mb-0">
+                                <strong>
+                                    <field name="evaluation_form_text"/>
+                                </strong>
+                                <newline/>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         name="div_alert_env_form"
+                         style="overflow:hidden;"
+                         attrs="{'invisible': ['|',('is_environment_evaluation_form_active', '=', False),('evaluation_type', '!=', 'environment_definition')]}">
+                        <div class="oe_left">
+                            <p class="mb-0">
+                                <strong>
+                                    <field name="environment_evaluation_text"/>
+                                </strong>
+                                <newline/>
+                            </p>
+                        </div>
+                    </div>
                     <notebook>
                         <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
-                            <field name="evaluation_competency_ids" nolabel="1" widget="widget_section_and_note_one2many"
-                               attrs="{'readonly':[('locked', '=', True)]}" mode="tree" default_order="id asc">
-                                <tree limit="200" editable="top" nolabel="1" default_order="id asc">
+                            <field name="evaluation_competency_ids" nolabel="1"  attrs="{'readonly':[('locked', '=', True)]}">
+                                <tree nolabel="1" default_order="id asc">
                                     <field name="evaluation_id"  invisible="1"/>
                                     <field name="name_skill" invisible="1"/>
                                     <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                    <field name="degree_id"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                    <field name="improvement_areas"/>
-                                    <field name="name" nolabel="1" widget="widget_section_and_note_text" colspan="4"/>
-                                    <field name="display_type" invisible="1"/>
+                                    <field name="degree_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                    <field name="improvement_areas" readonly="1"/>
                                 </tree>
-                                <form>
-                                    <field name="display_type" invisible="1"/>
-                                    <field name="skill_id"
-                                           readonly="1"
-                                           attrs="{'invisible': [('display_type','!=', 'bold')]}"/>
-                                    <field name="degree_id"
-                                           readonly="1"
-                                           attrs="{'invisible': [('display_type','!=', 'bold')]}"/>
-                                    <field name="name"
-                                           readonly="1"
-                                           nolabel="1" attrs="{'invisible': [('display_type','=', 'bold')]}"/>
-                                </form>
+                                <form string="Competencias">
+                          `          <header/>
+                                    <sheet>
+
+                                        <group>
+                                            <group>
+                                                <field name="skill_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                                <field name="degree_id"/>
+                                                <field name="improvement_areas"/>
+                                            </group>
+                                            <group/>
+                                        </group>
+                                        <notebook>
+                                            <page string="Dimensiones">
+
+                                                <field name="skill_line_ids" nolabel="1" >
+                                                    <tree editable="bottom">
+
+                                                        <field name="dimension_id"
+                                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                        <field name="behavior"/>
+                                                     </tree>
+                                                    <form string="Dimensiones">
+                                                    <field name="dimension_id" readonly="1"
+                                                           options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                        <field name="behavior" readonly="1"/>
+                                                    </form>
+                                                 </field>
+                                            </page>
+                                        </notebook>
+                                    </sheet>`
+                                  </form>
                             </field>
                         </page>
                     </notebook>
@@ -170,6 +187,7 @@
     <record id='onsc_desempeno_evaluation_action' model='ir.actions.act_window'>
         <field name="name">Evaluación de Desempeño</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
+        <field name="context">{'is_from_menu': True}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

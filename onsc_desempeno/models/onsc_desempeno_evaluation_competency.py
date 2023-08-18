@@ -18,19 +18,15 @@ STATE = [
 class ONSCDesempenoEvaluationCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.competency'
     _description = u'Evaluación'
-    _order = "name_skill,name"
+    _order = "name_skill"
 
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
     skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True)
+    skill_line_ids = fields.One2many(comodel_name="onsc.desempeno.skill.line", inverse_name="competency_id",
+                                     string="Lineas de competencia",
+                                     )
 
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo')
-    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar')
-    name = fields.Text(string="Dimensión-Comportamiento esperado", readonly=True)
-    name_skill = fields.Char(string="Nombre Competencia", related='skill_id.name', store=True)
-
-    display_type = fields.Selection([
-        ('line_section', "Section"),
-        ('line_note', "Note"),
-        ('bold', "Bold")],
-        default='bold', help="Technical field for UX purpose.")
+    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', help='Este es un tooltip para el campo Brecha/Fortalezas/Aspectos a mejorar')
+    name_skill = fields.Char(string="Nombre Competencia", related='skill_id.name')

@@ -91,7 +91,7 @@
     <menuitem id="onsc_desempeno_self_evaluation_menu"
               name="Autoevaluación"
               action="onsc_desempeno_evaluation_action"
-              groups="onsc_desempeno.group_desempeno_usuario_evaluacion"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
               parent="onsc_desempeno_evaluaciones_menu"
               sequence="1"/>
 
