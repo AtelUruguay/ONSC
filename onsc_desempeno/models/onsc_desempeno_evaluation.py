@@ -31,18 +31,32 @@ class ONSCDesempenoEvaluation(models.Model):
     _name = 'onsc.desempeno.evaluation'
     _description = u'Evaluación'
 
-    def _get_domain_employee(self, args):
-        if self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue'):
-            contract_id = self.env.user.employee_id.job_id.contract_id
-            operating_unit_id = contract_id.operating_unit_id
-            employees = self.env['hr.contract'].suspend_security().search(
-                [('operating_unit_id', '=', operating_unit_id.id),
-                 ('legajo_state', 'in', ['active', 'incoming_commission'])]).mapped('employee_id')
+    def _get_domain(self, args):
+        if self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso'):
+            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
 
-            args = expression.AND([[('evaluated_id', 'in', employees.ids)], args])
-        else:
-            args = expression.AND([[('evaluated_id', '=', self.env.user.employee_id.id)], args])
+            args = expression.AND([[('inciso_id', '=', inciso_id), ], args])
+        elif self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue'):
+            operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+            args = expression.AND([[('operating_unit_id', '=', operating_unit_id), ], args])
+        elif self.user_has_groups('onsc_desempeno.group_desempeno_usuario_evaluacion'):
+            args = expression.AND([[('evaluated_id', '=', self.env.user.employee_id.id), ], args])
+
         return args
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        if self._context.get('is_from_menu'):
+            args = self._get_domain(args)
+        return super(ONSCDesempenoEvaluation, self)._search(args, offset=offset, limit=limit, order=order,
+                                                            count=count,
+                                                            access_rights_uid=access_rights_uid)
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if self._context.get('is_from_menu'):
+            domain = self._get_domain(domain)
+        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     name = fields.Char(string="Nombre", compute="_compute_name", store=True)
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', required=True)
@@ -60,6 +74,7 @@ class ONSCDesempenoEvaluation(models.Model):
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
+    year = fields.Integer(tring='Año a Evaluar', readonly=True, related='general_cycle_id.year')
     evaluation_start_date = fields.Date(string='Fecha inicio ciclo evaluación', readonly=True)
     evaluation_end_date = fields.Date(string='Fecha fin ciclo evaluación', readonly=True)
     environment_definition_end_date = fields.Date(string='Fecha de Fin de la Definición de Entorno', readonly=True)

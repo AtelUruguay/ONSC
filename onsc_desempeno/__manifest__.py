@@ -9,7 +9,8 @@ ONSC - Gestión de Desempeño
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['mail', 'model_history', 'base_suspend_security', 'onsc_base', 'onsc_catalog', 'onsc_legajo'],
+    'depends': ['mail', 'model_history', 'base_suspend_security', 'web_widget_section_and_note', 'onsc_base',
+                'onsc_catalog', 'onsc_legajo'],
     'data': [
         'security/onsc_desempeno_security.xml',
         'security/ir.model.access.csv',
@@ -32,13 +33,5 @@ ONSC - Gestión de Desempeño
     'installable': True,
     'application': True,
     'auto_install': False,
-    'assets': {
-        'web.assets_backend': [
-            'onsc_desempeno/static/src/scss/section_and_note_backend.scss',
-            'onsc_desempeno/static/src/js/section_and_note_fields_backend.js',
-
-        ],
-
-    },
     'license': 'LGPL-3',
 }

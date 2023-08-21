@@ -270,21 +270,13 @@ class ONSCDesempenoEvaluationList(models.Model):
             'state': 'draft',
         })
 
-        # SKILL es la de la nota
-        # skill line son las hijas que es puro visual
         for skill in self.env['onsc.desempeno.skill.line'].suspend_security().search(
                 [('level_id', '=', evaluation.level_id.id)]).mapped('skill_id'):
             Competency.create({'evaluation_id': evaluation.id,
                                'skill_id': skill.id,
-                               # 'display_type': False
+                               'skill_line_ids': skill.skill_line_ids.filtered(lambda r: r.level_id.id == evaluation.level_id.id).ids
                                })
-            for skill_line in skill.skill_line_ids:
-                Competency.create({'evaluation_id': evaluation.id,
-                                   'skill_id': skill.id,
-                                   'dimension_id': skill_line.dimension_id.id,
-                                   'name': '%s - %s' % (skill_line.dimension_id.name, skill_line.behavior),
-                                   'display_type': 'line_note'
-                                   })
+
         return evaluation
 
     def _create_leader_evaluation(self, data):
