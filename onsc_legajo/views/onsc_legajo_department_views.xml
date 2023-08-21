@@ -6,10 +6,15 @@
         <field name="model">onsc.legajo.department</field>
         <field name="arch" type="xml">
             <tree string="Legajos">
-                <field name="department_id" string="UO"/>
                 <field name="legajo_id"/>
+                <field name="department_id" string="UO"/>
+                <field name="contract_id" string="Contrato"/>
                 <field name="job_id" string="Puesto"/>
+                <field name="operating_unit_id" string="Unidad ejecutora"/>
                 <field name="legajo_state"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <button name="button_open_legajo" type="object" string="Ver Legajo" icon="fa-edit"/>
             </tree>
         </field>
     </record>
@@ -20,13 +25,17 @@
         <field name="arch" type="xml">
             <search string="Legajos">
                 <searchpanel>
-                    <field name="department_id" string="UNIDAD ORGANIZATIVA" icon="fa-building" enable_counters="1"/>
+                    <field name="inciso_id" string="Inciso" icon="fa-building" enable_counters="1"/>
+                    <field name="operating_unit_id" string="Unidad ejecutora" icon="fa-building" enable_counters="1"/>
+                    <field name="department_id" string="Unidad organizativa" icon="fa-building" enable_counters="1"/>
                 </searchpanel>
                 <field name="legajo_id" string="Funcionario"/>
                 <field name="contract_id" string="Contrato"/>
                 <field name="job_id" string="Puesto"/>
                 <field name="department_id" string="UO"/>
                 <field name="legajo_state"/>
+                <filter string="Puestos vigentes" name="filter_active_jobs"
+                            domain="[('is_job_open','=',True)]"/>
                 <group string="Agrupar por">
                     <filter name="group_department_id" string="Unidad organizativa" context="{'group_by': 'department_id'}"/>
                     <filter name="group_legajo_id" string="Legajo" context="{'group_by': 'legajo_id'}"/>
@@ -41,7 +50,7 @@
         <field name="name">Consulta de legajos por UO</field>
         <field name="res_model">onsc.legajo.department</field>
         <field name="view_mode">tree</field>
-        <field name="context">{'is_legajo':True,'search_default_group_department_id':True,'active_test': False}</field>
+        <field name="context">{'is_from_menu':True,'is_legajo':True,'search_default_group_department_id':True,'active_test': False}</field>
     </record>
     </data>
 </odoo>

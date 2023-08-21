@@ -29,9 +29,21 @@ class HrJob(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict',
                                       tracking=True)
     legajo_id = fields.Many2one('onsc.legajo', string='Legajo', related='contract_id.legajo_id', store=True)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id', store=True)
+    operating_unit_id = fields.Many2one(
+        "operating.unit",
+        string="Unidad ejecutora",
+        related='contract_id.operating_unit_id',
+        store=True)
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     role_extra_is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')
+    legajo_state = fields.Selection(
+        [('active', 'Activo'), ('egresed', 'Egresado')],
+        string='Estado del funcionario',
+        related='contract_id.legajo_id.legajo_state',
+        store=True
+    )
 
     @api.depends('contract_id')
     def _compute_department_domain(self):
