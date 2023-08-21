@@ -156,5 +156,10 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _check_complete_evaluation(self):
 
-        if self.evaluation_type != 'environment_definition' and not self.general_comments:
-            raise ValidationError(_("El campo comentarios generales es obligatorio"))
+        if self.evaluation_type != 'environment_definition':
+            if not self.general_comments:
+                raise ValidationError(_("El campo comentarios generales es obligatorio"))
+            for skill in self.evaluation_competency_ids:
+                 if not skill.degree_id or not skill.improvement_areas:
+                    raise ValidationError(
+                        _("Los campos grado de necesidad de desarrollo y Brecha/Fortalezas/Aspectos a mejorar  son requeridos para todas las competencias"))
