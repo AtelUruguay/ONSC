@@ -60,7 +60,7 @@ class ONSCLegajo(models.Model):
         related='employee_id.legajo_state',
         store=True
     )
-    
+
     job_ids = fields.One2many(
         comodel_name='hr.job',
         inverse_name='legajo_id',

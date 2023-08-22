@@ -81,45 +81,44 @@ class ONSCLegajoDepartment(models.Model):
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
         self.env.cr.execute('''CREATE OR REPLACE VIEW %s AS (
-SELECT 
-row_number() OVER (ORDER BY legajo_id, contract_id, type, job_id) AS id, * 
+SELECT
+row_number() OVER(ORDER BY legajo_id, contract_id, type, job_id) AS id, *
 FROM
 (SELECT
-	contract.legajo_id,
-	contract.id AS contract_id,
-	legajo.legajo_state AS legajo_state,
-	contract.legajo_state AS contract_legajo_state,
-	job.id AS job_id,
-	contract.inciso_id,
-	contract.operating_unit_id,
-	contract.employee_id,
-	job.department_id,
-	job.start_date AS start_date,
+    contract.legajo_id,
+    contract.id AS contract_id,
+    legajo.legajo_state AS legajo_state,
+    contract.legajo_state AS contract_legajo_state,
+    job.id AS job_id,
+    contract.inciso_id,
+    contract.operating_unit_id,
+    contract.employee_id,
+    job.department_id,
+    job.start_date AS start_date,
     job.end_date AS end_date,
-	'system' AS type
+    'system' AS type
 FROM
-	hr_contract contract
+    hr_contract contract
 LEFT JOIN hr_job job ON job.contract_id = contract.id
 LEFT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
 UNION ALL
 SELECT
-	legajo.id AS legajo_id,
-	contract.id AS contract_id,
-	legajo.legajo_state AS legajo_state,
-	contract.legajo_state AS contract_legajo_state,
-	NULL AS job_id,
-	contract.inciso_id,
-	contract.operating_unit_id,
-	contract.employee_id,
-	NULL AS department_id,
-	NULL AS start_date,
+    legajo.id AS legajo_id,
+    contract.id AS contract_id,
+    legajo.legajo_state AS legajo_state,
+    contract.legajo_state AS contract_legajo_state,
+    NULL AS job_id,
+    contract.inciso_id,
+    contract.operating_unit_id,
+    contract.employee_id,
+    NULL AS department_id,
+    NULL AS start_date,
     NULL AS end_date,
-	'joker' AS type
+    'joker' AS type
 FROM
-	hr_contract contract
+    hr_contract contract
 RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
-	) AS main_query
-)''' % (self._table,))
+) AS main_query)''' % (self._table,))
 
     def _search_is_job_open(self, operator, value):
         system_records = self.search([('type', '=', 'system')])
@@ -129,7 +128,8 @@ RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
 
         joker_records = self.search([('type', '=', 'joker')])
         joker_valid_records = joker_records.filtered(lambda x: x.legajo_state == 'egresed')
-        joker_valid_records |= joker_records.filtered(lambda x: x.legajo_state != 'egresed' and len(x.legajo_id.job_ids) == 0)
+        joker_valid_records |= joker_records.filtered(
+            lambda x: x.legajo_state != 'egresed' and len(x.legajo_id.job_ids) == 0)
 
         if operator == '=' and value is False:
             _operator = 'not in'
