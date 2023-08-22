@@ -35,7 +35,18 @@
                             <field name="definition"/>
                             <field name="active" invisible="1"/>
                         </group>
-                        <group/>
+                    </group>
+                    <group>
+                        <notebook>
+                            <page string="Niveles de Desempeño" >
+                                <field name="level_line_ids" nolabel="1"  >
+                                    <tree nolabel="1"  editable="bottom"  >
+                                        <field name="hierarchical_level_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="is_uo_manager" colpan="2" />
+                                    </tree>
+                                </field>
+                            </page>
+                        </notebook>
                     </group>
                 </sheet>
             </form>
@@ -48,7 +59,7 @@
         <field name="inherit_id" ref="onsc_catalog.onsc_catalog_occupation_form"/>
         <field name="arch" type="xml">
             <field name="approve_cgn_date" position="after">
-                <field name="level_id" required="1"/>
+                <field name="level_id" invisible="1"/>
             </field>
         </field>
     </record>

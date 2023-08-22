@@ -27,6 +27,7 @@ ONSC - Gestión de Desempeño
         'views/onsc_desempeno_evaluation_stage_views.xml',
         'views/onsc_desempeno_evaluation_list_views.xml',
         'views/onsc_desempeno_evaluation_views.xml',
+        'views/onsc_desempeno_competency_views.xml',
         'views/onsc_desempeno_menuitems.xml'
     ],
     'demo': [],
