@@ -274,16 +274,24 @@ class HrJobRoleLine(models.Model):
             raise ValidationError(
                 _("Solo puede modificar las lineas de roles adicionales para las que está habilitado por inciso"))
 
+    @api.model
+    def create(self, values):
+        record = super(HrJobRoleLine, self).create(values)
+        line_name = record.user_role_id.name or ''
+        record.job_id._message_log(body=_('Línea del rol adicional %s creada') % (line_name))
+        return record
+
     def write(self, vals):
         self._check_write()
         _fields = ['start_date', 'end_date', 'user_role_id', 'active']
         ref_tracked_fields = self.fields_get(_fields)
         initial_values = {}
         for rec in self:
+            line_name = rec.user_role_id.name or ''
             for field in _fields:
                 initial_values[field] = eval('rec.%s' % (field))
             super(HrJobRoleLine, rec).write(vals)
             dummy, tracking_value_ids = rec._mail_track(ref_tracked_fields, initial_values)
-            rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
+            rec.job_id._message_log(body=_('Línea del rol adicional %s actualizada') % (line_name),
                                     tracking_value_ids=tracking_value_ids)
         return True

@@ -79,7 +79,7 @@
               groups="onsc_legajo.group_legajo_configurador_contrato"
               sequence="6"/>
     <menuitem id="onsc_legajo_hr_job_menu"
-              name="Puestos de trabajo"
+              name="Puestos en UO"
               parent="onsc_legajo_root_menu"
               action="onsc_legajo_hr_job_action"
               groups="onsc_legajo.group_legajo_configurador_puesto"
