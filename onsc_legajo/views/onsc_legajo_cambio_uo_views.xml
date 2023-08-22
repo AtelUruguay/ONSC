@@ -41,7 +41,6 @@
                     </header>
                     <sheet>
                         <field name="is_error_synchronization" invisible="1"/>
-                        <field name="active" invisible="1" force_save="1"/>
                         <div name="oe_tittle" class="oe_title"/>
                         <field name="operating_unit_id" invisible="1" force_save="1"/>
                         <field name="inciso_id" invisible="1" force_save="1"/>
