@@ -92,6 +92,11 @@ class HrEmployee(models.Model):
         string="¿Permite que su identidad étnico-racial se visualice en su CV?",
         history=True)
 
+    cv_address_amplification = fields.Text(
+        u"Aclaraciones",
+        related='cv_digital_id.cv_address_amplification',
+        store=True)
+
     allow_content_public = fields.Selection(
         selection=[('si', u'Si'), ('no', u'No')],
         string=u'¿Permite que el contenido de esta sección se visualice en su CV?',
@@ -309,7 +314,7 @@ class HrEmployee(models.Model):
             'cv_address_apto': self.cv_digital_id.cv_address_apto,
             'cv_address_zip': self.cv_digital_id.cv_address_zip,
             'cv_address_is_cv_bis': self.cv_digital_id.cv_address_is_cv_bis,
-            'cv_address_amplification': self.cv_digital_id.cv_address_amplification,
+            # 'cv_address_amplification': self.cv_digital_id.cv_address_amplification,
             'cv_address_place': self.cv_digital_id.cv_address_place,
             'cv_address_block': self.cv_digital_id.cv_address_block,
             'cv_address_sandlot': self.cv_digital_id.cv_address_sandlot,

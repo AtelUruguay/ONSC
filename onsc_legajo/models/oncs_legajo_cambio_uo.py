@@ -183,11 +183,13 @@ class ONSCLegajoCambioUO(models.Model):
             if record.job_id and record.date_start < record.job_id.start_date:
                 raise ValidationError(_("La fecha desde debe ser mayor o igual a la fecha del puesto actual"))
 
-    @api.constrains("department_id", "job_id")
+    @api.constrains("department_id", "job_id", "security_job_id")
     def _check_department_id(self):
         for record in self:
-            if record.department_id.id == record.job_id.department_id.id:
-                raise ValidationError(_("La UO destino tiene que ser distinta a la actual"))
+            is_same_department = record.job_id and record.job_id.department_id == record.department_id
+            if record.job_id and is_same_department and record.job_id.security_job_id == record.security_job_id:
+                raise ValidationError(_("Si el cambio es dentro de la misma UO no debería ser con "
+                                        "la misma Seguridad de puesto"))
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state")
     def _check_security_job_id(self):

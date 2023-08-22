@@ -14,6 +14,7 @@
                 <field name="legajo_state"/>
                 <field name="start_date"/>
                 <field name="end_date"/>
+                <field name="end_date"/>
                 <button name="button_open_legajo" type="object" string="Ver Legajo" icon="fa-edit"/>
             </tree>
         </field>
@@ -34,8 +35,6 @@
                 <field name="job_id" string="Puesto"/>
                 <field name="department_id" string="UO"/>
                 <field name="legajo_state"/>
-                <filter string="Puestos vigentes" name="filter_active_jobs"
-                            domain="[('is_job_open','=',True)]"/>
                 <group string="Agrupar por">
                     <filter name="group_department_id" string="Unidad organizativa" context="{'group_by': 'department_id'}"/>
                     <filter name="group_legajo_id" string="Legajo" context="{'group_by': 'legajo_id'}"/>
@@ -50,7 +49,8 @@
         <field name="name">Consulta de legajos por UO</field>
         <field name="res_model">onsc.legajo.department</field>
         <field name="view_mode">tree</field>
-        <field name="context">{'is_from_menu':True,'is_legajo':True,'search_default_filter_active_jobs':True,'search_default_group_department_id':True,'active_test': False}</field>
+        <field name="domain">[('is_job_open','=',True)]</field>
+        <field name="context">{'is_from_menu':True,'is_legajo':True, 'search_default_group_department_id':True,'active_test': False}</field>
     </record>
     </data>
 </odoo>

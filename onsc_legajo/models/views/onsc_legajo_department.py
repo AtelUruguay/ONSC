@@ -27,11 +27,21 @@ class ONSCLegajoDepartment(models.Model):
 
     def _get_domain(self, args):
         Legajo = self.env['onsc.legajo']
-        not_abstract_security = not Legajo._get_abstract_inciso_security() and not Legajo._get_abstract_ue_security() and not Legajo._get_abstract_config_security()
-        if not_abstract_security is False:
+        is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
+        is_ue_security = self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
+        if is_inciso_security:
             legajos = Legajo.search([])
+            contract = self.env.user.employee_id.job_id.contract_id
             args = expression.AND([[
-                ('legajo_id', 'in', legajos.ids)
+                ('legajo_id', 'in', legajos.ids),
+                ('inciso_id', '=', contract.inciso_id.id)
+            ], args])
+        elif is_ue_security:
+            legajos = Legajo.search([])
+            contract = self.env.user.employee_id.job_id.contract_id
+            args = expression.AND([[
+                ('legajo_id', 'in', legajos.ids),
+                ('operating_unit_id', '=', contract.operating_unit_id.id)
             ], args])
         elif self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()

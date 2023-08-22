@@ -11,7 +11,7 @@
     </record>
 
     <record id="desempeno_generate_evaluations_lists_360" model="ir.cron">
-        <field name="name">Generar lista de participantes de evaluaciones 360°</field>
+        <field name="name">Lista de participantes de evaluaciones 360°</field>
         <field name="model_id" ref="model_onsc_desempeno_evaluation_list"/>
         <field name="state">code</field>
         <field name="code">model.manage_evaluations_lists()</field>
