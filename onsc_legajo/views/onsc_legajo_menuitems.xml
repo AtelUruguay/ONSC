@@ -207,7 +207,7 @@
             sequence="15"/>
     <menuitem
             id="onsc_cambio_uo_menu"
-            name="Cambio de UO"
+            name="Cambio de UO o Seguridad"
             parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
             action="onsc_legajo.onsc_legajo_cambio_uo_action"
             groups="onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue,onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_cambio_uo_responsable_uo,onsc_legajo.group_legajo_cambio_uo_consulta,onsc_legajo.group_legajo_cambio_uo_administrar"
