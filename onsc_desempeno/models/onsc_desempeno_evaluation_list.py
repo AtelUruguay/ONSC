@@ -164,14 +164,15 @@ class ONSCDesempenoEvaluationList(models.Model):
         with self._cr.savepoint():
             for line in valid_lines:
                 try:
-                    new_evaluation = self._create_self_evaluation(line)
-                    self._create_leader_evaluation(line)
+                    new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                    self.suspend_security()._create_leader_evaluation(line)
                     if fields.Date.today() <= self.end_date:
-                        self._create_environment_definition(line)
-                        self._create_collaborator_evaluation(line)
-                    line.write({
+                        self.suspend_security()._create_environment_definition(line)
+                        self.suspend_security()._create_collaborator_evaluation(line)
+                    line.suspend_security().write({
                         'state': 'generated',
                         'error_log': False,
+                        'evaluation_create_date': fields.Date.today(),
                         'evaluation_ids': [(6, 0, [new_evaluation.id])]})
                     lines_evaluated |= line
                 except Exception as e:
@@ -277,7 +278,6 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluation_end_date': data.evaluation_list_id.end_date,
             'state': 'draft',
         })
-
         for skill in self.env['onsc.desempeno.skill.line'].suspend_security().search(
                 [('level_id', '=', evaluation.level_id.id)]).mapped('skill_id').filtered(lambda r: r.active):
             Competency.create({'evaluation_id': evaluation.id,
@@ -358,6 +358,11 @@ class ONSCDesempenoEvaluationListLine(models.Model):
         string='',
         compute='_compute_active',
         store=True)
+
+    evaluation_create_date = fields.Date(
+        string=u'Fecha de generación',
+        index=True,
+        readonly=True)
 
     evaluation_ids = fields.Many2many(
         'onsc.desempeno.evaluation',

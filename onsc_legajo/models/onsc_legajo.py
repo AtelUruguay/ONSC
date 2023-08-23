@@ -61,6 +61,11 @@ class ONSCLegajo(models.Model):
         store=True
     )
 
+    job_ids = fields.One2many(
+        comodel_name='hr.job',
+        inverse_name='legajo_id',
+        string='Puestos')
+
     def _compute_contract_info(self):
         for record in self:
             available_contracts = record._get_user_available_contract(record.employee_id)

@@ -11,6 +11,7 @@ class ONSCCVDigitalVacante(models.Model):
     _name = 'onsc.cv.digital.vacante'
     _description = 'Vacantes'
     _rec_name = 'nroPuesto'
+    _order = 'fechaVacantePLaza ASC'
 
     selected = fields.Boolean(string="Seleccionado", help="Active para seleccionar esta Vacante")
     nroPuesto = fields.Char(string="Puesto")

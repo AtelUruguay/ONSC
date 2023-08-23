@@ -40,7 +40,12 @@ class ONSCLegajoOffice(models.Model):
         for record in self:
             name = record.code
             if self._context.get('show_project_program', False) and (record.programa or record.programaDescripcion):
-                name = record.programaDescripcion + " - " + record.proyectoDescripcion
+                name = 'Programa %s %s - Proyecto %s %s' % (
+                    record.programa,
+                    record.programaDescripcion,
+                    record.proyecto,
+                    record.proyectoDescripcion,
+                )
             res.append((record.id, name))
         return res
 
@@ -50,13 +55,23 @@ class ONSCLegajoOffice(models.Model):
             args = []
         by_name = super(ONSCLegajoOffice, self).name_search(name, args=args, operator=operator, limit=limit)
         if self._context.get('show_project_program', False):
-            by_domain = ['|', ('programaDescripcion', operator, name), ('proyectoDescripcion', operator, name)] + args
+            by_domain = ['|', '|', '|',
+                         ('programa', operator, name),
+                         ('programaDescripcion', operator, name),
+                         ('proyecto', operator, name),
+                         ('proyectoDescripcion', operator, name)
+                         ] + args
             by_search = self.search(by_domain, limit=limit)
             return list(set(by_name + by_search.name_get()))
         return by_name
 
     def _custom_display_name(self):
-        return self.programaDescripcion + " - " + self.proyectoDescripcion
+        return 'Programa %s %s - Proyecto %s %s' % (
+            self.programa,
+            self.programaDescripcion,
+            self.proyecto,
+            self.proyectoDescripcion,
+        )
 
     @api.depends('inciso', 'unidadEjecutora', 'programa', 'proyecto')
     def _compute_code(self):

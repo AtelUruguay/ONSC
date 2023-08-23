@@ -2,8 +2,8 @@
 <templates xml:space="preserve">
 
 <t t-name="switch_jobs_menu.SwitchJobMenu" owl="1">
-    <Dropdown class="o_switch_company_menu" position="'bottom-end'" title="'Puesto de trabajo'">
-        <t t-set-slot="toggler" title="Cambiar puesto de trabajo">
+    <Dropdown class="o_switch_company_menu" position="'bottom-end'" title="'Puesto en UO'">
+        <t t-set-slot="toggler" title="Cambiar puesto en UO">
              <t t-if="jobService.currentJob">
                  <i class="fa fa-users" ></i>
             </t>

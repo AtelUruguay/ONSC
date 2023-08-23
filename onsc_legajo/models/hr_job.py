@@ -29,9 +29,21 @@ class HrJob(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict',
                                       tracking=True)
     legajo_id = fields.Many2one('onsc.legajo', string='Legajo', related='contract_id.legajo_id', store=True)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id', store=True)
+    operating_unit_id = fields.Many2one(
+        "operating.unit",
+        string="Unidad ejecutora",
+        related='contract_id.operating_unit_id',
+        store=True)
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     role_extra_is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')
+    legajo_state = fields.Selection(
+        [('active', 'Activo'), ('egresed', 'Egresado')],
+        string='Estado del funcionario',
+        related='contract_id.legajo_id.legajo_state',
+        store=True
+    )
 
     @api.depends('contract_id')
     def _compute_department_domain(self):
@@ -262,16 +274,24 @@ class HrJobRoleLine(models.Model):
             raise ValidationError(
                 _("Solo puede modificar las lineas de roles adicionales para las que está habilitado por inciso"))
 
+    @api.model
+    def create(self, values):
+        record = super(HrJobRoleLine, self).create(values)
+        line_name = record.user_role_id.name or ''
+        record.job_id._message_log(body=_('Línea del rol adicional %s creada') % (line_name))
+        return record
+
     def write(self, vals):
         self._check_write()
         _fields = ['start_date', 'end_date', 'user_role_id', 'active']
         ref_tracked_fields = self.fields_get(_fields)
         initial_values = {}
         for rec in self:
+            line_name = rec.user_role_id.name or ''
             for field in _fields:
                 initial_values[field] = eval('rec.%s' % (field))
             super(HrJobRoleLine, rec).write(vals)
             dummy, tracking_value_ids = rec._mail_track(ref_tracked_fields, initial_values)
-            rec.job_id._message_log(body=_('Línea de roles adicionales actualizada'),
+            rec.job_id._message_log(body=_('Línea del rol adicional %s actualizada') % (line_name),
                                     tracking_value_ids=tracking_value_ids)
         return True

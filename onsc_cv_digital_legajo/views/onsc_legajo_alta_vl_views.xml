@@ -168,10 +168,12 @@
                             <field name="selected" nolabel="1"
                                    groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
                                    widget="boolean_toggle" force_save="1" class="oe_edit_only"/>
+                            <field name="fechaVacantePLaza" readonly="1"/>
                             <field name="Dsc3Descripcion" readonly="1"/>
                             <field name="Dsc4Descripcion" readonly="1"/>
                             <field name="nroPuesto" readonly="1"/>
                             <field name="nroPlaza" readonly="1"/>
+                            <field name="state_square_id" readonly="1"/>
                             <field name="descripcionJornadaFormal" readonly="1"/>
                             <field name="state" invisible="1"/>
                         </tree>
@@ -195,6 +197,8 @@
                             <group>
                                 <field name="nroPlaza"/>
                                 <field name="nroPuesto"/>
+                                <field name="state_square_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="Dsc3Id"/>
                                 <field name="Dsc3Descripcion"/>
                                 <field name="Dsc4Id"/>
