@@ -40,7 +40,7 @@ class ONSCLegajoOffice(models.Model):
         for record in self:
             name = record.code
             if self._context.get('show_project_program', False) and (record.programa or record.programaDescripcion):
-                name = 'Programa %s %s - Proyecto %s %s' % (
+                name = 'Programa %s - %s / Proyecto %s-%s' % (
                     record.programa,
                     record.programaDescripcion,
                     record.proyecto,
@@ -66,7 +66,7 @@ class ONSCLegajoOffice(models.Model):
         return by_name
 
     def _custom_display_name(self):
-        return 'Programa %s %s - Proyecto %s %s' % (
+        return 'Programa %s-%s / Proyecto %s-%s' % (
             self.programa,
             self.programaDescripcion,
             self.proyecto,
