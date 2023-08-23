@@ -27,6 +27,11 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                                      string="Lineas de competencia",
                                      )
 
-    degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo')
-    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', help='Este es un tooltip para el campo Brecha/Fortalezas/Aspectos a mejorar')
+    degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo', required=True)
+    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=True, help='Este es un tooltip para el campo Brecha/Fortalezas/Aspectos a mejorar')
     name_skill = fields.Char(string="Nombre Competencia", related='skill_id.name')
+
+    def button_open_current_skill(self):
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_competency_action').read()[0]
+        action.update({'res_id': self.id})
+        return action

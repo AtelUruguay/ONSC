@@ -40,7 +40,7 @@ class ONSCDesempenoEvaluation(models.Model):
             operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
             args = expression.AND([[('operating_unit_id', '=', operating_unit_id), ], args])
         elif self.user_has_groups('onsc_desempeno.group_desempeno_usuario_evaluacion'):
-            args = expression.AND([[('evaluated_id', '=', self.env.user.employee_id.id), ], args])
+            args = expression.OR([[('evaluated_id', '=', self.env.user.employee_id.id), ], args])
 
         return args
 
@@ -155,6 +155,5 @@ class ONSCDesempenoEvaluation(models.Model):
         self.write({'state': 'completed'})
 
     def _check_complete_evaluation(self):
-
         if self.evaluation_type != 'environment_definition' and not self.general_comments:
             raise ValidationError(_("El campo comentarios generales es obligatorio"))

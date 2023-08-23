@@ -2,7 +2,8 @@
 import logging
 from collections import defaultdict
 
-from odoo import fields, models, api, tools
+from odoo import fields, models, api, tools, _
+from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
@@ -255,6 +256,13 @@ class ONSCDesempenoEvaluationList(models.Model):
     def _create_self_evaluation(self, data):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        is_manager = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id == data.employee_id.id
+        level_id = Level.suspend_security().search(
+            [('hierarchical_level_id', '=', data.job_id.department_id.hierarchical_level_id.id),
+             ('is_uo_manager', '=', is_manager)]).mapped("level_id")
+        if not level_id:
+            raise ValidationError(_(u"No tiene ningún nivel configurado"))
 
         evaluation = Evaluation.create({
             'evaluated_id': data.employee_id.id,
@@ -264,17 +272,18 @@ class ONSCDesempenoEvaluationList(models.Model):
             'inciso_id': data.contract_id.inciso_id.id,
             'operating_unit_id': data.contract_id.operating_unit_id.id,
             'occupation_id': data.contract_id.occupation_id.id,
-            'level_id': data.contract_id.occupation_id.level_id.id,
+            'level_id': level_id.id,
             'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
             'evaluation_start_date': data.evaluation_list_id.start_date,
             'evaluation_end_date': data.evaluation_list_id.end_date,
             'state': 'draft',
         })
         for skill in self.env['onsc.desempeno.skill.line'].suspend_security().search(
-                [('level_id', '=', evaluation.level_id.id)]).mapped('skill_id'):
+                [('level_id', '=', evaluation.level_id.id)]).mapped('skill_id').filtered(lambda r: r.active):
             Competency.create({'evaluation_id': evaluation.id,
                                'skill_id': skill.id,
-                               'skill_line_ids': skill.skill_line_ids.filtered(lambda r: r.level_id.id == evaluation.level_id.id).ids
+                               'skill_line_ids': skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids
                                })
 
         return evaluation
