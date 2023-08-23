@@ -38,13 +38,14 @@
         <field name="arch" type="xml">
             <form string="Evaluación de Desempeño" create="0" delete="0" duplicate="0">
                 <header>
+                     <field name="evaluation_form_edit" invisible="1"/>
                     <button type="object" class="btn btn-primary"
                             string=" Comenzar Evaluación"
-                            attrs="{'invisible': [('state', '!=', 'draft')]}"
+                            attrs="{'invisible': ['|',('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
                             name="button_start_evaluation"/>
                     <button type="object" class="btn btn-primary"
                             string=" Completar evaluación"
-                            attrs="{'invisible': [('state', '!=', 'in_process')]}"
+                            attrs="{'invisible': ['|',('state', '!=', 'in_process'),('evaluation_form_edit', '=', False)]}"
                             name="button_completed_evaluation"
                             confirm="¿Está seguro de que desea dar por completado el formulario?"/>
                     <field name="state" widget="statusbar"
@@ -55,6 +56,7 @@
                     <field name="is_evaluation_form_active" invisible="1"/>
                     <field name="is_environment_evaluation_form_active" invisible="1"/>
                     <field name="change_evaluator" width="25%" invisible="1"/>
+
                     <group >
                         <group  style="min-width: 100px !important;" >
 
@@ -126,17 +128,18 @@
                     </div>
                     <notebook>
                         <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
-                            <field name="evaluation_competency_ids" nolabel="1"  attrs="{'readonly':[('locked', '=', True)]}">
-                                <tree nolabel="1" default_order="name_skill asc" editable="bottom" >
+                            <field name="evaluation_competency_ids" nolabel="1" attrs="{'readonly':[('locked', '=', True)]}">
+                                <tree nolabel="1" editable="bottom" >
                                     <field name="state"  invisible="1"/>
-                                      <field name="evaluation_id"  invisible="1"/>
+                                    <field name="evaluation_form_edit" invisible="1" />
+                                    <field name="evaluation_id"  invisible="1"/>
                                     <field name="name_skill" invisible="1"/>
                                     <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <field name="degree_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <button type="object"
                                             name="button_open_current_skill"
-                                            attrs="{'invisible': [('state', '!=','in_process')]}"
+                                            attrs="{'invisible': ['|',('state', '!=','in_process'),('evaluation_form_edit', '=',False)]}"
                                             context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
                                             icon="fa-edit"/>
                                 </tree>

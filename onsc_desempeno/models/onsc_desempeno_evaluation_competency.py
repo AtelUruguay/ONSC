@@ -24,12 +24,12 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
     skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True)
     skill_line_ids = fields.One2many(comodel_name="onsc.desempeno.skill.line", inverse_name="competency_id",
-                                     string="Lineas de competencia",
-                                     )
-
+                                     string="Lineas de competencia")
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo', required=True)
-    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=True, help='Este es un tooltip para el campo Brecha/Fortalezas/Aspectos a mejorar')
+    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=True,
+                                    help='Este es un tooltip para el campo Brecha/Fortalezas/Aspectos a mejorar')
     name_skill = fields.Char(string="Nombre Competencia", related='skill_id.name')
+    evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit',)
 
     def button_open_current_skill(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_competency_action').read()[0]

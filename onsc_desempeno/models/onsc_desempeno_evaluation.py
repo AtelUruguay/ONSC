@@ -86,7 +86,7 @@ class ONSCDesempenoEvaluation(models.Model):
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
     change_evaluator = fields.Boolean(string="Cambio de evaluador", default=False)
-
+    evaluation_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_evaluation_form_edit')
     is_evaluation_form_active = fields.Boolean(
         compute=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active'),
         default=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active', True)
@@ -143,10 +143,14 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.evaluation_type == 'self_evaluation' and record.state not in [
-                'in_process']
+            record.should_disable_form_edit = record.evaluation_type == 'self_evaluation' and (record.state not in ['in_process'] or record.evaluated_id.id != self.env.user.employee_id.id)
 
-    # and record.evaluated_id.id == self.env.user.employee_id.id
+    @api.depends('state')
+    def _compute_evaluation_form_edit(self):
+
+        for record in self:
+            record.evaluation_form_edit = record.evaluation_type == 'self_evaluation' and record.evaluated_id.id == self.env.user.employee_id.id
+
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})
 
@@ -157,3 +161,8 @@ class ONSCDesempenoEvaluation(models.Model):
     def _check_complete_evaluation(self):
         if self.evaluation_type != 'environment_definition' and not self.general_comments:
             raise ValidationError(_("El campo comentarios generales es obligatorio"))
+
+        for competency in self.evaluation_competency_ids:
+            if not competency.degree_id or not competency.improvement_areas:
+                raise ValidationError(
+                    _('Deben estar todas las evaluaciones de competencias completas para poder pasar a "Completado"'))
