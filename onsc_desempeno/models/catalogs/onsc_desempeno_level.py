@@ -2,7 +2,6 @@
 import logging
 
 from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -35,12 +34,10 @@ class ONSCDesempenoLevelLine(models.Model):
     hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico", required=True)
     is_uo_manager = fields.Boolean(string="Responsable UO", default=False)
 
-    @api.constrains('hierarchical_level_id')
-    def _check_unique_level(self):
-        for record in self:
-            if self.search_count([("hierarchical_level_id", "=", record.hierarchical_level_id.id),
-                                  ("is_uo_manager", "=", record.is_uo_manager), ("id", "!=", record.id)]) > 0:
-                raise ValidationError(_(u"Solo se puede tener un nivel jerarquico asociado a los niveles"))
+    _sql_constraints = [
+        ('level_line_uniq', 'unique(hierarchical_level_id,is_uo_manager)',
+         u'Solo se puede tener un nivel jerarquico asociado a los niveles'),
+    ]
 
 
 class ONSCCatalogOccupation(models.Model):
