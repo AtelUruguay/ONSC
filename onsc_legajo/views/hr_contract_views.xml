@@ -150,7 +150,7 @@
                             <field name="job_ids" nolabel="1" readonly="1"
                                    context="{'form_view_ref' : 'onsc_legajo.onsc_legajo_hr_job_form_view'}">
                                 <tree editable="top">
-                                    <field name="name"/>
+                                    <field name="name" string="Puesto en UO"/>
                                     <field name="department_id" string="Unidad organizativa"/>
                                     <field name="start_date"/>
                                     <field name="end_date"/>
