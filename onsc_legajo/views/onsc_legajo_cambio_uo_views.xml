@@ -69,7 +69,7 @@
                                 <field name="employee_id" string="C.I." required="1"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             </group>
                             <group name="main_group_right">
                                 <field name="cv_birthdate"
@@ -98,14 +98,14 @@
                                        context="{'custom_display_name':True}"
                                        force_save="1"
                                        attrs="{'invisible': [('show_job', '=', False)],'required': [('show_job', '=', True)],'readonly': [('should_disable_form_edit', '=', True)]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                        domain="job_id_domain"/>
                                 <field name="date_start"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"/>
                                 <label for="department_id" string="UO"/>
                                 <div class="oe_inline">
                                     <field name="department_id" domain="department_id_domain"
                                            style="width:94% !important"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
-                                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                     <button name="action_show_organigram" type="object" icon="fa-cubes"
                                             class="oe_inline"
                                             attrs="{'invisible': [('department_id', '=', False)]}"/>
@@ -113,7 +113,7 @@
                                 <field name="security_job_id"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="occupation_id"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
 
                             </group>
                             <group name="uo_right"/>
