@@ -31,9 +31,13 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
             data)
 
     def _get_data(self, record):
-        altaDetalle = {'cedula': record.partner_id.cv_nro_doc[:-1],
-                       'digitoVerificador': record.partner_id.cv_nro_doc[-1],
-                       }
+        cv_nro_doc_without_digit = self.env.user.partner_id.cv_nro_doc and self.env.user.partner_id.cv_nro_doc[
+                                                                           :-1] or ''
+        altaDetalle = {
+            'cedula': record.partner_id.cv_nro_doc[:-1],
+            'digitoVerificador': record.partner_id.cv_nro_doc[-1],
+            'usuarioCedulaOdoo': cv_nro_doc_without_digit
+        }
         if record.inciso_origin_id.is_central_administration:
             altaDetalle.update({
                 'sec_plaza': record.contract_id.sec_position

@@ -17,6 +17,8 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS11_bajaCS')
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS11_9005")
         wsclient = self._get_client(parameter, '', integration_error)
+        cv_nro_doc_without_digit = self.env.user.partner_id.cv_nro_doc and self.env.user.partner_id.cv_nro_doc[
+                                                                           :-1] or ''
         data = {
             'fechaVigencia': record.end_date.strftime('%d/%m/%Y'),
             'cedula': int(record.employee_id.cv_nro_doc[:-1], 16), 'descripcionMotivo': record.reason_description,
@@ -24,7 +26,9 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
             'tipoNormaSigla': record.norm_id.tipoNormaSigla, 'anioNorma': record.norm_year,
             'descripcionResolucion': record.resolution_description,
             'fechaResolucion': record.resolution_date.strftime('%d/%m/%Y'), 'tipoResolucion': record.resolution_type,
-            'CodigoExtincionComision': int(record.extinction_commission_id.code)}
+            'CodigoExtincionComision': int(record.extinction_commission_id.code),
+            'usuarioCedulaOdoo': cv_nro_doc_without_digit
+        }
         _logger.info('******************WS11')
         _logger.info(data)
         _logger.info('******************WS11')

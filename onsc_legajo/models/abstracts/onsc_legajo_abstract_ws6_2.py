@@ -30,11 +30,14 @@ class ONSCLegajoAbstractSyncWS6_2(models.AbstractModel):
                     job = record.job_ids.filtered(lambda x: x.end_date is False)
                     if len(job) > 1:
                         job = job[0]
+                    notify_partner = record.last_notify_user_id.partner_id
+                    cv_nro_doc_without_digit = notify_partner.cv_nro_doc and notify_partner.cv_nro_doc[:-1] or ''
                     data = {
                         'cedula': int(record.employee_id.cv_nro_doc),
                         'secPlaza': int(record.sec_position),
                         'nroPlaza': record.workplace,
-                        'idPuesto': record.position
+                        'idPuesto': record.position,
+                        'usuarioCedulaOdoo': cv_nro_doc_without_digit
                     }
                     if job.department_id:
                         data.update({'uo': job.department_id.code})

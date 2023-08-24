@@ -121,6 +121,7 @@ class ONSCLegajoAltaVL(models.Model):
         return self.syncronize_ws1(log_info=True)
 
     def action_call_ws4(self):
+        self._message_log(body=_('Envia a SGH'))
         return self.syncronize_ws4(log_info=True)
 
     def action_aprobado_cgn(self):
