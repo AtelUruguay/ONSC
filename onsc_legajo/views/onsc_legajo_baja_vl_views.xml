@@ -90,7 +90,7 @@
                                 <field name="contract_id" domain="contract_id_domain"
                                        context="{'show_descriptors':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                 />
                                 <field name="end_date"/>
                             </group>
@@ -106,7 +106,7 @@
 
                                 <field name="norm_id" colspan="3"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                 <field name="norm_type" colspan="2"/>
                                 <field name="norm_number" colspan="2"/>
                                 <field name="norm_year" colspan="2"/>
@@ -134,7 +134,7 @@
                                 <tree editable="top">
                                     <field name="name" required="1"/>
                                     <field name="document_type_id" required="1"
-                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                     <field name="document_file" required="1" widget="binary"
                                            filename="document_file_name"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
@@ -145,10 +145,10 @@
                         <group name="group6">
                             <group>
                                 <field name="causes_discharge_id"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                 <field name="causes_discharge_extended_id"
                                        attrs="{'invisible': [('is_require_extended', '=', False)]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             </group>
                         </group>
                         <group name="adicional" string="Información Adicional">
