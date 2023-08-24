@@ -19,6 +19,7 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
         wsclient = self._get_client(parameter, '', integration_error)
         user_partner = self.env.user.partner_id
         cv_nro_doc_without_digit = user_partner.cv_nro_doc and user_partner.cv_nro_doc[:-1] or ''
+
         data = {
             'fechaDeBaja': record.end_date.strftime('%d/%m/%Y'),
             'descripcionMotivo': record.reason_description,

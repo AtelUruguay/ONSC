@@ -19,6 +19,7 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
         wsclient = self._get_client(parameter, '', integration_error)
         user_partner = self.env.user.partner_id
         cv_nro_doc_without_digit = user_partner.cv_nro_doc and user_partner.cv_nro_doc[:-1] or ''
+
         data = {
             'fechaVigencia': record.end_date.strftime('%d/%m/%Y'),
             'cedula': int(record.employee_id.cv_nro_doc[:-1], 16), 'descripcionMotivo': record.reason_description,

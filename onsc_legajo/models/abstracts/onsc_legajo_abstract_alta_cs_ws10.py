@@ -33,6 +33,7 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
     def _get_data(self, record):
         user_partner = self.env.user.partner_id
         cv_nro_doc_without_digit = user_partner.cv_nro_doc and user_partner.cv_nro_doc[:-1] or ''
+
         altaDetalle = {
             'cedula': record.partner_id.cv_nro_doc[:-1],
             'digitoVerificador': record.partner_id.cv_nro_doc[-1],
