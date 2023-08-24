@@ -40,9 +40,10 @@
                         <notebook>
                             <page string="Niveles de Desempeño" >
                                 <field name="level_line_ids" nolabel="1"  >
-                                    <tree nolabel="1"  editable="bottom"  >
-                                        <field name="hierarchical_level_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                                        <field name="is_uo_manager" colpan="2" />
+                                    <tree nolabel="1"  editable="top"  >
+                                        <field name="hierarchical_level_id" width="30%"
+                                               options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                        <field name="is_uo_manager" width="10%" />
                                     </tree>
                                 </field>
                             </page>
