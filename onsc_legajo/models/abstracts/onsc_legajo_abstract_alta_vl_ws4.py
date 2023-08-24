@@ -31,12 +31,14 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
 
     # flake8: noqa: C901
     def _get_data_multi(self, records):
+        cv_nro_doc_without_digit = self.env.user.partner_id.cv_nro_doc and self.env.user.partner_id.cv_nro_doc[
+                                                                           :-1] or ''
         data = {
             'inciso': records[0].inciso_id.budget_code,
             'ue': records[0].operating_unit_id.budget_code,
             'descripcion': 'Alta masiva VL WS',
             'presupuestales': 'S' if records[0].is_presupuestado else 'N',
-
+            'usuarioCedulaOdoo': cv_nro_doc_without_digit
         }
 
         altasDetalle = []

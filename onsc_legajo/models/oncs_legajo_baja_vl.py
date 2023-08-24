@@ -162,6 +162,7 @@ class ONSCLegajoBajaVL(models.Model):
 
     def action_call_ws9(self):
         self._check_required_fieds_ws9()
+        self._message_log(body=_('Envia a SGH'))
         self.env['onsc.legajo.abstract.baja.vl.ws9'].suspend_security().syncronize(self)
 
     def action_aprobado_cgn(self):

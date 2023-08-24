@@ -65,23 +65,23 @@
                                         <field name="nroPlaza"
                                                attrs="{'invisible': [('is_reserva_sgh', '=', False)]}"/>
                                         <field name="state_square_id"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                                attrs="{'invisible': [('is_reserva_sgh', '=', False)]}"/>
                                         <field name="regime_id"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                                attrs="{'invisible': [('is_reserva_sgh', '=', True)]}"/>
                                         <field name="descriptor1_id" domain="descriptor1_domain_id"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                                attrs="{'invisible': [('is_reserva_sgh', '=', True)]}"/>
                                         <field name="descriptor2_id" domain="descriptor2_domain_id"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                                attrs="{'invisible': [('is_reserva_sgh', '=', True)]}"/>
                                         <field name="descriptor3_id" domain="descriptor3_domain_id"
                                                attrs="{'invisible': ['|', ('is_presupuestado', '=', True), ('is_reserva_sgh', '=', True)]}"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="descriptor4_id" domain="descriptor4_domain_id"
                                                attrs="{'invisible': ['|', ('is_presupuestado', '=', True), ('is_reserva_sgh', '=', True)]}"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="descriptor1_domain_id" invisible="1"/>
                                         <field name="descriptor2_domain_id" invisible="1"/>
                                         <field name="descriptor3_domain_id" invisible="1"/>
@@ -101,19 +101,19 @@
                                     <group name="group6_left">
                                         <field name="department_id_domain" invisible="1"/>
                                         <field name="department_id" domain="department_id_domain"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="occupation_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                         <field name="income_mechanism_id"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="call_number"
                                                attrs="{'invisible': [('is_call_number_required', '=', False)]}"/>
                                         <field name="retributive_day_id" context="{'show_only_description':True}"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                     </group>
                                     <group name="group6_right">
                                         <field name="security_job_id"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="is_responsable_uo"/>
                                     </group>
                                 </group>
@@ -144,7 +144,7 @@
                                         <field name="reason_description" colspan="4"/>
                                         <field name="norm_id" colspan="3"
                                                context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
-                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="norm_type" colspan="2"/>
                                         <field name="norm_number" colspan="2"/>
                                         <field name="norm_year" colspan="1"/>
@@ -172,7 +172,7 @@
                                         <tree editable="top">
                                             <field name="name" required="1"/>
                                             <field name="document_type_id" required="1"
-                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                             <field name="document_file" required="1" widget="binary" filename="document_file_name"
                                                    options="{'accepted_file_extensions': '.pdf'}"/>
                                             <field name="document_file_name" invisible="1"/>

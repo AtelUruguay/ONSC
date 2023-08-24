@@ -51,7 +51,7 @@
                         <group>
                             <field name="inciso_origin_id"
                                    required="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"
                                    domain="inciso_origin_id_domain"/>
                             <field name="inciso_origin_id_domain" invisible="1"/>
@@ -71,7 +71,7 @@
                         <group>
                             <field name="partner_id" domain="partner_id_domain" context="{'show_cv_nro_doc':True}"
                                    required="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
                             <field name="cv_birthdate" force_save="1"
                                    attrs="{'readonly': ['|',('state', 'not in', ['draft', 'error_sgh']),('employee_id', '!=', False)]}"/>
@@ -84,7 +84,7 @@
                                    force_save="1"
                                    context="{'show_descriptors':True}"
                                    attrs="{'invisible': [('is_inciso_origin_ac', '=', False)],'readonly': ['|',('is_edit_contract', '=', False),('state', '!=', 'draft')],'required': [('is_inciso_origin_ac', '=', True)]}"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="employee_id" invisible="1" force_save="1"/>
                             <field name="is_edit_contract" invisible="1"/>
                         </group>
@@ -96,7 +96,7 @@
                            attrs="{'invisible': [('is_inciso_origin_ac', '!=', True)]}">
                         <group>
                             <field name="program_project_origin_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    context="{'show_project_program':True}" readonly="1"
                                    forcesave="1"/>
                             <field name="regime_origin_id" forcesave="1"
@@ -104,26 +104,26 @@
                         </group>
                         <group>
                             <field name="descriptor1_id" readonly="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="descriptor2_id" readonly="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="descriptor3_id" readonly="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="descriptor4_id" readonly="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                         </group>
                     </group>
 
                     <group string="Destino">
                         <group>
                             <field name="inciso_destination_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    domain="inciso_destination_id_domain"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
                             <field name="inciso_destination_id_domain" invisible="1"/>
                             <field name="type_cs" invisible="1"/>
                             <field name="operating_unit_destination_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'readonly': [('state','!=','draft')]}"
                                    domain="operating_unit_destination_id_domain"/>
                             <field name="operating_unit_destination_id_domain" invisible="1"/>
@@ -131,23 +131,23 @@
                             <field name="is_edit_destination" invisible="1"/>
                             <field name="program_project_destination_id" context="{'show_project_program':True}"
                                    attrs="{'invisible': [('is_edit_destination', '=',False)]}"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="date_start_commission"
                                    attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
                         </group>
                         <group>
                             <field name="department_id"
                                    domain="[('operating_unit_id','=',operating_unit_destination_id)]"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"/>
                             <field name="security_job_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"/>
                             <field name="occupation_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"/>
                             <field name="regime_commission_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
                         </group>
                     </group>
@@ -157,7 +157,7 @@
                             <field name="reason_description"/>
                             <field name="norm_id" colspan="3"
                                    context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="norm_type" colspan="2"/>
                             <field name="norm_number" colspan="2"/>
                             <field name="norm_year" colspan="1"/>
@@ -186,7 +186,7 @@
                             <tree editable="top">
                                 <field name="name" required="1"/>
                                 <field name="document_type_id" required="1"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                 <field name="document_file" options="{'accepted_file_extensions': '.pdf'}" required="1"
                                        filename="document_file_name" widget="binary"/>
                                 <field name="document_file_name" invisible="1"/>
