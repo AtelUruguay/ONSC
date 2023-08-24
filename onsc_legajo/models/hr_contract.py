@@ -162,6 +162,9 @@ class HrContract(models.Model):
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
     is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
     notify_sgh = fields.Boolean("Notificar SGH")
+    last_notify_user_id = fields.Many2one(
+        comodel_name='res.users',
+        string='Usuario que dispara la notificación SGH')
     extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
                                                string="Motivo extinción de la comisión")
 
@@ -283,7 +286,10 @@ class HrContract(models.Model):
     def _notify_sgh(self, values):
         for modified_field in ['sec_position', 'workplace', 'occupation_id']:
             if modified_field in values:
-                self.filtered(lambda x: x.legajo_state != 'baja').write({'notify_sgh': True})
+                self.filtered(lambda x: x.legajo_state != 'baja').write({
+                    'notify_sgh': True,
+                    'last_notify_user_id': self.env.user.id,
+                })
 
     def _get_state_square(self, legajo_state):
         if legajo_state == 'incoming_commission':

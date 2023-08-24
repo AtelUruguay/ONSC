@@ -656,6 +656,7 @@ class ONSCLegajoAltaCS(models.Model):
 
     def action_send_sgh(self):
         self.check_send_sgh()
+        self._message_log(body=_('Envia a SGH'))
         self.env['onsc.legajo.abstract.alta.cs.ws10'].with_context(
             log_info=True, altas_cs=self).suspend_security().syncronize(self)
 

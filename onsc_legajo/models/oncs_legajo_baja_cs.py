@@ -263,6 +263,7 @@ class ONSCLegajoBajaCS(models.Model):
 
     def action_call_ws11(self):
         self._check_required_fieds_ws11()
+        self._message_log(body=_('Envia a SGH'))
         self.env['onsc.legajo.abstract.baja.vl.ws11'].suspend_security().syncronize(self)
 
     def action_update_contract(self):

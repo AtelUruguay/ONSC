@@ -17,6 +17,8 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS9_bajaSGH')
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS9_9005")
         wsclient = self._get_client(parameter, '', integration_error)
+        user_partner = self.env.user.partner_id
+        cv_nro_doc_without_digit = user_partner.cv_nro_doc and user_partner.cv_nro_doc[:-1] or ''
         data = {
             'fechaDeBaja': record.end_date.strftime('%d/%m/%Y'),
             'descripcionMotivo': record.reason_description,
@@ -30,7 +32,8 @@ class ONSCLegajoAbstractSyncWS9(models.AbstractModel):
             'cedula': int(record.employee_id.cv_nro_doc[:-1], 16),
             'secPlaza': int(record.contract_id.sec_position),
             'estadoLaboralBaja': int(record.causes_discharge_id.code_cgn),
-            'causalEgreso': record.causes_discharge_id.is_require_extended and record.causes_discharge_extended_id.description or None
+            'causalEgreso': record.causes_discharge_id.is_require_extended and record.causes_discharge_extended_id.description or None,
+            'usuarioCedulaOdoo': cv_nro_doc_without_digit
         }
         _logger.info('******************WS9')
         _logger.info(data)
