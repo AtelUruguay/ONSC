@@ -113,6 +113,10 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
+    is_line_availables = fields.Integer(
+        string='¿Hay colaboradores por generar evaluación?',
+        compute='_compute_is_line_availables'
+    )
 
     _sql_constraints = [
         ('recordset_uniq', 'unique(department_id,evaluation_stage_id)',
@@ -125,6 +129,11 @@ class ONSCDesempenoEvaluationList(models.Model):
             rec.name = 'Evaluación: %s, Responsable: %s' % (
                 rec.evaluation_stage_id.name,
                 rec.manager_id.name)
+
+    @api.depends('line_ids')
+    def _compute_is_line_availables(self):
+        for rec in self:
+            rec.is_line_availables = len(rec.line_ids) > 0
 
     def _compute_manager_id(self):
         for rec in self:
