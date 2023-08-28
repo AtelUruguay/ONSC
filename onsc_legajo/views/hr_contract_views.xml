@@ -26,7 +26,6 @@
                     </div>
                     <group name="top_info">
                         <group name="top_info_left">
-                            <field name="active" invisible="1"/>
                             <field name="name" invisible="1"/>
                             <field name="nro_doc" />
                             <field name="first_name" />

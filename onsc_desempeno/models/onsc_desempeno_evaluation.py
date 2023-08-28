@@ -147,7 +147,6 @@ class ONSCDesempenoEvaluation(models.Model):
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
-
         for record in self:
             record.evaluation_form_edit = record.evaluation_type == 'self_evaluation' and record.evaluated_id.id == self.env.user.employee_id.id
 
