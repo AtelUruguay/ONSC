@@ -29,9 +29,12 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=True,
                                     help='Este es un tooltip para el campo Brecha/Fortalezas/Aspectos a mejorar')
     name_skill = fields.Char(string="Nombre Competencia", related='skill_id.name')
-    evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit',)
+    evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit', )
 
     def button_open_current_skill(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_competency_action').read()[0]
         action.update({'res_id': self.id})
         return action
+
+    def action_close_dialog(self):
+        return {'type': 'ir.actions.act_window_close'}
