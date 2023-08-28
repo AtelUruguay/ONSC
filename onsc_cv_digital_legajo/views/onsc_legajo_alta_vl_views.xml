@@ -111,7 +111,7 @@
                             <field name="health_provider_id" readonly="1" force_save="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="uy_citizenship" readonly="1" force_save="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="crendencial_serie" readonly="1" force_save="1"/>
                             <field name="credential_number" readonly="1" force_save="1"/>
                             <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
@@ -120,7 +120,7 @@
                                    readonly="1" force_save="1"/>
                             <field name="civical_credential_filename" invisible="1" readonly="1" force_save="1"/>
                             <field name="marital_status_id" readonly="1" force_save="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="digitized_document_file" filename="digitized_document_filename"
                                    options="{'accepted_file_extensions': '.pdf'}" readonly="1" force_save="1"/>
                             <field name="digitized_document_filename" invisible="1" force_save="1"/>

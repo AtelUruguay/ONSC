@@ -114,7 +114,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    is_line_availables = fields.Integer(
+    is_line_availables = fields.Boolean(
         string='¿Hay colaboradores por generar evaluación?',
         compute='_compute_is_line_availables'
     )
@@ -272,6 +272,10 @@ class ONSCDesempenoEvaluationList(models.Model):
              ('is_uo_manager', '=', is_manager)]).mapped("level_id")
         if not level_id:
             raise ValidationError(_(u"No tiene ningún nivel configurado"))
+        skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+            [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+        if not skills:
+            raise ValidationError(_(u"No se ha encontrado ninguna competencia activas"))
 
         evaluation = Evaluation.create({
             'evaluated_id': data.employee_id.id,
@@ -287,8 +291,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluation_end_date': data.evaluation_list_id.end_date,
             'state': 'draft',
         })
-        for skill in self.env['onsc.desempeno.skill.line'].suspend_security().search(
-                [('level_id', '=', evaluation.level_id.id)]).mapped('skill_id').filtered(lambda r: r.active):
+        for skill in skills:
             Competency.create({'evaluation_id': evaluation.id,
                                'skill_id': skill.id,
                                'skill_line_ids': skill.skill_line_ids.filtered(

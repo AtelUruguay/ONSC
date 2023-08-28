@@ -52,10 +52,10 @@
                                 <field name="id_ejecucion" readonly="1"/>
                                 <field name="inciso_id" required="1"
                                        attrs="{'readonly': [('is_inciso_readonly', '!=', False)]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                 <field name="operating_unit_id" domain="operating_unit_id_domain"
                                        required="1" attrs="{'readonly': [('is_operating_unit_readonly', '!=', False)]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                 <field name="altas_vl_ids" invisible="1"/>
                                 <field name="line2process_qty" invisible="1"/>
                                 <field name="is_can_process" invisible="1"/>

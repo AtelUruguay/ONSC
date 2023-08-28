@@ -61,6 +61,7 @@
                             <group name="main_group_left">
                                 <field name="is_require_extended" invisible="1"/>
                                 <field name="employee_id_domain" invisible="1"/>
+                                <field name="employee_id_domain" invisible="1"/>
                                 <field name="contract_id_domain" invisible="1"/>
                                 <field name="operating_unit_id" invisible="1" force_save="1"/>
                                 <field name="inciso_id" invisible="1" force_save="1"/>
@@ -76,17 +77,13 @@
                                 <field name="employee_id" string="C.I." required="1"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
 
                             </group>
-                            <group name="main_group_right">
-
-
-                            </group>
+                            <group name="main_group_right"/>
                         </group>
                         <group name="contract">
                             <group name="contract_left">
-
                                 <field name="contract_id" domain="contract_id_domain"
                                        context="{'show_descriptors':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}"
