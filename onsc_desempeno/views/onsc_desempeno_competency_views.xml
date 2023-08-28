@@ -31,6 +31,11 @@
                         </page>
                     </notebook>
                 </sheet>
+               <footer>
+                    <button string="Guardar" name="action_close_dialog" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel" />
+               </footer>
+
              </form>
          </field>
     </record>

@@ -129,7 +129,7 @@
                     <notebook>
                         <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
                             <field name="evaluation_competency_ids" nolabel="1" attrs="{'readonly':[('locked', '=', True)]}">
-                                <tree nolabel="1" editable="bottom" >
+                                <tree nolabel="1"  create="0" edit="0" >
                                     <field name="state"  invisible="1"/>
                                     <field name="evaluation_form_edit" invisible="1" />
                                     <field name="evaluation_id"  invisible="1"/>
