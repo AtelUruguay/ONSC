@@ -11,6 +11,7 @@ class ONSCDesempenoSkill(models.Model):
     _name = 'onsc.desempeno.skill'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = 'Competencias'
+    _order = "name"
 
     name = fields.Char(string="Nombre de la competencia", required=True)
     definition = fields.Text(string="Definición")

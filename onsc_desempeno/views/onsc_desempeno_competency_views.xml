@@ -4,11 +4,9 @@
         <field name="name">onsc.desempeno.evaluation.competency.form</field>
         <field name="model">onsc.desempeno.evaluation.competency</field>
         <field name="arch" type="xml">
-
-         <form string="Competencias">
+            <form string="Competencias">
               <header/>
                 <sheet>
-
                     <group>
                         <group>
                             <field name="skill_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
@@ -22,7 +20,6 @@
 
                             <field name="skill_line_ids" nolabel="1"  options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree>
-
                                     <field name="dimension_id" readonly="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="behavior" style="white-space:normal;" readonly="1"/>
@@ -33,10 +30,9 @@
                 </sheet>
                <footer>
                     <button string="Guardar" name="action_close_dialog" type="object" class="btn-primary"/>
-                    <button string="Cancel" class="btn-secondary" special="cancel" />
+                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
                </footer>
-
-             </form>
+            </form>
          </field>
     </record>
 
@@ -44,6 +40,6 @@
         <field name="name">Competencias</field>
         <field name="res_model">onsc.desempeno.evaluation.competency</field>
         <field name="view_mode">form</field>
-         <field name="target">new</field>
+        <field name="target">new</field>
      </record>
 </odoo>
