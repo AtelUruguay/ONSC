@@ -57,6 +57,11 @@ ONSC - Legajo
         'views/onsc_legajo_cambio_uo_views.xml',
         'views/onsc_legajo_menuitems.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'onsc_legajo/static/src/js/basic_view.js',
+        ],
+    },
     'demo': [],
     'installable': True,
     'application': True,
