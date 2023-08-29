@@ -275,7 +275,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
             [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
         if not skills:
-            raise ValidationError(_(u"No se ha encontrado ninguna competencia activas"))
+            raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
             'evaluated_id': data.employee_id.id,

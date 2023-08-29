@@ -209,7 +209,7 @@
                                 <field name="resolution_date"/>
                                 <field name="resolution_type"/>
                                 <field name="retributive_day_id"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                        context="{'show_only_description':True}"/>
                                 <field name="additional_information"/>
                                 <field name="message_error" readonly="1"/>
