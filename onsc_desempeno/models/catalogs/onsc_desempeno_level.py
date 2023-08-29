@@ -2,6 +2,7 @@
 import logging
 
 from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -18,6 +19,13 @@ class ONSCDesempenoLevel(models.Model):
     _sql_constraints = [
         ('name_uniq', 'unique(name)', u'El nombre del nivel debe ser único'),
     ]
+
+    @api.constrains('level_line_ids')
+    def _check_level_line_ids(self):
+
+        for record in self:
+            if len(record.level_line_ids) == 0:
+                raise ValidationError(_(u"Se debe tener 1 línea configurada"))
 
     @api.returns('self', lambda value: value.id)
     def copy(self, default=None):
@@ -36,7 +44,7 @@ class ONSCDesempenoLevelLine(models.Model):
 
     _sql_constraints = [
         ('level_line_uniq', 'unique(hierarchical_level_id,is_uo_manager)',
-         u'Solo se puede tener un nivel jerarquico asociado a los niveles'),
+         u'Solo se puede tener una combinación de nivel jerárquico y responsable uo asociada a los niveles'),
     ]
 
 
