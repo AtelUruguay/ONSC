@@ -133,7 +133,6 @@
                                     <field name="state"  invisible="1"/>
                                     <field name="evaluation_form_edit" invisible="1" />
                                     <field name="evaluation_id"  invisible="1"/>
-                                    <field name="name_skill" invisible="1"/>
                                     <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <field name="degree_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>

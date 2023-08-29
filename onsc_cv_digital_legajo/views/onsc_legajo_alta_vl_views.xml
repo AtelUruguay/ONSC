@@ -70,7 +70,7 @@
                     <field name="partner_id" string="C.I." required="1"
                            context="{'tree_view_ref': 'onsc_cv_digital_legajo.onsc_cv_digital_legajo_tree_view','show_cv_nro_doc':True}"
                            attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="partner_id_domain"
-                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                     <field name="document_identity_file" readonly="1" force_save="1"
                            filename="document_identity_filename"
                            options="{'accepted_file_extensions': '.pdf'}"/>
