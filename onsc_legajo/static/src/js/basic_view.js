@@ -1,0 +1,14 @@
+odoo.define('onsc_legajo.BasicView', function (require) {
+"use strict";
+
+var BasicView = require('web.BasicView');
+
+BasicView.include({
+    init: function (viewInfo, params) {
+        this._super.apply(this, arguments);
+        if (params.action.xml_id.includes('legajo') && (viewInfo.base_model === "hr.contract" || viewInfo.base_model === "hr.employee")){
+            this.controllerParams.archiveEnabled = false
+        }
+    }
+})
+});
