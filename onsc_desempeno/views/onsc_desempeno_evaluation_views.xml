@@ -38,7 +38,7 @@
         <field name="arch" type="xml">
             <form string="Evaluación de Desempeño" create="0" delete="0" duplicate="0">
                 <header>
-                     <field name="evaluation_form_edit" invisible="1"/>
+                    <field name="evaluation_form_edit" invisible="1"/>
                     <button type="object" class="btn btn-primary"
                             string=" Comenzar Evaluación"
                             attrs="{'invisible': ['|',('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
@@ -49,33 +49,24 @@
                             name="button_completed_evaluation"
                             confirm="¿Está seguro de que desea dar por completado el formulario?"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,finished,uncompleted,canceled"/>
+                           statusbar_visible="draft,in_process,completed,uncompleted"/>
                 </header>
                 <sheet>
                     <field name="should_disable_form_edit" invisible="1"/>
                     <field name="is_evaluation_form_active" invisible="1"/>
                     <field name="is_environment_evaluation_form_active" invisible="1"/>
                     <field name="change_evaluator" width="25%" invisible="1"/>
+                    <div class="oe_title" name="div_title">
+                        <label for="evaluated_id"/>
+                        <h4>
+                            <field name="evaluated_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </h4>
+                    </div>
 
-                    <group >
-                        <group  style="min-width: 100px !important;" >
-
+                    <group>
+                        <group  style="min-width: 100px !important;">
                             <label for="evaluation_type" style="min-width: 100px !important;">Tipo</label>
                             <field name="evaluation_type" nolabel="1" style="margin-bottom: 5px!important; min-width: 100px !important;"/>
-                            <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
-                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="uo_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
-                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="operating_unit_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
-                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="level_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
-                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="occupation_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
-                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                        </group>
-                        <group >
-                            <field name="evaluated_id"
-                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="evaluator_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': [('evaluation_type', 'in',['self_evaluation', 'environment_definition'])]}"/>
@@ -87,6 +78,18 @@
                             <field name="evaluation_end_date"/>
                             <field name="environment_definition_end_date"
                                    attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
+                        </group>
+                        <group>
+                            <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="uo_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="level_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="occupation_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                     </group>
 
@@ -128,8 +131,9 @@
                     </div>
                     <notebook>
                         <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
-                            <field name="evaluation_competency_ids" nolabel="1" attrs="{'readonly':[('locked', '=', True)]}">
-                                <tree nolabel="1"  create="0" edit="0" >
+                            <field name="evaluation_competency_ids" nolabel="1" attrs="{'readonly':[('locked', '=', True)]}"
+                                   options="{'no_open': True}" create="0" delete="0" edit="0">
+                                <tree nolabel="1" create="0" edit="0">
                                     <field name="state"  invisible="1"/>
                                     <field name="evaluation_form_edit" invisible="1" />
                                     <field name="evaluation_id"  invisible="1"/>
@@ -142,11 +146,9 @@
                                             context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
                                             icon="fa-edit"/>
                                 </tree>
-
                             </field>
                         </page>
                     </notebook>
-
                     <group name="general_comments" string="Comentarios Generales"
                            attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('locked', '=', True)]}">
                         <field name="general_comments" nolabel="1"

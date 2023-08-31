@@ -44,7 +44,7 @@ class ONSCDesempenoLevelLine(models.Model):
 
     _sql_constraints = [
         ('level_line_uniq', 'unique(hierarchical_level_id,is_uo_manager)',
-         u'Solo se puede tener una combinación de nivel jerárquico y responsable uo asociada a los niveles'),
+         u'La combinación de nivel jerárquico y responsable UO solo puede estar asociada a un nivel'),
     ]
 
 

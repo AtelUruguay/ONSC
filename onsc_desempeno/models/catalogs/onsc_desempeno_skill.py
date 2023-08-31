@@ -42,8 +42,9 @@ class ONSCDesempenoSkillLine(models.Model):
     _description = 'Competencias linea'
     _order = 'name_dimension, name_level'
 
-    dimension_id = fields.Many2one('onsc.desempeno.dimension', string="Dimensión", required=True)
-    level_id = fields.Many2one('onsc.desempeno.level', string="Nivel", required=True)
+    dimension_id = fields.Many2one('onsc.desempeno.dimension', string="Dimensión",
+                                   required=True, ondelete='restrict')
+    level_id = fields.Many2one('onsc.desempeno.level', string="Nivel", required=True, ondelete='restrict')
     behavior = fields.Char(string="Comportamiento esperado", required=True)
     skill_id = fields.Many2one('onsc.desempeno.skill', string="Competencias", required=True, ondelete='cascade')
     name_dimension = fields.Char(string="Competencias", related='dimension_id.name', store=True)

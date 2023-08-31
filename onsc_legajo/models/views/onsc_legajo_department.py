@@ -50,7 +50,7 @@ class ONSCLegajoDepartment(models.Model):
             ], args])
         return args
 
-    legajo_id = fields.Many2one('onsc.legajo', string="Legajo")
+    legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
     contract_id = fields.Many2one('hr.contract', string="Contrato")
     legajo_state = fields.Selection(
         [('active', 'Activo'), ('egresed', 'Egresado')],
@@ -63,6 +63,7 @@ class ONSCLegajoDepartment(models.Model):
         ('outgoing_commission', 'Comisión saliente'),
         ('incoming_commission', 'Comisión entrante')], string='Estado del contrato')
     job_id = fields.Many2one('hr.job', string="Puesto")
+    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
     employee_id = fields.Many2one('hr.employee', string="Funcionario")
@@ -90,6 +91,7 @@ FROM
     legajo.legajo_state AS legajo_state,
     contract.legajo_state AS contract_legajo_state,
     job.id AS job_id,
+    job.security_job_id AS security_job_id,
     contract.inciso_id,
     contract.operating_unit_id,
     contract.employee_id,
@@ -108,6 +110,7 @@ SELECT
     legajo.legajo_state AS legajo_state,
     contract.legajo_state AS contract_legajo_state,
     NULL AS job_id,
+    NULL AS security_job_id,
     contract.inciso_id,
     contract.operating_unit_id,
     contract.employee_id,
@@ -129,7 +132,9 @@ RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
         joker_records = self.search([('type', '=', 'joker')])
         joker_valid_records = joker_records.filtered(lambda x: x.legajo_state == 'egresed')
         joker_valid_records |= joker_records.filtered(
-            lambda x: x.legajo_state != 'egresed' and len(x.legajo_id.job_ids) == 0)
+            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(x.legajo_id.job_ids) == 0)
+        joker_valid_records |= joker_records.filtered(
+            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(x.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= _today)) == 0)
 
         if operator == '=' and value is False:
             _operator = 'not in'

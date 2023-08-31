@@ -40,7 +40,7 @@
                     </group>
                     <notebook>
                         <page string="Dimensiones">
-                            <field name="skill_line_ids" nolabel="1">
+                            <field name="skill_line_ids" nolabel="1" options="{'no_open': True}">
                                 <tree editable="bottom">
                                     <field name="dimension_id"
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>

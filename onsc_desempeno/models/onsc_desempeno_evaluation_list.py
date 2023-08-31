@@ -119,6 +119,11 @@ class ONSCDesempenoEvaluationList(models.Model):
         compute='_compute_is_line_availables'
     )
 
+    is_line_generated_availables = fields.Boolean(
+        string='¿Hay colaboradores con evaluaciones generadas?',
+        compute='_compute_is_line_availables'
+    )
+
     _sql_constraints = [
         ('recordset_uniq', 'unique(department_id,evaluation_stage_id)',
          u'Ya existe una lista de evaluación para esta unidad organizativa y ciclo de evaluación.'),
@@ -135,6 +140,7 @@ class ONSCDesempenoEvaluationList(models.Model):
     def _compute_is_line_availables(self):
         for rec in self:
             rec.is_line_availables = len(rec.line_ids) > 0
+            rec.is_line_generated_availables = len(rec.evaluation_generated_line_ids) > 0
 
     def _compute_manager_id(self):
         for rec in self:
@@ -185,7 +191,9 @@ class ONSCDesempenoEvaluationList(models.Model):
                         'evaluation_ids': [(6, 0, [new_evaluation.id])]})
                     lines_evaluated |= line
                 except Exception as e:
-                    line.write({'state': 'error', 'error_log': tools.ustr(e)})
+                    line.write({
+                        'state': 'error',
+                        'error_log': 'Error al generar formulario contacte al administrador. %s' % (tools.ustr(e))})
         return lines_evaluated
 
     # INTELIGENCIA
@@ -271,7 +279,8 @@ class ONSCDesempenoEvaluationList(models.Model):
             [('hierarchical_level_id', '=', data.job_id.department_id.hierarchical_level_id.id),
              ('is_uo_manager', '=', is_manager)]).mapped("level_id")
         if not level_id:
-            raise ValidationError(_(u"No tiene ningún nivel configurado"))
+            raise ValidationError(
+                _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
         skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
             [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
         if not skills:
