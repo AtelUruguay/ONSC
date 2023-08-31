@@ -14,6 +14,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _description = u'Ciclo general de evaluación de desempeño'
     _rec_name = 'year'
+    _order = 'year DESC'
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):

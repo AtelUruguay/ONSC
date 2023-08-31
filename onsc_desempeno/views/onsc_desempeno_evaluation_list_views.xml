@@ -33,7 +33,7 @@
                 <field name="manager_id"/>
                 <field name="start_date" optional="show"/>
                 <field name="end_date" optional="show"/>
-                <field name="end_date_environment" optional="show"/>
+                <field name="end_date_environment" optional="hide"/>
             </tree>
         </field>
     </record>
@@ -81,6 +81,7 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="should_disable_form_edit" invisible="1"/>
                             <field name="is_line_availables" invisible="1"/>
+                            <field name="is_line_generated_availables" invisible="1"/>
                         </group>
                         <group>
                             <field name="start_date"/>
@@ -129,7 +130,8 @@
                                 </form>
                             </field>
                         </page>
-                        <page string="Colaboradores con formularios generados">
+                        <page string="Colaboradores con formularios generados"
+                            attrs="{'invisible': [('is_line_generated_availables','=',False)]}">
                             <field name="evaluation_generated_line_ids" nolabel="1">
                                 <tree string="Colaboradores" editable="top" create="0" delete="0" edit="0">
                                     <field name="employee_id" readonly="1"/>
