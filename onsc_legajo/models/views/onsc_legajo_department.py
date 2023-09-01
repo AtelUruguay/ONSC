@@ -50,6 +50,17 @@ class ONSCLegajoDepartment(models.Model):
             ], args])
         return args
 
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(ONSCLegajoDepartment, self).fields_get(allfields, attributes)
+        hide = ['is_job_open', 'type', 'end_date', 'employee_id']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
+
     legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
     contract_id = fields.Many2one('hr.contract', string="Contrato")
     legajo_state = fields.Selection(
@@ -69,15 +80,15 @@ class ONSCLegajoDepartment(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Funcionario")
     department_id = fields.Many2one('hr.department', string="UO")
     start_date = fields.Date(string='Fecha desde')
-    end_date = fields.Date(string='Fecha hasta')
+    end_date = fields.Date(string='Fecha hasta', searchable=False)
     type = fields.Selection(
         string='Tipo',
         selection=[('system', 'Sistema'),
                    ('joker', 'Comodity')],
-        required=False, )
+        required=False, searchable=False)
 
     is_job_open = fields.Boolean(string='¿Puesto vigente?', compute='_compute_is_job_open',
-                                 search='_search_is_job_open')
+                                 search='_search_is_job_open', searchable=False, selectable=False, sortable=False)
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
