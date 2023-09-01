@@ -50,6 +50,17 @@ class ONSCLegajoDepartment(models.Model):
             ], args])
         return args
 
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(ONSCLegajoDepartment, self).fields_get(allfields, attributes)
+        hide = ['is_job_open', 'type', 'end_date', 'employee_id']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
+
     legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
     contract_id = fields.Many2one('hr.contract', string="Contrato")
     legajo_state = fields.Selection(
@@ -74,9 +85,10 @@ class ONSCLegajoDepartment(models.Model):
         string='Tipo',
         selection=[('system', 'Sistema'),
                    ('joker', 'Comodity')],
-        required=False, )
+        required=False)
 
-    is_job_open = fields.Boolean(string='¿Puesto vigente?', compute='_compute_is_job_open',
+    is_job_open = fields.Boolean(string='¿Puesto vigente?',
+                                 compute='_compute_is_job_open',
                                  search='_search_is_job_open')
 
     def init(self):
@@ -132,9 +144,11 @@ RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
         joker_records = self.search([('type', '=', 'joker')])
         joker_valid_records = joker_records.filtered(lambda x: x.legajo_state == 'egresed')
         joker_valid_records |= joker_records.filtered(
-            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(x.legajo_id.job_ids) == 0)
+            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
+                x.legajo_id.job_ids) == 0)
         joker_valid_records |= joker_records.filtered(
-            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(x.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= _today)) == 0)
+            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
+                x.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= _today)) == 0)
 
         if operator == '=' and value is False:
             _operator = 'not in'

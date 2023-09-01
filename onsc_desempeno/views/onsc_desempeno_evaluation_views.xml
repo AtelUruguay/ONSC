@@ -49,7 +49,7 @@
                             name="button_completed_evaluation"
                             confirm="¿Está seguro de que desea dar por completado el formulario?"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,uncompleted"/>
+                           statusbar_visible="draft,in_process,completed,finished"/>
                 </header>
                 <sheet>
                     <field name="should_disable_form_edit" invisible="1"/>

@@ -14,7 +14,6 @@
                 <field name="contract_id" string="Contrato" optional="hide"/>
                 <field name="legajo_state" optional="hide"/>
                 <field name="start_date"/>
-                <field name="end_date" optional="hide"/>
                 <button name="button_open_legajo" type="object" string="Ver Legajo" icon="fa-edit"/>
             </tree>
         </field>
