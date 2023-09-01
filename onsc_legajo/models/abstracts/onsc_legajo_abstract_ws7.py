@@ -3,7 +3,7 @@
 import datetime
 import logging
 
-from odoo import models, api, tools
+from odoo import models, api, tools, fields
 
 _logger = logging.getLogger(__name__)
 
@@ -35,37 +35,39 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                 "onsc_legajo.onsc_legajo_integration_error_WS7_9004")
             Contract = self.env['hr.contract'].sudo()
             try:
-                response_test = []
-                for item in response:
-                    if item.mov == 'ASCENSO':
-                        response_test.append(item)
+                self._populate_staging(response)
+                # response_test = []
+                # for item in response:
+                #     if item.mov == 'ASCENSO':
+                #         response_test.append(item)
 
-                for operation in response:
-                    # if operation.mov in ['ALTA', 'BAJA']:
-                    #     self._check_movement(Contract,
-                    #                          operation,
-                    #                          onsc_legajo_integration_error_WS7_9004)
-                    # if operation.mov == 'ASCENSO' and operation.tipo_mov == 'BAJA':
-                    #     self.set_ascenso(Contract,
-                    #                      operation,
-                    #                      operation.mov,
-                    #                      response,
-                    #                      onsc_legajo_integration_error_WS7_9004)
-                    #     return True
-                    # if operation.mov == 'TRANSFORMA' and operation.tipo_mov == 'BAJA':
-                    #     self.set_transforma(Contract,
-                    #                         operation,
-                    #                         operation.mov,
-                    #                         response,
-                    #                         onsc_legajo_integration_error_WS7_9004)
-                    #     return True
-                    if operation.mov == 'REESTRUCTURA' and operation.tipo_mov == 'BAJA':
-                        self.set_reestructura(Contract,
-                                              operation,
-                                              operation.mov,
-                                              response,
-                                              onsc_legajo_integration_error_WS7_9004)
-                        return True
+                # for operation in response:
+
+                # if operation.mov in ['ALTA', 'BAJA']:
+                #     self._check_movement(Contract,
+                #                          operation,
+                #                          onsc_legajo_integration_error_WS7_9004)
+                # if operation.mov == 'ASCENSO' and operation.tipo_mov == 'BAJA':
+                #     self.set_ascenso(Contract,
+                #                      operation,
+                #                      operation.mov,
+                #                      response,
+                #                      onsc_legajo_integration_error_WS7_9004)
+                #     return True
+                # if operation.mov == 'TRANSFORMA' and operation.tipo_mov == 'BAJA':
+                #     self.set_transforma(Contract,
+                #                         operation,
+                #                         operation.mov,
+                #                         response,
+                #                         onsc_legajo_integration_error_WS7_9004)
+                #     return True
+                # if operation.mov == 'REESTRUCTURA' and operation.tipo_mov == 'BAJA':
+                #     self.set_reestructura(Contract,
+                #                           operation,
+                #                           operation.mov,
+                #                           response,
+                #                           onsc_legajo_integration_error_WS7_9004)
+                # return True
 
             except Exception as e:
                 long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
@@ -73,6 +75,91 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                 self.create_new_log(origin='WS7', type='error',
                                     integration_log=onsc_legajo_integration_error_WS7_9004,
                                     long_description=long_description)
+
+    def _populate_staging(self, response):
+        Inciso = self.env['onsc.catalog.inciso'].suspend_security()
+        OperatingUnit = self.env['operating.unit'].suspend_security()
+        DocType = self.env['onsc.cv.document.type'].suspend_security()
+        Country = self.env['res.country'].suspend_security()
+        Race = self.env['onsc.cv.race'].suspend_security()
+        IncomeMechanism = self.env['onsc.legajo.income.mechanism'].suspend_security()
+        Regime = self.env['onsc.legajo.regime'].suspend_security()
+        Descriptor1 = self.env['onsc.catalog.descriptor1'].suspend_security()
+        Descriptor2 = self.env['onsc.catalog.descriptor2'].suspend_security()
+        Descriptor3 = self.env['onsc.catalog.descriptor3'].suspend_security()
+        Descriptor4 = self.env['onsc.catalog.descriptor4'].suspend_security()
+        ExtinctionCommission = self.env['onsc.legajo.reason.extinction.commission'].suspend_security()
+        CommissionRegime = self.env['onsc.legajo.commission.regime'].suspend_security()
+        RetributiveDay = self.env['onsc.legajo.jornada.retributiva'].suspend_security()
+        Office = self.env['onsc.legajo.office'].suspend_security()
+        Gender = self.env['onsc.cv.gender'].suspend_security()
+        MaritalStatus = self.env['onsc.cv.status.civil'].suspend_security()
+
+        Staging = self.env['onsc.legajo.staging.ws7'].suspend_security()
+
+        for operation in response:
+            vals = {
+                'primer_nombre': operation.primer_nombre,
+                'segundo_nombre': hasattr(operation, 'segundo_nombre') and operation.segundo_nombre or False,
+                'primer_ap': operation.primer_ap,
+                'segundo_ap': hasattr(operation, 'segundo_ap') and operation.segundo_ap or False,
+                'fecha_nac': datetime.datetime.strptime(operation.fecha_nac, '%d/%m/%Y').date(),
+                'fecha_ing_adm': datetime.datetime.strptime(operation.fecha_ing_adm,
+                                                            '%d/%m/%Y').date(),
+                'cod_mot_baja': hasattr(operation, 'cod_mot_baja') and operation.cod_mot_baja or False,
+                'fecha_vig': hasattr(operation, 'fecha_vig') and datetime.datetime.strptime(operation.fecha_vig,
+                                                                                            '%d/%m/%Y').date() or False,
+                'fecha_aud': hasattr(operation, 'fecha_aud') and datetime.datetime.strptime(operation.fecha_aud,
+                                                                                            '%d/%m/%Y').date() or False,
+                'mov': hasattr(operation, 'mov') and operation.mov or False,
+                'tipo_mov': hasattr(operation, 'tipo_mov') and operation.tipo_mov or False,
+                'pdaId': hasattr(operation, 'pdaId') and operation.pdaId or False,
+                'movimientoPadreId': hasattr(operation, 'proyecto') and operation.proyecto or False,
+                'fecha_desde_vinc': hasattr(operation, 'fecha_desde_vinc') and operation.fecha_desde_vinc or False,
+                'idPuesto': hasattr(operation, 'idPuesto') and operation.idPuesto or False,
+                'nroPlaza': hasattr(operation, 'nroPlaza') and operation.nroPlaza or False,
+                'secPlaza': hasattr(operation, 'secPlaza') and operation.secPlaza or False,
+                'programa': hasattr(operation, 'programa') and operation.programa or False,
+                'proyecto': hasattr(operation, 'proyecto') and operation.proyecto or False,
+                'aniosInactividad': hasattr(operation, 'aniosInactividad') and operation.aniosInactividad or False,
+                'fechaGraduacion': hasattr(operation, 'fechaGraduacion') and datetime.datetime.strptime(
+                    operation.fechaGraduacion, '%d/%m/%Y').date() or False,
+
+                'inciso_id': Inciso.search([('budget_code', '=', str(operation.inciso))], limit=1).id,
+                'operating_unit_id': OperatingUnit.search([('budget_code', '=', str(operation.ue))], limit=1).id,
+                'cv_document_type_id': DocType.search([('code', '=', str(operation.tipo_doc))], limit=1).id,
+                'country_id': Country.search([('code', '=', str(operation.cod_pais))], limit=1).id,
+                'race_id': hasattr(operation, 'raza') and Race.search([('code', '=', operation.raza)], limit=1).id,
+                'income_mechanism_id': hasattr(operation, 'cod_mecing') and IncomeMechanism.search(
+                    [('code', '=', operation.cod_mecing)], limit=1).id or False,
+                'regime_id': hasattr(operation, 'cod_reg') and Regime.search([('codRegimen', '=', operation.cod_reg)],
+                                                                             limit=1).id or False,
+                'descriptor1_id': hasattr(operation, 'cod_desc1') and Descriptor1.search(
+                    [('code', '=', operation.cod_desc1)], limit=1).id or False,
+                'descriptor2_id': hasattr(operation, 'cod_desc2') and Descriptor2.search(
+                    [('code', '=', operation.cod_desc2)], limit=1).id or False,
+                'descriptor3_id': hasattr(operation, 'cod_desc3') and Descriptor3.search(
+                    [('code', '=', operation.cod_desc3)], limit=1).id or False,
+                'descriptor4_id': hasattr(operation, 'cod_desc4') and Descriptor4.search(
+                    [('code', '=', operation.cod_desc4)], limit=1).id or False,
+                'comision_inciso_dest_id': hasattr(operation, 'comi_inciso_dest') and Inciso.search(
+                    [('budget_code', '=', str(operation.comi_inciso_dest))], limit=1).id or False,
+                'comision_operating_unit_dest_id': hasattr(operation, 'comi_ue_dest') and OperatingUnit.search(
+                    [('budget_code', '=', str(operation.comi_ue_dest))],
+                    limit=1).id or False,
+                'extinction_commission_id': hasattr(operation, 'comi_mot_ext') and ExtinctionCommission.search(
+                    [('code', '=', operation.comi_mot_ext)],
+                    limit=1).id or False,
+                'commission_regime_id': hasattr(operation, 'comi_reg') and CommissionRegime.search(
+                    [('code', '=', operation.comi_reg)], limit=1).id or False,
+                'retributive_day_id': hasattr(operation, 'jornada_ret') and RetributiveDay.search(
+                    [('code', '=', operation.jornada_ret)], limit=1).id or False,
+                'gender_id': hasattr(operation, 'sexo') and Gender.search([('code', '=', operation.sexo)],
+                                                                          limit=1).id or False,
+                'marital_status_id': hasattr(operation, 'codigoEstadoCivil') and MaritalStatus.search(
+                    [('code', '=', operation.codigoEstadoCivil)], limit=1).id or False,
+            }
+            Staging.create(vals)
 
     def _check_movement(self, Contract, operation, error):
         """
@@ -121,7 +208,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                                 ws_tuple=str(operation),
                                 long_description='Alta no encontrada')
         else:
-            ascenso_causes_discharge = self.env.user.company_id.ascenso_causes_discharge_id
+            ascenso_causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
             contract_date_end = datetime.datetime.strptime(operation.fecha_vig, "%d/%m/%Y").date()
             contract.deactivate_legajo_contract(contract_date_end + datetime.timedelta(days=-1))
 
@@ -158,7 +245,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                                 ws_tuple=str(operation),
                                 long_description='Alta no encontrada')
         else:
-            transforma_causes_discharge_id = self.env.user.company_id.ascenso_causes_discharge_id
+            transforma_causes_discharge_id = self.env.user.company_id.ws7_transforma_causes_discharge_id
             contract_date_end = datetime.datetime.strptime(operation.fecha_vig, "%d/%m/%Y").date()
             contract.deactivate_legajo_contract(contract_date_end + datetime.timedelta(days=-1))
 
@@ -195,7 +282,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                                 ws_tuple=str(operation),
                                 long_description='Alta no encontrada')
         else:
-            causes_discharge_id = self.env.user.company_id.reestructura_causes_discharge_id
+            causes_discharge_id = self.env.user.company_id.ws7_reestructura_causes_discharge_id
             contract_date_end = datetime.datetime.strptime(operation.fecha_vig, "%d/%m/%Y").date()
             contract.deactivate_legajo_contract(contract_date_end + datetime.timedelta(days=-1))
 

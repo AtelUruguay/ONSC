@@ -16,24 +16,44 @@
                             <button string="Descartar" type="object" name="cancel" special="cancel" data-hotkey="z" />
                         </header>
                     </div>
-                    <div class="app_settings_block" id="onsc_legajo_digital">
-                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Causales de egreso</h6>
+                    <div class="app_settings_block" id="onsc_legajo">
                         <div class="row mt16 o_settings_container">
-                            <div class="col-xs-12 col-md-6 o_setting_box">
-                                <div class="col-12 col-lg-12 o_setting_box" id="legajo_help_settings">
-                                    <div class="o_setting_left_pane"/>
-                                    <div class="o_setting_right_pane">
-                                        <div class="text-muted content-group mt16">
-                                            <span>Ascenso</span>
-                                            <field name="ascenso_causes_discharge_id"
-                                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                                   class="col-12 col-lg-12"/>
+                            <div class="col-12 col-lg-6 o_setting_box" id="legajo_help_settings">
+                                <div class="o_setting_left_pane"/>
+                                <div class="o_setting_right_pane">
+                                    <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Causales de egreso</h6>
+                                    <div class="text-muted">
+                                        Seleccione....... DEFINIR
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="row">
+                                            <label for="ws7_ascenso_causes_discharge_id" string="Ascenso" class="col-md-3 o_light_label"/>
+                                            <field name="ws7_ascenso_causes_discharge_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         </div>
-                                        <div class="text-muted content-group mt16">
-                                            <span>Transforma</span>
-                                            <field name="transforma_causes_discharge_id"
-                                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                                   class="col-12 col-lg-12"/>
+                                        <div class="row">
+                                            <label for="ws7_transforma_causes_discharge_id" string="Transforma" class="col-md-3 o_light_label"/>
+                                            <field name="ws7_transforma_causes_discharge_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                        </div>
+                                        <div class="row">
+                                            <label for="ws7_reestructura_causes_discharge_id" string="Reestructura" class="col-md-3 o_light_label"/>
+                                            <field name="ws7_reestructura_causes_discharge_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                        </div>
+                                    </div>
+                                    <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de parámetros del WS7</h6>
+                                    <div class="text-muted">
+                                        Seleccione....... DEFINIR
+                                    </div>
+                                    <div class="content-group">
+                                        <div class="row">
+                                            <label for="ws7_date_from" string="Fecha/hora desde" class="col-md-3 o_light_label"/>
+                                            <field name="ws7_date_from" required="1"/>
+                                        </div>
+                                        <div class="row">
+                                            <label for="ws7_latency_inseconds" string="Latencia (segundos)" class="col-md-3 o_light_label"/>
+                                            <field name="ws7_latency_inseconds"  required="1"/>
                                         </div>
                                     </div>
                                 </div>
