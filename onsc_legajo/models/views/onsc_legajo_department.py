@@ -80,15 +80,16 @@ class ONSCLegajoDepartment(models.Model):
     employee_id = fields.Many2one('hr.employee', string="Funcionario")
     department_id = fields.Many2one('hr.department', string="UO")
     start_date = fields.Date(string='Fecha desde')
-    end_date = fields.Date(string='Fecha hasta', searchable=False)
+    end_date = fields.Date(string='Fecha hasta')
     type = fields.Selection(
         string='Tipo',
         selection=[('system', 'Sistema'),
                    ('joker', 'Comodity')],
-        required=False, searchable=False)
+        required=False)
 
-    is_job_open = fields.Boolean(string='¿Puesto vigente?', compute='_compute_is_job_open',
-                                 search='_search_is_job_open', searchable=False, selectable=False, sortable=False)
+    is_job_open = fields.Boolean(string='¿Puesto vigente?',
+                                 compute='_compute_is_job_open',
+                                 search='_search_is_job_open')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -143,9 +144,11 @@ RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
         joker_records = self.search([('type', '=', 'joker')])
         joker_valid_records = joker_records.filtered(lambda x: x.legajo_state == 'egresed')
         joker_valid_records |= joker_records.filtered(
-            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(x.legajo_id.job_ids) == 0)
+            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
+                x.legajo_id.job_ids) == 0)
         joker_valid_records |= joker_records.filtered(
-            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(x.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= _today)) == 0)
+            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
+                x.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= _today)) == 0)
 
         if operator == '=' and value is False:
             _operator = 'not in'
