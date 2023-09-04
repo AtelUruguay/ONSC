@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="onsc_desempeno_general_cycle_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.general.cycle.tree</field>
+        <field name="model">onsc.desempeno.general.cycle</field>
+        <field name="arch" type="xml">
+            <tree string="Ciclo General de Evaluación de Desempeño">
+                <field name="year" />
+                <field name="start_date"/>
+                <field name="start_date_max"/>
+                <field name="end_date_max"/>
+                <field name="end_date"/>
+                <field name="active" invisible="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_migration_form" model="ir.ui.view">
+        <field name="name">onsc.migration.form</field>
+        <field name="model">onsc.migration</field>
+        <field name="arch" type="xml">
+            <form string="Ciclo General de Evaluación de Desempeño">
+                <header>
+                    <button type="object" class="btn btn-primary"
+                            string="Ejecutar"
+                            name="button_run_process"/>
+
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="ok,error,in_process,process"/>
+                </header>
+                <sheet>
+                     <group>
+                        <group>
+                            <field name="document_file" filename="document_filename"/>
+                                <field name="document_filename" invisible="1"/>
+
+                            <field name="error"  attrs="{'invisible': [('state', '!=', 'error')]}"/>
+                        </group>
+                        <group/>
+                    </group>
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_migration_action' model='ir.actions.act_window'>
+        <field name="name">Migracion inicial</field>
+        <field name="res_model">onsc.migration</field>
+        <field name="view_mode">tree,form</field>
+
+    </record>
+</odoo>

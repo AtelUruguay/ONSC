@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="0">
+        <record model="ir.module.category" id="module_category_onsc_migracion">
+            <field name="name">ONSC Migración</field>
+            <field name="sequence">1</field>
+        </record>
+       <record id="group_usuario_migracion" model="res.groups">
+            <field name="name">Usuario de Migración</field>
+            <field name="comment">Usuario de Migración</field>
+            <field name="category_id" ref="module_category_onsc_migracion"/>
+        </record>
+
+    </data>
+</odoo>
