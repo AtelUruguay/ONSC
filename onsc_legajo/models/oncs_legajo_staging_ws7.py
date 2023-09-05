@@ -7,6 +7,8 @@ class ONSCLegajoStagingWS7(models.Model):
     _name = 'onsc.legajo.staging.ws7'
     _description = 'Staging WS7'
 
+    info_income = fields.Char(string='Data de origen', )
+
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
 
@@ -20,9 +22,9 @@ class ONSCLegajoStagingWS7(models.Model):
     fecha_vig = fields.Date(string='fecha_vig')
     fecha_aud = fields.Datetime(string='fecha_aud')
     mov = fields.Char(string='mov')
-    tipo_mov = fields.Char(string='tipo_mov')
-    pdaId = fields.Char(string='pdaId')
-    movimientoPadreId = fields.Char(string='movimientoPadreId')
+    tipo_mov = fields.Char(string='tipo_mov', index=True)
+    pdaId = fields.Char(string='pdaId', index=True)
+    movimientoPadreId = fields.Char(string='movimientoPadreId', index=True)
     fecha_desde_vinc = fields.Char(string='fecha_desde_vinc')
     idPuesto = fields.Char(string='idPuesto')
     nroPlaza = fields.Char(string='nroPlaza')
@@ -32,8 +34,8 @@ class ONSCLegajoStagingWS7(models.Model):
     aniosInactividad = fields.Char(string='aniosInactividad')
     fechaGraduacion = fields.Date(string='fechaGraduacion')
 
-    cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento') #tipo_doc
-    country_id = fields.Many2one('res.country', u'País') #cod_pais
+    cv_document_type_id = fields.Many2one('onsc.cv.document.type', u'Tipo de documento')  # tipo_doc
+    country_id = fields.Many2one('res.country', u'País')  # cod_pais
     race_id = fields.Many2one("onsc.cv.race", string=u"Raza")  # raza
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso')  # cod_mecing
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', history=True)  # cod_reg
@@ -60,3 +62,20 @@ class ONSCLegajoStagingWS7(models.Model):
     # CV
     gender_id = fields.Many2one("onsc.cv.gender", string=u"Género")  # sexo
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil")  # codigoEstadoCivil
+
+    state = fields.Selection(
+        string='Estado',
+        selection=[
+            ('in_process', 'En proceso'),
+            ('process', 'Procesado'),
+            ('error', 'Error'),
+        ], default='in_process')
+
+    log = fields.Text(string='Log')
+
+    def init(self):
+        self._cr.execute("""CREATE INDEX IF NOT EXISTS onsc_legajo_staging_ws7_recordset_unique
+        ON onsc_legajo_staging_ws7 (tipo_mov,"pdaId")""")
+
+    def button_in_process(self):
+        self.write({'state': 'in_process', 'log': False})
