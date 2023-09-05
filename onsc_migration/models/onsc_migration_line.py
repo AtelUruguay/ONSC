@@ -4,12 +4,11 @@ import logging
 
 import openpyxl as openpyxl
 
-from odoo import models, fields
+from odoo import models, fields, tools
 
 STATE = [
     ('ok', 'OK'),
     ('error', 'Error'),
-    ('in_process', 'Procesando'),
     ('process', 'Procesado'),
 ]
 _logger = logging.getLogger(__name__)
@@ -22,10 +21,10 @@ except ImportError:
 class ONSCMigratio(models.Model):
     _name = "onsc.migration"
 
-    state = fields.Selection(STATE, string='Estado', readonly=True)
+    state = fields.Selection(STATE, string='Estado', readonly=True, default='ok')
     error = fields.Text("Error")
     document_file = fields.Binary(string='Archivo de carga', required=True)
-    document_filename = fields.Char('Nombre del documento')
+    document_filename = fields.Char('Nombre del documento', store=True)
     line_ids = fields.One2many('onsc.migration.line', 'migration_id', string='Líneas')
 
     def button_run_process(self):
@@ -39,76 +38,98 @@ class ONSCMigratio(models.Model):
                 message_error = []
 
                 for row in sheet.iter_rows(min_row=2, values_only=True):
+                    message_error = []
+                    self._cr.execute("""SELECT count(id) FROM onsc_migration_line  WHERE upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""", ( str(row[2]),str(row[44]),str(row[45]),str(row[46])))
+                    count = self._cr.fetchone()[0]
+                    if count > 0:
+                        continue
+
                     row_dict = {}
 
-                    self._cr.execute("""SELECT id FROM res_country  WHERE code = %s""", (row[0],))
+                    self._cr.execute("""SELECT id FROM res_country  WHERE upper(code) = %s""", (row[0].upper(),))
                     country_id = self._cr.fetchone()
 
-                    self._cr.execute("""SELECT id FROM onsc_cv_document_type  WHERE code = %s""", (row[1],))
+                    self._cr.execute("""SELECT id FROM onsc_cv_document_type  WHERE upper(code) = %s""",
+                                     (row[1].upper(),))
                     doc_type_id = self._cr.fetchone()
 
-                    self._cr.execute("""SELECT id FROM onsc_cv_status_civil  WHERE code = %s""", (str(row[8]),))
+                    self._cr.execute("""SELECT id FROM onsc_cv_status_civil  WHERE upper(code) = %s""",
+                                     (str(row[8]).upper(),))
                     marital_status_id = self._cr.fetchone()
 
-                    self._cr.execute("""SELECT id FROM onsc_cv_gender  WHERE code = %s""", (str(row[10]),))
+                    self._cr.execute("""SELECT id FROM onsc_cv_gender  WHERE upper(code) = %s""",
+                                     (str(row[10]).upper(),))
                     gender_id = self._cr.fetchone()
 
                     if row[0] != row[11]:
-                        self._cr.execute("""SELECT id FROM res_country  WHERE code = %s""", (row[11],))
+                        self._cr.execute("""SELECT id FROM res_country  WHERE upper(code) = %s""", (row[11].upper(),))
                         birth_country_id = self._cr.fetchone()
                     else:
                         birth_country_id = country_id
 
-                    self._cr.execute("""SELECT id FROM res_country_state  WHERE code = %s""", (row[18],))
+                    self._cr.execute("""SELECT id FROM res_country_state  WHERE upper(code) = %s""", (str(row[18]).upper(),))
                     address_state_id = self._cr.fetchone()
                     self._cr.execute("""SELECT id FROM onsc_cv_location  WHERE other_code = %s""", (str(row[19]),))
                     address_location_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_cv_street  WHERE code = %s""", (str(row[20]),))
+                    self._cr.execute("""SELECT id FROM onsc_cv_street  WHERE upper(code) = %s""",
+                                     (str(row[20]).upper(),))
                     address_street_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_cv_street  WHERE code = %s""", (str(row[22]),))
+                    self._cr.execute("""SELECT id FROM onsc_cv_street  WHERE upper(code) = %s""",
+                                     (str(row[22]).upper(),))
                     address_street2_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_cv_street  WHERE code = %s""", (str(row[23]),))
+                    self._cr.execute("""SELECT id FROM onsc_cv_street  WHERE upper(code) = %s""",
+                                     (str(row[23]).upper(),))
                     address_street3_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_legajo_health_provider  WHERE code = %s""", (str(row[30]),))
+                    self._cr.execute("""SELECT id FROM onsc_legajo_health_provider  WHERE upper(code) = %s""",
+                                     (str(row[30]).upper(),))
                     health_provider_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_catalog_inciso  WHERE budget_code = %s""", (str(row[35]),))
+                    self._cr.execute("""SELECT id FROM onsc_catalog_inciso  WHERE upper(budget_code) = %s""",
+                                     (str(row[35]).upper(),))
                     inciso_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM operating_unit  WHERE budget_code = %s""", (str(row[36]),))
+                    self._cr.execute("""SELECT id FROM operating_unit  WHERE upper(budget_code) = %s""",
+                                     (str(row[36]).upper(),))
                     operating_unit_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_legajo_office  WHERE programa = %s and proyecto = %s""",
-                                     (str(row[37]), str(row[38])))
+                    self._cr.execute(
+                        """SELECT id FROM onsc_legajo_office  WHERE upper(programa) = %s and upper(proyecto) = %s""",
+                        (str(row[37]).upper(), str(row[38]).upper()))
                     program_project_id = self._cr.fetchone()
                     self._cr.execute("""SELECT id FROM onsc_legajo_regime  WHERE "codRegimen" = %s """, (str(row[39]),))
                     regime_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_catalog_descriptor1  WHERE code = %s""", (str(row[40]),))
+                    self._cr.execute("""SELECT id FROM onsc_catalog_descriptor1  WHERE upper(code) = %s""",
+                                     (str(row[40]).upper(),))
                     descriptor1_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_catalog_descriptor2  WHERE code = %s""", (str(row[41]),))
+                    self._cr.execute("""SELECT id FROM onsc_catalog_descriptor2  WHERE upper(code) = %s""",
+                                     (str(row[41]).upper(),))
                     descriptor2_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_catalog_descriptor3  WHERE code = %s""", (str(row[42]),))
+                    self._cr.execute("""SELECT id FROM onsc_catalog_descriptor3  WHERE upper(code) = %s""",
+                                     (str(row[42]).upper(),))
                     descriptor3_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_catalog_descriptor4  WHERE code = %s""", (str(row[43]),))
+                    self._cr.execute("""SELECT id FROM onsc_catalog_descriptor4  WHERE upper(code) = %s""",
+                                     (str(row[43]).upper(),))
                     descriptor4_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_catalog_occupation  WHERE code = %s""", (str(row[48]),))
+                    self._cr.execute("""SELECT id FROM onsc_catalog_occupation  WHERE upper(code) = %s""",
+                                     (str(row[48]).upper(),))
                     occupation_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM onsc_legajo_income_mechanism  WHERE code = %s""",
-                                     (str(row[49]),))
+                    self._cr.execute("""SELECT id FROM onsc_legajo_income_mechanism  WHERE upper(code) = %s""",
+                                     (str(row[49]).upper(),))
                     income_mechanism_id = self._cr.fetchone()
                     self._cr.execute(
-                        """SELECT id FROM onsc_legajo_norm  WHERE "tipoNorma" = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s """,
-                        (str(row[52]), str(row[53]), str(row[54]), str(row[55])), )
+                        """SELECT id FROM onsc_legajo_norm  WHERE upper("tipoNorma") = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s """,
+                        (str(row[52]).upper(), row[53], row[54], row[55]), )
                     norm_id = self._cr.fetchone()
-                    self._cr.execute("""SELECT id FROM hr_department  WHERE code = %s """, (str(row[68]),))
+                    self._cr.execute("""SELECT id FROM hr_department  WHERE upper(code) = %s """,
+                                     (str(row[68]).upper(),))
                     department_id = self._cr.fetchone()
                     self._cr.execute(
-                        """SELECT id FROM onsc_legajo_jornada_retributiva  WHERE "codigoJornada" = %s  limit 1""",
-                        (str(row[81]),))
+                        """SELECT id FROM onsc_legajo_jornada_retributiva  WHERE upper("codigoJornada") = %s  limit 1""",
+                        (str(row[81]).upper(),))
                     retributive_day_id = self._cr.fetchone()
                     self._cr.execute(
-                        """SELECT id FROM onsc_legajo_jornada_retributiva  WHERE "codigoJornada" = %s  limit 1""",
-                        (str(row[82]),))
+                        """SELECT id FROM onsc_legajo_jornada_retributiva  WHERE upper("codigoJornada") = %s  limit 1""",
+                        (str(row[82]).upper(),))
                     retributive_day_formal_id = self._cr.fetchone()
                     self._cr.execute(
-                        """SELECT id FROM onsc_legajo_security_job  WHERE name = %s """, (str(row[85]),))
+                        """SELECT id FROM onsc_legajo_security_job  WHERE upper(name) = %s """, (str(row[85]).upper(),))
                     security_job_id = self._cr.fetchone()
 
                     row_dict['migration_id'] = self.id
@@ -116,12 +137,12 @@ class ONSCMigratio(models.Model):
                         row_dict['country_id'] = country_id[0]
                     else:
                         message_error.append(
-                            " \n El Pais del documento es obligatorio")
+                            " El Pais del documento es obligatorio")
                     if doc_type_id:
-                        row_dict['doc_type_id'] = country_id[0]
+                        row_dict['doc_type_id'] = doc_type_id[0]
                     else:
                         message_error.append(
-                            " \n El tipo de documento es obligatorio")
+                            "  El tipo de documento es obligatorio")
 
                     row_dict['doc_nro'] = row[2]
                     row_dict['first_name'] = row[3]
@@ -132,7 +153,7 @@ class ONSCMigratio(models.Model):
                     if marital_status_id:
                         row_dict['marital_status_id'] = marital_status_id[0]
                     if type(row[9]).__name__ == 'datetime':
-                        row_dict['birth_date'] =row[9].strftime("%Y-%m-%d")
+                        row_dict['birth_date'] = row[9].strftime("%Y-%m-%d")
                     if gender_id:
                         row_dict['gender_id'] = gender_id[0]
                     if birth_country_id:
@@ -148,12 +169,15 @@ class ONSCMigratio(models.Model):
                         row_dict['address_state_id'] = address_state_id[0]
                     else:
                         message_error.append(
-                            " \n El Departamento es obligatorio")
+                            "  El Departamento es obligatorio")
+                    if address_street_id:
+                        row_dict['address_street_id'] = address_street_id[0]
+
                     if address_location_id:
                         row_dict['address_location_id'] = address_location_id[0]
                     else:
                         message_error.append(
-                            " \n La localidad es obligatoria")
+                            "  La localidad es obligatoria")
                     if address_street2_id:
                         row_dict['address_street2_id'] = address_street2_id[0]
                     if address_street3_id:
@@ -174,59 +198,57 @@ class ONSCMigratio(models.Model):
                             row_dict['date_income_public_administration'] = row[31].strftime("%Y-%m-%d")
                         else:
                             message_error.append(
-                                " \n El tipo de dato de  la Fecha de ingreso a la administración pública es incorrecto")
+                                "  El tipo de dato de  la Fecha de ingreso a la administración pública es incorrecto")
                     else:
                         message_error.append(
-                            " \n La Fecha de ingreso a la administración pública es obligatoria")
-
+                            "  La Fecha de ingreso a la administración pública es obligatoria")
 
                     row_dict['inactivity_years'] = row[32]
                     if type(row[33]).__name__ == 'datetime':
                         row_dict['graduation_date'] = row[33].strftime("%Y-%m-%d")
                     if type(row[34]).__name__ == 'datetime':
-                        row_dict['graduation_date'] = row[35].strftime("%Y-%m-%d")
+                        row_dict['graduation_date'] = row[34].strftime("%Y-%m-%d")
                     if inciso_id:
                         row_dict['inciso_id'] = inciso_id[0]
                     else:
                         message_error.append(
-                            " \n El incisio es obligatorio")
-                    if row[70] == 'null' and not operating_unit_id:
+                            "  El incisio es obligatorio")
+                    if row[70] and not operating_unit_id:
                         message_error.append(
-                            " \n La UE es obligatoria")
+                            "  La UE es obligatoria")
 
                     elif operating_unit_id:
-                         row_dict['operating_unit_id'] = operating_unit_id[0]
+                        row_dict['operating_unit_id'] = operating_unit_id[0]
 
-                    if row[70] == 'null' and not program_project_id:
+                    if row[70] and not program_project_id:
                         message_error.append(
-                            " \n La Progrma es obligatorio")
+                            "  La Progrma es obligatorio")
 
                     elif program_project_id:
                         row_dict['program_project_id'] = program_project_id[0]
 
-                    if row[70] == 'null' and not regime_id:
+                    if row[70] and not regime_id:
                         message_error.append(
-                            " \nEl regimen es obligatorio")
+                            " El regimen es obligatorio")
 
                     elif regime_id:
-                        row_dict['program_project_id'] = regime_id[0]
+                        row_dict['regime_id'] = regime_id[0]
 
                     if descriptor1_id:
                         row_dict['descriptor1_id'] = descriptor1_id[0]
                     if descriptor2_id:
-                        row_dict['descriptor1_id'] = descriptor2_id[0]
+                        row_dict['descriptor2_id'] = descriptor2_id[0]
                     if descriptor3_id:
                         row_dict['descriptor3_id'] = descriptor3_id[0]
                     else:
                         message_error.append(
-                            " \n El descriptor 3 es obligatorio")
+                            "  El descriptor 3 es obligatorio")
                     if descriptor4_id:
                         row_dict['descriptor4_id'] = descriptor4_id[0]
 
-                    row_dict['nro_puesto'] = int(row[44])
-
-                    row_dict['nro_place'] = int(row[45])
-                    row_dict['sec_place'] = int(row[46])
+                    row_dict['nro_puesto'] = row[44]
+                    row_dict['nro_place'] = row[45]
+                    row_dict['sec_place'] = row[46]
                     row_dict['state_place'] = row[47]
                     if occupation_id:
                         row_dict['occupation_id'] = occupation_id[0]
@@ -236,51 +258,54 @@ class ONSCMigratio(models.Model):
                     row_dict['call_number'] = row[50]
                     row_dict['reason_description'] = row[51]
                     if norm_id:
-                       row_dict['norm_id'] = norm_id and norm_id[0]
+                        row_dict['norm_id'] = norm_id and norm_id[0]
                     row_dict['resolution_description'] = row[56]
                     if type(row[57]).__name__ == 'datetime':
                         row_dict['resolution_date'] = row[57].strftime("%Y-%m-%d")
 
                     row_dict['resolution_type'] = row[58]
                     if department_id:
-                         row_dict['department_id'] = department_id and department_id[0] or False
+                        row_dict['department_id'] = department_id and department_id[0] or False
                     if retributive_day_id:
                         row_dict['retributive_day_id'] = retributive_day_id[0]
                     else:
                         message_error.append(
-                            " \n La Jornada Formal es obligatoria")
+                            "  La Jornada Formal es obligatoria")
                     if retributive_day_formal_id:
                         row_dict['retributive_day_formal_id'] = retributive_day_formal_id[0]
                     else:
                         message_error.append(
-                            " \n El descriptor 3 es obligatorio")
+                            "  El descriptor 3 es obligatorio")
                     if security_job_id:
-                        row_dict['security_job_id'] =security_job_id[0]
+                        row_dict['security_job_id'] = security_job_id[0]
 
-                    if row[70] != 'null':
-                        self._cr.execute("""SELECT id FROM onsc_catalog_inciso  WHERE budget_code = %s""",
-                                         (str(row[59]),))
+                    if row[70]:
+                        self._cr.execute("""SELECT id FROM onsc_catalog_inciso  WHERE upper(budget_code) = %s""",
+                                         (str(row[59]).upper(),))
                         inciso_des_id = self._cr.fetchone()
-                        self._cr.execute("""SELECT id FROM operating_unit  WHERE budget_code = %s""", (str(row[60]),))
+                        self._cr.execute("""SELECT id FROM operating_unit  WHERE upper(budget_code) = %s""",
+                                         (str(row[60]).upper(),))
                         operating_unit_des_id = self._cr.fetchone()
-                        self._cr.execute("""SELECT id FROM operating_unit  WHERE programa = %s and proyecto = %s""",
-                                         (str(row[60]), str(row[61])))
+                        self._cr.execute(
+                            """SELECT id FROM onsc_legajo_office  WHERE upper(programa) = %s and upper(proyecto) = %s""",
+                            (str(row[61]).upper(), str(row[62]).upper()))
                         program_project_des_id = self._cr.fetchone()
-                        self._cr.execute("""SELECT id FROM onsc_legajo_regime  WHERE "codRegimen" = %s """,
-                                         (str(row[62]),))
+                        self._cr.execute("""SELECT id FROM onsc_legajo_regime  WHERE upper("codRegimen") = %s """,
+                                         (str(row[63]).upper(),))
                         regime_des_id = self._cr.fetchone()
-                        self._cr.execute("""SELECT id FROM onsc_legajo_commission_regime  WHERE "codRegimen" = %s """,
-                                         (str(row[71]),))
+                        self._cr.execute(
+                            """SELECT id FROM onsc_legajo_commission_regime  WHERE cgn_code = %s """,
+                            (str(row[71]),))
                         regime_commission_id = self._cr.fetchone()
                         self._cr.execute(
-                            """SELECT id FROM onsc_legajo_norm  WHERE "tipoNorma" = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s """,
-                            (str(row[73]), str(row[74]), str(row[75]), str(row[76])))
+                            """SELECT id FROM onsc_legajo_norm  WHERE upper("tipoNorma") = %s and "numeroNorma"= %s and"anioNorma" = %s and"articuloNorma" = %s """,
+                            (str(row[73]).upper(), row[74], row[75], row[76]))
                         norm_des_id = self._cr.fetchone()
                         if inciso_des_id:
                             row_dict['inciso_des_id'] = inciso_des_id[0]
                         else:
                             message_error.append(
-                                " \n El inciso destino es obligatorio")
+                                "  El inciso destino es obligatorio")
                         if operating_unit_des_id:
                             row_dict['operating_unit_des_id'] = operating_unit_des_id[0]
                         if program_project_des_id:
@@ -297,81 +322,114 @@ class ONSCMigratio(models.Model):
                                 row_dict['date_start_commission'] = row[69].strftime("%Y-%m-%d")
                             else:
                                 message_error.append(
-                                    " \n El tipo de dato de la FFecha inicio comisión es incorrecto")
+                                    "  El tipo de dato de la FFecha inicio comisión es incorrecto")
                         else:
                             message_error.append(
-                                " \n La Fecha inicio comisión es obligatoria")
+                                "  La Fecha inicio comisión es obligatoria")
                         if row[70]:
                             row_dict['type_commission'] = row[70]
                         else:
                             message_error.append(
-                                " \n La Fecha inicio comisión es obligatoria")
+                                "  La Fecha inicio comisión es obligatoria")
 
                         if regime_commission_id:
-
                             row_dict['regime_commission_id'] = regime_commission_id[0]
                         if row[73]:
                             row_dict['reason_commision'] = row[73]
                         else:
                             message_error.append(
-                                " \n La descripción motivo comisión s obligatoria")
+                                "  La descripción motivo comisión s obligatoria")
 
                         if norm_des_id:
-                            row_dict['norm_comm_id'] =  norm_des_id[0]
+                            row_dict['norm_comm_id'] = norm_des_id[0]
                         if row[77]:
                             row_dict['resolution_comm_description'] = row[77]
                         else:
                             message_error.append(
-                                " \n La descripción de la Resolucion comisión es obligatoria")
+                                "  La descripción de la Resolucion comisión es obligatoria")
 
-                        row_dict['resolution_comm_date'] = type(row[78]).__name__ == 'datetime' and row[78].strftime(
-                            "%Y-%m-%d") or False
-                        row_dict['resolution_comm_type'] = row[79] or False
+                        if row[78]:
+                            if type(row[78]).__name__ == 'datetime':
+                                row_dict['resolution_comm_date'] = row[78].strftime("%Y-%m-%d")
+                            else:
+                                message_error.append(
+                                    "  El tipo de dato de la Fecha de la Resolucion Comisión es incorrecto")
+                        else:
+                            message_error.append(
+                                "  La Fecha de la Resolucion Comisión es obligatoria")
+                        if row[79]:
+                            row_dict['resolution_comm_type'] = row[79]
+                        else:
+                            message_error.append(
+                                "  Tipo de la Resolución comisión")
+
                     else:
+                        if type(row[80]).__name__ == 'datetime':
+                            row_dict['end_date_contract'] = row[80].strftime("%Y-%m-%d")
 
-                        row_dict['end_date_contract'] = type(row[80]).__name__ == 'datetime' and row[80].strftime(
-                            "%Y-%m-%d") or False
-                    row_dict['state_move'] = row[84] or False
-                    if row_dict['state_move'] == 'BP':
-                        self._cr.execute(
-                            """SELECT id FROM onsc_legajo_norm  WHERE "tipoNorma" = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s """,
-                            (str(row[89]), str(row[90]), str(row[91]), str(row[92])))
-                        norm_dis_id = self._cr.fetchone()
-                        self._cr.execute("""SELECT id FROM onsc_legajo_causes_discharge  WHERE "codRegimen" = %s """,
-                                         (str(row[86]),))
-                        causes_discharge_id = self._cr.fetchone()
+                    if type(row[83]).__name__ == 'float':
+                        row_dict['id_movimiento'] = int(row[83])
+                    if row[84]:
+                        row_dict['state_move'] = row[84]
+                        if row_dict['state_move'] == 'BP':
+                            self._cr.execute(
+                                """SELECT id FROM onsc_legajo_norm  WHERE upper("tipoNorma") = %s and "numeroNorma" = %s and "anioNorma" = %s and "articuloNorma"= %s """,
+                                (str(row[89]).upper(), row[90], row[91], row[92]))
+                            norm_dis_id = self._cr.fetchone()
+                            self._cr.execute(
+                                """SELECT id FROM onsc_legajo_causes_discharge  WHERE upper("codRegimen") = %s """,
+                                (str(row[86]).upper(),))
+                            causes_discharge_id = self._cr.fetchone()
+                            if type(row[87]).__name__ == 'datetime':
+                                row_dict['id_movimiento'] = row[87].strftime("%Y-%m-%d")
+                            if causes_discharge_id:
+                                row_dict['causes_discharge_id'] = causes_discharge_id[0]
 
-                        row_dict['id_movimiento'] = row[83] or False
-                        row_dict['end_date'] = type(row[87]).__name__ == 'datetime' and row[87].strftime(
-                            "%Y-%m-%d") or False
-                        row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0] or False
-                        row_dict['reason_discharge'] = row[88] or False
-                        row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0] or False
+                            row_dict['reason_discharge'] = row[88]
+                            if norm_dis_id:
+                                row_dict['norm_dis_id'] = norm_dis_id[0]
 
-                        row_dict['resolution_dis_description'] = row[93] or False
-                        row_dict['resolution_dis_date'] = type(row[94]).__name__ == 'datetime' and row[94].strftime(
-                            "%Y-%m-%d") or False
-                        row_dict['resolution_dis_type'] = row[95] or False
+                            row_dict['resolution_dis_description'] = row[93]
+                            if type(row[87]).__name__ == 'datetime':
+                                row_dict['resolution_dis_date'] = row[94].strftime("%Y-%m-%d")
+                            row_dict['resolution_dis_type'] = row[95]
 
-                    elif row_dict['state_move'] == 'AP':
-                        row_dict['id_movimiento'] = row[83] or False
+
+                    else:
+                        message_error.append(
+                            "  El estado es obligatorio")
+
+                    if message_error:
+                        row_dict['error'] = '\n'.join(message_error)
+                        row_dict['state'] = 'error'
+                    else:
+                        row_dict['error'] = 'ok'
+
+                    row_dict_limpio = row_dict.copy()
+
+                    for clave, valor in row_dict.items():
+                        if valor is None or valor == '':
+                            del row_dict_limpio[clave]
+
                     self._cr.execute(
                         """INSERT INTO "onsc_migration_line" (%s) VALUES %s RETURNING id""" % (
-                            ', '.join(row_dict.keys()),
-                            tuple(row_dict.values())
+                            ', '.join(row_dict_limpio.keys()),
+                            tuple(row_dict_limpio.values())
                         ),
                     )
-                self.env.cr.commit()
+                    self.env.cr.commit()
 
             return True
-        except Exception:
-            self.suspend_security().write({'error': "Error al procesar el archivo", 'state': 'error'})
+
+        except Exception as e:
+            self.suspend_security().write({'error': tools.ustr(e), 'state': 'error'})
 
 
 class ONSCMigrationLine(models.Model):
     _name = "onsc.migration.line"
 
     migration_id = fields.Many2one('onsc.migration', string='Cabezal migracion')
+    error = fields.Char("Error",readonly=True)
     state = fields.Selection(STATE, string='Estado', readonly=True)
     country_id = fields.Many2one('res.country', string=u'País')
     doc_type_id = fields.Many2one('onsc.cv.document.type', string='Tipo de documento')
@@ -466,16 +524,16 @@ class ONSCMigrationLine(models.Model):
     regime_commission_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen de comisión')
     reason_commision = fields.Text(string='Descr motivo comisión')
     norm_comm_id = fields.Many2one('onsc.legajo.norm', string='Norma comisión')
-    norm_comm_type = fields.Char(string="Tipo norma", related="norm_comm_id.tipoNorma", store=True, readonly=True)
-    norm_comm_number = fields.Integer(string='Número de norma', related="norm_comm_id.numeroNorma",
+    norm_comm_type = fields.Char(string="Tipo norma comisión", related="norm_comm_id.tipoNorma", store=True, readonly=True)
+    norm_comm_number = fields.Integer(string='Número de norma comisión', related="norm_comm_id.numeroNorma",
                                       store=True, readonly=True)
-    norm_comm_year = fields.Integer(string='Año de norma', related="norm_comm_id.anioNorma", store=True,
+    norm_comm_year = fields.Integer(string='Año de norma comisión', related="norm_comm_id.anioNorma", store=True,
                                     readonly=True)
-    norm_comm_article = fields.Integer(string='Artículo de norma', related="norm_comm_id.articuloNorma",
+    norm_comm_article = fields.Integer(string='Artículo de norma comisión', related="norm_comm_id.articuloNorma",
                                        store=True, readonly=True)
-    resolution_comm_description = fields.Char(string='Descripción de la resolución')
-    resolution_comm_date = fields.Date(string='Fecha de la resolución')
-    resolution_comm_type = fields.Char(string='Tipo de resolución')
+    resolution_comm_description = fields.Char(string='Descripción de la resolución comisión')
+    resolution_comm_date = fields.Date(string='Fecha de la resolución comisión')
+    resolution_comm_type = fields.Char(string='Tipo de resolución comisión')
     end_date_contract = fields.Date(string="Vencimiento del contrato")
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva',
                                          string='Carga horaria semanal según contrato')
@@ -488,7 +546,7 @@ class ONSCMigrationLine(models.Model):
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso')
     reason_discharge = fields.Text(string='Descr motivo baja')
-    norm_dis_id = fields.Many2one('onsc.legajo.norm', string='Norma comisión')
+    norm_dis_id = fields.Many2one('onsc.legajo.norm', string='Norma comisión baja')
     norm_dis_type = fields.Char(string="Tipo norma de la baja", related="norm_dis_id.tipoNorma", store=True,
                                 readonly=True)
     norm_dis_number = fields.Integer(string='Número de norma de la baja', related="norm_dis_id.numeroNorma",
