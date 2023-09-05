@@ -23,7 +23,7 @@
                 <header>
                     <button type="object" class="btn btn-primary"
                             string="Ejecutar"
-                            name="button_run_process"/>
+                            name="button_process"/>
 
                     <field name="state" widget="statusbar"
                            statusbar_visible="ok,error,in_process,process"/>

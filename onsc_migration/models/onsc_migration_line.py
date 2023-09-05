@@ -12,13 +12,9 @@ STATE = [
     ('process', 'Procesado'),
 ]
 _logger = logging.getLogger(__name__)
-try:
-    import xlrd
-except ImportError:
-    _logger.debug('Cannot `import xlrd`.')
 
 
-class ONSCMigratio(models.Model):
+class ONSCMigration(models.Model):
     _name = "onsc.migration"
 
     state = fields.Selection(STATE, string='Estado', readonly=True, default='ok')
@@ -27,7 +23,11 @@ class ONSCMigratio(models.Model):
     document_filename = fields.Char('Nombre del documento', store=True)
     line_ids = fields.One2many('onsc.migration.line', 'migration_id', string='Líneas')
 
-    def button_run_process(self):
+    def button_process(self):
+        self.process_binary()
+        return True
+
+    def process_binary(self):
         try:
             if self.document_file:
                 excel_data = io.BytesIO(base64.b64decode(self.document_file))
@@ -35,11 +35,11 @@ class ONSCMigratio(models.Model):
 
                 sheet = workbook.active
 
-                message_error = []
-
                 for row in sheet.iter_rows(min_row=2, values_only=True):
                     message_error = []
-                    self._cr.execute("""SELECT count(id) FROM onsc_migration_line  WHERE upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""", ( str(row[2]),str(row[44]),str(row[45]),str(row[46])))
+                    self._cr.execute(
+                        """SELECT count(id) FROM onsc_migration_line  WHERE upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
+                        (str(row[2]), str(row[44]), str(row[45]), str(row[46])))
                     count = self._cr.fetchone()[0]
                     if count > 0:
                         continue
@@ -67,7 +67,8 @@ class ONSCMigratio(models.Model):
                     else:
                         birth_country_id = country_id
 
-                    self._cr.execute("""SELECT id FROM res_country_state  WHERE upper(code) = %s""", (str(row[18]).upper(),))
+                    self._cr.execute("""SELECT id FROM res_country_state  WHERE upper(code) = %s""",
+                                     (str(row[18]).upper(),))
                     address_state_id = self._cr.fetchone()
                     self._cr.execute("""SELECT id FROM onsc_cv_location  WHERE other_code = %s""", (str(row[19]),))
                     address_location_id = self._cr.fetchone()
@@ -394,7 +395,6 @@ class ONSCMigratio(models.Model):
                                 row_dict['resolution_dis_date'] = row[94].strftime("%Y-%m-%d")
                             row_dict['resolution_dis_type'] = row[95]
 
-
                     else:
                         message_error.append(
                             "  El estado es obligatorio")
@@ -429,7 +429,7 @@ class ONSCMigrationLine(models.Model):
     _name = "onsc.migration.line"
 
     migration_id = fields.Many2one('onsc.migration', string='Cabezal migracion')
-    error = fields.Char("Error",readonly=True)
+    error = fields.Char("Error", readonly=True)
     state = fields.Selection(STATE, string='Estado', readonly=True)
     country_id = fields.Many2one('res.country', string=u'País')
     doc_type_id = fields.Many2one('onsc.cv.document.type', string='Tipo de documento')
@@ -524,7 +524,8 @@ class ONSCMigrationLine(models.Model):
     regime_commission_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen de comisión')
     reason_commision = fields.Text(string='Descr motivo comisión')
     norm_comm_id = fields.Many2one('onsc.legajo.norm', string='Norma comisión')
-    norm_comm_type = fields.Char(string="Tipo norma comisión", related="norm_comm_id.tipoNorma", store=True, readonly=True)
+    norm_comm_type = fields.Char(string="Tipo norma comisión", related="norm_comm_id.tipoNorma", store=True,
+                                 readonly=True)
     norm_comm_number = fields.Integer(string='Número de norma comisión', related="norm_comm_id.numeroNorma",
                                       store=True, readonly=True)
     norm_comm_year = fields.Integer(string='Año de norma comisión', related="norm_comm_id.anioNorma", store=True,
