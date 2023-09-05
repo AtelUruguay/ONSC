@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_staging_ws7_view_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.staging.ws7.tree</field>
+        <field name="model">onsc.legajo.staging.ws7</field>
+        <field name="arch" type="xml">
+            <tree string="Staging WS7" limit="200">
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="primer_nombre"/>
+                <field name="segundo_nombre"/>
+                <field name="primer_ap"/>
+                <field name="segundo_ap"/>
+                <field name="mov"/>
+                <field name="tipo_mov"/>
+                <field name="pdaId"/>
+                <field name="movimientoPadreId"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="onsc_legajo_staging_ws7_view_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.staging.ws7.form</field>
+        <field name="model">onsc.legajo.staging.ws7</field>
+        <field name="arch" type="xml">
+            <form string="Staging WS7">
+                <header>
+                    <button name="button_in_process" type="object" string="A procesar" states="error"/>
+                    <field name="state" widget="statusbar" clickable="1"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="primer_nombre"/>
+                            <field name="segundo_nombre"/>
+                            <field name="primer_ap"/>
+                            <field name="segundo_ap"/>
+                            <field name="mov"/>
+                            <field name="tipo_mov"/>
+                            <field name="pdaId"/>
+                            <field name="movimientoPadreId"/>
+                            <field name="fecha_nac"/>
+                            <field name="fecha_ing_adm"/>
+                            <field name="cod_mot_baja"/>
+                            <field name="fecha_vig"/>
+                            <field name="fecha_aud"/>
+                            <field name="fecha_desde_vinc"/>
+                            <field name="idPuesto"/>
+                            <field name="nroPlaza"/>
+                            <field name="secPlaza"/>
+                            <field name="programa"/>
+                            <field name="proyecto"/>
+                            <field name="aniosInactividad"/>
+                            <field name="fechaGraduacion"/>
+                        </group>
+                        <group>
+                            <field name="inciso_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="operating_unit_id"
+                                   domain="[('inciso_id', '=', inciso_id)]"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="cv_document_type_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="country_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="race_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="income_mechanism_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="regime_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="descriptor1_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="descriptor2_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="descriptor3_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="descriptor4_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="comision_inciso_dest_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="comision_operating_unit_dest_id"
+                                   domain="[('inciso_id', '=', comision_inciso_dest_id)]"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="extinction_commission_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="commission_regime_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="program_project_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="retributive_day_id"
+                                   domain="[('office_id', '=', program_project_id)]"
+                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="gender_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="marital_status_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Data origen">
+                            <field name="info_income"/>
+                        </page>
+                        <page string="Log">
+                            <field name="log"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="onsc_legajo_staging_ws7_view_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.staging.ws7.search</field>
+        <field name="model">onsc.legajo.staging.ws7</field>
+        <field name="arch" type="xml">
+            <search string="Staging WS7">
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="primer_nombre"/>
+                <field name="segundo_nombre"/>
+                <field name="primer_ap"/>
+                <field name="segundo_ap"/>
+                <field name="mov"/>
+                <field name="tipo_mov"/>
+                <field name="pdaId"/>
+                <field name="movimientoPadreId"/>
+                <field name="state"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_legajo_staging_ws7_action" model="ir.actions.act_window">
+        <field name="name">Staging WS7</field>
+        <field name="res_model">onsc.legajo.staging.ws7</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>
