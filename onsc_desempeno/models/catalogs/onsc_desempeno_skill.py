@@ -8,6 +8,7 @@ _logger = logging.getLogger(__name__)
 
 HTML_HELP = """<a class="btn" target="_blank" title="%s"><i class="fa fa-question-circle-o" role="img" aria-label="Info"/></a>"""
 
+
 class ONSCDesempenoSkill(models.Model):
     _name = 'onsc.desempeno.skill'
     _inherit = ['mail.thread', 'mail.activity.mixin']
@@ -53,8 +54,8 @@ class ONSCDesempenoSkillLine(models.Model):
     competency_id = fields.Many2one('onsc.desempeno.evaluation.competency', string="Competencias")
 
     dimension_tooltip = fields.Html(string=" ",
-        compute=lambda s: s._get_help('dimension_tooltip'),
-        default=lambda s: s._get_help('dimension_tooltip', True))
+                                    compute=lambda s: s._get_help('dimension_tooltip'),
+                                    default=lambda s: s._get_help('dimension_tooltip', True))
 
     _sql_constraints = [
         ('line_uniq', 'unique(skill_id,dimension_id,level_id)',

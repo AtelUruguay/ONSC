@@ -152,14 +152,18 @@ class ONSCDesempenoEvaluation(models.Model):
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
+        user_employee_id = self.env.user.employee_id.id
         for record in self:
-            record.should_disable_form_edit = record.evaluation_type == 'self_evaluation' and (
-                    record.state not in ['in_process'] or record.evaluated_id.id != self.env.user.employee_id.id)
+            is_self_evaluation = record.evaluation_type == 'self_evaluation'
+            second_condition = record.state not in ['in_process'] or record.evaluated_id.id != user_employee_id
+            record.should_disable_form_edit = is_self_evaluation and second_condition
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
+        user_employee_id = self.env.user.employee_id.id
         for record in self:
-            record.evaluation_form_edit = record.evaluation_type == 'self_evaluation' and record.evaluated_id.id == self.env.user.employee_id.id
+            is_am_evaluated = record.evaluated_id.id == user_employee_id
+            record.evaluation_form_edit = record.evaluation_type == 'self_evaluation' and is_am_evaluated
 
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})
