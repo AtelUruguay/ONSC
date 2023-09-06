@@ -73,11 +73,21 @@ class ONSCDesempenoEvaluation(models.Model):
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
+    evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
     year = fields.Integer(tring='Año a Evaluar', readonly=True, related='general_cycle_id.year')
-    evaluation_start_date = fields.Date(string='Fecha inicio ciclo evaluación', readonly=True)
-    evaluation_end_date = fields.Date(string='Fecha fin ciclo evaluación', readonly=True)
-    environment_definition_end_date = fields.Date(string='Fecha de Fin de la Definición de Entorno', readonly=True)
+    evaluation_start_date = fields.Date(
+        string='Fecha inicio ciclo evaluación',
+        related='evaluation_stage_id.start_date',
+        store=True)
+    evaluation_end_date = fields.Date(
+        string='Fecha fin ciclo evaluación',
+        related='evaluation_stage_id.end_date',
+        store=True)
+    environment_definition_end_date = fields.Date(
+        string='Fecha de Fin de la Definición de Entorno',
+        related='evaluation_stage_id.end_date_environment',
+        store=True)
     evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'evaluation_id',
                                                 string='Evaluación de Competencias')
     general_comments = fields.Text(string='Comentarios Generales')
@@ -143,7 +153,8 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.evaluation_type == 'self_evaluation' and (record.state not in ['in_process'] or record.evaluated_id.id != self.env.user.employee_id.id)
+            record.should_disable_form_edit = record.evaluation_type == 'self_evaluation' and (
+                    record.state not in ['in_process'] or record.evaluated_id.id != self.env.user.employee_id.id)
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):

@@ -14,6 +14,7 @@ STATE = [
     ('canceled', 'Cancelado')
 ]
 
+HTML_HELP = """<a class="btn" style="padding-top:inherit!important;" target="_blank" title="%s"><i class="fa fa-question-circle-o" role="img" aria-label="Info"/></a>"""
 
 class ONSCDesempenoEvaluationCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.competency'
@@ -30,6 +31,18 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=True,
                                     help='Este es un tooltip para el campo Brecha/Fortalezas/Aspectos a mejorar')
     evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit', )
+
+    skill_tooltip = fields.Html(
+        compute=lambda s: s._get_help('skill_tooltip'),
+        default=lambda s: s._get_help('skill_tooltip', True))
+
+    def _get_help(self, help_field='', is_default=False):
+        _html2construct = HTML_HELP % ('Tooltip')
+        if is_default:
+            return eval("_html2construct")
+        for rec in self:
+            _html2construct = HTML_HELP % (rec.skill_id.definition or '')
+            setattr(rec, help_field, _html2construct)
 
     def button_open_current_skill(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_competency_action').read()[0]

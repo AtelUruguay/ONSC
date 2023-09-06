@@ -10,6 +10,7 @@
             </search>
         </field>
     </record>
+
     <record id="onsc_desempeno_dimension_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.dimension.tree</field>
         <field name="model">onsc.desempeno.dimension</field>

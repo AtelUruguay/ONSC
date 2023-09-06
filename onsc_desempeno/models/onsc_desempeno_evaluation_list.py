@@ -295,9 +295,8 @@ class ONSCDesempenoEvaluationList(models.Model):
             'operating_unit_id': data.contract_id.operating_unit_id.id,
             'occupation_id': data.contract_id.occupation_id.id,
             'level_id': level_id.id,
+            'evaluation_stage_id': data.evaluation_list_id.evaluation_stage_id.id,
             'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
-            'evaluation_start_date': data.evaluation_list_id.start_date,
-            'evaluation_end_date': data.evaluation_list_id.end_date,
             'state': 'draft',
         })
         for skill in skills:
@@ -320,6 +319,14 @@ class ONSCDesempenoEvaluationList(models.Model):
     def _create_collaborator_evaluation(self, data):
         # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         return True
+
+    def _action_desempeno_evaluation_list(self):
+        if self.user_has_groups(
+                'onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue'):
+            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_list_nofilter_is_imanager_action')
+        else:
+            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_list_action')
+        return action.read()[0]
 
 
 class ONSCDesempenoEvaluationListLine(models.Model):
