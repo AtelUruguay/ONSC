@@ -175,4 +175,26 @@
             </p>
         </field>
     </record>
+
+    <record id='onsc_desempeno_evaluation_list_nofilter_is_imanager_action' model='ir.actions.act_window'>
+        <field name="name">Lista de participantes 360° por UE</field>
+        <field name="res_model">onsc.desempeno.evaluation.list</field>
+        <field name="context">{'is_from_menu': True}</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Crear una Lista de participantes 360°
+            </p>
+        </field>
+    </record>
+
+    <record id="onsc_desempeno_evaluation_list_action_server" model="ir.actions.server">
+        <field name="name">Lista de participantes 360° por UE</field>
+        <field name="type">ir.actions.server</field>
+        <field name="state">code</field>
+        <field name="model_id" ref="model_onsc_desempeno_evaluation_list"/>
+        <field name="code">
+            action = model._action_desempeno_evaluation_list()
+        </field>
+    </record>
 </odoo>
