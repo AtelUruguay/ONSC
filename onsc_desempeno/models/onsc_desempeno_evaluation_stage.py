@@ -93,7 +93,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
         if is_default:
             return is_operating_unit_readonly
         for rec in self:
-            rec.is_operating_unit_readonly = is_operating_unit_readonly
+            second_condition = rec.start_date and rec.start_date <= fields.Date.today()
+            rec.is_operating_unit_readonly = is_operating_unit_readonly or second_condition
 
     def _compute_operating_unit_id_domain(self, is_default=False):
         user_contract_id = self.env.user.employee_id.job_id.contract_id

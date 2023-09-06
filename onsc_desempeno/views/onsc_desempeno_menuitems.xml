@@ -8,7 +8,7 @@
 
     <menuitem id="onsc_desempeno_evaluation_list_menu"
               name="Lista de participantes 360"
-              action="onsc_desempeno_evaluation_list_action"
+              action="onsc_desempeno_evaluation_list_action_server"
               parent="onsc_desempeno_root_menu"
               groups="onsc_desempeno.group_desempeno_responsable_uo,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue"
               sequence="1"/>
