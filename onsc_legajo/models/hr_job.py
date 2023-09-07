@@ -50,7 +50,6 @@ class HrJob(models.Model):
          'The name of the job position must be unique per department in company!'),
     ]
 
-
     @api.depends('contract_id')
     def _compute_department_domain(self):
         UOs = self.env['hr.department']
