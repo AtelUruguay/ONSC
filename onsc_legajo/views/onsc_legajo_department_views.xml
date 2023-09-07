@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <tree string="Legajos">
                 <field name="legajo_id" string="Funcionario"/>
-                <field name="job_id" string="Puesto"/>
+                <field name="job_name" string="Puesto"/>
                 <field name="security_job_id" optional="show"/>
                 <field name="department_id" string="UO" optional="hide"/>
                 <field name="operating_unit_id" string="Unidad ejecutora" optional="hide"/>
@@ -31,10 +31,10 @@
                 </searchpanel>
                 <field name="legajo_id" string="Funcionario"/>
                 <field name="contract_id" string="Contrato"/>
-                <field name="job_id" string="Puesto"/>
                 <field name="department_id" string="UO"/>
                 <field name="security_job_id"/>
                 <field name="legajo_state"/>
+                <field name="job_name"/>
                 <filter string="Funcionarios activos" name="filter_legajo_state_active"
                             domain="[('legajo_state','=','active')]"/>
                 <filter string="Funcionarios egresados" name="filter_legajo_state_egresed"

@@ -28,9 +28,16 @@ class ONSCLegajoDepartment(models.Model):
 
     def _get_domain(self, args):
         Legajo = self.env['onsc.legajo']
+        is_config_security = self.user_has_groups(
+            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo')
         is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
         is_ue_security = self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
-        if is_inciso_security:
+        if is_config_security:
+            legajos = Legajo.search([])
+            args = expression.AND([[
+                ('legajo_id', 'in', legajos.ids),
+            ], args])
+        elif is_inciso_security:
             legajos = Legajo.search([])
             contract = self.env.user.employee_id.job_id.contract_id
             args = expression.AND([[
@@ -54,7 +61,7 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoDepartment, self).fields_get(allfields, attributes)
-        hide = ['is_job_open', 'type', 'end_date', 'employee_id']
+        hide = ['is_job_open', 'type', 'end_date', 'employee_id', 'job_id']
         for field in hide:
             if field in res:
                 res[field]['selectable'] = False
@@ -75,6 +82,9 @@ class ONSCLegajoDepartment(models.Model):
         ('outgoing_commission', 'Comisión saliente'),
         ('incoming_commission', 'Comisión entrante')], string='Estado del contrato')
     job_id = fields.Many2one('hr.job', string="Puesto")
+    job_name = fields.Char(
+        string='Nombre del puesto',
+        required=False)
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
@@ -104,6 +114,7 @@ FROM
     legajo.legajo_state AS legajo_state,
     contract.legajo_state AS contract_legajo_state,
     job.id AS job_id,
+    job.name AS job_name,
     job.security_job_id AS security_job_id,
     contract.inciso_id,
     contract.operating_unit_id,
@@ -123,6 +134,7 @@ SELECT
     legajo.legajo_state AS legajo_state,
     contract.legajo_state AS contract_legajo_state,
     NULL AS job_id,
+    NULL AS job_name,
     NULL AS security_job_id,
     contract.inciso_id,
     contract.operating_unit_id,
@@ -151,13 +163,20 @@ RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
             lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
                 x.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= _today)) == 0)
 
+        unicity_joker_legajo_ids = open_system_records.mapped('legajo_id.id')
+        unicity_joker = self
+        for joker_valid_record in joker_valid_records:
+            if joker_valid_record.legajo_id.id not in unicity_joker_legajo_ids:
+                unicity_joker |= joker_valid_record
+                unicity_joker_legajo_ids.append(joker_valid_record.legajo_id.id)
+
         if operator == '=' and value is False:
             _operator = 'not in'
         else:
             _operator = 'in'
 
         final_records = open_system_records
-        final_records |= joker_valid_records
+        final_records |= unicity_joker
         return [('id', _operator, final_records.ids)]
 
     @api.depends('start_date', 'end_date')
