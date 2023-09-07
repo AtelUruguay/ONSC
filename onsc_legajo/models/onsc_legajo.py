@@ -9,6 +9,7 @@ class ONSCLegajo(models.Model):
     _name = "onsc.legajo"
     _inherit = "onsc.legajo.abstract.legajo.security"
     _rec_name = "employee_id"
+    _order = "employee_id"
 
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
