@@ -7,6 +7,7 @@ class ONSCLegajoDepartment(models.Model):
     _name = "onsc.legajo.department"
     _description = "Legajo - UO"
     _auto = False
+    _order = "legajo_id"
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
