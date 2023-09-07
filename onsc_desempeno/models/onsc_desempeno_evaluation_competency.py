@@ -30,7 +30,10 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo',
                                 required=True, ondelete='restrict')
     improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=True,
-                                    help='Este es un tooltip para el campo Brecha/Fortalezas/Aspectos a mejorar')
+                                    help='Para identificar la necesidad de desarrollo que requiere la persona, '
+                                         'compare, para cada competencia, el desempeño observado con los '
+                                         'comportamientos esperados, contenidos en las dimensiones de '
+                                         'cada competencia.')
     evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit', )
 
     skill_tooltip = fields.Html(
