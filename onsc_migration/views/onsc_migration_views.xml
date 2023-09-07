@@ -22,7 +22,7 @@
             <form string="Migracion">
                 <header>
                     <button type="object" class="btn btn-primary"
-                            string="Ejecutar"
+                            string="Cargar Archivo" attrs="{'invisible': [('state', '!=', 'ok')]}"
                             name="button_process"/>
 
                     <field name="state" widget="statusbar"
@@ -31,7 +31,7 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="document_file" filename="document_filename"/>
+                            <field name="document_file" filename="document_filename" attrs="{'readonly': [('state', '!=', 'ok')]}"/>
                             <field name="document_filename" invisible="1"/>
 
                             <field name="error" attrs="{'invisible': [('state', '!=', 'error')]}"/>
@@ -40,7 +40,116 @@
                     </group>
                     <notebook>
                         <page string="Lineas de migración">
-                            <field name="line_ids" nolabel="1">
+                            <field name="line_ids" nolabel="1" >
+                                <tree string="Migracion"  options="{'no_open': True}" editable="top" create="0" delete="0">
+                                    <field name="state"/>
+                                    <field name="error"/>
+                                    <field name="country_id"/>
+                                    <field name="doc_type_id"/>
+                                    <field name="doc_nro"/>
+                                    <field name="first_name"/>
+                                    <field name="second_name"/>
+                                    <field name="first_surname"/>
+                                    <field name="second_surname"/>
+                                    <field name="name_ci"/>
+                                    <field name="marital_status_id"/>
+                                    <field name="birth_date"/>
+                                    <field name="gender_id"/>
+                                    <field name="birth_country_id"/>
+                                    <field name="citizenship"/>
+                                    <field name="crendencial_serie"/>
+                                    <field name="credential_number"/>
+                                    <field name="personal_phone"/>
+                                    <field name="email"/>
+                                    <field name="email_inst"/>
+                                    <field name="address_state_id"/>
+                                    <field name="address_location_id"/>
+                                    <field name="address_street_id"/>
+                                    <field name="address_street2_id"/>
+                                    <field name="address_street3_id"/>
+                                    <field name="address_nro_door"/>
+                                    <field name="address_is_bis"/>
+                                    <field name="address_apto"/>
+                                    <field name="address_place"/>
+                                    <field name="address_zip"/>
+                                    <field name="address_block"/>
+                                    <field name="address_sandlot"/>
+                                    <field name="health_provider_id"/>
+                                    <field name="date_income_public_administration"/>
+                                    <field name="inactivity_years"/>
+                                    <field name="graduation_date"/>
+                                    <field name="date_start"/>
+
+
+									<field name="inciso_id"/>
+                                    <field name="operating_unit_id"/>
+                                    <field name="program"/>
+                                    <field name="project"/>
+                                    <field name="regime_id"/>
+                                    <field name="descriptor1_id"/>
+                                    <field name="descriptor2_id"/>
+                                    <field name="descriptor3_id"/>
+                                    <field name="descriptor4_id"/>
+                                    <field name="nro_puesto"/>
+                                    <field name="nro_place"/>
+                                    <field name="sec_place"/>
+                                    <field name="state_place"/>
+                                    <field name="occupation_id"/>
+                                    <field name="income_mechanism_id"/>
+                                    <field name="call_number"/>
+                                    <field name="reason_description"/>
+                                    <field name="norm_type"/>
+                                    <field name="norm_number"/>
+                                    <field name="norm_year"/>
+                                    <field name="norm_article"/>
+                                    <field name="resolution_description"/>
+                                    <field name="resolution_date"/>
+                                    <field name="resolution_type"/>
+                                    <field name="inciso_des_id"/>
+                                    <field name="operating_unit_des_id"/>
+                                    <field name="program_des"/>
+                                    <field name="project_des"/>
+                                    <field name="regime_des_id"/>
+                                    <field name="nro_puesto_des"/>
+                                    <field name="nro_place_des"/>
+                                    <field name="sec_place_des"/>
+                                    <field name="state_place_des"/>
+                                    <field name="department_id"/>
+                                    <field name="date_start_commission"/>
+                                    <field name="type_commission"/>
+                                    <field name="regime_commission_id"/>
+                                    <field name="reason_commision"/>
+                                    <field name="norm_comm_type"/>
+                                    <field name="norm_comm_number"/>
+                                    <field name="norm_comm_year"/>
+                                    <field name="norm_comm_article"/>
+                                    <field name="resolution_comm_description"/>
+                                    <field name="resolution_comm_date"/>
+                                    <field name="resolution_comm_type"/>
+
+									  <field name="end_date_contract"/>
+                                    <field name="retributive_day_id"/>
+                                    <field name="retributive_day_formal_id"/>
+                                    <field name="id_movimiento"/>
+                                    <field name="state_move"/>
+                                    <field name="security_job_id"/>
+                                    <field name="end_date"/>
+                                    <field name="causes_discharge_id"/>
+                                    <field name="reason_discharge"/>
+                                    <field name="norm_dis_type"/>
+                                    <field name="norm_dis_number"/>
+                                    <field name="norm_dis_year"/>
+                                    <field name="norm_dis_article"/>
+
+                                    <field name="resolution_dis_description"/>
+                                    <field name="resolution_dis_date"/>
+                                    <field name="resolution_dis_type"/>
+                                </tree>
+
+                            </field>
+                        </page>
+                        <page string="Lineas de migración con error">
+                            <field name="error_line_ids" nolabel="1">
                                 <tree string="Migracion"  options="{'no_open': True}" editable="top" create="0" delete="0">
                                     <field name="state"/>
                                     <field name="error"/>
