@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <menuitem id="onsc_migration_root_menu"
+              name="Migración"
+              web_icon="onsc_catalog,static/description/icon.png"
+              sequence="5"/>
+
+    <menuitem id="onsc_migration_menu"
+              name="Migración"
+              action="onsc_migration_action"
+              parent="onsc_migration_root_menu"
+              groups="onsc_migration.group_usuario_migracion"
+              sequence="1"/>
+
+</odoo>
