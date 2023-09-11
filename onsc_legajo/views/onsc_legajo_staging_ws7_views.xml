@@ -7,6 +7,7 @@
             <tree string="Staging WS7" limit="200">
                 <field name="inciso_id"/>
                 <field name="operating_unit_id"/>
+                <field name="doc"/>
                 <field name="primer_nombre"/>
                 <field name="segundo_nombre"/>
                 <field name="primer_ap"/>
@@ -31,6 +32,7 @@
                 <sheet>
                     <group>
                         <group>
+                            <field name="doc"/>
                             <field name="primer_nombre"/>
                             <field name="segundo_nombre"/>
                             <field name="primer_ap"/>

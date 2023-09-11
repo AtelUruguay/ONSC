@@ -12,6 +12,8 @@ class ONSCLegajoStagingWS7(models.Model):
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
 
+    fecha_aud_doc = fields.Char(string='Combinación fecha_aud-ci', index=True)
+    doc = fields.Char(string='doc', index=True)
     primer_nombre = fields.Char(string='primer_nombre')
     segundo_nombre = fields.Char(string='segundo_nombre')
     primer_ap = fields.Char(string='primer_ap')
@@ -69,6 +71,7 @@ class ONSCLegajoStagingWS7(models.Model):
             ('in_process', 'En proceso'),
             ('process', 'Procesado'),
             ('error', 'Error'),
+            ('na', 'No aplica')
         ], default='in_process')
 
     log = fields.Text(string='Log')
