@@ -26,69 +26,166 @@
         <field name="arch" type="xml">
             <form string="Staging WS7">
                 <header>
-                    <button name="button_in_process" type="object" string="A procesar" states="error"/>
+                    <button name="button_in_process"
+                            type="object"
+                            string="Pasar a En proceso"
+                            states="error,in_process"/>
                     <field name="state" widget="statusbar" clickable="1"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
+                            <field name="should_disable_form_edit" invisible="1"/>
                             <field name="doc"/>
-                            <field name="primer_nombre"/>
-                            <field name="segundo_nombre"/>
-                            <field name="primer_ap"/>
-                            <field name="segundo_ap"/>
-                            <field name="mov"/>
-                            <field name="tipo_mov"/>
-                            <field name="pdaId"/>
-                            <field name="movimientoPadreId"/>
-                            <field name="fecha_nac"/>
-                            <field name="fecha_ing_adm"/>
-                            <field name="cod_mot_baja"/>
-                            <field name="fecha_vig"/>
-                            <field name="fecha_aud"/>
-                            <field name="fecha_desde_vinc"/>
+                            <field name="primer_nombre" readonly="1"/>
+                            <field name="segundo_nombre" readonly="1"/>
+                            <field name="primer_ap" readonly="1"/>
+                            <field name="segundo_ap" readonly="1"/>
+                            <field name="mov" readonly="1"/>
+                            <field name="tipo_mov" readonly="1"/>
+                            <field name="pdaId" readonly="1"/>
+                            <field name="movimientoPadreId" readonly="1"/>
+                            <field name="fecha_nac" readonly="1"/>
+                            <field name="fecha_ing_adm" readonly="1"/>
+                            <field name="cod_mot_baja" readonly="1"/>
+                            <field name="fecha_vig" readonly="0"/>
+                            <field name="fecha_aud" readonly="0"/>
+                            <field name="fecha_desde_vinc" readonly="0"/>
                             <field name="idPuesto"/>
                             <field name="nroPlaza"/>
                             <field name="secPlaza"/>
-                            <field name="programa"/>
-                            <field name="proyecto"/>
-                            <field name="aniosInactividad"/>
-                            <field name="fechaGraduacion"/>
+                            <field name="programa" readonly="1"/>
+                            <field name="proyecto" readonly="1"/>
+                            <field name="aniosInactividad" readonly="1"/>
+                            <field name="fechaGraduacion" readonly="1"/>
                         </group>
                         <group>
-                            <field name="inciso_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="operating_unit_id"
-                                   domain="[('inciso_id', '=', inciso_id)]"
-                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="cv_document_type_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="country_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="race_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="income_mechanism_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="regime_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="descriptor1_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="descriptor2_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="descriptor3_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="descriptor4_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="comision_inciso_dest_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="comision_operating_unit_dest_id"
-                                   domain="[('inciso_id', '=', comision_inciso_dest_id)]"
-                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="extinction_commission_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="commission_regime_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="program_project_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="retributive_day_id"
-                                   domain="[('office_id', '=', program_project_id)]"
-                                   options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="gender_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="marital_status_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <label for="inciso"/>
+                            <div>
+                                <field name="inciso" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="inciso_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="ue"/>
+                            <div>
+                                <field name="ue" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="operating_unit_id"
+                                       domain="[('inciso_id', '=', inciso_id)]"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="tipo_doc"/>
+                            <div>
+                                <field name="tipo_doc" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="cv_document_type_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_pais"/>
+                            <div>
+                                <field name="cod_pais" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="country_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="raza"/>
+                            <div>
+                                <field name="raza" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="race_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_mecing"/>
+                            <div>
+                                <field name="cod_mecing" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="income_mechanism_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_reg"/>
+                            <div>
+                                <field name="cod_reg" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="regime_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_desc1"/>
+                            <div>
+                                <field name="cod_desc1" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="descriptor1_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_desc2"/>
+                            <div>
+                                <field name="cod_desc2" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="descriptor2_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_desc3"/>
+                            <div>
+                                <field name="cod_desc3" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="descriptor3_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_desc4"/>
+                            <div>
+                                <field name="cod_desc4" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="descriptor4_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="sexo"/>
+                            <div>
+                                <field name="sexo" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="gender_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="codigoEstadoCivil"/>
+                            <div>
+                                <field name="codigoEstadoCivil" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="marital_status_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="jornada_ret"/>
+                            <div>
+                                <field name="jornada_ret" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="retributive_day_id"
+                                       readonly="1"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <field name="program_project_id" readonly="1"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="budget_item_id" readonly="1"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Data origen">
-                            <field name="info_income"/>
-                        </page>
                         <page string="Log">
                             <field name="log"/>
+                        </page>
+                        <page string="Data origen">
+                            <field name="info_income" readonly="1"/>
                         </page>
                     </notebook>
                 </sheet>
@@ -111,6 +208,11 @@
                 <field name="pdaId"/>
                 <field name="movimientoPadreId"/>
                 <field name="state"/>
+                <group string="Agrupar por">
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_mov" string="mov" context="{'group_by': 'mov'}"/>
+                    <filter name="group_tipo_mov" string="tipo_mov" context="{'group_by': 'tipo_mov'}"/>
+                </group>
             </search>
         </field>
     </record>
