@@ -199,17 +199,15 @@ class ONSCLegajoStagingWS7(models.Model):
             args.append(('id', 'in', ids))
         for record in self.search(args):
             try:
-                if record.mov in ['ALTA', 'BAJA']:
-                    self._check_movement(Contract, record)
-                elif record.mov in ['ASCENSO', 'TRANSFORMA'] and record.tipo_mov == 'BAJA':
-                    self.set_ascenso_transformacion(Contract, record)
-                self.env.cr.commit()
+                with self._cr.savepoint():
+                    if record.mov in ['ALTA', 'BAJA']:
+                        self._check_movement(Contract, record)
+                    elif record.mov in ['ASCENSO', 'TRANSFORMA'] and record.tipo_mov == 'BAJA':
+                        self.set_ascenso_transformacion(Contract, record)
             except Exception as e:
-                self.env.cr.rollback()
                 record.write({
                     'state': 'error',
                     'log': 'Error: %s' % tools.ustr(e)})
-                self.env.cr.commit()
 
     def _check_movement(self, Contract, record):
         """
