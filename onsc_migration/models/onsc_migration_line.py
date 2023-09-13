@@ -45,9 +45,11 @@ class ONSCMigration(models.Model):
                 sheet = workbook.active
 
                 for row in sheet.iter_rows(min_row=2, values_only=True):
-                    # count = self.check_line(str(row[2]), str(row[44]), str(row[45]), str(row[46]))
-                    # if count > 0:
-                    #     continue
+                    count = self.check_line(str(row[2]), str(row[44]), str(row[45]), str(row[46]))
+                    if count > 0:
+                        continue
+                    if not row[0] and not row[1] and not row[2]:
+                        break
 
                     row_dict = {}
 
@@ -55,10 +57,12 @@ class ONSCMigration(models.Model):
                     doc_type_id = self.get_doc_type(row[1].upper())
                     marital_status_id = self.get_status_civil(str(row[8]).upper())
                     gender_id = self.get_gender(str(row[10]).upper())
-                    if row[0] != row[11]:
+                    if row[11] and row[0] != row[11]:
                         birth_country_id = self.get_country(row[11].upper())
-                    else:
+                    elif row[11]:
                         birth_country_id = country_id
+                    else:
+                        birth_country_id = None
                     address_state_id = self.get_country_state(str(row[18]).upper())
                     address_location_id = self.is_numeric(row[19]) and self.get_location(str(row[19])) or None
                     address_street_id = self.get_street(str(row[20]).upper())
@@ -215,8 +219,8 @@ class ONSCMigration(models.Model):
 
     def check_line(self, doc_nro, nro_puesto, nro_place, sec_place):
         self._cr.execute(
-            """SELECT count(id) FROM onsc_migration_line  WHERE upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
-            (doc_nro, nro_puesto, nro_place, sec_place))
+            """SELECT count(id) FROM onsc_migration_line  WHERE migration_id = %s and upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
+            (self.id, doc_nro, nro_puesto, nro_place, sec_place))
         return self._cr.fetchone()[0]
 
     def get_country(self, code):
@@ -453,6 +457,7 @@ class ONSCMigrationLine(models.Model):
     resolution_dis_description = fields.Char(string='Descripción de la resolución de la baja')
     resolution_dis_date = fields.Date(string='Fecha de la resolución de la baja')
     resolution_dis_type = fields.Char(string='Tipo de resolución de la baja')
+    partner_id = fields.Many2one('res.partner', string="Contacto")
 
     def validate_line(self):
         message_error = []
@@ -520,3 +525,161 @@ class ONSCMigrationLine(models.Model):
         result = super(ONSCMigrationLine, self).write(vals)
         self.validate_line()
         return result
+
+    def create_contact(self, line):
+        Partner = self.env['res.partner']
+        partner = Partner.sudo().search([('cv_nro_doc', '=', line.doc_nro)], limit=1)
+        try:
+            if not partner:
+                data_partner = {
+                    # 'cv_sex': line.cv_sex,
+                    'cv_emissor_country_id': line.country_id.id,
+                    'cv_nro_doc': line.doc_nro,
+                    'cv_document_type_id': line.doc_type_id.id,
+                    'is_partner_cv': True,
+                    'email': line.email,
+                    'cv_dnic_name_1': line.first_name,
+                    'cv_dnic_name_2': line.second_name,
+                    'cv_dnic_lastname_1': line.first_surname,
+                    'cv_dnic_lastname_2': line.second_surname,
+                    'cv_dnic_full_name': line.name_ci,
+                    'cv_birthdate': line.birth_date,
+                }
+                partner = Partner.suspend_security().create(data_partner)
+                line.write({'partner_id': partner.id})
+            else:
+                data_partner = {
+                    'cv_dnic_name_1': line.first_name,
+                    'cv_dnic_name_2': line.second_name,
+                    'cv_dnic_lastname_1': line.first_surname,
+                    'cv_dnic_lastname_2': line.second_surname,
+                    'cv_dnic_full_name': line.name_ci,
+                    'cv_birthdate': line.birth_date,
+                }
+                partner.suspend_security().write(data_partner)
+                line.write({'partner_id': partner.id})
+        except Exception as e:
+            self.env.cr.rollback()
+            line.write({'state': 'error', 'error': "No se puedo crear el contacto: " + tools.ustr(e)})
+            self.env.cr.commit()
+
+    def create_cv(self, line):
+        CVDigital = self.env['onsc.cv.digital']
+        cv_digital = CVDigital.sudo().search([('partner_id', '=', line.partner_id.id)], limit=1)
+        try:
+            if not cv_digital:
+                data = {'partner_id': line.partner_id.id,
+                        'personal_phone': line.personal_phone,
+                        'email': line.email_inst,
+                        'country_id': line.country_uy.id,
+                        'marital_status_id': line.marital_status_id.id,
+                        'country_of_birth_id': line.birth_country_id.id,
+                        'uy_citizenship': line.citizenship,
+                        'crendencial_serie': line.crendencial_serie,
+                        'credential_number': line.credential_number,
+                        'cv_address_state_id': line.address_state_id.id,
+                        'cv_address_location_id': line.address_location_id.id,
+                        'cv_address_street_id': line.address_street_id.id,
+                        'cv_address_street2_id': line.address_street2_id.id,
+                        'cv_address_street3_id': line.address_street3_id.id,
+                        'cv_address_zip': line.address_zip,
+                        'cv_address_nro_door': line.address_nro_door,
+                        'cv_address_is_cv_bis': line.address_is_bis,
+                        'cv_address_apto': line.address_apto,
+                        'cv_address_place': line.address_place,
+                        'cv_address_block': line.address_block,
+                        'cv_address_sandlot': line.address_sandlot,
+                        'health_provider_id': line.health_provider_id.id
+                        }
+
+                CVDigital.suspend_security().create(data)
+                return False
+            else:
+                data = {'email': line.email_inst,
+                        'marital_status_id': line.marital_status_id.id,
+                        'health_provider_id': line.health_provider_id.id
+                        }
+
+                CVDigital.suspend_security().write(data)
+                return True
+            self.env.cr.commit()
+        except Exception as e:
+            self.env.cr.rollback()
+            line.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
+            self.env.cr.commit()
+
+    def _get_info_from_line(self, line):
+        vals = ({
+            'country_of_birth_id': line.birth_country_id.id,
+            'institutional_email': line.email_inst,
+            'health_provider_id': line.health_provider_id.id,
+            'cv_first_name': line.first_name,
+            'cv_second_name': line.second_name,
+            'cv_last_name_1': line.first_surname,
+            'cv_last_name_2': line.second_surname,
+            'cv_birthdate': line.birth_date,
+            'personal_phone': line.personal_phone,
+            'email': line.email,
+            'cv_nro_doc': line.doc_nro,
+            # todo hacer casteo entre valores que viene en la planilla y los que seusa  en CV
+            'uy_citizenship': line.citizenship,
+            'crendencial_serie': line.crendencial_serie,
+            'credential_number': line.credential_number,
+            'marital_status_id': line.marital_status_id.id,
+            'country_id': line.country_id.id,
+            'cv_address_street_id': line.address_street_idaddress_street_id.id,
+            'cv_address_street2_id': line.address_street2_id.id,
+            'cv_address_street3_id': line.address_street3_id.id,
+            'cv_address_state_id': line.address_state_id.id,
+            'cv_address_location_id': line.address_location_id.id,
+            'cv_address_nro_door': line.address_nro_door,
+            'cv_address_apto': line.address_apto,
+            'cv_address_zip': line.address_zip,
+            'cv_address_is_cv_bis': line.address_is_bis,
+            'cv_address_place': line.address_place,
+            'cv_address_block': line.address_block,
+            'cv_address_sandlot': line.address_sandlotself.cv_digital_id.cv_address_sandlot,
+            'cv_gender_id': line.gender_id.id,
+
+        })
+        return vals
+
+    def create_employee(self, line, exist_cv):
+        try:
+            employee = super(ONSCMigrationLine,
+                             self.with_context(is_alta_vl=True)).suspend_security()._get_legajo_employee()
+            cv = employee.cv_digital_id
+            if exist_cv:
+                vals = employee.with_context(is_migration=True).suspend_security._get_info_fromcv()
+                cv.with_context(documentary_validation='cv_address',
+                                user_id=self.env.user.id,
+                                can_update_contact_cv=True).button_documentary_approve()
+                cv.with_context(user_id=self.env.user.id,
+                                documentary_validation='marital_status').button_documentary_approve()
+                cv.with_context(user_id=self.env.user.id,
+                                documentary_validation='civical_credential').button_documentary_approve()
+                cv.with_context(user_id=self.env.user.id,
+                                documentary_validation='nro_doc').button_documentary_approve()
+            else:
+                vals = self.suspend_security()._get_info_from_line()
+            vals.update({
+                'cv_birthdate': self.cv_birthdate,
+            })
+
+            employee.write(vals)
+            cv.write({'is_docket': True})
+
+        except Exception as e:
+            self.env.cr.rollback()
+            line.write({'state': 'error', 'error': "No se puedo crear el funcionario: " + tools.ustr(e)})
+            self.env.cr.commit()
+
+    def initial_migration_process(self, limite=200):
+
+        for line in self.search([('state', '=', 'ok')], limit=limite):
+            self.create_contact(line)
+            exist_cv = self.create_cv(line)
+            if line.state != 'AP':
+                self.create_employee(line, exist_cv)
+            line.write({'state': 'process'})
+            self.env.cr.commit()
