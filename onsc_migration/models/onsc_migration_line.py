@@ -4,7 +4,7 @@ import logging
 
 import openpyxl as openpyxl
 
-from odoo import models, fields, tools, api
+from odoo import models, fields, tools
 
 STATE = [
     ('draft', 'Borrador'),
@@ -65,7 +65,7 @@ class ONSCMigration(models.Model):
 
                     country_id = row[0] and self.get_country(row[0].upper())
                     doc_type_id = row[1] and self.get_doc_type(row[1].upper())
-                    marital_status_id =row[8] and  self.get_status_civil(str(row[8]).upper())
+                    marital_status_id = row[8] and self.get_status_civil(str(row[8]).upper())
                     gender_id = row[10] and self.get_gender(str(row[10]).upper())
                     if row[12] and row[0] != row[12]:
                         birth_country_id = row[12] and self.get_country(row[12].upper())
@@ -150,10 +150,10 @@ class ONSCMigration(models.Model):
                     row_dict['call_number'] = row[51]
                     row_dict['reason_description'] = row[52]
                     row_dict['norm_id'] = norm_id and norm_id[0]
-                    row_dict['norm_type'] =  row[53]
+                    row_dict['norm_type'] = row[53]
                     row_dict['norm_number'] = row[54]
-                    row_dict['norm_year'] =  row[55]
-                    row_dict['norm_article'] =  row[56]
+                    row_dict['norm_year'] = row[55]
+                    row_dict['norm_article'] = row[56]
                     row_dict['resolution_description'] = row[57]
                     row_dict['resolution_date'] = self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d")
                     row_dict['resolution_type'] = row[59]
@@ -186,7 +186,7 @@ class ONSCMigration(models.Model):
                         row_dict['norm_comm_id'] = norm_comm_id and norm_comm_id[0]
                         row_dict['norm_comm_type'] = row[74]
                         row_dict['norm_comm_number'] = row[75]
-                        row_dict['norm_comm_year'] =row[76]
+                        row_dict['norm_comm_year'] = row[76]
                         row_dict['norm_comm_article'] = row[77]
                         row_dict['resolution_comm_description'] = row[78]
                         row_dict['resolution_comm_date'] = self.is_datetime(row[79]) and row[79].strftime("%Y-%m-%d")
@@ -251,7 +251,6 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Unidad ejecutora  no es válido")
         if row[69] and not row_dict['department_id']:
             message_error.append("El campo Unidad organizativa no es válido")
-
 
         if row[49] and not row_dict['occupation_id']:
             message_error.append("El campo Ocupación no es válido")
@@ -402,6 +401,7 @@ class ONSCMigration(models.Model):
         self._cr.execute("""SELECT id FROM onsc_legajo_commission_regime  WHERE cgn_code = %s """, (code,))
         return self._cr.fetchone()
 
+
 class ONSCMigrationLine(models.Model):
     _name = "onsc.migration.line"
 
@@ -526,14 +526,13 @@ class ONSCMigrationLine(models.Model):
     resolution_dis_type = fields.Char(string='Tipo de resolución de la baja')
     sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], 'Sexo')
 
-
     def validate_line(self, message_error):
 
         for required_field in REQUIRED_FIELDS:
             if not eval('self.%s' % required_field):
                 message_error.append("El campo %s no es válido" % self._fields[required_field].string)
 
-        if self.sex not in ('male','feminine'):
+        if self.sex not in ('male', 'feminine'):
             message_error.append("El campo Sexo no es válido")
 
         if self.address_street_id:
