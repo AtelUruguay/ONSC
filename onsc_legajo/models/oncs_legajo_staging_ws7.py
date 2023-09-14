@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 
-from odoo import models, fields, tools, _
+from odoo import models, fields, tools, api, _
 
 
 class ONSCLegajoStagingWS7(models.Model):
@@ -103,6 +103,10 @@ class ONSCLegajoStagingWS7(models.Model):
     def init(self):
         self._cr.execute("""CREATE INDEX IF NOT EXISTS onsc_legajo_staging_ws7_recordset_unique
         ON onsc_legajo_staging_ws7 (tipo_mov,"pdaId")""")
+
+    @api.onchange('inciso_id')
+    def onchange_inciso_id(self):
+        self.operating_unit_id = False
 
     def _compute_should_disable_form_edit(self):
         for record in self:

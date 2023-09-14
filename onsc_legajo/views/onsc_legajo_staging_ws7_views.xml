@@ -29,8 +29,8 @@
                     <button name="button_in_process"
                             type="object"
                             string="Pasar a En proceso"
-                            states="error,in_process"/>
-                    <field name="state" widget="statusbar" clickable="1"/>
+                            states="error"/>
+                    <field name="state" widget="statusbar" clickable="0"/>
                 </header>
                 <sheet>
                     <group>
