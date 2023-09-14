@@ -113,25 +113,31 @@ class ONSCLegajoStagingWS7(models.Model):
             record.should_disable_form_edit = record.state in ['na', 'processed']
 
     def button_in_process(self):
-        self._set_mapped_vals()
-        if not self.log:
-            self.state = 'in_process'
+        if len(self) == 0:
+            self = self.search([('state', '=', 'error')])
+        for record in self.filtered(lambda x: x.state not in ['na', 'processed']):
+            record._set_mapped_vals()
 
     def _set_mapped_vals(self):
         RetributiveDay = self.env['onsc.legajo.jornada.retributiva'].suspend_security()
         BudgetItem = self.env['onsc.legajo.budget.item'].suspend_security()
+        log_list = []
 
-        log_list = self._set_mapped_vals_get_logs()
+        vals = self._set_mapped_vals_get_logs(log_list)
 
         budget_item_args = []
-        if self.descriptor1_id:
-            budget_item_args.append(('dsc1Id', '=', self.descriptor1_id.id))
-        if self.descriptor2_id:
-            budget_item_args.append(('dsc1Id', '=', self.descriptor1_id.id))
-        if self.descriptor3_id:
-            budget_item_args.append(('dsc1Id', '=', self.descriptor1_id.id))
-        if self.descriptor4_id:
-            budget_item_args.append(('dsc1Id', '=', self.descriptor1_id.id))
+        descriptor1_id = vals.get('descriptor1_id')
+        descriptor2_id = vals.get('descriptor2_id')
+        descriptor3_id = vals.get('descriptor3_id')
+        descriptor4_id = vals.get('descriptor4_id')
+        if descriptor1_id:
+            budget_item_args.append(('dsc1Id', '=', descriptor1_id))
+        if descriptor2_id:
+            budget_item_args.append(('dsc2Id', '=', descriptor2_id))
+        if descriptor3_id:
+            budget_item_args.append(('dsc3Id', '=', descriptor3_id))
+        if descriptor4_id:
+            budget_item_args.append(('dsc4Id', '=', descriptor4_id))
 
         budget_item = BudgetItem.search(budget_item_args, limit=1)
         if not budget_item:
@@ -152,49 +158,105 @@ class ONSCLegajoStagingWS7(models.Model):
             )
 
         if len(log_list) > 0:
-            log_str = ', '.join(log_list)
-            self.write({'log': log_str, 'state': 'error'})
+            state = 'error'
+            log = ', '.join(log_list)
         else:
-            self.write({
-                'state': 'in_process',
-                'log': False,
-                'budget_item_id': budget_item.id,
-                'retributive_day_id': retributive_day_id,
-                'program_project_id': office_id,
-            })
+            state = 'in_process'
+            log = False
 
-    def _set_mapped_vals_get_logs(self):
-        log_list = []
+        vals.update({
+            'state': state,
+            'log': log,
+            'budget_item_id': budget_item.id,
+            'retributive_day_id': retributive_day_id,
+            'program_project_id': office_id,
+        })
+        self.write(vals)
+
+    def _set_mapped_vals_get_logs(self, log_list):
+        BaseUtils = self.env['onsc.base.utils'].sudo()
+        Inciso = self.env['onsc.catalog.inciso'].suspend_security()
+        OperatingUnit = self.env['operating.unit'].suspend_security()
+        DocType = self.env['onsc.cv.document.type'].suspend_security()
+        Country = self.env['res.country'].suspend_security()
+        Race = self.env['onsc.cv.race'].suspend_security()
+        IncomeMechanism = self.env['onsc.legajo.income.mechanism'].suspend_security()
+        Regime = self.env['onsc.legajo.regime'].suspend_security()
+        Descriptor1 = self.env['onsc.catalog.descriptor1'].suspend_security()
+        Descriptor2 = self.env['onsc.catalog.descriptor2'].suspend_security()
+        Descriptor3 = self.env['onsc.catalog.descriptor3'].suspend_security()
+        Descriptor4 = self.env['onsc.catalog.descriptor4'].suspend_security()
+        Gender = self.env['onsc.cv.gender'].suspend_security()
+        MaritalStatus = self.env['onsc.cv.status.civil'].suspend_security()
+
+        vals = {}
         if self.inciso and not self.inciso_id:
-            log_list.append(_('Hay establecido un inciso pero no está cargado el catálogo correspondiente'))
+            inciso_id = BaseUtils._get_catalog_id(Inciso, 'budget_code', self, 'inciso', log_list)
+        else:
+            inciso_id = self.inciso_id.id
+        vals.update({'inciso_id': inciso_id})
         if self.ue and not self.operating_unit_id:
-            log_list.append(_('Hay establecido una ue pero no está cargado el catálogo correspondiente'))
+            operating_unit_id = OperatingUnit.search([('budget_code', '=', str(self.ue)),
+                                                      ('inciso_id', '=', inciso_id)], limit=1).id
+        else:
+            operating_unit_id = self.operating_unit_id.id
+        vals.update({'operating_unit_id': operating_unit_id})
         if self.tipo_doc and not self.cv_document_type_id:
-            log_list.append(_('Hay establecido un tipo_doc pero no está cargado el catálogo correspondiente'))
+            cv_document_type_id = BaseUtils._get_catalog_id(DocType, 'code_other', self, 'tipo_doc', log_list)
+        else:
+            cv_document_type_id = self.cv_document_type_id.id
+        vals.update({'cv_document_type_id': cv_document_type_id})
         if self.cod_pais and not self.country_id:
-            log_list.append(_('Hay establecido un cod_pais pero no está cargado el catálogo correspondiente'))
+            country_id = BaseUtils._get_catalog_id(Country, 'code_rve', self, 'cod_pais', log_list)
+        else:
+            country_id = self.country_id.id
+        vals.update({'country_id': country_id})
         if self.raza and not self.race_id:
-            log_list.append(_('Hay establecido un raza pero no está cargado el catálogo correspondiente'))
+            race_id = BaseUtils._get_catalog_id(Race, 'code', self, 'raza', log_list)
+        else:
+            race_id = self.race_id.id
+        vals.update({'race_id': race_id})
         if self.cod_mecing and not self.income_mechanism_id:
-            log_list.append(_('Hay establecido un cod_mecing pero no está cargado el catálogo correspondiente'))
+            income_mechanism_id = BaseUtils._get_catalog_id(IncomeMechanism, 'code', self, 'cod_mecing', log_list)
+        else:
+            income_mechanism_id = self.income_mechanism_id.id
+        vals.update({'income_mechanism_id': income_mechanism_id})
         if self.cod_reg and not self.regime_id:
-            log_list.append(_('Hay establecido un cod_reg pero no está cargado el catálogo correspondiente'))
+            regime_id = BaseUtils._get_catalog_id(Regime, 'codRegimen', self, 'cod_reg', log_list)
+        else:
+            regime_id = self.regime_id.id
+        vals.update({'regime_id': regime_id})
         if self.cod_desc1 and not self.descriptor1_id:
-            log_list.append(_('Hay establecido un cod_desc1 pero no está cargado el catálogo correspondiente'))
+            descriptor1_id = BaseUtils._get_catalog_id(Descriptor1, 'code', self, 'cod_desc1', log_list)
+        else:
+            descriptor1_id = self.descriptor1_id.id
+        vals.update({'descriptor1_id': descriptor1_id})
         if self.cod_desc2 and not self.descriptor2_id:
-            log_list.append(_('Hay establecido un cod_desc2 pero no está cargado el catálogo correspondiente'))
+            descriptor2_id = BaseUtils._get_catalog_id(Descriptor2, 'code', self, 'cod_desc2', log_list)
+        else:
+            descriptor2_id = self.descriptor2_id.id
+        vals.update({'descriptor2_id': descriptor2_id})
         if self.cod_desc3 and not self.descriptor3_id:
-            log_list.append(_('Hay establecido un cod_desc3 pero no está cargado el catálogo correspondiente'))
+            descriptor3_id = BaseUtils._get_catalog_id(Descriptor3, 'code', self, 'cod_desc3', log_list)
+        else:
+            descriptor3_id = self.descriptor3_id.id
+        vals.update({'descriptor3_id': descriptor3_id})
         if self.cod_desc4 and not self.descriptor4_id:
-            log_list.append(_('Hay establecido un cod_desc4 pero no está cargado el catálogo correspondiente'))
-
+            descriptor4_id = BaseUtils._get_catalog_id(Descriptor4, 'code', self, 'cod_desc4', log_list)
+        else:
+            descriptor4_id = self.descriptor4_id.id
+        vals.update({'descriptor4_id': descriptor4_id})
         if self.sexo and not self.gender_id:
-            log_list.append(_('Hay establecido un sexo pero no está cargado el catálogo correspondiente'))
+            gender_id = BaseUtils._get_catalog_id(Gender, 'code', self, 'sexo', log_list)
+        else:
+            gender_id = self.gender_id.id
+        vals.update({'gender_id': gender_id})
         if self.codigoEstadoCivil and not self.marital_status_id:
-            log_list.append(_('Hay establecido un codigoEstadoCivil pero no está cargado el catálogo correspondiente'))
-        if self.cod_desc4 and not self.descriptor4_id:
-            log_list.append(_('Hay establecido un cod_desc4 pero no está cargado el catálogo correspondiente'))
-        return log_list
+            marital_status_id = BaseUtils._get_catalog_id(MaritalStatus, 'code', self, 'codigoEstadoCivil', log_list)
+        else:
+            marital_status_id = self.marital_status_id.id
+        vals.update({'marital_status_id': marital_status_id})
+        return vals
 
     def process_staging(self, ids=[]):
         Contract = self.env['hr.contract'].sudo()

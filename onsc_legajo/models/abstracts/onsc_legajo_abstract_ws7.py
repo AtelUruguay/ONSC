@@ -115,6 +115,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
         Gender = self.env['onsc.cv.gender'].suspend_security()
         MaritalStatus = self.env['onsc.cv.status.civil'].suspend_security()
         Staging = self.env['onsc.legajo.staging.ws7'].suspend_security()
+        stagings = self.env['onsc.legajo.staging.ws7']
 
         integration_error_WS7_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS7_9004")
 
@@ -131,56 +132,55 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                         continue
 
                     is_simplify_record = vals.get('mov') in ['ALTA', 'BAJA']
-                    if not is_simplify_record:
-                        inciso_id = self._get_catalog_id(Inciso, 'budget_code', operation, 'inciso', logs_list)
-                        operating_unit_id = OperatingUnit.search([('budget_code', '=', str(operation.ue)),
-                                                                  ('inciso_id', '=', inciso_id)], limit=1).id
-                        if not operating_unit_id:
-                            logs_list.append(
-                                _('No se encontró en el catálogo Unidad ejecutora el valor %s') % (operation.ue))
-
-                        cv_document_type_id = self._get_catalog_id(DocType, 'code_other', operation, 'tipo_doc',
-                                                                   logs_list)
-                        country_id = self._get_catalog_id(Country, 'code_rve', operation, 'cod_pais', logs_list)
-                        race_id = self._get_catalog_id(Race, 'code', operation, 'raza', logs_list)
-                        income_mechanism_id = self._get_catalog_id(IncomeMechanism, 'code', operation, 'cod_mecing',
-                                                                   logs_list)
-                        descriptor1_id = self._get_catalog_id(Descriptor1, 'code', operation, 'cod_desc1', logs_list)
-                        descriptor2_id = self._get_catalog_id(Descriptor2, 'code', operation, 'cod_desc2', logs_list)
-                        descriptor3_id = self._get_catalog_id(Descriptor3, 'code', operation, 'cod_desc3', logs_list)
-                        descriptor4_id = self._get_catalog_id(Descriptor4, 'code', operation, 'cod_desc4', logs_list)
-
-                        extinction_commission_id = self._get_catalog_id(ExtinctionCommission, 'code', operation,
-                                                                        'comi_mot_ext',
-                                                                        logs_list)
-                        gender_id = self._get_catalog_id(Gender, 'code', operation, 'sexo', logs_list)
-                        marital_status_id = self._get_catalog_id(MaritalStatus, 'code', operation, 'codigoEstadoCivil',
-                                                                 logs_list)
-                        regime_id = self._get_catalog_id(Regime, 'codRegimen', operation, 'cod_reg', logs_list)
-
-                        vals.update({
-                            'inciso_id': inciso_id,
-                            'operating_unit_id': operating_unit_id,
-                            'cv_document_type_id': cv_document_type_id,
-                            'country_id': country_id,
-                            'race_id': race_id,
-                            'income_mechanism_id': income_mechanism_id,
-                            'regime_id': regime_id,
-                            'descriptor1_id': descriptor1_id,
-                            'descriptor2_id': descriptor2_id,
-                            'descriptor3_id': descriptor3_id,
-                            'descriptor4_id': descriptor4_id,
-                            'extinction_commission_id': extinction_commission_id,
-                            'gender_id': gender_id,
-                            'marital_status_id': marital_status_id,
-                        })
+                    # if not is_simplify_record:
+                    #     inciso_id = self._get_catalog_id(Inciso, 'budget_code', operation, 'inciso', logs_list)
+                    #     operating_unit_id = OperatingUnit.search([('budget_code', '=', str(operation.ue)),
+                    #                                               ('inciso_id', '=', inciso_id)], limit=1).id
+                    #     if not operating_unit_id:
+                    #         logs_list.append(
+                    #             _('No se encontró en el catálogo Unidad ejecutora el valor %s') % (operation.ue))
+                    #
+                    #     cv_document_type_id = self._get_catalog_id(DocType, 'code_other', operation, 'tipo_doc',
+                    #                                                logs_list)
+                    #     country_id = self._get_catalog_id(Country, 'code_rve', operation, 'cod_pais', logs_list)
+                    #     race_id = self._get_catalog_id(Race, 'code', operation, 'raza', logs_list)
+                    #     income_mechanism_id = self._get_catalog_id(IncomeMechanism, 'code', operation, 'cod_mecing',
+                    #                                                logs_list)
+                    #     descriptor1_id = self._get_catalog_id(Descriptor1, 'code', operation, 'cod_desc1', logs_list)
+                    #     descriptor2_id = self._get_catalog_id(Descriptor2, 'code', operation, 'cod_desc2', logs_list)
+                    #     descriptor3_id = self._get_catalog_id(Descriptor3, 'code', operation, 'cod_desc3', logs_list)
+                    #     descriptor4_id = self._get_catalog_id(Descriptor4, 'code', operation, 'cod_desc4', logs_list)
+                    #
+                    #     extinction_commission_id = self._get_catalog_id(ExtinctionCommission, 'code', operation,
+                    #                                                     'comi_mot_ext',
+                    #                                                     logs_list)
+                    #     gender_id = self._get_catalog_id(Gender, 'code', operation, 'sexo', logs_list)
+                    #     marital_status_id = self._get_catalog_id(MaritalStatus, 'code', operation, 'codigoEstadoCivil',
+                    #                                              logs_list)
+                    #     regime_id = self._get_catalog_id(Regime, 'codRegimen', operation, 'cod_reg', logs_list)
+                    #
+                    #     vals.update({
+                    #         'inciso_id': inciso_id,
+                    #         'operating_unit_id': operating_unit_id,
+                    #         'cv_document_type_id': cv_document_type_id,
+                    #         'country_id': country_id,
+                    #         'race_id': race_id,
+                    #         'income_mechanism_id': income_mechanism_id,
+                    #         'regime_id': regime_id,
+                    #         'descriptor1_id': descriptor1_id,
+                    #         'descriptor2_id': descriptor2_id,
+                    #         'descriptor3_id': descriptor3_id,
+                    #         'descriptor4_id': descriptor4_id,
+                    #         'extinction_commission_id': extinction_commission_id,
+                    #         'gender_id': gender_id,
+                    #         'marital_status_id': marital_status_id,
+                    #     })
 
                     if is_simplify_record:
                         vals.update({'state': 'na'})
 
-                    staging = Staging.create(vals)
-                    if not is_simplify_record:
-                        staging._set_mapped_vals()
+                    stagings |= Staging.create(vals)
+                stagings.button_in_process()
             except Exception as e:
                 raise e
 

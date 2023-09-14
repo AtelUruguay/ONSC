@@ -1,11 +1,34 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models
+from odoo import models, _
 
 
 class ONSCBaseUtils(models.AbstractModel):
     _name = 'onsc.base.utils'
     _description = 'Base utils ONSC'
+
+    def _get_catalog_id(self, Catalog, catalog_field, operation, operation_code, log_list):
+        """
+        Get the catalog ID based on the given operation code.
+        :param Catalog: Env of Object. Ex: self.env['catalog']
+        :param catalog_field: Field name of the catalog. Ex: 'code'
+        :param operation: Record of the operation
+        :param operation_code: Var name of the operation. Ex: 'tipo_doc'
+        :param log_list: Log list to append errors
+        :return: id or False
+        """
+        if not hasattr(operation, operation_code):
+            return False
+        int_valid_operation_value = isinstance(getattr(operation, operation_code), int)
+        char_valid_operation_value = isinstance(getattr(operation, operation_code), str) and getattr(operation,
+                                                                                                     operation_code) != ""
+        if int_valid_operation_value or char_valid_operation_value:
+            recordset = Catalog.search([(catalog_field, '=', getattr(operation, operation_code))], limit=1)
+            if not recordset:
+                log_list.append(_('No se encontró en el catálogo %s el valor %s') % (
+                    Catalog._description, getattr(operation, operation_code)))
+            return recordset.id
+        return False
 
     def get_really_values_changed(self, recordset, values):
         """
