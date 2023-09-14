@@ -7,18 +7,27 @@ import openpyxl as openpyxl
 from odoo import models, fields, tools
 
 STATE = [
-    ('ok', 'OK'),
+    ('draft', 'Borrador'),
     ('error', 'Error'),
     ('in_process', 'Procesando'),
     ('process', 'Procesado'),
 ]
+
+REQUIRED_FIELDS = {'country_id', 'doc_type_id', 'doc_nro', 'first_name', 'address_state_id', 'address_location_id',
+                   'date_income_public_administration', 'sex', 'state', 'first_surname', 'inciso_id', 'state_place',
+                   'descriptor3_id', 'retributive_day_id', 'retributive_day_formal_id', 'state_move', 'sex',
+                   'birth_date', 'date_start'}
+
+REQUIRED_FIELDS_COMM = {'inciso_des_id', 'date_start_commission', 'state_place_des', 'reason_commision',
+                        'resolution_comm_description', 'resolution_comm_date', 'resolution_comm_type', }
+
 _logger = logging.getLogger(__name__)
 
 
 class ONSCMigration(models.Model):
     _name = "onsc.migration"
 
-    state = fields.Selection(STATE, string='Estado', readonly=True, default='ok')
+    state = fields.Selection(STATE, string='Estado', readonly=True, default='draft')
     error = fields.Text("Error")
     document_file = fields.Binary(string='Archivo de carga', required=True)
     document_filename = fields.Char('Nombre del documento', store=True)
@@ -45,9 +54,11 @@ class ONSCMigration(models.Model):
                 sheet = workbook.active
 
                 for row in sheet.iter_rows(min_row=2, values_only=True):
-                    # count = self.check_line(str(row[2]), str(row[44]), str(row[45]), str(row[46]))
-                    # if count > 0:
-                    #     continue
+                    count = self.check_line(str(row[2]), str(row[44]), str(row[45]), str(row[46]))
+                    if count > 0:
+                        continue
+                    if not row[0] and not row[1] and not row[2]:
+                        break
 
                     row_dict = {}
 
@@ -55,31 +66,33 @@ class ONSCMigration(models.Model):
                     doc_type_id = self.get_doc_type(row[1].upper())
                     marital_status_id = self.get_status_civil(str(row[8]).upper())
                     gender_id = self.get_gender(str(row[10]).upper())
-                    if row[0] != row[11]:
+                    if row[11] and row[0] != row[11]:
                         birth_country_id = self.get_country(row[11].upper())
-                    else:
+                    elif row[11]:
                         birth_country_id = country_id
-                    address_state_id = self.get_country_state(str(row[18]).upper())
-                    address_location_id = self.is_numeric(row[19]) and self.get_location(str(row[19])) or None
-                    address_street_id = self.get_street(str(row[20]).upper())
-                    address_street2_id = self.get_street(str(row[22]).upper())
-                    address_street3_id = self.get_street(str(row[23]).upper())
-                    health_provider_id = self.get_health_provider(str(row[30]).upper())
-                    inciso_id = self.get_inciso(str(row[35]).upper())
-                    operating_unit_id = self.get_operating_unit(str(row[36]).upper())
-                    program_project_id = self.get_office(str(row[37]).upper(), str(row[38]).upper())
-                    regime_id = self.get_regime(str(row[39]))
-                    descriptor1_id = self.get_descriptor1(str(row[40]).upper())
-                    descriptor2_id = self.get_descriptor2(str(row[41]).upper())
-                    descriptor3_id = self.get_descriptor3(str(row[42]).upper())
-                    descriptor4_id = self.get_descriptor4(str(row[43]).upper())
-                    occupation_id = self.get_occupation(str(row[48]).upper())
-                    income_mechanism_id = self.get_income_mechanism(str(row[49]).upper())
-                    norm_id = self.get_norm(str(row[52]).upper(), row[53], row[54], row[55])
-                    department_id = self.get_department(str(row[68]).upper())
-                    retributive_day_id = self.get_jornada_retributiva(str(row[81]).upper())
-                    retributive_day_formal_id = self.get_jornada_retributiva(str(row[82]).upper())
-                    security_job_id = self.get_security_job(str(row[85]).upper())
+                    else:
+                        birth_country_id = None
+                    address_state_id = self.get_country_state(str(row[19]).upper())
+                    address_location_id = self.is_numeric(row[20]) and self.get_location(str(row[19])) or None
+                    address_street_id = self.get_street(str(row[21]).upper())
+                    address_street2_id = self.get_street(str(row[23]).upper())
+                    address_street3_id = self.get_street(str(row[24]).upper())
+                    health_provider_id = self.get_health_provider(str(row[31]).upper())
+                    inciso_id = self.get_inciso(str(row[36]).upper())
+                    operating_unit_id = self.get_operating_unit(str(row[37]).upper())
+                    program_project_id = self.get_office(str(row[38]).upper(), str(row[39]).upper())
+                    regime_id = self.get_regime(str(row[40]))
+                    descriptor1_id = self.get_descriptor1(str(row[41]).upper())
+                    descriptor2_id = self.get_descriptor2(str(row[42]).upper())
+                    descriptor3_id = self.get_descriptor3(str(row[43]).upper())
+                    descriptor4_id = self.get_descriptor4(str(row[44]).upper())
+                    occupation_id = self.get_occupation(str(row[49]).upper())
+                    income_mechanism_id = self.get_income_mechanism(str(row[50]).upper())
+                    norm_id = self.get_norm(str(row[53]).upper(), row[54], row[55], row[56])
+                    department_id = self.get_department(str(row[69]).upper())
+                    retributive_day_id = self.get_jornada_retributiva(str(row[82]).upper())
+                    retributive_day_formal_id = self.get_jornada_retributiva(str(row[83]).upper())
+                    security_job_id = self.get_security_job(str(row[86]).upper())
 
                     row_dict['migration_id'] = self.id
                     row_dict['country_id'] = country_id and country_id[0]
@@ -93,97 +106,98 @@ class ONSCMigration(models.Model):
                     row_dict['marital_status_id'] = marital_status_id and marital_status_id[0]
                     row_dict['birth_date'] = self.is_datetime(row[9]) and row[9].strftime("%Y-%m-%d")
                     row_dict['gender_id'] = gender_id and gender_id[0]
+                    row_dict['sex'] = row[12]
                     row_dict['birth_country_id'] = birth_country_id and birth_country_id[0]
-                    row_dict['citizenship'] = row[12]
-                    row_dict['crendencial_serie'] = row[13]
-                    row_dict['credential_number'] = row[14]
-                    row_dict['personal_phone'] = row[15]
-                    row_dict['email'] = row[16]
-                    row_dict['email_inst'] = row[17]
+                    row_dict['citizenship'] = row[13]
+                    row_dict['crendencial_serie'] = row[14]
+                    row_dict['credential_number'] = row[15]
+                    row_dict['personal_phone'] = row[16]
+                    row_dict['email'] = row[17]
+                    row_dict['email_inst'] = row[18]
                     row_dict['address_state_id'] = address_state_id and address_state_id[0]
                     row_dict['address_street_id'] = address_street_id and address_street_id[0]
                     row_dict['address_location_id'] = address_location_id and address_location_id[0]
                     row_dict['address_street2_id'] = address_street2_id and address_street2_id[0]
                     row_dict['address_street3_id'] = address_street3_id and address_street3_id[0]
-                    row_dict['address_nro_door'] = row[21]
-                    row_dict['address_is_bis'] = row[24]
-                    row_dict['address_apto'] = row[25]
-                    row_dict['address_place'] = row[26]
-                    row_dict['address_zip'] = row[27]
-                    row_dict['address_block'] = row[28]
-                    row_dict['address_sandlot'] = row[29]
+                    row_dict['address_nro_door'] = row[22]
+                    row_dict['address_is_bis'] = row[25]
+                    row_dict['address_apto'] = row[26]
+                    row_dict['address_place'] = row[27]
+                    row_dict['address_zip'] = row[28]
+                    row_dict['address_block'] = row[29]
+                    row_dict['address_sandlot'] = row[30]
                     row_dict['health_provider_id'] = health_provider_id and health_provider_id[0]
                     row_dict['date_income_public_administration'] = self.is_datetime(row[31]) and row[31].strftime(
                         "%Y-%m-%d")
-                    row_dict['inactivity_years'] = row[32]
-                    row_dict['graduation_date'] = self.is_datetime(row[33]) and row[33].strftime("%Y-%m-%d")
-                    row_dict['date_start'] = self.is_datetime(row[34]) and row[34].strftime("%Y-%m-%d")
+                    row_dict['inactivity_years'] = row[33]
+                    row_dict['graduation_date'] = self.is_datetime(row[34]) and row[34].strftime("%Y-%m-%d")
+                    row_dict['date_start'] = self.is_datetime(row[35]) and row[35].strftime("%Y-%m-%d")
                     row_dict['inciso_id'] = inciso_id and inciso_id[0]
                     row_dict['operating_unit_id'] = operating_unit_id and operating_unit_id[0]
                     row_dict['program_project_id'] = program_project_id and program_project_id[0]
                     row_dict['regime_id'] = regime_id and regime_id[0]
                     row_dict['descriptor1_id'] = descriptor1_id and descriptor1_id[0]
                     row_dict['descriptor2_id'] = descriptor2_id and descriptor2_id[0]
-                    row_dict['descriptor3_id'] = descriptor3_id[0]
+                    row_dict['descriptor3_id'] = descriptor3_id and descriptor3_id[0]
                     row_dict['descriptor4_id'] = descriptor4_id and descriptor4_id[0]
-                    row_dict['nro_puesto'] = row[44]
-                    row_dict['nro_place'] = row[45]
-                    row_dict['sec_place'] = row[46]
-                    row_dict['state_place'] = row[47]
+                    row_dict['nro_puesto'] = row[45]
+                    row_dict['nro_place'] = row[46]
+                    row_dict['sec_place'] = row[47]
+                    row_dict['state_place'] = row[48]
                     row_dict['occupation_id'] = occupation_id and occupation_id[0]
                     row_dict['income_mechanism_id'] = income_mechanism_id and income_mechanism_id[0]
-                    row_dict['call_number'] = row[50]
-                    row_dict['reason_description'] = row[51]
+                    row_dict['call_number'] = row[51]
+                    row_dict['reason_description'] = row[52]
                     row_dict['norm_id'] = norm_id and norm_id[0]
-                    row_dict['resolution_description'] = row[56]
-                    row_dict['resolution_date'] = self.is_datetime(row[57]) and row[57].strftime("%Y-%m-%d")
-                    row_dict['resolution_type'] = row[58]
+                    row_dict['resolution_description'] = row[57]
+                    row_dict['resolution_date'] = self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d")
+                    row_dict['resolution_type'] = row[59]
                     row_dict['department_id'] = department_id and department_id[0]
                     row_dict['retributive_day_id'] = retributive_day_id[0]
                     row_dict['retributive_day_formal_id'] = retributive_day_formal_id[0]
                     row_dict['security_job_id'] = security_job_id and security_job_id[0]
 
-                    if row[70]:
+                    if row[71]:
 
-                        inciso_des_id = self.get_inciso(str(row[59]).upper())
-                        operating_unit_des_id = self.get_operating_unit(str(row[60]).upper(), )
-                        program_project_des_id = self.get_office(str(row[61]).upper(), str(row[62]).upper())
-                        regime_des_id = self.get_regime(str(row[63]).upper())
-                        regime_commission_id = self.get_commision_regime(str(row[71]))
-                        norm_des_id = self.get_norm(str(row[73]).upper(), row[74], row[75], row[76])
+                        inciso_des_id = self.get_inciso(str(row[60]).upper())
+                        operating_unit_des_id = self.get_operating_unit(str(row[61]).upper(), )
+                        program_project_des_id = self.get_office(str(row[62]).upper(), str(row[63]).upper())
+                        regime_des_id = self.get_regime(str(row[64]).upper())
+                        regime_commission_id = self.get_commision_regime(str(row[72]))
+                        norm_des_id = self.get_norm(str(row[74]).upper(), row[75], row[76], row[77])
 
                         row_dict['inciso_des_id'] = inciso_des_id[0]
                         row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
                         row_dict['program_project_des_id'] = program_project_des_id and program_project_des_id[0]
                         row_dict['regime_des_id'] = regime_des_id and regime_des_id[0]
-                        row_dict['nro_puesto_des'] = row[64]
-                        row_dict['nro_place_des '] = row[65]
-                        row_dict['sec_place_des'] = row[66]
-                        row_dict['state_place_des'] = row[67]
-                        row_dict['date_start_commission'] = self.is_datetime(row[69]) and row[69].strftime("%Y-%m-%d")
-                        row_dict['type_commission'] = row[70]
+                        row_dict['nro_puesto_des'] = row[65]
+                        row_dict['nro_place_des '] = row[66]
+                        row_dict['sec_place_des'] = row[67]
+                        row_dict['state_place_des'] = row[68]
+                        row_dict['date_start_commission'] = self.is_datetime(row[70]) and row[70].strftime("%Y-%m-%d")
+                        row_dict['type_commission'] = row[71]
                         row_dict['regime_commission_id'] = regime_commission_id and regime_commission_id[0]
-                        row_dict['reason_commision'] = row[73]
+                        row_dict['reason_commision'] = row[74]
                         row_dict['norm_comm_id'] = norm_des_id and norm_des_id[0]
-                        row_dict['resolution_comm_description'] = row[77]
-                        row_dict['resolution_comm_date'] = self.is_datetime(row[78]) and row[78].strftime("%Y-%m-%d")
-                        row_dict['resolution_comm_type'] = row[79]
+                        row_dict['resolution_comm_description'] = row[78]
+                        row_dict['resolution_comm_date'] = self.is_datetime(row[79]) and row[79].strftime("%Y-%m-%d")
+                        row_dict['resolution_comm_type'] = row[80]
 
                     else:
-                        row_dict['end_date_contract'] = self.is_datetime(row[80]) and row[80].strftime("%Y-%m-%d")
+                        row_dict['end_date_contract'] = self.is_datetime(row[81]) and row[81].strftime("%Y-%m-%d")
 
-                    row_dict['id_movimiento'] = self.is_numeric(row[83]) and int(row[83])
-                    row_dict['state_move'] = row[84]
+                    row_dict['id_movimiento'] = self.is_numeric(row[84]) and int(row[84])
+                    row_dict['state_move'] = row[85]
                     if row_dict['state_move'] == 'BP':
-                        norm_dis_id = self.get_norm(str(row[89]).upper(), row[90], row[91], row[92])
-                        causes_discharge_id = self.get_causes_discharge(str(row[86]).upper())
-                        row_dict['id_movimiento'] = self.is_datetime(row[87]) and row[87].strftime("%Y-%m-%d")
+                        norm_dis_id = self.get_norm(str(row[90]).upper(), row[91], row[92], row[93])
+                        causes_discharge_id = self.get_causes_discharge(str(row[87]).upper())
+                        row_dict['id_movimiento'] = self.is_datetime(row[88]) and row[89].strftime("%Y-%m-%d")
                         row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0]
-                        row_dict['reason_discharge'] = row[88]
+                        row_dict['reason_discharge'] = row[90]
                         row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
-                        row_dict['resolution_dis_description'] = row[93]
-                        row_dict['resolution_dis_date'] = self.is_datetime(row[94]) and row[94].strftime("%Y-%m-%d")
-                        row_dict['resolution_dis_type'] = row[95]
+                        row_dict['resolution_dis_description'] = row[94]
+                        row_dict['resolution_dis_date'] = self.is_datetime(row[95]) and row[95].strftime("%Y-%m-%d")
+                        row_dict['resolution_dis_type'] = row[96]
 
                     row_dict_limpio = row_dict.copy()
 
@@ -198,8 +212,8 @@ class ONSCMigration(models.Model):
                         ),
                     )
                     line = self._cr.fetchone()[0]
-
-                    self.env['onsc.migration.line'].suspend_security().browse(line).validate_line()
+                    message_error = self.validate(row, row_dict)
+                    self.env['onsc.migration.line'].suspend_security().browse(line).validate_line(message_error)
                     self.env.cr.commit()
             self.write({'state': 'process'})
             return True
@@ -207,16 +221,24 @@ class ONSCMigration(models.Model):
         except Exception as e:
             self.suspend_security().write({'error': tools.ustr(e), 'state': 'error'})
 
+    def validate(self, row, row_dict):
+        message_error = []
+        if row[8] and not row_dict['marital_status_id']:
+            message_error.append("El campo Estado civil no es válido")
+        if row[10] and not row_dict['gender_id']:
+            message_error.append("El campo Género no es válido")
+        return message_error
+
     def is_datetime(self, row):
         return type(row).__name__ == 'datetime' or False
 
     def is_numeric(self, row):
-        return type(row).__name__ == 'float' or False
+        return type(row).__name__ == 'int' or False
 
     def check_line(self, doc_nro, nro_puesto, nro_place, sec_place):
         self._cr.execute(
-            """SELECT count(id) FROM onsc_migration_line  WHERE upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
-            (doc_nro, nro_puesto, nro_place, sec_place))
+            """SELECT count(id) FROM onsc_migration_line  WHERE migration_id = %s and upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
+            (self.id, doc_nro, nro_puesto, nro_place, sec_place))
         return self._cr.fetchone()[0]
 
     def get_country(self, code):
@@ -312,7 +334,7 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_causes_discharge(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_causes_discharge  WHERE upper("codRegimen") = %s """, (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_causes_discharge  WHERE upper(code) = %s """, (code,))
         return self._cr.fetchone()
 
     def get_commision_regime(self, code):
@@ -338,8 +360,8 @@ class ONSCMigrationLine(models.Model):
     gender_id = fields.Many2one('onsc.cv.gender', string='Genero')
     birth_country_id = fields.Many2one('res.country', string=u'País de nacimiento')
     citizenship = fields.Selection(string="Ciudadanía",
-                                   selection=[('L', 'Legal'), ('N', 'Natural'),
-                                              ('E', 'Extranjero')])
+                                   selection=[('legal', 'Legal'), ('natural', 'Natural'),
+                                              ('extranjero', 'Extranjero')])
     crendencial_serie = fields.Char(string="Serie de la credencial", size=3)
     credential_number = fields.Char(string="Número de la credencial", size=6)
     personal_phone = fields.Char(string="Número de Teléfono")
@@ -410,7 +432,7 @@ class ONSCMigrationLine(models.Model):
     sec_place_des = fields.Char(string="Secuencial Plaza destino")
     state_place_des = fields.Selection(string="Estado plaza destino",
                                        selection=[('O', 'O'), ('C', 'C'), ('R', 'R(no com.)'), ('S', 'S(comisiones)')])
-    department_id = fields.Many2one("hr.department", string="Unidad organizativa destino")
+    department_id = fields.Many2one("hr.department", string="Unidad organizativa")
     date_start_commission = fields.Date(string='Fecha inicio comisión')
     type_commission = fields.Selection(string="ETipo de Comisión",
                                        selection=[('CS', 'Comisión de Servicio'), ('PC', 'Pase en Comisión')])
@@ -453,70 +475,43 @@ class ONSCMigrationLine(models.Model):
     resolution_dis_description = fields.Char(string='Descripción de la resolución de la baja')
     resolution_dis_date = fields.Date(string='Fecha de la resolución de la baja')
     resolution_dis_type = fields.Char(string='Tipo de resolución de la baja')
+    sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], 'Sexo')
 
-    def validate_line(self):
-        message_error = []
-        if not self.country_id:
-            message_error.append("El Pais del documento es obligatorio")
-        if not self.doc_type_id:
-            message_error.append("El tipo de documento es obligatorio")
-        if not self.address_state_id:
-            message_error.append("El Departamento es obligatorio")
-        if not self.address_location_id:
-            message_error.append("La localidad es obligatoria")
-        if not self.date_income_public_administration:
-            message_error.append("La Fecha de ingreso a la administración pública es obligatoria")
-        if not self.inciso_id:
-            message_error.append("El incisio es obligatorio")
+    def validate_line(self, message_error):
+
+        for required_field in REQUIRED_FIELDS:
+            if not eval('self.%s' % required_field):
+                message_error.append("El campo %s no es válido" % self._fields[required_field].string)
 
         if self.type_commission:
-            message = self.validate_commision()
-            if message:
-                message_error.append(message)
-
-        if not self.descriptor3_id:
-            message_error.append("El descriptor 3 es obligatorio")
-
-        if not self.retributive_day_id:
-            message_error.append("La Jornada Formal es obligatoria")
-        if not self.retributive_day_formal_id:
-            message_error.append(" El descriptor 3 es obligatorio")
-        if not self.state_move:
-            message_error.append("El estado es obligatorio")
+            for required_field in REQUIRED_FIELDS_COMM:
+                if not eval('self.%s' % required_field):
+                    message_error.append("El campo %s no es válido" % self._fields[required_field].string)
+        else:
+            if not self.program_project_id:
+                message_error.append("No se encontró oficina para la combinación Programa/Proyecto")
+            if not self.regime_id:
+                message_error.append("El campo Regimen no es válido")
+            if not self.operating_unit_id:
+                message_error.append("El campo UE no es válido")
+            if not self.nro_puesto:
+                message_error.append("El campo Puesto origen no es válido")
+            if not self.nro_place:
+                message_error.append("El campo Plaza origen no es válido")
+            if not self.sec_place:
+                message_error.append("El campo Secuencial Plaza origen no es válido")
 
         if message_error:
             error = '\n'.join(message_error)
             state = 'error'
         else:
             error = ''
-            state = 'ok'
+            state = 'draft'
 
         self._cr.execute(
             """update "onsc_migration_line" set state = '%s',error = '%s' where id = %s """ % (state, error, self.id))
 
-    def validate_commision(self):
-        message_error = []
-        if not self.operating_unit_id:
-            message_error.append("La UE es obligatoria")
-
-        if not self.program_project_id:
-            message_error.append("La Progrma es obligatorio")
-        if not self.regime_id:
-            message_error.append(" El regimen es obligatorio")
-        if not self.inciso_des_id:
-            message_error.append("El inciso destino es obligatorio")
-        if not self.date_start_commission:
-            message_error.append("La Fecha inicio comisión es obligatoria")
-        if not self.reason_commision:
-            message_error.append("La descripción motivo comisión s obligatoria")
-        if not self.resolution_comm_description:
-            message_error.append("La descripción de la Resolucion comisión es obligatoria")
-        if not self.resolution_comm_date:
-            message_error.append("La Fecha de la Resolucion Comisión es obligatoria")
-        if not self.resolution_comm_type:
-            message_error.append("Tipo de la Resolución comisión")
-
     def write(self, vals):
         result = super(ONSCMigrationLine, self).write(vals)
-        self.validate_line()
+
         return result
