@@ -100,7 +100,6 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                                     long_description=long_description)
 
     def _populate_staging(self, response):
-
         Inciso = self.env['onsc.catalog.inciso'].suspend_security()
         OperatingUnit = self.env['operating.unit'].suspend_security()
         DocType = self.env['onsc.cv.document.type'].suspend_security()
@@ -113,135 +112,138 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
         Descriptor3 = self.env['onsc.catalog.descriptor3'].suspend_security()
         Descriptor4 = self.env['onsc.catalog.descriptor4'].suspend_security()
         ExtinctionCommission = self.env['onsc.legajo.reason.extinction.commission'].suspend_security()
-        CommissionRegime = self.env['onsc.legajo.commission.regime'].suspend_security()
-        RetributiveDay = self.env['onsc.legajo.jornada.retributiva'].suspend_security()
         Gender = self.env['onsc.cv.gender'].suspend_security()
         MaritalStatus = self.env['onsc.cv.status.civil'].suspend_security()
         Staging = self.env['onsc.legajo.staging.ws7'].suspend_security()
 
-        onsc_legajo_integration_error_WS7_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS7_9004")
+        integration_error_WS7_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS7_9004")
 
         with self._cr.savepoint():
             try:
                 for operation in response:
                     if operation.primer_nombre == 'SIN DATO':
                         continue
-                    if Staging.search_count([('pdaId', '=', operation.pdaId)]):
-                        long_description = "pdaId ya existente: %s" % operation.pdaId
-                        _logger.warning(long_description)
-                        self.create_new_log(origin='WS7', type='error',
-                                            integration_log=onsc_legajo_integration_error_WS7_9004,
-                                            long_description=long_description)
                     logs_list = []
-                    inciso_id = self._get_catalog_id(Inciso, 'budget_code', operation, 'inciso', logs_list)
-                    operating_unit_id = OperatingUnit.search([('budget_code', '=', str(operation.ue)),
-                                                              ('inciso_id', '=', inciso_id)], limit=1).id
-                    if not operating_unit_id:
-                        logs_list.append(
-                            _('No se encontró en el catálogo Unidad ejecutora el valor %s') % (operation.ue))
 
-                    cv_document_type_id = self._get_catalog_id(DocType, 'code_other', operation, 'tipo_doc', logs_list)
-                    country_id = self._get_catalog_id(Country, 'code_rve', operation, 'cod_pais', logs_list)
-                    race_id = self._get_catalog_id(Race, 'code', operation, 'raza', logs_list)
-                    income_mechanism_id = self._get_catalog_id(IncomeMechanism, 'code', operation, 'cod_mecing',
-                                                               logs_list)
-                    descriptor1_id = self._get_catalog_id(Descriptor1, 'code', operation, 'cod_desc1', logs_list)
-                    descriptor2_id = self._get_catalog_id(Descriptor2, 'code', operation, 'cod_desc2', logs_list)
-                    descriptor3_id = self._get_catalog_id(Descriptor3, 'code', operation, 'cod_desc3', logs_list)
-                    descriptor4_id = self._get_catalog_id(Descriptor4, 'code', operation, 'cod_desc4', logs_list)
-                    extinction_commission_id = self._get_catalog_id(ExtinctionCommission, 'code', operation,
-                                                                    'comi_mot_ext',
-                                                                    logs_list)
-                    commission_regime_id = self._get_catalog_id(CommissionRegime, 'code', operation, 'comi_reg',
-                                                                logs_list)
-                    gender_id = self._get_catalog_id(Gender, 'code', operation, 'sexo', logs_list)
-                    marital_status_id = self._get_catalog_id(MaritalStatus, 'code', operation, 'codigoEstadoCivil',
-                                                             logs_list)
-                    regime_id = self._get_catalog_id(Regime, 'codRegimen', operation, 'cod_reg', logs_list)
+                    vals = self._get_base_dict(operation)
+                    _is_op_unicity_valid = self._is_op_unicity_valid(vals, integration_error_WS7_9004)
+                    if not _is_op_unicity_valid:
+                        continue
 
-                    comision_inciso_dest_id = False
-                    comision_operating_unit_dest_id = False
-                    if hasattr(operation, 'comi_inciso_dest') and operation.comi_inciso_dest:
-                        comision_inciso_dest_id = Inciso.search([
-                            ('budget_code', '=', str(operation.comi_inciso_dest))], limit=1).id
-                        if not comision_inciso_dest_id:
-                            logs_list.append(_('No se encontró el Inciso destino'))
-                        if hasattr(operation, 'comi_ue_dest') and operation.comi_ue_dest:
-                            comision_operating_unit_dest_id = OperatingUnit.search([
-                                ('budget_code', '=', str(operation.comi_ue_dest)),
-                                ('inciso_id', '=', comision_inciso_dest_id)], limit=1).id
-                            if not comision_operating_unit_dest_id:
-                                logs_list.append(_('No se encontró la Unidad ejecutora destino'))
+                    is_simplify_record = vals.get('mov') in ['ALTA', 'BAJA']
+                    if not is_simplify_record:
+                        inciso_id = self._get_catalog_id(Inciso, 'budget_code', operation, 'inciso', logs_list)
+                        operating_unit_id = OperatingUnit.search([('budget_code', '=', str(operation.ue)),
+                                                                  ('inciso_id', '=', inciso_id)], limit=1).id
+                        if not operating_unit_id:
+                            logs_list.append(
+                                _('No se encontró en el catálogo Unidad ejecutora el valor %s') % (operation.ue))
 
-                    retributive_day = RetributiveDay.search([
-                        ('codigoJornada', '=', operation.jornada_ret),
-                        ('office_id.proyecto', '=', operation.proyecto),
-                        ('office_id.programa', '=', operation.programa),
-                    ], limit=1)
-                    retributive_day_id = retributive_day.id
-                    office_id = retributive_day.office_id.id
+                        cv_document_type_id = self._get_catalog_id(DocType, 'code_other', operation, 'tipo_doc',
+                                                                   logs_list)
+                        country_id = self._get_catalog_id(Country, 'code_rve', operation, 'cod_pais', logs_list)
+                        race_id = self._get_catalog_id(Race, 'code', operation, 'raza', logs_list)
+                        income_mechanism_id = self._get_catalog_id(IncomeMechanism, 'code', operation, 'cod_mecing',
+                                                                   logs_list)
+                        descriptor1_id = self._get_catalog_id(Descriptor1, 'code', operation, 'cod_desc1', logs_list)
+                        descriptor2_id = self._get_catalog_id(Descriptor2, 'code', operation, 'cod_desc2', logs_list)
+                        descriptor3_id = self._get_catalog_id(Descriptor3, 'code', operation, 'cod_desc3', logs_list)
+                        descriptor4_id = self._get_catalog_id(Descriptor4, 'code', operation, 'cod_desc4', logs_list)
 
-                    if not retributive_day_id:
-                        logs_list.append(_('No se encontró la Jornada retributiva'))
+                        extinction_commission_id = self._get_catalog_id(ExtinctionCommission, 'code', operation,
+                                                                        'comi_mot_ext',
+                                                                        logs_list)
+                        gender_id = self._get_catalog_id(Gender, 'code', operation, 'sexo', logs_list)
+                        marital_status_id = self._get_catalog_id(MaritalStatus, 'code', operation, 'codigoEstadoCivil',
+                                                                 logs_list)
+                        regime_id = self._get_catalog_id(Regime, 'codRegimen', operation, 'cod_reg', logs_list)
 
-                    vals = {
-                        'info_income': str(operation),
-                        'primer_nombre': operation.primer_nombre,
-                        'segundo_nombre': hasattr(operation, 'segundo_nombre') and operation.segundo_nombre or False,
-                        'primer_ap': operation.primer_ap,
-                        'segundo_ap': hasattr(operation, 'segundo_ap') and operation.segundo_ap or False,
-                        'fecha_nac': datetime.datetime.strptime(operation.fecha_nac, '%d/%m/%Y').date(),
-                        'fecha_ing_adm': datetime.datetime.strptime(operation.fecha_ing_adm,
-                                                                    '%d/%m/%Y').date(),
-                        'cod_mot_baja': hasattr(operation, 'cod_mot_baja') and operation.cod_mot_baja or False,
-                        'fecha_vig': hasattr(operation, 'fecha_vig') and datetime.datetime.strptime(operation.fecha_vig,
-                                                                                                    '%d/%m/%Y').date() or False,
-                        'fecha_aud': hasattr(operation, 'fecha_aud') and datetime.datetime.strptime(operation.fecha_aud,
-                                                                                                    '%Y-%m-%d %H:%M:%S.%f') or False,
-                        'mov': hasattr(operation, 'mov') and operation.mov or False,
-                        'tipo_mov': hasattr(operation, 'tipo_mov') and operation.tipo_mov or False,
-                        'pdaId': hasattr(operation, 'pdaId') and operation.pdaId or False,
-                        'movimientoPadreId': hasattr(operation, 'proyecto') and operation.proyecto or False,
-                        'fecha_desde_vinc': hasattr(operation,
-                                                    'fecha_desde_vinc') and operation.fecha_desde_vinc or False,
-                        'idPuesto': hasattr(operation, 'idPuesto') and operation.idPuesto or False,
-                        'nroPlaza': hasattr(operation, 'nroPlaza') and operation.nroPlaza or False,
-                        'secPlaza': hasattr(operation, 'secPlaza') and operation.secPlaza or False,
-                        'programa': hasattr(operation, 'programa') and operation.programa or False,
-                        'proyecto': hasattr(operation, 'proyecto') and operation.proyecto or False,
-                        'aniosInactividad': hasattr(operation,
-                                                    'aniosInactividad') and operation.aniosInactividad or False,
-                        'fechaGraduacion': hasattr(operation, 'fechaGraduacion') and datetime.datetime.strptime(
-                            operation.fechaGraduacion, '%d/%m/%Y').date() or False,
+                        vals.update({
+                            'inciso_id': inciso_id,
+                            'operating_unit_id': operating_unit_id,
+                            'cv_document_type_id': cv_document_type_id,
+                            'country_id': country_id,
+                            'race_id': race_id,
+                            'income_mechanism_id': income_mechanism_id,
+                            'regime_id': regime_id,
+                            'descriptor1_id': descriptor1_id,
+                            'descriptor2_id': descriptor2_id,
+                            'descriptor3_id': descriptor3_id,
+                            'descriptor4_id': descriptor4_id,
+                            'extinction_commission_id': extinction_commission_id,
+                            'gender_id': gender_id,
+                            'marital_status_id': marital_status_id,
+                        })
 
-                        'inciso_id': inciso_id,
-                        'operating_unit_id': operating_unit_id,
-                        'cv_document_type_id': cv_document_type_id,
-                        'country_id': country_id,
-                        'race_id': race_id,
-                        'income_mechanism_id': income_mechanism_id,
-                        'regime_id': regime_id,
-                        'descriptor1_id': descriptor1_id,
-                        'descriptor2_id': descriptor2_id,
-                        'descriptor3_id': descriptor3_id,
-                        'descriptor4_id': descriptor4_id,
-                        'comision_inciso_dest_id': comision_inciso_dest_id,
-                        'comision_operating_unit_dest_id': comision_operating_unit_dest_id,
-                        'extinction_commission_id': extinction_commission_id,
-                        'commission_regime_id': commission_regime_id,
-                        'retributive_day_id': retributive_day_id,
-                        'program_project_id': office_id,
-                        'gender_id': gender_id,
-                        'marital_status_id': marital_status_id,
-                    }
+                    if is_simplify_record:
+                        vals.update({'state': 'na'})
 
-                    if len(logs_list):
-                        log_str = ', '.join(logs_list)
-                        vals.update({'log': log_str, 'state': 'error'})
-
-                    Staging.create(vals)
+                    staging = Staging.create(vals)
+                    if not is_simplify_record:
+                        staging._mapped_vals()
             except Exception as e:
                 raise e
+
+    def _get_base_dict(self, operation):
+        mov = hasattr(operation, 'mov') and operation.mov or False
+        fecha_aud = hasattr(operation, 'fecha_aud') and datetime.datetime.strptime(operation.fecha_aud,
+                                                                                   '%Y-%m-%d %H:%M:%S.%f') or ''
+        key = "%s-%s-%s-%s" % (fecha_aud, operation.doc, operation.mov, operation.tipo_mov)
+
+        if hasattr(operation, 'fecha_vig'):
+            fecha_vig = datetime.datetime.strptime(operation.fecha_vig, '%d/%m/%Y').date()
+        else:
+            fecha_vig = False
+        if hasattr(operation, 'fechaGraduacion'):
+            fechaGraduacion = datetime.datetime.strptime(operation.fechaGraduacion, '%d/%m/%Y').date()
+        else:
+            fechaGraduacion = False
+
+        return {
+            'info_income': str(operation),
+            'doc': operation.doc,
+            'key': key,
+            'primer_nombre': operation.primer_nombre,
+            'segundo_nombre': operation.segundo_nombre if hasattr(operation, 'segundo_nombre') else False,
+            'primer_ap': operation.primer_ap,
+            'segundo_ap': operation.segundo_ap if hasattr(operation, 'segundo_ap') else False,
+            'fecha_nac': datetime.datetime.strptime(operation.fecha_nac, '%d/%m/%Y').date(),
+            'fecha_ing_adm': datetime.datetime.strptime(operation.fecha_ing_adm,
+                                                        '%d/%m/%Y').date(),
+            'cod_mot_baja': operation.cod_mot_baja if hasattr(operation, 'cod_mot_baja') else False,
+            'fecha_vig': fecha_vig,
+            'fecha_aud': fecha_aud,
+            'mov': mov,
+            'tipo_mov': operation.tipo_mov,
+            'pdaId': operation.pdaId,
+            'movimientoPadreId': operation.movimientoPadreId if hasattr(operation, 'movimientoPadreId') else False,
+            'fecha_desde_vinc': operation.fecha_desde_vinc if hasattr(operation, 'fecha_desde_vinc') else False,
+            'idPuesto': operation.idPuesto,
+            'nroPlaza': operation.nroPlaza,
+            'secPlaza': operation.secPlaza,
+            'programa': operation.programa if hasattr(operation, 'programa') else False,
+            'proyecto': operation.proyecto if hasattr(operation, 'proyecto') else False,
+            'aniosInactividad': operation.aniosInactividad if hasattr(operation, 'aniosInactividad') else False,
+            'fechaGraduacion': fechaGraduacion,
+            'inciso': operation.inciso if hasattr(operation, 'inciso') else False,
+            'ue': operation.ue if hasattr(operation, 'ue') else False,
+            'tipo_doc': operation.tipo_doc,
+            'cod_pais': operation.cod_pais,
+            'raza': operation.raza if hasattr(operation, 'raza') else False,
+            'cod_mecing': operation.cod_mecing if hasattr(operation, 'cod_mecing') else False,
+            'cod_desc1': operation.cod_desc1 if hasattr(operation, 'cod_desc1') else False,
+            'cod_desc2': operation.cod_desc2 if hasattr(operation, 'cod_desc2') else False,
+            'cod_desc3': operation.cod_desc3 if hasattr(operation, 'cod_desc3') else False,
+            'cod_desc4': operation.cod_desc4 if hasattr(operation, 'cod_desc4') else False,
+            'comi_inciso_dest': operation.comi_inciso_dest if hasattr(operation, 'comi_inciso_dest') else False,
+            'comi_ue_dest': operation.comi_ue_dest if hasattr(operation, 'comi_ue_dest') else False,
+            'comi_mot_ext': operation.comi_mot_ext if hasattr(operation, 'comi_mot_ext') else False,
+            'comi_reg': operation.comi_reg if hasattr(operation, 'comi_reg') else False,
+            'jornada_ret': operation.jornada_ret if hasattr(operation, 'jornada_ret') else False,
+            'sexo': operation.sexo if hasattr(operation, 'sexo') else False,
+            'codigoEstadoCivil': operation.codigoEstadoCivil if hasattr(operation, 'codigoEstadoCivil') else False,
+            'cod_reg': operation.cod_reg if hasattr(operation, 'cod_reg') else False,
+        }
 
     def _get_catalog_id(self, Catalog, catalog_field, operation, operation_code, log_list):
         """
@@ -255,8 +257,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
         """
         if not hasattr(operation, operation_code):
             return False
-        int_valid_operation_value = isinstance(getattr(operation, operation_code), int) and getattr(operation,
-                                                                                                    operation_code) != 0
+        int_valid_operation_value = isinstance(getattr(operation, operation_code), int)
         char_valid_operation_value = isinstance(getattr(operation, operation_code), str) and getattr(operation,
                                                                                                      operation_code) != ""
         if int_valid_operation_value or char_valid_operation_value:
@@ -267,296 +268,16 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             return recordset.id
         return False
 
-    def _check_movement(self, Contract, operation, error):
-        """
-        Chequea que el movimiento exista en el sistema
-        :param Contract: Recomendado: self.env['hr.contract'].sudo()
-        :param operation: Recordset de la operacion
-        :param error: Recordset del log de error
-        """
-        exist_contract = self._get_simple_contract(
-            Contract,
-            operation,
-            use_search_count=True
-        )
-        if not exist_contract:
-            self.create_new_log(
-                origin='WS7',
-                type='error',
-                integration_log=error,
-                ws_tuple=str(operation),
-                long_description='Movimiento no encontrado en el sistema')
-
-    def set_ascenso(self, Contract, operation, movement, response, error):
-        second_movement = self._get_second_movement(operation, response, 'ALTA')
-        # ---------------------FIXME ajustes manuales a la info del reuqest para poder testear
-        operation.doc = '39893218'
-        operation.inciso = '2'
-        operation.ue = '8'
-
-        second_movement.doc = '39893218'
-        second_movement.inciso = '2'
-        second_movement.ue = '8'
-        # ---------------------FIXME
-
-        if not second_movement:
-            self.create_new_log(origin='WS7',
-                                type='error',
-                                integration_log=error,
-                                ws_tuple=str(operation),
-                                long_description='Segundo movimiento no encontrado')
-            return
-        contract = self._get_contract(Contract, operation, legajo_state_operator='!=', legajo_state='baja')
-        if len(contract) == 0:
-            self.create_new_log(origin='WS7',
-                                type='error',
-                                integration_log=error,
-                                ws_tuple=str(operation),
-                                long_description='Alta no encontrada')
-        else:
-            ascenso_causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
-            contract_date_end = datetime.datetime.strptime(operation.fecha_vig, "%d/%m/%Y").date()
-            contract.deactivate_legajo_contract(contract_date_end + datetime.timedelta(days=-1))
-
-            new_contract = self._get_contract_copy(contract, second_movement, error)
-            contract.write({
-                'causes_discharge_id': ascenso_causes_discharge.id,
-                'cs_contract_id': new_contract.id
-            })
-
-    def set_transforma(self, Contract, operation, movement, response, error):
-        second_movement = self._get_second_movement(operation, response, 'ALTA')
-        # ---------------------FIXME ajustes manuales a la info del reuqest para poder testear
-        operation.doc = '39893218'
-        operation.inciso = '2'
-        operation.ue = '8'
-
-        second_movement.doc = '39893218'
-        second_movement.inciso = '2'
-        second_movement.ue = '8'
-        # ---------------------FIXME
-
-        if not second_movement:
-            self.create_new_log(origin='WS7',
-                                type='error',
-                                integration_log=error,
-                                ws_tuple=str(operation),
-                                long_description='Segundo movimiento no encontrado')
-            return
-        contract = self._get_contract(Contract, operation, legajo_state_operator='!=', legajo_state='baja')
-        if len(contract) == 0:
-            self.create_new_log(origin='WS7',
-                                type='error',
-                                integration_log=error,
-                                ws_tuple=str(operation),
-                                long_description='Alta no encontrada')
-        else:
-            transforma_causes_discharge_id = self.env.user.company_id.ws7_transforma_causes_discharge_id
-            contract_date_end = datetime.datetime.strptime(operation.fecha_vig, "%d/%m/%Y").date()
-            contract.deactivate_legajo_contract(contract_date_end + datetime.timedelta(days=-1))
-
-            new_contract = self._get_contract_copy(contract, second_movement, error)
-            contract.write({
-                'causes_discharge_id': transforma_causes_discharge_id.id,
-                'cs_contract_id': new_contract.id
-            })
-
-    def set_reestructura(self, Contract, operation, movement, response, error):
-        second_movement = self._get_second_movement(operation, response, 'ALTA')
-        # ---------------------FIXME ajustes manuales a la info del reuqest para poder testear
-        operation.doc = '39893218'
-        operation.inciso = '2'
-        operation.ue = '8'
-
-        second_movement.doc = '39893218'
-        second_movement.inciso = '2'
-        second_movement.ue = '8'
-        # ---------------------FIXME
-
-        if not second_movement:
-            self.create_new_log(origin='WS7',
-                                type='error',
-                                integration_log=error,
-                                ws_tuple=str(operation),
-                                long_description='Segundo movimiento no encontrado')
-            return
-        contract = self._get_contract(Contract, operation, legajo_state_operator='!=', legajo_state='baja')
-        if len(contract) == 0:
-            self.create_new_log(origin='WS7',
-                                type='error',
-                                integration_log=error,
-                                ws_tuple=str(operation),
-                                long_description='Alta no encontrada')
-        else:
-            causes_discharge_id = self.env.user.company_id.ws7_reestructura_causes_discharge_id
-            contract_date_end = datetime.datetime.strptime(operation.fecha_vig, "%d/%m/%Y").date()
-            contract.deactivate_legajo_contract(contract_date_end + datetime.timedelta(days=-1))
-
-            new_contract = self._get_contract_copy(contract, second_movement, error)
-            contract.write({
-                'causes_discharge_id': causes_discharge_id.id,
-                'cs_contract_id': new_contract.id
-            })
-
-    def _get_second_movement(self, operation, response, tipo_mov):
-        """
-        Retorna movimiento de contrapartida de la lista de movimientos devueltos por el WS
-        :param operation: Recordset de la operacion
-        :param response: Listado de recordsets devueltos por el WS
-        :param tipo_mov: Tipo de movimiento contra el que se compara
-        :return: Recordset secundario O False
-
-        # TODO
-        other_movement.idPuesto == operation.idPuesto and \
-                    other_movement.nroPlaza == operation.nroPlaza and \
-                    other_movement.secPlaza == operation.secPlaza and \
-        """
-        second_movement = False
-        for other_movement in response:
-            if other_movement.inciso == operation.inciso and \
-                    other_movement.ue == operation.ue and \
-                    other_movement.doc == operation.doc and \
-                    other_movement.mov == operation.mov and \
-                    other_movement.tipo_mov == tipo_mov:
-                second_movement = other_movement
-                break
-        return second_movement
-
-    def _get_simple_contract(self, Contract, operation, use_search_count=False):
-        """
-        Retorna contrato que cumple con los parametros de busqueda del movimiento
-        :param Contract: Recomendado: self.env['hr.contract'].sudo()
-        :param operation: Recordset de la operacion
-        :param legajo_state_operator: Operador para buscar por estado de legajo
-        :param legajo_state: Estado de legajo deseado
-        :param use_search_count: True si se desea usar search_count  y no search
-        :return Contract: Recordset o si el Contrato fue encontrado
-
-        # TODO
-        # ('emissor_country_id.code_rve', '=', str(operation.cod_pais)),
-        # ('document_type_id.code', '=', str(tipo_doc)),
-
-        no coincide con lo que estamos manejando
-        """
-        args = [
-            ('position', '=', str(operation.idPuesto)),
-            ('workplace', '=', operation.nroPlaza),
-            ('sec_position', '=', operation.secPlaza),
-            #
-            ('nro_doc', '=', str(operation.doc)),
-        ]
-        if use_search_count:
-            return Contract.search_count(args)
-        return Contract.search(args, limit=1)
-
-    def _get_contract(self, Contract, operation, legajo_state_operator, legajo_state, use_search_count=False):
-        """
-        Retorna contrato que cumple con los parametros de busqueda del movimiento
-        :param Contract: Recomendado: self.env['hr.contract'].sudo()
-        :param operation: Recordset de la operacion
-        :param legajo_state_operator: Operador para buscar por estado de legajo
-        :param legajo_state: Estado de legajo deseado
-        :param use_search_count: True si se desea usar search_count  y no search
-        :return Contract: Recordset o si el Contrato fue encontrado
-
-        # TODO
-        # ('emissor_country_id.code_rve', '=', str(operation.cod_pais)),
-        # ('document_type_id.code', '=', str(tipo_doc)),
-
-        no coincide con lo que estamos manejando
-        """
-        args = [
-            ('inciso_id.budget_code', '=', str(operation.inciso)),  #
-            ('operating_unit_id.budget_code', '=', str(operation.ue)),  #
-            ('position', '=', str(operation.idPuesto)),
-            ('workplace', '=', operation.nroPlaza),
-            ('sec_position', '=', operation.secPlaza),
-            #
-            ('nro_doc', '=', str(operation.doc)),
-            ('legajo_state', legajo_state_operator, legajo_state)  #
-        ]
-        if use_search_count:
-            return Contract.search_count(args)
-        return Contract.search(args, limit=1)
-
-    def _get_contract_copy(self, contract, operation, error):
-        """
-        Duplica el contrato aplicando los cambios de la operacion
-        :param contract: Recordset de contrato
-        :param operation: Recordset de la operacion
-        :param error: Recordset del log de error
-        :return: Recordset de contrato
-
-        # TODO
-        si no estan todos los descriptores?
-        de todos los juegos cuales pasamos? ej:
-        cod_reg : hay que verificarlo?
-        inciso?
-        ue?
-        """
-        inciso = self.env['onsc.catalog.inciso'].search([('budget_code', '=', operation.inciso)], limit=1)
-        operating_unit = self.env['operating.unit'].search([
-            ('budget_code', '=', operation.ue),
-            ('inciso_id', '=', inciso.id),
-        ], limit=1)
-        descriptor1 = self.env['onsc.catalog.descriptor1'].search([('code', '=', operation.cod_desc1)], limit=1)
-        descriptor2 = self.env['onsc.catalog.descriptor2'].search([('code', '=', operation.cod_desc2)], limit=1)
-        descriptor3 = self.env['onsc.catalog.descriptor3'].search([('code', '=', operation.cod_desc3)], limit=1)
-        descriptor4 = self.env['onsc.catalog.descriptor4'].search([('code', '=', operation.cod_desc4)], limit=1)
-        income_mechanism = self.env['onsc.legajo.income.mechanism'].search([('code', '=', operation.cod_mecing)],
-                                                                           limit=1)
-        regime = self.env['onsc.legajo.regime'].search([('codRegimen', '=', operation.cod_reg)], limit=1)
-
-        if (descriptor1 and descriptor2 and descriptor3 and descriptor4 and income_mechanism and regime) is False:
-            long_description = 'Algún catálogo de esta tupla no fué identificado: ' \
-                               'Desc1: %s, Desc2: %s, Desc3: %s, Desc4: %s, Mec. Ing: %s, Regimen: %s' % (
-                                   descriptor1.code,
-                                   descriptor2.code,
-                                   descriptor3.code,
-                                   descriptor4.code,
-                                   income_mechanism.code,
-                                   regime.codRegimen,
-                               )
-            self.create_new_log(origin='WS7',
-                                type='error',
-                                integration_log=error,
-                                ws_tuple=str(operation),
+    def _is_op_unicity_valid(self, vals, onsc_legajo_integration_error_WS7_9004):
+        Staging = self.env['onsc.legajo.staging.ws7'].suspend_security()
+        if Staging.search_count([('key', '=', vals.get('key'))]):
+            long_description = "Combinación de llave ya existente: %s" % vals.get('key')
+            _logger.warning(long_description)
+            self.create_new_log(origin='WS7', type='error',
+                                integration_log=onsc_legajo_integration_error_WS7_9004,
                                 long_description=long_description)
-        else:
-            contract_date_end = datetime.datetime.strptime(operation.fecha_vig, "%d/%m/%Y").date()
-            new_contract = contract.copy({
-                'inciso_id': inciso.id,
-                'operating_unit_id': operating_unit.id,
-                'date_start': contract_date_end,
-                'eff_date': contract_date_end,
-                'date_end': False,
-                'legajo_state': 'active',
-                'descriptor1_id': descriptor1.id,
-                'descriptor2_id': descriptor2.id,
-                'descriptor3_id': descriptor3.id,
-                'descriptor4_id': descriptor4.id,
-                'income_mechanism_id': income_mechanism.id,
-                'regime_id': regime.id,
-                'position': str(operation.idPuesto),
-                'workplace': str(operation.nroPlaza),
-                'sec_position': str(operation.secPlaza),
-                'program': str(operation.programa),
-                'project': str(operation.proyecto),
-            })
-            return new_contract
-
-    def _copy_jobs(self, source_contract, target_contract, operation):
-        """
-        :param source_contract: Recordset de contrato
-        :param target_contract: Recordset de contrato
-        :param operation: Recordset de la operacion
-        :return: Nuevos puestos
-        """
-        if target_contract.operating_unit_id != source_contract.operating_unit_id:
-            return self.env['hr.job']
-        return source_contract.job_ids.copy({
-            'contract_id': target_contract.id
-        })
+            return False
+        return True
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
         IntegrationError = self.env['onsc.legajo.integration.error']

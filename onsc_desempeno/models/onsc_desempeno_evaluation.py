@@ -75,7 +75,7 @@ class ONSCDesempenoEvaluation(models.Model):
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
-    year = fields.Integer(tring='Año a Evaluar', readonly=True, related='general_cycle_id.year')
+    year = fields.Integer(string='Año a Evaluar', readonly=True, related='general_cycle_id.year')
     evaluation_start_date = fields.Date(
         string='Fecha inicio ciclo evaluación',
         related='evaluation_stage_id.start_date',
