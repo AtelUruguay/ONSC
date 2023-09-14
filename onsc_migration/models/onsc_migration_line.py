@@ -107,7 +107,7 @@ class ONSCMigration(models.Model):
                     row_dict['marital_status_id'] = marital_status_id and marital_status_id[0]
                     row_dict['birth_date'] = self.is_datetime(row[9]) and row[9].strftime("%Y-%m-%d")
                     row_dict['gender_id'] = gender_id and gender_id[0]
-                    row_dict['sex'] = row[12] and row[12].lower()
+                    row_dict['sex'] = row[11] and row[12].lower()
                     row_dict['birth_country_id'] = birth_country_id and birth_country_id[0]
                     row_dict['citizenship'] = row[13]
                     row_dict['crendencial_serie'] = row[14]
