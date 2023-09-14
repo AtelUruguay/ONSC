@@ -180,7 +180,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
 
                     staging = Staging.create(vals)
                     if not is_simplify_record:
-                        staging._mapped_vals()
+                        staging._set_mapped_vals()
             except Exception as e:
                 raise e
 
