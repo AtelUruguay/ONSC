@@ -15,7 +15,8 @@ ONSC - Legajo
                 'base_user_role_hide_admin',
                 'hr_contract',
                 'model_history',
-                'switch_jobs_security'
+                'switch_jobs_security',
+                'web_tree_header_buttons_always_visible'
                 ],
     'data': [
         'security/onsc_legajo_security.xml',
