@@ -131,7 +131,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                     if not _is_op_unicity_valid:
                         continue
 
-                    is_simplify_record = vals.get('mov') in ['ALTA', 'BAJA']
+                    is_simplify_record = vals.get('mov') in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']
                     # if not is_simplify_record:
                     #     inciso_id = self._get_catalog_id(Inciso, 'budget_code', operation, 'inciso', logs_list)
                     #     operating_unit_id = OperatingUnit.search([('budget_code', '=', str(operation.ue)),

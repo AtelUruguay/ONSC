@@ -266,7 +266,7 @@ class ONSCLegajoStagingWS7(models.Model):
         for record in self.search(args):
             try:
                 with self._cr.savepoint():
-                    if record.mov in ['ALTA', 'BAJA']:
+                    if record.mov in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']:
                         self._check_movement(Contract, record)
                     elif record.mov in ['ASCENSO', 'TRANSFORMA'] and record.tipo_mov == 'BAJA':
                         self.set_ascenso_transformacion(Contract, record)
