@@ -13,8 +13,9 @@ STATE = [
     ('process', 'Procesado'),
 ]
 
-REQUIRED_FIELDS = {'country_id', 'doc_type_id', 'doc_nro', 'first_name', 'address_state_id', 'address_location_id',
-                   'date_income_public_administration', 'sex', 'state', 'first_surname', 'inciso_id', 'state_place',
+REQUIRED_FIELDS = {'country_id', 'doc_type_id', 'doc_nro', 'first_name',
+                   'date_income_public_administration', 'sex', 'state_move', 'first_surname', 'inciso_id',
+                   'state_place',
                    'descriptor3_id', 'retributive_day_id', 'retributive_day_formal_id', 'state_move', 'sex',
                    'birth_date', 'date_start'}
 
@@ -66,14 +67,14 @@ class ONSCMigration(models.Model):
                     doc_type_id = self.get_doc_type(row[1].upper())
                     marital_status_id = self.get_status_civil(str(row[8]).upper())
                     gender_id = self.get_gender(str(row[10]).upper())
-                    if row[11] and row[0] != row[11]:
-                        birth_country_id = self.get_country(row[11].upper())
-                    elif row[11]:
+                    if row[12] and row[0] != row[12]:
+                        birth_country_id = self.get_country(row[12].upper())
+                    elif row[12]:
                         birth_country_id = country_id
                     else:
                         birth_country_id = None
                     address_state_id = self.get_country_state(str(row[19]).upper())
-                    address_location_id = self.is_numeric(row[20]) and self.get_location(str(row[19])) or None
+                    address_location_id = self.is_numeric(row[20]) and self.get_location(str(row[20])) or None
                     address_street_id = self.get_street(str(row[21]).upper())
                     address_street2_id = self.get_street(str(row[23]).upper())
                     address_street3_id = self.get_street(str(row[24]).upper())
@@ -106,7 +107,7 @@ class ONSCMigration(models.Model):
                     row_dict['marital_status_id'] = marital_status_id and marital_status_id[0]
                     row_dict['birth_date'] = self.is_datetime(row[9]) and row[9].strftime("%Y-%m-%d")
                     row_dict['gender_id'] = gender_id and gender_id[0]
-                    row_dict['sex'] = row[12]
+                    row_dict['sex'] = row[12] and row[12].lower()
                     row_dict['birth_country_id'] = birth_country_id and birth_country_id[0]
                     row_dict['citizenship'] = row[13]
                     row_dict['crendencial_serie'] = row[14]
@@ -127,7 +128,7 @@ class ONSCMigration(models.Model):
                     row_dict['address_block'] = row[29]
                     row_dict['address_sandlot'] = row[30]
                     row_dict['health_provider_id'] = health_provider_id and health_provider_id[0]
-                    row_dict['date_income_public_administration'] = self.is_datetime(row[31]) and row[31].strftime(
+                    row_dict['date_income_public_administration'] = self.is_datetime(row[32]) and row[32].strftime(
                         "%Y-%m-%d")
                     row_dict['inactivity_years'] = row[33]
                     row_dict['graduation_date'] = self.is_datetime(row[34]) and row[34].strftime("%Y-%m-%d")
@@ -191,9 +192,9 @@ class ONSCMigration(models.Model):
                     if row_dict['state_move'] == 'BP':
                         norm_dis_id = self.get_norm(str(row[90]).upper(), row[91], row[92], row[93])
                         causes_discharge_id = self.get_causes_discharge(str(row[87]).upper())
-                        row_dict['id_movimiento'] = self.is_datetime(row[88]) and row[89].strftime("%Y-%m-%d")
+                        row_dict['end_date'] = self.is_datetime(row[88]) and row[88].strftime("%Y-%m-%d")
                         row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0]
-                        row_dict['reason_discharge'] = row[90]
+                        row_dict['reason_discharge'] = row[89]
                         row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
                         row_dict['resolution_dis_description'] = row[94]
                         row_dict['resolution_dis_date'] = self.is_datetime(row[95]) and row[95].strftime("%Y-%m-%d")
@@ -316,7 +317,7 @@ class ONSCMigration(models.Model):
 
     def get_norm(self, tipoNorma, numeroNorma, anioNorma, articuloNorma):
         self._cr.execute(
-            """SELECT id FROM onsc_legajo_norm  WHERE upper("tipoNorma") = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s""",
+            """SELECT id FROM onsc_legajo_norm  WHERE upper("tipoNormaSigla") = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s""",
             (tipoNorma, numeroNorma, anioNorma, articuloNorma))
         return self._cr.fetchone()
 
@@ -483,6 +484,9 @@ class ONSCMigrationLine(models.Model):
             if not eval('self.%s' % required_field):
                 message_error.append("El campo %s no es válido" % self._fields[required_field].string)
 
+        if self.address_street_id:
+            message_error = self.validate_adress(message_error)
+
         if self.type_commission:
             for required_field in REQUIRED_FIELDS_COMM:
                 if not eval('self.%s' % required_field):
@@ -510,6 +514,14 @@ class ONSCMigrationLine(models.Model):
 
         self._cr.execute(
             """update "onsc_migration_line" set state = '%s',error = '%s' where id = %s """ % (state, error, self.id))
+
+    def validate_adress(self, message_error):
+
+        if not self.address_location_id:
+            message_error.append("El campo Localidad no es válido")
+        if not self.address_state_id:
+            message_error.append("El campo Departamento no es válido")
+        return message_error
 
     def write(self, vals):
         result = super(ONSCMigrationLine, self).write(vals)

@@ -55,6 +55,7 @@
                                     <field name="marital_status_id"/>
                                     <field name="birth_date"/>
                                     <field name="gender_id"/>
+                                    <field name="sex"/>
                                     <field name="birth_country_id"/>
                                     <field name="citizenship"/>
                                     <field name="crendencial_serie"/>
