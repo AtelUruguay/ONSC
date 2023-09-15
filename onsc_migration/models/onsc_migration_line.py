@@ -14,12 +14,11 @@ STATE = [
 ]
 
 REQUIRED_FIELDS = {'country_id', 'doc_type_id', 'doc_nro', 'first_name',
-                   'date_income_public_administration', 'sex', 'state_move', 'first_surname', 'inciso_id',
-                   'state_place',
-                   'descriptor3_id', 'retributive_day_id', 'retributive_day_formal_id', 'state_move', 'sex',
+                   'date_income_public_administration', 'state_move', 'first_surname', 'inciso_id',
+                   'descriptor3_id', 'retributive_day_id', 'retributive_day_formal_id', 'state_move',
                    'birth_date', 'date_start'}
 
-REQUIRED_FIELDS_COMM = {'inciso_des_id', 'date_start_commission', 'state_place_des', 'reason_commision',
+REQUIRED_FIELDS_COMM = {'inciso_des_id', 'date_start_commission', 'reason_commision',
                         'resolution_comm_description', 'resolution_comm_date', 'resolution_comm_type', }
 
 _logger = logging.getLogger(__name__)
@@ -170,7 +169,7 @@ class ONSCMigration(models.Model):
                         regime_commission_id = self.get_commision_regime(str(row[72]))
                         norm_comm_id = row[74] and self.get_norm(str(row[74]).upper(), row[75], row[76], row[77])
 
-                        row_dict['inciso_des_id'] = inciso_des_id[0]
+                        row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
                         row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
                         row_dict['program_project_des_id'] = program_project_des_id and program_project_des_id[0]
                         row_dict['regime_des_id'] = regime_des_id and regime_des_id[0]
@@ -224,11 +223,12 @@ class ONSCMigration(models.Model):
                         ),
                     )
                     line = self._cr.fetchone()[0]
-                    if count > 0:
-                        self._cr.execute(
-                            """update "onsc_migration_line" set state = 'error',error = 'Ya existe un registro para el documento %s' where id = %s """ % (row[2],line))
-                        self._cr.commit()
-                        continue
+                    # todo descomentar al finalizar las pruebas
+                    # if count > 0:
+                    #     self._cr.execute(
+                    #         """update "onsc_migration_line" set state = 'error',error = 'Ya existe un registro para el documento %s' where id = %s """ % (row[2], line))
+                    #     self._cr.commit()
+                    #     continue
                     message_error = self.validate(row, row_dict)
                     self.env['onsc.migration.line'].suspend_security().browse(line).validate_line(message_error)
                     self.env.cr.commit()
@@ -246,7 +246,7 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Género no es válido")
         if row[12] and not row_dict['birth_country_id']:
             message_error.append("El campo país de nacimiento  no es válido")
-        if row[13] and not row_dict['citizenship']:
+        if row[13] and row[13] not in ('legal', 'natural', 'extrajero'):
             message_error.append("El campo Ciudadania no es válido")
 
         if row[31] and not row_dict['health_provider_id']:
@@ -265,7 +265,8 @@ class ONSCMigration(models.Model):
 
         if row[86] and not row_dict['security_job_id']:
             message_error.append("El campo Seguridad de Puesto no es válido")
-
+        if (row[62] or row[63]) and not row_dict['program_project_des_id']:
+            message_error.append("No se encontró oficina destino para la combinación Programa/Proyecto")
         if row[71]:
             message_error = self.validate_commision(row, row_dict, message_error)
         message_error = self.validate_adrress(row, row_dict, message_error)
@@ -278,6 +279,7 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Esquina 1 no es válido")
         if row[24] and not row_dict['address_street3_id']:
             message_error.append("El campo Esquina 2 no es válido")
+
         return message_error
 
     def validate_commision(self, row, row_dict, message_error):
@@ -287,8 +289,11 @@ class ONSCMigration(models.Model):
         if row[72] and not row_dict['regime_commission_id']:
             message_error.append("El campo Régimen de la comisión no es válido")
 
-        if row[64] and not row_dict['regime_des_id']:
+        if row[40] and not row_dict['regime_id']:
             message_error.append("El campo Régimen destino no es válido")
+
+        if (row[38] or row[39]) and not row_dict['program_project_id']:
+            message_error.append("No se encontró oficina para la combinación Programa/Proyecto")
 
         return message_error
 
@@ -409,7 +414,7 @@ class ONSCMigration(models.Model):
 class ONSCMigrationLine(models.Model):
     _name = "onsc.migration.line"
 
-    migration_id = fields.Many2one('onsc.migration', string='Cabezal migracion')
+    migration_id = fields.Many2one('onsc.migration', string='Cabezal migracion', ondelete='cascade')
     error = fields.Char("Error", readonly=True)
     state = fields.Selection(STATE, string='Estado', readonly=True)
     country_id = fields.Many2one('res.country', string=u'País')
@@ -463,7 +468,8 @@ class ONSCMigrationLine(models.Model):
     nro_place = fields.Char(string="Plaza origen")
     sec_place = fields.Char(string="Secuencial Plaza origen")
     state_place = fields.Selection(string="Estado plaza origen",
-                                   selection=[('O', 'O'), ('C', 'C'), ('R', 'R(no com.)'), ('S', 'S(comisiones)')])
+                                   selection=[('O', 'Ocupado'), ('C', 'Fuera de cuadro'), ('R', 'Reservada'),
+                                              ('S', 'Comisión saliente')])
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso origen')
     call_number = fields.Char(string='Número de llamado origen')
@@ -492,7 +498,7 @@ class ONSCMigrationLine(models.Model):
     nro_puesto_des = fields.Char(string="Puesto destino")
     nro_place_des = fields.Char(string="Plaza destino")
     sec_place_des = fields.Char(string="Secuencial Plaza destino")
-    state_place_des = fields.Selection(string="Estado plaza destino", selection=[('E', 'E')])
+    state_place_des = fields.Selection(string="Estado plaza destino", selection=[('E', 'Comisión Entrante')])
     department_id = fields.Many2one("hr.department", string="Unidad organizativa")
     date_start_commission = fields.Date(string='Fecha inicio comisión')
     type_commission = fields.Selection(string="Tipo de Comisión",
@@ -538,6 +544,8 @@ class ONSCMigrationLine(models.Model):
 
         if self.sex not in ('male', 'feminine'):
             message_error.append("El campo Sexo no es válido")
+        if self.state_place not in ('O', 'C', 'R', 'S'):
+            message_error.append("El campo Estado plaza origen no es válido")
 
         if self.address_street_id:
             message_error = self.validate_adress(message_error)
@@ -546,19 +554,11 @@ class ONSCMigrationLine(models.Model):
             for required_field in REQUIRED_FIELDS_COMM:
                 if not eval('self.%s' % required_field):
                     message_error.append("El campo %s no es válido" % self._fields[required_field].string)
+            if self.state_place_des != 'E':
+                message_error.append("El campo Estado plaza destino no es válido")
+
         else:
-            if not self.program_project_id:
-                message_error.append("No se encontró oficina para la combinación Programa/Proyecto")
-            if not self.regime_id:
-                message_error.append("El campo Regimen no es válido")
-            if not self.operating_unit_id:
-                message_error.append("El campo UE no es válido")
-            if not self.nro_puesto:
-                message_error.append("El campo Puesto origen no es válido")
-            if not self.nro_place:
-                message_error.append("El campo Plaza origen no es válido")
-            if not self.sec_place:
-                message_error.append("El campo Secuencial Plaza origen no es válido")
+            message_error = self.validate_no_requiered(message_error)
 
         if message_error:
             error = '\n'.join(message_error)
@@ -569,6 +569,21 @@ class ONSCMigrationLine(models.Model):
 
         self._cr.execute(
             """update "onsc_migration_line" set state = '%s',error = '%s' where id = %s """ % (state, error, self.id))
+
+    def validate_no_requiered(self, message_error):
+        if not self.program_project_id:
+            message_error.append("No se encontró oficina para la combinación Programa/Proyecto")
+        if not self.regime_id:
+            message_error.append("El campo Regimen no es válido")
+        if not self.operating_unit_id:
+            message_error.append("El campo UE no es válido")
+        if not self.nro_puesto:
+            message_error.append("El campo Puesto origen no es válido")
+        if not self.nro_place:
+            message_error.append("El campo Plaza origen no es válido")
+        if not self.sec_place:
+            message_error.append("El campo Secuencial Plaza origen no es válido")
+        return message_error
 
     def validate_adress(self, message_error):
 
