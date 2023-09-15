@@ -22,16 +22,16 @@
             <form string="Migracion">
                 <header>
                     <button type="object" class="btn btn-primary"
-                            string="Cargar Archivo" attrs="{'invisible': [('state', '!=', 'ok')]}"
+                            string="Cargar Archivo" attrs="{'invisible': [('state', '!=', 'draft')]}"
                             name="button_process"/>
 
                     <field name="state" widget="statusbar"
-                           statusbar_visible="ok,error"/>
+                           statusbar_visible="draft,error,process"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
-                            <field name="document_file" filename="document_filename" attrs="{'readonly': [('state', '!=', 'ok')]}"/>
+                            <field name="document_file" filename="document_filename" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="document_filename" invisible="1"/>
 
                             <field name="error" attrs="{'invisible': [('state', '!=', 'error')]}"/>
@@ -40,8 +40,8 @@
                     </group>
                     <notebook>
                         <page string="Lineas de migración">
-                            <field name="line_ids" nolabel="1" >
-                                <tree string="Migracion"  options="{'no_open': True}" editable="top" create="0" delete="0">
+                            <field name="line_ids" readonly="1" nolabel="1" >
+                                <tree string="Migracion"  options="{'no_open': True}" edit="0" create="0" delete="0">
                                     <field name="state"/>
                                     <field name="error"/>
                                     <field name="country_id"/>
@@ -55,6 +55,7 @@
                                     <field name="marital_status_id"/>
                                     <field name="birth_date"/>
                                     <field name="gender_id"/>
+                                    <field name="sex"/>
                                     <field name="birth_country_id"/>
                                     <field name="citizenship"/>
                                     <field name="crendencial_serie"/>
@@ -149,8 +150,8 @@
                             </field>
                         </page>
                         <page string="Lineas de migración con error">
-                            <field name="error_line_ids" nolabel="1">
-                                <tree string="Migracion"  options="{'no_open': True}" editable="top" create="0" delete="0">
+                            <field name="error_line_ids" readonly="1" nolabel="1">
+                                <tree string="Migracion"  options="{'no_open': True}" edit="0" create="0" delete="0">
                                     <field name="state"/>
                                     <field name="error"/>
                                     <field name="country_id"/>

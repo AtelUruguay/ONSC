@@ -17,7 +17,7 @@ _logger = logging.getLogger(__name__)
 class ONSCLegajoClient():
 
     def __init__(self):
-        self.timeout = 20
+        self.timeout = 60
 
     def _create_unverified_https_context(self):
         try:

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Legajo',
-    'version': '15.0.9.0.0',
+    'version': '15.0.10.0.0',
     'summary': 'ONSC - Legajo',
     'sequence': 11,
     'description': """
@@ -15,7 +15,8 @@ ONSC - Legajo
                 'base_user_role_hide_admin',
                 'hr_contract',
                 'model_history',
-                'switch_jobs_security'
+                'switch_jobs_security',
+                'web_tree_header_buttons_always_visible'
                 ],
     'data': [
         'security/onsc_legajo_security.xml',
@@ -55,6 +56,7 @@ ONSC - Legajo
         'views/ir_attachment_view.xml',
         'views/onsc_legajo_alta_cs_view.xml',
         'views/onsc_legajo_cambio_uo_views.xml',
+        'views/onsc_legajo_staging_ws7_views.xml',
         'views/onsc_legajo_menuitems.xml',
     ],
     'assets': {

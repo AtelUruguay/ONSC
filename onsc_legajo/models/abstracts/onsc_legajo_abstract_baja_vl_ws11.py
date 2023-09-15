@@ -22,7 +22,7 @@ class ONSCLegajoAbstractSyncWS11(models.AbstractModel):
 
         data = {
             'fechaVigencia': record.end_date.strftime('%d/%m/%Y'),
-            'cedula': int(record.employee_id.cv_nro_doc[:-1], 16), 'descripcionMotivo': record.reason_description,
+            'cedula': int(record.employee_id.cv_nro_doc[:-1]), 'descripcionMotivo': record.reason_description,
             'numeroNorma': record.norm_number, 'articuloNorma': record.norm_article,
             'tipoNormaSigla': record.norm_id.tipoNormaSigla, 'anioNorma': record.norm_year,
             'descripcionResolucion': record.resolution_description,

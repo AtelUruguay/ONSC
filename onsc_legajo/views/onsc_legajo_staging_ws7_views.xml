@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_staging_ws7_view_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.staging.ws7.tree</field>
+        <field name="model">onsc.legajo.staging.ws7</field>
+        <field name="arch" type="xml">
+            <tree string="Staging WS7" limit="200" create="0" delete="0">
+                <header>
+                    <button name="button_in_process"
+                            type="object"
+                            attrs="{'always_visible': True}"
+                            string="Reprocesar"/>
+                </header>
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="doc"/>
+                <field name="primer_nombre"/>
+                <field name="segundo_nombre"/>
+                <field name="primer_ap"/>
+                <field name="segundo_ap"/>
+                <field name="mov"/>
+                <field name="tipo_mov"/>
+                <field name="pdaId"/>
+                <field name="movimientoPadreId"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
+    <record id="onsc_legajo_staging_ws7_view_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.staging.ws7.form</field>
+        <field name="model">onsc.legajo.staging.ws7</field>
+        <field name="arch" type="xml">
+            <form string="Staging WS7" create="0" delete="0">
+                <header>
+                    <button name="button_in_process"
+                            type="object"
+                            string="Reprocesar"
+                            states="error"/>
+                    <field name="state" widget="statusbar" clickable="0"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="should_disable_form_edit" invisible="1"/>
+                            <field name="doc"/>
+                            <field name="primer_nombre" readonly="1"/>
+                            <field name="segundo_nombre" readonly="1"/>
+                            <field name="primer_ap" readonly="1"/>
+                            <field name="segundo_ap" readonly="1"/>
+                            <field name="mov" readonly="1"/>
+                            <field name="tipo_mov" readonly="1"/>
+                            <field name="pdaId" readonly="1"/>
+                            <field name="movimientoPadreId" readonly="1"/>
+                            <field name="fecha_nac" readonly="1"/>
+                            <field name="fecha_ing_adm" readonly="1"/>
+                            <field name="cod_mot_baja" readonly="1"/>
+                            <field name="fecha_vig" readonly="0"/>
+                            <field name="fecha_aud" readonly="0"/>
+                            <field name="fecha_desde_vinc" readonly="0"/>
+                            <field name="idPuesto"/>
+                            <field name="nroPlaza"/>
+                            <field name="secPlaza"/>
+                            <field name="programa" readonly="1"/>
+                            <field name="proyecto" readonly="1"/>
+                            <field name="aniosInactividad" readonly="1"/>
+                            <field name="fechaGraduacion" readonly="1"/>
+                        </group>
+                        <group>
+                            <label for="inciso"/>
+                            <div>
+                                <field name="inciso" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="inciso_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="ue"/>
+                            <div>
+                                <field name="ue" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="operating_unit_id"
+                                       domain="[('inciso_id', '=', inciso_id)]"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="tipo_doc"/>
+                            <div>
+                                <field name="tipo_doc" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="cv_document_type_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_pais"/>
+                            <div>
+                                <field name="cod_pais" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="country_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="raza"/>
+                            <div>
+                                <field name="raza" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="race_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_mecing"/>
+                            <div>
+                                <field name="cod_mecing" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="income_mechanism_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_reg"/>
+                            <div>
+                                <field name="cod_reg" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="regime_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_desc1"/>
+                            <div>
+                                <field name="cod_desc1" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="descriptor1_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_desc2"/>
+                            <div>
+                                <field name="cod_desc2" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="descriptor2_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_desc3"/>
+                            <div>
+                                <field name="cod_desc3" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="descriptor3_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="cod_desc4"/>
+                            <div>
+                                <field name="cod_desc4" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="descriptor4_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="sexo"/>
+                            <div>
+                                <field name="sexo" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="gender_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="codigoEstadoCivil"/>
+                            <div>
+                                <field name="codigoEstadoCivil" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="marital_status_id"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <label for="jornada_ret"/>
+                            <div>
+                                <field name="jornada_ret" readonly="1" class="oe_inline" style="width:20%!important"/>
+                                <field name="retributive_day_id"
+                                       readonly="1"
+                                       style="width:80%!important"
+                                       class="oe_inline"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            </div>
+                            <field name="program_project_id" readonly="1"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="budget_item_id" readonly="1"
+                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Log">
+                            <field name="log"/>
+                        </page>
+                        <page string="Data origen">
+                            <field name="info_income" readonly="1"/>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+    <record id="onsc_legajo_staging_ws7_view_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.staging.ws7.search</field>
+        <field name="model">onsc.legajo.staging.ws7</field>
+        <field name="arch" type="xml">
+            <search string="Staging WS7">
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="primer_nombre"/>
+                <field name="segundo_nombre"/>
+                <field name="primer_ap"/>
+                <field name="segundo_ap"/>
+                <field name="mov"/>
+                <field name="tipo_mov"/>
+                <field name="pdaId"/>
+                <field name="movimientoPadreId"/>
+                <field name="state"/>
+                <group string="Agrupar por">
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_mov" string="mov" context="{'group_by': 'mov'}"/>
+                    <filter name="group_tipo_mov" string="tipo_mov" context="{'group_by': 'tipo_mov'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_legajo_staging_ws7_action" model="ir.actions.act_window">
+        <field name="name">Staging WS7</field>
+        <field name="res_model">onsc.legajo.staging.ws7</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+</odoo>

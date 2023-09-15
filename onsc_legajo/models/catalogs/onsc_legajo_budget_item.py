@@ -11,6 +11,7 @@ class ONSCLegajoBudgetItem(models.Model):
     _name = 'onsc.legajo.budget.item'
     _inherit = 'onsc.legajo.abstract.sync'
     _description = 'Partida'
+    _rec_name = 'codPartida'
 
     codPartida = fields.Char(string="Código de partida", required=True)
     dsc1Id = fields.Many2one("onsc.catalog.descriptor1", string="Descriptor 1")

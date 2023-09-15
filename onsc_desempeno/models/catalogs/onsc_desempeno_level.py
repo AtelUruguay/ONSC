@@ -41,6 +41,7 @@ class ONSCDesempenoLevelLine(models.Model):
     level_id = fields.Many2one("onsc.desempeno.level", string="Nivel")
     hierarchical_level_id = fields.Many2one("onsc.catalog.hierarchical.level", string="Nivel jerárquico", required=True)
     is_uo_manager = fields.Boolean(string="Responsable UO", default=False)
+    active = fields.Boolean(string="Activo", related='level_id.active', store=True)
 
     _sql_constraints = [
         ('level_line_uniq', 'unique(hierarchical_level_id,is_uo_manager)',

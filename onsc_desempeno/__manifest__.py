@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Gestión de Desempeño',
-    'version': '15.0.4.6.0',
+    'version': '15.0.5.0.0',
     'summary': 'ONSC - Gestión de Desempeño',
     'sequence': 1,
     'description': """

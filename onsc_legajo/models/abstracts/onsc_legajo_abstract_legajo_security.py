@@ -50,6 +50,10 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
             employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
         if self._context.get('mi_legajo'):
             available_contracts = employees.mapped('contract_ids')
+        elif self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo'):
+            department_ids = self.env['onsc.legajo.department'].get_uo_tree()
+            available_contracts = employees.mapped('contract_ids').mapped('job_ids').filtered(
+                lambda x: x.department_id.id in department_ids).mapped('contract_id')
         elif self._get_abstract_config_security():
             available_contracts = employees.mapped('contract_ids')
         elif self._get_abstract_inciso_security():

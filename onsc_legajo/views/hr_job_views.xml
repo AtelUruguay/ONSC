@@ -25,7 +25,6 @@
             <form string="Puestos en UO">
                 <header/>
                 <sheet>
-                    <widget name="web_ribbon" title="Archivado" bg_color="bg-danger" attrs="{'invisible': [('active', '=', True)]}"/>
                     <div class="oe_button_box" name="button_box"/>
                     <div class="oe_title">
                         <label for="name" string="Puesto en UO"/>
@@ -60,7 +59,6 @@
                         <field name="end_date"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                attrs="{'readonly': [('is_readonly', '=', True)]}"/>
-                        <field name="active" invisible="1"/>
                         <field name="security_job_id"
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"

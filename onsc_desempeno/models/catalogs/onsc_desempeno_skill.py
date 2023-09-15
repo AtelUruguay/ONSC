@@ -6,6 +6,8 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
+HTML_HELP = """<a class="btn" target="_blank" title="%s"><i class="fa fa-question-circle-o" role="img" aria-label="Info"/></a>"""
+
 
 class ONSCDesempenoSkill(models.Model):
     _name = 'onsc.desempeno.skill'
@@ -51,7 +53,19 @@ class ONSCDesempenoSkillLine(models.Model):
     name_level = fields.Char(string="Nivel", related='level_id.name', store=True)
     competency_id = fields.Many2one('onsc.desempeno.evaluation.competency', string="Competencias")
 
+    dimension_tooltip = fields.Html(string=" ",
+                                    compute=lambda s: s._get_help('dimension_tooltip'),
+                                    default=lambda s: s._get_help('dimension_tooltip', True))
+
     _sql_constraints = [
         ('line_uniq', 'unique(skill_id,dimension_id,level_id)',
          u'La dimensión y nivel debe ser unico para la competencia'),
     ]
+
+    def _get_help(self, help_field='', is_default=False):
+        _html2construct = HTML_HELP % ('Tooltip')
+        if is_default:
+            return eval("_html2construct")
+        for rec in self:
+            _html2construct = HTML_HELP % (rec.sudo().dimension_id.definition or '')
+            setattr(rec, help_field, _html2construct)

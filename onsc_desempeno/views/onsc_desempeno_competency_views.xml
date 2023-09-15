@@ -9,17 +9,29 @@
                 <sheet>
                     <group>
                         <group colspan="4">
-                            <field name="skill_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <label for="skill_id"/>
+                            <div>
+                                <field name="skill_id" readonly="1"
+                                       widget="many2one_tooltip"
+                                       class="float-left"
+                                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <div class="float-left">
+                                    <field name="skill_tooltip"/>
+                                </div>
+                            </div>
+
+
                             <field colspan="4" name="degree_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field colspan="4" name="improvement_areas"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Dimensiones">
-                            <field name="skill_line_ids" nolabel="1" options="{'no_open': True}" create="0" delete="0" edit="0">
-                                <tree>
+                            <field name="skill_line_ids" nolabel="1" options="{'no_open': True}">
+                                <tree create="0" delete="0">
+                                    <field name="dimension_tooltip" string=""/>
                                     <field name="dimension_id" readonly="1"
-                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                       options="{'fields_to_show': ['definition'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="behavior" style="white-space:normal;" readonly="1"/>
                                  </tree>
                             </field>
