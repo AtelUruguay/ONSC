@@ -55,9 +55,8 @@ class ONSCMigration(models.Model):
                 sheet = workbook.active
 
                 for row in sheet.iter_rows(min_row=2, values_only=True):
-                    count = self.check_line(str(row[2]), str(row[44]), str(row[45]), str(row[46]))
-                    if count > 0:
-                        continue
+                    count = self.check_line(str(row[2]), str(row[45]), str(row[46]), str(row[47]))
+
                     if not row[0] and not row[1] and not row[2]:
                         break
 
@@ -225,6 +224,11 @@ class ONSCMigration(models.Model):
                         ),
                     )
                     line = self._cr.fetchone()[0]
+                    if count > 0:
+                        self._cr.execute(
+                            """update "onsc_migration_line" set state = 'error',error = 'Ya existe un registro para el documento %s' where id = %s """ % (row[2],line))
+                        self._cr.commit()
+                        continue
                     message_error = self.validate(row, row_dict)
                     self.env['onsc.migration.line'].suspend_security().browse(line).validate_line(message_error)
                     self.env.cr.commit()
@@ -262,7 +266,7 @@ class ONSCMigration(models.Model):
         if row[86] and not row_dict['security_job_id']:
             message_error.append("El campo Seguridad de Puesto no es válido")
 
-        if row_dict['type_commission']:
+        if row[71]:
             message_error = self.validate_commision(row, row_dict, message_error)
         message_error = self.validate_adrress(row, row_dict, message_error)
         return message_error
@@ -297,8 +301,8 @@ class ONSCMigration(models.Model):
 
     def check_line(self, doc_nro, nro_puesto, nro_place, sec_place):
         self._cr.execute(
-            """SELECT count(id) FROM onsc_migration_line  WHERE migration_id = %s and upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
-            (self.id, doc_nro, nro_puesto, nro_place, sec_place))
+            """SELECT count(id) FROM onsc_migration_line  WHERE state != 'error' and upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
+            (doc_nro, nro_puesto, nro_place, sec_place))
         return self._cr.fetchone()[0]
 
     def get_country(self, code):
