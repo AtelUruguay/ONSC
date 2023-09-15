@@ -145,15 +145,26 @@ class HrJob(models.Model):
         }
 
     # INTELIGENCIA DE ENTIDAD
-    def create_job(self, contract, department, start_date, security_job):
+    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False):
         """
         CREA NUEVO PUESTO A PARTIR DE LA DATA DE ENTRADA
         :param contract: Recordset a hr.contract
         :param department: Recordset a hr.department
         :param start_date: Date
         :param security_job: Recordset a onsc.legajo.security.job
+        :param extra_security_roles: Extra security to apply
         :return: nuevo recordet de hr.job
         """
+        role_extra_ids = [(5,)]
+        if extra_security_roles:
+            for extra_security_role in extra_security_roles:
+                role_extra_ids.append((0, 0, {
+                    'user_role_id': extra_security_role.user_role_id.id,
+                    'type': 'manual',
+                    'start_date': start_date,
+                    'end_date': False,
+                    'active': extra_security_role.active
+                }))
         job = self.suspend_security().create({
             'name': '%s - %s' % (contract.display_name, str(start_date)),
             'employee_id': contract.employee_id.id,
@@ -161,6 +172,7 @@ class HrJob(models.Model):
             'department_id': department.id,
             'start_date': start_date,
             'security_job_id': security_job.id,
+            'role_extra_ids': role_extra_ids
         })
         job.onchange_security_job_id()
         if job.security_job_id.is_uo_manager and job.start_date <= fields.Date.today():
