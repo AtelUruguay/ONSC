@@ -51,7 +51,6 @@ class ONSCLegajoStagingWS7(models.Model):
     comi_inciso_dest = fields.Char(string='comi_inciso_dest')
     comi_ue_dest = fields.Char(string='comi_ue_dest')
     comi_mot_ext = fields.Char(string='comi_mot_ext')
-    comi_reg = fields.Char(string='comi_reg')
     jornada_ret = fields.Char(string='jornada_ret')
     sexo = fields.Char(string='sexo')
     codigoEstadoCivil = fields.Char(string='codigoEstadoCivil')
@@ -200,6 +199,8 @@ class ONSCLegajoStagingWS7(models.Model):
                                                       ('inciso_id', '=', inciso_id)], limit=1).id
         else:
             operating_unit_id = self.operating_unit_id.id
+        if not operating_unit_id:
+            log_list.append(_('No se encontró en el catálogo Unidad Ejecutora el valor self.ue'))
         vals.update({'operating_unit_id': operating_unit_id})
         if self.tipo_doc and not self.cv_document_type_id:
             cv_document_type_id = BaseUtils._get_catalog_id(DocType, 'code_other', self, 'tipo_doc', log_list)
@@ -258,10 +259,10 @@ class ONSCLegajoStagingWS7(models.Model):
         vals.update({'marital_status_id': marital_status_id})
         return vals
 
-    def process_staging(self, ids=[]):
+    def process_staging(self, ids=False):
         Contract = self.env['hr.contract'].sudo()
         args = [('state', 'in', ['in_process', 'na']), ('checked_bysystem', '=', False)]
-        if len(ids) > 0:
+        if ids:
             args.append(('id', 'in', ids))
         for record in self.search(args):
             try:
@@ -432,8 +433,17 @@ class ONSCLegajoStagingWS7(models.Model):
         :param operation: Recordset de la operacion
         :return: Nuevos puestos
         """
+        jobs = self.env['hr.job']
         if target_contract.operating_unit_id != source_contract.operating_unit_id:
-            return self.env['hr.job']
-        return source_contract.job_ids.filtered(
-            lambda x: x.end_date is False or x.end_date >= target_contract.date_start).copy(
-            {'contract_id': target_contract.id})
+            return jobs
+        for job_id in source_contract.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= target_contract.date_start):
+            jobs |= self.env['hr.job'].suspend_security().create_job(
+                target_contract,
+                job_id.department_id,
+                target_contract.date_start,
+                job_id.security_job_id,
+                job_id.role_extra_ids
+            )
+        return jobs
+        # return .copy(
+        #     {'contract_id': target_contract.id, 'end_date': False, 'start_date':})
