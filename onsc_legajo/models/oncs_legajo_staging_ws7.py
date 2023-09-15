@@ -269,8 +269,12 @@ class ONSCLegajoStagingWS7(models.Model):
                 with self._cr.savepoint():
                     if record.mov in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']:
                         self._check_movement(Contract, record)
-                    elif record.mov in ['ASCENSO', 'TRANSFORMA'] and record.tipo_mov == 'BAJA':
-                        self.set_ascenso_transformacion(Contract, record)
+                    elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA'] and record.tipo_mov == 'BAJA':
+                        self.set_asc_transf_reest(Contract, record)
+                    elif record.mov in ['RESERVA'] and record.tipo_mov == 'ALTA':
+                        self.set_reserva(Contract, record)
+                    elif record.mov in ['DESRESERVA'] and record.tipo_mov == 'BAJA':
+                        self.set_desreserva(Contract, record)
             except Exception as e:
                 record.write({
                     'state': 'error',
@@ -292,7 +296,7 @@ class ONSCLegajoStagingWS7(models.Model):
         if not exist_contract:
             record.write({'checked_bysystem': True, 'log': _('No se encontró el contrato')})
 
-    def set_ascenso_transformacion(self, Contract, record):
+    def set_asc_transf_reest(self, Contract, record):
         records = record
         contract = self._get_contract(Contract, record, legajo_state_operator='!=', legajo_state='baja')
         if len(contract) == 0:
@@ -312,14 +316,38 @@ class ONSCLegajoStagingWS7(models.Model):
         contract.deactivate_legajo_contract(record.fecha_vig + datetime.timedelta(days=-1))
         if record.mov == 'ASCENSO':
             causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
-        else:
+        elif record.mov == 'TRANSFORMA':
             causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
+        else:
+            causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
         contract.write({
             'causes_discharge_id': causes_discharge.id,
             'cs_contract_id': new_contract.id
         })
         self._copy_jobs(contract, new_contract)
         records |= second_movement
+        records.write({'state': 'processed'})
+
+    def set_reserva(self, Contract, record):
+        records = record
+        contract = self._get_contract(Contract, record, legajo_state_operator='=', legajo_state='active')
+        if len(contract) == 0:
+            record.write({
+                'state': 'error',
+                'log': _('Contrato no encontrado')})
+            return
+        contract.deactivate_legajo_contract(record.fecha_vig, legajo_state='reserved', eff_date=record.fecha_vig)
+        records.write({'state': 'processed'})
+
+    def set_desreserva(self, Contract, record):
+        records = record
+        contract = self._get_contract(Contract, record, legajo_state_operator='=', legajo_state='reserved')
+        if len(contract) == 0:
+            record.write({
+                'state': 'error',
+                'log': _('Contrato no encontrado')})
+            return
+        contract.deactivate_legajo_contract(record.fecha_vig, legajo_state='reserved', eff_date=record.fecha_vig)
         records.write({'state': 'processed'})
 
     def _get_second_movement(self, operation, tipo_mov):
@@ -402,7 +430,8 @@ class ONSCLegajoStagingWS7(models.Model):
         income_mechanism = record.income_mechanism_id
         regime = record.regime_id
 
-        new_contract = contract.copy({
+        new_contract = self.env['hr.contract'].suspend_security().create({
+            'employee_id': contract.employee_id.id,
             'inciso_id': inciso.id,
             'operating_unit_id': operating_unit.id,
             'date_start': record.fecha_vig,
@@ -415,14 +444,17 @@ class ONSCLegajoStagingWS7(models.Model):
             'descriptor4_id': descriptor4.id,
             'income_mechanism_id': income_mechanism.id,
             'retributive_day_id': record.retributive_day_id.id,
-            'description_day': record.retributive_day_id.descripcionJornada,
-            'code_day': record.retributive_day_id.codigoJornada,
+            # 'description_day': record.retributive_day_id.descripcionJornada,
+            # 'code_day': record.retributive_day_id.codigoJornada,
             'regime_id': regime.id,
             'position': str(record.idPuesto),
             'workplace': str(record.nroPlaza),
             'sec_position': str(record.secPlaza),
             'program': str(record.programa),
             'project': str(record.proyecto),
+            'state_square_id': contract.state_square_id.id,
+            #
+            'wage': contract.wage
         })
         return new_contract
 

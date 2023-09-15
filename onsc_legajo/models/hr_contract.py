@@ -275,10 +275,12 @@ class HrContract(models.Model):
     def activate_legajo_contract(self, legajo_state='active'):
         self.write({'legajo_state': legajo_state})
 
-    def deactivate_legajo_contract(self, date_end, legajo_state='baja'):
+    def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date = False):
         vals = {'legajo_state': legajo_state}
         if legajo_state == 'baja':
             vals.update({'date_end': date_end})
+        if eff_date:
+            vals.update({'eff_date': eff_date})
         self.suspend_security().write(vals)
         for job in self.suspend_security().job_ids.filtered(lambda x: x.end_date is False):
             job.deactivate(date_end)
