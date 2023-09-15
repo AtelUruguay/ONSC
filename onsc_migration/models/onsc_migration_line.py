@@ -262,7 +262,7 @@ class ONSCMigration(models.Model):
         if row[86] and not row_dict['security_job_id']:
             message_error.append("El campo Seguridad de Puesto no es válido")
 
-        if row_dict['type_commission']:
+        if row[71]:
             message_error = self.validate_commision(row, row_dict, message_error)
         message_error = self.validate_adrress(row, row_dict, message_error)
         return message_error
