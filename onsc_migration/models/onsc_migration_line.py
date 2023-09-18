@@ -14,8 +14,8 @@ STATE = [
 ]
 
 REQUIRED_FIELDS = {'country_id', 'doc_type_id', 'doc_nro', 'first_name',
-                   'date_income_public_administration', 'state_move', 'first_surname', 'inciso_id',
-                   'descriptor3_id', 'retributive_day_id', 'retributive_day_formal_id', 'state_move',
+                   'date_income_public_administration', 'first_surname', 'inciso_id',
+                   'descriptor3_id', 'retributive_day_id', 'retributive_day_formal_id',
                    'birth_date', 'date_start'}
 
 REQUIRED_FIELDS_COMM = {'inciso_des_id', 'date_start_commission', 'reason_commision',
@@ -267,6 +267,11 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Seguridad de Puesto no es válido")
         if (row[62] or row[63]) and not row_dict['program_project_des_id']:
             message_error.append("No se encontró oficina destino para la combinación Programa/Proyecto")
+        if row[85] == 'BP' and row[87] and not row_dict['causes_discharge_id']:
+            message_error.append("El campo Casual de egreso no es valido no es válido")
+        if row[85] == 'BP' and (row[90] or row[91] or row[92] or row[93]) and not row_dict['norm_dis_id']:
+            message_error.append("El campo Norma de la baja no es valido no es válido")
+
         if row[71]:
             message_error = self.validate_commision(row, row_dict, message_error)
         message_error = self.validate_adrress(row, row_dict, message_error)
@@ -498,7 +503,7 @@ class ONSCMigrationLine(models.Model):
     nro_puesto_des = fields.Char(string="Puesto destino")
     nro_place_des = fields.Char(string="Plaza destino")
     sec_place_des = fields.Char(string="Secuencial Plaza destino")
-    state_place_des = fields.Selection(string="Estado plaza destino", selection=[('E', 'Comisión Entrante')])
+    state_place_des = fields.Selection(string="Estado plaza destino", selection=[('E', u'Comisión Entrante')])
     department_id = fields.Many2one("hr.department", string="Unidad organizativa")
     date_start_commission = fields.Date(string='Fecha inicio comisión')
     type_commission = fields.Selection(string="Tipo de Comisión",
@@ -546,7 +551,8 @@ class ONSCMigrationLine(models.Model):
             message_error.append("El campo Sexo no es válido")
         if self.state_place not in ('O', 'C', 'R', 'S'):
             message_error.append("El campo Estado plaza origen no es válido")
-
+        if self.state_move not in ('A', 'AP', 'BP'):
+            message_error.append("El campo Estado del Movimiento no es válido")
         if self.address_street_id:
             message_error = self.validate_adress(message_error)
 
