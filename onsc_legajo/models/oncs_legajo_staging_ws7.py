@@ -259,14 +259,20 @@ class ONSCLegajoStagingWS7(models.Model):
         vals.update({'marital_status_id': marital_status_id})
         return vals
 
-    def process_staging(self, ids=False):
+    def process_staging(self, ids=False, limit=0):
         Contract = self.env['hr.contract'].sudo()
         args = [('state', 'in', ['in_process', 'na']), ('checked_bysystem', '=', False)]
         if ids:
             args.append(('id', 'in', ids))
+
+        current_pointer = 0
         for record in self.search(args):
             try:
                 with self._cr.savepoint():
+                    if limit:
+                        current_pointer += 1
+                    if current_pointer > limit:
+                        return
                     if record.mov in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']:
                         self._check_movement(Contract, record)
                     elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA'] and record.tipo_mov == 'BAJA':
@@ -275,6 +281,17 @@ class ONSCLegajoStagingWS7(models.Model):
                         self.set_reserva(Contract, record)
                     elif record.mov in ['DESRESERVA'] and record.tipo_mov == 'BAJA':
                         self.set_desreserva(Contract, record)
+                    elif record.mov in ['RENOVACION'] and record.tipo_mov == 'ALTA':
+                        self.set_renovacion(Contract, record)
+                    elif record.mov in ['CORRECCION_ASCENSO'] and record.tipo_mov == 'ALTA':
+                        self.set_correccion_ascenso(Contract, record)
+                    elif record.mov in ['CORRECCION_ALTA'] and record.tipo_mov == 'ALTA':
+                        self.set_correccion_alta(Contract, record)
+                    elif record.mov in ['CORRECCION_BAJA'] and record.tipo_mov == 'ALTA':
+                        self.set_correccion_baja(Contract, record)
+                    elif record.mov in ['CAMBIO_JORNADA']:
+                        self.set_cambio_jornada(Contract, record)
+
             except Exception as e:
                 record.write({
                     'state': 'error',
@@ -313,6 +330,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return
 
         new_contract = self._get_contract_copy(contract, second_movement)
+        self._copy_jobs(contract, new_contract)
         contract.deactivate_legajo_contract(record.fecha_vig + datetime.timedelta(days=-1))
         if record.mov == 'ASCENSO':
             causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
@@ -324,8 +342,85 @@ class ONSCLegajoStagingWS7(models.Model):
             'causes_discharge_id': causes_discharge.id,
             'cs_contract_id': new_contract.id
         })
-        self._copy_jobs(contract, new_contract)
         records |= second_movement
+        records.write({'state': 'processed'})
+
+    def set_correccion_ascenso(self, Contract, record):
+        records = record
+        active_contract = self._get_contract(Contract, record, legajo_state_operator='=', legajo_state='active')
+        if len(active_contract) == 0:
+            record.write({
+                'state': 'error',
+                'log': _('Contrato no encontrado')})
+            return
+
+        second_movement = self._get_second_movement(record, 'BAJA')
+        if not second_movement:
+            record.write({
+                'state': 'error',
+                'log': _('Segundo movimiento no encontrado')})
+            return
+        records |= second_movement
+
+        baja_contract = self._get_contract(Contract, second_movement, legajo_state_operator='=', legajo_state='baja')
+        if len(baja_contract) == 0:
+            second_movement.write({
+                'state': 'error',
+                'log': _('Contrato no encontrado')})
+            return
+        baja_contract.write({
+            'date_end': record.fecha_vig + datetime.timedelta(days=-1),
+            'eff_date': record.fecha_aud.date(),
+        })
+        active_contract.write({
+            'date_start': record.fecha_vig,
+            'eff_date': record.fecha_aud.date(),
+        })
+        records.write({'state': 'processed'})
+
+    def set_correccion_alta(self, Contract, record):
+        records = record
+        second_movement = self._get_second_movement(record, 'BAJA')
+        if not second_movement:
+            record.write({
+                'state': 'error',
+                'log': _('Segundo movimiento no encontrado')})
+            return
+        records |= second_movement
+
+        active_contract = self._get_contract(Contract, second_movement, legajo_state_operator='=',
+                                             legajo_state='active')
+        if len(active_contract) == 0:
+            second_movement.write({
+                'state': 'error',
+                'log': _('Contrato no encontrado')})
+            return
+        active_contract.write({
+            'date_start': record.fecha_vig,
+            'eff_date': record.fecha_aud.date(),
+        })
+        records.write({'state': 'processed'})
+
+    def set_correccion_baja(self, Contract, record):
+        records = record
+        second_movement = self._get_second_movement(record, 'BAJA')
+        if not second_movement:
+            record.write({
+                'state': 'error',
+                'log': _('Segundo movimiento no encontrado')})
+            return
+        records |= second_movement
+
+        active_contract = self._get_contract(Contract, second_movement, legajo_state_operator='=', legajo_state='baja')
+        if len(active_contract) == 0:
+            second_movement.write({
+                'state': 'error',
+                'log': _('Contrato no encontrado')})
+            return
+        active_contract.write({
+            'date_end': record.fecha_vig,
+            'eff_date': record.fecha_aud.date(),
+        })
         records.write({'state': 'processed'})
 
     def set_reserva(self, Contract, record):
@@ -348,6 +443,34 @@ class ONSCLegajoStagingWS7(models.Model):
                 'log': _('Contrato no encontrado')})
             return
         contract.deactivate_legajo_contract(record.fecha_vig, legajo_state='reserved', eff_date=record.fecha_vig)
+        records.write({'state': 'processed'})
+
+    def set_renovacion(self, Contract, record):
+        records = record
+        contract = self._get_contract(Contract, record, legajo_state_operator='=', legajo_state='active')
+        if len(contract) == 0:
+            record.write({
+                'state': 'error',
+                'log': _('Contrato no encontrado')})
+            return
+        contract.write({
+            'date_end': record.fecha_vig,
+            'eff_date': record.fecha_aud.date(),
+        })
+        records.write({'state': 'processed'})
+
+    def set_cambio_jornada(self, Contract, record):
+        records = record
+        contract = self._get_contract(Contract, record, legajo_state_operator='=', legajo_state='active')
+        if len(contract) == 0:
+            record.write({
+                'state': 'error',
+                'log': _('Contrato no encontrado')})
+            return
+        contract.write({
+            'retributive_day_id': record.retributive_day_id.id,
+            'eff_date': record.fecha_vig,
+        })
         records.write({'state': 'processed'})
 
     def _get_second_movement(self, operation, tipo_mov):
@@ -468,7 +591,8 @@ class ONSCLegajoStagingWS7(models.Model):
         jobs = self.env['hr.job']
         if target_contract.operating_unit_id != source_contract.operating_unit_id:
             return jobs
-        for job_id in source_contract.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= target_contract.date_start):
+        for job_id in source_contract.job_ids.filtered(
+                lambda x: x.end_date is False or x.end_date >= target_contract.date_start):
             jobs |= self.env['hr.job'].suspend_security().create_job(
                 target_contract,
                 job_id.department_id,

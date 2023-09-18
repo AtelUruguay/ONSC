@@ -12,6 +12,7 @@ class HrContract(models.Model):
     _rec_name = 'legajo_name'
     _inherit = ['hr.contract', 'model.history']
     _history_model = 'hr.contract.model.history'
+    _history_columns = ['date_start', 'date_end']
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
