@@ -22,9 +22,6 @@
                                 <div class="o_setting_left_pane"/>
                                 <div class="o_setting_right_pane">
                                     <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Causales de egreso</h6>
-                                    <div class="text-muted">
-                                        Seleccione....... DEFINIR
-                                    </div>
                                     <div class="content-group">
                                         <div class="row">
                                             <label for="ws7_ascenso_causes_discharge_id" string="Ascenso" class="col-md-3 o_light_label"/>
@@ -43,9 +40,6 @@
                                         </div>
                                     </div>
                                     <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de parámetros del WS7</h6>
-                                    <div class="text-muted">
-                                        Seleccione....... DEFINIR
-                                    </div>
                                     <div class="content-group">
                                         <div class="row">
                                             <label for="ws7_date_from" string="Fecha/hora desde" class="col-md-3 o_light_label"/>
