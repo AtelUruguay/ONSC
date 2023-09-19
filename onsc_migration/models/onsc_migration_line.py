@@ -227,6 +227,7 @@ class ONSCMigration(models.Model):
                 self._set_base_vals(row_dict, row)
                 self._set_m2o_values(row_dict, row)
 
+                # SI ES COMISION
                 if row[71]:
                     inciso_des_id = row[60] and self.get_inciso(str(row[60]).upper())
                     operating_unit_des_id = row[61] and self.get_operating_unit(
@@ -238,7 +239,8 @@ class ONSCMigration(models.Model):
                         operating_unit_des_id and operating_unit_des_id[0]
                     )
                     regime_des_id = row[64] and self.get_regime(str(row[64]).upper())
-                    regime_commission_id = self.get_commision_regime(str(row[72]))
+                    state_place_des_id = row[68] and self.get_state_place(str(row[68]))
+                    regime_commission_id = row[72] and self.get_commision_regime(str(row[72]))
                     norm_comm_id = row[74] and self.get_norm(
                         str(row[74]).upper(),
                         row[75],
@@ -246,7 +248,6 @@ class ONSCMigration(models.Model):
                         row[77],
                         inciso_des_id and inciso_des_id[0]
                     )
-                    state_place_des_id = self.get_state_place(str(row[68]))
 
                     row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
                     row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
@@ -279,7 +280,7 @@ class ONSCMigration(models.Model):
                         row[91],
                         row[92],
                         row[93],
-                        inciso_des_id and inciso_des_id[0]
+                        row_dict.get('inciso_id')
                     )
                     causes_discharge_id = row[87] and self.get_causes_discharge(str(row[87]).upper())
                     row_dict['end_date'] = self.is_datetime(row[88]) and row[88].strftime("%Y-%m-%d")
@@ -329,20 +330,68 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Estado civil no es válido")
         if row[10] and not row_dict['gender_id']:
             message_error.append("El campo Género no es válido")
-        if row[13] and row_dict['citizenship'] not in [tupla[0] for tupla in CITIZENSHIP]:
-            message_error.append("El campo Ciudadanía no es válido")
-        if row[59] and row_dict['resolution_type'] not in ['M', 'P', 'U']:
-            message_error.append("Tipo de resolución no es válido")
         if row[12] and not row_dict['birth_country_id']:
             message_error.append("El campo país de nacimiento no es válido")
+        if row[13] and row_dict['citizenship'] not in [tupla[0] for tupla in CITIZENSHIP]:
+            message_error.append("El campo Ciudadanía no es válido")
         if row[31] and not row_dict['health_provider_id']:
             message_error.append("El campo Codigo de salud no es válido")
+        if row[36] and not row_dict['inciso_id']:
+            message_error.append("El campo Inciso no es válido")
         if row[37] and not row_dict['operating_unit_id']:
-            message_error.append("El campo Unidad ejecutora  no es válido")
+            message_error.append("El campo Unidad ejecutora no es válido")
+        if row[38] and row[39] and not row_dict['program_project_id']:
+            message_error.append("El campo Programa-Proyecto no es válido")
+        if row[48] and not row_dict['state_place_id']:
+            message_error.append("El campo Estado plaza no es válido")
+        if row[49] and not row_dict['occupation_id']:
+            message_error.append("El campo Ocupación no es válido")
+        if row[50] and not row_dict['income_mechanism_id']:
+            message_error.append("El campo Mecanismo de ingreso no es válido")
+        if (row[53] or row[54] or row[55] or row[56]) and not row_dict['norm_id']:
+            message_error.append("El campo Norma no es válido")
+        if row[59] and row_dict['resolution_type'] not in ['M', 'P', 'U']:
+            message_error.append("Tipo de resolución no es válido")
+        if (row[62] or row[63]) and not row_dict['program_project_des_id']:
+            message_error.append("No se encontró oficina destino para la combinación Programa/Proyecto")
         if row[69] and not row_dict['department_id']:
             message_error.append("El campo Unidad organizativa no es válido")
+        if row[82] and not row_dict['retributive_day_id']:
+            message_error.append("El campo Jornada retributiva no es válido")
+        if row[83] and not row_dict['retributive_day_formal_id']:
+            message_error.append("El campo Jornada retributiva formal no es válido")
+        if row[85] == 'BP' and row[87] and not row_dict['causes_discharge_id']:
+            message_error.append("El campo Casual de egreso no es válido")
+        if row[85] == 'BP' and (row[90] or row[91] or row[92] or row[93]) and not row_dict['norm_dis_id']:
+            message_error.append("El campo Norma de la baja no es válido")
+        if row[86] and not row_dict['security_job_id']:
+            message_error.append("El campo Seguridad de Puesto no es válido")
+            
+        # FIXED REQUIRED VALUES
+        if not row_dict['budget_item_id']:
+            message_error.append("El campo Partida presupuestal no es válido")
+        self._validate_address(row, row_dict, message_error)
+        self._validate_descriptors(row, row_dict, message_error)
+        self._validate_commision(row, row_dict, message_error)
+        return message_error
+
+    def _validate_address(self, row, row_dict, message_error):
+        if row[19] and not row_dict['address_state_id']:
+            message_error.append("El campo Departamento no es válido")
+        if row[20] and not row_dict['address_location_id']:
+            message_error.append("El campo Localidad no es válido")
+        if row[21] and not row_dict['address_street_id']:
+            message_error.append("El campo Calle no es válido")
+        if row[23] and not row_dict['address_street2_id']:
+            message_error.append("El campo Esquina 1 no es válido")
+        if row[24] and not row_dict['address_street3_id']:
+            message_error.append("El campo Esquina 2 no es válido")
         if row[25] and not row_dict['address_is_bis']:
             message_error.append("El campo Bis no es válido")
+
+    def _validate_descriptors(self, row, row_dict, message_error):
+        if row[40] and not row_dict['regime_id']:
+            message_error.append("El campo Régimen no es válido")
         if row[41] and not row_dict['descriptor1_id']:
             message_error.append("El campo Descriptor1 no es válido")
         if row[42] and not row_dict['descriptor2_id']:
@@ -352,51 +401,25 @@ class ONSCMigration(models.Model):
         if row[44] and not row_dict['descriptor4_id']:
             message_error.append("El campo Descriptor4 no es válido")
 
-        if row[49] and not row_dict['occupation_id']:
-            message_error.append("El campo Ocupación no es válido")
-        if row[50] and not row_dict['income_mechanism_id']:
-            message_error.append("El campo Mecanismo de ingreso no es válido")
-        if (row[53] or row[54] or row[55] or row[56]) and not row_dict['norm_id']:
-            message_error.append("El campo Norma no es válido")
-
-        if row[86] and not row_dict['security_job_id']:
-            message_error.append("El campo Seguridad de Puesto no es válido")
-        if (row[62] or row[63]) and not row_dict['program_project_des_id']:
-            message_error.append("No se encontró oficina destino para la combinación Programa/Proyecto")
-        if row[85] == 'BP' and row[87] and not row_dict['causes_discharge_id']:
-            message_error.append("El campo Casual de egreso no es válido")
-        if row[85] == 'BP' and (row[90] or row[91] or row[92] or row[93]) and not row_dict['norm_dis_id']:
-            message_error.append("El campo Norma de la baja no es válido")
-
-        if row[71]:
-            message_error = self.validate_commision(row, row_dict, message_error)
-        message_error = self.validate_adrress(row, row_dict, message_error)
-        return message_error
-
-    def validate_adrress(self, row, row_dict, message_error):
-        if row[21] and not row_dict['address_street_id']:
-            message_error.append("El campo Calle no es válido")
-        if row[23] and not row_dict['address_street2_id']:
-            message_error.append("El campo Esquina 1 no es válido")
-        if row[24] and not row_dict['address_street3_id']:
-            message_error.append("El campo Esquina 2 no es válido")
-
-        return message_error
-
-    def validate_commision(self, row, row_dict, message_error):
-        if (row[74] or row[75] or row[76] or row[77]) and not row_dict['norm_comm_id']:
-            message_error.append("El campo Norma comisión no es válido")
-
+    def _validate_commision(self, row, row_dict, message_error):
+        if not row[71]:
+            return
+        if row[60] and not row_dict['inciso_des_id']:
+            message_error.append("El campo Inciso destino no es válido")
+        if row[61] and not row_dict['operating_unit_des_id']:
+            message_error.append("El campo Unidad ejecutora destino no es válido")
+        if row[62] and not row_dict['program_project_des_id']:
+            message_error.append("El campo 'Programa-Proyecto destino no es válido")
+        if row[64] and not row_dict['regime_des_id']:
+            message_error.append("El campo Régimen destino no es válido")
+        if row[68] and not row_dict['state_place_des_id']:
+            message_error.append("El campo Plaza destino no es válido")
         if row[72] and not row_dict['regime_commission_id']:
             message_error.append("El campo Régimen de la comisión no es válido")
-
-        if row[40] and not row_dict['regime_id']:
-            message_error.append("El campo Régimen destino no es válido")
-
-        if (row[38] or row[39]) and not row_dict['program_project_id']:
-            message_error.append("No se encontró oficina para la combinación Programa/Proyecto")
-
-        return message_error
+        if (row[74] or row[75] or row[76] or row[77]) and not row_dict['norm_comm_id']:
+            message_error.append("El campo Norma comisión no es válido")
+        if row[72] and not row_dict['regime_commission_id']:
+            message_error.append("El campo Régimen de la comisión no es válido")
 
     def is_datetime(self, row):
         return type(row).__name__ == 'datetime' or False
@@ -515,20 +538,35 @@ class ONSCMigration(models.Model):
     def get_budget_item(
             self,
             row,
-            descriptor3_id,
+            descriptor3_id=None,
             descriptor1_id=None,
             descriptor2_id=None,
             descriptor4_id=None):
-        _sql = """SELECT id
-            FROM onsc_legajo_budget_item
-            WHERE
-            "dsc3Id" = %s""" % descriptor3_id
+        if not descriptor3_id:
+            _sql = """SELECT id
+                FROM onsc_legajo_budget_item
+                WHERE
+                "dsc3Id" is null"""
+        else:
+            _sql = """SELECT id
+                FROM onsc_legajo_budget_item
+                WHERE
+                "dsc3Id" = %s""" % descriptor3_id
         if row[41]:
-            _sql += """ AND "dsc1Id" = %s""" % descriptor1_id
+            if not descriptor1_id:
+                _sql += """ AND "dsc1Id" is null"""
+            else:
+                _sql += """ AND "dsc1Id" = %s""" % descriptor1_id
         if row[42]:
-            _sql += """ AND "dsc2Id" = %s""" % descriptor2_id
+            if not descriptor2_id:
+                _sql += """ AND "dsc2Id" is null"""
+            else:
+                _sql += """ AND "dsc2Id" = %s""" % descriptor2_id
         if row[44]:
-            _sql += """ AND "dsc4Id" = %s""" % descriptor4_id
+            if not descriptor4_id:
+                _sql += """ AND "dsc4Id" is null"""
+            else:
+                _sql += """ AND "dsc4Id" = %s""" % descriptor4_id
         self._cr.execute(_sql)
         return self._cr.fetchone()
 
@@ -675,7 +713,7 @@ class ONSCMigrationLine(models.Model):
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso')
     reason_discharge = fields.Text(string='Descr motivo baja')
-    norm_dis_id = fields.Many2one('onsc.legajo.norm', string='Norma comisión baja')
+    norm_dis_id = fields.Many2one('onsc.legajo.norm', string='Norma de la baja')
     norm_dis_type = fields.Char(string="Tipo norma de la baja")
     norm_dis_number = fields.Integer(string='Número de norma de la baja')
     norm_dis_year = fields.Integer(string='Año de norma de la baja')
