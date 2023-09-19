@@ -20,14 +20,14 @@
                 <field name="segundo_ap"/>
                 <field name="mov"/>
                 <field name="tipo_mov"/>
-                <field name="pdaId"/>
-                <field name="movimientoPadreId"/>
                 <field name="fecha_aud" optional="show"/>
                 <field name="idPuesto" optional="hide"/>
                 <field name="nroPlaza" optional="hide"/>
                 <field name="secPlaza" optional="hide"/>
                 <field name="programa" optional="hide"/>
                 <field name="proyecto" optional="hide"/>
+                <field name="pdaId" optional="hide"/>
+                <field name="movimientoPadreId" optional="hide"/>
                 <field name="state"/>
             </tree>
         </field>
