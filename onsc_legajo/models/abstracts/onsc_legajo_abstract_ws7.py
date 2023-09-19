@@ -32,9 +32,9 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             paFechaHastawithTz = pfFechaDesdewithTz + datetime.timedelta(days=days)
         elif fecha_hasta:
             paFechaHasta = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
-            paFechaHasta += datetime.timedelta(hours=int(tz_delta))
-            paFechaHastawithTz = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
             paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
+            paFechaHastawithTz = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
+            paFechaHastawithTz -= datetime.timedelta(hours=int(tz_delta))
         else:
             paFechaHasta = fields.Datetime.now()
             paFechaHastawithTz = fields.Datetime.now()
@@ -42,7 +42,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
 
         paFechaDesde -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
         data = {
-            'paFechaDesde': paFechaDesde.strftime('%d/%m/%Y %H:%M:%S'),
+           'paFechaDesde': paFechaDesde.strftime('%d/%m/%Y %H:%M:%S'),
             'paFechaHasta': paFechaHasta.strftime('%d/%m/%Y %H:%M:%S'),
         }
         return self.with_context(
@@ -103,8 +103,8 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
         mov = hasattr(operation, 'mov') and operation.mov or False
         fecha_aud = hasattr(operation, 'fecha_aud') and datetime.datetime.strptime(operation.fecha_aud,
                                                                                    '%Y-%m-%d %H:%M:%S.%f') or ''
-        fecha_aud += datetime.timedelta(hours=int(tz_delta) * -1)
         key = "%s-%s-%s-%s" % (fecha_aud, operation.doc, operation.mov, operation.tipo_mov)
+        fecha_aud += datetime.timedelta(hours=int(tz_delta) * -1)
 
         if hasattr(operation, 'fecha_vig'):
             fecha_vig = datetime.datetime.strptime(operation.fecha_vig, '%d/%m/%Y').date()
