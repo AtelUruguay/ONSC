@@ -7,6 +7,7 @@ from odoo import models, fields, tools, api, _
 class ONSCLegajoStagingWS7(models.Model):
     _name = 'onsc.legajo.staging.ws7'
     _description = 'Staging WS7'
+    _rec_name = 'key'
 
     info_income = fields.Char(string='Data de origen', )
 
