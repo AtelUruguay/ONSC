@@ -188,6 +188,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
         mov = hasattr(operation, 'mov') and operation.mov or False
         fecha_aud = hasattr(operation, 'fecha_aud') and datetime.datetime.strptime(operation.fecha_aud,
                                                                                    '%Y-%m-%d %H:%M:%S.%f') or ''
+        fecha_aud_date = fecha_aud and fecha_aud.date() or False
         key = "%s-%s-%s-%s" % (fecha_aud, operation.doc, operation.mov, operation.tipo_mov)
 
         if hasattr(operation, 'fecha_vig'):
@@ -213,6 +214,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             'cod_mot_baja': operation.cod_mot_baja if hasattr(operation, 'cod_mot_baja') else False,
             'fecha_vig': fecha_vig,
             'fecha_aud': fecha_aud,
+            'fecha_aud_date': fecha_aud_date,
             'mov': mov,
             'tipo_mov': operation.tipo_mov,
             'pdaId': operation.pdaId,

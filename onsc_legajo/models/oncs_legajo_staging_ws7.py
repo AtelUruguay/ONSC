@@ -23,7 +23,8 @@ class ONSCLegajoStagingWS7(models.Model):
     fecha_ing_adm = fields.Date(string='fecha_ing_adm')
     cod_mot_baja = fields.Char(string='cod_mot_baja')
     fecha_vig = fields.Date(string='fecha_vig')
-    fecha_aud = fields.Datetime(string='fecha_aud')
+    fecha_aud = fields.Char(string='fecha_aud')
+    fecha_aud_date = fields.Date(string='fecha_aud_date')
     mov = fields.Char(string='mov', index=True)
     tipo_mov = fields.Char(string='tipo_mov', index=True)
     pdaId = fields.Char(string='pdaId', index=True)
@@ -311,7 +312,7 @@ class ONSCLegajoStagingWS7(models.Model):
             use_search_count=True
         )
         if not exist_contract:
-            record.write({'checked_bysystem': True, 'log': _('No se encontró el contrato')})
+            record.write({'checked_bysystem': True, 'log': _('Contrato no encontrado')})
 
     def set_asc_transf_reest(self, Contract, record):
         records = record
@@ -370,11 +371,11 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         baja_contract.write({
             'date_end': record.fecha_vig + datetime.timedelta(days=-1),
-            'eff_date': record.fecha_aud.date(),
+            'eff_date': record.fecha_aud_date,
         })
         active_contract.write({
             'date_start': record.fecha_vig,
-            'eff_date': record.fecha_aud.date(),
+            'eff_date': record.fecha_aud_date,
         })
         records.write({'state': 'processed'})
 
@@ -397,7 +398,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         active_contract.write({
             'date_start': record.fecha_vig,
-            'eff_date': record.fecha_aud.date(),
+            'eff_date': record.fecha_aud_date,
         })
         records.write({'state': 'processed'})
 
@@ -419,7 +420,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         active_contract.write({
             'date_end': record.fecha_vig,
-            'eff_date': record.fecha_aud.date(),
+            'eff_date': record.fecha_aud_date,
         })
         records.write({'state': 'processed'})
 
@@ -455,7 +456,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         contract.write({
             'date_end': record.fecha_vig,
-            'eff_date': record.fecha_aud.date(),
+            'eff_date': record.fecha_aud_date,
         })
         records.write({'state': 'processed'})
 
