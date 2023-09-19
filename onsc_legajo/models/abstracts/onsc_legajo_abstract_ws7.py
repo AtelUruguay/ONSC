@@ -14,7 +14,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
     _description = 'Modelo abstracto para la sincronización de legajo con WS7'
 
     @api.model
-    def syncronize(self, log_info=False, days=False):
+    def syncronize(self, log_info=False, days=False, fecha_hasta=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS7_F_PU_RVE_MOVIMIENTOS')
         timeout = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS7_F_PU_RVE_MOVIMIENTOS_TIMEOUT')
         tz_delta = self.env['ir.config_parameter'].sudo().get_param('server_timezone_delta')
@@ -30,11 +30,17 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
         if days and days > 0:
             paFechaHasta = paFechaDesde + datetime.timedelta(days=days)
             paFechaHastawithTz = pfFechaDesdewithTz + datetime.timedelta(days=days)
+        elif fecha_hasta:
+            paFechaHasta = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
+            paFechaHasta += datetime.timedelta(hours=int(tz_delta))
+            paFechaHastawithTz = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
+            paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
         else:
             paFechaHasta = fields.Datetime.now()
             paFechaHastawithTz = fields.Datetime.now()
             paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
-            paFechaHastawithTz -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
+
+        paFechaDesde -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
         data = {
             'paFechaDesde': paFechaDesde.strftime('%d/%m/%Y %H:%M:%S'),
             'paFechaHasta': paFechaHasta.strftime('%d/%m/%Y %H:%M:%S'),
@@ -59,39 +65,6 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                 self.env.user.company_id.sudo().write({
                     'ws7_date_from': self.env.context.get('date_to')
                 })
-                # response_test = []
-                # for item in response:
-                #     if item.mov == 'ASCENSO':
-                #         response_test.append(item)
-
-                # for operation in response:
-
-                # if operation.mov in ['ALTA', 'BAJA']:
-                #     self._check_movement(Contract,
-                #                          operation,
-                #                          onsc_legajo_integration_error_WS7_9004)
-                # if operation.mov == 'ASCENSO' and operation.tipo_mov == 'BAJA':
-                #     self.set_ascenso(Contract,
-                #                      operation,
-                #                      operation.mov,
-                #                      response,
-                #                      onsc_legajo_integration_error_WS7_9004)
-                #     return True
-                # if operation.mov == 'TRANSFORMA' and operation.tipo_mov == 'BAJA':
-                #     self.set_transforma(Contract,
-                #                         operation,
-                #                         operation.mov,
-                #                         response,
-                #                         onsc_legajo_integration_error_WS7_9004)
-                #     return True
-                # if operation.mov == 'REESTRUCTURA' and operation.tipo_mov == 'BAJA':
-                #     self.set_reestructura(Contract,
-                #                           operation,
-                #                           operation.mov,
-                #                           response,
-                #                           onsc_legajo_integration_error_WS7_9004)
-                # return True
-
             except Exception as e:
                 long_description = "Error: %s" % tools.ustr(e)
                 _logger.warning(long_description)
@@ -100,22 +73,9 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                                     long_description=long_description)
 
     def _populate_staging(self, response):
-        Inciso = self.env['onsc.catalog.inciso'].suspend_security()
-        OperatingUnit = self.env['operating.unit'].suspend_security()
-        DocType = self.env['onsc.cv.document.type'].suspend_security()
-        Country = self.env['res.country'].suspend_security()
-        Race = self.env['onsc.cv.race'].suspend_security()
-        IncomeMechanism = self.env['onsc.legajo.income.mechanism'].suspend_security()
-        Regime = self.env['onsc.legajo.regime'].suspend_security()
-        Descriptor1 = self.env['onsc.catalog.descriptor1'].suspend_security()
-        Descriptor2 = self.env['onsc.catalog.descriptor2'].suspend_security()
-        Descriptor3 = self.env['onsc.catalog.descriptor3'].suspend_security()
-        Descriptor4 = self.env['onsc.catalog.descriptor4'].suspend_security()
-        ExtinctionCommission = self.env['onsc.legajo.reason.extinction.commission'].suspend_security()
-        Gender = self.env['onsc.cv.gender'].suspend_security()
-        MaritalStatus = self.env['onsc.cv.status.civil'].suspend_security()
         Staging = self.env['onsc.legajo.staging.ws7'].suspend_security()
         stagings = self.env['onsc.legajo.staging.ws7']
+        tz_delta = self.env['ir.config_parameter'].sudo().get_param('server_timezone_delta')
 
         integration_error_WS7_9004 = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS7_9004")
 
@@ -126,69 +86,24 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                         continue
                     logs_list = []
 
-                    vals = self._get_base_dict(operation)
+                    vals = self._get_base_dict(operation, tz_delta)
                     _is_op_unicity_valid = self._is_op_unicity_valid(vals, integration_error_WS7_9004)
                     if not _is_op_unicity_valid:
                         continue
 
                     is_simplify_record = vals.get('mov') in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']
-                    # if not is_simplify_record:
-                    #     inciso_id = self._get_catalog_id(Inciso, 'budget_code', operation, 'inciso', logs_list)
-                    #     operating_unit_id = OperatingUnit.search([('budget_code', '=', str(operation.ue)),
-                    #                                               ('inciso_id', '=', inciso_id)], limit=1).id
-                    #     if not operating_unit_id:
-                    #         logs_list.append(
-                    #             _('No se encontró en el catálogo Unidad ejecutora el valor %s') % (operation.ue))
-                    #
-                    #     cv_document_type_id = self._get_catalog_id(DocType, 'code_other', operation, 'tipo_doc',
-                    #                                                logs_list)
-                    #     country_id = self._get_catalog_id(Country, 'code_rve', operation, 'cod_pais', logs_list)
-                    #     race_id = self._get_catalog_id(Race, 'code', operation, 'raza', logs_list)
-                    #     income_mechanism_id = self._get_catalog_id(IncomeMechanism, 'code', operation, 'cod_mecing',
-                    #                                                logs_list)
-                    #     descriptor1_id = self._get_catalog_id(Descriptor1, 'code', operation, 'cod_desc1', logs_list)
-                    #     descriptor2_id = self._get_catalog_id(Descriptor2, 'code', operation, 'cod_desc2', logs_list)
-                    #     descriptor3_id = self._get_catalog_id(Descriptor3, 'code', operation, 'cod_desc3', logs_list)
-                    #     descriptor4_id = self._get_catalog_id(Descriptor4, 'code', operation, 'cod_desc4', logs_list)
-                    #
-                    #     extinction_commission_id = self._get_catalog_id(ExtinctionCommission, 'code', operation,
-                    #                                                     'comi_mot_ext',
-                    #                                                     logs_list)
-                    #     gender_id = self._get_catalog_id(Gender, 'code', operation, 'sexo', logs_list)
-                    #     marital_status_id = self._get_catalog_id(MaritalStatus, 'code', operation, 'codigoEstadoCivil',
-                    #                                              logs_list)
-                    #     regime_id = self._get_catalog_id(Regime, 'codRegimen', operation, 'cod_reg', logs_list)
-                    #
-                    #     vals.update({
-                    #         'inciso_id': inciso_id,
-                    #         'operating_unit_id': operating_unit_id,
-                    #         'cv_document_type_id': cv_document_type_id,
-                    #         'country_id': country_id,
-                    #         'race_id': race_id,
-                    #         'income_mechanism_id': income_mechanism_id,
-                    #         'regime_id': regime_id,
-                    #         'descriptor1_id': descriptor1_id,
-                    #         'descriptor2_id': descriptor2_id,
-                    #         'descriptor3_id': descriptor3_id,
-                    #         'descriptor4_id': descriptor4_id,
-                    #         'extinction_commission_id': extinction_commission_id,
-                    #         'gender_id': gender_id,
-                    #         'marital_status_id': marital_status_id,
-                    #     })
-
                     if is_simplify_record:
                         vals.update({'state': 'na'})
-
                     stagings |= Staging.create(vals)
                 stagings.button_in_process()
             except Exception as e:
                 raise e
 
-    def _get_base_dict(self, operation):
+    def _get_base_dict(self, operation, tz_delta):
         mov = hasattr(operation, 'mov') and operation.mov or False
         fecha_aud = hasattr(operation, 'fecha_aud') and datetime.datetime.strptime(operation.fecha_aud,
                                                                                    '%Y-%m-%d %H:%M:%S.%f') or ''
-        fecha_aud_date = fecha_aud and fecha_aud.date() or False
+        fecha_aud += datetime.timedelta(hours=int(tz_delta) * -1)
         key = "%s-%s-%s-%s" % (fecha_aud, operation.doc, operation.mov, operation.tipo_mov)
 
         if hasattr(operation, 'fecha_vig'):
@@ -214,7 +129,6 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             'cod_mot_baja': operation.cod_mot_baja if hasattr(operation, 'cod_mot_baja') else False,
             'fecha_vig': fecha_vig,
             'fecha_aud': fecha_aud,
-            'fecha_aud_date': fecha_aud_date,
             'mov': mov,
             'tipo_mov': operation.tipo_mov,
             'pdaId': operation.pdaId,
