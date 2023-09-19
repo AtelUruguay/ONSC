@@ -32,12 +32,15 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             paFechaHastawithTz = pfFechaDesdewithTz + datetime.timedelta(days=days)
         elif fecha_hasta:
             paFechaHasta = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
+            paFechaHasta += datetime.timedelta(hours=int(tz_delta))
             paFechaHastawithTz = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
             paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
         else:
             paFechaHasta = fields.Datetime.now()
             paFechaHastawithTz = fields.Datetime.now()
             paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
+
+        paFechaDesde -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
         data = {
             'paFechaDesde': paFechaDesde.strftime('%d/%m/%Y %H:%M:%S'),
             'paFechaHasta': paFechaHasta.strftime('%d/%m/%Y %H:%M:%S'),
