@@ -23,7 +23,11 @@ class ONSCLegajoNorm(models.Model):
     fechaDerogacion = fields.Date(string=u"Fecha derogación")
     fechaVencimiento = fields.Date(string="Fecha vencimiento")
     active = fields.Boolean(string="Activo", default=True)
-    inciso_ids = fields.Many2many('onsc.catalog.inciso', string="Incisos")
+    inciso_ids = fields.Many2many(
+        "onsc.catalog.inciso",
+        "onsc_catalog_inciso_onsc_legajo_norm_rel",
+        string="Incisos",
+    )
 
     _sql_constraints = [
         ('pk_uniq', 'unique(pk)', u'El código de la norma debe ser único')

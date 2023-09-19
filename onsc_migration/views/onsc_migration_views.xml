@@ -94,7 +94,7 @@
                                     <field name="nro_puesto"/>
                                     <field name="nro_place"/>
                                     <field name="sec_place"/>
-                                    <field name="state_place"/>
+                                    <field name="state_place_id"/>
                                     <field name="occupation_id"/>
                                     <field name="income_mechanism_id"/>
                                     <field name="call_number"/>
@@ -114,7 +114,7 @@
                                     <field name="nro_puesto_des"/>
                                     <field name="nro_place_des"/>
                                     <field name="sec_place_des"/>
-                                    <field name="state_place_des"/>
+                                    <field name="state_place_des_id"/>
                                     <field name="department_id"/>
                                     <field name="date_start_commission"/>
                                     <field name="type_commission"/>
@@ -203,7 +203,7 @@
                                     <field name="nro_puesto"/>
                                     <field name="nro_place"/>
                                     <field name="sec_place"/>
-                                    <field name="state_place"/>
+                                    <field name="state_place_id"/>
                                     <field name="occupation_id"/>
                                     <field name="income_mechanism_id"/>
                                     <field name="call_number"/>
@@ -223,7 +223,7 @@
                                     <field name="nro_puesto_des"/>
                                     <field name="nro_place_des"/>
                                     <field name="sec_place_des"/>
-                                    <field name="state_place_des"/>
+                                    <field name="state_place_des_id"/>
                                     <field name="department_id"/>
                                     <field name="date_start_commission"/>
                                     <field name="type_commission"/>
