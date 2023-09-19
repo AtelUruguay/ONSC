@@ -203,6 +203,7 @@
         <field name="model">onsc.legajo.staging.ws7</field>
         <field name="arch" type="xml">
             <search string="Staging WS7">
+                <field name="fecha_aud" optional="show"/>
                 <field name="inciso_id"/>
                 <field name="operating_unit_id"/>
                 <field name="primer_nombre"/>
@@ -213,6 +214,11 @@
                 <field name="tipo_mov"/>
                 <field name="pdaId"/>
                 <field name="movimientoPadreId"/>
+                <field name="idPuesto" optional="hide"/>
+                <field name="nroPlaza" optional="hide"/>
+                <field name="secPlaza" optional="hide"/>
+                <field name="programa" optional="hide"/>
+                <field name="proyecto" optional="hide"/>
                 <field name="state"/>
                 <group string="Agrupar por">
                     <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>

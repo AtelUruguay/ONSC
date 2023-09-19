@@ -8,7 +8,7 @@
                     <div class="o_control_panel">
                         <div class="o_panel">
                             <ol role="navigation" class="breadcrumb o_settings_title d-none d-md-block">
-                                <li class="breadcrumb-item active">Ajustes</li>
+                                <li class="breadcrumb-item active">Integración novedades CGN</li>
                             </ol>
                         </div>
                         <header>
@@ -59,8 +59,8 @@
             </field>
     </record>
 
-    <record id="onsc_legajo_digital_config_action" model="ir.actions.act_window">
-        <field name="name">Configuración</field>
+    <record id="onsc_legajo_config_action" model="ir.actions.act_window">
+        <field name="name">Integración novedades CGN</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">onsc.legajo.settings</field>
         <field name="view_mode">form</field>

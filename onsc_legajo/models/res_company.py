@@ -22,3 +22,8 @@ class ResCompany(models.Model):
         string='Fecha/hora desde')
     ws7_latency_inseconds = fields.Integer(
         string='Latencia(segundos)')
+
+    def write(self, vals):
+        if all('ws7' in key for key in vals.keys()):
+            return super(ResCompany, self.suspend_security()).write(vals)
+        return super(ResCompany, self).write(vals)
