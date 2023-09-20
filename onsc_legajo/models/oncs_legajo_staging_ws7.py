@@ -81,7 +81,7 @@ class ONSCLegajoStagingWS7(models.Model):
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada retributiva')  # jornada_ret
 
     budget_item_id = fields.Many2one('onsc.legajo.budget.item', string='Partida presupuestal')
-    program_project_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto')  # programa - proyecto
+    program_project_id = fields.Many2one('onsc.legajo.office', string='Oficina')
 
     # CV
     gender_id = fields.Many2one("onsc.cv.gender", string=u"Género")  # sexo
@@ -149,8 +149,8 @@ class ONSCLegajoStagingWS7(models.Model):
             ('codigoJornada', '=', self.jornada_ret),
             ('office_id.proyecto', '=', self.proyecto),
             ('office_id.programa', '=', self.programa),
-            ('office_id.inciso', '=', self.inciso_id.id),
-            ('office_id.unidadEjecutora', '=', self.operating_unit_id.id)
+            ('office_id.inciso', '=', vals.get('inciso_id')),
+            ('office_id.unidadEjecutora', '=', vals.get('operating_unit_id'))
         ], limit=1)
         retributive_day_id = retributive_day.id
         office_id = retributive_day.office_id.id
@@ -337,7 +337,7 @@ class ONSCLegajoStagingWS7(models.Model):
         contract.deactivate_legajo_contract(
             record.fecha_vig + datetime.timedelta(days=-1),
             legajo_state='baja',
-            eff_date=record.fecha_vig + datetime.timedelta(days=-1)
+            eff_date=record.fecha_vig
         )
         if record.mov == 'ASCENSO':
             causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
@@ -621,5 +621,4 @@ class ONSCLegajoStagingWS7(models.Model):
         else:
             _eff_date = eff_date
         if contract.eff_date and contract.eff_date > _eff_date:
-            raise ValidationError(_("La nueva fecha efectiva no puede ser menor a "
-                                    "la fecha efectiva actual del Contrato."))
+            raise ValidationError(_("No se puede modificar la historia del contrato para la fecha enviada."))
