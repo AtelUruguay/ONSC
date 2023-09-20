@@ -409,7 +409,7 @@ class ONSCMigration(models.Model):
         if row[61] and not row_dict['operating_unit_des_id']:
             message_error.append("El campo Unidad ejecutora destino no es válido")
         if row[62] and not row_dict['program_project_des_id']:
-            message_error.append("El campo 'Programa-Proyecto destino no es válido")
+            message_error.append("El campo Programa-Proyecto destino no es válido")
         if row[64] and not row_dict['regime_des_id']:
             message_error.append("El campo Régimen destino no es válido")
         if row[68] and not row_dict['state_place_des_id']:
