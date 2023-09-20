@@ -276,8 +276,7 @@ class HrContract(models.Model):
 
     def activate_legajo_contract(self, legajo_state='active', eff_date=False):
         if self.eff_date and eff_date and self.eff_date > eff_date:
-            raise ValidationError(_("La nueva fecha efectiva no puede ser menor a "
-                                    "la fecha efectiva actual del Contrato."))
+            raise ValidationError(_("No se puede modificar la historia del contrato para la fecha enviada."))
         vals = {'legajo_state': legajo_state}
         if eff_date:
             vals.update({'eff_date': str(eff_date)})
@@ -285,8 +284,7 @@ class HrContract(models.Model):
 
     def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False):
         if self.eff_date and eff_date and self.eff_date > eff_date:
-            raise ValidationError(_("La nueva fecha efectiva no puede ser menor a "
-                                    "la fecha efectiva actual del Contrato."))
+            raise ValidationError(_("No se puede modificar la historia del contrato para la fecha enviada."))
         vals = {'legajo_state': legajo_state}
         if legajo_state == 'baja':
             vals.update({'date_end': date_end})
