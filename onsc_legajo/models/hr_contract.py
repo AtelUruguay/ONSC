@@ -275,7 +275,7 @@ class HrContract(models.Model):
             'onsc_legajo.onsc_legajo_hr_contract_view_form').id)).get_history_record_action(history_id, res_id)
 
     def activate_legajo_contract(self, legajo_state='active', eff_date=False):
-        if self.eff_date and self.eff_date > eff_date:
+        if self.eff_date and eff_date and self.eff_date > eff_date:
             raise ValidationError(_("La nueva fecha efectiva no puede ser menor a "
                                     "la fecha efectiva actual del Contrato."))
         vals = {'legajo_state': legajo_state}
@@ -284,7 +284,7 @@ class HrContract(models.Model):
         self.write(vals)
 
     def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False):
-        if self.eff_date and self.eff_date > eff_date:
+        if self.eff_date and eff_date and self.eff_date > eff_date:
             raise ValidationError(_("La nueva fecha efectiva no puede ser menor a "
                                     "la fecha efectiva actual del Contrato."))
         vals = {'legajo_state': legajo_state}
