@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-
     <record id="onsc_migration_tree" model="ir.ui.view">
         <field name="name">onsc.migration.tree</field>
         <field name="model">onsc.migration</field>
@@ -10,7 +9,6 @@
                 <field name="document_filename"/>
                 <field name="write_date"/>
                 <field name="state"/>
-
             </tree>
         </field>
     </record>
@@ -24,7 +22,6 @@
                     <button type="object" class="btn btn-primary"
                             string="Cargar Archivo" attrs="{'invisible': [('state', '!=', 'draft')]}"
                             name="button_process"/>
-
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,error,process"/>
                 </header>
@@ -128,7 +125,7 @@
                                     <field name="resolution_comm_date"/>
                                     <field name="resolution_comm_type"/>
 
-									  <field name="end_date_contract"/>
+                                    <field name="end_date_contract"/>
                                     <field name="retributive_day_id"/>
                                     <field name="retributive_day_formal_id"/>
                                     <field name="id_movimiento"/>
@@ -146,7 +143,6 @@
                                     <field name="resolution_dis_date"/>
                                     <field name="resolution_dis_type"/>
                                 </tree>
-
                             </field>
                         </page>
                         <page string="Lineas de migración con error">
@@ -255,13 +251,10 @@
                                     <field name="resolution_dis_date"/>
                                     <field name="resolution_dis_type"/>
                                 </tree>
-
                             </field>
                         </page>
                     </notebook>
-
                 </sheet>
-
             </form>
         </field>
     </record>
@@ -270,6 +263,5 @@
         <field name="name">Migracion inicial</field>
         <field name="res_model">onsc.migration</field>
         <field name="view_mode">tree,form</field>
-
     </record>
 </odoo>

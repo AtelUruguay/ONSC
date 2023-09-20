@@ -1,6 +1,7 @@
 import base64
 import io
 import logging
+import re
 
 import openpyxl as openpyxl
 
@@ -93,9 +94,9 @@ class ONSCMigration(models.Model):
             'personal_phone': row[16],
             'email': row[17],
             'email_inst': row[18],
-            'address_nro_door': row[22],
+            'address_nro_door': str(row[22]),
             'address_is_bis': row[25],
-            'address_apto': row[26],
+            'address_apto': str(row[26]),
             'address_place': row[27],
             'address_zip': row[28],
             'address_block': row[29],
@@ -300,13 +301,20 @@ class ONSCMigration(models.Model):
                 for clave, valor in row_dict.items():
                     if valor is None or valor == '' or valor is False:
                         del row_dict_limpio[clave]
+                    if isinstance(valor, str):
+                        row_dict_limpio[clave] = valor.strip()
 
-                self._cr.execute(
-                    """INSERT INTO "onsc_migration_line" (%s) VALUES %s RETURNING id""" % (
-                        ', '.join(row_dict_limpio.keys()),
-                        tuple(row_dict_limpio.values())
-                    ),
+                _query_str = """INSERT INTO "onsc_migration_line" (%s) VALUES %s RETURNING id""" % (
+                    ', '.join(row_dict_limpio.keys()),
+                    tuple(row_dict_limpio.values())
                 )
+
+                # _query_str1 = re.sub(r"(?<![a-zA-Z])'(?![a-zA-Z])", '"', _query_str)
+
+                # tabla = "onsc_migration_line"
+                # sentencia_sql = f"INSERT INTO {tabla} ({', '.join(row_dict_limpio.keys())}) VALUES ({', '.join(['%s' for _ in row_dict_limpio.values()])})"
+
+                self._cr.execute(_query_str)
                 line = self._cr.fetchone()[0]
                 # todo descomentar al finalizar las pruebas
                 # if count > 0:
@@ -352,8 +360,6 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Norma no es válido")
         if row[59] and row_dict['resolution_type'] not in ['M', 'P', 'U']:
             message_error.append("Tipo de resolución no es válido")
-        if (row[62] or row[63]) and not row_dict['program_project_des_id']:
-            message_error.append("No se encontró oficina destino para la combinación Programa/Proyecto")
         if row[69] and not row_dict['department_id']:
             message_error.append("El campo Unidad organizativa no es válido")
         if row[82] and not row_dict['retributive_day_id']:
@@ -614,6 +620,7 @@ class ONSCMigrationLine(models.Model):
     marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil")
     birth_date = fields.Date(string='Fecha de nacimiento')
     gender_id = fields.Many2one('onsc.cv.gender', string='Genero')
+    sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], 'Sexo')
     birth_country_id = fields.Many2one('res.country', string=u'País de nacimiento')
     citizenship = fields.Selection(string="Ciudadanía",
                                    selection=CITIZENSHIP)
@@ -676,7 +683,7 @@ class ONSCMigrationLine(models.Model):
         string='Tipo de resolución'
     )
     inciso_des_id = fields.Many2one('onsc.catalog.inciso', string='Inciso destino')
-    operating_unit_des_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
+    operating_unit_des_id = fields.Many2one("operating.unit", string="Unidad ejecutora destino")
     program_project_des_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto destino')
     program_des = fields.Char(string='Programa destino', related="program_project_des_id.programa")
     project_des = fields.Char(string='Proyecto destino', related="program_project_des_id.proyecto")
@@ -721,7 +728,6 @@ class ONSCMigrationLine(models.Model):
     resolution_dis_description = fields.Char(string='Descripción de la resolución de la baja')
     resolution_dis_date = fields.Date(string='Fecha de la resolución de la baja')
     resolution_dis_type = fields.Char(string='Tipo de resolución de la baja')
-    sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], 'Sexo')
 
     def validate_line(self, message_error):
         for required_field in REQUIRED_FIELDS:
