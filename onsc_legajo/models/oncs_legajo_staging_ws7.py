@@ -268,35 +268,34 @@ class ONSCLegajoStagingWS7(models.Model):
 
         current_pointer = 0
         for record in self.search(args):
-            # try:
-            with self._cr.savepoint():
-                if limit:
-                    current_pointer += 1
-                if current_pointer > limit:
-                    return
-                if record.mov in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']:
-                    self._check_movement(Contract, record)
-                elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA'] and record.tipo_mov == 'BAJA':
-                    self.set_asc_transf_reest(Contract, record)
-                elif record.mov in ['RESERVA'] and record.tipo_mov == 'ALTA':
-                    self.set_reserva(Contract, record)
-                elif record.mov in ['DESRESERVA'] and record.tipo_mov == 'BAJA':
-                    self.set_desreserva(Contract, record)
-                elif record.mov in ['RENOVACION'] and record.tipo_mov == 'ALTA':
-                    self.set_renovacion(Contract, record)
-                elif record.mov in ['CORRECCION_ASCENSO'] and record.tipo_mov == 'ALTA':
-                    self.set_correccion_ascenso(Contract, record)
-                elif record.mov in ['CORRECCION_ALTA'] and record.tipo_mov == 'ALTA':
-                    self.set_correccion_alta(Contract, record)
-                elif record.mov in ['CORRECCION_BAJA'] and record.tipo_mov == 'ALTA':
-                    self.set_correccion_baja(Contract, record)
-                elif record.mov in ['CAMBIO_JORNADA']:
-                    self.set_cambio_jornada(Contract, record)
-
-            # except Exception as e:
-            #     record.write({
-            #         'state': 'error',
-            #         'log': 'Error: %s' % tools.ustr(e)})
+            try:
+                with self._cr.savepoint():
+                    if limit:
+                        current_pointer += 1
+                    if current_pointer > limit:
+                        return
+                    if record.mov in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']:
+                        self._check_movement(Contract, record)
+                    elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA'] and record.tipo_mov == 'BAJA':
+                        self.set_asc_transf_reest(Contract, record)
+                    elif record.mov in ['RESERVA'] and record.tipo_mov == 'ALTA':
+                        self.set_reserva(Contract, record)
+                    elif record.mov in ['DESRESERVA'] and record.tipo_mov == 'BAJA':
+                        self.set_desreserva(Contract, record)
+                    elif record.mov in ['RENOVACION'] and record.tipo_mov == 'ALTA':
+                        self.set_renovacion(Contract, record)
+                    elif record.mov in ['CORRECCION_ASCENSO'] and record.tipo_mov == 'ALTA':
+                        self.set_correccion_ascenso(Contract, record)
+                    elif record.mov in ['CORRECCION_ALTA'] and record.tipo_mov == 'ALTA':
+                        self.set_correccion_alta(Contract, record)
+                    elif record.mov in ['CORRECCION_BAJA'] and record.tipo_mov == 'ALTA':
+                        self.set_correccion_baja(Contract, record)
+                    elif record.mov in ['CAMBIO_JORNADA']:
+                        self.set_cambio_jornada(Contract, record)
+            except Exception as e:
+                record.write({
+                    'state': 'error',
+                    'log': 'Error: %s' % tools.ustr(e)})
 
     def _check_movement(self, Contract, record):
         """
