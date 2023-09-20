@@ -250,7 +250,7 @@ class HrContract(models.Model):
 
     def write(self, values):
         if 'legajo_state' in values.keys() and 'state_square_id' not in values.keys():
-            values['state_square_id'] = self._get_state_square(values.get('legajo_state'))
+            values['state_square_id'] = self._get_state_square(values.get('legajo_state')).id
         result = super(HrContract, self.suspend_security()).write(values)
         self._notify_sgh(values)
         return result
@@ -276,12 +276,12 @@ class HrContract(models.Model):
     def activate_legajo_contract(self, legajo_state='active'):
         self.write({'legajo_state': legajo_state})
 
-    def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date = False):
+    def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False):
         vals = {'legajo_state': legajo_state}
         if legajo_state == 'baja':
             vals.update({'date_end': date_end})
         if eff_date:
-            vals.update({'eff_date': eff_date})
+            vals.update({'eff_date': str(eff_date)})
         self.suspend_security().write(vals)
         for job in self.suspend_security().job_ids.filtered(lambda x: x.end_date is False):
             job.deactivate(date_end)

@@ -292,7 +292,6 @@ class ONSCLegajoStagingWS7(models.Model):
                         self.set_correccion_baja(Contract, record)
                     elif record.mov in ['CAMBIO_JORNADA']:
                         self.set_cambio_jornada(Contract, record)
-
             except Exception as e:
                 record.write({
                     'state': 'error',
