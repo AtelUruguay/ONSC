@@ -147,7 +147,8 @@ class ONSCLegajoStagingWS7(models.Model):
         retributive_day = RetributiveDay.search([
             ('codigoJornada', '=', self.jornada_ret),
             ('office_id.proyecto', '=', self.proyecto),
-            ('office_id.programa', '=', self.programa),
+            ('office_id.inciso', '=', self.inciso_id.id),
+            ('office_id.unidadEjecutora', '=', self.operating_unit_id.id)
         ], limit=1)
         retributive_day_id = retributive_day.id
         office_id = retributive_day.office_id.id
