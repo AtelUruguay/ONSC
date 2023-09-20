@@ -2,6 +2,7 @@
 import datetime
 
 from odoo import models, fields, tools, api, _
+from odoo.exceptions import ValidationError
 
 
 class ONSCLegajoStagingWS7(models.Model):
@@ -147,6 +148,7 @@ class ONSCLegajoStagingWS7(models.Model):
         retributive_day = RetributiveDay.search([
             ('codigoJornada', '=', self.jornada_ret),
             ('office_id.proyecto', '=', self.proyecto),
+            ('office_id.programa', '=', self.programa),
             ('office_id.inciso', '=', self.inciso_id.id),
             ('office_id.unidadEjecutora', '=', self.operating_unit_id.id)
         ], limit=1)
@@ -332,7 +334,11 @@ class ONSCLegajoStagingWS7(models.Model):
 
         new_contract = self._get_contract_copy(contract, second_movement)
         self._copy_jobs(contract, new_contract)
-        contract.deactivate_legajo_contract(record.fecha_vig + datetime.timedelta(days=-1))
+        contract.deactivate_legajo_contract(
+            record.fecha_vig + datetime.timedelta(days=-1),
+            legajo_state='baja',
+            eff_date=record.fecha_vig + datetime.timedelta(days=-1)
+        )
         if record.mov == 'ASCENSO':
             causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
         elif record.mov == 'TRANSFORMA':
@@ -369,6 +375,8 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
+        self._check_valid_eff_date(baja_contract, record.fecha_aud.date())
+        self._check_valid_eff_date(active_contract, record.fecha_aud.date())
         baja_contract.write({
             'date_end': record.fecha_vig + datetime.timedelta(days=-1),
             'eff_date': record.fecha_aud.date(),
@@ -396,6 +404,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
+        self._check_valid_eff_date(active_contract, record.fecha_aud.date())
         active_contract.write({
             'date_start': record.fecha_vig,
             'eff_date': record.fecha_aud.date(),
@@ -418,6 +427,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
+        self._check_valid_eff_date(active_contract, record.fecha_aud.date())
         active_contract.write({
             'date_end': record.fecha_vig,
             'eff_date': record.fecha_aud.date(),
@@ -443,7 +453,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        contract.deactivate_legajo_contract(record.fecha_vig, legajo_state='reserved', eff_date=record.fecha_vig)
+        contract.activate_legajo_contract(legajo_state='active', eff_date=record.fecha_vig)
         records.write({'state': 'processed'})
 
     def set_renovacion(self, Contract, record):
@@ -454,6 +464,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
+        self._check_valid_eff_date(contract, record.fecha_aud.date())
         contract.write({
             'date_end': record.fecha_vig,
             'eff_date': record.fecha_aud.date(),
@@ -468,6 +479,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
+        self._check_valid_eff_date(contract, record.fecha_vig)
         contract.write({
             'retributive_day_id': record.retributive_day_id.id,
             'eff_date': record.fecha_vig,
@@ -602,5 +614,12 @@ class ONSCLegajoStagingWS7(models.Model):
                 job_id.role_extra_ids
             )
         return jobs
-        # return .copy(
-        #     {'contract_id': target_contract.id, 'end_date': False, 'start_date':})
+
+    def _check_valid_eff_date(self, contract, eff_date):
+        if isinstance(eff_date, str):
+            _eff_date = fields.Date.from_string(eff_date)
+        else:
+            _eff_date = eff_date
+        if contract.eff_date and contract.eff_date > _eff_date:
+            raise ValidationError(_("La nueva fecha efectiva no puede ser menor a "
+                                    "la fecha efectiva actual del Contrato."))
