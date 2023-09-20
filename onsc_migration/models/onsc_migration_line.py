@@ -309,12 +309,12 @@ class ONSCMigration(models.Model):
                     tuple(row_dict_limpio.values())
                 )
 
-                _query_str1 = re.sub(r"(?<![a-zA-Z])'(?![a-zA-Z])", '"', _query_str)
+                # _query_str1 = re.sub(r"(?<![a-zA-Z])'(?![a-zA-Z])", '"', _query_str)
 
-                tabla = "onsc_migration_line"
-                sentencia_sql = f"INSERT INTO {tabla} ({', '.join(row_dict_limpio.keys())}) VALUES ({', '.join(['%s' for _ in row_dict_limpio.values()])})"
+                # tabla = "onsc_migration_line"
+                # sentencia_sql = f"INSERT INTO {tabla} ({', '.join(row_dict_limpio.keys())}) VALUES ({', '.join(['%s' for _ in row_dict_limpio.values()])})"
 
-                self._cr.execute(_query_str1)
+                self._cr.execute(_query_str)
                 line = self._cr.fetchone()[0]
                 # todo descomentar al finalizar las pruebas
                 # if count > 0:
