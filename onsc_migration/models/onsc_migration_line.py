@@ -211,6 +211,7 @@ class ONSCMigration(models.Model):
 
     def process_binary(self):
         try:
+            MigrationLine = self.env['onsc.migration.line'].suspend_security()
             if not self.document_file:
                 return
             row_number = 0
@@ -296,34 +297,14 @@ class ONSCMigration(models.Model):
                     row_dict['resolution_dis_date'] = self.is_datetime(row[95]) and row[95].strftime("%Y-%m-%d")
                     row_dict['resolution_dis_type'] = row[96]
 
-                row_dict_limpio = row_dict.copy()
-
+                cleaned_data = {}
                 for clave, valor in row_dict.items():
-                    if valor is None or valor == '' or valor is False:
-                        del row_dict_limpio[clave]
-                    if isinstance(valor, str):
-                        row_dict_limpio[clave] = valor.strip()
+                    if valor is not None and valor != '' and valor is not False:
+                        cleaned_data[clave] = valor.strip() if isinstance(valor, str) else valor
 
-                _query_str = """INSERT INTO "onsc_migration_line" (%s) VALUES %s RETURNING id""" % (
-                    ', '.join(row_dict_limpio.keys()),
-                    tuple(row_dict_limpio.values())
-                )
-
-                # _query_str1 = re.sub(r"(?<![a-zA-Z])'(?![a-zA-Z])", '"', _query_str)
-
-                # tabla = "onsc_migration_line"
-                # sentencia_sql = f"INSERT INTO {tabla} ({', '.join(row_dict_limpio.keys())}) VALUES ({', '.join(['%s' for _ in row_dict_limpio.values()])})"
-
-                self._cr.execute(_query_str)
-                line = self._cr.fetchone()[0]
-                # todo descomentar al finalizar las pruebas
-                # if count > 0:
-                #     self._cr.execute(
-                #         """update "onsc_migration_line" set state = 'error',error = 'Ya existe un registro para el documento %s' where id = %s """ % (row[2], line))
-                #     self._cr.commit()
-                #     continue
+                new_line = MigrationLine.create(cleaned_data)
                 message_error = self.validate(row, row_dict)
-                self.env['onsc.migration.line'].suspend_security().browse(line).validate_line(message_error)
+                new_line.validate_line(message_error)
                 self.env.cr.commit()
             self.write({'state': 'process'})
             return True
