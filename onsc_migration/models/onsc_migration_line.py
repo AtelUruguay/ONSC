@@ -80,37 +80,37 @@ class ONSCMigration(models.Model):
     def _set_base_vals(self, row_dict, row):
         row_dict.update({
             'migration_id': self.id,
-            'doc_nro': row[2],
-            'first_name': row[3],
-            'second_name': row[4],
-            'first_surname': row[5],
-            'second_surname': row[6],
-            'name_ci': row[7],
+            'doc_nro': str(row[2]),
+            'first_name': str(row[3]),
+            'second_name': str(row[4]),
+            'first_surname': str(row[5]),
+            'second_surname': str(row[6]),
+            'name_ci': str(row[7]),
             'birth_date': self.is_datetime(row[9]) and row[9].strftime("%Y-%m-%d"),
-            'sex': row[11] and str(row[11]),
+            'sex': str(row[11]),
             'citizenship': row[13],
-            'crendencial_serie': row[14],
-            'credential_number': row[15],
-            'personal_phone': row[16],
-            'email': row[17],
-            'email_inst': row[18],
+            'crendencial_serie': str(row[14]),
+            'credential_number': str(row[15]),
+            'personal_phone': str(row[16]),
+            'email': str(row[17]),
+            'email_inst': str(row[18]),
             'address_nro_door': str(row[22]),
             'address_is_bis': row[25],
             'address_apto': str(row[26]),
-            'address_place': row[27],
-            'address_zip': row[28],
-            'address_block': row[29],
-            'address_sandlot': row[30],
+            'address_place': str(row[27]),
+            'address_zip': str(row[28]),
+            'address_block': str(row[29]),
+            'address_sandlot': str(row[30]),
             'date_income_public_administration': self.is_datetime(row[32]) and row[32].strftime("%Y-%m-%d"),
             'inactivity_years': row[33],
             'graduation_date': self.is_datetime(row[34]) and row[34].strftime("%Y-%m-%d"),
             'date_start': self.is_datetime(row[35]) and row[35].strftime("%Y-%m-%d"),
-            'nro_puesto': row[45],
-            'nro_place': row[46],
-            'sec_place': row[47],
-            'call_number': row[51],
-            'reason_description': row[52],
-            'norm_type': row[53],
+            'nro_puesto': str(row[45]),
+            'nro_place': str(row[46]),
+            'sec_place': str(row[47]),
+            'call_number': str(row[51]),
+            'reason_description': str(row[52]),
+            'norm_type': str(row[53]),
             'norm_number': row[54],
             'norm_year': row[55],
             'norm_article': row[56],
@@ -122,42 +122,42 @@ class ONSCMigration(models.Model):
         })
 
     def _set_m2o_values(self, row_dict, row):
-        country_id = row[0] and self.get_country(row[0].upper())
-        doc_type_id = row[1] and self.get_doc_type(row[1].upper())
-        marital_status_id = row[8] and self.get_status_civil(str(row[8]).upper())
-        gender_id = row[10] and self.get_gender(str(row[10]).upper())
+        country_id = row[0] and self.get_country(str(row[0]))
+        doc_type_id = row[1] and self.get_doc_type(str(row[1]))
+        marital_status_id = row[8] and self.get_status_civil(str(row[8]))
+        gender_id = row[10] and self.get_gender(str(row[10]))
         if row[12] and row[0] != row[12]:
-            birth_country_id = row[12] and self.get_country(row[12].upper())
+            birth_country_id = row[12] and self.get_country(str(row[12]))
         elif row[12]:
             birth_country_id = country_id
         else:
             birth_country_id = None
         address_state_id = row[19] and self.get_country_state(
-            str(row[19]).upper(), country_id and country_id[0])
+            str(row[19]), country_id and country_id[0])
         address_location_id = self.is_numeric(row[20]) and self.get_location(
             str(row[20]), address_state_id and address_state_id[0])
-        address_street_id = row[21] and self.get_street(str(row[21]).upper(),
+        address_street_id = row[21] and self.get_street(str(row[21]),
                                                         address_location_id and address_location_id[0])
-        address_street2_id = row[23] and self.get_street(str(row[23]).upper(),
+        address_street2_id = row[23] and self.get_street(str(row[23]),
                                                          address_location_id and address_location_id[0])
-        address_street3_id = self.get_street(str(row[24]).upper(), address_location_id and address_location_id[0])
-        health_provider_id = row[31] and self.get_health_provider(str(row[31]).upper())
-        inciso_id = row[36] and self.get_inciso(str(row[36]).upper())
-        operating_unit_id = row[37] and self.get_operating_unit(str(row[37]).upper(), inciso_id and inciso_id[0])
+        address_street3_id = self.get_street(str(row[24]), address_location_id and address_location_id[0])
+        health_provider_id = row[31] and self.get_health_provider(str(row[31]))
+        inciso_id = row[36] and self.get_inciso(str(row[36]))
+        operating_unit_id = row[37] and self.get_operating_unit(str(row[37]), inciso_id and inciso_id[0])
         program_project_id = self.get_office(
-            str(row[38]).upper(),
-            str(row[39]).upper(),
+            str(row[38]),
+            str(row[39]),
             operating_unit_id and operating_unit_id[0])
         regime_id = row[40] and self.get_regime(str(row[40]))
-        descriptor1_id = row[41] and self.get_descriptor1(str(row[41]).upper())
-        descriptor2_id = row[42] and self.get_descriptor2(str(row[42]).upper())
-        descriptor3_id = row[43] and self.get_descriptor3(str(row[43]).upper())
-        descriptor4_id = row[44] and self.get_descriptor4(str(row[44]).upper())
-        state_place_id = row[48] and self.get_state_place(str(row[48]).upper())
-        occupation_id = row[45] and self.get_occupation(str(row[49]).upper())
-        income_mechanism_id = row[50] and self.get_income_mechanism(str(row[50]).upper())
+        descriptor1_id = row[41] and self.get_descriptor1(str(row[41]))
+        descriptor2_id = row[42] and self.get_descriptor2(str(row[42]))
+        descriptor3_id = row[43] and self.get_descriptor3(str(row[43]))
+        descriptor4_id = row[44] and self.get_descriptor4(str(row[44]))
+        state_place_id = row[48] and self.get_state_place(str(row[48]))
+        occupation_id = row[45] and self.get_occupation(str(row[49]))
+        income_mechanism_id = row[50] and self.get_income_mechanism(str(row[50]))
         norm_id = row[53] and self.get_norm(
-            str(row[53]).upper(),
+            str(row[53]),
             row[54],
             row[55],
             row[56],
@@ -170,15 +170,15 @@ class ONSCMigration(models.Model):
             descriptor2_id and descriptor2_id[0],
             descriptor4_id and descriptor4_id[0]
         )
-        department_id = row[69] and self.get_department(str(row[69]).upper(),
+        department_id = row[69] and self.get_department(str(row[69]),
                                                         operating_unit_id and operating_unit_id[0])
         retributive_day_id = row[82] and self.get_jornada_retributiva(
-            str(row[82]).upper(),
+            str(row[82]),
             program_project_id and program_project_id[0])
         # retributive_day_formal_id = row[83] and self.get_jornada_retributiva(
-        #     str(row[83]).upper(),
+        #     str(row[83]),
         #     program_project_id and program_project_id[0])
-        security_job_id = row[86] and self.get_security_job(str(row[86]).upper())
+        security_job_id = row[86] and self.get_security_job(str(row[86]))
 
         row_dict.update({
             'country_id': country_id and country_id[0],
@@ -233,20 +233,20 @@ class ONSCMigration(models.Model):
 
                 # SI ES COMISION
                 if row[71]:
-                    inciso_des_id = row[60] and self.get_inciso(str(row[60]).upper())
+                    inciso_des_id = row[60] and self.get_inciso(str(row[60]))
                     operating_unit_des_id = row[61] and self.get_operating_unit(
-                        str(row[61]).upper(),
+                        str(row[61]),
                         inciso_des_id and inciso_des_id[0])
                     program_project_des_id = self.get_office(
-                        str(row[62]).upper(),
-                        str(row[63]).upper(),
+                        str(row[62]),
+                        str(row[63]),
                         operating_unit_des_id and operating_unit_des_id[0]
                     )
-                    regime_des_id = row[64] and self.get_regime(str(row[64]).upper())
+                    regime_des_id = row[64] and self.get_regime(str(row[64]))
                     state_place_des_id = row[68] and self.get_state_place(str(row[68]))
                     regime_commission_id = row[72] and self.get_commision_regime(str(row[72]))
                     norm_comm_id = row[74] and self.get_norm(
-                        str(row[74]).upper(),
+                        str(row[74]),
                         row[75],
                         row[76],
                         row[77],
@@ -280,13 +280,13 @@ class ONSCMigration(models.Model):
                 row_dict['state_move'] = row[85]
                 if row_dict['state_move'] == 'BP':
                     norm_dis_id = row[90] and self.get_norm(
-                        str(row[90]).upper(),
+                        str(row[90]),
                         row[91],
                         row[92],
                         row[93],
                         row_dict.get('inciso_id')
                     )
-                    causes_discharge_id = row[87] and self.get_causes_discharge(str(row[87]).upper())
+                    causes_discharge_id = row[87] and self.get_causes_discharge(str(row[87]))
                     row_dict['end_date'] = self.is_datetime(row[88]) and row[88].strftime("%Y-%m-%d")
                     row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0]
                     row_dict['reason_discharge'] = row[89]
@@ -420,28 +420,28 @@ class ONSCMigration(models.Model):
 
     def check_line(self, doc_nro, nro_puesto, nro_place, sec_place):
         self._cr.execute(
-            """SELECT count(id) FROM onsc_migration_line WHERE state != 'error' and upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
+            """SELECT count(id) FROM onsc_migration_line WHERE state != 'error' and doc_nro = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
             (doc_nro, nro_puesto, nro_place, sec_place))
         return self._cr.fetchone()[0]
 
     def get_country(self, code):
-        self._cr.execute("""SELECT id FROM res_country WHERE code = %s""", (code.upper(),))
+        self._cr.execute("""SELECT id FROM res_country WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_doc_type(self, code):
-        self._cr.execute("""SELECT id FROM onsc_cv_document_type WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_cv_document_type WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_status_civil(self, code):
-        self._cr.execute("""SELECT id FROM onsc_cv_status_civil WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_cv_status_civil WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_gender(self, code):
-        self._cr.execute("""SELECT id FROM onsc_cv_gender WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_cv_gender WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_country_state(self, code, country_id=None):
-        self._cr.execute("""SELECT id FROM res_country_state WHERE upper(code) = %s AND country_id = %s""",
+        self._cr.execute("""SELECT id FROM res_country_state WHERE code = %s AND country_id = %s""",
                          (code, country_id))
         return self._cr.fetchone()
 
@@ -460,22 +460,22 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_health_provider(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_health_provider WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_health_provider WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_inciso(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_inciso WHERE upper(budget_code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_inciso WHERE budget_code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_operating_unit(self, code, inciso_id=None):
-        self._cr.execute("""SELECT id FROM operating_unit WHERE upper(budget_code) = %s AND inciso_id=%s""",
+        self._cr.execute("""SELECT id FROM operating_unit WHERE budget_code = %s AND inciso_id=%s""",
                          (code, inciso_id))
         return self._cr.fetchone()
 
     def get_office(self, programa, proyecto, operating_unit_id=None):
         self._cr.execute("""SELECT id FROM onsc_legajo_office WHERE
-        upper(programa) = %s AND 
-        upper(proyecto) = %s AND
+        programa = %s AND 
+        proyecto = %s AND
         "unidadEjecutora"=%s
         """, (programa, proyecto, operating_unit_id))
         return self._cr.fetchone()
@@ -485,31 +485,31 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_descriptor1(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor1 WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor1 WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_descriptor2(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor2 WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor2 WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_descriptor3(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor3 WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor3 WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_descriptor4(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor4 WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor4 WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_occupation(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_occupation WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_occupation WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_state_place(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_state_square WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_state_square WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_income_mechanism(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_income_mechanism WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_income_mechanism WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_norm(self, tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id=None):
@@ -517,7 +517,7 @@ class ONSCMigration(models.Model):
             """SELECT id
             FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel
             WHERE
-            upper("tipoNormaSigla") = %s and 
+            "tipoNormaSigla" = %s and 
             "numeroNorma"= %s and 
             "anioNorma" = %s and 
             "articuloNorma"= %s and
@@ -563,24 +563,24 @@ class ONSCMigration(models.Model):
 
     def get_department(self, code, operating_unit_id=None):
         self._cr.execute("""SELECT id FROM hr_department WHERE
-        upper(code) = %s AND 
+        code = %s AND 
         operating_unit_id = %s""", (code, operating_unit_id))
         return self._cr.fetchone()
 
     def get_jornada_retributiva(self, code, office_id):
         self._cr.execute(
             """SELECT id FROM onsc_legajo_jornada_retributiva WHERE
-            upper("codigoJornada") = %s AND
+            "codigoJornada" = %s AND
             office_id = %s
             limit 1""", (code, office_id))
         return self._cr.fetchone()
 
     def get_security_job(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_security_job WHERE upper(name) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_security_job WHERE name = %s""", (code,))
         return self._cr.fetchone()
 
     def get_causes_discharge(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_causes_discharge WHERE upper(code) = %s """, (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_causes_discharge WHERE code = %s """, (code,))
         return self._cr.fetchone()
 
     def get_commision_regime(self, code):

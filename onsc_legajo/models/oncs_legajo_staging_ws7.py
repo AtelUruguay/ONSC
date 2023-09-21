@@ -486,6 +486,10 @@ class ONSCLegajoStagingWS7(models.Model):
         })
         records.write({'state': 'processed'})
 
+    def set_modif_funcionario(self, Contract, record):
+        contract = self._get_contract(Contract, record, legajo_state_operator='=', legajo_state='active')
+
+
     def _get_second_movement(self, operation, tipo_mov):
         """
         Retorna movimiento de contrapartida de la lista de movimientos devueltos por el WS
