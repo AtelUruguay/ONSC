@@ -266,7 +266,7 @@ class HrEmployee(models.Model):
             'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
         }
         cv_address_documentary_validated = record.cv_digital_id.cv_address_documentary_validation_state == 'validated'
-        if not self._context.get('exclusive_validated_info') or cv_address_documentary_validated:
+        if self._context.get('is_migration') or not self._context.get('exclusive_validated_info') or cv_address_documentary_validated:
             vals.update(record._get_info_fromcv_cv_address())
         # NRO DOCUMENTO
         if record.cv_digital_id.nro_doc_documentary_validation_state == 'validated':
@@ -278,10 +278,10 @@ class HrEmployee(models.Model):
         if record.cv_digital_id.marital_status_documentary_validation_state == 'validated':
             vals.update(record._get_info_fromcv_marital_status())
         # CREDENCIAL CIVICA
-        if record.cv_digital_id.civical_credential_documentary_validation_state == 'validated':
+        if self._context.get('is_migration') or record.cv_digital_id.civical_credential_documentary_validation_state == 'validated':
             vals.update(record._get_info_fromcv_civical_credential())
         # GENERO
-        if record.cv_digital_id.gender_documentary_validation_state == 'validated':
+        if self._context.get('is_migration') or record.cv_digital_id.gender_documentary_validation_state == 'validated':
             vals.update(record._get_info_fromcv_gender())
         # IDENTIDAD ÉTNICO RACIAL
         if record.cv_digital_id.cv_race_documentary_validation_state == 'validated':

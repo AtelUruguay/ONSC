@@ -127,7 +127,7 @@
 
                                     <field name="end_date_contract"/>
                                     <field name="retributive_day_id"/>
-                                    <field name="retributive_day_formal_id"/>
+                                    <field name="retributive_day_formal"/>
                                     <field name="id_movimiento"/>
                                     <field name="state_move"/>
                                     <field name="security_job_id"/>
@@ -235,7 +235,7 @@
 
 									  <field name="end_date_contract"/>
                                     <field name="retributive_day_id"/>
-                                    <field name="retributive_day_formal_id"/>
+                                    <field name="retributive_day_formal"/>
                                     <field name="id_movimiento"/>
                                     <field name="state_move"/>
                                     <field name="security_job_id"/>

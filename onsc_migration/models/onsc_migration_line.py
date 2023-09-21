@@ -1,11 +1,11 @@
 import base64
 import io
 import logging
-import re
 
 import openpyxl as openpyxl
 
 from odoo import models, fields, tools
+from odoo.exceptions import ValidationError
 
 STATE = [
     ('draft', 'Borrador'),
@@ -31,17 +31,8 @@ REQUIRED_FIELDS = {
     'inciso_id',
     'descriptor3_id',
     'retributive_day_id',
-    'retributive_day_formal_id',
+    'retributive_day_formal',
     'date_start'
-}
-
-REQUIRED_FIELDS_NO_COMM = {
-    'inciso_des_id',
-    'date_start_commission',
-    'reason_commision',
-    'resolution_comm_description',
-    'resolution_comm_date',
-    'resolution_comm_type',
 }
 
 REQUIRED_FIELDS_COMM = {
@@ -51,6 +42,15 @@ REQUIRED_FIELDS_COMM = {
     'resolution_comm_description',
     'resolution_comm_date',
     'resolution_comm_type',
+}
+
+REQUIRED_FIELDS_COMM_AC = {
+    'nro_puesto',
+    'nro_place',
+    'sec_place',
+    'nro_puesto_des',
+    'nro_place_des',
+    'sec_place_des',
 }
 
 _logger = logging.getLogger(__name__)
@@ -80,82 +80,84 @@ class ONSCMigration(models.Model):
     def _set_base_vals(self, row_dict, row):
         row_dict.update({
             'migration_id': self.id,
-            'doc_nro': row[2],
-            'first_name': row[3],
-            'second_name': row[4],
-            'first_surname': row[5],
-            'second_surname': row[6],
-            'name_ci': row[7],
+            'doc_nro': str(row[2]),
+            'first_name': str(row[3]),
+            'second_name': str(row[4]),
+            'first_surname': str(row[5]),
+            'second_surname': str(row[6]),
+            'name_ci': str(row[7]),
             'birth_date': self.is_datetime(row[9]) and row[9].strftime("%Y-%m-%d"),
-            'sex': row[11] and row[11].lower(),
+            'sex': str(row[11]),
             'citizenship': row[13],
-            'crendencial_serie': row[14],
-            'credential_number': row[15],
-            'personal_phone': row[16],
-            'email': row[17],
-            'email_inst': row[18],
+            'crendencial_serie': str(row[14]),
+            'credential_number': str(row[15]),
+            'personal_phone': str(row[16]),
+            'email': str(row[17]),
+            'email_inst': str(row[18]),
             'address_nro_door': str(row[22]),
             'address_is_bis': row[25],
             'address_apto': str(row[26]),
-            'address_place': row[27],
-            'address_zip': row[28],
-            'address_block': row[29],
-            'address_sandlot': row[30],
+            'address_place': str(row[27]),
+            'address_zip': str(row[28]),
+            'address_block': str(row[29]),
+            'address_sandlot': str(row[30]),
             'date_income_public_administration': self.is_datetime(row[32]) and row[32].strftime("%Y-%m-%d"),
             'inactivity_years': row[33],
             'graduation_date': self.is_datetime(row[34]) and row[34].strftime("%Y-%m-%d"),
             'date_start': self.is_datetime(row[35]) and row[35].strftime("%Y-%m-%d"),
-            'nro_puesto': row[45],
-            'nro_place': row[46],
-            'sec_place': row[47],
-            'call_number': row[51],
-            'reason_description': row[52],
-            'norm_type': row[53],
+            'nro_puesto': str(row[45]),
+            'nro_place': str(row[46]),
+            'sec_place': str(row[47]),
+            'call_number': str(row[51]),
+            'reason_description': str(row[52]),
+            'norm_type': str(row[53]),
             'norm_number': row[54],
             'norm_year': row[55],
             'norm_article': row[56],
             'resolution_description': row[57],
             'resolution_date': self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d"),
-            'resolution_type': row[59]
+            'resolution_type': row[59],
+            'retributive_day_formal': row[83],
+
         })
 
     def _set_m2o_values(self, row_dict, row):
-        country_id = row[0] and self.get_country(row[0].upper())
-        doc_type_id = row[1] and self.get_doc_type(row[1].upper())
-        marital_status_id = row[8] and self.get_status_civil(str(row[8]).upper())
-        gender_id = row[10] and self.get_gender(str(row[10]).upper())
+        country_id = row[0] and self.get_country(str(row[0]))
+        doc_type_id = row[1] and self.get_doc_type(str(row[1]))
+        marital_status_id = row[8] and self.get_status_civil(str(row[8]))
+        gender_id = row[10] and self.get_gender(str(row[10]))
         if row[12] and row[0] != row[12]:
-            birth_country_id = row[12] and self.get_country(row[12].upper())
+            birth_country_id = row[12] and self.get_country(str(row[12]))
         elif row[12]:
             birth_country_id = country_id
         else:
             birth_country_id = None
         address_state_id = row[19] and self.get_country_state(
-            str(row[19]).upper(), country_id and country_id[0])
+            str(row[19]), country_id and country_id[0])
         address_location_id = self.is_numeric(row[20]) and self.get_location(
             str(row[20]), address_state_id and address_state_id[0])
-        address_street_id = row[21] and self.get_street(str(row[21]).upper(),
+        address_street_id = row[21] and self.get_street(str(row[21]),
                                                         address_location_id and address_location_id[0])
-        address_street2_id = row[23] and self.get_street(str(row[23]).upper(),
+        address_street2_id = row[23] and self.get_street(str(row[23]),
                                                          address_location_id and address_location_id[0])
-        address_street3_id = self.get_street(str(row[24]).upper(), address_location_id and address_location_id[0])
-        health_provider_id = row[31] and self.get_health_provider(str(row[31]).upper())
-        inciso_id = row[36] and self.get_inciso(str(row[36]).upper())
-        operating_unit_id = row[37] and self.get_operating_unit(str(row[37]).upper(), inciso_id and inciso_id[0])
+        address_street3_id = self.get_street(str(row[24]), address_location_id and address_location_id[0])
+        health_provider_id = row[31] and self.get_health_provider(str(row[31]))
+        inciso_id = row[36] and self.get_inciso(str(row[36]))
+        operating_unit_id = row[37] and self.get_operating_unit(str(row[37]), inciso_id and inciso_id[0])
         program_project_id = self.get_office(
-            str(row[38]).upper(),
-            str(row[39]).upper(),
+            str(row[38]),
+            str(row[39]),
             operating_unit_id and operating_unit_id[0])
         regime_id = row[40] and self.get_regime(str(row[40]))
-        descriptor1_id = row[41] and self.get_descriptor1(str(row[41]).upper())
-        descriptor2_id = row[42] and self.get_descriptor2(str(row[42]).upper())
-        descriptor3_id = row[43] and self.get_descriptor3(str(row[43]).upper())
-        descriptor4_id = row[44] and self.get_descriptor4(str(row[44]).upper())
-        state_place_id = row[48] and self.get_state_place(str(row[48]).upper())
-        occupation_id = row[45] and self.get_occupation(str(row[49]).upper())
-        income_mechanism_id = row[50] and self.get_income_mechanism(str(row[50]).upper())
+        descriptor1_id = row[41] and self.get_descriptor1(str(row[41]))
+        descriptor2_id = row[42] and self.get_descriptor2(str(row[42]))
+        descriptor3_id = row[43] and self.get_descriptor3(str(row[43]))
+        descriptor4_id = row[44] and self.get_descriptor4(str(row[44]))
+        state_place_id = row[48] and self.get_state_place(str(row[48]))
+        occupation_id = row[45] and self.get_occupation(str(row[49]))
+        income_mechanism_id = row[50] and self.get_income_mechanism(str(row[50]))
         norm_id = row[53] and self.get_norm(
-            str(row[53]).upper(),
+            str(row[53]),
             row[54],
             row[55],
             row[56],
@@ -168,15 +170,15 @@ class ONSCMigration(models.Model):
             descriptor2_id and descriptor2_id[0],
             descriptor4_id and descriptor4_id[0]
         )
-        department_id = row[69] and self.get_department(str(row[69]).upper(),
+        department_id = row[69] and self.get_department(str(row[69]),
                                                         operating_unit_id and operating_unit_id[0])
         retributive_day_id = row[82] and self.get_jornada_retributiva(
-            str(row[82]).upper(),
+            str(row[82]),
             program_project_id and program_project_id[0])
-        retributive_day_formal_id = row[83] and self.get_jornada_retributiva(
-            str(row[83]).upper(),
-            program_project_id and program_project_id[0])
-        security_job_id = row[86] and self.get_security_job(str(row[86]).upper())
+        # retributive_day_formal_id = row[83] and self.get_jornada_retributiva(
+        #     str(row[83]),
+        #     program_project_id and program_project_id[0])
+        security_job_id = row[86] and self.get_security_job(str(row[86]))
 
         row_dict.update({
             'country_id': country_id and country_id[0],
@@ -205,7 +207,7 @@ class ONSCMigration(models.Model):
             'norm_id': norm_id and norm_id[0],
             'department_id': department_id and department_id[0],
             'retributive_day_id': retributive_day_id and retributive_day_id[0],
-            'retributive_day_formal_id': retributive_day_formal_id and retributive_day_formal_id[0],
+            # 'retributive_day_formal_id': retributive_day_formal_id,
             'security_job_id': security_job_id and security_job_id[0],
         })
 
@@ -231,20 +233,20 @@ class ONSCMigration(models.Model):
 
                 # SI ES COMISION
                 if row[71]:
-                    inciso_des_id = row[60] and self.get_inciso(str(row[60]).upper())
+                    inciso_des_id = row[60] and self.get_inciso(str(row[60]))
                     operating_unit_des_id = row[61] and self.get_operating_unit(
-                        str(row[61]).upper(),
+                        str(row[61]),
                         inciso_des_id and inciso_des_id[0])
                     program_project_des_id = self.get_office(
-                        str(row[62]).upper(),
-                        str(row[63]).upper(),
+                        str(row[62]),
+                        str(row[63]),
                         operating_unit_des_id and operating_unit_des_id[0]
                     )
-                    regime_des_id = row[64] and self.get_regime(str(row[64]).upper())
+                    regime_des_id = row[64] and self.get_regime(str(row[64]))
                     state_place_des_id = row[68] and self.get_state_place(str(row[68]))
                     regime_commission_id = row[72] and self.get_commision_regime(str(row[72]))
                     norm_comm_id = row[74] and self.get_norm(
-                        str(row[74]).upper(),
+                        str(row[74]),
                         row[75],
                         row[76],
                         row[77],
@@ -278,13 +280,13 @@ class ONSCMigration(models.Model):
                 row_dict['state_move'] = row[85]
                 if row_dict['state_move'] == 'BP':
                     norm_dis_id = row[90] and self.get_norm(
-                        str(row[90]).upper(),
+                        str(row[90]),
                         row[91],
                         row[92],
                         row[93],
                         row_dict.get('inciso_id')
                     )
-                    causes_discharge_id = row[87] and self.get_causes_discharge(str(row[87]).upper())
+                    causes_discharge_id = row[87] and self.get_causes_discharge(str(row[87]))
                     row_dict['end_date'] = self.is_datetime(row[88]) and row[88].strftime("%Y-%m-%d")
                     row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0]
                     row_dict['reason_discharge'] = row[89]
@@ -345,15 +347,17 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Unidad organizativa no es válido")
         if row[82] and not row_dict['retributive_day_id']:
             message_error.append("El campo Jornada retributiva no es válido")
-        if row[83] and not row_dict['retributive_day_formal_id']:
-            message_error.append("El campo Jornada retributiva formal no es válido")
+        # if row[83] and not row_dict['retributive_day_formal']:
+        #     message_error.append("El campo Jornada retributiva formal no es válido")
         if row[85] == 'BP' and row[87] and not row_dict['causes_discharge_id']:
             message_error.append("El campo Casual de egreso no es válido")
         if row[85] == 'BP' and (row[90] or row[91] or row[92] or row[93]) and not row_dict['norm_dis_id']:
             message_error.append("El campo Norma de la baja no es válido")
         if row[86] and not row_dict['security_job_id']:
             message_error.append("El campo Seguridad de Puesto no es válido")
-            
+        if row[11] and row_dict['sex'] not in ['male', 'feminine']:
+            message_error.append("Sexo no es válido")
+
         # FIXED REQUIRED VALUES
         if not row_dict['budget_item_id']:
             message_error.append("El campo Partida presupuestal no es válido")
@@ -416,28 +420,28 @@ class ONSCMigration(models.Model):
 
     def check_line(self, doc_nro, nro_puesto, nro_place, sec_place):
         self._cr.execute(
-            """SELECT count(id) FROM onsc_migration_line WHERE state != 'error' and upper(doc_nro) = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
+            """SELECT count(id) FROM onsc_migration_line WHERE state != 'error' and doc_nro = %s and nro_puesto = %s and nro_place =%s and sec_place =%s""",
             (doc_nro, nro_puesto, nro_place, sec_place))
         return self._cr.fetchone()[0]
 
     def get_country(self, code):
-        self._cr.execute("""SELECT id FROM res_country WHERE upper(code) = %s""", (code.upper(),))
+        self._cr.execute("""SELECT id FROM res_country WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_doc_type(self, code):
-        self._cr.execute("""SELECT id FROM onsc_cv_document_type WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_cv_document_type WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_status_civil(self, code):
-        self._cr.execute("""SELECT id FROM onsc_cv_status_civil WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_cv_status_civil WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_gender(self, code):
-        self._cr.execute("""SELECT id FROM onsc_cv_gender WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_cv_gender WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_country_state(self, code, country_id=None):
-        self._cr.execute("""SELECT id FROM res_country_state WHERE upper(code) = %s AND country_id = %s""",
+        self._cr.execute("""SELECT id FROM res_country_state WHERE code = %s AND country_id = %s""",
                          (code, country_id))
         return self._cr.fetchone()
 
@@ -456,22 +460,22 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_health_provider(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_health_provider WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_health_provider WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_inciso(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_inciso WHERE upper(budget_code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_inciso WHERE budget_code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_operating_unit(self, code, inciso_id=None):
-        self._cr.execute("""SELECT id FROM operating_unit WHERE upper(budget_code) = %s AND inciso_id=%s""",
+        self._cr.execute("""SELECT id FROM operating_unit WHERE budget_code = %s AND inciso_id=%s""",
                          (code, inciso_id))
         return self._cr.fetchone()
 
     def get_office(self, programa, proyecto, operating_unit_id=None):
         self._cr.execute("""SELECT id FROM onsc_legajo_office WHERE
-        upper(programa) = %s AND 
-        upper(proyecto) = %s AND
+        programa = %s AND 
+        proyecto = %s AND
         "unidadEjecutora"=%s
         """, (programa, proyecto, operating_unit_id))
         return self._cr.fetchone()
@@ -481,31 +485,31 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_descriptor1(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor1 WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor1 WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_descriptor2(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor2 WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor2 WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_descriptor3(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor3 WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor3 WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_descriptor4(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor4 WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_descriptor4 WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_occupation(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_occupation WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_catalog_occupation WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_state_place(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_state_square WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_state_square WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_income_mechanism(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_income_mechanism WHERE upper(code) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_income_mechanism WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_norm(self, tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id=None):
@@ -513,7 +517,7 @@ class ONSCMigration(models.Model):
             """SELECT id
             FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel
             WHERE
-            upper("tipoNormaSigla") = %s and 
+            "tipoNormaSigla" = %s and 
             "numeroNorma"= %s and 
             "anioNorma" = %s and 
             "articuloNorma"= %s and
@@ -559,24 +563,24 @@ class ONSCMigration(models.Model):
 
     def get_department(self, code, operating_unit_id=None):
         self._cr.execute("""SELECT id FROM hr_department WHERE
-        upper(code) = %s AND 
+        code = %s AND 
         operating_unit_id = %s""", (code, operating_unit_id))
         return self._cr.fetchone()
 
     def get_jornada_retributiva(self, code, office_id):
         self._cr.execute(
             """SELECT id FROM onsc_legajo_jornada_retributiva WHERE
-            upper("codigoJornada") = %s AND
+            "codigoJornada" = %s AND
             office_id = %s
             limit 1""", (code, office_id))
         return self._cr.fetchone()
 
     def get_security_job(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_security_job WHERE upper(name) = %s""", (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_security_job WHERE name = %s""", (code,))
         return self._cr.fetchone()
 
     def get_causes_discharge(self, code):
-        self._cr.execute("""SELECT id FROM onsc_legajo_causes_discharge WHERE upper(code) = %s """, (code,))
+        self._cr.execute("""SELECT id FROM onsc_legajo_causes_discharge WHERE code = %s """, (code,))
         return self._cr.fetchone()
 
     def get_commision_regime(self, code):
@@ -692,7 +696,8 @@ class ONSCMigrationLine(models.Model):
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva',
                                          string='Carga horaria semanal según contrato')
     budget_item_id = fields.Many2one('onsc.legajo.budget.item', string='Partida presupuestal')
-    retributive_day_formal_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada Formal')
+    retributive_day_formal = fields.Integer(string='Jornada Formal')
+    # retributive_day_formal_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada Formal')
     id_movimiento = fields.Char(string='id_movimiento')
     state_move = fields.Selection(string="Estado del Movimiento",
                                   selection=[('A', 'Aprobado'), ('AP', 'Alta pendiente'), ('BP', 'Baja pendiente')])
@@ -710,6 +715,8 @@ class ONSCMigrationLine(models.Model):
     resolution_dis_date = fields.Date(string='Fecha de la resolución de la baja')
     resolution_dis_type = fields.Char(string='Tipo de resolución de la baja')
 
+    partner_id = fields.Many2one('res.partner', string='Contacto')
+
     def validate_line(self, message_error):
         for required_field in REQUIRED_FIELDS:
             if not eval('self.%s' % required_field):
@@ -724,15 +731,9 @@ class ONSCMigrationLine(models.Model):
             message_error = self.validate_adress(message_error)
 
         if self.type_commission:
-            for required_field in REQUIRED_FIELDS_COMM:
-                if not eval('self.%s' % required_field):
-                    message_error.append("El campo %s no es válido" % self._fields[required_field].string)
-            # FIXME
-            # if self.state_place_des != 'E':
-            #     message_error.append("El campo Estado plaza destino no es válido")
-
+            self._validate_line_commission(message_error)
         else:
-            message_error = self.validate_no_required(message_error)
+            message_error = self._validate_line_no_required(message_error)
 
         if message_error:
             error = '\n'.join(message_error)
@@ -742,9 +743,18 @@ class ONSCMigrationLine(models.Model):
             state = 'draft'
 
         self._cr.execute(
-            """update "onsc_migration_line" set state = '%s',error = '%s' where id = %s """ % (state, error, self.id))
+            """UPDATE "onsc_migration_line" SET state = '%s',error = '%s' where id = %s """ % (state, error, self.id))
 
-    def validate_no_required(self, message_error):
+    def _validate_line_commission(self, message_error):
+        for required_field in REQUIRED_FIELDS_COMM:
+            if not eval('self.%s' % required_field):
+                message_error.append("El campo %s no es válido" % self._fields[required_field].string)
+        if self.inciso_id.is_central_administration:
+            for required_field in REQUIRED_FIELDS_COMM_AC:
+                if not eval('self.%s' % required_field):
+                    message_error.append("El campo %s no es válido" % self._fields[required_field].string)
+
+    def _validate_line_no_required(self, message_error):
         if not self.program_project_id:
             message_error.append("No se encontró oficina para la combinación Programa/Proyecto")
         if not self.regime_id:
@@ -760,14 +770,192 @@ class ONSCMigrationLine(models.Model):
         return message_error
 
     def validate_adress(self, message_error):
-
         if not self.address_location_id:
             message_error.append("El campo Localidad no es válido")
         if not self.address_state_id:
             message_error.append("El campo Departamento no es válido")
         return message_error
 
-    def write(self, vals):
-        result = super(ONSCMigrationLine, self).write(vals)
+    # FASE 2
+    def _get_info_from_line(self, line):
+        vals = ({
+            'country_of_birth_id': line.birth_country_id.id,
+            'institutional_email': line.email_inst,
+            'health_provider_id': line.health_provider_id.id,
+            'cv_first_name': line.first_name,
+            'cv_second_name': line.second_name,
+            'cv_last_name_1': line.first_surname,
+            'cv_last_name_2': line.second_surname,
+            'cv_birthdate': line.birth_date,
+            'personal_phone': line.personal_phone,
+            'email': line.email,
+            'cv_nro_doc': line.doc_nro,
+            # todo hacer casteo entre valores que viene en la planilla y los que seusa  en CV
+            'uy_citizenship': line.citizenship,
+            'crendencial_serie': line.crendencial_serie,
+            'credential_number': line.credential_number,
+            'marital_status_id': line.marital_status_id.id,
+            'country_id': line.country_id.id,
+            'cv_address_street_id': line.address_street_idaddress_street_id.id,
+            'cv_address_street2_id': line.address_street2_id.id,
+            'cv_address_street3_id': line.address_street3_id.id,
+            'cv_address_state_id': line.address_state_id.id,
+            'cv_address_location_id': line.address_location_id.id,
+            'cv_address_nro_door': line.address_nro_door,
+            'cv_address_apto': line.address_apto,
+            'cv_address_zip': line.address_zip,
+            'cv_address_is_cv_bis': line.address_is_bis,
+            'cv_address_place': line.address_place,
+            'cv_address_block': line.address_block,
+            'cv_address_sandlot': line.address_sandlotself.cv_digital_id.cv_address_sandlot,
+            'cv_gender_id': line.gender_id.id,
 
-        return result
+        })
+        return vals
+
+    def create_employee(self, line, cv_digital):
+        try:
+            employee = super(ONSCMigrationLine,
+                             self.with_context(is_alta_vl=True)).suspend_security()._get_legajo_employee()
+            cv = employee.cv_digital_id
+            if cv_digital:
+                vals = employee.with_context(is_migration=True).suspend_security._get_info_fromcv()
+                cv.with_context(documentary_validation='cv_address',
+                                user_id=self.env.user.id,
+                                can_update_contact_cv=True).button_documentary_approve()
+                cv.with_context(user_id=self.env.user.id,
+                                documentary_validation='marital_status').button_documentary_approve()
+                cv.with_context(user_id=self.env.user.id,
+                                documentary_validation='civical_credential').button_documentary_approve()
+                cv.with_context(user_id=self.env.user.id,
+                                documentary_validation='nro_doc').button_documentary_approve()
+            else:
+                vals = self.suspend_security()._get_info_from_line()
+            vals.update({
+                'cv_birthdate': self.cv_birthdate,
+            })
+            employee.write(vals)
+            cv.write({'is_docket': True})
+        except Exception as e:
+            raise ValidationError("No se puedo crear el funcionario: " + tools.ustr(e))
+            # self.env.cr.rollback()
+            # line.write({'state': 'error', 'error': "No se puedo crear el funcionario: " + tools.ustr(e)})
+            # self.env.cr.commit()
+
+    def process_line(self, limit=200):
+        Partner = self.env['res.partner'].suspend_security()
+        CVDigital = self.env['onsc.cv.digital'].suspend_security()
+        Employee = self.env['hr.employee'].suspend_security()
+        for line in self.search([('state', '=', 'ok')], limit=limit):
+            try:
+                if line._is_employee_in_system(Employee):
+                    line.write({'state': 'process'})
+                    continue
+                partner_id = line._create_contact(Partner)
+                cv_digital = line._create_cv(CVDigital, partner_id)
+                if line.state != 'AP':
+                    line.create_employee(cv_digital)
+                line.write({'state': 'process'})
+                self.env.cr.commit()
+            except Exception as e:
+                self.env.cr.rollback()
+                self.write({
+                    'state': 'error',
+                    'error': tools.ustr(e)
+                })
+                self.env.cr.commit()
+
+    def _create_contact(self, Partner):
+        try:
+            partner = Partner.search([
+                ('cv_nro_doc', '=', self.doc_nro),
+                ('cv_emissor_country_id', '=', self.country_id.id),
+                ('cv_document_type_id', '=', self.doc_type_id.id),
+            ], limit=1)
+            if not partner:
+                data_partner = {
+                    'cv_sex': self.sex,
+                    'cv_emissor_country_id': self.country_id.id,
+                    'cv_nro_doc': self.doc_nro,
+                    'cv_document_type_id': self.doc_type_id.id,
+                    'is_partner_cv': True,
+                    'email': self.email,
+                    'cv_dnic_name_1': self.first_name,
+                    'cv_dnic_name_2': self.second_name,
+                    'cv_dnic_lastname_1': self.first_surname,
+                    'cv_dnic_lastname_2': self.second_surname,
+                    'cv_dnic_full_name': self.name_ci,
+                    'cv_birthdate': self.birth_date,
+                }
+                partner = Partner.create(data_partner)
+                self.write({'partner_id': partner.id})
+            else:
+                data_partner = {
+                    'cv_dnic_name_1': self.first_name,
+                    'cv_dnic_name_2': self.second_name,
+                    'cv_dnic_lastname_1': self.first_surname,
+                    'cv_dnic_lastname_2': self.second_surname,
+                    'cv_dnic_full_name': self.name_ci,
+                    'cv_birthdate': self.birth_date,
+                }
+                partner.write(data_partner)
+            return partner
+            # self.write({'partner_id': partner.id})
+            # self.env.cr.commit()
+        except Exception as e:
+            raise ValidationError("No se puedo crear el contacto: " + tools.ustr(e))
+            # self.env.cr.rollback()
+            # self.write({'state': 'error', 'error': "No se puedo crear el contacto: " + tools.ustr(e)})
+            # self.env.cr.commit()
+
+    def _create_cv(self, CVDigital, partner_id):
+        try:
+            cv_digital = CVDigital.search([
+                ('partner_id', '=', partner_id.id),
+                ('type', '=', 'cv')
+            ], limit=1)
+            if not cv_digital:
+                data = {
+                    'partner_id': partner_id.id,
+                    'personal_phone': self.personal_phone,
+                    'email': self.email_inst,
+                    'country_id': self.country_uy.id,
+                    'marital_status_id': self.marital_status_id.id,
+                    'country_of_birth_id': self.birth_country_id.id,
+                    'uy_citizenship': self.citizenship,
+                    'crendencial_serie': self.crendencial_serie,
+                    'credential_number': self.credential_number,
+                    'cv_address_state_id': self.address_state_id.id,
+                    'cv_address_location_id': self.address_location_id.id,
+                    'cv_address_street_id': self.address_street_id.id,
+                    'cv_address_street2_id': self.address_street2_id.id,
+                    'cv_address_street3_id': self.address_street3_id.id,
+                    'cv_address_zip': self.address_zip,
+                    'cv_address_nro_door': self.address_nro_door,
+                    'cv_address_is_cv_bis': self.address_is_bis,
+                    'cv_address_apto': self.address_apto,
+                    'cv_address_place': self.address_place,
+                    'cv_address_block': self.address_block,
+                    'cv_address_sandlot': self.address_sandlot,
+                    'health_provider_id': self.health_provider_id.id
+                }
+                return CVDigital.create(data)
+            else:
+                data = {'email': self.email_inst,
+                        'marital_status_id': self.marital_status_id.id,
+                        'health_provider_id': self.health_provider_id.id
+                        }
+                cv_digital.write(data)
+                return cv_digital
+        except Exception as e:
+            raise ValidationError("No se puedo crear el CV: " + tools.ustr(e))
+            # self.env.cr.rollback()
+            # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
+            # self.env.cr.commit()
+
+    def _is_employee_in_system(self, Employee):
+        return Employee.search_count([
+            ('cv_emissor_country_id', '=', self.country_id.id),
+            ('cv_document_type_id', '=', self.doc_type_id.id),
+            ('cv_nro_doc', '=', self.doc_nro),
+        ])
