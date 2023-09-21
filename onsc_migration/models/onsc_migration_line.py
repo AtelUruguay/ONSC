@@ -31,17 +31,8 @@ REQUIRED_FIELDS = {
     'inciso_id',
     'descriptor3_id',
     'retributive_day_id',
-    'retributive_day_formal_id',
+    'retributive_day_formal',
     'date_start'
-}
-
-REQUIRED_FIELDS_NO_COMM = {
-    'inciso_des_id',
-    'date_start_commission',
-    'reason_commision',
-    'resolution_comm_description',
-    'resolution_comm_date',
-    'resolution_comm_type',
 }
 
 REQUIRED_FIELDS_COMM = {
@@ -51,6 +42,15 @@ REQUIRED_FIELDS_COMM = {
     'resolution_comm_description',
     'resolution_comm_date',
     'resolution_comm_type',
+}
+
+REQUIRED_FIELDS_COMM_AC = {
+    'nro_puesto',
+    'nro_place',
+    'sec_place',
+    'nro_puesto_des',
+    'nro_place_des',
+    'sec_place_des',
 }
 
 _logger = logging.getLogger(__name__)
@@ -87,7 +87,7 @@ class ONSCMigration(models.Model):
             'second_surname': row[6],
             'name_ci': row[7],
             'birth_date': self.is_datetime(row[9]) and row[9].strftime("%Y-%m-%d"),
-            'sex': row[11] and row[11].lower(),
+            'sex': row[11] and str(row[11]),
             'citizenship': row[13],
             'crendencial_serie': row[14],
             'credential_number': row[15],
@@ -116,7 +116,9 @@ class ONSCMigration(models.Model):
             'norm_article': row[56],
             'resolution_description': row[57],
             'resolution_date': self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d"),
-            'resolution_type': row[59]
+            'resolution_type': row[59],
+            'retributive_day_formal': row[83],
+
         })
 
     def _set_m2o_values(self, row_dict, row):
@@ -173,9 +175,9 @@ class ONSCMigration(models.Model):
         retributive_day_id = row[82] and self.get_jornada_retributiva(
             str(row[82]).upper(),
             program_project_id and program_project_id[0])
-        retributive_day_formal_id = row[83] and self.get_jornada_retributiva(
-            str(row[83]).upper(),
-            program_project_id and program_project_id[0])
+        # retributive_day_formal_id = row[83] and self.get_jornada_retributiva(
+        #     str(row[83]).upper(),
+        #     program_project_id and program_project_id[0])
         security_job_id = row[86] and self.get_security_job(str(row[86]).upper())
 
         row_dict.update({
@@ -205,7 +207,7 @@ class ONSCMigration(models.Model):
             'norm_id': norm_id and norm_id[0],
             'department_id': department_id and department_id[0],
             'retributive_day_id': retributive_day_id and retributive_day_id[0],
-            'retributive_day_formal_id': retributive_day_formal_id and retributive_day_formal_id[0],
+            # 'retributive_day_formal_id': retributive_day_formal_id,
             'security_job_id': security_job_id and security_job_id[0],
         })
 
@@ -345,14 +347,16 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Unidad organizativa no es válido")
         if row[82] and not row_dict['retributive_day_id']:
             message_error.append("El campo Jornada retributiva no es válido")
-        if row[83] and not row_dict['retributive_day_formal_id']:
-            message_error.append("El campo Jornada retributiva formal no es válido")
+        # if row[83] and not row_dict['retributive_day_formal']:
+        #     message_error.append("El campo Jornada retributiva formal no es válido")
         if row[85] == 'BP' and row[87] and not row_dict['causes_discharge_id']:
             message_error.append("El campo Casual de egreso no es válido")
         if row[85] == 'BP' and (row[90] or row[91] or row[92] or row[93]) and not row_dict['norm_dis_id']:
             message_error.append("El campo Norma de la baja no es válido")
         if row[86] and not row_dict['security_job_id']:
             message_error.append("El campo Seguridad de Puesto no es válido")
+        if row[11] and row_dict['sex'] not in ['male', 'feminine']:
+            message_error.append("Sexo no es válido")
 
         # FIXED REQUIRED VALUES
         if not row_dict['budget_item_id']:
@@ -421,7 +425,7 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()[0]
 
     def get_country(self, code):
-        self._cr.execute("""SELECT id FROM res_country WHERE upper(code) = %s""", (code.upper(),))
+        self._cr.execute("""SELECT id FROM res_country WHERE code = %s""", (code.upper(),))
         return self._cr.fetchone()
 
     def get_doc_type(self, code):
@@ -692,7 +696,8 @@ class ONSCMigrationLine(models.Model):
     retributive_day_id = fields.Many2one('onsc.legajo.jornada.retributiva',
                                          string='Carga horaria semanal según contrato')
     budget_item_id = fields.Many2one('onsc.legajo.budget.item', string='Partida presupuestal')
-    retributive_day_formal_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada Formal')
+    retributive_day_formal = fields.Integer(string='Jornada Formal')
+    # retributive_day_formal_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada Formal')
     id_movimiento = fields.Char(string='id_movimiento')
     state_move = fields.Selection(string="Estado del Movimiento",
                                   selection=[('A', 'Aprobado'), ('AP', 'Alta pendiente'), ('BP', 'Baja pendiente')])
@@ -726,11 +731,9 @@ class ONSCMigrationLine(models.Model):
             message_error = self.validate_adress(message_error)
 
         if self.type_commission:
-            for required_field in REQUIRED_FIELDS_COMM:
-                if not eval('self.%s' % required_field):
-                    message_error.append("El campo %s no es válido" % self._fields[required_field].string)
+            self._validate_line_commission(message_error)
         else:
-            message_error = self.validate_no_required(message_error)
+            message_error = self._validate_line_no_required(message_error)
 
         if message_error:
             error = '\n'.join(message_error)
@@ -740,9 +743,18 @@ class ONSCMigrationLine(models.Model):
             state = 'draft'
 
         self._cr.execute(
-            """update "onsc_migration_line" set state = '%s',error = '%s' where id = %s """ % (state, error, self.id))
+            """UPDATE "onsc_migration_line" SET state = '%s',error = '%s' where id = %s """ % (state, error, self.id))
 
-    def validate_no_required(self, message_error):
+    def _validate_line_commission(self, message_error):
+        for required_field in REQUIRED_FIELDS_COMM:
+            if not eval('self.%s' % required_field):
+                message_error.append("El campo %s no es válido" % self._fields[required_field].string)
+        if self.inciso_id.is_central_administration:
+            for required_field in REQUIRED_FIELDS_COMM_AC:
+                if not eval('self.%s' % required_field):
+                    message_error.append("El campo %s no es válido" % self._fields[required_field].string)
+
+    def _validate_line_no_required(self, message_error):
         if not self.program_project_id:
             message_error.append("No se encontró oficina para la combinación Programa/Proyecto")
         if not self.regime_id:
@@ -888,7 +900,7 @@ class ONSCMigrationLine(models.Model):
                 }
                 partner.write(data_partner)
             return partner
-                # self.write({'partner_id': partner.id})
+            # self.write({'partner_id': partner.id})
             # self.env.cr.commit()
         except Exception as e:
             raise ValidationError("No se puedo crear el contacto: " + tools.ustr(e))
