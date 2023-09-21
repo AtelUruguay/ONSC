@@ -156,9 +156,8 @@ class ONSCLegajoStagingWS7(models.Model):
         office_id = retributive_day.office_id.id
 
         if not retributive_day_id:
-            log_list.append(
-                _('No se encontró la Jornada retributiva para la combinación de jornada_ret, proyecto y programa')
-            )
+            log_list.append(_('No se encontró la Jornada Retributiva para esa combinación de '
+                              'Oficina (Inciso, UE, Programa, Proyecto)'))
 
         if len(log_list) > 0:
             state = 'error'
@@ -329,7 +328,7 @@ class ONSCLegajoStagingWS7(models.Model):
         if not second_movement:
             record.write({
                 'state': 'error',
-                'log': _('Segundo movimiento no encontrado')})
+                'log': _('Segundo movimiento no encontrado o en estado Error')})
             return
 
         new_contract = self._get_contract_copy(contract, second_movement)
@@ -365,7 +364,7 @@ class ONSCLegajoStagingWS7(models.Model):
         if not second_movement:
             record.write({
                 'state': 'error',
-                'log': _('Segundo movimiento no encontrado')})
+                'log': _('Segundo movimiento no encontrado o en estado Error')})
             return
         records |= second_movement
 
@@ -393,7 +392,7 @@ class ONSCLegajoStagingWS7(models.Model):
         if not second_movement:
             record.write({
                 'state': 'error',
-                'log': _('Segundo movimiento no encontrado')})
+                'log': _('Segundo movimiento no encontrado o en estado Error')})
             return
         records |= second_movement
 
@@ -417,7 +416,7 @@ class ONSCLegajoStagingWS7(models.Model):
         if not second_movement:
             record.write({
                 'state': 'error',
-                'log': _('Segundo movimiento no encontrado')})
+                'log': _('Segundo movimiento no encontrado o en estado Error')})
             return
         records |= second_movement
 
@@ -442,7 +441,11 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        contract.deactivate_legajo_contract(record.fecha_vig, legajo_state='reserved', eff_date=record.fecha_vig)
+        contract.deactivate_legajo_contract(
+            record.fecha_vig + datetime.timedelta(days=-1),
+            legajo_state='reserved',
+            eff_date=record.fecha_vig
+        )
         records.write({'state': 'processed'})
 
     def set_desreserva(self, Contract, record):
@@ -486,8 +489,8 @@ class ONSCLegajoStagingWS7(models.Model):
         })
         records.write({'state': 'processed'})
 
-    def set_modif_funcionario(self, Contract, record):
-        contract = self._get_contract(Contract, record, legajo_state_operator='=', legajo_state='active')
+    # def set_modif_funcionario(self, Contract, record):
+    #     contract = self._get_contract(Contract, record, legajo_state_operator='=', legajo_state='active')
 
 
     def _get_second_movement(self, operation, tipo_mov):
