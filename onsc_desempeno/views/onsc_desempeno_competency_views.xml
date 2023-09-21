@@ -19,10 +19,8 @@
                                     <field name="skill_tooltip"/>
                                 </div>
                             </div>
-
-
-                            <field colspan="4" name="degree_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field colspan="4" name="improvement_areas"/>
+                            <field colspan="4" name="degree_id" required="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field colspan="4" name="improvement_areas" required="1"/>
                         </group>
                     </group>
                     <notebook>
