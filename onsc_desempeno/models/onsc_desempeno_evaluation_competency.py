@@ -19,7 +19,7 @@ HTML_HELP = """<a class="btn" style="padding-top:inherit!important;" target="_bl
 
 class ONSCDesempenoEvaluationCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.competency'
-    _description = u'Evaluación'
+    _description = u'Competencia'
     _order = "skill_id"
 
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)
@@ -28,8 +28,8 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     skill_line_ids = fields.One2many(comodel_name="onsc.desempeno.skill.line", inverse_name="competency_id",
                                      string="Lineas de competencia")
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo',
-                                required=True, ondelete='restrict')
-    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=True,
+                                required=False, ondelete='restrict')
+    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=False,
                                     help='Para identificar la necesidad de desarrollo que requiere la persona, '
                                          'compare, para cada competencia, el desempeño observado con los '
                                          'comportamientos esperados, contenidos en las dimensiones de '
