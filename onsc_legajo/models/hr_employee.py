@@ -5,6 +5,7 @@ from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import models, fields, api
+from odoo.osv import expression
 
 MODIFIED_FIELDS_TO_NOTIFY_SGH = [
     'cv_nro_doc',
@@ -121,6 +122,18 @@ class HrEmployee(models.Model):
                     potential_file_field.set("modifiers", json.dumps(modifiers))
         res['arch'] = etree.tostring(doc)
         return res
+
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        cv_nro_doc_args = []
+        for args_item in args:
+            if args_item[0] == 'name' and len(args_item) == 3:
+                cv_nro_doc_args = [('cv_nro_doc', args_item[1], args_item[2])]
+
+        if len(cv_nro_doc_args) > 0:
+            args = expression.OR([cv_nro_doc_args, args])
+        return super(HrEmployee, self)._search(args, offset=offset, limit=limit, order=order, count=count,
+                                                      access_rights_uid=access_rights_uid)
 
     partner_id = fields.Many2one('res.partner', string='Contacto', compute='_compute_partner_id', store=True)
 
