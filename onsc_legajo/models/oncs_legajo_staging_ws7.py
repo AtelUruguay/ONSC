@@ -294,6 +294,8 @@ class ONSCLegajoStagingWS7(models.Model):
                         self.set_correccion_baja(Contract, record)
                     elif record.mov in ['CAMBIO_JORNADA']:
                         self.set_cambio_jornada(Contract, record)
+                    elif record.mov in ['MODFU']:
+                        self.set_modif_funcionario(Contract, record)
             except Exception as e:
                 record.write({
                     'state': 'error',
@@ -489,8 +491,33 @@ class ONSCLegajoStagingWS7(models.Model):
         })
         records.write({'state': 'processed'})
 
-    # def set_modif_funcionario(self, Contract, record):
-    #     contract = self._get_contract(Contract, record, legajo_state_operator='=', legajo_state='active')
+    def set_modif_funcionario(self, Contract, record):
+        contract = self._get_contract(Contract, record, legajo_state_operator='!=', legajo_state='baja')
+        if len(contract) == 0:
+            record.write({
+                'state': 'error',
+                'log': _('Contrato no encontrado')})
+            return
+        if not record.aniosInactividad.isdigit():
+            record.write({
+                'state': 'error',
+                'log': _('Valor inválido para aniosInactividad')})
+            return
+        contract.legajo_id.suspend_security().write({
+            'public_admin_inactivity_years_qty': int(record.aniosInactividad),
+            'public_admin_entry_date': record.fecha_ing_adm,
+        })
+        self._check_valid_eff_date(contract, record.fecha_aud.date())
+        contract.suspend_security().write({
+            'eff_date': str(record.fecha_aud.date()),
+            'graduation_date': str(record.fechaGraduacion),
+        })
+        self._set_modif_funcionario_extras(contract, record)
+        record.write({'state': 'processed'})
+
+    def _set_modif_funcionario_extras(self,contract, recor):
+        return True
+
 
 
     def _get_second_movement(self, operation, tipo_mov):
