@@ -258,7 +258,7 @@ class ONSCMigration(models.Model):
                     row_dict['program_project_des_id'] = program_project_des_id and program_project_des_id[0]
                     row_dict['regime_des_id'] = regime_des_id and regime_des_id[0]
                     row_dict['nro_puesto_des'] = row[65]
-                    row_dict['nro_place_des '] = row[66]
+                    row_dict['nro_place_des'] = row[66]
                     row_dict['sec_place_des'] = row[67]
                     row_dict['state_place_des_id'] = state_place_des_id and state_place_des_id[0]
                     row_dict['date_start_commission'] = self.is_datetime(row[70]) and row[70].strftime("%Y-%m-%d")
