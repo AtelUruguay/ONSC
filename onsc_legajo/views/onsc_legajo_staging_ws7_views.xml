@@ -66,8 +66,8 @@
                             <field name="idPuesto"/>
                             <field name="nroPlaza"/>
                             <field name="secPlaza"/>
-                            <field name="programa" readonly="1"/>
-                            <field name="proyecto" readonly="1"/>
+                            <field name="programa" readonly="0"/>
+                            <field name="proyecto" readonly="0"/>
                             <field name="aniosInactividad" readonly="1"/>
                             <field name="fechaGraduacion" readonly="1"/>
                         </group>
