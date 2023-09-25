@@ -82,16 +82,16 @@
                                 options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                         <group>
-                            <field name="reason_description" required="1"/>
+                            <field name="reason_description"/>
                             <field name="norm_code_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="type_norm_discharge"/>
                             <field name="norm_number_discharge"/>
                             <field name="norm_year_discharge" />
                             <field name="norm_article_discharge"/>
-                            <field name="resolution_description" required="1"/>
-                            <field name="resolution_date" required="1"/>
-                            <field name="resolution_type" required="1"/>
+                            <field name="resolution_description"/>
+                            <field name="resolution_date"/>
+                            <field name="resolution_type"/>
                             <field name="contract_expiration_date"/>
                             <field name="additional_information"/>
                             <field name="code_day" />

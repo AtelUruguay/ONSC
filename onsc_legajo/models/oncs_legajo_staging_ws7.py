@@ -370,21 +370,31 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         records |= second_movement
 
-        baja_contract = self._get_contract(Contract, second_movement, legajo_state_operator='=', legajo_state='baja')
+        baja_contract = Contract.search([
+            ('cs_contract_id', '=', active_contract.id),
+            ('legajo_state', '=', 'baja')], limit=1)
         if len(baja_contract) == 0:
-            second_movement.write({
+            record.write({
                 'state': 'error',
-                'log': _('Contrato no encontrado')})
+                'log': _('Contrato de baja no encontrado')})
             return
-        self._check_valid_eff_date(baja_contract, record.fecha_aud.date())
-        self._check_valid_eff_date(active_contract, record.fecha_aud.date())
+        self._check_valid_eff_date(baja_contract, second_movement.fecha_aud.date())
+        self._check_valid_eff_date(active_contract, second_movement.fecha_aud.date())
+        baja_end_date = baja_contract.date_end
+        active_start_date = active_contract.date_start
         baja_contract.write({
-            'date_end': record.fecha_vig + datetime.timedelta(days=-1),
-            'eff_date': record.fecha_aud.date(),
+            'date_end': second_movement.fecha_vig + datetime.timedelta(days=-1),
+            'eff_date': second_movement.fecha_aud.date(),
         })
         active_contract.write({
-            'date_start': record.fecha_vig,
-            'eff_date': record.fecha_aud.date(),
+            'date_start': second_movement.fecha_vig,
+            'eff_date': second_movement.fecha_aud.date(),
+        })
+        baja_contract.job_ids.filtered(lambda x: x.end_date and x.end_date == baja_end_date).write({
+            'end_date': second_movement.fecha_vig + datetime.timedelta(days=-1),
+        })
+        active_contract.job_ids.filtered(lambda x: x.start_date and x.start_date == active_start_date).write({
+            'start_date': second_movement.fecha_vig,
         })
         records.write({'state': 'processed'})
 
@@ -405,10 +415,10 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(active_contract, record.fecha_aud.date())
+        self._check_valid_eff_date(active_contract, second_movement.fecha_aud.date())
         active_contract.write({
-            'date_start': record.fecha_vig,
-            'eff_date': record.fecha_aud.date(),
+            'date_start': second_movement.fecha_vig,
+            'eff_date': second_movement.fecha_aud.date(),
         })
         records.write({'state': 'processed'})
 
@@ -428,10 +438,10 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(active_contract, record.fecha_aud.date())
+        self._check_valid_eff_date(active_contract, second_movement.fecha_aud.date())
         active_contract.write({
-            'date_end': record.fecha_vig,
-            'eff_date': record.fecha_aud.date(),
+            'date_end': second_movement.fecha_vig,
+            'eff_date': second_movement.fecha_aud.date(),
         })
         records.write({'state': 'processed'})
 
