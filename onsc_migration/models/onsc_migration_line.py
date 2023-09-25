@@ -118,6 +118,7 @@ class ONSCMigration(models.Model):
             'resolution_date': self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d"),
             'resolution_type': row[59],
             'retributive_day_formal': row[83],
+            'retributive_day_formal_desc': row[84],
 
         })
 
@@ -178,7 +179,7 @@ class ONSCMigration(models.Model):
         # retributive_day_formal_id = row[83] and self.get_jornada_retributiva(
         #     str(row[83]),
         #     program_project_id and program_project_id[0])
-        security_job_id = row[86] and self.get_security_job(str(row[86]))
+        security_job_id = row[87] and self.get_security_job(str(row[87]))
 
         row_dict.update({
             'country_id': country_id and country_id[0],
@@ -276,28 +277,28 @@ class ONSCMigration(models.Model):
                 else:
                     row_dict['end_date_contract'] = self.is_datetime(row[81]) and row[81].strftime("%Y-%m-%d")
 
-                row_dict['id_movimiento'] = self.is_numeric(row[84]) and int(row[84])
-                row_dict['state_move'] = row[85]
+                row_dict['id_movimiento'] = self.is_numeric(row[85]) and int(row[85])
+                row_dict['state_move'] = row[86]
                 if row_dict['state_move'] == 'BP':
-                    norm_dis_id = row[90] and self.get_norm(
-                        str(row[90]),
-                        row[91],
+                    norm_dis_id = row[91] and self.get_norm(
+                        str(row[91]),
                         row[92],
                         row[93],
+                        row[94],
                         row_dict.get('inciso_id')
                     )
-                    causes_discharge_id = row[87] and self.get_causes_discharge(str(row[87]))
-                    row_dict['end_date'] = self.is_datetime(row[88]) and row[88].strftime("%Y-%m-%d")
+                    causes_discharge_id = row[88] and self.get_causes_discharge(str(row[88]))
+                    row_dict['end_date'] = self.is_datetime(row[89]) and row[89].strftime("%Y-%m-%d")
                     row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0]
-                    row_dict['reason_discharge'] = row[89]
+                    row_dict['reason_discharge'] = row[90]
                     row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
-                    row_dict['norm_dis_type'] = row[90]
-                    row_dict['norm_dis_number'] = row[91]
-                    row_dict['norm_dis_year'] = row[92]
-                    row_dict['norm_dis_article'] = row[93]
-                    row_dict['resolution_dis_description'] = row[94]
-                    row_dict['resolution_dis_date'] = self.is_datetime(row[95]) and row[95].strftime("%Y-%m-%d")
-                    row_dict['resolution_dis_type'] = row[96]
+                    row_dict['norm_dis_type'] = row[91]
+                    row_dict['norm_dis_number'] = row[92]
+                    row_dict['norm_dis_year'] = row[93]
+                    row_dict['norm_dis_article'] = row[94]
+                    row_dict['resolution_dis_description'] = row[5]
+                    row_dict['resolution_dis_date'] = self.is_datetime(row[96]) and row[96].strftime("%Y-%m-%d")
+                    row_dict['resolution_dis_type'] = row[97]
 
                 cleaned_data = {}
                 for clave, valor in row_dict.items():
@@ -349,11 +350,11 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Jornada retributiva no es válido")
         # if row[83] and not row_dict['retributive_day_formal']:
         #     message_error.append("El campo Jornada retributiva formal no es válido")
-        if row[85] == 'BP' and row[87] and not row_dict['causes_discharge_id']:
+        if row[86] == 'BP' and row[88] and not row_dict['causes_discharge_id']:
             message_error.append("El campo Casual de egreso no es válido")
-        if row[85] == 'BP' and (row[90] or row[91] or row[92] or row[93]) and not row_dict['norm_dis_id']:
+        if row[86] == 'BP' and (row[91] or row[92] or row[93] or row[94]) and not row_dict['norm_dis_id']:
             message_error.append("El campo Norma de la baja no es válido")
-        if row[86] and not row_dict['security_job_id']:
+        if row[87] and not row_dict['security_job_id']:
             message_error.append("El campo Seguridad de Puesto no es válido")
         if row[11] and row_dict['sex'] not in ['male', 'feminine']:
             message_error.append("Sexo no es válido")
@@ -697,6 +698,7 @@ class ONSCMigrationLine(models.Model):
                                          string='Carga horaria semanal según contrato')
     budget_item_id = fields.Many2one('onsc.legajo.budget.item', string='Partida presupuestal')
     retributive_day_formal = fields.Integer(string='Jornada Formal')
+    retributive_day_formal_desc = fields.Char(string='Descripción de la jornada formal')
     # retributive_day_formal_id = fields.Many2one('onsc.legajo.jornada.retributiva', string='Jornada Formal')
     id_movimiento = fields.Char(string='id_movimiento')
     state_move = fields.Selection(string="Estado del Movimiento",
