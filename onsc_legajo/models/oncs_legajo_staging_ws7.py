@@ -336,7 +336,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
         new_contract = self._get_contract_copy(contract, second_movement)
         self._copy_jobs(contract, new_contract)
-        contract.deactivate_legajo_contract(
+        contract.with_context(no_check_write=True).deactivate_legajo_contract(
             record.fecha_vig + datetime.timedelta(days=-1),
             legajo_state='baja',
             eff_date=record.fecha_vig
@@ -461,7 +461,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        contract.deactivate_legajo_contract(
+        contract.with_context(no_check_write=True).deactivate_legajo_contract(
             record.fecha_vig + datetime.timedelta(days=-1),
             legajo_state='reserved',
             eff_date=record.fecha_vig
@@ -476,7 +476,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        contract.activate_legajo_contract(legajo_state='active', eff_date=record.fecha_vig)
+        contract.with_context(no_check_write=True).activate_legajo_contract(legajo_state='active', eff_date=record.fecha_vig)
         records.write({'state': 'processed'})
 
     def set_renovacion(self, Contract, record):
