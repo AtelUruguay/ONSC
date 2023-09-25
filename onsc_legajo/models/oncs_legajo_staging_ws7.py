@@ -9,6 +9,7 @@ class ONSCLegajoStagingWS7(models.Model):
     _name = 'onsc.legajo.staging.ws7'
     _description = 'Staging WS7'
     _rec_name = 'key'
+    _order = 'fecha_aud ASC'
 
     info_income = fields.Char(string='Data de origen', )
 
@@ -393,9 +394,8 @@ class ONSCLegajoStagingWS7(models.Model):
         baja_contract.job_ids.filtered(lambda x: x.end_date and x.end_date == baja_end_date).write({
             'end_date': second_movement.fecha_vig + datetime.timedelta(days=-1),
         })
-        active_contract.job_ids.filtered(lambda x: x.start_date and x.start_date == active_start_date).write({
-            'start_date': second_movement.fecha_vig,
-        })
+        active_contract.job_ids.filtered(
+            lambda x: x.start_date and x.start_date == active_start_date).update_start_date(second_movement.fecha_vig)
         records.write({'state': 'processed'})
 
     def set_correccion_alta(self, Contract, record):
@@ -416,10 +416,13 @@ class ONSCLegajoStagingWS7(models.Model):
                 'log': _('Contrato no encontrado')})
             return
         self._check_valid_eff_date(active_contract, second_movement.fecha_aud.date())
+        active_start_date = active_contract.date_start
         active_contract.write({
             'date_start': second_movement.fecha_vig,
             'eff_date': second_movement.fecha_aud.date(),
         })
+        active_contract.job_ids.filtered(
+            lambda x: x.start_date and x.start_date == active_start_date).update_start_date(second_movement.fecha_vig)
         records.write({'state': 'processed'})
 
     def set_correccion_baja(self, Contract, record):
@@ -432,16 +435,19 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         records |= second_movement
 
-        active_contract = self._get_contract(Contract, second_movement, legajo_state_operator='=', legajo_state='baja')
-        if len(active_contract) == 0:
+        contract = self._get_contract(Contract, second_movement, legajo_state_operator='=', legajo_state='baja')
+        if len(contract) == 0:
             second_movement.write({
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        self._check_valid_eff_date(active_contract, second_movement.fecha_aud.date())
-        active_contract.write({
+        self._check_valid_eff_date(contract, second_movement.fecha_aud.date())
+        contract.write({
             'date_end': second_movement.fecha_vig,
             'eff_date': second_movement.fecha_aud.date(),
+        })
+        contract.job_ids.filtered(lambda x: x.end_date and x.end_date == second_movement.fecha_vig).write({
+            'end_date': second_movement.fecha_vig,
         })
         records.write({'state': 'processed'})
 
@@ -644,12 +650,17 @@ class ONSCLegajoStagingWS7(models.Model):
         :param target_contract: Recordset de contrato
         :param operation: Recordset de la operacion
         :return: Nuevos puestos
+        Fecha hasta abierto o Fecha hasta posterior al día de hoy
+        O
+        Fecha desde anterior a la Fecha de inicio del Contrato
         """
         jobs = self.env['hr.job']
         if target_contract.operating_unit_id != source_contract.operating_unit_id:
             return jobs
         for job_id in source_contract.job_ids.filtered(
-                lambda x: x.end_date is False or x.end_date >= target_contract.date_start):
+                lambda x:
+                (x.end_date is False or x.end_date >= fields.Date.today()) and
+                x.start_date <= target_contract.date_start):
             jobs |= self.env['hr.job'].suspend_security().create_job(
                 target_contract,
                 job_id.department_id,
