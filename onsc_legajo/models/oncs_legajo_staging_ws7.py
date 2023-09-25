@@ -278,25 +278,25 @@ class ONSCLegajoStagingWS7(models.Model):
                     if current_pointer > limit:
                         return
                     if record.mov in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']:
-                        self.with_context(no_check_write=True)._check_movement(Contract, record)
+                        self._check_movement(Contract, record)
                     elif record.mov in ['ASCENSO', 'TRANSFORMA', 'REESTRUCTURA'] and record.tipo_mov == 'BAJA':
-                        self.with_context(no_check_write=True).set_asc_transf_reest(Contract, record)
+                        self.set_asc_transf_reest(Contract, record)
                     elif record.mov in ['RESERVA'] and record.tipo_mov == 'ALTA':
-                        self.with_context(no_check_write=True).set_reserva(Contract, record)
+                        self.set_reserva(Contract, record)
                     elif record.mov in ['DESRESERVA'] and record.tipo_mov == 'BAJA':
-                        self.with_context(no_check_write=True).set_desreserva(Contract, record)
+                        self.set_desreserva(Contract, record)
                     elif record.mov in ['RENOVACION'] and record.tipo_mov == 'ALTA':
-                        self.with_context(no_check_write=True).set_renovacion(Contract, record)
+                        self.set_renovacion(Contract, record)
                     elif record.mov in ['CORRECCION_ASCENSO'] and record.tipo_mov == 'ALTA':
-                        self.with_context(no_check_write=True).set_correccion_ascenso(Contract, record)
+                        self.set_correccion_ascenso(Contract, record)
                     elif record.mov in ['CORRECCION_ALTA'] and record.tipo_mov == 'ALTA':
-                        self.with_context(no_check_write=True).set_correccion_alta(Contract, record)
+                        self.set_correccion_alta(Contract, record)
                     elif record.mov in ['CORRECCION_BAJA'] and record.tipo_mov == 'ALTA':
-                        self.with_context(no_check_write=True).set_correccion_baja(Contract, record)
+                        self.set_correccion_baja(Contract, record)
                     elif record.mov in ['CAMBIO_JORNADA']:
-                        self.with_context(no_check_write=True).set_cambio_jornada(Contract, record)
+                        self.set_cambio_jornada(Contract, record)
                     elif record.mov in ['MODFU']:
-                        self.with_context(no_check_write=True).set_modif_funcionario(Contract, record)
+                        self.set_modif_funcionario(Contract, record)
             except Exception as e:
                 record.write({
                     'state': 'error',
@@ -336,7 +336,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
         new_contract = self._get_contract_copy(contract, second_movement)
         self._copy_jobs(contract, new_contract)
-        contract.deactivate_legajo_contract(
+        contract.with_context(no_check_write=True).deactivate_legajo_contract(
             record.fecha_vig + datetime.timedelta(days=-1),
             legajo_state='baja',
             eff_date=record.fecha_vig
@@ -395,7 +395,8 @@ class ONSCLegajoStagingWS7(models.Model):
             'end_date': second_movement.fecha_vig + datetime.timedelta(days=-1),
         })
         active_contract.job_ids.filtered(
-            lambda x: x.start_date and x.start_date == active_start_date).update_start_date(second_movement.fecha_vig)
+            lambda x: x.start_date and x.start_date == active_start_date).with_context(
+            no_check_write=True).update_start_date(second_movement.fecha_vig)
         records.write({'state': 'processed'})
 
     def set_correccion_alta(self, Contract, record):
@@ -422,7 +423,8 @@ class ONSCLegajoStagingWS7(models.Model):
             'eff_date': second_movement.fecha_aud.date(),
         })
         active_contract.job_ids.filtered(
-            lambda x: x.start_date and x.start_date == active_start_date).update_start_date(second_movement.fecha_vig)
+            lambda x: x.start_date and x.start_date == active_start_date).with_context(
+            no_check_write=True).update_start_date(second_movement.fecha_vig)
         records.write({'state': 'processed'})
 
     def set_correccion_baja(self, Contract, record):
@@ -459,7 +461,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        contract.deactivate_legajo_contract(
+        contract.with_context(no_check_write=True).deactivate_legajo_contract(
             record.fecha_vig + datetime.timedelta(days=-1),
             legajo_state='reserved',
             eff_date=record.fecha_vig
@@ -474,7 +476,7 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        contract.activate_legajo_contract(legajo_state='active', eff_date=record.fecha_vig)
+        contract.with_context(no_check_write=True).activate_legajo_contract(legajo_state='active', eff_date=record.fecha_vig)
         records.write({'state': 'processed'})
 
     def set_renovacion(self, Contract, record):
