@@ -224,7 +224,7 @@ class ONSCMigration(models.Model):
 
             for row in sheet.iter_rows(min_row=2, values_only=True):
                 row_number += 1
-                count = self.check_line(str(row[2]), str(row[45]), str(row[46]), str(row[47]))
+                # count = self.check_line(str(row[2]), str(row[45]), str(row[46]), str(row[47]))
                 if not row[0] and not row[1] and not row[2]:
                     break
 
@@ -318,14 +318,27 @@ class ONSCMigration(models.Model):
 
     def validate(self, row, row_dict):
         message_error = []
+        if row[59] and row_dict['resolution_type'] not in ['M', 'P', 'U']:
+            message_error.append("Tipo de resolución no es válido")
+        if row[11] and row_dict['sex'] not in ['male', 'feminine']:
+            message_error.append("Sexo no es válido")
+        if row[13] and row_dict['citizenship'] not in [tupla[0] for tupla in CITIZENSHIP]:
+            message_error.append("El campo Ciudadanía no es válido")
+
+        self._validate_m2o(row, row_dict, message_error)
+        self._validate_norm(row, row_dict, message_error)
+        self._validate_address(row, row_dict, message_error)
+        self._validate_descriptors(row, row_dict, message_error)
+        self._validate_commision(row, row_dict, message_error)
+        return message_error
+
+    def _validate_m2o(self, row, row_dict, message_error):
         if row[8] and not row_dict['marital_status_id']:
             message_error.append("El campo Estado civil no es válido")
         if row[10] and not row_dict['gender_id']:
             message_error.append("El campo Género no es válido")
         if row[12] and not row_dict['birth_country_id']:
             message_error.append("El campo país de nacimiento no es válido")
-        if row[13] and row_dict['citizenship'] not in [tupla[0] for tupla in CITIZENSHIP]:
-            message_error.append("El campo Ciudadanía no es válido")
         if row[31] and not row_dict['health_provider_id']:
             message_error.append("El campo Codigo de salud no es válido")
         if row[36] and not row_dict['inciso_id']:
@@ -340,32 +353,22 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Ocupación no es válido")
         if row[50] and not row_dict['income_mechanism_id']:
             message_error.append("El campo Mecanismo de ingreso no es válido")
-        if (row[53] or row[54] or row[55] or row[56]) and not row_dict['norm_id']:
-            message_error.append("El campo Norma no es válido")
-        if row[59] and row_dict['resolution_type'] not in ['M', 'P', 'U']:
-            message_error.append("Tipo de resolución no es válido")
         if row[69] and not row_dict['department_id']:
             message_error.append("El campo Unidad organizativa no es válido")
         if row[82] and not row_dict['retributive_day_id']:
             message_error.append("El campo Jornada retributiva no es válido")
-        # if row[83] and not row_dict['retributive_day_formal']:
-        #     message_error.append("El campo Jornada retributiva formal no es válido")
+        if row[87] and not row_dict['security_job_id']:
+            message_error.append("El campo Seguridad de Puesto no es válido")
+        if not row_dict['budget_item_id']:
+            message_error.append("El campo Partida presupuestal no es válido")
+
+    def _validate_norm(self, row, row_dict, message_error):
         if row[86] == 'BP' and row[88] and not row_dict['causes_discharge_id']:
             message_error.append("El campo Casual de egreso no es válido")
         if row[86] == 'BP' and (row[91] or row[92] or row[93] or row[94]) and not row_dict['norm_dis_id']:
             message_error.append("El campo Norma de la baja no es válido")
-        if row[87] and not row_dict['security_job_id']:
-            message_error.append("El campo Seguridad de Puesto no es válido")
-        if row[11] and row_dict['sex'] not in ['male', 'feminine']:
-            message_error.append("Sexo no es válido")
-
-        # FIXED REQUIRED VALUES
-        if not row_dict['budget_item_id']:
-            message_error.append("El campo Partida presupuestal no es válido")
-        self._validate_address(row, row_dict, message_error)
-        self._validate_descriptors(row, row_dict, message_error)
-        self._validate_commision(row, row_dict, message_error)
-        return message_error
+        if (row[53] or row[54] or row[55] or row[56]) and not row_dict['norm_id']:
+            message_error.append("El campo Norma no es válido")
 
     def _validate_address(self, row, row_dict, message_error):
         if row[19] and not row_dict['address_state_id']:
@@ -474,10 +477,7 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_office(self, programa, proyecto, operating_unit_id=None):
-        self._cr.execute("""SELECT id FROM onsc_legajo_office WHERE
-        programa = %s AND 
-        proyecto = %s AND
-        "unidadEjecutora"=%s
+        self._cr.execute("""SELECT id FROM onsc_legajo_office WHERE programa = %s AND proyecto = %s AND "unidadEjecutora"=%s
         """, (programa, proyecto, operating_unit_id))
         return self._cr.fetchone()
 
@@ -515,25 +515,11 @@ class ONSCMigration(models.Model):
 
     def get_norm(self, tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id=None):
         self._cr.execute(
-            """SELECT id
-            FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel
-            WHERE
-            "tipoNormaSigla" = %s and 
-            "numeroNorma"= %s and 
-            "anioNorma" = %s and 
-            "articuloNorma"= %s and
-            onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND
-            onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""",
+            """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel WHERE "tipoNormaSigla" = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s and onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""",
             (tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id))
         return self._cr.fetchone()
 
-    def get_budget_item(
-            self,
-            row,
-            descriptor3_id=None,
-            descriptor1_id=None,
-            descriptor2_id=None,
-            descriptor4_id=None):
+    def get_budget_item(self, row, descriptor3_id=None, descriptor1_id=None, descriptor2_id=None, descriptor4_id=None):
         if not descriptor3_id:
             _sql = """SELECT id
                 FROM onsc_legajo_budget_item
@@ -563,17 +549,14 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_department(self, code, operating_unit_id=None):
-        self._cr.execute("""SELECT id FROM hr_department WHERE
-        code = %s AND 
-        operating_unit_id = %s""", (code, operating_unit_id))
+        self._cr.execute("""SELECT id FROM hr_department WHERE code = %s AND operating_unit_id = %s""",
+                         (code, operating_unit_id))
         return self._cr.fetchone()
 
     def get_jornada_retributiva(self, code, office_id):
         self._cr.execute(
-            """SELECT id FROM onsc_legajo_jornada_retributiva WHERE
-            "codigoJornada" = %s AND
-            office_id = %s
-            limit 1""", (code, office_id))
+            """SELECT id FROM onsc_legajo_jornada_retributiva WHERE "codigoJornada" = %s AND office_id = %s limit 1""",
+            (code, office_id))
         return self._cr.fetchone()
 
     def get_security_job(self, code):
