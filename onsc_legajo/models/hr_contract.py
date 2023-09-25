@@ -292,7 +292,7 @@ class HrContract(models.Model):
             vals.update({'eff_date': str(eff_date)})
 
         self.suspend_security().write(vals)
-        self.job_ids.deactivate(date_end)
+        self.job_ids.with_context(no_check_write=True).deactivate(date_end)
 
     def _notify_sgh(self, values):
         for modified_field in ['sec_position', 'workplace', 'occupation_id']:
