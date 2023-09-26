@@ -32,6 +32,26 @@ class ONSCDesempenoEvaluation(models.Model):
     _description = u'Evaluación'
 
     def _get_domain(self, args):
+        if self._context.get('self_evaluation'):
+            args = self._get_domain_self_evaluation(args)
+        if self._context.get('leader_evaluation'):
+            args = self._get_domain_leader_evaluation(args)
+
+        return args
+    def _get_domain_self_evaluation(self, args):
+        if self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso'):
+            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
+
+            args = expression.AND([[('inciso_id', '=', inciso_id), ], args])
+        elif self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue'):
+            operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+            args = expression.AND([[('operating_unit_id', '=', operating_unit_id), ], args])
+        elif self.user_has_groups('onsc_desempeno.group_desempeno_usuario_evaluacion'):
+            args = expression.OR([[('evaluated_id', '=', self.env.user.employee_id.id), ], args])
+
+        return args
+# todo el metodo _get_domain_leader_evaluation no esta hecho
+    def _get_domain_leader_evaluation(self, args):
         if self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
 

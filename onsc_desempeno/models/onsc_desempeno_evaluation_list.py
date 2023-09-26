@@ -309,8 +309,42 @@ class ONSCDesempenoEvaluationList(models.Model):
         return evaluation
 
     def _create_leader_evaluation(self, data):
-        # TODO Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        return True
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        is_manager = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id == data.employee_id.id
+        level_id = Level.suspend_security().search(
+            [('hierarchical_level_id', '=', data.job_id.department_id.hierarchical_level_id.id),
+             ('is_uo_manager', '=', is_manager)]).mapped("level_id")
+        if not level_id:
+            raise ValidationError(
+                _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+        skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+            [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+        if not skills:
+            raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+
+        evaluation = Evaluation.create({
+            'evaluated_id': data.employee_id.id,
+            'evaluator_id': self.manager_id.id,
+            'evaluation_type': 'leader_evaluation',
+            'uo_id': data.job_id.department_id.id,
+            'inciso_id': data.contract_id.inciso_id.id,
+            'operating_unit_id': data.contract_id.operating_unit_id.id,
+            'occupation_id': data.contract_id.occupation_id.id,
+            'level_id': level_id.id,
+            'evaluation_stage_id': data.evaluation_list_id.evaluation_stage_id.id,
+            'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
+            'state': 'draft',
+        })
+        for skill in skills:
+            Competency.create({'evaluation_id': evaluation.id,
+                               'skill_id': skill.id,
+                               'skill_line_ids': skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids
+                               })
+
+        return evaluation
 
     def _create_environment_definition(self, data):
         # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
