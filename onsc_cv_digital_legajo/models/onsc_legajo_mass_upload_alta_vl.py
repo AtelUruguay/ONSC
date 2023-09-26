@@ -424,7 +424,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     existing_record.update_line(values)
                 if not existing_record:
                     MassLine.create_line(values)
-        except Exception:
+        except Exception as e:
             raise ValidationError(_('El archivo no es válido o no tiene el formato correcto.'))
 
     def action_process(self):
@@ -561,7 +561,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 alta_vl_id = AltaVL.create(data_alta_vl)
                 alta_vl_id.with_context(no_update_extra=True)._update_altavl_info()
                 line.write({'state': 'done'})
-                alta_vl_id.with_context({'not_check_attached_document': True}).check_required_fieds_ws4()
+                alta_vl_id.with_context({'not_check_attached_document': True}).check_required_fields_ws4()
                 self.env.cr.commit()
             except Exception as e:
                 self.env.cr.rollback()
@@ -819,7 +819,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
         record = self.env[self._fields[field].comodel_name].sudo().search(args, limit=1)
         if record:
             return record.id
-        elif len(value) == 0:
+        elif isinstance(value,str) and len(value) == 0:
             return False
         else:
             if field in ['address_location_id']:
