@@ -813,48 +813,27 @@ class ONSCMigrationLine(models.Model):
         })
         return vals
 
-    def create_employee(self, line, cv_digital):
-        try:
-            employee = super(ONSCMigrationLine,
-                             self.with_context(is_alta_vl=True)).suspend_security()._get_legajo_employee()
-            cv = employee.cv_digital_id
-            if cv_digital:
-                vals = employee.with_context(is_migration=True).suspend_security._get_info_fromcv()
-                cv.with_context(documentary_validation='cv_address',
-                                user_id=self.env.user.id,
-                                can_update_contact_cv=True).button_documentary_approve()
-                cv.with_context(user_id=self.env.user.id,
-                                documentary_validation='marital_status').button_documentary_approve()
-                cv.with_context(user_id=self.env.user.id,
-                                documentary_validation='civical_credential').button_documentary_approve()
-                cv.with_context(user_id=self.env.user.id,
-                                documentary_validation='nro_doc').button_documentary_approve()
-            else:
-                vals = self.suspend_security()._get_info_from_line()
-            vals.update({
-                'cv_birthdate': self.cv_birthdate,
-            })
-            employee.write(vals)
-            cv.write({'is_docket': True})
-        except Exception as e:
-            raise ValidationError("No se puedo crear el funcionario: " + tools.ustr(e))
-            # self.env.cr.rollback()
-            # line.write({'state': 'error', 'error': "No se puedo crear el funcionario: " + tools.ustr(e)})
-            # self.env.cr.commit()
-
     def process_line(self, limit=200):
         Partner = self.env['res.partner'].suspend_security()
         CVDigital = self.env['onsc.cv.digital'].suspend_security()
         Employee = self.env['hr.employee'].suspend_security()
-        for line in self.search([('state', '=', 'ok')], limit=limit):
+        AltaVL = self.env['onsc.legajo.alta.vl'].suspend_security()
+        Contract = self.env['hr.contract'].suspend_security()
+        # TODO revisar que estados procesar (capaz que es solo en borrador)
+        for line in self.search([('state', 'in', ['borrador', 'in_process'])], limit=limit):
             try:
-                if line._is_employee_in_system(Employee):
-                    line.write({'state': 'process'})
-                    continue
-                partner_id = line._create_contact(Partner)
-                cv_digital = line._create_cv(CVDigital, partner_id)
-                if line.state != 'AP':
-                    line.create_employee(cv_digital)
+                employee = line._get_employee(Employee)  # existe el funcionario?
+                if not employee:
+                    partner = line._create_contact(Partner)
+                    cv_digital = line._create_cv(CVDigital, partner)
+                    if line.state_move != 'AP':
+                        employee = line.create_employee(Employee, partner, cv_digital)
+                        legajo = line._create_legajo(employee)
+                if line.state_move == 'AP':
+                    alta_vl = line._create_alta_vl(AltaVL, partner)
+                else:
+                    contract = line._create_contract(Contract, employee)
+                #TODO: FALTA BAJA VL
                 line.write({'state': 'process'})
                 self.env.cr.commit()
             except Exception as e:
@@ -888,7 +867,7 @@ class ONSCMigrationLine(models.Model):
                     'cv_birthdate': self.birth_date,
                 }
                 partner = Partner.create(data_partner)
-                self.write({'partner_id': partner.id})
+                # self.write({'partner_id': partner.id})
             else:
                 data_partner = {
                     'cv_dnic_name_1': self.first_name,
@@ -953,9 +932,179 @@ class ONSCMigrationLine(models.Model):
             # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
 
-    def _is_employee_in_system(self, Employee):
-        return Employee.search_count([
+    def _create_alta_vl(self, AltaVL, partner_id):
+        try:
+            data_alta_vl = {
+                'partner_id': partner_id.id,
+                'date_start': self.date_start,
+                'inciso_id': self.inciso_id.id,
+                'operating_unit_id': self.operating_unit_id.id,
+                'cv_sex': self.sex,
+                'cv_birthdate': self.birth_date,
+                'cv_document_type_id': self.doc_type_id.id,
+                # 'is_reserva_sgh': self.is_reserva_sgh,
+                'crendencial_serie': self.crendencial_serie,
+                'credential_number': self.credential_number,
+                'regime_id': self.regime_id.id,
+                'descriptor1_id': self.descriptor1_id.id if self.descriptor1_id else False,
+                'descriptor2_id': self.descriptor2_id.id if self.descriptor2_id else False,
+                'descriptor3_id': self.descriptor3_id.id if self.descriptor3_id else False,
+                'descriptor4_id': self.descriptor4_id.id if self.descriptor4_id else False,
+                'nroPuesto': self.nro_puesto,
+                'nroPlaza': self.nro_place,
+                'sec_position': self.sec_place,
+                'department_id': self.department_id.id if self.department_id else False,
+                'security_job_id': self.security_job_id.id if self.security_job_id else False,
+                'occupation_id': self.occupation_id.id if self.occupation_id else False,
+                'date_income_public_administration': self.date_income_public_administration,
+                'income_mechanism_id': self.income_mechanism_id.id if self.income_mechanism_id else False,
+                'inactivity_years': self.inactivity_years,
+                'graduation_date': self.graduation_date,
+                'contract_expiration_date': self.end_date_contract,
+                'reason_description': self.reason_description,
+                'program_project_id': self.program_project_id.id if self.program_project_id else False,
+                'resolution_description': self.resolution_description,
+                'resolution_date': self.resolution_date,
+                'resolution_type': self.resolution_type,
+                'retributive_day_id': self.retributive_day_id.id if self.retributive_day_id else False,
+                # 'additional_information': self.additional_information,
+                'norm_id': self.norm_id.id if self.norm_id else False,
+                'call_number': self.call_number,
+                'codigoJornadaFormal': self.retributive_day_formal,
+
+                # 'country_code': cv_digital.country_code,
+                'country_of_birth_id': self.birth_country_id.id if self.birth_country_id else False,
+                'marital_status_id': self.marital_status_id.id if self.marital_status_id else False,
+                'uy_citizenship': self.citizenship,
+                'personal_phone': self.personal_phone,
+                # 'mobile_phone': cv_digital.mobile_phone,
+                'email': self.email,
+                'cv_address_street_id': self.address_street_id.id if self.address_street_id else False,
+                'cv_address_street2_id': self.cv_address_street2_id.id if self.cv_address_street2_id else False,
+                'cv_address_street3_id': self.cv_address_street3_id.id if self.cv_address_street3_id else False,
+                'health_provider_id': self.health_provider_id.id if self.health_provider_id else False,
+                # 'mass_upload_id': self.id,
+            }
+            altavl = AltaVL.create(data_alta_vl)
+
+            return altavl
+        except Exception as e:
+            raise ValidationError("No se puedo crear el AltaVL: " + tools.ustr(e))
+            # self.env.cr.rollback()
+            # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
+            # self.env.cr.commit()
+
+    def _create_employee(self, Employee, partner_id, cv_digital):
+        try:
+            employee = Employee._get_legajo_employee(self.country_id, self.doc_type_id, partner_id)
+            return employee
+            # cv = employee.cv_digital_id
+            # if cv_digital:
+            #     vals = employee.with_context(is_migration=True).suspend_security._get_info_fromcv()
+            #     cv.with_context(documentary_validation='cv_address',
+            #                     user_id=self.env.user.id,
+            #                     can_update_contact_cv=True).button_documentary_approve()
+            #     cv.with_context(user_id=self.env.user.id,
+            #                     documentary_validation='marital_status').button_documentary_approve()
+            #     cv.with_context(user_id=self.env.user.id,
+            #                     documentary_validation='civical_credential').button_documentary_approve()
+            #     cv.with_context(user_id=self.env.user.id,
+            #                     documentary_validation='nro_doc').button_documentary_approve()
+            # else:
+            #     vals = self.suspend_security()._get_info_from_line()
+            # vals.update({
+            #     'cv_birthdate': self.cv_birthdate,
+            # })
+            # employee.write(vals)
+            # cv.write({'is_docket': True})
+        except Exception as e:
+            raise ValidationError("No se puedo crear el funcionario: " + tools.ustr(e))
+            # self.env.cr.rollback()
+            # line.write({'state': 'error', 'error': "No se puedo crear el funcionario: " + tools.ustr(e)})
+            # self.env.cr.commit()
+
+    def _create_legajo(self, employee):
+        return self.env['onsc.legajo']._get_legajo(
+            employee,
+            self.date_income_public_administration,
+            self.inactivity_years)
+
+    def _create_contract(self, Contract, employee):
+        vals_contract1 = {
+            'employee_id': employee.id,
+            'name': employee.name,
+            'date_start': self.date_start or fields.Date.today(),
+            'inciso_id': self.inciso_id.id,
+            'operating_unit_id': self.operating_unit_id.id,
+            'income_mechanism_id': self.income_mechanism_id.id,
+            'program': self.program_project_id.programa,
+            'project': self.program_project_id.proyecto,
+            'regime_id': self.regime_id.id,
+            'occupation_id': self.occupation_id.id,
+            'descriptor1_id': self.descriptor1_id.id,
+            'descriptor2_id': self.descriptor2_id.id,
+            'descriptor3_id': self.descriptor3_id.id,
+            'descriptor4_id': self.descriptor4_id.id,
+            'position': self.nroPuesto,
+            'workplace': self.nroPlaza,
+            'sec_position': self.secPlaza,
+            'graduation_date': self.graduation_date,
+            'reason_description': self.reason_description,
+            'norm_code_id': self.norm_id.id,
+            'resolution_description': self.resolution_description,
+            'resolution_date': self.resolution_date,
+            'resolution_type': self.resolution_type,
+            'call_number': self.call_number,
+            'contract_expiration_date': self.contract_expiration_date,
+            'additional_information': self.additional_information,
+            'code_day': self.retributive_day_id.codigoJornada,
+            'description_day': self.retributive_day_id.descripcionJornada,
+            'retributive_day_id': self.retributive_day_id.id,
+            'id_alta': self.id_alta,
+            'wage': 1
+        }
+        # AC -> NO AC
+        # no se crea puestos al nuevo contrato, csaliente y centrante sin puesto
+        # ac -> ac, csaliente y centrante con puesto
+        # no ac -> ac csaliente y centrante con puesto
+        if not self.inciso_des_id:
+            vals_contract1.update({
+                'legajo_state': 'active'
+            })
+            contracts = Contract.suspend_security().create(vals_contract1)
+        else:
+            vals_contract2 = vals_contract1.copy()
+            vals_contract1.update({
+                'legajo_state': 'outgoing_commission'
+            })
+            vals_contract2.update({
+                'legajo_state': 'incoming_commission'
+            })
+            # DEJAR EN CASO DE QUE HAYA 2 CONTRATOS EN EL C1 EL CAMPO CONTRATO RELACIONADO ENGANCHADO AL CONTRATO 2
+            # SOLO SE CREA EL CONTRATO1 (COMISION SALIENTE) SI EL INCISO ORIGEN ES AC
+            # SINO SOLO VOY POR EL CONTRATO DE COMISION ENTRANTE (SIEMPRE SE CREA)
+            contract1 = Contract.suspend_security().create(vals_contract1)
+            contract2 = Contract.suspend_security().create(vals_contract2)
+            contracts = contract1
+            contracts |= contract2
+
+            if self.inciso_des_id.is_central_administration: # esto no es del todo valido
+                # ADICIONAR QUE SOLO SI TRAE UO Y SEGURIDAD DE PUESTO
+                # el puesto es solo para el C2 al C1 no interesa, SI HAY UN SOLO CONTRATO ES CONTRA ESE
+                self.env['hr.job'].suspend_security().create_job(
+                    contract2,
+                    self.department_id,
+                    self.date_start_commission,
+                    self.security_job_id
+                )
+        return contracts
+
+    def _get_employee(self, Employee, use_search_count=False):
+        args = [
             ('cv_emissor_country_id', '=', self.country_id.id),
             ('cv_document_type_id', '=', self.doc_type_id.id),
             ('cv_nro_doc', '=', self.doc_nro),
-        ])
+        ]
+        if use_search_count:
+            return Employee.search_count(args)
+        return Employee.search(args, limit=1)
