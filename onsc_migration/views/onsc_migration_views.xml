@@ -128,6 +128,7 @@
                                     <field name="end_date_contract"/>
                                     <field name="retributive_day_id"/>
                                     <field name="retributive_day_formal"/>
+                                    <field name="retributive_day_formal_desc"/>
                                     <field name="id_movimiento"/>
                                     <field name="state_move"/>
                                     <field name="security_job_id"/>
@@ -232,10 +233,10 @@
                                     <field name="resolution_comm_description"/>
                                     <field name="resolution_comm_date"/>
                                     <field name="resolution_comm_type"/>
-
-									  <field name="end_date_contract"/>
+                                    <field name="end_date_contract"/>
                                     <field name="retributive_day_id"/>
                                     <field name="retributive_day_formal"/>
+                                    <field name="retributive_day_formal_desc"/>
                                     <field name="id_movimiento"/>
                                     <field name="state_move"/>
                                     <field name="security_job_id"/>
