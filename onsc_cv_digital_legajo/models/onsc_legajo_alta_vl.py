@@ -108,7 +108,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.depends('inciso_id')
     def _compute_partner_id_domain(self):
-        partner_ids = self.env['onsc.cv.digital'].search([
+        partner_ids = self.env['onsc.cv.digital'].sudo().search([
             ('type', '=', 'cv'),
             ('partner_id.is_partner_cv', '=', True),
             ('partner_id.is_cv_uruguay', '=', True),
