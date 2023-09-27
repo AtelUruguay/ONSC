@@ -29,7 +29,6 @@ REQUIRED_FIELDS = {
     'sex',
     'date_income_public_administration',
     'inciso_id',
-    'descriptor3_id',
     'retributive_day_id',
     'retributive_day_formal',
     'date_start'
@@ -110,10 +109,7 @@ class ONSCMigration(models.Model):
             'sec_place': str(row[47]),
             'call_number': str(row[51]),
             'reason_description': str(row[52]),
-            'norm_type': str(row[53]),
-            'norm_number': row[54],
-            'norm_year': row[55],
-            'norm_article': row[56],
+
             'resolution_description': row[57],
             'resolution_date': self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d"),
             'resolution_type': row[59],
@@ -232,6 +228,13 @@ class ONSCMigration(models.Model):
                 self._set_base_vals(row_dict, row)
                 self._set_m2o_values(row_dict, row)
 
+                if row_dict['norm_id']:
+                    row_dict.update({
+                        'norm_type': str(row[53]),
+                        'norm_number': row[54],
+                        'norm_year': row[55],
+                        'norm_article': row[56], })
+
                 # SI ES COMISION
                 if row[71]:
                     inciso_des_id = row[60] and self.get_inciso(str(row[60]))
@@ -266,11 +269,12 @@ class ONSCMigration(models.Model):
                     row_dict['type_commission'] = row[71]
                     row_dict['regime_commission_id'] = regime_commission_id and regime_commission_id[0]
                     row_dict['reason_commision'] = row[73]
-                    row_dict['norm_comm_id'] = norm_comm_id and norm_comm_id[0]
-                    row_dict['norm_comm_type'] = row[74]
-                    row_dict['norm_comm_number'] = row[75]
-                    row_dict['norm_comm_year'] = row[76]
-                    row_dict['norm_comm_article'] = row[77]
+                    if norm_comm_id:
+                        row_dict['norm_comm_id'] = norm_comm_id and norm_comm_id[0]
+                        row_dict['norm_comm_type'] = row[74]
+                        row_dict['norm_comm_number'] = row[75]
+                        row_dict['norm_comm_year'] = row[76]
+                        row_dict['norm_comm_article'] = row[77]
                     row_dict['resolution_comm_description'] = row[78]
                     row_dict['resolution_comm_date'] = self.is_datetime(row[79]) and row[79].strftime("%Y-%m-%d")
                     row_dict['resolution_comm_type'] = row[80]
@@ -287,15 +291,17 @@ class ONSCMigration(models.Model):
                         row[94],
                         row_dict.get('inciso_id')
                     )
+                    if norm_dis_id:
+                        row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
+                        row_dict['norm_dis_type'] = row[91]
+                        row_dict['norm_dis_number'] = row[92]
+                        row_dict['norm_dis_year'] = row[93]
+                        row_dict['norm_dis_article'] = row[94]
+
                     causes_discharge_id = row[88] and self.get_causes_discharge(str(row[88]))
                     row_dict['end_date'] = self.is_datetime(row[89]) and row[89].strftime("%Y-%m-%d")
                     row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0]
                     row_dict['reason_discharge'] = row[90]
-                    row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
-                    row_dict['norm_dis_type'] = row[91]
-                    row_dict['norm_dis_number'] = row[92]
-                    row_dict['norm_dis_year'] = row[93]
-                    row_dict['norm_dis_article'] = row[94]
                     row_dict['resolution_dis_description'] = row[5]
                     row_dict['resolution_dis_date'] = self.is_datetime(row[96]) and row[96].strftime("%Y-%m-%d")
                     row_dict['resolution_dis_type'] = row[97]
@@ -391,7 +397,7 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Descriptor1 no es válido")
         if row[42] and not row_dict['descriptor2_id']:
             message_error.append("El campo Descriptor2 no es válido")
-        if row[43] and not row_dict['descriptor3_id']:
+        if not row_dict['descriptor3_id']:
             message_error.append("El campo Descriptor3 no es válido")
         if row[44] and not row_dict['descriptor4_id']:
             message_error.append("El campo Descriptor4 no es válido")
@@ -413,8 +419,7 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Régimen de la comisión no es válido")
         if (row[74] or row[75] or row[76] or row[77]) and not row_dict['norm_comm_id']:
             message_error.append("El campo Norma comisión no es válido")
-        if row[72] and not row_dict['regime_commission_id']:
-            message_error.append("El campo Régimen de la comisión no es válido")
+
 
     def is_datetime(self, row):
         return type(row).__name__ == 'datetime' or False
@@ -742,8 +747,6 @@ class ONSCMigrationLine(models.Model):
     def _validate_line_no_required(self, message_error):
         if not self.program_project_id:
             message_error.append("No se encontró oficina para la combinación Programa/Proyecto")
-        if not self.regime_id:
-            message_error.append("El campo Regimen no es válido")
         if not self.operating_unit_id:
             message_error.append("El campo UE no es válido")
         if not self.nro_puesto:
@@ -813,12 +816,12 @@ class ONSCMigrationLine(models.Model):
                     cv_digital = line._create_cv(CVDigital, partner)
                     if line.state_move != 'AP':
                         employee = line.create_employee(Employee, partner, cv_digital)
-                        legajo = line._create_legajo(employee)
+                        line._create_legajo(employee)
                 if line.state_move == 'AP':
-                    alta_vl = line._create_alta_vl(AltaVL, partner)
+                    line._create_alta_vl(AltaVL, partner)
                 else:
-                    contract = line._create_contract(Contract, employee)
-                #TODO: FALTA BAJA VL
+                    line._create_contract(Contract, employee)
+                # TODO: FALTA BAJA VL
                 line.write({'state': 'process'})
                 self.env.cr.commit()
             except Exception as e:
@@ -1073,7 +1076,7 @@ class ONSCMigrationLine(models.Model):
             contracts = contract1
             contracts |= contract2
 
-            if self.inciso_des_id.is_central_administration: # esto no es del todo valido
+            if self.inciso_des_id.is_central_administration:  # esto no es del todo valido
                 # ADICIONAR QUE SOLO SI TRAE UO Y SEGURIDAD DE PUESTO
                 # el puesto es solo para el C2 al C1 no interesa, SI HAY UN SOLO CONTRATO ES CONTRA ESE
                 self.env['hr.job'].suspend_security().create_job(
