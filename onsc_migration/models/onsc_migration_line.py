@@ -804,21 +804,23 @@ class ONSCMigrationLine(models.Model):
         Employee = self.env['hr.employee'].suspend_security()
         AltaVL = self.env['onsc.legajo.alta.vl'].suspend_security()
         Contract = self.env['hr.contract'].suspend_security()
-        # TODO revisar que estados procesar (capaz que es solo en borrador)
-        for line in self.search([('state', 'in', ['borrador', 'in_process'])], limit=limit):
+
+        for line in self.search([('state', 'in', ['draft'])], limit=limit):
             try:
                 employee = line._get_employee(Employee)  # existe el funcionario?
                 if not employee:
                     partner = line._create_contact(Partner)
                     cv_digital = line._create_cv(CVDigital, partner)
                     if line.state_move != 'AP':
-                        employee = line.create_employee(Employee, partner, cv_digital)
+                        employee = line._create_employee(Employee, partner, cv_digital)
                         legajo = line._create_legajo(employee)
                 if line.state_move == 'AP':
                     alta_vl = line._create_alta_vl(AltaVL, partner)
                 else:
                     contract = line._create_contract(Contract, employee)
-                #TODO: FALTA BAJA VL
+                    if line.state_move == 'BP':
+                        line.update_baja_vl(contract)
+
                 line.write({'state': 'process'})
                 self.env.cr.commit()
             except Exception as e:
@@ -850,6 +852,10 @@ class ONSCMigrationLine(models.Model):
                     'cv_dnic_lastname_2': self.second_surname,
                     'cv_dnic_full_name': self.name_ci,
                     'cv_birthdate': self.birth_date,
+                    'cv_first_name': self.first_name,
+                    'cv_second_name': self.second_name,
+                    'cv_last_name_1': self.first_surname,
+                    'cv_last_name_2':self.second_surname,
                 }
                 partner = Partner.create(data_partner)
                 # self.write({'partner_id': partner.id})
@@ -861,6 +867,10 @@ class ONSCMigrationLine(models.Model):
                     'cv_dnic_lastname_2': self.second_surname,
                     'cv_dnic_full_name': self.name_ci,
                     'cv_birthdate': self.birth_date,
+                    'cv_first_name': self.first_name,
+                    'cv_second_name': self.second_name,
+                    'cv_last_name_1': self.first_surname,
+                    'cv_last_name_2': self.second_surname,
                 }
                 partner.write(data_partner)
             return partner
@@ -883,7 +893,7 @@ class ONSCMigrationLine(models.Model):
                     'partner_id': partner_id.id,
                     'personal_phone': self.personal_phone,
                     'email': self.email_inst,
-                    'country_id': self.country_uy.id,
+                    'country_id': self.country_id.id,
                     'marital_status_id': self.marital_status_id.id,
                     'country_of_birth_id': self.birth_country_id.id,
                     'uy_citizenship': self.citizenship,
@@ -1015,6 +1025,7 @@ class ONSCMigrationLine(models.Model):
             self.inactivity_years)
 
     def _create_contract(self, Contract, employee):
+        Job = self.env['hr.job'].suspend_security()
         vals_contract1 = {
             'employee_id': employee.id,
             'name': employee.name,
@@ -1030,9 +1041,9 @@ class ONSCMigrationLine(models.Model):
             'descriptor2_id': self.descriptor2_id.id,
             'descriptor3_id': self.descriptor3_id.id,
             'descriptor4_id': self.descriptor4_id.id,
-            'position': self.nroPuesto,
-            'workplace': self.nroPlaza,
-            'sec_position': self.secPlaza,
+            'position': self.nro_puesto,
+            'workplace': self.nro_place,
+            'sec_position': self.sec_place,
             'graduation_date': self.graduation_date,
             'reason_description': self.reason_description,
             'norm_code_id': self.norm_id.id,
@@ -1040,23 +1051,27 @@ class ONSCMigrationLine(models.Model):
             'resolution_date': self.resolution_date,
             'resolution_type': self.resolution_type,
             'call_number': self.call_number,
-            'contract_expiration_date': self.contract_expiration_date,
-            'additional_information': self.additional_information,
-            'code_day': self.retributive_day_id.codigoJornada,
-            'description_day': self.retributive_day_id.descripcionJornada,
+            'contract_expiration_date': self.end_date_contract,
+            'code_day': self.retributive_day_formal,
+            'description_day': self.retributive_day_formal_desc,
             'retributive_day_id': self.retributive_day_id.id,
-            'id_alta': self.id_alta,
+            'id_alta': self.id_movimiento,
+            'state_square_id': self.state_place_id.id,
             'wage': 1
         }
-        # AC -> NO AC
-        # no se crea puestos al nuevo contrato, csaliente y centrante sin puesto
-        # ac -> ac, csaliente y centrante con puesto
-        # no ac -> ac csaliente y centrante con puesto
-        if not self.inciso_des_id:
+
+        if not self.type_commission:
             vals_contract1.update({
                 'legajo_state': 'active'
             })
             contracts = Contract.suspend_security().create(vals_contract1)
+            if self.department_id and self.security_job_id:
+                Job.create_job(
+                    contracts,
+                    self.department_id,
+                    self.date_start_commission,
+                    self.security_job_id
+                )
         else:
             vals_contract2 = vals_contract1.copy()
             vals_contract1.update({
@@ -1065,23 +1080,24 @@ class ONSCMigrationLine(models.Model):
             vals_contract2.update({
                 'legajo_state': 'incoming_commission'
             })
-            # DEJAR EN CASO DE QUE HAYA 2 CONTRATOS EN EL C1 EL CAMPO CONTRATO RELACIONADO ENGANCHADO AL CONTRATO 2
-            # SOLO SE CREA EL CONTRATO1 (COMISION SALIENTE) SI EL INCISO ORIGEN ES AC
-            # SINO SOLO VOY POR EL CONTRATO DE COMISION ENTRANTE (SIEMPRE SE CREA)
-            contract1 = Contract.suspend_security().create(vals_contract1)
-            contract2 = Contract.suspend_security().create(vals_contract2)
-            contracts = contract1
-            contracts |= contract2
 
-            if self.inciso_des_id.is_central_administration: # esto no es del todo valido
-                # ADICIONAR QUE SOLO SI TRAE UO Y SEGURIDAD DE PUESTO
-                # el puesto es solo para el C2 al C1 no interesa, SI HAY UN SOLO CONTRATO ES CONTRA ESE
-                self.env['hr.job'].suspend_security().create_job(
+            if self.inciso_des_id.is_central_administration:
+                contract1 = Contract.suspend_security().create(vals_contract1)
+                vals_contract2.update({
+                    'cs_contract_id': contract1.id
+                })
+            contract2 = Contract.suspend_security().create(vals_contract2)
+            contracts = contract2
+            contracts |= contract1
+
+            if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:
+                Job.create_job(
                     contract2,
                     self.department_id,
                     self.date_start_commission,
                     self.security_job_id
                 )
+
         return contracts
 
     def _get_employee(self, Employee, use_search_count=False):
@@ -1093,3 +1109,26 @@ class ONSCMigrationLine(models.Model):
         if use_search_count:
             return Employee.search_count(args)
         return Employee.search(args, limit=1)
+
+    def update_baja_vl(self, contract_id):
+        data = {
+            'id_deregistration_discharge': self.id_movimiento,
+            'reason_deregistration': self.reason_discharge.reason_description or False,
+            'norm_code_deregistration_id': self.norm_comm_id and self.norm_id.id or False,
+            'type_norm_deregistration': self.norm_comm_type or False,
+            'norm_number_deregistration': self.norm_comm_number or False,
+            'norm_year_deregistration': self.norm_comm_year or False,
+            'norm_article_deregistration': self.norm_comm_article or False,
+            'resolution_description_deregistration': self.resolution_dis_description or False,
+            'resolution_date_deregistration': self.resolution_dis_date or False,
+            'resolution_type_deregistration': self.resolution_dis_type or False,
+            'causes_discharge_id': self.causes_discharge_id and self.causes_discharge_id.id or False,
+            'legajo_state': 'baja',
+        }
+
+        contract_id.suspend_security().write(data)
+        contract_id.suspend_security().deactivate_legajo_contract(
+            date_end=self.end_date
+        )
+
+        return True
