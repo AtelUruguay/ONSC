@@ -293,7 +293,6 @@ class ONSCMigration(models.Model):
                     )
                     row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
                     if norm_dis_id:
-
                         row_dict['norm_dis_type'] = row[91]
                         row_dict['norm_dis_number'] = row[92]
                         row_dict['norm_dis_year'] = row[93]
@@ -666,9 +665,9 @@ class ONSCMigrationLine(models.Model):
     program_des = fields.Char(string='Programa destino', related="program_project_des_id.programa")
     project_des = fields.Char(string='Proyecto destino', related="program_project_des_id.proyecto")
     regime_des_id = fields.Many2one('onsc.legajo.regime', string='Régimen destino')
-    nro_puesto_des = fields.Char(string="Puesto destino",index=True)
-    nro_place_des = fields.Char(string="Plaza destino",index=True)
-    sec_place_des = fields.Char(string="Secuencial Plaza destino",index=True)
+    nro_puesto_des = fields.Char(string="Puesto destino", index=True)
+    nro_place_des = fields.Char(string="Plaza destino", index=True)
+    sec_place_des = fields.Char(string="Secuencial Plaza destino", index=True)
     state_place_des_id = fields.Many2one('onsc.legajo.state.square', string='Estado plaza')
     department_id = fields.Many2one("hr.department", string="Unidad organizativa")
     date_start_commission = fields.Date(string='Fecha inicio comisión')
