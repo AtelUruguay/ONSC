@@ -534,7 +534,7 @@ class ONSCLegajoStagingWS7(models.Model):
         self._set_modif_funcionario_extras(contract, record)
         record.write({'state': 'processed'})
 
-    def _set_modif_funcionario_extras(self, contract, recor):
+    def _set_modif_funcionario_extras(self, contract, record):
         return True
 
     def _get_second_movement(self, operation, tipo_mov):
