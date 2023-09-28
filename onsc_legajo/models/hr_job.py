@@ -183,9 +183,8 @@ class HrJob(models.Model):
         return job
 
     def deactivate(self, date_end):
-        for job in self.suspend_security().filtered(lambda x:
-                                                    (x.end_date is False or x.end_date > date_end) and
-                                                    x.start_date <= date_end):
+        for job in self.suspend_security().filtered(
+                lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
             job.end_date = date_end
             job.suspend_security().onchange_end_date()
         if date_end < fields.Date.today() and self.security_job_id.is_uo_manager:
@@ -321,4 +320,3 @@ class HrJobRoleLine(models.Model):
             rec.job_id._message_log(body=_('Línea del rol adicional %s actualizada') % (line_name),
                                     tracking_value_ids=tracking_value_ids)
         return True
-

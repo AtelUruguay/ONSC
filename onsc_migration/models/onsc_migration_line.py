@@ -30,7 +30,6 @@ REQUIRED_FIELDS = {
     'sex',
     'date_income_public_administration',
     'inciso_id',
-    'descriptor3_id',
     'retributive_day_id',
     'retributive_day_formal',
     'date_start'
@@ -111,10 +110,7 @@ class ONSCMigration(models.Model):
             'sec_place': str(row[47]),
             'call_number': str(row[51]),
             'reason_description': str(row[52]),
-            'norm_type': str(row[53]),
-            'norm_number': row[54],
-            'norm_year': row[55],
-            'norm_article': row[56],
+
             'resolution_description': row[57],
             'resolution_date': self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d"),
             'resolution_type': row[59],
@@ -156,7 +152,7 @@ class ONSCMigration(models.Model):
         descriptor3_id = row[43] and self.get_descriptor3(str(row[43]))
         descriptor4_id = row[44] and self.get_descriptor4(str(row[44]))
         state_place_id = row[48] and self.get_state_place(str(row[48]))
-        occupation_id = row[45] and self.get_occupation(str(row[49]))
+        occupation_id = row[49] and self.get_occupation(str(row[49]))
         income_mechanism_id = row[50] and self.get_income_mechanism(str(row[50]))
         norm_id = row[53] and self.get_norm(
             str(row[53]),
@@ -225,13 +221,20 @@ class ONSCMigration(models.Model):
 
             for row in sheet.iter_rows(min_row=2, values_only=True):
                 row_number += 1
-                # count = self.check_line(str(row[2]), str(row[45]), str(row[46]), str(row[47]))
+
                 if not row[0] and not row[1] and not row[2]:
                     break
 
                 row_dict = {}
                 self._set_base_vals(row_dict, row)
                 self._set_m2o_values(row_dict, row)
+
+                if row_dict['norm_id']:
+                    row_dict.update({
+                        'norm_type': str(row[53]),
+                        'norm_number': row[54],
+                        'norm_year': row[55],
+                        'norm_article': row[56], })
 
                 # SI ES COMISION
                 if row[71]:
@@ -268,10 +271,11 @@ class ONSCMigration(models.Model):
                     row_dict['regime_commission_id'] = regime_commission_id and regime_commission_id[0]
                     row_dict['reason_commision'] = row[73]
                     row_dict['norm_comm_id'] = norm_comm_id and norm_comm_id[0]
-                    row_dict['norm_comm_type'] = row[74]
-                    row_dict['norm_comm_number'] = row[75]
-                    row_dict['norm_comm_year'] = row[76]
-                    row_dict['norm_comm_article'] = row[77]
+                    if norm_comm_id:
+                        row_dict['norm_comm_type'] = row[74]
+                        row_dict['norm_comm_number'] = row[75]
+                        row_dict['norm_comm_year'] = row[76]
+                        row_dict['norm_comm_article'] = row[77]
                     row_dict['resolution_comm_description'] = row[78]
                     row_dict['resolution_comm_date'] = self.is_datetime(row[79]) and row[79].strftime("%Y-%m-%d")
                     row_dict['resolution_comm_type'] = row[80]
@@ -288,15 +292,17 @@ class ONSCMigration(models.Model):
                         row[94],
                         row_dict.get('inciso_id')
                     )
+                    row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
+                    if norm_dis_id:
+                        row_dict['norm_dis_type'] = row[91]
+                        row_dict['norm_dis_number'] = row[92]
+                        row_dict['norm_dis_year'] = row[93]
+                        row_dict['norm_dis_article'] = row[94]
+
                     causes_discharge_id = row[88] and self.get_causes_discharge(str(row[88]))
                     row_dict['end_date'] = self.is_datetime(row[89]) and row[89].strftime("%Y-%m-%d")
                     row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0]
                     row_dict['reason_discharge'] = row[90]
-                    row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
-                    row_dict['norm_dis_type'] = row[91]
-                    row_dict['norm_dis_number'] = row[92]
-                    row_dict['norm_dis_year'] = row[93]
-                    row_dict['norm_dis_article'] = row[94]
                     row_dict['resolution_dis_description'] = row[5]
                     row_dict['resolution_dis_date'] = self.is_datetime(row[96]) and row[96].strftime("%Y-%m-%d")
                     row_dict['resolution_dis_type'] = row[97]
@@ -325,6 +331,9 @@ class ONSCMigration(models.Model):
             message_error.append("Sexo no es válido")
         if row[13] and row_dict['citizenship'] not in [tupla[0] for tupla in CITIZENSHIP]:
             message_error.append("El campo Ciudadanía no es válido")
+
+        if (not row[65] and not row[66] and not row[67]) and (not row[45] and not row[46] and not row[47]):
+            message_error.append("Los campo PLaza, Sec. Plaza y Puesto no son válidos")
 
         self._validate_m2o(row, row_dict, message_error)
         self._validate_norm(row, row_dict, message_error)
@@ -392,7 +401,7 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Descriptor1 no es válido")
         if row[42] and not row_dict['descriptor2_id']:
             message_error.append("El campo Descriptor2 no es válido")
-        if row[43] and not row_dict['descriptor3_id']:
+        if not row_dict['descriptor3_id']:
             message_error.append("El campo Descriptor3 no es válido")
         if row[44] and not row_dict['descriptor4_id']:
             message_error.append("El campo Descriptor4 no es válido")
@@ -515,9 +524,10 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_norm(self, tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id=None):
-        self._cr.execute(
-            """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel WHERE "tipoNormaSigla" = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s and onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""",
-            (tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id))
+        if self.is_numeric(numeroNorma) and self.is_numeric(anioNorma) and self.is_numeric(articuloNorma):
+            self._cr.execute(
+                """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel WHERE "tipoNormaSigla" = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s and onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""",
+                (tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id))
         return self._cr.fetchone()
 
     def get_budget_item(self, row, descriptor3_id=None, descriptor1_id=None, descriptor2_id=None, descriptor4_id=None):
@@ -581,7 +591,7 @@ class ONSCMigrationLine(models.Model):
     state = fields.Selection(STATE, string='Estado', readonly=True)
     country_id = fields.Many2one('res.country', string=u'País')
     doc_type_id = fields.Many2one('onsc.cv.document.type', string='Tipo de documento')
-    doc_nro = fields.Char(string="Numero documento")
+    doc_nro = fields.Char(string="Numero documento", index=True)
     first_name = fields.Char(string='Primer nombre')
     second_name = fields.Char(string='Segundo nombre')
     first_surname = fields.Char(string='Primer apellido')
@@ -626,9 +636,9 @@ class ONSCMigrationLine(models.Model):
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor 2')
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor 3')
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor 4')
-    nro_puesto = fields.Char(string="Puesto origen")
-    nro_place = fields.Char(string="Plaza origen")
-    sec_place = fields.Char(string="Secuencial Plaza origen")
+    nro_puesto = fields.Char(string="Puesto origen", index=True)
+    nro_place = fields.Char(string="Plaza origen", index=True)
+    sec_place = fields.Char(string="Secuencial Plaza origen", index=True)
     # state_place = fields.Selection(string="Estado plaza origen",
     #                                selection=[('O', 'Ocupado'), ('C', 'Fuera de cuadro'), ('R', 'Reservada'),
     #                                           ('S', 'Comisión saliente')])
@@ -658,9 +668,9 @@ class ONSCMigrationLine(models.Model):
     program_des = fields.Char(string='Programa destino', related="program_project_des_id.programa")
     project_des = fields.Char(string='Proyecto destino', related="program_project_des_id.proyecto")
     regime_des_id = fields.Many2one('onsc.legajo.regime', string='Régimen destino')
-    nro_puesto_des = fields.Char(string="Puesto destino")
-    nro_place_des = fields.Char(string="Plaza destino")
-    sec_place_des = fields.Char(string="Secuencial Plaza destino")
+    nro_puesto_des = fields.Char(string="Puesto destino", index=True)
+    nro_place_des = fields.Char(string="Plaza destino", index=True)
+    sec_place_des = fields.Char(string="Secuencial Plaza destino", index=True)
     state_place_des_id = fields.Many2one('onsc.legajo.state.square', string='Estado plaza')
     department_id = fields.Many2one("hr.department", string="Unidad organizativa")
     date_start_commission = fields.Date(string='Fecha inicio comisión')
