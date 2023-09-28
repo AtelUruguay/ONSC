@@ -263,6 +263,7 @@ class ONSCLegajoStagingWS7(models.Model):
         vals.update({'marital_status_id': marital_status_id})
         return vals
 
+    # flake8: noqa: C901
     def process_staging(self, ids=False, limit=0):
         Contract = self.env['hr.contract'].sudo()
         args = [('state', 'in', ['in_process', 'na']), ('checked_bysystem', '=', False)]
@@ -657,10 +658,9 @@ class ONSCLegajoStagingWS7(models.Model):
         jobs = self.env['hr.job']
         if target_contract.operating_unit_id != source_contract.operating_unit_id:
             return jobs
-        for job_id in source_contract.job_ids.filtered(
-                lambda x:
-                (x.end_date is False or x.end_date >= fields.Date.today()) and
-                x.start_date <= target_contract.date_start):
+        for job_id in source_contract.job_ids.filtered(lambda x:
+                                                       (x.end_date is False or x.end_date >= fields.Date.today())
+                                                       and x.start_date <= target_contract.date_start):
             jobs |= self.env['hr.job'].suspend_security().create_job(
                 target_contract,
                 job_id.department_id,

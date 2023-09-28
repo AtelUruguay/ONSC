@@ -420,7 +420,6 @@ class ONSCMigration(models.Model):
         if (row[74] or row[75] or row[76] or row[77]) and not row_dict['norm_comm_id']:
             message_error.append("El campo Norma comisión no es válido")
 
-
     def is_datetime(self, row):
         return type(row).__name__ == 'datetime' or False
 

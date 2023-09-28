@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-import datetime
 
-from odoo import models, fields, tools, api, _
-from odoo.exceptions import ValidationError
+from odoo import models
 
 
 class ONSCLegajoStagingWS7(models.Model):

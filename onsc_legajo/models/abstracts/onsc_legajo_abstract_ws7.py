@@ -42,7 +42,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
 
         paFechaDesde -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
         data = {
-           'paFechaDesde': paFechaDesde.strftime('%d/%m/%Y %H:%M:%S'),
+            'paFechaDesde': paFechaDesde.strftime('%d/%m/%Y %H:%M:%S'),
             'paFechaHasta': paFechaHasta.strftime('%d/%m/%Y %H:%M:%S'),
         }
         return self.with_context(
@@ -84,8 +84,6 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                 for operation in response:
                     if operation.primer_nombre == 'SIN DATO':
                         continue
-                    logs_list = []
-
                     vals = self._get_base_dict(operation, tz_delta)
                     _is_op_unicity_valid = self._is_op_unicity_valid(vals, integration_error_WS7_9004)
                     if not _is_op_unicity_valid:

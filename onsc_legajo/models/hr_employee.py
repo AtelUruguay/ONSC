@@ -133,7 +133,7 @@ class HrEmployee(models.Model):
         if len(cv_nro_doc_args) > 0:
             args = expression.OR([cv_nro_doc_args, args])
         return super(HrEmployee, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-                                                      access_rights_uid=access_rights_uid)
+                                               access_rights_uid=access_rights_uid)
 
     partner_id = fields.Many2one('res.partner', string='Contacto', compute='_compute_partner_id', store=True)
 
