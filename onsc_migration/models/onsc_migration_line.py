@@ -80,44 +80,41 @@ class ONSCMigration(models.Model):
     def _set_base_vals(self, row_dict, row):
         row_dict.update({
             'migration_id': self.id,
-            'doc_nro': str(row[2]),
-            'first_name': str(row[3]),
-            'second_name': str(row[4]),
-            'first_surname': str(row[5]),
-            'second_surname': str(row[6]),
-            'name_ci': str(row[7]),
+            'doc_nro': row[2] and str(row[2]),
+            'first_name': row[3] and str(row[3]),
+            'second_name': row[4] and str(row[4]),
+            'first_surname': row[5] and str(row[5]),
+            'second_surname': row[6] and str(row[6]),
+            'name_ci': row[7] and str(row[7]),
             'birth_date': self.is_datetime(row[9]) and row[9].strftime("%Y-%m-%d"),
-            'sex': str(row[11]),
+            'sex': row[11] and str(row[11]),
             'citizenship': row[13],
-            'crendencial_serie': str(row[14]),
-            'credential_number': str(row[15]),
-            'personal_phone': str(row[16]),
-            'email': str(row[17]),
-            'email_inst': str(row[18]),
-            'address_nro_door': str(row[22]),
+            'crendencial_serie': row[14] and str(row[14]),
+            'credential_number': row[15] and str(row[15]),
+            'personal_phone': row[16] and str(row[16]),
+            'email': row[17] and str(row[17]),
+            'email_inst': row[18] and str(row[18]),
+            'address_nro_door': row[22] and str(row[22]),
             'address_is_bis': row[25],
-            'address_apto': str(row[26]),
-            'address_place': str(row[27]),
-            'address_zip': str(row[28]),
-            'address_block': str(row[29]),
-            'address_sandlot': str(row[30]),
+            'address_apto': row[26] and str(row[26]),
+            'address_place': row[27] and str(row[27]),
+            'address_zip': row[28] and str(row[28]),
+            'address_block': row[29] and str(row[29]),
+            'address_sandlot': row[30] and str(row[30]),
             'date_income_public_administration': self.is_datetime(row[32]) and row[32].strftime("%Y-%m-%d"),
             'inactivity_years': row[33],
             'graduation_date': self.is_datetime(row[34]) and row[34].strftime("%Y-%m-%d"),
             'date_start': self.is_datetime(row[35]) and row[35].strftime("%Y-%m-%d"),
-            'nro_puesto': str(row[45]),
-            'nro_place': str(row[46]),
-            'sec_place': str(row[47]),
-            'call_number': str(row[51]),
-            'reason_description': str(row[52]),
-
+            'nro_puesto': row[45] and str(row[45]),
+            'nro_place': row[46] and str(row[46]),
+            'sec_place': row[47] and str(row[47]),
+            'call_number': row[51] and str(row[51]),
+            'reason_description': row[52] and str(row[52]),
             'resolution_description': row[57],
             'resolution_date': self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d"),
             'resolution_type': row[59],
             'retributive_day_formal': row[83],
-            'retributive_day_formal_desc': row[84],
-
-        })
+            'retributive_day_formal_desc': row[84], })
 
     def _set_m2o_values(self, row_dict, row):
         country_id = row[0] and self.get_country(str(row[0]))
@@ -231,7 +228,7 @@ class ONSCMigration(models.Model):
 
                 if row_dict['norm_id']:
                     row_dict.update({
-                        'norm_type': str(row[53]),
+                        'norm_type': row[53] and str(row[53]),
                         'norm_number': row[54],
                         'norm_year': row[55],
                         'norm_article': row[56], })
@@ -891,7 +888,7 @@ class ONSCMigrationLine(models.Model):
                         employee = line._create_employee(Employee, partner, cv_digital)
                         line._create_legajo(employee)
                 if line.state_move == 'AP':
-                     line._create_alta_vl(AltaVL, partner)
+                    line._create_alta_vl(AltaVL, partner)
                 else:
                     contract = line._create_contract(Contract, employee)
                     if line.state_move == 'BP':
