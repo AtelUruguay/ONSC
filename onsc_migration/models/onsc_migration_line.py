@@ -3,6 +3,7 @@ import io
 import logging
 
 import openpyxl as openpyxl
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import models, fields, tools
 from odoo.exceptions import ValidationError
@@ -764,6 +765,10 @@ class ONSCMigrationLine(models.Model):
     # FASE 2
     def _get_info_from_line(self, line):
         vals = ({
+            'name': calc_full_name(line.first_name,
+                                   line.second_name,
+                                   line.first_surname,
+                                   line.second_surname),
             'country_of_birth_id': line.birth_country_id.id,
             'institutional_email': line.email_inst,
             'health_provider_id': line.health_provider_id.id,
@@ -775,7 +780,6 @@ class ONSCMigrationLine(models.Model):
             'personal_phone': line.personal_phone,
             'email': line.email,
             'cv_nro_doc': line.doc_nro,
-            # todo hacer casteo entre valores que viene en la planilla y los que seusa  en CV
             'uy_citizenship': line.citizenship,
             'crendencial_serie': line.crendencial_serie,
             'credential_number': line.credential_number,
@@ -794,8 +798,70 @@ class ONSCMigrationLine(models.Model):
             'cv_address_block': line.address_block,
             'cv_address_sandlot': line.address_sandlotself.cv_digital_id.cv_address_sandlot,
             'cv_gender_id': line.gender_id.id,
+            'cv_sex': line.sex,
+            'cv_sex_updated_date': line.create_date,
+            'gender_date': line.create_date,
 
         })
+        return vals
+
+    def _get_info_fromcv(self):
+        record = self.sudo()
+        vals = {
+
+            'drivers_license_ids': record._get_driver_licences_orm(),
+            # Datos del legajo
+            'emergency_service_id': record.cv_digital_id.emergency_service_id.id,
+            'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
+            'emergency_service_telephone': record.cv_digital_id.emergency_service_telephone,
+            'digitized_document_file': record.cv_digital_id.digitized_document_file,
+            'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
+            'health_department_id': record.cv_digital_id.health_department_id.id,
+            'prefix_phone_id': record.cv_digital_id.prefix_phone_id.id,
+            'prefix_mobile_phone_id': record.cv_digital_id.prefix_mobile_phone_id.id,
+            'mobile_phone': record.cv_digital_id.mobile_phone,
+            'allow_content_public': record.cv_digital_id.allow_content_public,
+            'situation_disability': record.cv_digital_id.situation_disability,
+            'see': record.cv_digital_id.see,
+            'hear': record.cv_digital_id.hear,
+            'walk': record.cv_digital_id.walk,
+            'speak': record.cv_digital_id.speak,
+            'realize': record.cv_digital_id.realize,
+            'lear': record.cv_digital_id.lear,
+            'interaction': record.cv_digital_id.interaction,
+            'need_other_support': record.cv_digital_id.need_other_support,
+            'is_need_other_support': record.cv_digital_id.is_need_other_support,
+            'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
+            'is_cv_race_public': record.cv_digital_id.is_cv_race_public,
+            'other_information_official': record.cv_digital_id.other_information_official,
+            'is_driver_license': record.cv_digital_id.is_driver_license,
+            'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
+            'cv_race2': record.cv_digital_id.cv_race2,
+            'cv_race_ids': record.cv_digital_id.cv_race_ids,
+            'cv_first_race_id': record.cv_digital_id.cv_first_race_id,
+            'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
+            'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
+            'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
+            'afro_descendant_date': record.cv_digital_id.afro_descendant_date,
+            'is_occupational_health_card': record.cv_digital_id.is_occupational_health_card,
+            'occupational_health_card_date': record.cv_digital_id.occupational_health_card_date,
+            'occupational_health_card_file': record.cv_digital_id.occupational_health_card_file,
+            'occupational_health_card_filename': record.cv_digital_id.occupational_health_card_filename,
+            'is_medical_aptitude_certificate_status': record.cv_digital_id.is_medical_aptitude_certificate_status,
+            'medical_aptitude_certificate_date': record.cv_digital_id.medical_aptitude_certificate_date,
+            'medical_aptitude_certificate_file': record.cv_digital_id.medical_aptitude_certificate_file,
+            'medical_aptitude_certificate_filename': record.cv_digital_id.medical_aptitude_certificate_filename,
+            'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
+            'is_victim_violent': record.cv_digital_id.is_victim_violent,
+            'relationship_victim_violent_filename': record.cv_digital_id.relationship_victim_violent_filename,
+            'people_disabilitie': record.cv_digital_id.people_disabilitie,
+            'document_certificate_file': record.cv_digital_id.document_certificate_file,
+            'document_certificate_filename': record.cv_digital_id.document_certificate_filename,
+            'certificate_date': record.cv_digital_id.certificate_date,
+            'to_date': record.cv_digital_id.to_date,
+            'disability_date': record.cv_digital_id.disability_date,
+            'type_support_ids': record._get_type_support_orm(),
+        }
         return vals
 
     def process_line(self, limit=200):
@@ -813,9 +879,9 @@ class ONSCMigrationLine(models.Model):
                     cv_digital = line._create_cv(CVDigital, partner)
                     if line.state_move != 'AP':
                         employee = line._create_employee(Employee, partner, cv_digital)
-                        legajo = line._create_legajo(employee)
+                        line._create_legajo(employee)
                 if line.state_move == 'AP':
-                    alta_vl = line._create_alta_vl(AltaVL, partner)
+                     line._create_alta_vl(AltaVL, partner)
                 else:
                     contract = line._create_contract(Contract, employee)
                     if line.state_move == 'BP':
@@ -844,7 +910,6 @@ class ONSCMigrationLine(models.Model):
                     'cv_emissor_country_id': self.country_id.id,
                     'cv_nro_doc': self.doc_nro,
                     'cv_document_type_id': self.doc_type_id.id,
-                    'is_partner_cv': True,
                     'email': self.email,
                     'cv_dnic_name_1': self.first_name,
                     'cv_dnic_name_2': self.second_name,
@@ -855,7 +920,7 @@ class ONSCMigrationLine(models.Model):
                     'cv_first_name': self.first_name,
                     'cv_second_name': self.second_name,
                     'cv_last_name_1': self.first_surname,
-                    'cv_last_name_2':self.second_surname,
+                    'cv_last_name_2': self.second_surname,
                 }
                 partner = Partner.create(data_partner)
                 # self.write({'partner_id': partner.id})
@@ -872,7 +937,7 @@ class ONSCMigrationLine(models.Model):
                     'cv_last_name_1': self.first_surname,
                     'cv_last_name_2': self.second_surname,
                 }
-                partner.write(data_partner)
+                partner.with_context(can_update_contact_cv=True).write(data_partner)
             return partner
             # self.write({'partner_id': partner.id})
             # self.env.cr.commit()
@@ -962,17 +1027,13 @@ class ONSCMigrationLine(models.Model):
                 'resolution_date': self.resolution_date,
                 'resolution_type': self.resolution_type,
                 'retributive_day_id': self.retributive_day_id.id if self.retributive_day_id else False,
-                # 'additional_information': self.additional_information,
                 'norm_id': self.norm_id.id if self.norm_id else False,
                 'call_number': self.call_number,
                 'codigoJornadaFormal': self.retributive_day_formal,
-
-                # 'country_code': cv_digital.country_code,
                 'country_of_birth_id': self.birth_country_id.id if self.birth_country_id else False,
                 'marital_status_id': self.marital_status_id.id if self.marital_status_id else False,
                 'uy_citizenship': self.citizenship,
                 'personal_phone': self.personal_phone,
-                # 'mobile_phone': cv_digital.mobile_phone,
                 'email': self.email,
                 'cv_address_street_id': self.address_street_id.id if self.address_street_id else False,
                 'cv_address_street2_id': self.cv_address_street2_id.id if self.cv_address_street2_id else False,
@@ -991,32 +1052,19 @@ class ONSCMigrationLine(models.Model):
 
     def _create_employee(self, Employee, partner_id, cv_digital):
         try:
-            employee = Employee._get_legajo_employee(self.country_id, self.doc_type_id, partner_id)
+            employee = Employee.search([
+                ('cv_emissor_country_id', '=', self.country_id.id),
+                ('cv_document_type_id', '=', self.doc_type_id.id),
+                ('cv_nro_doc', '=', partner_id.cv_nro_doc),
+            ], limit=1)
+            if not employee:
+                vals = self.suspend_security()._get_info_from_line()
+                vals.update(self._get_info_fromcv(cv_digital))
+                employee = self.suspend_security().create(vals)
             return employee
-            # cv = employee.cv_digital_id
-            # if cv_digital:
-            #     vals = employee.with_context(is_migration=True).suspend_security._get_info_fromcv()
-            #     cv.with_context(documentary_validation='cv_address',
-            #                     user_id=self.env.user.id,
-            #                     can_update_contact_cv=True).button_documentary_approve()
-            #     cv.with_context(user_id=self.env.user.id,
-            #                     documentary_validation='marital_status').button_documentary_approve()
-            #     cv.with_context(user_id=self.env.user.id,
-            #                     documentary_validation='civical_credential').button_documentary_approve()
-            #     cv.with_context(user_id=self.env.user.id,
-            #                     documentary_validation='nro_doc').button_documentary_approve()
-            # else:
-            #     vals = self.suspend_security()._get_info_from_line()
-            # vals.update({
-            #     'cv_birthdate': self.cv_birthdate,
-            # })
-            # employee.write(vals)
-            # cv.write({'is_docket': True})
+
         except Exception as e:
             raise ValidationError("No se puedo crear el funcionario: " + tools.ustr(e))
-            # self.env.cr.rollback()
-            # line.write({'state': 'error', 'error': "No se puedo crear el funcionario: " + tools.ustr(e)})
-            # self.env.cr.commit()
 
     def _create_legajo(self, employee):
         return self.env['onsc.legajo']._get_legajo(
