@@ -770,104 +770,104 @@ class ONSCMigrationLine(models.Model):
         return message_error
 
     # FASE 2
-    def _get_info_from_line(self, line):
+    def _get_info_from_line(self):
         vals = ({
-            'name': calc_full_name(line.first_name,
-                                   line.second_name,
-                                   line.first_surname,
-                                   line.second_surname),
-            'country_of_birth_id': line.birth_country_id.id,
-            'institutional_email': line.email_inst,
-            'health_provider_id': line.health_provider_id.id,
-            'cv_first_name': line.first_name,
-            'cv_second_name': line.second_name,
-            'cv_last_name_1': line.first_surname,
-            'cv_last_name_2': line.second_surname,
-            'cv_birthdate': line.birth_date,
-            'personal_phone': line.personal_phone,
-            'email': line.email,
-            'cv_nro_doc': line.doc_nro,
-            'uy_citizenship': line.citizenship,
-            'crendencial_serie': line.crendencial_serie,
-            'credential_number': line.credential_number,
-            'marital_status_id': line.marital_status_id.id,
-            'country_id': line.country_id.id,
-            'cv_address_street_id': line.address_street_idaddress_street_id.id,
-            'cv_address_street2_id': line.address_street2_id.id,
-            'cv_address_street3_id': line.address_street3_id.id,
-            'cv_address_state_id': line.address_state_id.id,
-            'cv_address_location_id': line.address_location_id.id,
-            'cv_address_nro_door': line.address_nro_door,
-            'cv_address_apto': line.address_apto,
-            'cv_address_zip': line.address_zip,
-            'cv_address_is_cv_bis': line.address_is_bis,
-            'cv_address_place': line.address_place,
-            'cv_address_block': line.address_block,
-            'cv_address_sandlot': line.address_sandlotself.cv_digital_id.cv_address_sandlot,
-            'cv_gender_id': line.gender_id.id,
-            'cv_sex': line.sex,
-            'cv_sex_updated_date': line.create_date,
-            'gender_date': line.create_date,
+            'name': calc_full_name(self.first_name,
+                                   self.second_name,
+                                   self.first_surname,
+                                   self.second_surname),
+            'country_of_birth_id': self.birth_country_id.id,
+            'institutional_email': self.email_inst,
+            'health_provider_id': self.health_provider_id.id,
+            'cv_first_name': self.first_name,
+            'cv_second_name': self.second_name,
+            'cv_last_name_1': self.first_surname,
+            'cv_last_name_2': self.second_surname,
+            'cv_birthdate': self.birth_date,
+            'personal_phone': self.personal_phone,
+            'email': self.email,
+            'cv_nro_doc': self.doc_nro,
+            'uy_citizenship': self.citizenship,
+            'crendencial_serie': self.crendencial_serie,
+            'credential_number': self.credential_number,
+            'marital_status_id': self.marital_status_id.id,
+            'country_id': self.country_id.id,
+            'cv_address_street_id': self.address_street_id.id,
+            'cv_address_street2_id': self.address_street2_id.id,
+            'cv_address_street3_id': self.address_street3_id.id,
+            'cv_address_state_id': self.address_state_id.id,
+            'cv_address_location_id': self.address_location_id.id,
+            'cv_address_nro_door': self.address_nro_door,
+            'cv_address_apto': self.address_apto,
+            'cv_address_zip': self.address_zip,
+            'cv_address_is_cv_bis': self.address_is_bis,
+            'cv_address_place': self.address_place,
+            'cv_address_block': self.address_block,
+            'cv_address_sandlot': self.address_sandlot,
+            'cv_gender_id': self.gender_id.id,
+            'cv_sex': self.sex,
+            'cv_sex_updated_date': self.create_date,
+            'gender_date': self.create_date,
 
         })
         return vals
 
-    def _get_info_fromcv(self):
-        record = self.sudo()
+    def _get_info_fromcv(self,cv_digital_id):
+
         vals = {
 
-            'drivers_license_ids': record._get_driver_licences_orm(),
+
             # Datos del legajo
-            'emergency_service_id': record.cv_digital_id.emergency_service_id.id,
-            'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
-            'emergency_service_telephone': record.cv_digital_id.emergency_service_telephone,
-            'digitized_document_file': record.cv_digital_id.digitized_document_file,
-            'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
-            'health_department_id': record.cv_digital_id.health_department_id.id,
-            'prefix_phone_id': record.cv_digital_id.prefix_phone_id.id,
-            'prefix_mobile_phone_id': record.cv_digital_id.prefix_mobile_phone_id.id,
-            'mobile_phone': record.cv_digital_id.mobile_phone,
-            'allow_content_public': record.cv_digital_id.allow_content_public,
-            'situation_disability': record.cv_digital_id.situation_disability,
-            'see': record.cv_digital_id.see,
-            'hear': record.cv_digital_id.hear,
-            'walk': record.cv_digital_id.walk,
-            'speak': record.cv_digital_id.speak,
-            'realize': record.cv_digital_id.realize,
-            'lear': record.cv_digital_id.lear,
-            'interaction': record.cv_digital_id.interaction,
-            'need_other_support': record.cv_digital_id.need_other_support,
-            'is_need_other_support': record.cv_digital_id.is_need_other_support,
-            'is_cv_gender_public': record.cv_digital_id.is_cv_gender_public,
-            'is_cv_race_public': record.cv_digital_id.is_cv_race_public,
-            'other_information_official': record.cv_digital_id.other_information_official,
-            'is_driver_license': record.cv_digital_id.is_driver_license,
-            'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
-            'cv_race2': record.cv_digital_id.cv_race2,
-            'cv_race_ids': record.cv_digital_id.cv_race_ids,
-            'cv_first_race_id': record.cv_digital_id.cv_first_race_id,
-            'afro_descendants_filename': record.cv_digital_id.afro_descendants_filename,
-            'afro_descendants_file': record.cv_digital_id.afro_descendants_file,
-            'is_afro_descendants': record.cv_digital_id.is_afro_descendants,
-            'afro_descendant_date': record.cv_digital_id.afro_descendant_date,
-            'is_occupational_health_card': record.cv_digital_id.is_occupational_health_card,
-            'occupational_health_card_date': record.cv_digital_id.occupational_health_card_date,
-            'occupational_health_card_file': record.cv_digital_id.occupational_health_card_file,
-            'occupational_health_card_filename': record.cv_digital_id.occupational_health_card_filename,
-            'is_medical_aptitude_certificate_status': record.cv_digital_id.is_medical_aptitude_certificate_status,
-            'medical_aptitude_certificate_date': record.cv_digital_id.medical_aptitude_certificate_date,
-            'medical_aptitude_certificate_file': record.cv_digital_id.medical_aptitude_certificate_file,
-            'medical_aptitude_certificate_filename': record.cv_digital_id.medical_aptitude_certificate_filename,
-            'relationship_victim_violent_file': record.cv_digital_id.relationship_victim_violent_file,
-            'is_victim_violent': record.cv_digital_id.is_victim_violent,
-            'relationship_victim_violent_filename': record.cv_digital_id.relationship_victim_violent_filename,
-            'people_disabilitie': record.cv_digital_id.people_disabilitie,
-            'document_certificate_file': record.cv_digital_id.document_certificate_file,
-            'document_certificate_filename': record.cv_digital_id.document_certificate_filename,
-            'certificate_date': record.cv_digital_id.certificate_date,
-            'to_date': record.cv_digital_id.to_date,
-            'disability_date': record.cv_digital_id.disability_date,
-            'type_support_ids': record._get_type_support_orm(),
+            'emergency_service_id': cv_digital_id.emergency_service_id.id,
+            'prefix_emergency_phone_id': cv_digital_id.prefix_emergency_phone_id.id,
+            'emergency_service_telephone': cv_digital_id.emergency_service_telephone,
+            'digitized_document_file': cv_digital_id.digitized_document_file,
+            'digitized_document_filename': cv_digital_id.digitized_document_filename,
+            'health_department_id': cv_digital_id.health_department_id.id,
+            'prefix_phone_id': cv_digital_id.prefix_phone_id.id,
+            'prefix_mobile_phone_id': cv_digital_id.prefix_mobile_phone_id.id,
+            'mobile_phone': cv_digital_id.mobile_phone,
+            'allow_content_public': cv_digital_id.allow_content_public,
+            'situation_disability': cv_digital_id.situation_disability,
+            'see': cv_digital_id.see,
+            'hear': cv_digital_id.hear,
+            'walk': cv_digital_id.walk,
+            'speak': cv_digital_id.speak,
+            'realize': cv_digital_id.realize,
+            'lear': cv_digital_id.lear,
+            'interaction': cv_digital_id.interaction,
+            'need_other_support': cv_digital_id.need_other_support,
+            'is_need_other_support': cv_digital_id.is_need_other_support,
+            'is_cv_gender_public': cv_digital_id.is_cv_gender_public,
+            'is_cv_race_public': cv_digital_id.is_cv_race_public,
+            'other_information_official': cv_digital_id.other_information_official,
+            'is_driver_license': cv_digital_id.is_driver_license,
+            'is_public_information_victim_violent': cv_digital_id.is_public_information_victim_violent,
+            'cv_race2': cv_digital_id.cv_race2,
+            'cv_race_ids': cv_digital_id.cv_race_ids,
+            'cv_first_race_id': cv_digital_id.cv_first_race_id,
+            'afro_descendants_filename': cv_digital_id.afro_descendants_filename,
+            'afro_descendants_file': cv_digital_id.afro_descendants_file,
+            'is_afro_descendants': cv_digital_id.is_afro_descendants,
+            'afro_descendant_date': cv_digital_id.afro_descendant_date,
+            'is_occupational_health_card': cv_digital_id.is_occupational_health_card,
+            'occupational_health_card_date': cv_digital_id.occupational_health_card_date,
+            'occupational_health_card_file': cv_digital_id.occupational_health_card_file,
+            'occupational_health_card_filename': cv_digital_id.occupational_health_card_filename,
+            'is_medical_aptitude_certificate_status': cv_digital_id.is_medical_aptitude_certificate_status,
+            'medical_aptitude_certificate_date': cv_digital_id.medical_aptitude_certificate_date,
+            'medical_aptitude_certificate_file': cv_digital_id.medical_aptitude_certificate_file,
+            'medical_aptitude_certificate_filename': cv_digital_id.medical_aptitude_certificate_filename,
+            'relationship_victim_violent_file': cv_digital_id.relationship_victim_violent_file,
+            'is_victim_violent': cv_digital_id.is_victim_violent,
+            'relationship_victim_violent_filename': cv_digital_id.relationship_victim_violent_filename,
+            'people_disabilitie': cv_digital_id.people_disabilitie,
+            'document_certificate_file': cv_digital_id.document_certificate_file,
+            'document_certificate_filename': cv_digital_id.document_certificate_filename,
+            'certificate_date': cv_digital_id.certificate_date,
+            'to_date': cv_digital_id.to_date,
+            'disability_date': cv_digital_id.disability_date,
+
         }
         return vals
 
@@ -898,7 +898,7 @@ class ONSCMigrationLine(models.Model):
                 self.env.cr.commit()
             except Exception as e:
                 self.env.cr.rollback()
-                self.write({
+                line.write({
                     'state': 'error',
                     'error': tools.ustr(e)
                 })
@@ -928,8 +928,11 @@ class ONSCMigrationLine(models.Model):
                     'cv_second_name': self.second_name,
                     'cv_last_name_1': self.first_surname,
                     'cv_last_name_2': self.second_surname,
+                    'is_partner_cv': True,
+
+
                 }
-                partner = Partner.create(data_partner)
+                partner = Partner.with_context(can_update_contact_cv=True).create(data_partner)
                 # self.write({'partner_id': partner.id})
             else:
                 data_partner = {
@@ -943,6 +946,8 @@ class ONSCMigrationLine(models.Model):
                     'cv_second_name': self.second_name,
                     'cv_last_name_1': self.first_surname,
                     'cv_last_name_2': self.second_surname,
+                    'is_partner_cv': True,
+
                 }
                 partner.with_context(can_update_contact_cv=True).write(data_partner)
             return partner
@@ -1067,7 +1072,7 @@ class ONSCMigrationLine(models.Model):
             if not employee:
                 vals = self.suspend_security()._get_info_from_line()
                 vals.update(self._get_info_fromcv(cv_digital))
-                employee = self.suspend_security().create(vals)
+                employee = Employee.suspend_security().create(vals)
             return employee
 
         except Exception as e:
@@ -1124,7 +1129,7 @@ class ONSCMigrationLine(models.Model):
                 Job.create_job(
                     contracts,
                     self.department_id,
-                    self.date_start_commission,
+                    self.create_date,
                     self.security_job_id
                 )
         else:
