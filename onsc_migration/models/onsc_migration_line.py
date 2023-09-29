@@ -44,13 +44,16 @@ REQUIRED_FIELDS_COMM = {
     'resolution_comm_type',
 }
 
-REQUIRED_FIELDS_COMM_AC = {
-    'nro_puesto',
-    'nro_place',
-    'sec_place',
+REQUIRED_FIELDS_COMM_DESTINATION_AC = {
     'nro_puesto_des',
     'nro_place_des',
     'sec_place_des',
+}
+
+REQUIRED_FIELDS_COMM_ORIGIN_AC = {
+    'nro_puesto',
+    'nro_place',
+    'sec_place',
 }
 
 _logger = logging.getLogger(__name__)
@@ -743,7 +746,11 @@ class ONSCMigrationLine(models.Model):
             if not eval('self.%s' % required_field):
                 message_error.append("El campo %s no es válido" % self._fields[required_field].string)
         if self.inciso_id.is_central_administration:
-            for required_field in REQUIRED_FIELDS_COMM_AC:
+            for required_field in REQUIRED_FIELDS_COMM_ORIGIN_AC:
+                if not eval('self.%s' % required_field):
+                    message_error.append("El campo %s no es válido" % self._fields[required_field].string)
+        if self.inciso_des_id.is_central_administration:
+            for required_field in REQUIRED_FIELDS_COMM_DESTINATION_AC:
                 if not eval('self.%s' % required_field):
                     message_error.append("El campo %s no es válido" % self._fields[required_field].string)
 
