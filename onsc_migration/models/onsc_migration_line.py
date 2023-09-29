@@ -808,6 +808,8 @@ class ONSCMigrationLine(models.Model):
             'cv_sex': self.sex,
             'cv_sex_updated_date': self.create_date,
             'gender_date': self.create_date,
+            'cv_emissor_country_id':self.country_id.id,
+            'cv_document_type_id':self.doc_type_id.id,
 
         })
         return vals
@@ -1019,7 +1021,7 @@ class ONSCMigrationLine(models.Model):
                 'descriptor4_id': self.descriptor4_id.id if self.descriptor4_id else False,
                 'nroPuesto': self.nro_puesto,
                 'nroPlaza': self.nro_place,
-                'sec_position': self.sec_place,
+                'secPlaza': self.sec_place,
                 'department_id': self.department_id.id if self.department_id else False,
                 'security_job_id': self.security_job_id.id if self.security_job_id else False,
                 'occupation_id': self.occupation_id.id if self.occupation_id else False,
@@ -1043,12 +1045,12 @@ class ONSCMigrationLine(models.Model):
                 'personal_phone': self.personal_phone,
                 'email': self.email,
                 'cv_address_street_id': self.address_street_id.id if self.address_street_id else False,
-                'cv_address_street2_id': self.cv_address_street2_id.id if self.cv_address_street2_id else False,
-                'cv_address_street3_id': self.cv_address_street3_id.id if self.cv_address_street3_id else False,
+                'cv_address_street2_id': self.address_street2_id.id if self.address_street2_id else False,
+                'cv_address_street3_id': self.address_street3_id.id if self.address_street3_id else False,
                 'health_provider_id': self.health_provider_id.id if self.health_provider_id else False,
                 # 'mass_upload_id': self.id,
             }
-            altavl = AltaVL.create(data_alta_vl)
+            altavl = AltaVL.with_context(is_migration=True).create(data_alta_vl)
 
             return altavl
         except Exception as e:
@@ -1168,7 +1170,7 @@ class ONSCMigrationLine(models.Model):
     def update_baja_vl(self, contract_id):
         data = {
             'id_deregistration_discharge': self.id_movimiento,
-            'reason_deregistration': self.reason_discharge.reason_description or False,
+            'reason_deregistration': self.reason_discharge or False,
             'norm_code_deregistration_id': self.norm_comm_id and self.norm_id.id or False,
             'type_norm_deregistration': self.norm_comm_type or False,
             'norm_number_deregistration': self.norm_comm_number or False,
