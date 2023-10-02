@@ -814,8 +814,8 @@ class ONSCMigrationLine(models.Model):
             'cv_sex': self.sex,
             'cv_sex_updated_date': self.create_date,
             'gender_date': self.create_date,
-            'cv_emissor_country_id':self.country_id.id,
-            'cv_document_type_id':self.doc_type_id.id,
+            'cv_emissor_country_id': self.country_id.id,
+            'cv_document_type_id': self.doc_type_id.id,
 
         })
         return vals
@@ -1013,7 +1013,7 @@ class ONSCMigrationLine(models.Model):
         try:
             data_alta_vl = {
                 'partner_id': partner_id.id,
-                'full_name':partner_id.cv_full_name,
+                'full_name': partner_id.cv_full_name,
                 'date_start': self.date_start,
                 'inciso_id': self.inciso_id.id,
                 'operating_unit_id': self.operating_unit_id.id,
