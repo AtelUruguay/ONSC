@@ -343,8 +343,7 @@ class ONSCMigration(models.Model):
         return message_error
 
     def _validate_m2o(self, row, row_dict, message_error):
-        if row[8] and not row_dict['marital_status_id']:
-            message_error.append("El campo Estado civil no es válido")
+
         if row[10] and not row_dict['gender_id']:
             message_error.append("El campo Género no es válido")
         if row[12] and not row_dict['birth_country_id']:
@@ -797,7 +796,7 @@ class ONSCMigrationLine(models.Model):
             'uy_citizenship': self.citizenship,
             'crendencial_serie': self.crendencial_serie,
             'credential_number': self.credential_number,
-            'marital_status_id': self.marital_status_id.id,
+            'marital_status_id': self.marital_status_id and self.marital_status_id.id,
             'country_id': self.country_id.id,
             'cv_address_street_id': self.address_street_id.id,
             'cv_address_street2_id': self.address_street2_id.id,
@@ -815,6 +814,8 @@ class ONSCMigrationLine(models.Model):
             'cv_sex': self.sex,
             'cv_sex_updated_date': self.create_date,
             'gender_date': self.create_date,
+            'cv_emissor_country_id': self.country_id.id,
+            'cv_document_type_id': self.doc_type_id.id,
 
         })
         return vals
@@ -890,6 +891,7 @@ class ONSCMigrationLine(models.Model):
                     if line.state_move != 'AP':
                         employee = line._create_employee(Employee, partner, cv_digital)
                         line._create_legajo(employee)
+                        cv_digital.write({'is_docket': True})
                 if line.state_move == 'AP':
                     line._create_alta_vl(AltaVL, partner)
                 else:
@@ -973,7 +975,7 @@ class ONSCMigrationLine(models.Model):
                     'personal_phone': self.personal_phone,
                     'email': self.email_inst,
                     'country_id': self.country_id.id,
-                    'marital_status_id': self.marital_status_id.id,
+                    'marital_status_id': self.marital_status_id and self.marital_status_id.id,
                     'country_of_birth_id': self.birth_country_id.id,
                     'uy_citizenship': self.citizenship,
                     'crendencial_serie': self.crendencial_serie,
@@ -990,12 +992,13 @@ class ONSCMigrationLine(models.Model):
                     'cv_address_place': self.address_place,
                     'cv_address_block': self.address_block,
                     'cv_address_sandlot': self.address_sandlot,
-                    'health_provider_id': self.health_provider_id.id
+                    'health_provider_id': self.health_provider_id.id,
+
                 }
                 return CVDigital.create(data)
             else:
                 data = {'email': self.email_inst,
-                        'marital_status_id': self.marital_status_id.id,
+                        'marital_status_id': self.marital_status_id and self.marital_status_id.id,
                         'health_provider_id': self.health_provider_id.id
                         }
                 cv_digital.write(data)
@@ -1010,6 +1013,7 @@ class ONSCMigrationLine(models.Model):
         try:
             data_alta_vl = {
                 'partner_id': partner_id.id,
+                'full_name': partner_id.cv_full_name,
                 'date_start': self.date_start,
                 'inciso_id': self.inciso_id.id,
                 'operating_unit_id': self.operating_unit_id.id,
@@ -1026,7 +1030,7 @@ class ONSCMigrationLine(models.Model):
                 'descriptor4_id': self.descriptor4_id.id if self.descriptor4_id else False,
                 'nroPuesto': self.nro_puesto,
                 'nroPlaza': self.nro_place,
-                'sec_position': self.sec_place,
+                'secPlaza': self.sec_place,
                 'department_id': self.department_id.id if self.department_id else False,
                 'security_job_id': self.security_job_id.id if self.security_job_id else False,
                 'occupation_id': self.occupation_id.id if self.occupation_id else False,
@@ -1050,12 +1054,12 @@ class ONSCMigrationLine(models.Model):
                 'personal_phone': self.personal_phone,
                 'email': self.email,
                 'cv_address_street_id': self.address_street_id.id if self.address_street_id else False,
-                'cv_address_street2_id': self.cv_address_street2_id.id if self.cv_address_street2_id else False,
-                'cv_address_street3_id': self.cv_address_street3_id.id if self.cv_address_street3_id else False,
+                'cv_address_street2_id': self.address_street2_id.id if self.address_street2_id else False,
+                'cv_address_street3_id': self.address_street3_id.id if self.address_street3_id else False,
                 'health_provider_id': self.health_provider_id.id if self.health_provider_id else False,
                 # 'mass_upload_id': self.id,
             }
-            altavl = AltaVL.create(data_alta_vl)
+            altavl = AltaVL.with_context(is_migration=True).create(data_alta_vl)
 
             return altavl
         except Exception as e:
@@ -1140,7 +1144,16 @@ class ONSCMigrationLine(models.Model):
                 'legajo_state': 'outgoing_commission'
             })
             vals_contract2.update({
-                'legajo_state': 'incoming_commission'
+                'legajo_state': 'incoming_commission',
+                'inciso_id': self.inciso_des_id.id,
+                'operating_unit_id': self.operating_unit_des_id.id,
+                'program': self.program_project_des_id.programa,
+                'project': self.program_project_des_id.proyecto,
+                'regime_id': self.regime_des_id.id,
+                'position': self.nro_puesto_des,
+                'workplace': self.nro_place_des,
+                'sec_position': self.sec_place_des,
+                'state_square_id': self.state_place_des_id.id,
             })
 
             if self.inciso_des_id.is_central_administration:
@@ -1175,7 +1188,7 @@ class ONSCMigrationLine(models.Model):
     def update_baja_vl(self, contract_id):
         data = {
             'id_deregistration_discharge': self.id_movimiento,
-            'reason_deregistration': self.reason_discharge.reason_description or False,
+            'reason_deregistration': self.reason_discharge or False,
             'norm_code_deregistration_id': self.norm_comm_id and self.norm_id.id or False,
             'type_norm_deregistration': self.norm_comm_type or False,
             'norm_number_deregistration': self.norm_comm_number or False,
