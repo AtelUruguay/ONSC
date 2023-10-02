@@ -10,7 +10,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
     _catalogs_2validate = ['city_id']
     _order = 'start_date desc'
 
-    city_id = fields.Many2one("onsc.cv.location", string="Ciudad donde desempeñó", required=True)
+    city_id = fields.Many2one("onsc.cv.location", string="Ciudad donde desempeñó")
     unit_name = fields.Char("Área/Unidad")
     entry_institution_id = fields.Many2one("onsc.cv.entry", string="Rubro de la institución", required=True)
     hierarchical_level_id = fields.Many2one("onsc.cv.experience.hierarchical.level", string="Nivel jerárquico",
