@@ -3,6 +3,7 @@ import io
 import logging
 
 import openpyxl as openpyxl
+from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import models, fields, tools
 from odoo.exceptions import ValidationError
@@ -43,13 +44,16 @@ REQUIRED_FIELDS_COMM = {
     'resolution_comm_type',
 }
 
-REQUIRED_FIELDS_COMM_AC = {
-    'nro_puesto',
-    'nro_place',
-    'sec_place',
+REQUIRED_FIELDS_COMM_DESTINATION_AC = {
     'nro_puesto_des',
     'nro_place_des',
     'sec_place_des',
+}
+
+REQUIRED_FIELDS_COMM_ORIGIN_AC = {
+    'nro_puesto',
+    'nro_place',
+    'sec_place',
 }
 
 _logger = logging.getLogger(__name__)
@@ -79,44 +83,41 @@ class ONSCMigration(models.Model):
     def _set_base_vals(self, row_dict, row):
         row_dict.update({
             'migration_id': self.id,
-            'doc_nro': str(row[2]),
-            'first_name': str(row[3]),
-            'second_name': str(row[4]),
-            'first_surname': str(row[5]),
-            'second_surname': str(row[6]),
-            'name_ci': str(row[7]),
+            'doc_nro': row[2] and str(row[2]),
+            'first_name': row[3] and str(row[3]),
+            'second_name': row[4] and str(row[4]),
+            'first_surname': row[5] and str(row[5]),
+            'second_surname': row[6] and str(row[6]),
+            'name_ci': row[7] and str(row[7]),
             'birth_date': self.is_datetime(row[9]) and row[9].strftime("%Y-%m-%d"),
-            'sex': str(row[11]),
+            'sex': row[11] and str(row[11]),
             'citizenship': row[13],
-            'crendencial_serie': str(row[14]),
-            'credential_number': str(row[15]),
-            'personal_phone': str(row[16]),
-            'email': str(row[17]),
-            'email_inst': str(row[18]),
-            'address_nro_door': str(row[22]),
+            'crendencial_serie': row[14] and str(row[14]),
+            'credential_number': row[15] and str(row[15]),
+            'personal_phone': row[16] and str(row[16]),
+            'email': row[17] and str(row[17]),
+            'email_inst': row[18] and str(row[18]),
+            'address_nro_door': row[22] and str(row[22]),
             'address_is_bis': row[25],
-            'address_apto': str(row[26]),
-            'address_place': str(row[27]),
-            'address_zip': str(row[28]),
-            'address_block': str(row[29]),
-            'address_sandlot': str(row[30]),
+            'address_apto': row[26] and str(row[26]),
+            'address_place': row[27] and str(row[27]),
+            'address_zip': row[28] and str(row[28]),
+            'address_block': row[29] and str(row[29]),
+            'address_sandlot': row[30] and str(row[30]),
             'date_income_public_administration': self.is_datetime(row[32]) and row[32].strftime("%Y-%m-%d"),
             'inactivity_years': row[33],
             'graduation_date': self.is_datetime(row[34]) and row[34].strftime("%Y-%m-%d"),
             'date_start': self.is_datetime(row[35]) and row[35].strftime("%Y-%m-%d"),
-            'nro_puesto': str(row[45]),
-            'nro_place': str(row[46]),
-            'sec_place': str(row[47]),
-            'call_number': str(row[51]),
-            'reason_description': str(row[52]),
-
+            'nro_puesto': row[45] and str(row[45]),
+            'nro_place': row[46] and str(row[46]),
+            'sec_place': row[47] and str(row[47]),
+            'call_number': row[51] and str(row[51]),
+            'reason_description': row[52] and str(row[52]),
             'resolution_description': row[57],
             'resolution_date': self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d"),
             'resolution_type': row[59],
             'retributive_day_formal': row[83],
-            'retributive_day_formal_desc': row[84],
-
-        })
+            'retributive_day_formal_desc': row[84], })
 
     def _set_m2o_values(self, row_dict, row):
         country_id = row[0] and self.get_country(str(row[0]))
@@ -230,7 +231,7 @@ class ONSCMigration(models.Model):
 
                 if row_dict['norm_id']:
                     row_dict.update({
-                        'norm_type': str(row[53]),
+                        'norm_type': row[53] and str(row[53]),
                         'norm_number': row[54],
                         'norm_year': row[55],
                         'norm_article': row[56], })
@@ -422,6 +423,8 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Régimen de la comisión no es válido")
         if (row[74] or row[75] or row[76] or row[77]) and not row_dict['norm_comm_id']:
             message_error.append("El campo Norma comisión no es válido")
+        if row[72] and not row_dict['regime_commission_id']:
+            message_error.append("El campo Régimen de la comisión no es válido")
 
     def is_datetime(self, row):
         return type(row).__name__ == 'datetime' or False
@@ -743,13 +746,19 @@ class ONSCMigrationLine(models.Model):
             if not eval('self.%s' % required_field):
                 message_error.append("El campo %s no es válido" % self._fields[required_field].string)
         if self.inciso_id.is_central_administration:
-            for required_field in REQUIRED_FIELDS_COMM_AC:
+            for required_field in REQUIRED_FIELDS_COMM_ORIGIN_AC:
+                if not eval('self.%s' % required_field):
+                    message_error.append("El campo %s no es válido" % self._fields[required_field].string)
+        if self.inciso_des_id.is_central_administration:
+            for required_field in REQUIRED_FIELDS_COMM_DESTINATION_AC:
                 if not eval('self.%s' % required_field):
                     message_error.append("El campo %s no es válido" % self._fields[required_field].string)
 
     def _validate_line_no_required(self, message_error):
         if not self.program_project_id:
             message_error.append("No se encontró oficina para la combinación Programa/Proyecto")
+        if not self.regime_id:
+            message_error.append("El campo Regimen no es válido")
         if not self.operating_unit_id:
             message_error.append("El campo UE no es válido")
         if not self.nro_puesto:
@@ -768,40 +777,101 @@ class ONSCMigrationLine(models.Model):
         return message_error
 
     # FASE 2
-    def _get_info_from_line(self, line):
+    def _get_info_from_line(self):
         vals = ({
-            'country_of_birth_id': line.birth_country_id.id,
-            'institutional_email': line.email_inst,
-            'health_provider_id': line.health_provider_id.id,
-            'cv_first_name': line.first_name,
-            'cv_second_name': line.second_name,
-            'cv_last_name_1': line.first_surname,
-            'cv_last_name_2': line.second_surname,
-            'cv_birthdate': line.birth_date,
-            'personal_phone': line.personal_phone,
-            'email': line.email,
-            'cv_nro_doc': line.doc_nro,
-            # todo hacer casteo entre valores que viene en la planilla y los que seusa  en CV
-            'uy_citizenship': line.citizenship,
-            'crendencial_serie': line.crendencial_serie,
-            'credential_number': line.credential_number,
-            'marital_status_id': line.marital_status_id.id,
-            'country_id': line.country_id.id,
-            'cv_address_street_id': line.address_street_idaddress_street_id.id,
-            'cv_address_street2_id': line.address_street2_id.id,
-            'cv_address_street3_id': line.address_street3_id.id,
-            'cv_address_state_id': line.address_state_id.id,
-            'cv_address_location_id': line.address_location_id.id,
-            'cv_address_nro_door': line.address_nro_door,
-            'cv_address_apto': line.address_apto,
-            'cv_address_zip': line.address_zip,
-            'cv_address_is_cv_bis': line.address_is_bis,
-            'cv_address_place': line.address_place,
-            'cv_address_block': line.address_block,
-            'cv_address_sandlot': line.address_sandlotself.cv_digital_id.cv_address_sandlot,
-            'cv_gender_id': line.gender_id.id,
+            'name': calc_full_name(self.first_name,
+                                   self.second_name,
+                                   self.first_surname,
+                                   self.second_surname),
+            'country_of_birth_id': self.birth_country_id.id,
+            'institutional_email': self.email_inst,
+            'health_provider_id': self.health_provider_id.id,
+            'cv_first_name': self.first_name,
+            'cv_second_name': self.second_name,
+            'cv_last_name_1': self.first_surname,
+            'cv_last_name_2': self.second_surname,
+            'cv_birthdate': self.birth_date,
+            'personal_phone': self.personal_phone,
+            'email': self.email,
+            'cv_nro_doc': self.doc_nro,
+            'uy_citizenship': self.citizenship,
+            'crendencial_serie': self.crendencial_serie,
+            'credential_number': self.credential_number,
+            'marital_status_id': self.marital_status_id.id,
+            'country_id': self.country_id.id,
+            'cv_address_street_id': self.address_street_id.id,
+            'cv_address_street2_id': self.address_street2_id.id,
+            'cv_address_street3_id': self.address_street3_id.id,
+            'cv_address_state_id': self.address_state_id.id,
+            'cv_address_location_id': self.address_location_id.id,
+            'cv_address_nro_door': self.address_nro_door,
+            'cv_address_apto': self.address_apto,
+            'cv_address_zip': self.address_zip,
+            'cv_address_is_cv_bis': self.address_is_bis,
+            'cv_address_place': self.address_place,
+            'cv_address_block': self.address_block,
+            'cv_address_sandlot': self.address_sandlot,
+            'cv_gender_id': self.gender_id.id,
+            'cv_sex': self.sex,
+            'cv_sex_updated_date': self.create_date,
+            'gender_date': self.create_date,
 
         })
+        return vals
+
+    def _get_info_fromcv(self, cv_digital_id):
+
+        vals = {'emergency_service_id': cv_digital_id.emergency_service_id.id,
+                'prefix_emergency_phone_id': cv_digital_id.prefix_emergency_phone_id.id,
+                'emergency_service_telephone': cv_digital_id.emergency_service_telephone,
+                'digitized_document_file': cv_digital_id.digitized_document_file,
+                'digitized_document_filename': cv_digital_id.digitized_document_filename,
+                'health_department_id': cv_digital_id.health_department_id.id,
+                'prefix_phone_id': cv_digital_id.prefix_phone_id.id,
+                'prefix_mobile_phone_id': cv_digital_id.prefix_mobile_phone_id.id,
+                'mobile_phone': cv_digital_id.mobile_phone,
+                'allow_content_public': cv_digital_id.allow_content_public,
+                'situation_disability': cv_digital_id.situation_disability,
+                'see': cv_digital_id.see,
+                'hear': cv_digital_id.hear,
+                'walk': cv_digital_id.walk,
+                'speak': cv_digital_id.speak,
+                'realize': cv_digital_id.realize,
+                'lear': cv_digital_id.lear,
+                'interaction': cv_digital_id.interaction,
+                'need_other_support': cv_digital_id.need_other_support,
+                'is_need_other_support': cv_digital_id.is_need_other_support,
+                'is_cv_gender_public': cv_digital_id.is_cv_gender_public,
+                'is_cv_race_public': cv_digital_id.is_cv_race_public,
+                'other_information_official': cv_digital_id.other_information_official,
+                'is_driver_license': cv_digital_id.is_driver_license,
+                'is_public_information_victim_violent': cv_digital_id.is_public_information_victim_violent,
+                'cv_race2': cv_digital_id.cv_race2,
+                'cv_race_ids': cv_digital_id.cv_race_ids,
+                'cv_first_race_id': cv_digital_id.cv_first_race_id,
+                'afro_descendants_filename': cv_digital_id.afro_descendants_filename,
+                'afro_descendants_file': cv_digital_id.afro_descendants_file,
+                'is_afro_descendants': cv_digital_id.is_afro_descendants,
+                'afro_descendant_date': cv_digital_id.afro_descendant_date,
+                'is_occupational_health_card': cv_digital_id.is_occupational_health_card,
+                'occupational_health_card_date': cv_digital_id.occupational_health_card_date,
+                'occupational_health_card_file': cv_digital_id.occupational_health_card_file,
+                'occupational_health_card_filename': cv_digital_id.occupational_health_card_filename,
+                'is_medical_aptitude_certificate_status': cv_digital_id.is_medical_aptitude_certificate_status,
+                'medical_aptitude_certificate_date': cv_digital_id.medical_aptitude_certificate_date,
+                'medical_aptitude_certificate_file': cv_digital_id.medical_aptitude_certificate_file,
+                'medical_aptitude_certificate_filename': cv_digital_id.medical_aptitude_certificate_filename,
+                'relationship_victim_violent_file': cv_digital_id.relationship_victim_violent_file,
+                'is_victim_violent': cv_digital_id.is_victim_violent,
+                'relationship_victim_violent_filename': cv_digital_id.relationship_victim_violent_filename,
+                'people_disabilitie': cv_digital_id.people_disabilitie,
+                'document_certificate_file': cv_digital_id.document_certificate_file,
+                'document_certificate_filename': cv_digital_id.document_certificate_filename,
+                'certificate_date': cv_digital_id.certificate_date,
+                'to_date': cv_digital_id.to_date,
+                'disability_date': cv_digital_id.disability_date,
+
+                }
         return vals
 
     def process_line(self, limit=200):
@@ -810,26 +880,28 @@ class ONSCMigrationLine(models.Model):
         Employee = self.env['hr.employee'].suspend_security()
         AltaVL = self.env['onsc.legajo.alta.vl'].suspend_security()
         Contract = self.env['hr.contract'].suspend_security()
-        # TODO revisar que estados procesar (capaz que es solo en borrador)
-        for line in self.search([('state', 'in', ['borrador', 'in_process'])], limit=limit):
+
+        for line in self.search([('state', 'in', ['draft'])], limit=limit):
             try:
                 employee = line._get_employee(Employee)  # existe el funcionario?
                 if not employee:
                     partner = line._create_contact(Partner)
                     cv_digital = line._create_cv(CVDigital, partner)
                     if line.state_move != 'AP':
-                        employee = line.create_employee(Employee, partner, cv_digital)
+                        employee = line._create_employee(Employee, partner, cv_digital)
                         line._create_legajo(employee)
                 if line.state_move == 'AP':
                     line._create_alta_vl(AltaVL, partner)
                 else:
-                    line._create_contract(Contract, employee)
-                # TODO: FALTA BAJA VL
+                    contract = line._create_contract(Contract, employee)
+                    if line.state_move == 'BP':
+                        line.update_baja_vl(contract)
+
                 line.write({'state': 'process'})
                 self.env.cr.commit()
             except Exception as e:
                 self.env.cr.rollback()
-                self.write({
+                line.write({
                     'state': 'error',
                     'error': tools.ustr(e)
                 })
@@ -848,7 +920,6 @@ class ONSCMigrationLine(models.Model):
                     'cv_emissor_country_id': self.country_id.id,
                     'cv_nro_doc': self.doc_nro,
                     'cv_document_type_id': self.doc_type_id.id,
-                    'is_partner_cv': True,
                     'email': self.email,
                     'cv_dnic_name_1': self.first_name,
                     'cv_dnic_name_2': self.second_name,
@@ -856,8 +927,14 @@ class ONSCMigrationLine(models.Model):
                     'cv_dnic_lastname_2': self.second_surname,
                     'cv_dnic_full_name': self.name_ci,
                     'cv_birthdate': self.birth_date,
+                    'cv_first_name': self.first_name,
+                    'cv_second_name': self.second_name,
+                    'cv_last_name_1': self.first_surname,
+                    'cv_last_name_2': self.second_surname,
+                    'is_partner_cv': True,
+
                 }
-                partner = Partner.create(data_partner)
+                partner = Partner.with_context(can_update_contact_cv=True).create(data_partner)
                 # self.write({'partner_id': partner.id})
             else:
                 data_partner = {
@@ -867,8 +944,14 @@ class ONSCMigrationLine(models.Model):
                     'cv_dnic_lastname_2': self.second_surname,
                     'cv_dnic_full_name': self.name_ci,
                     'cv_birthdate': self.birth_date,
+                    'cv_first_name': self.first_name,
+                    'cv_second_name': self.second_name,
+                    'cv_last_name_1': self.first_surname,
+                    'cv_last_name_2': self.second_surname,
+                    'is_partner_cv': True,
+
                 }
-                partner.write(data_partner)
+                partner.with_context(can_update_contact_cv=True).write(data_partner)
             return partner
             # self.write({'partner_id': partner.id})
             # self.env.cr.commit()
@@ -889,7 +972,7 @@ class ONSCMigrationLine(models.Model):
                     'partner_id': partner_id.id,
                     'personal_phone': self.personal_phone,
                     'email': self.email_inst,
-                    'country_id': self.country_uy.id,
+                    'country_id': self.country_id.id,
                     'marital_status_id': self.marital_status_id.id,
                     'country_of_birth_id': self.birth_country_id.id,
                     'uy_citizenship': self.citizenship,
@@ -958,17 +1041,13 @@ class ONSCMigrationLine(models.Model):
                 'resolution_date': self.resolution_date,
                 'resolution_type': self.resolution_type,
                 'retributive_day_id': self.retributive_day_id.id if self.retributive_day_id else False,
-                # 'additional_information': self.additional_information,
                 'norm_id': self.norm_id.id if self.norm_id else False,
                 'call_number': self.call_number,
                 'codigoJornadaFormal': self.retributive_day_formal,
-
-                # 'country_code': cv_digital.country_code,
                 'country_of_birth_id': self.birth_country_id.id if self.birth_country_id else False,
                 'marital_status_id': self.marital_status_id.id if self.marital_status_id else False,
                 'uy_citizenship': self.citizenship,
                 'personal_phone': self.personal_phone,
-                # 'mobile_phone': cv_digital.mobile_phone,
                 'email': self.email,
                 'cv_address_street_id': self.address_street_id.id if self.address_street_id else False,
                 'cv_address_street2_id': self.cv_address_street2_id.id if self.cv_address_street2_id else False,
@@ -987,32 +1066,19 @@ class ONSCMigrationLine(models.Model):
 
     def _create_employee(self, Employee, partner_id, cv_digital):
         try:
-            employee = Employee._get_legajo_employee(self.country_id, self.doc_type_id, partner_id)
+            employee = Employee.search([
+                ('cv_emissor_country_id', '=', self.country_id.id),
+                ('cv_document_type_id', '=', self.doc_type_id.id),
+                ('cv_nro_doc', '=', partner_id.cv_nro_doc),
+            ], limit=1)
+            if not employee:
+                vals = self.suspend_security()._get_info_from_line()
+                vals.update(self._get_info_fromcv(cv_digital))
+                employee = Employee.suspend_security().create(vals)
             return employee
-            # cv = employee.cv_digital_id
-            # if cv_digital:
-            #     vals = employee.with_context(is_migration=True).suspend_security._get_info_fromcv()
-            #     cv.with_context(documentary_validation='cv_address',
-            #                     user_id=self.env.user.id,
-            #                     can_update_contact_cv=True).button_documentary_approve()
-            #     cv.with_context(user_id=self.env.user.id,
-            #                     documentary_validation='marital_status').button_documentary_approve()
-            #     cv.with_context(user_id=self.env.user.id,
-            #                     documentary_validation='civical_credential').button_documentary_approve()
-            #     cv.with_context(user_id=self.env.user.id,
-            #                     documentary_validation='nro_doc').button_documentary_approve()
-            # else:
-            #     vals = self.suspend_security()._get_info_from_line()
-            # vals.update({
-            #     'cv_birthdate': self.cv_birthdate,
-            # })
-            # employee.write(vals)
-            # cv.write({'is_docket': True})
+
         except Exception as e:
             raise ValidationError("No se puedo crear el funcionario: " + tools.ustr(e))
-            # self.env.cr.rollback()
-            # line.write({'state': 'error', 'error': "No se puedo crear el funcionario: " + tools.ustr(e)})
-            # self.env.cr.commit()
 
     def _create_legajo(self, employee):
         return self.env['onsc.legajo']._get_legajo(
@@ -1021,6 +1087,7 @@ class ONSCMigrationLine(models.Model):
             self.inactivity_years)
 
     def _create_contract(self, Contract, employee):
+        Job = self.env['hr.job'].suspend_security()
         vals_contract1 = {
             'employee_id': employee.id,
             'name': employee.name,
@@ -1036,9 +1103,9 @@ class ONSCMigrationLine(models.Model):
             'descriptor2_id': self.descriptor2_id.id,
             'descriptor3_id': self.descriptor3_id.id,
             'descriptor4_id': self.descriptor4_id.id,
-            'position': self.nroPuesto,
-            'workplace': self.nroPlaza,
-            'sec_position': self.secPlaza,
+            'position': self.nro_puesto,
+            'workplace': self.nro_place,
+            'sec_position': self.sec_place,
             'graduation_date': self.graduation_date,
             'reason_description': self.reason_description,
             'norm_code_id': self.norm_id.id,
@@ -1046,23 +1113,27 @@ class ONSCMigrationLine(models.Model):
             'resolution_date': self.resolution_date,
             'resolution_type': self.resolution_type,
             'call_number': self.call_number,
-            'contract_expiration_date': self.contract_expiration_date,
-            'additional_information': self.additional_information,
-            'code_day': self.retributive_day_id.codigoJornada,
-            'description_day': self.retributive_day_id.descripcionJornada,
+            'contract_expiration_date': self.end_date_contract,
+            'code_day': self.retributive_day_formal,
+            'description_day': self.retributive_day_formal_desc,
             'retributive_day_id': self.retributive_day_id.id,
-            'id_alta': self.id_alta,
+            'id_alta': self.id_movimiento,
+            'state_square_id': self.state_place_id.id,
             'wage': 1
         }
-        # AC -> NO AC
-        # no se crea puestos al nuevo contrato, csaliente y centrante sin puesto
-        # ac -> ac, csaliente y centrante con puesto
-        # no ac -> ac csaliente y centrante con puesto
-        if not self.inciso_des_id:
+
+        if not self.type_commission:
             vals_contract1.update({
                 'legajo_state': 'active'
             })
             contracts = Contract.suspend_security().create(vals_contract1)
+            if self.department_id and self.security_job_id:
+                Job.create_job(
+                    contracts,
+                    self.department_id,
+                    self.create_date,
+                    self.security_job_id
+                )
         else:
             vals_contract2 = vals_contract1.copy()
             vals_contract1.update({
@@ -1071,23 +1142,24 @@ class ONSCMigrationLine(models.Model):
             vals_contract2.update({
                 'legajo_state': 'incoming_commission'
             })
-            # DEJAR EN CASO DE QUE HAYA 2 CONTRATOS EN EL C1 EL CAMPO CONTRATO RELACIONADO ENGANCHADO AL CONTRATO 2
-            # SOLO SE CREA EL CONTRATO1 (COMISION SALIENTE) SI EL INCISO ORIGEN ES AC
-            # SINO SOLO VOY POR EL CONTRATO DE COMISION ENTRANTE (SIEMPRE SE CREA)
-            contract1 = Contract.suspend_security().create(vals_contract1)
-            contract2 = Contract.suspend_security().create(vals_contract2)
-            contracts = contract1
-            contracts |= contract2
 
-            if self.inciso_des_id.is_central_administration:  # esto no es del todo valido
-                # ADICIONAR QUE SOLO SI TRAE UO Y SEGURIDAD DE PUESTO
-                # el puesto es solo para el C2 al C1 no interesa, SI HAY UN SOLO CONTRATO ES CONTRA ESE
-                self.env['hr.job'].suspend_security().create_job(
+            if self.inciso_des_id.is_central_administration:
+                contract1 = Contract.suspend_security().create(vals_contract1)
+                vals_contract2.update({
+                    'cs_contract_id': contract1.id
+                })
+            contract2 = Contract.suspend_security().create(vals_contract2)
+            contracts = contract2
+            contracts |= contract1
+
+            if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:
+                Job.create_job(
                     contract2,
                     self.department_id,
                     self.date_start_commission,
                     self.security_job_id
                 )
+
         return contracts
 
     def _get_employee(self, Employee, use_search_count=False):
@@ -1099,3 +1171,26 @@ class ONSCMigrationLine(models.Model):
         if use_search_count:
             return Employee.search_count(args)
         return Employee.search(args, limit=1)
+
+    def update_baja_vl(self, contract_id):
+        data = {
+            'id_deregistration_discharge': self.id_movimiento,
+            'reason_deregistration': self.reason_discharge.reason_description or False,
+            'norm_code_deregistration_id': self.norm_comm_id and self.norm_id.id or False,
+            'type_norm_deregistration': self.norm_comm_type or False,
+            'norm_number_deregistration': self.norm_comm_number or False,
+            'norm_year_deregistration': self.norm_comm_year or False,
+            'norm_article_deregistration': self.norm_comm_article or False,
+            'resolution_description_deregistration': self.resolution_dis_description or False,
+            'resolution_date_deregistration': self.resolution_dis_date or False,
+            'resolution_type_deregistration': self.resolution_dis_type or False,
+            'causes_discharge_id': self.causes_discharge_id and self.causes_discharge_id.id or False,
+            'legajo_state': 'baja',
+        }
+
+        contract_id.suspend_security().write(data)
+        contract_id.suspend_security().deactivate_legajo_contract(
+            date_end=self.end_date
+        )
+
+        return True
