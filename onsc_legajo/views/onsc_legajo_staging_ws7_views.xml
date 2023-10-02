@@ -42,13 +42,13 @@
                             type="object"
                             string="Reprocesar"
                             states="error"/>
-                    <field name="state" widget="statusbar" clickable="0"/>
+                    <field name="state" widget="statusbar"/>
                 </header>
                 <sheet>
                     <group>
                         <group>
                             <field name="should_disable_form_edit" invisible="1"/>
-                            <field name="doc"/>
+                            <field name="doc" readonly="1"/>
                             <field name="primer_nombre" readonly="1"/>
                             <field name="segundo_nombre" readonly="1"/>
                             <field name="primer_ap" readonly="1"/>
@@ -60,14 +60,14 @@
                             <field name="fecha_nac" readonly="1"/>
                             <field name="fecha_ing_adm" readonly="1"/>
                             <field name="cod_mot_baja" readonly="1"/>
-                            <field name="fecha_vig" readonly="0"/>
-                            <field name="fecha_aud" readonly="0"/>
-                            <field name="fecha_desde_vinc" readonly="0"/>
-                            <field name="idPuesto"/>
-                            <field name="nroPlaza"/>
-                            <field name="secPlaza"/>
-                            <field name="programa" readonly="0"/>
-                            <field name="proyecto" readonly="0"/>
+                            <field name="fecha_vig" readonly="1"/>
+                            <field name="fecha_aud" readonly="1"/>
+                            <field name="fecha_desde_vinc" readonly="1"/>
+                            <field name="idPuesto" readonly="1"/>
+                            <field name="nroPlaza" readonly="1"/>
+                            <field name="secPlaza" readonly="1"/>
+                            <field name="programa" readonly="1"/>
+                            <field name="proyecto" readonly="1"/>
                             <field name="aniosInactividad" readonly="1"/>
                             <field name="fechaGraduacion" readonly="1"/>
                         </group>
@@ -194,7 +194,7 @@
                     </group>
                     <notebook>
                         <page string="Log">
-                            <field name="log"/>
+                            <field name="log" readonly="1"/>
                         </page>
                         <page string="Data origen">
                             <field name="info_income" readonly="1"/>

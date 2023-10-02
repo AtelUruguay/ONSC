@@ -88,7 +88,7 @@
         <field name='interval_number'>1</field>
         <field name='interval_type'>days</field>
         <field name="numbercall">-1</field>
-        <field name="active">False</field>
+        <field name="active">True</field>
     </record>
     <record id="legajo_ws7_2" model="ir.cron">
         <field name="name">Legajo: WS7.2 Procesar staging de Movimientos</field>
@@ -98,6 +98,6 @@
         <field name='interval_number'>1</field>
         <field name='interval_type'>days</field>
         <field name="numbercall">-1</field>
-        <field name="active">False</field>
+        <field name="active">True</field>
     </record>
 </odoo>

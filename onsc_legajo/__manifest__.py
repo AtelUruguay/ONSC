@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Legajo',
-    'version': '15.0.10.0.0',
+    'version': '15.0.11.0.0',
     'summary': 'ONSC - Legajo',
     'sequence': 11,
     'description': """
