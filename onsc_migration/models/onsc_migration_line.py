@@ -168,14 +168,7 @@ class ONSCMigration(models.Model):
             descriptor2_id and descriptor2_id[0],
             descriptor4_id and descriptor4_id[0]
         )
-        department_id = row[69] and self.get_department(str(row[69]),
-                                                        operating_unit_id and operating_unit_id[0])
-        retributive_day_id = row[82] and self.get_jornada_retributiva(
-            str(row[82]),
-            program_project_id and program_project_id[0])
-        # retributive_day_formal_id = row[83] and self.get_jornada_retributiva(
-        #     str(row[83]),
-        #     program_project_id and program_project_id[0])
+
         security_job_id = row[87] and self.get_security_job(str(row[87]))
 
         row_dict.update({
@@ -203,11 +196,20 @@ class ONSCMigration(models.Model):
             'occupation_id': occupation_id and occupation_id[0],
             'income_mechanism_id': income_mechanism_id and income_mechanism_id[0],
             'norm_id': norm_id and norm_id[0],
-            'department_id': department_id and department_id[0],
-            'retributive_day_id': retributive_day_id and retributive_day_id[0],
+
             # 'retributive_day_formal_id': retributive_day_formal_id,
             'security_job_id': security_job_id and security_job_id[0],
         })
+        if not row[71]:
+            retributive_day_id = row[82] and self.get_jornada_retributiva(
+                str(row[82]),
+                program_project_id and program_project_id[0])
+
+            department_id = row[69] and self.get_department(str(row[69]),
+                                                            operating_unit_id and operating_unit_id[0])
+            row_dict.update({
+                'retributive_day_id': row[82] and retributive_day_id and retributive_day_id[0],
+                'department_id': department_id and department_id[0], })
 
     def process_binary(self):
         try:
@@ -257,6 +259,8 @@ class ONSCMigration(models.Model):
                         row[77],
                         inciso_des_id and inciso_des_id[0]
                     )
+                    department_id = row[69] and self.get_department(str(row[69]),
+                                                                    operating_unit_des_id and operating_unit_des_id[0])
 
                     row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
                     row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
@@ -279,6 +283,12 @@ class ONSCMigration(models.Model):
                     row_dict['resolution_comm_description'] = row[78]
                     row_dict['resolution_comm_date'] = self.is_datetime(row[79]) and row[79].strftime("%Y-%m-%d")
                     row_dict['resolution_comm_type'] = row[80]
+                    if row[82] and inciso_des_id:
+                        retributive_day_id = self.get_jornada_retributiva(
+                            str(row[82]),
+                            program_project_des_id and program_project_des_id[0])
+                        row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[0]
+                    row_dict['department_id'] = department_id and department_id[0]
                 else:
                     row_dict['end_date_contract'] = self.is_datetime(row[81]) and row[81].strftime("%Y-%m-%d")
 
@@ -364,8 +374,7 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Mecanismo de ingreso no es válido")
         if row[69] and not row_dict['department_id']:
             message_error.append("El campo Unidad organizativa no es válido")
-        if row[82] and not row_dict['retributive_day_id']:
-            message_error.append("El campo Jornada retributiva no es válido")
+
         if row[87] and not row_dict['security_job_id']:
             message_error.append("El campo Seguridad de Puesto no es válido")
         if not row_dict['budget_item_id']:
@@ -1118,9 +1127,6 @@ class ONSCMigrationLine(models.Model):
             'resolution_type': self.resolution_type,
             'call_number': self.call_number,
             'contract_expiration_date': self.end_date_contract,
-            'code_day': self.retributive_day_formal,
-            'description_day': self.retributive_day_formal_desc,
-            'retributive_day_id': self.retributive_day_id.id,
             'id_alta': self.id_movimiento,
             'state_square_id': self.state_place_id.id,
             'wage': 1
@@ -1128,7 +1134,10 @@ class ONSCMigrationLine(models.Model):
 
         if not self.type_commission:
             vals_contract1.update({
-                'legajo_state': 'active'
+                'legajo_state': 'active',
+                'code_day': self.retributive_day_formal,
+                'description_day': self.retributive_day_formal_desc,
+                'retributive_day_id': self.retributive_day_id.id,
             })
             contracts = Contract.suspend_security().create(vals_contract1)
             if self.department_id and self.security_job_id:
@@ -1154,12 +1163,16 @@ class ONSCMigrationLine(models.Model):
                 'workplace': self.nro_place_des,
                 'sec_position': self.sec_place_des,
                 'state_square_id': self.state_place_des_id.id,
+
             })
 
             if self.inciso_des_id.is_central_administration:
                 contract1 = Contract.suspend_security().create(vals_contract1)
                 vals_contract2.update({
-                    'cs_contract_id': contract1.id
+                    'cs_contract_id': contract1.id,
+                    'code_day': self.retributive_day_formal,
+                    'description_day': self.retributive_day_formal_desc,
+                    'retributive_day_id': self.retributive_day_id.id,
                 })
             contract2 = Contract.suspend_security().create(vals_contract2)
             contracts = contract2
