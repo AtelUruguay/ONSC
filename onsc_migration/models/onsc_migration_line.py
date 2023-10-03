@@ -1007,8 +1007,27 @@ class ONSCMigrationLine(models.Model):
                     'cv_address_block': self.address_block,
                     'cv_address_sandlot': self.address_sandlot,
                     'health_provider_id': self.health_provider_id.id,
-
+                    'legajo_gral_info_documentary_validation_state': 'validated',
                 }
+
+                for item in ['disabilitie',
+                             'nro_doc',
+                             'civical_credential',
+                             'marital_status',
+                             'photo',
+                             'gender',
+                             'afro_descendant',
+                             'occupational_health_card',
+                             'medical_aptitude_certificate',
+                             'victim_violent',
+                             'cv_address',
+                             ]:
+                    data.update({
+                        '%s_documentary_validation_state' % item: 'validated',
+                        '%s_write_date' % item: self.create_date,
+                        '%s_documentary_validation_date' % item: self.create_date,
+                        '%s_documentary_user_id' % item: self.create_uid.id,
+                    })
                 return CVDigital.create(data)
             else:
                 data = {'email': self.email_inst,
