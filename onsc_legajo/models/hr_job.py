@@ -176,7 +176,7 @@ class HrJob(models.Model):
         })
         job.onchange_security_job_id()
         if job.security_job_id.is_uo_manager and job.start_date <= fields.Date.today():
-            job.department_id.write({
+            job.department_id.suspend_security().write({
                 'manager_id': job.employee_id.id,
                 'is_manager_reserved': False
             })
@@ -220,7 +220,7 @@ class HrJob(models.Model):
                 [('security_job_id.is_uo_manager', '=', True), ('contract_id.legajo_state', '!=', 'baja'),
                  ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date)]):
             if record.department_id.manager_id.id != record.employee_id.id:
-                record.department_id.write({'manager_id': record.employee_id.id})
+                record.department_id.suspend_security().write({'manager_id': record.employee_id.id})
 
 
 class HrJobRoleLine(models.Model):
