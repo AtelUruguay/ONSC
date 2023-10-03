@@ -284,10 +284,15 @@ class ONSCMigration(models.Model):
                     row_dict['resolution_comm_date'] = self.is_datetime(row[79]) and row[79].strftime("%Y-%m-%d")
                     row_dict['resolution_comm_type'] = row[80]
                     if row[82] and inciso_des_id:
-                        retributive_day_id = self.get_jornada_retributiva(
-                            str(row[82]),
-                            program_project_des_id and program_project_des_id[0])
-                        row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[0]
+                        if inciso_des_id[1] == True:
+                            retributive_day_id = self.get_jornada_retributiva(
+                                str(row[82]),
+                                program_project_des_id and program_project_des_id[0])
+                            row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[0]
+                        elif row_dict['program_project_id']:
+                            retributive_day_id = self.get_jornada_retributiva(
+                                str(row[82]), row_dict['program_project_id'])
+                            row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[0]
                     row_dict['department_id'] = department_id and department_id[0]
                 else:
                     row_dict['end_date_contract'] = self.is_datetime(row[81]) and row[81].strftime("%Y-%m-%d")
@@ -486,7 +491,7 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_inciso(self, code):
-        self._cr.execute("""SELECT id FROM onsc_catalog_inciso WHERE budget_code = %s""", (code,))
+        self._cr.execute("""SELECT id, is_central_administration FROM onsc_catalog_inciso WHERE budget_code = %s""", (code,))
         return self._cr.fetchone()
 
     def get_operating_unit(self, code, inciso_id=None):
