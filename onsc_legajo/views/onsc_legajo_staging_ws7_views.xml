@@ -4,7 +4,7 @@
         <field name="name">onsc.legajo.staging.ws7.tree</field>
         <field name="model">onsc.legajo.staging.ws7</field>
         <field name="arch" type="xml">
-            <tree string="Staging WS7" limit="200" create="0" delete="1">
+            <tree string="Staging WS7" limit="200" create="0" delete="0">
                 <header>
                     <button name="button_in_process"
                             type="object"
