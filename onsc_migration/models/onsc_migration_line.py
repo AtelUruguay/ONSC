@@ -284,7 +284,7 @@ class ONSCMigration(models.Model):
                     row_dict['resolution_comm_date'] = self.is_datetime(row[79]) and row[79].strftime("%Y-%m-%d")
                     row_dict['resolution_comm_type'] = row[80]
                     if row[82] and inciso_des_id:
-                        if inciso_des_id[1] == True:
+                        if inciso_des_id[1] is True:
                             retributive_day_id = self.get_jornada_retributiva(
                                 str(row[82]),
                                 program_project_des_id and program_project_des_id[0])
