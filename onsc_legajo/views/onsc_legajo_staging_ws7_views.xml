@@ -36,7 +36,7 @@
         <field name="name">onsc.legajo.staging.ws7.form</field>
         <field name="model">onsc.legajo.staging.ws7</field>
         <field name="arch" type="xml">
-            <form string="Staging WS7" create="0" delete="1">
+            <form string="Staging WS7" create="0" delete="0">
                 <header>
                     <button name="button_in_process"
                             type="object"

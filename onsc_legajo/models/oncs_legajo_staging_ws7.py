@@ -112,7 +112,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
     def _compute_should_disable_form_edit(self):
         for record in self:
-            record.should_disable_form_edit = record.state in ['na', 'processed']
+            record.should_disable_form_edit = record.state not in ['error']
 
     def button_in_process(self):
         if len(self) == 0:
