@@ -86,6 +86,7 @@
                             <group name="contract_left">
                                 <field name="contract_id" domain="contract_id_domain"
                                        context="{'show_descriptors':True}"
+                                       required="1"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                 />
