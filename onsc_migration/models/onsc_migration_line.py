@@ -1071,7 +1071,7 @@ class ONSCMigrationLine(models.Model):
                         '%s_documentary_validation_date' % item: self.create_date,
                         '%s_documentary_user_id' % item: self.create_uid.id,
                     })
-                return CVDigital.create(data)
+                return CVDigital.with_context(is_migration=True).create(data)
             else:
                 data = {'email': self.email_inst,
                         'marital_status_id': self.marital_status_id and self.marital_status_id.id,
