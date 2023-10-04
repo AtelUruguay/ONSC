@@ -294,9 +294,8 @@ class ONSCMigration(models.Model):
                                 str(row[82]), row_dict['program_project_id'])
                             row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[0]
                     row_dict['department_id'] = department_id and department_id[0]
-                else:
-                    row_dict['end_date_contract'] = self.is_datetime(row[81]) and row[81].strftime("%Y-%m-%d")
 
+                row_dict['end_date_contract'] = self.is_datetime(row[81]) and row[81].strftime("%Y-%m-%d")
                 row_dict['id_movimiento'] = self.is_numeric(row[85]) and int(row[85])
                 row_dict['state_move'] = row[86]
                 if row_dict['state_move'] == 'BP':
