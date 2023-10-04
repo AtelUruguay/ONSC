@@ -970,10 +970,22 @@ class ONSCMigrationLine(models.Model):
                     'cv_last_name_1': self.first_surname,
                     'cv_last_name_2': self.second_surname,
                     'is_partner_cv': True,
-
+                    'address_info_date': self.create_date,
+                    'country_id': self.country_id.id,
+                    'state_id': self.address_state_id.id,
+                    'cv_location_id': self.address_location_id.id,
+                    'street': self.address_street_id.display_name,
+                    'street2': self.address_street2_id.display_name,
+                    'cv_street3': self.address_street3_id.display_name,
+                    'cv_nro_door': self.address_nro_door,
+                    'is_cv_bis': self.address_is_bis,
+                    'cv_apto': self.address_apto,
+                    'cv_address_place': self.address_place,
+                    'cv_address_block': self.address_block,
+                    'cv_address_sandlot': self.address_sandlot,
+                    'zip': self.address_zip,
                 }
                 partner = Partner.with_context(can_update_contact_cv=True).create(data_partner)
-                # self.write({'partner_id': partner.id})
             else:
                 data_partner = {
                     'cv_dnic_name_1': self.first_name,
