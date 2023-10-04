@@ -762,7 +762,8 @@ class ONSCMigrationLine(models.Model):
             for required_field in REQUIRED_FIELDS_COMM_ORIGIN_AC:
                 if not eval('self.%s' % required_field):
                     message_error.append("El campo %s no es válido" % self._fields[required_field].string)
-        for required_field in REQUIRED_FIELDS_COMM_DESTINATION_AC:
+        if self.inciso_des_id.is_central_administration:
+            for required_field in REQUIRED_FIELDS_COMM_DESTINATION_AC:
                 if not eval('self.%s' % required_field):
                     message_error.append("El campo %s no es válido" % self._fields[required_field].string)
 
@@ -899,19 +900,21 @@ class ONSCMigrationLine(models.Model):
         for line in self.search([('state', 'in', ['draft'])], limit=limit):
             try:
                 employee = line._get_employee(Employee)  # existe el funcionario?
+                partner = line._create_contact(Partner)
                 if not employee:
-                    partner = line._create_contact(Partner)
+
                     cv_digital = line._create_cv(CVDigital, partner)
                     if line.state_move != 'AP':
                         employee = line._create_employee(Employee, partner, cv_digital)
                         line._create_legajo(employee)
                         cv_digital.write({'is_docket': True})
+
                 if line.state_move == 'AP':
                     line._create_alta_vl(AltaVL, partner)
-                elif self._check_unicity(Contract, employee):
+                elif line._check_unicity(Contract, employee):
                     contract = line._create_contract(Contract, employee)
                     if line.state_move == 'BP':
-                        line._create_baja_vl(BajaVL,contract,employee,partner)
+                        line._create_baja_vl(BajaVL, contract, employee, partner)
 
                 line.write({'state': 'process'})
                 self.env.cr.commit()
@@ -1188,7 +1191,7 @@ class ONSCMigrationLine(models.Model):
         }
 
         if not self.type_commission:
-            legajo_state = self.state_place_id.code == 'R' and 'reserverd' or 'active'
+            legajo_state = self.state_place_id.code == 'R' and 'reserved' or 'active'
 
             vals_contract1.update({
                 'legajo_state': legajo_state,
