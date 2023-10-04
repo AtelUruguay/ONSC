@@ -927,19 +927,19 @@ class ONSCMigrationLine(models.Model):
     def _check_unicity(self, Contract, employee):
         count = 0
         if not self.type_commission:
-            count = Contract.suspend_security.search_count(
+            count = Contract.suspend_security().search_count(
                 [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto),
                  ('workplace', '=', self.nro_place), ('sec_position', '=', self.sec_place),
                  ('legajo_state', '=', 'active')])
 
         else:
             if self.inciso_des_id.is_central_administration:
-                count = Contract.suspend_security.search_count(
+                count = Contract.suspend_security().search_count(
                     [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto_des),
                      ('workplace', '=', self.nro_place_des), ('sec_position', '=', self.sec_place_des),
                      ('legajo_state', '=', 'incoming_commission')])
             else:
-                count = Contract.suspend_security.search_count(
+                count = Contract.suspend_security().search_count(
                     [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto_des),
                      ('workplace', '=', self.nro_place_des), ('sec_position', '=', self.sec_place_des),
                      ('legajo_state', '=', 'outgoing_commission')])
