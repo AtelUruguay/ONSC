@@ -1206,7 +1206,22 @@ class ONSCMigrationLine(models.Model):
         else:
             vals_contract2 = vals_contract1.copy()
             vals_contract1.update({
-                'legajo_state': 'outgoing_commission'
+                'legajo_state': 'outgoing_commission',
+                'code_day': self.retributive_day_formal,
+                'description_day': self.retributive_day_formal_desc,
+                'retributive_day_id': self.retributive_day_id.id,
+                'graduation_date': self.graduation_date,
+                'income_mechanism_id': self.income_mechanism_id.id,
+                'call_number': self.call_number,
+                'regime_id': self.regime_id.id,
+                'descriptor1_id': self.descriptor1_id.id,
+                'descriptor2_id': self.descriptor2_id.id,
+                'descriptor3_id': self.descriptor3_id.id,
+                'descriptor4_id': self.descriptor4_id.id,
+                'resolution_description': self.resolution_description,
+                'resolution_date': self.resolution_date,
+                'resolution_type': self.resolution_type,
+                'norm_code_id': self.norm_id.id,
             })
             vals_contract2.update({
                 'legajo_state': 'incoming_commission',
