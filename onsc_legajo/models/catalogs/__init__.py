@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from . import onsc_catalog_base
 from . import onsc_legajo_emergency
 from . import onsc_legajo_causes_discharge
 from . import onsc_legajo_document_type

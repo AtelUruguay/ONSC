@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from . import onsc_legajo_regime
 from . import onsc_desempeno_degree
 from . import onsc_desempeno_degree_progress
 from . import onsc_desempeno_development_means
