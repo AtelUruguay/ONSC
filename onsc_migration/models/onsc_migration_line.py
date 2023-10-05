@@ -896,13 +896,13 @@ class ONSCMigrationLine(models.Model):
         AltaVL = self.env['onsc.legajo.alta.vl'].suspend_security()
         Contract = self.env['hr.contract'].suspend_security()
         BajaVL = self.env['onsc.legajo.baja.vl'].suspend_security()
+        Vacante = self.env['onsc.cv.digital.vacante'].suspend_security()
 
         for line in self.search([('state', 'in', ['draft'])], limit=limit):
             try:
                 employee = line._get_employee(Employee)  # existe el funcionario?
                 partner = line._create_contact(Partner)
                 if not employee:
-
                     cv_digital = line._create_cv(CVDigital, partner)
                     if line.state_move != 'AP':
                         employee = line._create_employee(Employee, partner, cv_digital)
@@ -910,7 +910,8 @@ class ONSCMigrationLine(models.Model):
                         cv_digital.write({'is_docket': True})
 
                 if line.state_move == 'AP':
-                    line._create_alta_vl(AltaVL, partner)
+                    cv_digital = line._create_cv(CVDigital, partner)
+                    line._create_alta_vl(AltaVL,Vacante, partner,employee,cv_digital)
                 elif line._check_unicity(Contract, employee):
                     contract = line._create_contract(Contract, employee)
                     if line.state_move == 'BP':
@@ -1085,8 +1086,9 @@ class ONSCMigrationLine(models.Model):
             # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
 
-    def _create_alta_vl(self, AltaVL, partner_id):
+    def _create_alta_vl(self, AltaVL,Vacante, partner_id,employee_id,cv_digital_id):
         try:
+
             data_alta_vl = {
                 'partner_id': partner_id.id,
                 'full_name': partner_id.cv_full_name,
@@ -1134,9 +1136,38 @@ class ONSCMigrationLine(models.Model):
                 'cv_address_street3_id': self.address_street3_id.id,
                 'health_provider_id': self.health_provider_id.id if self.health_provider_id else False,
                 'state': 'pendiente_auditoria_cgn',
-                'country_code': self.country_id.code
+                'country_code': self.country_id.code,
+                'cv_address_state_id': self.address_state_id.id,
+                'cv_address_location_id': self.address_location_id.id,
+                'employee_id': employee_id.id,
+                'cv_digital_id':cv_digital_id.id,
+                'cv_address_nro_door':self.address_nro_door,
+                'cv_address_is_cv_bis': self.address_is_bis,
+                'cv_address_apto': self.address_apto,
+                'cv_address_place': self.address_place,
+                'cv_address_zip': self.address_zip,
+                'cv_address_block': self.address_block,
+                'cv_address_sandlot': self.address_sandlot
+
             }
             altavl = AltaVL.with_context(is_migration=True).create(data_alta_vl)
+            if self.regime_id.presupuesto:
+                data_vac = {'selected':True,
+                            'nroPuesto': self.nro_puesto,
+                            'nroPlaza': self.nro_place,
+                            'estado': self.state_place_id.code,
+                            'Dsc3Id': self.descriptor3_id.code,
+                            'Dsc3Descripcion':self.descriptor3_id.name,
+                            'Dsc4Id': self.descriptor4_id.code,
+                            'Dsc4Descripcion': self.descriptor4_id.name,
+                            'codRegimen': self.regime_id.codRegimen,
+                            'descripcionRegimen': self.regime_id.descripcionRegimen,
+                            'codigoJornadaFormal': self.retributive_day_formal,
+                            'descripcionJornadaFormal': self.retributive_day_formal_desc,
+                            'alta_vl_id':altavl.id
+                            }
+
+                Vacante.create(data_vac)
 
             return altavl
         except Exception as e:
