@@ -294,9 +294,8 @@ class ONSCMigration(models.Model):
                                 str(row[82]), row_dict['program_project_id'])
                             row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[0]
                     row_dict['department_id'] = department_id and department_id[0]
-                else:
-                    row_dict['end_date_contract'] = self.is_datetime(row[81]) and row[81].strftime("%Y-%m-%d")
 
+                row_dict['end_date_contract'] = self.is_datetime(row[81]) and row[81].strftime("%Y-%m-%d")
                 row_dict['id_movimiento'] = self.is_numeric(row[85]) and int(row[85])
                 row_dict['state_move'] = row[86]
                 if row_dict['state_move'] == 'BP':
@@ -491,7 +490,8 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_inciso(self, code):
-        self._cr.execute("""SELECT id, is_central_administration FROM onsc_catalog_inciso WHERE budget_code = %s""", (code,))
+        self._cr.execute("""SELECT id, is_central_administration FROM onsc_catalog_inciso WHERE budget_code = %s""",
+                         (code,))
         return self._cr.fetchone()
 
     def get_operating_unit(self, code, inciso_id=None):
@@ -895,23 +895,26 @@ class ONSCMigrationLine(models.Model):
         Employee = self.env['hr.employee'].suspend_security()
         AltaVL = self.env['onsc.legajo.alta.vl'].suspend_security()
         Contract = self.env['hr.contract'].suspend_security()
+        BajaVL = self.env['onsc.legajo.baja.vl'].suspend_security()
 
         for line in self.search([('state', 'in', ['draft'])], limit=limit):
             try:
                 employee = line._get_employee(Employee)  # existe el funcionario?
+                partner = line._create_contact(Partner)
                 if not employee:
-                    partner = line._create_contact(Partner)
+
                     cv_digital = line._create_cv(CVDigital, partner)
                     if line.state_move != 'AP':
                         employee = line._create_employee(Employee, partner, cv_digital)
                         line._create_legajo(employee)
                         cv_digital.write({'is_docket': True})
+
                 if line.state_move == 'AP':
                     line._create_alta_vl(AltaVL, partner)
-                else:
+                elif line._check_unicity(Contract, employee):
                     contract = line._create_contract(Contract, employee)
                     if line.state_move == 'BP':
-                        line.update_baja_vl(contract)
+                        line._create_baja_vl(BajaVL, contract, employee, partner)
 
                 line.write({'state': 'process'})
                 self.env.cr.commit()
@@ -922,6 +925,28 @@ class ONSCMigrationLine(models.Model):
                     'error': tools.ustr(e)
                 })
                 self.env.cr.commit()
+
+    def _check_unicity(self, Contract, employee):
+        count = 0
+        if not self.type_commission:
+            count = Contract.suspend_security().search_count(
+                [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto),
+                 ('workplace', '=', self.nro_place), ('sec_position', '=', self.sec_place),
+                 ('legajo_state', '=', 'active')])
+
+        else:
+            if self.inciso_des_id.is_central_administration:
+                count = Contract.suspend_security().search_count(
+                    [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto_des),
+                     ('workplace', '=', self.nro_place_des), ('sec_position', '=', self.sec_place_des),
+                     ('legajo_state', '=', 'incoming_commission')])
+            else:
+                count = Contract.suspend_security().search_count(
+                    [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto_des),
+                     ('workplace', '=', self.nro_place_des), ('sec_position', '=', self.sec_place_des),
+                     ('legajo_state', '=', 'outgoing_commission')])
+
+        return count == 0
 
     def _create_contact(self, Partner):
         try:
@@ -962,6 +987,8 @@ class ONSCMigrationLine(models.Model):
                     'cv_address_block': self.address_block,
                     'cv_address_sandlot': self.address_sandlot,
                     'zip': self.address_zip,
+                    'cv_source_info_auth_type': 'dnic',
+
                 }
                 partner = Partner.with_context(can_update_contact_cv=True).create(data_partner)
             else:
@@ -1019,7 +1046,11 @@ class ONSCMigrationLine(models.Model):
                     'cv_address_block': self.address_block,
                     'cv_address_sandlot': self.address_sandlot,
                     'health_provider_id': self.health_provider_id.id,
+                    'cv_source_info_auth_type': 'dnic',
+                    'cv_gender_id': self.gender_id.id,
+                    'institutional_email': self.email_inst,
                     'legajo_gral_info_documentary_validation_state': 'validated',
+
                 }
 
                 for item in ['disabilitie',
@@ -1040,7 +1071,7 @@ class ONSCMigrationLine(models.Model):
                         '%s_documentary_validation_date' % item: self.create_date,
                         '%s_documentary_user_id' % item: self.create_uid.id,
                     })
-                return CVDigital.create(data)
+                return CVDigital.with_context(is_migration=True).create(data)
             else:
                 data = {'email': self.email_inst,
                         'marital_status_id': self.marital_status_id and self.marital_status_id.id,
@@ -1098,11 +1129,12 @@ class ONSCMigrationLine(models.Model):
                 'uy_citizenship': self.citizenship,
                 'personal_phone': self.personal_phone,
                 'email': self.email,
-                'cv_address_street_id': self.address_street_id.id if self.address_street_id else False,
-                'cv_address_street2_id': self.address_street2_id.id if self.address_street2_id else False,
-                'cv_address_street3_id': self.address_street3_id.id if self.address_street3_id else False,
+                'cv_address_street_id': self.address_street_id.id,
+                'cv_address_street2_id': self.address_street2_id.id,
+                'cv_address_street3_id': self.address_street3_id.id,
                 'health_provider_id': self.health_provider_id.id if self.health_provider_id else False,
-                # 'mass_upload_id': self.id,
+                'state': 'pendiente_auditoria_cgn',
+                'country_code': self.country_id.code
             }
             altavl = AltaVL.with_context(is_migration=True).create(data_alta_vl)
 
@@ -1141,27 +1173,17 @@ class ONSCMigrationLine(models.Model):
             'employee_id': employee.id,
             'name': employee.name,
             'date_start': self.date_start or fields.Date.today(),
+            'eff_date': self.date_start or fields.Date.today(),
             'inciso_id': self.inciso_id.id,
             'operating_unit_id': self.operating_unit_id.id,
-            'income_mechanism_id': self.income_mechanism_id.id,
             'program': self.program_project_id.programa,
             'project': self.program_project_id.proyecto,
-            'regime_id': self.regime_id.id,
             'occupation_id': self.occupation_id.id,
-            'descriptor1_id': self.descriptor1_id.id,
-            'descriptor2_id': self.descriptor2_id.id,
-            'descriptor3_id': self.descriptor3_id.id,
-            'descriptor4_id': self.descriptor4_id.id,
             'position': self.nro_puesto,
             'workplace': self.nro_place,
             'sec_position': self.sec_place,
-            'graduation_date': self.graduation_date,
             'reason_description': self.reason_description,
-            'norm_code_id': self.norm_id.id,
-            'resolution_description': self.resolution_description,
-            'resolution_date': self.resolution_date,
-            'resolution_type': self.resolution_type,
-            'call_number': self.call_number,
+
             'contract_expiration_date': self.end_date_contract,
             'id_alta': self.id_movimiento,
             'state_square_id': self.state_place_id.id,
@@ -1169,11 +1191,25 @@ class ONSCMigrationLine(models.Model):
         }
 
         if not self.type_commission:
+            legajo_state = self.state_place_id.code == 'R' and 'reserved' or 'active'
+
             vals_contract1.update({
-                'legajo_state': 'active',
+                'legajo_state': legajo_state,
                 'code_day': self.retributive_day_formal,
                 'description_day': self.retributive_day_formal_desc,
                 'retributive_day_id': self.retributive_day_id.id,
+                'graduation_date': self.graduation_date,
+                'income_mechanism_id': self.income_mechanism_id.id,
+                'call_number': self.call_number,
+                'regime_id': self.regime_id.id,
+                'descriptor1_id': self.descriptor1_id.id,
+                'descriptor2_id': self.descriptor2_id.id,
+                'descriptor3_id': self.descriptor3_id.id,
+                'descriptor4_id': self.descriptor4_id.id,
+                'resolution_description': self.resolution_description,
+                'resolution_date': self.resolution_date,
+                'resolution_type': self.resolution_type,
+                'norm_code_id': self.norm_id.id,
             })
             contracts = Contract.suspend_security().create(vals_contract1)
             if self.department_id and self.security_job_id:
@@ -1186,7 +1222,22 @@ class ONSCMigrationLine(models.Model):
         else:
             vals_contract2 = vals_contract1.copy()
             vals_contract1.update({
-                'legajo_state': 'outgoing_commission'
+                'legajo_state': 'outgoing_commission',
+                'code_day': self.retributive_day_formal,
+                'description_day': self.retributive_day_formal_desc,
+                'retributive_day_id': self.retributive_day_id.id,
+                'graduation_date': self.graduation_date,
+                'income_mechanism_id': self.income_mechanism_id.id,
+                'call_number': self.call_number,
+                'regime_id': self.regime_id.id,
+                'descriptor1_id': self.descriptor1_id.id,
+                'descriptor2_id': self.descriptor2_id.id,
+                'descriptor3_id': self.descriptor3_id.id,
+                'descriptor4_id': self.descriptor4_id.id,
+                'resolution_description': self.resolution_description,
+                'resolution_date': self.resolution_date,
+                'resolution_type': self.resolution_type,
+                'norm_code_id': self.norm_id.id,
             })
             vals_contract2.update({
                 'legajo_state': 'incoming_commission',
@@ -1194,15 +1245,19 @@ class ONSCMigrationLine(models.Model):
                 'operating_unit_id': self.operating_unit_des_id.id,
                 'program': self.program_project_des_id.programa,
                 'project': self.program_project_des_id.proyecto,
-                'regime_id': self.regime_des_id.id,
+                'commission_regime_id': self.regime_commission_id.id,
                 'position': self.nro_puesto_des,
                 'workplace': self.nro_place_des,
                 'sec_position': self.sec_place_des,
                 'state_square_id': self.state_place_des_id.id,
-
+                'eff_date': self.date_start or fields.Date.today(),
+                'resolution_description': self.resolution_comm_description,
+                'resolution_date': self.resolution_comm_date,
+                'resolution_type': self.resolution_comm_type,
+                'norm_code_id': self.norm_comm_id.id,
             })
 
-            if self.inciso_des_id.is_central_administration:
+            if self.inciso_id.is_central_administration:
                 contract1 = Contract.suspend_security().create(vals_contract1)
                 vals_contract2.update({
                     'cs_contract_id': contract1.id,
@@ -1212,7 +1267,8 @@ class ONSCMigrationLine(models.Model):
                 })
             contract2 = Contract.suspend_security().create(vals_contract2)
             contracts = contract2
-            contracts |= contract1
+            if not self.inciso_des_id.is_central_administration:
+                contracts |= contract1
 
             if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:
                 Job.create_job(
@@ -1234,25 +1290,24 @@ class ONSCMigrationLine(models.Model):
             return Employee.search_count(args)
         return Employee.search(args, limit=1)
 
-    def update_baja_vl(self, contract_id):
+    def _create_baja_vl(self, BajaVL, contract_id, employee_id, partner_id):
         data = {
-            'id_deregistration_discharge': self.id_movimiento,
-            'reason_deregistration': self.reason_discharge or False,
-            'norm_code_deregistration_id': self.norm_comm_id and self.norm_id.id or False,
-            'type_norm_deregistration': self.norm_comm_type or False,
-            'norm_number_deregistration': self.norm_comm_number or False,
-            'norm_year_deregistration': self.norm_comm_year or False,
-            'norm_article_deregistration': self.norm_comm_article or False,
-            'resolution_description_deregistration': self.resolution_dis_description or False,
-            'resolution_date_deregistration': self.resolution_dis_date or False,
-            'resolution_type_deregistration': self.resolution_dis_type or False,
-            'causes_discharge_id': self.causes_discharge_id and self.causes_discharge_id.id or False,
-            'legajo_state': 'baja',
+            'employee_id': employee_id.id,
+            'contract_id': contract_id.id,
+            'end_date': self.end_date,
+            'causes_discharge_id': self.causes_discharge_id.id,
+            'id_baja': self.id_movimiento,
+            'partner_id': partner_id.id,
+            'inciso_id': self.inciso_id.id,
+            'operating_unit_id': self.operating_unit_des_id.id,
+            'reason_description': self.reason_discharge,
+            'norm_id': self.norm_dis_id.id,
+            'resolution_description': self.resolution_dis_description,
+            'resolution_date': self.resolution_dis_date,
+            'resolution_type': self.resolution_dis_type,
+            'state': 'pendiente_auditoria_cgn'
         }
 
-        contract_id.suspend_security().write(data)
-        contract_id.suspend_security().deactivate_legajo_contract(
-            date_end=self.end_date
-        )
+        BajaVL.create(data)
 
         return True
