@@ -18,6 +18,10 @@ class ONSCLegajoRegime(models.Model):
     presupuesto = fields.Boolean(string="Presupuesto")
     vigente = fields.Boolean(string="Vigente")
     active = fields.Boolean(string="Activo", default=True)
+    
+    is_public_employee = fields.Boolean(string='Funcionario público')
+    is_manager = fields.Boolean(string='Responsable UO')
+    is_legajo = fields.Boolean(string='Legajo')
 
     _sql_constraints = [
         ('codRegimen_uniq', 'unique("codRegimen")', u'El código de régimen debe ser único'),
