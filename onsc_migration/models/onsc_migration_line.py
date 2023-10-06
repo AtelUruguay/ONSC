@@ -1,8 +1,9 @@
 import base64
+import csv
 import io
 import logging
+from datetime import datetime
 
-import openpyxl as openpyxl
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import models, fields, tools
@@ -89,7 +90,7 @@ class ONSCMigration(models.Model):
             'first_surname': row[5] and str(row[5]),
             'second_surname': row[6] and str(row[6]),
             'name_ci': row[7] and str(row[7]),
-            'birth_date': self.is_datetime(row[9]) and row[9].strftime("%Y-%m-%d"),
+            'birth_date': self.convert_datetime(row[9]),
             'sex': row[11] and str(row[11]),
             'citizenship': row[13],
             'crendencial_serie': row[14] and str(row[14]),
@@ -104,19 +105,19 @@ class ONSCMigration(models.Model):
             'address_zip': row[28] and str(row[28]),
             'address_block': row[29] and str(row[29]),
             'address_sandlot': row[30] and str(row[30]),
-            'date_income_public_administration': self.is_datetime(row[32]) and row[32].strftime("%Y-%m-%d"),
-            'inactivity_years': row[33],
-            'graduation_date': self.is_datetime(row[34]) and row[34].strftime("%Y-%m-%d"),
-            'date_start': self.is_datetime(row[35]) and row[35].strftime("%Y-%m-%d"),
+            'date_income_public_administration': self.convert_datetime(row[32]),
+            'inactivity_years': self.convert_int(row[33]),
+            'graduation_date': self.convert_datetime(row[34]),
+            'date_start': self.convert_datetime(row[35]),
             'nro_puesto': row[45] and str(row[45]),
             'nro_place': row[46] and str(row[46]),
             'sec_place': row[47] and str(row[47]),
             'call_number': row[51] and str(row[51]),
             'reason_description': row[52] and str(row[52]),
             'resolution_description': row[57],
-            'resolution_date': self.is_datetime(row[58]) and row[58].strftime("%Y-%m-%d"),
+            'resolution_date': self.convert_datetime(row[58]),
             'resolution_type': row[59],
-            'retributive_day_formal': row[83],
+            'retributive_day_formal': self.convert_int(row[83]),
             'retributive_day_formal_desc': row[84], })
 
     def _set_m2o_values(self, row_dict, row):
@@ -132,7 +133,7 @@ class ONSCMigration(models.Model):
             birth_country_id = None
         address_state_id = row[19] and self.get_country_state(
             str(row[19]), country_id and country_id[0])
-        address_location_id = self.is_numeric(row[20]) and self.get_location(
+        address_location_id = self.get_location(
             str(row[20]), address_state_id and address_state_id[0])
         address_street_id = row[21] and self.get_street(str(row[21]),
                                                         address_location_id and address_location_id[0])
@@ -156,9 +157,9 @@ class ONSCMigration(models.Model):
         income_mechanism_id = row[50] and self.get_income_mechanism(str(row[50]))
         norm_id = row[53] and self.get_norm(
             str(row[53]),
-            row[54],
-            row[55],
-            row[56],
+            self.convert_int(row[54]),
+            self.convert_int(row[55]),
+            self.convert_int(row[56]),
             inciso_id and inciso_id[0]
         )
         budget_item_id = self.get_budget_item(
@@ -217,120 +218,130 @@ class ONSCMigration(models.Model):
             if not self.document_file:
                 return
             row_number = 0
-            excel_data = io.BytesIO(base64.b64decode(self.document_file))
-            workbook = openpyxl.load_workbook(excel_data, data_only=True)
-            sheet = workbook.active
 
-            for row in sheet.iter_rows(min_row=2, values_only=True):
-                row_number += 1
+            # Obtiene el contenido del archivo CSV en una cadena binaria
+            csv_data = base64.b64decode(self.document_file)
 
-                if not row[0] and not row[1] and not row[2]:
-                    break
+            # Abre el archivo CSV utilizando la biblioteca csv
+            with io.StringIO(csv_data.decode('utf-8')) as csv_file:
+                csv_reader = csv.reader(csv_file, delimiter=';')
 
-                row_dict = {}
-                self._set_base_vals(row_dict, row)
-                self._set_m2o_values(row_dict, row)
+                # Ignora la primera fila que contiene los nombres de las columnas
+                next(csv_reader, None)
 
-                if row_dict['norm_id']:
-                    row_dict.update({
-                        'norm_type': row[53] and str(row[53]),
-                        'norm_number': row[54],
-                        'norm_year': row[55],
-                        'norm_article': row[56], })
+                for row in csv_reader:
+                    row_number += 1
 
-                # SI ES COMISION
-                if row[71]:
-                    inciso_des_id = row[60] and self.get_inciso(str(row[60]))
-                    operating_unit_des_id = row[61] and self.get_operating_unit(
-                        str(row[61]),
-                        inciso_des_id and inciso_des_id[0])
-                    program_project_des_id = self.get_office(
-                        str(row[62]),
-                        str(row[63]),
-                        operating_unit_des_id and operating_unit_des_id[0]
-                    )
-                    regime_des_id = row[64] and self.get_regime(str(row[64]))
-                    state_place_des_id = row[68] and self.get_state_place(str(row[68]))
-                    regime_commission_id = row[72] and self.get_commision_regime(str(row[72]))
-                    norm_comm_id = row[74] and self.get_norm(
-                        str(row[74]),
-                        row[75],
-                        row[76],
-                        row[77],
-                        inciso_des_id and inciso_des_id[0]
-                    )
-                    department_id = row[69] and self.get_department(str(row[69]),
-                                                                    operating_unit_des_id and operating_unit_des_id[0])
+                    if not row[0] and not row[1] and not row[2]:
+                        break
 
-                    row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
-                    row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
-                    row_dict['program_project_des_id'] = program_project_des_id and program_project_des_id[0]
-                    row_dict['regime_des_id'] = regime_des_id and regime_des_id[0]
-                    row_dict['nro_puesto_des'] = row[65]
-                    row_dict['nro_place_des'] = row[66]
-                    row_dict['sec_place_des'] = row[67]
-                    row_dict['state_place_des_id'] = state_place_des_id and state_place_des_id[0]
-                    row_dict['date_start_commission'] = self.is_datetime(row[70]) and row[70].strftime("%Y-%m-%d")
-                    row_dict['type_commission'] = row[71]
-                    row_dict['regime_commission_id'] = regime_commission_id and regime_commission_id[0]
-                    row_dict['reason_commision'] = row[73]
-                    row_dict['norm_comm_id'] = norm_comm_id and norm_comm_id[0]
-                    if norm_comm_id:
-                        row_dict['norm_comm_type'] = row[74]
-                        row_dict['norm_comm_number'] = row[75]
-                        row_dict['norm_comm_year'] = row[76]
-                        row_dict['norm_comm_article'] = row[77]
-                    row_dict['resolution_comm_description'] = row[78]
-                    row_dict['resolution_comm_date'] = self.is_datetime(row[79]) and row[79].strftime("%Y-%m-%d")
-                    row_dict['resolution_comm_type'] = row[80]
-                    if row[82] and inciso_des_id:
-                        if inciso_des_id[1] is True:
-                            retributive_day_id = self.get_jornada_retributiva(
-                                str(row[82]),
-                                program_project_des_id and program_project_des_id[0])
-                            row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[0]
-                        elif row_dict['program_project_id']:
-                            retributive_day_id = self.get_jornada_retributiva(
-                                str(row[82]), row_dict['program_project_id'])
-                            row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[0]
-                    row_dict['department_id'] = department_id and department_id[0]
+                    row_dict = {}
+                    self._set_base_vals(row_dict, row)
+                    self._set_m2o_values(row_dict, row)
 
-                row_dict['end_date_contract'] = self.is_datetime(row[81]) and row[81].strftime("%Y-%m-%d")
-                row_dict['id_movimiento'] = self.is_numeric(row[85]) and int(row[85])
-                row_dict['state_move'] = row[86]
-                if row_dict['state_move'] == 'BP':
-                    norm_dis_id = row[91] and self.get_norm(
-                        str(row[91]),
-                        row[92],
-                        row[93],
-                        row[94],
-                        row_dict.get('inciso_id')
-                    )
-                    row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
-                    if norm_dis_id:
-                        row_dict['norm_dis_type'] = row[91]
-                        row_dict['norm_dis_number'] = row[92]
-                        row_dict['norm_dis_year'] = row[93]
-                        row_dict['norm_dis_article'] = row[94]
+                    if row_dict['norm_id']:
+                        row_dict.update({
+                            'norm_type': row[53] and str(row[53]),
+                            'norm_number': self.convert_int(row[54]),
+                            'norm_year': self.convert_int(row[55]),
+                            'norm_article': self.convert_int(row[56]), })
 
-                    causes_discharge_id = row[88] and self.get_causes_discharge(str(row[88]))
-                    row_dict['end_date'] = self.is_datetime(row[89]) and row[89].strftime("%Y-%m-%d")
-                    row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0]
-                    row_dict['reason_discharge'] = row[90]
-                    row_dict['resolution_dis_description'] = row[5]
-                    row_dict['resolution_dis_date'] = self.is_datetime(row[96]) and row[96].strftime("%Y-%m-%d")
-                    row_dict['resolution_dis_type'] = row[97]
+                    # SI ES COMISION
+                    if row[71]:
+                        inciso_des_id = row[60] and self.get_inciso(str(row[60]))
+                        operating_unit_des_id = row[61] and self.get_operating_unit(
+                            str(row[61]),
+                            inciso_des_id and inciso_des_id[0])
+                        program_project_des_id = self.get_office(
+                            str(row[62]),
+                            str(row[63]),
+                            operating_unit_des_id and operating_unit_des_id[0]
+                        )
+                        regime_des_id = row[64] and self.get_regime(str(row[64]))
+                        state_place_des_id = row[68] and self.get_state_place(str(row[68]))
+                        regime_commission_id = row[72] and self.get_commision_regime(str(row[72]))
+                        norm_comm_id = row[74] and self.get_norm(
+                            str(row[74]),
+                            self.convert_int(row[75]),
+                            self.convert_int(row[76]),
+                            self.convert_int(row[77]),
+                            inciso_des_id and inciso_des_id[0]
+                        )
+                        department_id = row[69] and self.get_department(str(row[69]),
+                                                                        operating_unit_des_id and operating_unit_des_id[
+                                                                            0])
 
-                cleaned_data = {}
-                for clave, valor in row_dict.items():
-                    if valor is not None and valor != '' and valor is not False:
-                        cleaned_data[clave] = valor.strip() if isinstance(valor, str) else valor
+                        row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
+                        row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
+                        row_dict['program_project_des_id'] = program_project_des_id and program_project_des_id[0]
+                        row_dict['regime_des_id'] = regime_des_id and regime_des_id[0]
+                        row_dict['nro_puesto_des'] = row[65]
+                        row_dict['nro_place_des'] = row[66]
+                        row_dict['sec_place_des'] = row[67]
+                        row_dict['state_place_des_id'] = state_place_des_id and state_place_des_id[0]
+                        row_dict['date_start_commission'] = self.convert_datetime(row[70])
+                        row_dict['type_commission'] = row[71]
+                        row_dict['regime_commission_id'] = regime_commission_id and regime_commission_id[0]
+                        row_dict['reason_commision'] = row[73]
+                        row_dict['norm_comm_id'] = norm_comm_id and norm_comm_id[0]
+                        if norm_comm_id:
+                            row_dict['norm_comm_type'] = row[74]
+                            row_dict['norm_comm_number'] = self.convert_int(row[75])
+                            row_dict['norm_comm_year'] = self.convert_int(row[76])
+                            row_dict['norm_comm_article'] = self.convert_int(row[77])
+                        row_dict['resolution_comm_description'] = row[78]
+                        row_dict['resolution_comm_date'] = self.convert_datetime(row[79])
+                        row_dict['resolution_comm_type'] = row[80]
+                        if row[82] and inciso_des_id:
+                            if inciso_des_id[1] is True:
+                                retributive_day_id = self.get_jornada_retributiva(
+                                    str(row[82]),
+                                    program_project_des_id and program_project_des_id[0])
+                                row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[
+                                    0]
+                            elif row_dict['program_project_id']:
+                                retributive_day_id = self.get_jornada_retributiva(
+                                    str(row[82]), row_dict['program_project_id'])
+                                row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[
+                                    0]
+                        row_dict['department_id'] = department_id and department_id[0]
 
-                new_line = MigrationLine.create(cleaned_data)
-                message_error = self.validate(row, row_dict)
-                new_line.validate_line(message_error)
-                self.env.cr.commit()
-            self.write({'state': 'process'})
+                    row_dict['end_date_contract'] = self.convert_datetime(row[81])
+                    row_dict['id_movimiento'] = self.convert_int(row[85])
+                    row_dict['state_move'] = row[86]
+                    if row_dict['state_move'] == 'BP':
+                        norm_dis_id = row[91] and self.get_norm(
+                            str(row[91]),
+                            self.convert_int(row[92]),
+                            self.convert_int(row[93]),
+                            self.convert_int(row[94]),
+                            row_dict.get('inciso_id')
+                        )
+                        row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
+                        if norm_dis_id:
+                            row_dict['norm_dis_type'] = row[91]
+                            row_dict['norm_dis_number'] = self.convert_int(row[92])
+                            row_dict['norm_dis_year'] = self.convert_int(row[93])
+                            row_dict['norm_dis_article'] = self.convert_int(row[94])
+
+                        causes_discharge_id = row[88] and self.get_causes_discharge(str(row[88]))
+                        row_dict['end_date'] = self.convert_datetime(row[89])
+                        row_dict['causes_discharge_id'] = causes_discharge_id and causes_discharge_id[0]
+                        row_dict['reason_discharge'] = row[90]
+                        row_dict['resolution_dis_description'] = row[5]
+                        row_dict['resolution_dis_date'] = self.convert_datetime(row[96])
+                        row_dict['resolution_dis_type'] = row[97]
+
+                    cleaned_data = {}
+                    for clave, valor in row_dict.items():
+                        if valor is not None and valor != '' and valor is not False:
+                            cleaned_data[clave] = valor.strip() if isinstance(valor, str) else valor
+
+                    new_line = MigrationLine.create(cleaned_data)
+                    message_error = self.validate(row, row_dict)
+                    new_line.validate_line(message_error)
+                    self.env.cr.commit()
+                    self.write({'state': 'process'})
             return True
 
         except Exception as e:
@@ -438,11 +449,24 @@ class ONSCMigration(models.Model):
         if row[72] and not row_dict['regime_commission_id']:
             message_error.append("El campo Régimen de la comisión no es válido")
 
-    def is_datetime(self, row):
-        return type(row).__name__ == 'datetime' or False
+    def convert_datetime(self, date_str):
+        try:
+            # Convertir la cadena a un objeto datetime
+            fecha_obj = datetime.strptime(date_str, "%d/%m/%Y")
 
-    def is_numeric(self, row):
-        return type(row).__name__ == 'int' or False
+            # Convertir el objeto datetime a una cadena en formato "yyyy-mm-dd"
+            fecha_formateada = fecha_obj.strftime("%Y-%m-%d")
+            return fecha_formateada
+
+        except ValueError:
+            return False
+
+    def convert_int(self, row):
+        try:
+            entero = int(row)
+            return entero
+        except ValueError:
+            return False
 
     def check_line(self, doc_nro, nro_puesto, nro_place, sec_place):
         self._cr.execute(
@@ -537,10 +561,9 @@ class ONSCMigration(models.Model):
         return self._cr.fetchone()
 
     def get_norm(self, tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id=None):
-        if self.is_numeric(numeroNorma) and self.is_numeric(anioNorma) and self.is_numeric(articuloNorma):
-            self._cr.execute(
-                """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel WHERE "tipoNormaSigla" = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s and onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""",
-                (tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id))
+        self._cr.execute(
+            """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel WHERE "tipoNormaSigla" = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s and onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""",
+            (tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id))
         return self._cr.fetchone()
 
     def get_budget_item(self, row, descriptor3_id=None, descriptor1_id=None, descriptor2_id=None, descriptor4_id=None):
