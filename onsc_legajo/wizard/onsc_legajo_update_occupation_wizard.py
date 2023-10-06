@@ -9,7 +9,7 @@ class ONSCLegajoUpdateOccupationWizard(models.TransientModel):
 
     date = fields.Date(string="Fecha de actualización", required=True, default=lambda s: fields.Date.today())
     contract_id = fields.Many2one('hr.contract', string='Contrato')
-    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
+    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', required=True)
 
     def action_update_occupation(self):
         self.contract_id.suspend_security().write({

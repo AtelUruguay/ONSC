@@ -70,7 +70,7 @@ class HrContract(models.Model):
                                                domain="[('inciso_id','=', inciso_origin_id)]",
                                                history=True)
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
-    sec_position = fields.Char(string="Sec Plaza",  history=True)
+    sec_position = fields.Char(string="Sec Plaza", history=True)
     state_square_id = fields.Many2one(
         'onsc.legajo.state.square',
         string='Estado plaza',
@@ -99,6 +99,7 @@ class HrContract(models.Model):
     project = fields.Char(string='Proyecto', history=True)
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', history=True)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', history=True)
+    is_occupation_visible = fields.Boolean(compute='_compute_is_occupation_visible')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1', history=True)
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2', history=True)
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3', history=True)
@@ -225,12 +226,18 @@ class HrContract(models.Model):
                                                ('end_date', '=', False)]
                 self.operating_unit_id_domain = json.dumps(domain)
 
+    def _compute_is_occupation_visible(self):
+        for rec in self:
+            cond1 = rec.inciso_id.budget_code == '5' and rec.operating_unit_id.budget_code in ['13', '5']
+            cond2 = rec.regime_id.is_public_employee and rec.descriptor1_id.is_occupation_required
+            rec.is_occupation_visible = cond1 and cond2
+
     def _compute_show_button_update_occupation(self):
         for rec in self:
             is_valid_group = self.env.user.has_group(
                 'onsc_legajo.group_legajo_editar_ocupacion_contrato')
             is_valid_state = rec.legajo_state != 'baja'
-            rec.show_button_update_occupation = is_valid_group and is_valid_state
+            rec.show_button_update_occupation = is_valid_group and is_valid_state and rec.is_occupation_visible
 
     def _compute_is_mi_legajo(self):
         for rec in self:
