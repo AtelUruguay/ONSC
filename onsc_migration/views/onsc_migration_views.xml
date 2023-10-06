@@ -2,7 +2,7 @@
 <odoo>
      <record id="onsc_migrations_search" model="ir.ui.view">
         <field name="name">onsc.migration.search</field>
-        <field name="model">onsc.migration.</field>
+        <field name="model">onsc.migration</field>
         <field name="arch" type="xml">
             <search string="Migracion">
                 <field name="document_filename"/>
