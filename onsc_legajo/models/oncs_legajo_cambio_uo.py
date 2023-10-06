@@ -107,7 +107,6 @@ class ONSCLegajoCambioUO(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
-    is_occupation_required = fields.Boolean(compute='_compute_is_occupation_required', store=True)
 
     attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'cambio_uo_id',
                                                       string='Documentos adjuntos')
@@ -183,14 +182,6 @@ class ONSCLegajoCambioUO(models.Model):
             else:
                 domain = [('is_uo_manager', 'in', [True, False])]
             rec.security_job_id_domain = json.dumps(domain)
-
-    @api.depends('contract_id')
-    def _compute_is_occupation_required(self):
-        for rec in self:
-            contract = rec.contract_id
-            cond1 = contract.inciso_id.budget_code == '5' and contract.operating_unit_id.budget_code in ['13', '5']
-            cond2 = contract.regime_id.is_public_employee and contract.descriptor1_id.is_occupation_required
-            rec.is_occupation_required = cond1 and cond2
 
     @api.constrains("date_start", "contract_id", "job_id")
     def _check_date(self):
