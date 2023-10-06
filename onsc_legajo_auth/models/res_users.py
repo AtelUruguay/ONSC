@@ -13,7 +13,7 @@ class ResUsers(models.Model):
         user_id._update_employee_user()
         return user_id
 
-    def _update_employee_user(self, values):
+    def _update_employee_user(self):
         employee = self.env['hr.employee'].sudo().search([
             ('cv_emissor_country_id', '=', self.cv_emissor_country_id.id),
             ('cv_document_type_id', '=', self.cv_document_type_id.id),
