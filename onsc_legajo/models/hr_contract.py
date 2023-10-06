@@ -226,12 +226,15 @@ class HrContract(models.Model):
                                                ('end_date', '=', False)]
                 self.operating_unit_id_domain = json.dumps(domain)
 
+    @api.depends('inciso_id', 'operating_unit_id', 'regime_id', 'descriptor1_id')
     def _compute_is_occupation_visible(self):
         for rec in self:
             cond1 = rec.inciso_id.budget_code == '5' and rec.operating_unit_id.budget_code in ['13', '5']
-            cond2 = rec.regime_id.is_public_employee and rec.descriptor1_id.is_occupation_required
+            cond2 = rec.regime_id.is_public_employee and (
+                        rec.descriptor1_id.is_occupation_required or not rec.descriptor1_id.id)
             rec.is_occupation_visible = cond1 and cond2
 
+    @api.depends('inciso_id', 'operating_unit_id', 'regime_id', 'descriptor1_id', 'legajo_state')
     def _compute_show_button_update_occupation(self):
         for rec in self:
             is_valid_group = self.env.user.has_group(

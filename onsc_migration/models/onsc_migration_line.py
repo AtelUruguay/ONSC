@@ -1086,7 +1086,7 @@ class ONSCMigrationLine(models.Model):
                         '%s_documentary_validation_date' % item: self.create_date,
                         '%s_documentary_user_id' % item: self.create_uid.id,
                     })
-                cv_digital.write(data)
+                cv_digital.with_context(no_update_header_documentary_validation = True).write(data)
                 return cv_digital
         except Exception as e:
             raise ValidationError("No se puedo crear el CV: " + tools.ustr(e))
