@@ -911,7 +911,7 @@ class ONSCMigrationLine(models.Model):
 
                 if line.state_move == 'AP':
                     cv_digital = line._create_cv(CVDigital, partner)
-                    line._create_alta_vl(AltaVL,Vacante, partner,employee,cv_digital)
+                    line._create_alta_vl(AltaVL, Vacante, partner, employee, cv_digital)
                 elif line._check_unicity(Contract, employee):
                     contract = line._create_contract(Contract, employee)
                     if line.state_move == 'BP':
@@ -1086,7 +1086,7 @@ class ONSCMigrationLine(models.Model):
             # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
 
-    def _create_alta_vl(self, AltaVL,Vacante, partner_id,employee_id,cv_digital_id):
+    def _create_alta_vl(self, AltaVL, Vacante, partner_id, employee_id, cv_digital_id):
         try:
 
             data_alta_vl = {
@@ -1140,8 +1140,8 @@ class ONSCMigrationLine(models.Model):
                 'cv_address_state_id': self.address_state_id.id,
                 'cv_address_location_id': self.address_location_id.id,
                 'employee_id': employee_id.id,
-                'cv_digital_id':cv_digital_id.id,
-                'cv_address_nro_door':self.address_nro_door,
+                'cv_digital_id': cv_digital_id.id,
+                'cv_address_nro_door': self.address_nro_door,
                 'cv_address_is_cv_bis': self.address_is_bis,
                 'cv_address_apto': self.address_apto,
                 'cv_address_place': self.address_place,
@@ -1152,19 +1152,19 @@ class ONSCMigrationLine(models.Model):
             }
             altavl = AltaVL.with_context(is_migration=True).create(data_alta_vl)
             if self.regime_id.presupuesto:
-                data_vac = {'selected':True,
+                data_vac = {'selected': True,
                             'nroPuesto': self.nro_puesto,
                             'nroPlaza': self.nro_place,
                             'estado': self.state_place_id.code,
                             'Dsc3Id': self.descriptor3_id.code,
-                            'Dsc3Descripcion':self.descriptor3_id.name,
+                            'Dsc3Descripcion': self.descriptor3_id.name,
                             'Dsc4Id': self.descriptor4_id.code,
                             'Dsc4Descripcion': self.descriptor4_id.name,
                             'codRegimen': self.regime_id.codRegimen,
                             'descripcionRegimen': self.regime_id.descripcionRegimen,
                             'codigoJornadaFormal': self.retributive_day_formal,
                             'descripcionJornadaFormal': self.retributive_day_formal_desc,
-                            'alta_vl_id':altavl.id
+                            'alta_vl_id': altavl.id
                             }
 
                 Vacante.create(data_vac)
