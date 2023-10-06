@@ -149,49 +149,50 @@
                             <group string="Datos personales">
                                 <group>
                                     <field name="country_of_birth_id" required="True"/>
-                                    <label for="marital_status_id"/>
-                                    <div>
-                                        <field name="marital_status_id" required="True"/>
-                                        <button name="button_documentary_approve"
-                                                groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
-                                                invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': [('marital_status_documentary_validation_state', '=', 'validated')]}"
-                                                context="{'documentary_validation':'marital_status'}"
-                                                type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
-                                        <button name="button_documentary_reject"
-                                                groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
-                                                invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': [('marital_status_documentary_validation_state', '=', 'rejected')]}"
-                                                context="{'documentary_validation':'marital_status'}"
-                                                type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
-                                    </div>
-                                    <field name="digitized_document_file" filename="digitized_document_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="digitized_document_filename" invisible="1"/>
+                                    <field name="marital_status_id"/>
+<!--                                    <label for="marital_status_id"/>-->
+<!--                                    <div>-->
+<!--                                        <field name="marital_status_id"/>-->
+<!--                                        <button name="button_documentary_approve"-->
+<!--                                                groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"-->
+<!--                                                invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"-->
+<!--                                                attrs="{'invisible': [('marital_status_documentary_validation_state', '=', 'validated')]}"-->
+<!--                                                context="{'documentary_validation':'marital_status'}"-->
+<!--                                                type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>-->
+<!--                                        <button name="button_documentary_reject"-->
+<!--                                                groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"-->
+<!--                                                invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"-->
+<!--                                                attrs="{'invisible': [('marital_status_documentary_validation_state', '=', 'rejected')]}"-->
+<!--                                                context="{'documentary_validation':'marital_status'}"-->
+<!--                                                type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>-->
+<!--                                    </div>-->
+<!--                                    <field name="digitized_document_file" filename="digitized_document_filename"-->
+<!--                                           options="{'accepted_file_extensions': '.pdf'}"/>-->
+<!--                                    <field name="digitized_document_filename" invisible="1"/>-->
 
-                                    <div class="row" nolabel="1" colspan="2">
-                                        <div class="alert alert-danger" role="alert" style="width:70%"
-                                            attrs="{'invisible': [('marital_status_documentary_validation_state', '!=', 'rejected')]}">
-                                            <p class="mb-0">
-                                                <strong>
-                                                    La sección estado civil ha sido rechazada. Motivo del rechazo: <field name="marital_status_documentary_reject_reason" class="oe_inline"/>
-                                                    <p/>
-                                                    Fecha: <field name="marital_status_documentary_validation_date" class="oe_inline"/> Usuario: <field name="marital_status_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                </strong>
-                                            </p>
-                                        </div>
-                                        <div class="alert alert-success" role="alert" style="width:70%"
-                                             invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                             attrs="{'invisible': [('marital_status_documentary_validation_state', '!=', 'validated')]}">
-                                            <p class="mb-0">
-                                                <strong>
-                                                    La sección estado civil ha sido validada
-                                                    <p/>
-                                                    Fecha: <field name="marital_status_documentary_validation_date" class="oe_inline"/> Usuario: <field name="marital_status_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                </strong>
-                                            </p>
-                                        </div>
-                                    </div>
+<!--                                    <div class="row" nolabel="1" colspan="2">-->
+<!--                                        <div class="alert alert-danger" role="alert" style="width:70%"-->
+<!--                                            attrs="{'invisible': [('marital_status_documentary_validation_state', '!=', 'rejected')]}">-->
+<!--                                            <p class="mb-0">-->
+<!--                                                <strong>-->
+<!--                                                    La sección estado civil ha sido rechazada. Motivo del rechazo: <field name="marital_status_documentary_reject_reason" class="oe_inline"/>-->
+<!--                                                    <p/>-->
+<!--                                                    Fecha: <field name="marital_status_documentary_validation_date" class="oe_inline"/> Usuario: <field name="marital_status_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>-->
+<!--                                                </strong>-->
+<!--                                            </p>-->
+<!--                                        </div>-->
+<!--                                        <div class="alert alert-success" role="alert" style="width:70%"-->
+<!--                                             invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"-->
+<!--                                             attrs="{'invisible': [('marital_status_documentary_validation_state', '!=', 'validated')]}">-->
+<!--                                            <p class="mb-0">-->
+<!--                                                <strong>-->
+<!--                                                    La sección estado civil ha sido validada-->
+<!--                                                    <p/>-->
+<!--                                                    Fecha: <field name="marital_status_documentary_validation_date" class="oe_inline"/> Usuario: <field name="marital_status_documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>-->
+<!--                                                </strong>-->
+<!--                                            </p>-->
+<!--                                        </div>-->
+<!--                                    </div>-->
 
                                     <field name="uy_citizenship" required="True"/>
                                     <field name="crendencial_serie"

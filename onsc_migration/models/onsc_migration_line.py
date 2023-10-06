@@ -835,7 +835,6 @@ class ONSCMigrationLine(models.Model):
         return vals
 
     def _get_info_fromcv(self, cv_digital_id):
-
         vals = {'emergency_service_id': cv_digital_id.emergency_service_id.id,
                 'prefix_emergency_phone_id': cv_digital_id.prefix_emergency_phone_id.id,
                 'emergency_service_telephone': cv_digital_id.emergency_service_telephone,
@@ -885,8 +884,11 @@ class ONSCMigrationLine(models.Model):
                 'certificate_date': cv_digital_id.certificate_date,
                 'to_date': cv_digital_id.to_date,
                 'disability_date': cv_digital_id.disability_date,
-
                 }
+        if cv_digital_id.partner_id.user_ids:
+            vals['user_id'] = cv_digital_id.partner_id.user_ids[0].id
+        else:
+            vals['user_id'] = cv_digital_id.partner_id.user_id.id
         return vals
 
     def process_line(self, limit=200):
@@ -1050,9 +1052,7 @@ class ONSCMigrationLine(models.Model):
                     'cv_gender_id': self.gender_id.id,
                     'institutional_email': self.email_inst,
                     'legajo_gral_info_documentary_validation_state': 'validated',
-
                 }
-
                 for item in ['disabilitie',
                              'nro_doc',
                              'civical_credential',
@@ -1073,10 +1073,18 @@ class ONSCMigrationLine(models.Model):
                     })
                 return CVDigital.with_context(is_migration=True).create(data)
             else:
-                data = {'email': self.email_inst,
-                        'marital_status_id': self.marital_status_id and self.marital_status_id.id,
-                        'health_provider_id': self.health_provider_id.id
-                        }
+                data = {
+                    'email': self.email_inst,
+                    'marital_status_id': self.marital_status_id.id,
+                    'health_provider_id': self.health_provider_id.id
+                }
+                for item in ['marital_status']:
+                    data.update({
+                        '%s_documentary_validation_state' % item: 'validated',
+                        '%s_write_date' % item: self.create_date,
+                        '%s_documentary_validation_date' % item: self.create_date,
+                        '%s_documentary_user_id' % item: self.create_uid.id,
+                    })
                 cv_digital.write(data)
                 return cv_digital
         except Exception as e:

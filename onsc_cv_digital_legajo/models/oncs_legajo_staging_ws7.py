@@ -13,7 +13,11 @@ class ONSCLegajoStagingWS7(models.Model):
             raise ValidationError(_("No se pudo identificar el funcionario."))
         self._check_employee_valid_eff_date(employee_id, record.fecha_aud.date())
         contract.legajo_id.cv_digital_id.suspend_security().with_context(no_post_history=True).write({
-            'marital_status_id': record.marital_status_id.id
+            'marital_status_id': record.marital_status_id.id,
+            'marital_status_documentary_validation_state': 'validated',
+            'marital_status_write_date': record.fecha_aud.date(),
+            'marital_status_documentary_validation_date': record.fecha_aud.date(),
+            'marital_status_documentary_user_id': self.create_uid.id,
         })
         employee_id.suspend_security().write({
             'eff_date': str(record.fecha_aud.date()),
