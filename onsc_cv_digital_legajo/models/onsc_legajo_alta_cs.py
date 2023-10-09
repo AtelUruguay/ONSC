@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import json
+
 from odoo import models, fields, api
 
 REQUIRED_FIELDS = ['date_start_commission', 'reason_description', 'norm_id', 'resolution_description',
@@ -32,6 +34,26 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.employee_id = False
                 record.cv_digital_id = False
+
+    @api.depends('operating_unit_origin_id', 'is_inciso_origin_ac')
+    def _compute_partner_id_domain(self):
+        CVDigital = self.env['onsc.cv.digital'].sudo()
+        user_partner_id = self.env.user.partner_id
+        for record in self:
+            if not record.operating_unit_origin_id:
+                record.partner_id_domain = json.dumps([('id', 'in', [])])
+            elif record.is_inciso_origin_ac:
+                partner_ids = self.env['hr.contract'].sudo().search(
+                    [('operating_unit_id', '=', record.operating_unit_origin_id.id),
+                     ('legajo_state', '=', 'active'),
+                     ('regime_id.presupuesto', '=', True)]).mapped('employee_id.partner_id').ids
+                record.partner_id_domain = json.dumps([('id', 'in', partner_ids), ('id', '!=', user_partner_id.id)])
+            else:
+                partner_ids = CVDigital.search([
+                    ('type', '=', 'cv'),
+                    ('is_cv_uruguay', '=', True),
+                    ('partner_id', '!=', record.partner_id.id)]).mapped('partner_id').ids
+                record.partner_id_domain = json.dumps([('id', 'in', partner_ids)])
 
     @api.onchange('employee_id', 'cv_digital_id')
     def onchange_employee_id_cv_digital_id(self):

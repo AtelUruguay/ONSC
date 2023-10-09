@@ -14,6 +14,9 @@
                     </header>
                     <field name="full_name"/>
                     <field name="state"/>
+                    <field name="nroPuesto" optional="show"/>
+                    <field name="nroPlaza" optional="show"/>
+                    <field name="id_alta" optional="show"/>
                     <field name="error_message_synchronization" optional="hide"/>
                 </tree>
             </field>
