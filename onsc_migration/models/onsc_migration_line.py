@@ -133,7 +133,7 @@ class ONSCMigration(models.Model):
             birth_country_id = None
         address_state_id = row[19] and self.get_country_state(str(row[19]), country_id and country_id[0]) or False
         address_location_id = address_state_id and self.get_location(self.convert_int(row[20]), address_state_id[0]) or False
-        address_street_id = row[21] and self.get_street(str(row[21]),  address_location_id and address_location_id[0])
+        address_street_id = row[21] and self.get_street(str(row[21]), address_location_id and address_location_id[0])
         address_street2_id = row[23] and self.get_street(str(row[23]), address_location_id and address_location_id[0])
         address_street3_id = self.get_street(str(row[24]), address_location_id and address_location_id[0]) or False
         health_provider_id = row[31] and self.get_health_provider(str(row[31])) or False
@@ -260,9 +260,7 @@ class ONSCMigration(models.Model):
                             inciso_des_id and inciso_des_id[0]) or False
 
                         if inciso_des_id[1] is True:
-                            department_id = row[69] and self.get_department(str(row[69]), operating_unit_des_id and
-                                                                            operating_unit_des_id[0]) or False
-
+                            department_id = row[69] and self.get_department(str(row[69]), operating_unit_des_id and operating_unit_des_id[0]) or False
                             row_dict['department_id'] = department_id and department_id[0]
                         row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
                         row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
@@ -285,7 +283,6 @@ class ONSCMigration(models.Model):
                         row_dict['resolution_comm_description'] = row[78]
                         row_dict['resolution_comm_date'] = self.convert_datetime(row[79])
                         row_dict['resolution_comm_type'] = row[80]
-
 
                     row_dict['end_date_contract'] = self.convert_datetime(row[81])
                     row_dict['id_movimiento'] = self.convert_int(row[85])
@@ -921,11 +918,14 @@ class ONSCMigrationLine(models.Model):
                 if line.state_move == 'AP':
                     cv_digital = line._create_cv(CVDigital, partner)
                     line._create_alta_vl(AltaVL, Vacante, partner, employee, cv_digital)
-                elif line._check_unicity(Contract, employee):
-                    contract = line._create_contract(Contract, employee)
-                    if line.state_move == 'BP':
-                        line._create_baja_vl(BajaVL, contract, employee, partner)
-
+                else:
+                    if line._check_unicity(Contract, employee):
+                        contract = line._create_contract(Contract, employee)
+                        if line.state_move == 'BP':
+                            line._create_baja_vl(BajaVL, contract, employee, partner)
+                    else:
+                        line.write({'state': 'error', 'error': 'El contrato ya existe'})
+                        break
                 line.write({'state': 'process'})
                 self.env.cr.commit()
             except Exception as e:
@@ -961,8 +961,8 @@ class ONSCMigrationLine(models.Model):
                      ('legajo_state', '=', 'incoming_commission')])
             else:
                 count = Contract.suspend_security().search_count(
-                    [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto_des),
-                     ('workplace', '=', self.nro_place_des), ('sec_position', '=', self.sec_place_des),
+                    [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto),
+                     ('workplace', '=', self.nro_place), ('sec_position', '=', self.sec_place),
                      ('legajo_state', '=', 'outgoing_commission')])
 
         return count == 0
@@ -1301,6 +1301,7 @@ class ONSCMigrationLine(models.Model):
                 'date_start': self.date_start_commission or fields.Date.today(),
                 'reason_description': self.reason_commision,
 
+
             })
 
             if self.inciso_des_id.is_central_administration:
@@ -1310,6 +1311,12 @@ class ONSCMigrationLine(models.Model):
                     'retributive_day_id': self.retributive_day_id.id,
                     'occupation_id': self.occupation_id.id,
                 })
+                if not self.inciso_id.is_central_administration:
+                    vals_contract1.update({
+                        'inciso_origin_id': self.inciso_id.id,
+                        'operating_unit_origin_id': self.operating_unit_id.id,
+
+                    })
             if self.inciso_id.is_central_administration:
                 vals_contract1.update({
                     'legajo_state': 'outgoing_commission',
@@ -1319,7 +1326,16 @@ class ONSCMigrationLine(models.Model):
                     'norm_code_id': self.norm_id.id,
                     'reason_description': self.reason_description,
                     'occupation_id': self.occupation_id.id,
+                    'code_day': self.retributive_day_formal,
+                    'description_day': self.retributive_day_formal_desc,
+                    'retributive_day_id': self.retributive_day_id.id,
                 })
+                if not self.inciso_des_id.is_central_administration:
+                    vals_contract1.update({
+                        'code_day': self.retributive_day_formal,
+                        'description_day': self.retributive_day_formal_desc,
+                        'retributive_day_id': self.retributive_day_id.id,
+                    })
                 contract1 = Contract.suspend_security().create(vals_contract1)
                 vals_contract2.update({
                     'cs_contract_id': contract1.id,
