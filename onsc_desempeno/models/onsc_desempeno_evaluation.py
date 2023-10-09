@@ -50,8 +50,16 @@ class ONSCDesempenoEvaluation(models.Model):
             args = expression.OR([[('evaluated_id', '=', self.env.user.employee_id.id), ], args])
 
         return args
-# todo el metodo _get_domain_leader_evaluation no esta hecho
+# todo el metodo _get_domain_leadgraer_evaluation no esta hecho
     def _get_domain_leader_evaluation(self, args):
+        args = expression.AND([[('evaluator_id', '=', self.env.user.employee_id.id), ], args])
+        user_department_ids = self.env['hr.department'].search([('manager_id', '=', self.env.user.employee_id.id)])
+        available_department_ids = []
+        for user_department_id in user_department_ids:
+            available_department_ids.extend(self.env['hr.department'].search([('id', 'child_of', user_department_id)]))
+
+
+
         if self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
 

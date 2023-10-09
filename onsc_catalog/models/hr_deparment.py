@@ -229,6 +229,25 @@ class Department(models.Model):
         else:
             return recursive_search(self.parent_id)
 
+    def get_all_managers_in_department_tree(self):
+        """
+        :return: Lista de todos los departamentos con responsables en el árbol hacia arriba
+        """
+
+        def recursive_search(department):
+            managers = []
+            if department.manager_id:
+                managers.append(department.manager_id.id)
+            if department.parent_id:
+                managers.extend(recursive_search(department.parent_id))
+            return managers
+        managers_list = []
+
+        if self.manager_id:
+            managers_list.append(self.manager_id.id)
+        managers_list.extend(recursive_search(self.parent_id))
+        return managers_list
+
 
 class DepartmentResponsability(models.Model):
     _name = "hr.department.responsability"
