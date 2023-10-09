@@ -295,7 +295,7 @@ class ONSCLegajoAltaVL(models.Model):
         for rec in self:
             base_condition = not (rec.inciso_id.budget_code == '5' and rec.operating_unit_id.budget_code in ['13', '5'])
             desc_condition = rec.descriptor1_id.is_occupation_required or not rec.descriptor1_id.id
-            rec.is_occupation_required = base_condition and (rec.regime_id.is_public_employee or desc_condition)
+            rec.is_occupation_required = base_condition and rec.regime_id.is_public_employee and desc_condition
 
     @api.depends('regime_id')
     def _compute_security_job_id_domain(self):
