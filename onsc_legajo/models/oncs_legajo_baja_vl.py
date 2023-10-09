@@ -150,6 +150,10 @@ class ONSCLegajoBajaVL(models.Model):
             if record.end_date > fields.Date.today():
                 raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
 
+    @api.onchange('employee_id')
+    def onchange_employee_id(self):
+        self.contract_id = False
+
     @api.onchange('contract_id')
     def onchange_contract_id(self):
         self.operating_unit_id = self.contract_id.operating_unit_id.id

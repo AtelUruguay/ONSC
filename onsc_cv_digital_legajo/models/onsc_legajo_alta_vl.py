@@ -7,11 +7,12 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 
 # campos requeridos para la sincronización
-REQUIRED_FIELDS = ['inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
-                   'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description', 'resolution_date',
-                   'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
-                   'retributive_day_id', 'occupation_id',
-                   'date_income_public_administration', 'department_id', 'security_job_id']
+REQUIRED_FIELDS = [
+    'inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
+    'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description', 'resolution_date',
+    'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
+    'retributive_day_id', 'date_income_public_administration', 'department_id', 'security_job_id'
+]
 name_doc_one = u'Documento digitalizado "Partida de matrimonio / Partida de unión concubinaria / '
 name_doc_two = u'Certificado de convivencia / Partida o Certificado de divorcio / Partida de defunción'
 digitized_document_full_name = f'{name_doc_one}{name_doc_two}'
@@ -314,6 +315,8 @@ class ONSCLegajoAltaVL(models.Model):
             for required_field in REQUIRED_FIELDS:
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
+            if record.is_occupation_required and not record.occupation_id:
+                message.append("Ocupación")
             if record.is_indVencimiento and not record.contract_expiration_date:
                 message.append(record._fields['contract_expiration_date'].string)
             if not record.partner_id.cv_last_name_1:
