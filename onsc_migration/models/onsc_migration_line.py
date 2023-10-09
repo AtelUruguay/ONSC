@@ -6,7 +6,7 @@ from datetime import datetime
 
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
-from odoo import models, fields, tools
+from odoo import models, fields, tools, _
 from odoo.exceptions import ValidationError
 
 STATE = [
@@ -839,7 +839,6 @@ class ONSCMigrationLine(models.Model):
         return vals
 
     def _get_info_fromcv(self, cv_digital_id):
-
         vals = {'emergency_service_id': cv_digital_id.emergency_service_id.id,
                 'prefix_emergency_phone_id': cv_digital_id.prefix_emergency_phone_id.id,
                 'emergency_service_telephone': cv_digital_id.emergency_service_telephone,
@@ -889,8 +888,11 @@ class ONSCMigrationLine(models.Model):
                 'certificate_date': cv_digital_id.certificate_date,
                 'to_date': cv_digital_id.to_date,
                 'disability_date': cv_digital_id.disability_date,
-
                 }
+        if cv_digital_id.partner_id.user_ids:
+            vals['user_id'] = cv_digital_id.partner_id.user_ids[0].id
+        else:
+            vals['user_id'] = cv_digital_id.partner_id.user_id.id
         return vals
 
     def process_line(self, limit=200):
@@ -1028,7 +1030,7 @@ class ONSCMigrationLine(models.Model):
             # self.write({'partner_id': partner.id})
             # self.env.cr.commit()
         except Exception as e:
-            raise ValidationError("No se puedo crear el contacto: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el contacto: ") + tools.ustr(e))
             # self.env.cr.rollback()
             # self.write({'state': 'error', 'error': "No se puedo crear el contacto: " + tools.ustr(e)})
             # self.env.cr.commit()
@@ -1067,9 +1069,7 @@ class ONSCMigrationLine(models.Model):
                     'cv_gender_id': self.gender_id.id,
                     'institutional_email': self.email_inst,
                     'legajo_gral_info_documentary_validation_state': 'validated',
-
                 }
-
                 for item in ['disabilitie',
                              'nro_doc',
                              'civical_credential',
@@ -1090,14 +1090,22 @@ class ONSCMigrationLine(models.Model):
                     })
                 return CVDigital.with_context(is_migration=True).create(data)
             else:
-                data = {'email': self.email_inst,
-                        'marital_status_id': self.marital_status_id and self.marital_status_id.id,
-                        'health_provider_id': self.health_provider_id.id
-                        }
-                cv_digital.write(data)
+                data = {
+                    'email': self.email_inst,
+                    'marital_status_id': self.marital_status_id.id,
+                    'health_provider_id': self.health_provider_id.id
+                }
+                for item in ['marital_status']:
+                    data.update({
+                        '%s_documentary_validation_state' % item: 'validated',
+                        '%s_write_date' % item: self.create_date,
+                        '%s_documentary_validation_date' % item: self.create_date,
+                        '%s_documentary_user_id' % item: self.create_uid.id,
+                    })
+                cv_digital.with_context(no_update_header_documentary_validation=True).write(data)
                 return cv_digital
         except Exception as e:
-            raise ValidationError("No se puedo crear el CV: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el CV: ") + tools.ustr(e))
             # self.env.cr.rollback()
             # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
@@ -1188,7 +1196,7 @@ class ONSCMigrationLine(models.Model):
 
             return altavl
         except Exception as e:
-            raise ValidationError("No se puedo crear el AltaVL: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el AltaVL: ") + tools.ustr(e))
             # self.env.cr.rollback()
             # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
@@ -1207,7 +1215,7 @@ class ONSCMigrationLine(models.Model):
             return employee
 
         except Exception as e:
-            raise ValidationError("No se puedo crear el funcionario: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el funcionario: ") + tools.ustr(e))
 
     def _create_legajo(self, employee):
         return self.env['onsc.legajo']._get_legajo(
@@ -1259,6 +1267,10 @@ class ONSCMigrationLine(models.Model):
 
             })
             contracts = Contract.suspend_security().create(vals_contract1)
+            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+                                                                                           self.security_job_id,
+                                                                                           self.create_date):
+                raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.department_id and self.security_job_id:
                 Job.create_job(
                     contracts,
@@ -1318,6 +1330,10 @@ class ONSCMigrationLine(models.Model):
             if not self.inciso_des_id.is_central_administration:
                 contracts |= contract1
 
+            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+                                                                                           self.security_job_id,
+                                                                                           self.date_start_commission):
+                raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:
                 Job.create_job(
                     contract2,

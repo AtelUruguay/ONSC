@@ -259,9 +259,9 @@
                         <group>
                             <group string="Información personal:">
                                 <field name="institutional_email" readonly="1"/>
-                                <field name="digitized_document_file" filename="digitized_document_filename"
-                                       options="{'accepted_file_extensions': '.pdf'}" readonly="1"/>
-                                <field name="digitized_document_filename" invisible="1"/>
+<!--                                <field name="digitized_document_file" filename="digitized_document_filename"-->
+<!--                                       options="{'accepted_file_extensions': '.pdf'}" readonly="1"/>-->
+<!--                                <field name="digitized_document_filename" invisible="1"/>-->
                             </group>
                             <group string="Información de salud:">
                                 <separator string="Servicio de Salud/Emergencia" style="font-size: 12px"/>
