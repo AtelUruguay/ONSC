@@ -1,3 +1,5 @@
+# pylint: disable=E8102
+# pylint: disable=E8103
 import base64
 import csv
 import io
@@ -946,7 +948,6 @@ class ONSCMigrationLine(models.Model):
         return partner
 
     def _check_unicity(self, Contract, employee):
-        count = 0
         if not self.type_commission:
             count = Contract.suspend_security().search_count(
                 [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto),
