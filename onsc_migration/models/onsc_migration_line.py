@@ -6,7 +6,7 @@ from datetime import datetime
 
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
-from odoo import models, fields, tools
+from odoo import models, fields, tools, _
 from odoo.exceptions import ValidationError
 
 STATE = [
@@ -273,7 +273,8 @@ class ONSCMigration(models.Model):
                             inciso_des_id and inciso_des_id[0]
                         )
                         if inciso_des_id[1] is True:
-                            department_id = row[69] and self.get_department(str(row[69]), operating_unit_des_id and operating_unit_des_id[0])
+                            department_id = row[69] and self.get_department(str(row[69]), operating_unit_des_id and
+                                                                            operating_unit_des_id[0])
 
                             row_dict['department_id'] = department_id and department_id[0]
                         row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
@@ -1052,7 +1053,7 @@ class ONSCMigrationLine(models.Model):
             # self.write({'partner_id': partner.id})
             # self.env.cr.commit()
         except Exception as e:
-            raise ValidationError("No se puedo crear el contacto: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el contacto: ") + tools.ustr(e))
             # self.env.cr.rollback()
             # self.write({'state': 'error', 'error': "No se puedo crear el contacto: " + tools.ustr(e)})
             # self.env.cr.commit()
@@ -1124,10 +1125,10 @@ class ONSCMigrationLine(models.Model):
                         '%s_documentary_validation_date' % item: self.create_date,
                         '%s_documentary_user_id' % item: self.create_uid.id,
                     })
-                cv_digital.with_context(no_update_header_documentary_validation = True).write(data)
+                cv_digital.with_context(no_update_header_documentary_validation=True).write(data)
                 return cv_digital
         except Exception as e:
-            raise ValidationError("No se puedo crear el CV: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el CV: ") + tools.ustr(e))
             # self.env.cr.rollback()
             # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
@@ -1217,7 +1218,7 @@ class ONSCMigrationLine(models.Model):
 
             return altavl
         except Exception as e:
-            raise ValidationError("No se puedo crear el AltaVL: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el AltaVL: ") + tools.ustr(e))
             # self.env.cr.rollback()
             # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
@@ -1236,7 +1237,7 @@ class ONSCMigrationLine(models.Model):
             return employee
 
         except Exception as e:
-            raise ValidationError("No se puedo crear el funcionario: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el funcionario: ") + tools.ustr(e))
 
     def _create_legajo(self, employee):
         return self.env['onsc.legajo']._get_legajo(
@@ -1288,6 +1289,10 @@ class ONSCMigrationLine(models.Model):
 
             })
             contracts = Contract.suspend_security().create(vals_contract1)
+            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+                                                                                           self.security_job_id,
+                                                                                           self.create_date):
+                raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.department_id and self.security_job_id:
                 Job.create_job(
                     contracts,
@@ -1347,6 +1352,10 @@ class ONSCMigrationLine(models.Model):
             if not self.inciso_des_id.is_central_administration:
                 contracts |= contract1
 
+            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+                                                                                           self.security_job_id,
+                                                                                           self.date_start_commission):
+                raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:
                 Job.create_job(
                     contract2,
