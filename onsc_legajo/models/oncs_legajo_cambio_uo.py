@@ -105,6 +105,7 @@ class ONSCLegajoCambioUO(models.Model):
     show_job = fields.Boolean('Mostrar Puestos', compute='_compute_job_id_domain')
 
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
+    security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
 
     attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'cambio_uo_id',
@@ -173,6 +174,15 @@ class ONSCLegajoCambioUO(models.Model):
         for rec in self:
             rec.department_id_domain = json.dumps([('id', 'in', self.get_uo_tree(rec.contract_id))])
 
+    @api.depends('contract_id')
+    def _compute_security_job_id_domain(self):
+        for rec in self:
+            if not rec.contract_id.regime_id.is_manager:
+                domain = [('is_uo_manager', '=', False)]
+            else:
+                domain = [('is_uo_manager', 'in', [True, False])]
+            rec.security_job_id_domain = json.dumps(domain)
+
     @api.constrains("date_start", "contract_id", "job_id")
     def _check_date(self):
         for record in self:
@@ -233,6 +243,11 @@ class ONSCLegajoCambioUO(models.Model):
             self.job_id = job_ids[0].id
         else:
             self.job_id = False
+
+    @api.onchange('contract_id')
+    def onchange_contract_id(self):
+        self.occupation_id = False
+        self.security_job_id = False
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):

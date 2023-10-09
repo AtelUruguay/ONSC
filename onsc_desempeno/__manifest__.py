@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Gestión de Desempeño',
-    'version': '15.0.5.0.0',
+    'version': '15.0.6.0.0',
     'summary': 'ONSC - Gestión de Desempeño',
     'sequence': 1,
     'description': """
@@ -15,6 +15,7 @@ ONSC - Gestión de Desempeño
         'security/onsc_desempeno_security.xml',
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',
+        'views/catalogs/onsc_legajo_base_views.xml',
         'views/catalogs/onsc_desempeno_dimension_views.xml',
         'views/catalogs/onsc_desempeno_skill_views.xml',
         'views/catalogs/onsc_desempeno_level_views.xml',

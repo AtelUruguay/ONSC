@@ -38,6 +38,7 @@
                                 <field name="is_indVencimiento" invisible="1"/>
                                 <field name="is_operating_unit_readonly" invisible="1"/>
                                 <field name="should_disable_form_edit" invisible="1"/>
+                                <field name="is_occupation_required" invisible="1"/>
                             </group>
                             <group name="main_group_right">
                             </group>
@@ -103,6 +104,7 @@
                                         <field name="department_id" domain="department_id_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="occupation_id"
+                                               attrs="{'invisible': [('is_occupation_required', '=', False)]}"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="income_mechanism_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
@@ -113,8 +115,10 @@
                                     </group>
                                     <group name="group6_right">
                                         <field name="security_job_id"
+                                               domain="security_job_id_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="is_responsable_uo"/>
+                                        <field name="security_job_id_domain" invisible="1"/>
                                     </group>
                                 </group>
                                 <group name="group7">
@@ -156,7 +160,7 @@
                                                 <i class="fa fa-info-circle" role="alert"/>
                                                 En caso de no encontrar la norma de referencia para el movimiento,
                                                 comunicarse con el
-                                                área de puesto de UO de CGN al siguiente correo
+                                                área de puesto de trabajos de CGN al siguiente correo
                                                 <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
                                             </p>
                                         </div>

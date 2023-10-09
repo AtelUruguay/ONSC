@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Legajo',
-    'version': '15.0.10.0.0',
+    'version': '15.0.11.0.0',
     'summary': 'ONSC - Legajo',
     'sequence': 11,
     'description': """
@@ -32,6 +32,7 @@ ONSC - Legajo
         'views/onsc_legajo_department_views.xml',
 
         'views/onsc_legajo_settings_view.xml',
+        'views/catalogs/onsc_catalog_descriptors.xml',
         'views/catalogs/onsc_legajo_emergency_views.xml',
         'views/catalogs/onsc_legajo_health_provider_views.xml',
         'views/catalogs/onsc_legajo_document_type_views.xml',
