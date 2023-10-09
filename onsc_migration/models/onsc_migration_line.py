@@ -31,7 +31,6 @@ REQUIRED_FIELDS = {
     'sex',
     'date_income_public_administration',
     'inciso_id',
-    'retributive_day_id',
     'retributive_day_formal',
     'date_start'
 }
@@ -55,6 +54,7 @@ REQUIRED_FIELDS_COMM_ORIGIN_AC = {
     'nro_puesto',
     'nro_place',
     'sec_place',
+    'retributive_day_id',
 }
 
 _logger = logging.getLogger(__name__)
@@ -167,6 +167,7 @@ class ONSCMigration(models.Model):
         ) or False
 
         security_job_id = row[87] and self.get_security_job(str(row[87])) or False
+        retributive_day_id = row[82] and self.get_jornada_retributiva(str(row[82]), program_project_id and program_project_id[0]) or False
 
         row_dict.update({
             'country_id': country_id and country_id[0],
@@ -193,23 +194,16 @@ class ONSCMigration(models.Model):
             'occupation_id': occupation_id and occupation_id[0],
             'income_mechanism_id': income_mechanism_id and income_mechanism_id[0],
             'norm_id': norm_id and norm_id[0],
-
+            'retributive_day_id': row[82] and retributive_day_id and retributive_day_id[0],
             # 'retributive_day_formal_id': retributive_day_formal_id,
             'security_job_id': security_job_id and security_job_id[0],
         })
         if not row[71]:
-            retributive_day_id = row[82] and self.get_jornada_retributiva(
-                str(row[82]),
-                program_project_id and program_project_id[0])  or False
-
             department_id = row[69] and self.get_department(str(row[69]), operating_unit_id and operating_unit_id[0]) or False
-            row_dict.update({
-                'retributive_day_id': row[82] and retributive_day_id and retributive_day_id[0],
-                'department_id': department_id and department_id[0], })
+            row_dict.update({'department_id': department_id and department_id[0], })
         elif not inciso_id[1]:
             department_id = row[69] and self.get_department(str(row[69]), operating_unit_id and operating_unit_id[0]) or False
-            row_dict.update({
-                'department_id': department_id and department_id[0], })
+            row_dict.update({'department_id': department_id and department_id[0], })
 
     def process_binary(self):
         try:
@@ -291,16 +285,7 @@ class ONSCMigration(models.Model):
                         row_dict['resolution_comm_description'] = row[78]
                         row_dict['resolution_comm_date'] = self.convert_datetime(row[79])
                         row_dict['resolution_comm_type'] = row[80]
-                        if row[82] and inciso_des_id and inciso_des_id[1] is True:
-                            retributive_day_id = self.get_jornada_retributiva(str(row[82]),
-                                program_project_des_id and program_project_des_id[0]) or False
-                            row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[
-                                0]
-                        elif row[82] and row_dict['program_project_id']:
-                            retributive_day_id = self.get_jornada_retributiva(
-                                str(row[82]), row_dict['program_project_id'])
-                            row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[
-                                0]
+
 
                     row_dict['end_date_contract'] = self.convert_datetime(row[81])
                     row_dict['id_movimiento'] = self.convert_int(row[85])
@@ -1178,7 +1163,8 @@ class ONSCMigrationLine(models.Model):
                 'cv_address_place': self.address_place,
                 'cv_address_zip': self.address_zip,
                 'cv_address_block': self.address_block,
-                'cv_address_sandlot': self.address_sandlot
+                'cv_address_sandlot': self.address_sandlot,
+                'id_alta': self.id_movimiento
 
             }
             altavl = AltaVL.with_context(is_migration=True).create(data_alta_vl)
@@ -1248,7 +1234,7 @@ class ONSCMigrationLine(models.Model):
             'descriptor4_id': self.descriptor4_id.id,
             'graduation_date': self.graduation_date,
             'income_mechanism_id': self.income_mechanism_id.id,
-            'id_alta': self.id_movimiento,
+            'id_alta': self.state_move != 'BP' and self.id_movimiento,
             'regime_id': self.regime_id.id,
             'state_square_id': self.state_place_id.id,
             'call_number': self.call_number,
@@ -1277,7 +1263,7 @@ class ONSCMigrationLine(models.Model):
                 Job.create_job(
                     contracts,
                     self.department_id,
-                    self.create_date,
+                    self.date_start,
                     self.security_job_id
                 )
         else:
