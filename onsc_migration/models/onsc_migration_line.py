@@ -142,6 +142,7 @@ class ONSCMigration(models.Model):
         inciso_id = row[36] and self.get_inciso(str(row[36])) or False
         operating_unit_id = row[37] and self.get_operating_unit(str(row[37]),
                                                                 inciso_id and inciso_id[0]) or False
+
         program_project_id = self.get_office(
             str(row[38]),
             str(row[39]),
@@ -1313,7 +1314,7 @@ class ONSCMigrationLine(models.Model):
                     'occupation_id': self.occupation_id.id,
                 })
                 if not self.inciso_id.is_central_administration:
-                    vals_contract1.update({
+                    vals_contract2.update({
                         'inciso_origin_id': self.inciso_id.id,
                         'operating_unit_origin_id': self.operating_unit_id.id,
 
