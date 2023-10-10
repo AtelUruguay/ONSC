@@ -71,12 +71,12 @@ class ONSCMigration(models.Model):
     error = fields.Text("Error")
     document_file = fields.Binary(string='Archivo de carga', required=True)
     document_filename = fields.Char('Nombre del documento', store=True)
-    line_ids = fields.One2many('onsc.migration.line', 'migration_id', domain=[('state', '!=', 'error')],
+    line_ids = fields.One2many('onsc.migration.line', 'migration_id', domain=[('state', 'not in',[ 'error','error_process'])],
                                string='Líneas')
     error_line_ids = fields.One2many(
         comodel_name='onsc.migration.line',
         inverse_name='migration_id',
-        domain=[('state', '=', 'error')],
+        domain=[('state', 'in', ['error','error_process'])],
         string='Líneas con errores')
 
     def button_process(self):
@@ -1316,6 +1316,9 @@ class ONSCMigrationLine(models.Model):
                     vals_contract2.update({
                         'inciso_origin_id': self.inciso_id.id,
                         'operating_unit_origin_id': self.operating_unit_id.id,
+                    })
+                else:
+                    vals_contract2.update({
                         'code_day': self.retributive_day_formal,
                         'description_day': self.retributive_day_formal_desc,
                         'retributive_day_id': self.retributive_day_id.id,
