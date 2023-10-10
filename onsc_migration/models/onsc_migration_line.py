@@ -13,7 +13,9 @@ from odoo.exceptions import ValidationError
 
 STATE = [
     ('draft', 'Borrador'),
-    ('error', 'Error'),
+    ('error_head', 'Error'),
+    ('error', 'Error de staging'),
+    ('error_process', 'Error de proceso'),
     ('in_process', 'Procesando'),
     ('process', 'Procesado'),
 ]
@@ -229,7 +231,7 @@ class ONSCMigration(models.Model):
                     row_number += 1
 
                     if not row[0] and not row[1] and not row[2]:
-                        break
+                        continue
 
                     row_dict = {}
                     self._set_base_vals(row_dict, row)
@@ -327,7 +329,7 @@ class ONSCMigration(models.Model):
 
         except Exception as e:
             error = "Línea %s Error: %s" % (row_number, tools.ustr(e))
-            self.suspend_security().write({'error': error, 'state': 'error'})
+            self.suspend_security().write({'error': error, 'state': 'error_head'})
 
     def validate(self, row, row_dict):
         message_error = []
@@ -927,14 +929,14 @@ class ONSCMigrationLine(models.Model):
                         if line.state_move == 'BP':
                             line._create_baja_vl(BajaVL, contract, employee, partner)
                     else:
-                        line.write({'state': 'error', 'error': 'El contrato ya existe'})
-                        break
+                        line.write({'state': 'error_process', 'error': 'El contrato ya existe'})
+                        continue
                 line.write({'state': 'process'})
                 self.env.cr.commit()
             except Exception as e:
                 self.env.cr.rollback()
                 line.write({
-                    'state': 'error',
+                    'state': 'error_process',
                     'error': tools.ustr(e)
                 })
                 self.env.cr.commit()
@@ -1308,15 +1310,15 @@ class ONSCMigrationLine(models.Model):
 
             if self.inciso_des_id.is_central_administration:
                 vals_contract2.update({
-                    'code_day': self.retributive_day_formal,
-                    'description_day': self.retributive_day_formal_desc,
-                    'retributive_day_id': self.retributive_day_id.id,
                     'occupation_id': self.occupation_id.id,
                 })
                 if not self.inciso_id.is_central_administration:
                     vals_contract2.update({
                         'inciso_origin_id': self.inciso_id.id,
                         'operating_unit_origin_id': self.operating_unit_id.id,
+                        'code_day': self.retributive_day_formal,
+                        'description_day': self.retributive_day_formal_desc,
+                        'retributive_day_id': self.retributive_day_id.id,
 
                     })
             if self.inciso_id.is_central_administration:
