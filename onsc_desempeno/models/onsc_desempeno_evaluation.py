@@ -38,6 +38,7 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_leader_evaluation(args)
 
         return args
+
     def _get_domain_self_evaluation(self, args):
         if self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
@@ -50,19 +51,19 @@ class ONSCDesempenoEvaluation(models.Model):
             args = expression.OR([[('evaluated_id', '=', self.env.user.employee_id.id), ], args])
 
         return args
-# todo el metodo _get_domain_leadgraer_evaluation no esta hecho
+
+    # todo el metodo _get_domain_leadgraer_evaluation no esta hecho
     def _get_domain_leader_evaluation(self, args):
-        args = expression.AND([[('evaluator_id', '=', self.env.user.employee_id.id), ], args])
-        user_department_ids = self.env['hr.department'].search([('manager_id', '=', self.env.user.employee_id.id)])
-        available_department_ids = []
-        for user_department_id in user_department_ids:
-            available_department_ids.extend(self.env['hr.department'].search([('id', 'child_of', user_department_id)]))
-
-
-
-        if self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso'):
+        if self.user_has_groups('onsc_desempeno.group_desempeno_responsable_uo'):
+            user_department = self.env['hr.department'].search([('manager_id', '=', self.env.user.employee_id.id)])
+            available_department_ids = [user_department.ids]
+            for user_department in user_department:
+                available_department_ids.extend(self.env['hr.department'].search([('id', 'child_of', user_department.id)]))
+            args = expression.AND([['|',
+                                    ('evaluator_id', '=', self.env.user.employee_id.id),
+                                    ('uo_id', 'in', available_department_ids)], args])
+        elif self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-
             args = expression.AND([[('inciso_id', '=', inciso_id), ], args])
         elif self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue'):
             operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
