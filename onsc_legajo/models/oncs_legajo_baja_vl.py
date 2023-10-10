@@ -81,7 +81,7 @@ class ONSCLegajoBajaVL(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string="Funcionario")
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
-    contract_id = fields.Many2one('hr.contract', 'Contrato', required=True, copy=False)
+    contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     end_date = fields.Date(string="Fecha de Baja", default=lambda *a: fields.Date.today(), required=True, copy=False)
 
@@ -149,6 +149,10 @@ class ONSCLegajoBajaVL(models.Model):
         for record in self:
             if record.end_date > fields.Date.today():
                 raise ValidationError(_("La fecha baja debe ser menor o igual a la fecha de registro"))
+
+    @api.onchange('employee_id')
+    def onchange_employee_id(self):
+        self.contract_id = False
 
     @api.onchange('contract_id')
     def onchange_contract_id(self):

@@ -83,10 +83,10 @@
                     <group>
                         <group string="Información personal:">
                             <field name="institutional_email"/>
-                            <field name="digitized_document_file" filename="digitized_document_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}"
-                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>
-                            <field name="digitized_document_filename" invisible="1"/>
+<!--                            <field name="digitized_document_file" filename="digitized_document_filename"-->
+<!--                                   options="{'accepted_file_extensions': '.pdf'}"-->
+<!--                                   attrs="{'required': [('is_docket_active', '=', True)]}"/>-->
+<!--                            <field name="digitized_document_filename" invisible="1"/>-->
                         </group>
                         <group string="Información de salud:">
                             <separator string="Servicio de Salud/Emergencia" style="font-size: 12px"></separator>
@@ -211,6 +211,10 @@
                         </p>
                     </div>
                 </div>
+            </field>
+            <field name="marital_status_id" position="attributes">
+                <attribute name="attrs">{'readonly': [('is_docket_active','=',True)],'required': [('is_docket_active','=',False)]}</attribute>
+                <attribute name="required">0</attribute>
             </field>
             <field name="is_multiple_cv_race_selected" position="after">
                 <div class="row" nolabel="1" colspan="2">

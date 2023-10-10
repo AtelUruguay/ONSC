@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_legajo_regime_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.legajo.regime.tree</field>
+        <field name="model">onsc.legajo.regime</field>
+        <field name="inherit_id" ref="onsc_legajo.onsc_legajo_regime_tree"/>
+        <field name="arch" type="xml">
+            <field name="is_legajo" position="after">
+                <field name="is_desempeno" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+            </field>
+        </field>
+    </record>
+</odoo>

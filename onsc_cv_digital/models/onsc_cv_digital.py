@@ -494,7 +494,7 @@ class ONSCCVDigital(models.Model):
     @api.constrains('personal_phone', 'mobile_phone')
     def _check_valid_phone(self):
         for record in self:
-            if not record.personal_phone and not record.mobile_phone:
+            if not self._context.get('is_migration') and not record.personal_phone and not record.mobile_phone:
                 raise ValidationError(_("Necesitas al menos introducir la información de un teléfono"))
 
     @api.onchange('cv_sex_updated_date')

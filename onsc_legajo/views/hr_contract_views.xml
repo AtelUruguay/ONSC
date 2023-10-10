@@ -65,6 +65,7 @@
                                    readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="occupation_id"
+                                   attrs="{'invisible': [('is_occupation_visible', '=', False)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="descriptor1_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
@@ -75,6 +76,7 @@
                             <field name="descriptor4_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="graduation_date" />
+                            <field name="is_occupation_visible" invisible="1"/>
                             <field name="position" required="1"/>
                             <field name="workplace" required="1"/>
                             <field name="sec_position" required="1"/>

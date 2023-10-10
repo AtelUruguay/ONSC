@@ -176,16 +176,15 @@ class HrJob(models.Model):
         })
         job.onchange_security_job_id()
         if job.security_job_id.is_uo_manager and job.start_date <= fields.Date.today():
-            job.department_id.write({
+            job.department_id.suspend_security().write({
                 'manager_id': job.employee_id.id,
                 'is_manager_reserved': False
             })
         return job
 
     def deactivate(self, date_end):
-        for job in self.suspend_security().filtered(lambda x:
-                                                    (x.end_date is False or x.end_date > date_end) and
-                                                    x.start_date <= date_end):
+        for job in self.suspend_security().filtered(
+                lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
             job.end_date = date_end
             job.suspend_security().onchange_end_date()
         if date_end < fields.Date.today() and self.security_job_id.is_uo_manager:
@@ -221,7 +220,7 @@ class HrJob(models.Model):
                 [('security_job_id.is_uo_manager', '=', True), ('contract_id.legajo_state', '!=', 'baja'),
                  ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date)]):
             if record.department_id.manager_id.id != record.employee_id.id:
-                record.department_id.write({'manager_id': record.employee_id.id})
+                record.department_id.suspend_security().write({'manager_id': record.employee_id.id})
 
 
 class HrJobRoleLine(models.Model):
@@ -289,7 +288,9 @@ class HrJobRoleLine(models.Model):
         return json.dumps([('id', 'in', roles.ids)])
 
     def _check_write(self):
-        if self._context.get('no_check_write'):
+        list_users = self.env.ref('base.user_admin')
+        list_users |= self.env.ref('base.user_root')
+        if self._context.get('no_check_write') or self.env.user.id in list_users.ids:
             return True
         is_informatica_onsc = self.user_has_groups(
             'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc')
@@ -319,4 +320,3 @@ class HrJobRoleLine(models.Model):
             rec.job_id._message_log(body=_('Línea del rol adicional %s actualizada') % (line_name),
                                     tracking_value_ids=tracking_value_ids)
         return True
-

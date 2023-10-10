@@ -133,7 +133,7 @@ class HrEmployee(models.Model):
         if len(cv_nro_doc_args) > 0:
             args = expression.OR([cv_nro_doc_args, args])
         return super(HrEmployee, self)._search(args, offset=offset, limit=limit, order=order, count=count,
-                                                      access_rights_uid=access_rights_uid)
+                                               access_rights_uid=access_rights_uid)
 
     partner_id = fields.Many2one('res.partner', string='Contacto', compute='_compute_partner_id', store=True)
 
@@ -255,7 +255,8 @@ class HrEmployee(models.Model):
         if not self._context.get('consolidate_history_version'):
             self = self.with_context(consolidate_history_version=str(fields.Datetime.now()))
         history_fields = self.get_history_fields()
-        if not values.get('eff_date') and set(list(values)).intersection(set(history_fields)):
+        no_post_history = self._context.get('no_post_history', False)
+        if not values.get('eff_date') and set(list(values)).intersection(set(history_fields)) and not no_post_history:
             values.update({
                 'eff_date': fields.Date.today()
             })

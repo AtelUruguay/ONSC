@@ -14,6 +14,9 @@
                     </header>
                     <field name="full_name"/>
                     <field name="state"/>
+                    <field name="nroPuesto" optional="show"/>
+                    <field name="nroPlaza" optional="show"/>
+                    <field name="id_alta" optional="show"/>
                     <field name="error_message_synchronization" optional="hide"/>
                 </tree>
             </field>
@@ -123,9 +126,9 @@
                             <field name="civical_credential_filename" invisible="1" readonly="1" force_save="1"/>
                             <field name="marital_status_id" readonly="1" force_save="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
-                            <field name="digitized_document_file" filename="digitized_document_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}" readonly="1" force_save="1"/>
-                            <field name="digitized_document_filename" invisible="1" force_save="1"/>
+<!--                            <field name="digitized_document_file" filename="digitized_document_filename"-->
+<!--                                   options="{'accepted_file_extensions': '.pdf'}" readonly="1" force_save="1"/>-->
+<!--                            <field name="digitized_document_filename" invisible="1" force_save="1"/>-->
                             <field name="personal_phone" readonly="1" force_save="1"/>
                             <field name="mobile_phone" readonly="1"/>
                         </group>

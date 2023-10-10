@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+     <record id="onsc_migrations_search" model="ir.ui.view">
+        <field name="name">onsc.migration.search</field>
+        <field name="model">onsc.migration</field>
+        <field name="arch" type="xml">
+            <search string="Migracion">
+                <field name="document_filename"/>
+                <field name="state"/>
+            </search>
+        </field>
+    </record>
     <record id="onsc_migration_tree" model="ir.ui.view">
         <field name="name">onsc.migration.tree</field>
         <field name="model">onsc.migration</field>
@@ -128,6 +138,7 @@
                                     <field name="end_date_contract"/>
                                     <field name="retributive_day_id"/>
                                     <field name="retributive_day_formal"/>
+                                    <field name="retributive_day_formal_desc"/>
                                     <field name="id_movimiento"/>
                                     <field name="state_move"/>
                                     <field name="security_job_id"/>
@@ -232,10 +243,10 @@
                                     <field name="resolution_comm_description"/>
                                     <field name="resolution_comm_date"/>
                                     <field name="resolution_comm_type"/>
-
-									  <field name="end_date_contract"/>
+                                    <field name="end_date_contract"/>
                                     <field name="retributive_day_id"/>
                                     <field name="retributive_day_formal"/>
+                                    <field name="retributive_day_formal_desc"/>
                                     <field name="id_movimiento"/>
                                     <field name="state_move"/>
                                     <field name="security_job_id"/>

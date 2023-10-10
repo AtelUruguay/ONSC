@@ -151,9 +151,11 @@ class ONSCLegajoAltaVL(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", copy=False,
                                       readonly=True,
                                       states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False,
                                     readonly=True,
                                     states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    is_occupation_required = fields.Boolean(compute='_compute_is_occupation_required', store=True)
     date_income_public_administration = fields.Date(string="Fecha de ingreso a la administración pública", copy=False,
                                                     readonly=True, states={'borrador': [('readonly', False)],
                                                                            'error_sgh': [('readonly', False)]})
@@ -288,6 +290,22 @@ class ONSCLegajoAltaVL(models.Model):
             domain = [('id', 'in', BudgetItem.search(args).mapped('dsc4Id').ids)]
             rec.descriptor4_domain_id = json.dumps(domain)
 
+    @api.depends('inciso_id', 'operating_unit_id', 'regime_id', 'descriptor1_id')
+    def _compute_is_occupation_required(self):
+        for rec in self:
+            base_condition = not (rec.inciso_id.budget_code == '5' and rec.operating_unit_id.budget_code in ['13', '5'])
+            desc_condition = rec.descriptor1_id.is_occupation_required or not rec.descriptor1_id.id
+            rec.is_occupation_required = base_condition and rec.regime_id.is_public_employee and desc_condition
+
+    @api.depends('regime_id')
+    def _compute_security_job_id_domain(self):
+        for rec in self:
+            if not rec.regime_id.is_manager:
+                domain = [('is_uo_manager', '=', False)]
+            else:
+                domain = [('is_uo_manager', 'in', [True, False])]
+            rec.security_job_id_domain = json.dumps(domain)
+
     @api.constrains("attached_document_ids")
     def _check_attached_document_ids(self):
         for record in self:
@@ -327,12 +345,14 @@ class ONSCLegajoAltaVL(models.Model):
         self.department_id = False
         self.program_project_id = False
         self.retributive_day_id = False
+        self.occupation_id = False
 
     @api.onchange('descriptor1_id')
     def onchange_descriptor1(self):
         self.descriptor2_id = False
         self.descriptor3_id = False
         self.descriptor4_id = False
+        self.occupation_id = False
 
     @api.onchange('descriptor2_id')
     def onchange_descriptor2(self):
@@ -354,6 +374,10 @@ class ONSCLegajoAltaVL(models.Model):
         if self.nroPlaza and not self.nroPlaza.isnumeric():
             self.nroPlaza = ''
             return warning_response(_("El campo Plaza debe ser numérico"))
+
+    @api.onchange('regime_id')
+    def onchange_regime_id(self):
+        self.security_job_id = False
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
@@ -461,8 +485,6 @@ class ONSCLegajoAltaVL(models.Model):
             #
             'wage': 1
         }
-        # if self.state_square_id:
-        #     vals['state_square_id'] = self.state_square_id.id
 
         contract = Contract.suspend_security().create(vals)
 
