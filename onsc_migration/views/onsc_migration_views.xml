@@ -33,7 +33,7 @@
                             string="Cargar Archivo" attrs="{'invisible': [('state', '!=', 'draft')]}"
                             name="button_process"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,error,process"/>
+                           statusbar_visible="draft,error_head,process"/>
                 </header>
                 <sheet>
                     <group>
@@ -41,7 +41,7 @@
                             <field name="document_file" filename="document_filename" attrs="{'readonly': [('state', '!=', 'draft')]}"/>
                             <field name="document_filename" invisible="1"/>
 
-                            <field name="error" attrs="{'invisible': [('state', '!=', 'error')]}"/>
+                            <field name="error" attrs="{'invisible': [('state', '!=', 'error_head')]}"/>
                         </group>
                         <group/>
                     </group>
