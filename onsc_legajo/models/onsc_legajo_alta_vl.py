@@ -299,11 +299,12 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.depends('regime_id')
     def _compute_security_job_id_domain(self):
+        user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
             if not rec.regime_id.is_manager:
-                domain = [('is_uo_manager', '=', False)]
+                domain = [('is_uo_manager', '=', False), ('sequence', '>=', user_level)]
             else:
-                domain = [('is_uo_manager', 'in', [True, False])]
+                domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
 
     @api.constrains("attached_document_ids")
