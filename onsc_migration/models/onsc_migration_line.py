@@ -1,5 +1,6 @@
 # pylint: disable=E8102
 # pylint: disable=E8103
+import logging
 import base64
 import csv
 import io
@@ -10,6 +11,8 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 
 from odoo import models, fields, tools, _
 from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 STATE = [
     ('draft', 'Borrador'),
@@ -906,7 +909,10 @@ class ONSCMigrationLine(models.Model):
         BajaVL = self.env['onsc.legajo.baja.vl'].suspend_security()
         Vacante = self.env['onsc.cv.digital.vacante'].suspend_security()
 
+        line_iterator = 1
         for line in self.search([('state', 'in', ['draft'])], limit=limit):
+            _logger.info("MIGRACION INICIAL. Linea: %s", str(line_iterator))
+            line_iterator += 1
             try:
                 employee = line._get_employee(Employee)  # existe el funcionario?
 
