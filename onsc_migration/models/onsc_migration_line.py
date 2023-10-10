@@ -1,3 +1,5 @@
+# pylint: disable=E8102
+# pylint: disable=E8103
 import base64
 import csv
 import io
@@ -6,7 +8,7 @@ from datetime import datetime
 
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
-from odoo import models, fields, tools
+from odoo import models, fields, tools, _
 from odoo.exceptions import ValidationError
 
 STATE = [
@@ -31,7 +33,6 @@ REQUIRED_FIELDS = {
     'sex',
     'date_income_public_administration',
     'inciso_id',
-    'retributive_day_id',
     'retributive_day_formal',
     'date_start'
 }
@@ -55,6 +56,7 @@ REQUIRED_FIELDS_COMM_ORIGIN_AC = {
     'nro_puesto',
     'nro_place',
     'sec_place',
+    'retributive_day_id',
 }
 
 _logger = logging.getLogger(__name__)
@@ -121,56 +123,54 @@ class ONSCMigration(models.Model):
             'retributive_day_formal_desc': row[84], })
 
     def _set_m2o_values(self, row_dict, row):
-        country_id = row[0] and self.get_country(str(row[0]))
-        doc_type_id = row[1] and self.get_doc_type(str(row[1]))
-        marital_status_id = row[8] and self.get_status_civil(str(row[8]))
-        gender_id = row[10] and self.get_gender(str(row[10]))
+        country_id = row[0] and self.get_country(str(row[0])) or False
+        doc_type_id = row[1] and self.get_doc_type(str(row[1])) or False
+        marital_status_id = row[8] and self.get_status_civil(str(row[8])) or False
+        gender_id = row[10] and self.get_gender(str(row[10])) or False
         if row[12] and row[0] != row[12]:
-            birth_country_id = row[12] and self.get_country(str(row[12]))
+            birth_country_id = row[12] and self.get_country(str(row[12])) or False
         elif row[12]:
             birth_country_id = country_id
         else:
             birth_country_id = None
-        address_state_id = row[19] and self.get_country_state(
-            str(row[19]), country_id and country_id[0])
-        address_location_id = self.get_location(
-            str(row[20]), address_state_id and address_state_id[0])
-        address_street_id = row[21] and self.get_street(str(row[21]),
-                                                        address_location_id and address_location_id[0])
-        address_street2_id = row[23] and self.get_street(str(row[23]),
-                                                         address_location_id and address_location_id[0])
-        address_street3_id = self.get_street(str(row[24]), address_location_id and address_location_id[0])
-        health_provider_id = row[31] and self.get_health_provider(str(row[31]))
-        inciso_id = row[36] and self.get_inciso(str(row[36]))
-        operating_unit_id = row[37] and self.get_operating_unit(str(row[37]), inciso_id and inciso_id[0])
+        address_state_id = row[19] and self.get_country_state(str(row[19]), country_id and country_id[0]) or False
+        address_location_id = address_state_id and self.get_location(self.convert_int(row[20]), address_state_id[0]) or False
+        address_street_id = row[21] and self.get_street(str(row[21]), address_location_id and address_location_id[0])
+        address_street2_id = row[23] and self.get_street(str(row[23]), address_location_id and address_location_id[0])
+        address_street3_id = self.get_street(str(row[24]), address_location_id and address_location_id[0]) or False
+        health_provider_id = row[31] and self.get_health_provider(str(row[31])) or False
+        inciso_id = row[36] and self.get_inciso(str(row[36])) or False
+        operating_unit_id = row[37] and self.get_operating_unit(str(row[37]),
+                                                                inciso_id and inciso_id[0]) or False
+
         program_project_id = self.get_office(
             str(row[38]),
             str(row[39]),
             operating_unit_id and operating_unit_id[0])
         regime_id = row[40] and self.get_regime(str(row[40]))
-        descriptor1_id = row[41] and self.get_descriptor1(str(row[41]))
-        descriptor2_id = row[42] and self.get_descriptor2(str(row[42]))
-        descriptor3_id = row[43] and self.get_descriptor3(str(row[43]))
-        descriptor4_id = row[44] and self.get_descriptor4(str(row[44]))
-        state_place_id = row[48] and self.get_state_place(str(row[48]))
-        occupation_id = row[49] and self.get_occupation(str(row[49]))
-        income_mechanism_id = row[50] and self.get_income_mechanism(str(row[50]))
+        descriptor1_id = row[41] and self.get_descriptor1(str(row[41])) or False
+        descriptor2_id = row[42] and self.get_descriptor2(str(row[42])) or False
+        descriptor3_id = row[43] and self.get_descriptor3(str(row[43])) or False
+        descriptor4_id = row[44] and self.get_descriptor4(str(row[44])) or False
+        state_place_id = row[48] and self.get_state_place(str(row[48])) or False
+        occupation_id = row[49] and self.get_occupation(str(row[49])) or False
+        income_mechanism_id = row[50] and self.get_income_mechanism(str(row[50])) or False
         norm_id = row[53] and self.get_norm(
             str(row[53]),
             self.convert_int(row[54]),
             self.convert_int(row[55]),
             self.convert_int(row[56]),
-            inciso_id and inciso_id[0]
-        )
+            inciso_id and inciso_id[0]) or False
         budget_item_id = self.get_budget_item(
             row,
             descriptor3_id and descriptor3_id[0],
             descriptor1_id and descriptor1_id[0],
             descriptor2_id and descriptor2_id[0],
             descriptor4_id and descriptor4_id[0]
-        )
+        ) or False
 
-        security_job_id = row[87] and self.get_security_job(str(row[87]))
+        security_job_id = row[87] and self.get_security_job(str(row[87])) or False
+        retributive_day_id = row[82] and self.get_jornada_retributiva(str(row[82]), program_project_id and program_project_id[0]) or False
 
         row_dict.update({
             'country_id': country_id and country_id[0],
@@ -197,20 +197,16 @@ class ONSCMigration(models.Model):
             'occupation_id': occupation_id and occupation_id[0],
             'income_mechanism_id': income_mechanism_id and income_mechanism_id[0],
             'norm_id': norm_id and norm_id[0],
-
+            'retributive_day_id': row[82] and retributive_day_id and retributive_day_id[0],
             # 'retributive_day_formal_id': retributive_day_formal_id,
             'security_job_id': security_job_id and security_job_id[0],
         })
         if not row[71]:
-            retributive_day_id = row[82] and self.get_jornada_retributiva(
-                str(row[82]),
-                program_project_id and program_project_id[0])
-
-            department_id = row[69] and self.get_department(str(row[69]),
-                                                            operating_unit_id and operating_unit_id[0])
-            row_dict.update({
-                'retributive_day_id': row[82] and retributive_day_id and retributive_day_id[0],
-                'department_id': department_id and department_id[0], })
+            department_id = row[69] and self.get_department(str(row[69]), operating_unit_id and operating_unit_id[0]) or False
+            row_dict.update({'department_id': department_id and department_id[0], })
+        elif not inciso_id[1]:
+            department_id = row[69] and self.get_department(str(row[69]), operating_unit_id and operating_unit_id[0]) or False
+            row_dict.update({'department_id': department_id and department_id[0], })
 
     def process_binary(self):
         try:
@@ -248,29 +244,27 @@ class ONSCMigration(models.Model):
 
                     # SI ES COMISION
                     if row[71]:
-                        inciso_des_id = row[60] and self.get_inciso(str(row[60]))
+                        inciso_des_id = row[60] and self.get_inciso(str(row[60])) or False
                         operating_unit_des_id = row[61] and self.get_operating_unit(
                             str(row[61]),
-                            inciso_des_id and inciso_des_id[0])
+                            inciso_des_id and inciso_des_id[0]) or False
                         program_project_des_id = self.get_office(
                             str(row[62]),
                             str(row[63]),
-                            operating_unit_des_id and operating_unit_des_id[0]
-                        )
-                        regime_des_id = row[64] and self.get_regime(str(row[64]))
-                        state_place_des_id = row[68] and self.get_state_place(str(row[68]))
-                        regime_commission_id = row[72] and self.get_commision_regime(str(row[72]))
+                            operating_unit_des_id and operating_unit_des_id[0]) or False
+                        regime_des_id = row[64] and self.get_regime(str(row[64])) or False
+                        state_place_des_id = row[68] and self.get_state_place(str(row[68])) or False
+                        regime_commission_id = row[72] and self.get_commision_regime(str(row[72])) or False
                         norm_comm_id = row[74] and self.get_norm(
                             str(row[74]),
                             self.convert_int(row[75]),
                             self.convert_int(row[76]),
                             self.convert_int(row[77]),
-                            inciso_des_id and inciso_des_id[0]
-                        )
-                        department_id = row[69] and self.get_department(str(row[69]),
-                                                                        operating_unit_des_id and operating_unit_des_id[
-                                                                            0])
+                            inciso_des_id and inciso_des_id[0]) or False
 
+                        if inciso_des_id[1] is True:
+                            department_id = row[69] and self.get_department(str(row[69]), operating_unit_des_id and operating_unit_des_id[0]) or False
+                            row_dict['department_id'] = department_id and department_id[0]
                         row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
                         row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
                         row_dict['program_project_des_id'] = program_project_des_id and program_project_des_id[0]
@@ -292,19 +286,6 @@ class ONSCMigration(models.Model):
                         row_dict['resolution_comm_description'] = row[78]
                         row_dict['resolution_comm_date'] = self.convert_datetime(row[79])
                         row_dict['resolution_comm_type'] = row[80]
-                        if row[82] and inciso_des_id:
-                            if inciso_des_id[1] is True:
-                                retributive_day_id = self.get_jornada_retributiva(
-                                    str(row[82]),
-                                    program_project_des_id and program_project_des_id[0])
-                                row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[
-                                    0]
-                            elif row_dict['program_project_id']:
-                                retributive_day_id = self.get_jornada_retributiva(
-                                    str(row[82]), row_dict['program_project_id'])
-                                row_dict['retributive_day_id'] = row[82] and retributive_day_id and retributive_day_id[
-                                    0]
-                        row_dict['department_id'] = department_id and department_id[0]
 
                     row_dict['end_date_contract'] = self.convert_datetime(row[81])
                     row_dict['id_movimiento'] = self.convert_int(row[85])
@@ -316,7 +297,7 @@ class ONSCMigration(models.Model):
                             self.convert_int(row[93]),
                             self.convert_int(row[94]),
                             row_dict.get('inciso_id')
-                        )
+                        ) or False
                         row_dict['norm_dis_id'] = norm_dis_id and norm_dis_id[0]
                         if norm_dis_id:
                             row_dict['norm_dis_type'] = row[91]
@@ -358,7 +339,7 @@ class ONSCMigration(models.Model):
             message_error.append("El campo Ciudadanía no es válido")
 
         if (not row[65] and not row[66] and not row[67]) and (not row[45] and not row[46] and not row[47]):
-            message_error.append("Los campo PLaza, Sec. Plaza y Puesto no son válidos")
+            message_error.append("Los campo Plaza, Sec. Plaza y Puesto no son válidos")
 
         self._validate_m2o(row, row_dict, message_error)
         self._validate_norm(row, row_dict, message_error)
@@ -466,7 +447,7 @@ class ONSCMigration(models.Model):
             entero = int(row)
             return entero
         except ValueError:
-            return False
+            return 0
 
     def check_line(self, doc_nro, nro_puesto, nro_place, sec_place):
         self._cr.execute(
@@ -926,22 +907,28 @@ class ONSCMigrationLine(models.Model):
         for line in self.search([('state', 'in', ['draft'])], limit=limit):
             try:
                 employee = line._get_employee(Employee)  # existe el funcionario?
-                partner = line._create_contact(Partner)
+
                 if not employee:
+                    partner = line._create_contact(Partner)
                     cv_digital = line._create_cv(CVDigital, partner)
                     if line.state_move != 'AP':
                         employee = line._create_employee(Employee, partner, cv_digital)
                         line._create_legajo(employee)
                         cv_digital.write({'is_docket': True})
+                else:
+                    partner = self.get_partner(Partner)
 
                 if line.state_move == 'AP':
                     cv_digital = line._create_cv(CVDigital, partner)
                     line._create_alta_vl(AltaVL, Vacante, partner, employee, cv_digital)
-                elif line._check_unicity(Contract, employee):
-                    contract = line._create_contract(Contract, employee)
-                    if line.state_move == 'BP':
-                        line._create_baja_vl(BajaVL, contract, employee, partner)
-
+                else:
+                    if line._check_unicity(Contract, employee):
+                        contract = line._create_contract(Contract, employee)
+                        if line.state_move == 'BP':
+                            line._create_baja_vl(BajaVL, contract, employee, partner)
+                    else:
+                        line.write({'state': 'error', 'error': 'El contrato ya existe'})
+                        break
                 line.write({'state': 'process'})
                 self.env.cr.commit()
             except Exception as e:
@@ -952,8 +939,16 @@ class ONSCMigrationLine(models.Model):
                 })
                 self.env.cr.commit()
 
+    def get_partner(self, Partner):
+        partner = Partner.search([
+            ('cv_nro_doc', '=', self.doc_nro),
+            ('cv_emissor_country_id', '=', self.country_id.id),
+            ('cv_document_type_id', '=', self.doc_type_id.id),
+        ], limit=1)
+
+        return partner
+
     def _check_unicity(self, Contract, employee):
-        count = 0
         if not self.type_commission:
             count = Contract.suspend_security().search_count(
                 [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto),
@@ -968,8 +963,8 @@ class ONSCMigrationLine(models.Model):
                      ('legajo_state', '=', 'incoming_commission')])
             else:
                 count = Contract.suspend_security().search_count(
-                    [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto_des),
-                     ('workplace', '=', self.nro_place_des), ('sec_position', '=', self.sec_place_des),
+                    [('employee_id', '=', employee.id), ('position', '=', self.nro_puesto),
+                     ('workplace', '=', self.nro_place), ('sec_position', '=', self.sec_place),
                      ('legajo_state', '=', 'outgoing_commission')])
 
         return count == 0
@@ -1037,7 +1032,7 @@ class ONSCMigrationLine(models.Model):
             # self.write({'partner_id': partner.id})
             # self.env.cr.commit()
         except Exception as e:
-            raise ValidationError("No se puedo crear el contacto: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el contacto: ") + tools.ustr(e))
             # self.env.cr.rollback()
             # self.write({'state': 'error', 'error': "No se puedo crear el contacto: " + tools.ustr(e)})
             # self.env.cr.commit()
@@ -1109,10 +1104,10 @@ class ONSCMigrationLine(models.Model):
                         '%s_documentary_validation_date' % item: self.create_date,
                         '%s_documentary_user_id' % item: self.create_uid.id,
                     })
-                cv_digital.with_context(no_update_header_documentary_validation = True).write(data)
+                cv_digital.with_context(no_update_header_documentary_validation=True).write(data)
                 return cv_digital
         except Exception as e:
-            raise ValidationError("No se puedo crear el CV: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el CV: ") + tools.ustr(e))
             # self.env.cr.rollback()
             # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
@@ -1178,7 +1173,8 @@ class ONSCMigrationLine(models.Model):
                 'cv_address_place': self.address_place,
                 'cv_address_zip': self.address_zip,
                 'cv_address_block': self.address_block,
-                'cv_address_sandlot': self.address_sandlot
+                'cv_address_sandlot': self.address_sandlot,
+                'id_alta': self.id_movimiento
 
             }
             altavl = AltaVL.with_context(is_migration=True).create(data_alta_vl)
@@ -1202,7 +1198,7 @@ class ONSCMigrationLine(models.Model):
 
             return altavl
         except Exception as e:
-            raise ValidationError("No se puedo crear el AltaVL: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el AltaVL: ") + tools.ustr(e))
             # self.env.cr.rollback()
             # self.write({'state': 'error', 'error': "No se puedo crear el CV: " + tools.ustr(e)})
             # self.env.cr.commit()
@@ -1221,7 +1217,7 @@ class ONSCMigrationLine(models.Model):
             return employee
 
         except Exception as e:
-            raise ValidationError("No se puedo crear el funcionario: " + tools.ustr(e))
+            raise ValidationError(_("No se puedo crear el funcionario: ") + tools.ustr(e))
 
     def _create_legajo(self, employee):
         return self.env['onsc.legajo']._get_legajo(
@@ -1234,21 +1230,24 @@ class ONSCMigrationLine(models.Model):
         vals_contract1 = {
             'employee_id': employee.id,
             'name': employee.name,
-            'date_start': self.date_start or fields.Date.today(),
-            'eff_date': self.date_start or fields.Date.today(),
             'inciso_id': self.inciso_id.id,
             'operating_unit_id': self.operating_unit_id.id,
             'program': self.program_project_id.programa,
             'project': self.program_project_id.proyecto,
-            'occupation_id': self.occupation_id.id,
             'position': self.nro_puesto,
             'workplace': self.nro_place,
             'sec_position': self.sec_place,
-            'reason_description': self.reason_description,
-
             'contract_expiration_date': self.end_date_contract,
-            'id_alta': self.id_movimiento,
+            'descriptor1_id': self.descriptor1_id.id,
+            'descriptor2_id': self.descriptor2_id.id,
+            'descriptor3_id': self.descriptor3_id.id,
+            'descriptor4_id': self.descriptor4_id.id,
+            'graduation_date': self.graduation_date,
+            'income_mechanism_id': self.income_mechanism_id.id,
+            'id_alta': self.state_move != 'BP' and self.id_movimiento,
+            'regime_id': self.regime_id.id,
             'state_square_id': self.state_place_id.id,
+            'call_number': self.call_number,
             'wage': 1
         }
 
@@ -1257,50 +1256,34 @@ class ONSCMigrationLine(models.Model):
 
             vals_contract1.update({
                 'legajo_state': legajo_state,
+                'date_start': self.date_start or fields.Date.today(),
                 'code_day': self.retributive_day_formal,
                 'description_day': self.retributive_day_formal_desc,
                 'retributive_day_id': self.retributive_day_id.id,
-                'graduation_date': self.graduation_date,
-                'income_mechanism_id': self.income_mechanism_id.id,
-                'call_number': self.call_number,
-                'regime_id': self.regime_id.id,
-                'descriptor1_id': self.descriptor1_id.id,
-                'descriptor2_id': self.descriptor2_id.id,
-                'descriptor3_id': self.descriptor3_id.id,
-                'descriptor4_id': self.descriptor4_id.id,
+                'eff_date': self.date_start or fields.Date.today(),
                 'resolution_description': self.resolution_description,
                 'resolution_date': self.resolution_date,
                 'resolution_type': self.resolution_type,
                 'norm_code_id': self.norm_id.id,
+                'occupation_id': self.occupation_id.id,
+
             })
             contracts = Contract.suspend_security().create(vals_contract1)
+            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+                                                                                           self.security_job_id,
+                                                                                           self.create_date):
+                raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.department_id and self.security_job_id:
                 Job.create_job(
                     contracts,
                     self.department_id,
-                    self.create_date,
+                    self.date_start,
                     self.security_job_id
                 )
         else:
+
             vals_contract2 = vals_contract1.copy()
-            vals_contract1.update({
-                'legajo_state': 'outgoing_commission',
-                'code_day': self.retributive_day_formal,
-                'description_day': self.retributive_day_formal_desc,
-                'retributive_day_id': self.retributive_day_id.id,
-                'graduation_date': self.graduation_date,
-                'income_mechanism_id': self.income_mechanism_id.id,
-                'call_number': self.call_number,
-                'regime_id': self.regime_id.id,
-                'descriptor1_id': self.descriptor1_id.id,
-                'descriptor2_id': self.descriptor2_id.id,
-                'descriptor3_id': self.descriptor3_id.id,
-                'descriptor4_id': self.descriptor4_id.id,
-                'resolution_description': self.resolution_description,
-                'resolution_date': self.resolution_date,
-                'resolution_type': self.resolution_type,
-                'norm_code_id': self.norm_id.id,
-            })
+
             vals_contract2.update({
                 'legajo_state': 'incoming_commission',
                 'inciso_id': self.inciso_des_id.id,
@@ -1312,26 +1295,63 @@ class ONSCMigrationLine(models.Model):
                 'workplace': self.nro_place_des,
                 'sec_position': self.sec_place_des,
                 'state_square_id': self.state_place_des_id.id,
-                'eff_date': self.date_start or fields.Date.today(),
+                'eff_date': self.date_start_commission,
                 'resolution_description': self.resolution_comm_description,
                 'resolution_date': self.resolution_comm_date,
                 'resolution_type': self.resolution_comm_type,
                 'norm_code_id': self.norm_comm_id.id,
+                'date_start': self.date_start_commission or fields.Date.today(),
+                'reason_description': self.reason_commision,
+
+
             })
 
-            if self.inciso_id.is_central_administration:
-                contract1 = Contract.suspend_security().create(vals_contract1)
+            if self.inciso_des_id.is_central_administration:
                 vals_contract2.update({
-                    'cs_contract_id': contract1.id,
                     'code_day': self.retributive_day_formal,
                     'description_day': self.retributive_day_formal_desc,
                     'retributive_day_id': self.retributive_day_id.id,
+                    'occupation_id': self.occupation_id.id,
+                })
+                if not self.inciso_id.is_central_administration:
+                    vals_contract2.update({
+                        'inciso_origin_id': self.inciso_id.id,
+                        'operating_unit_origin_id': self.operating_unit_id.id,
+
+                    })
+            if self.inciso_id.is_central_administration:
+                vals_contract1.update({
+                    'legajo_state': 'outgoing_commission',
+                    'resolution_description': self.resolution_description,
+                    'resolution_date': self.resolution_date,
+                    'resolution_type': self.resolution_type,
+                    'norm_code_id': self.norm_id.id,
+                    'reason_description': self.reason_description,
+                    'occupation_id': self.occupation_id.id,
+                    'code_day': self.retributive_day_formal,
+                    'description_day': self.retributive_day_formal_desc,
+                    'retributive_day_id': self.retributive_day_id.id,
+                })
+                if not self.inciso_des_id.is_central_administration:
+                    vals_contract1.update({
+                        'code_day': self.retributive_day_formal,
+                        'description_day': self.retributive_day_formal_desc,
+                        'retributive_day_id': self.retributive_day_id.id,
+                    })
+                contract1 = Contract.suspend_security().create(vals_contract1)
+                vals_contract2.update({
+                    'cs_contract_id': contract1.id,
+
                 })
             contract2 = Contract.suspend_security().create(vals_contract2)
             contracts = contract2
             if not self.inciso_des_id.is_central_administration:
                 contracts |= contract1
 
+            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+                                                                                           self.security_job_id,
+                                                                                           self.date_start_commission):
+                raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:
                 Job.create_job(
                     contract2,
