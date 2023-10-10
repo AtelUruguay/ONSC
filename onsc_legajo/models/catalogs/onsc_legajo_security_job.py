@@ -14,6 +14,7 @@ class ONSCLegajoSecurityJob(models.Model):
     active = fields.Boolean('Activo', default=True)
     user_role_ids_domain = fields.Char(default=lambda self: self._user_role_ids_domain(),
                                        compute='_compute_user_role_ids_domain')
+    sequence = fields.Integer(string="Nivel", default=1)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)', u'El nombre de la seguridad de puesto debe ser única'),
