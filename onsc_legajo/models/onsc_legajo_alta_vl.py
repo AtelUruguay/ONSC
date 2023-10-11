@@ -307,6 +307,12 @@ class ONSCLegajoAltaVL(models.Model):
                 domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
 
+    @api.constrains("inactivity_years")
+    def _check_inactivity_years(self):
+        for record in self:
+            if record.inactivity_years < 0:
+                raise ValidationError(_("Los años de inactividad no pueden ser negativos"))
+
     @api.constrains("attached_document_ids")
     def _check_attached_document_ids(self):
         for record in self:
