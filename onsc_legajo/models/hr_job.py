@@ -228,7 +228,7 @@ class HrJobRoleLine(models.Model):
 
     user_role_id_domain = fields.Char(default=lambda self: self._user_role_id_domain(),
                                       compute='_compute_user_role_id_domain')
-    file = fields.Binary("Adjunto")
+    file = fields.Binary("Agregar adjunto")
     filename = fields.Char('Nombre del documento adjunto')
 
     @api.constrains("start_date", "end_date", "job_id", "active", "user_role_id")
