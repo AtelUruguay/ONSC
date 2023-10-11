@@ -332,6 +332,14 @@ class ONSCLegajoAltaVL(models.Model):
             if record.date_start and record.graduation_date and record.graduation_date > record.date_start:
                 raise ValidationError(_("La fecha de graduación debe ser menor o igual al día de alta"))
 
+    @api.constrains("date_start", "date_income_public_administration")
+    def _check_date_income_public_administration(self):
+        for record in self:
+            _date = record.date_income_public_administration
+            if _date and record.date_start and record.date_start < _date:
+                raise ValidationError(
+                    _("La Fecha de ingreso a la administración pública no puede ser mayor a la Fecha de alta"))
+
     @api.onchange('inciso_id')
     def onchange_inciso(self):
         # TODO: terminar los demas campos a setear

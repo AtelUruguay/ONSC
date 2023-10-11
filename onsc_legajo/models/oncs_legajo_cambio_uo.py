@@ -320,7 +320,6 @@ class ONSCLegajoCambioUO(models.Model):
         self.ensure_one()
         Job = self.env['hr.job']
         self._validate_confirm()
-        self.contract_id.suspend_security().write({'eff_date': self.date_start})
         warning_message = False
         show_warning = False
         if self.job_id.start_date == self.date_start:
