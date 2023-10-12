@@ -109,12 +109,12 @@
               parent="onsc_desempeno_evaluaciones_menu"
               sequence="10"/>
 
-     <menuitem id="onsc_desempeno_environment_definition_menu"
-              name="Evaluación de entorno"
-              action="onsc_desempeno_environment_definition_action"
-              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
-              parent="onsc_desempeno_evaluaciones_menu"
-              sequence="15"/>
+<!--     <menuitem id="onsc_desempeno_environment_definition_menu"-->
+<!--              name="Evaluación de entorno"-->
+<!--              action="onsc_desempeno_environment_definition_action"-->
+<!--              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"-->
+<!--              parent="onsc_desempeno_evaluaciones_menu"-->
+<!--              sequence="15"/>-->
 
 
 </odoo>

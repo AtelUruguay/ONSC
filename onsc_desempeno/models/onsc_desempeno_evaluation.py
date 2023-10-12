@@ -31,44 +31,71 @@ class ONSCDesempenoEvaluation(models.Model):
     _name = 'onsc.desempeno.evaluation'
     _description = u'Evaluación'
 
-    def _get_domain(self, args):
-        if self._context.get('self_evaluation') or self._context.get('collaborator_evaluation'):
-            args = self._get_domain_self_evaluation(args)
-        if self._context.get('leader_evaluation'):
-            args = self._get_domain_leader_evaluation(args)
+    def _is_group_admin_gh_inciso(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso')
 
+    def _is_group_admin_gh_ue(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue')
+
+    def _is_group_usuario_evaluacion(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_usuario_evaluacion')
+
+    def _is_group_responsable_uo(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_responsable_uo')
+
+    def _get_domain(self, args):
+        if self._context.get('self_evaluation'):
+            args = expression.AND([[('evaluation_type', '=', 'self_evaluation'), ], args])
+            args = self._get_domain_evaluation(args)
+        if self._context.get('collaborator_evaluation'):
+            args = expression.AND([[('evaluation_type', '=', 'collaborator'), ], args])
+            args = self._get_domain_collaborator(args)
+        if self._context.get('leader_evaluation'):
+            args = expression.AND([[('evaluation_type', '=', 'leader_evaluation'), ], args])
+            args = self._get_domain_evaluation(args)
         return args
 
-    def _get_domain_self_evaluation(self, args):
-        if self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso'):
+    def _get_domain_evaluation(self, args):
+        abstract_security = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
+        if self._is_group_admin_gh_inciso():
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-
             args = expression.AND([[('inciso_id', '=', inciso_id), ], args])
-        elif self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue'):
+        elif self._is_group_admin_gh_ue():
             operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
             args = expression.AND([[('operating_unit_id', '=', operating_unit_id), ], args])
-        elif self.user_has_groups('onsc_desempeno.group_desempeno_usuario_evaluacion'):
-            args = expression.OR([[('evaluated_id', '=', self.env.user.employee_id.id), ], args])
-
+        elif self._is_group_usuario_evaluacion():
+            if not abstract_security:
+                args = expression.AND([[('evaluator_id', '=', self.env.user.employee_id.id), ], args])
+            else:
+                args = expression.OR(
+                    [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', 'self_evaluation')],
+                     args])
         return args
 
-    def _get_domain_leader_evaluation(self, args):
-        if self.user_has_groups('onsc_desempeno.group_desempeno_responsable_uo'):
+    def _get_domain_collaborator(self, args):
+        abstract_security = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue() or self._is_group_responsable_uo()
+        if self._is_group_responsable_uo():
             user_department = self.env['hr.department'].search([('manager_id', '=', self.env.user.employee_id.id)])
             available_department_ids = [user_department.ids]
             for user_department in user_department:
-                available_department_ids.extend(self.env['hr.department'].search([('id', 'child_of', user_department.id)]))
+                available_department_ids.extend(
+                    self.env['hr.department'].search([('id', 'child_of', user_department.id)]))
             args = expression.AND([['|',
                                     ('evaluator_id', '=', self.env.user.employee_id.id),
                                     ('uo_id', 'in', available_department_ids)], args])
-        elif self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso'):
+        elif self._is_group_admin_gh_inciso():
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
             args = expression.AND([[('inciso_id', '=', inciso_id), ], args])
-        elif self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue'):
+        elif self._is_group_admin_gh_ue():
             operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
             args = expression.AND([[('operating_unit_id', '=', operating_unit_id), ], args])
-        elif self.user_has_groups('onsc_desempeno.group_desempeno_usuario_evaluacion'):
-            args = expression.OR([[('evaluated_id', '=', self.env.user.employee_id.id), ], args])
+        elif self._is_group_usuario_evaluacion():
+            if not abstract_security:
+                args = expression.AND([[('evaluator_id', '=', self.env.user.employee_id.id), ], args])
+            else:
+                args = expression.OR(
+                    [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', 'self_evaluation')],
+                     args])
 
         return args
 
@@ -182,16 +209,16 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            is_self_evaluation = record.evaluation_type == 'self_evaluation'
-            second_condition = record.state not in ['in_process'] or record.evaluated_id.id != user_employee_id
-            record.should_disable_form_edit = is_self_evaluation and second_condition
+            # is_self_evaluation = record.evaluation_type == 'self_evaluation'
+            second_condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id
+            record.should_disable_form_edit = second_condition
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            is_am_evaluated = record.evaluated_id.id == user_employee_id
-            record.evaluation_form_edit = record.evaluation_type == 'self_evaluation' and is_am_evaluated
+            # is_am_evaluated = record.evaluated_id.id == user_employee_id
+            record.evaluation_form_edit = record.evaluator_id.id == user_employee_id
 
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})
