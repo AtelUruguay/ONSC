@@ -1,11 +1,16 @@
 # -*- coding:utf-8 -*-
 import json
+import logging
+from email_validator import EmailNotValidError, validate_email
+
 
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 STATES = [
     ('borrador', 'Borrador'),
@@ -197,11 +202,21 @@ class ONSCLegajoBajaVL(models.Model):
             date_end=self.end_date
         )
         self.suspend_security().write({'state': 'aprobado_cgn'})
+        self._send_aprobado_notification()
         return True
 
     def action_rechazado_cgn(self):
         self.write({'state': 'rechazado_cgn'})
+        self._send_rechazado_notification()
         return True
+
+    def _send_aprobado_notification(self):
+        validation_email_template_id = self.env.ref('onsc_legajo.email_template_bajavl_aprobada')
+        validation_email_template_id.send_mail(self.id, force_send=True)
+
+    def _send_rechazado_notification(self):
+        validation_email_template_id = self.env.ref('onsc_legajo.email_template_bajavl_rechazada')
+        validation_email_template_id.send_mail(self.id, force_send=True)
 
     def button_open_contract(self):
         self.ensure_one()
@@ -242,3 +257,18 @@ class ONSCLegajoBajaVL(models.Model):
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
         return True
+
+    def get_followers_mails(self):
+        followers_emails = []
+        for follower in self.message_follower_ids:
+            try:
+                partner_email = follower.partner_id.email
+                validate_email(partner_email)
+                followers_emails.append(partner_email)
+            except EmailNotValidError:
+                # Si el email no es válido, se captura la excepción
+                _logger.info(_("Mail de Contacto no válido: %s") % follower.partner_id.email)
+        return ','.join(followers_emails)
+
+    def get_bajavl_name(self):
+        return self.employee_id.display_name
