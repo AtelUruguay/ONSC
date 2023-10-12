@@ -32,7 +32,7 @@ class ONSCDesempenoEvaluation(models.Model):
     _description = u'Evaluación'
 
     def _get_domain(self, args):
-        if self._context.get('self_evaluation'):
+        if self._context.get('self_evaluation') or self._context.get('collaborator_evaluation'):
             args = self._get_domain_self_evaluation(args)
         if self._context.get('leader_evaluation'):
             args = self._get_domain_leader_evaluation(args)
@@ -52,7 +52,6 @@ class ONSCDesempenoEvaluation(models.Model):
 
         return args
 
-    # todo el metodo _get_domain_leadgraer_evaluation no esta hecho
     def _get_domain_leader_evaluation(self, args):
         if self.user_has_groups('onsc_desempeno.group_desempeno_responsable_uo'):
             user_department = self.env['hr.department'].search([('manager_id', '=', self.env.user.employee_id.id)])
