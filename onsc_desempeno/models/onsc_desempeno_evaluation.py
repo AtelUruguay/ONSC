@@ -49,7 +49,7 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_evaluation(args)
         if self._context.get('collaborator_evaluation'):
             args = expression.AND([[('evaluation_type', '=', 'collaborator'), ], args])
-            args =  self._get_domain_collaborator(args)
+            args = self._get_domain_collaborator(args)
         if self._context.get('leader_evaluation'):
             args = expression.AND([[('evaluation_type', '=', 'leader_evaluation'), ], args])
             args = self._get_domain_evaluation(args)
