@@ -171,7 +171,7 @@ class ONSCDesempenoEvaluationList(models.Model):
     def _compute_should_disable_form_edit(self):
         for record in self:
             valid_edit = record.state == 'closed' or record.end_date < fields.Date.today() or not record.end_date
-            record.should_disable_form_edit = False
+            record.should_disable_form_edit = valid_edit
 
     def button_generate_evaluations(self):
         self.ensure_one()
@@ -181,8 +181,8 @@ class ONSCDesempenoEvaluationList(models.Model):
             for line in valid_lines:
                 try:
                     new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                    self.suspend_security()._create_leader_evaluation(line)
-                    self.suspend_security()._create_collaborator_evaluation()
+                    self.suspend_security()._create_collaborator_evaluation(line)
+                    self.suspend_security()._create_leader_evaluation()
                     if fields.Date.today() <= self.end_date:
                         self.suspend_security()._create_environment_definition(line)
 
@@ -312,7 +312,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
         return evaluation
 
-    def _create_leader_evaluation(self, data):
+    def _create_collaborator_evaluation(self, data):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
@@ -332,7 +332,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation = Evaluation.create({
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
-            'evaluation_type': 'leader_evaluation',
+            'evaluation_type': 'collaborator',
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
             'operating_unit_id': data.contract_id.operating_unit_id.id,
@@ -355,7 +355,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         return True
 
-    def _create_collaborator_evaluation(self):
+    def _create_leader_evaluation(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
@@ -379,11 +379,11 @@ class ONSCDesempenoEvaluationList(models.Model):
             evaluation = Evaluation.create({
                 'evaluated_id': self.manager_id.id,
                 'evaluator_id': data.employee_id.id,
-                'evaluation_type': 'collaborator',
-                'uo_id':  self.manager_id.job_id.department_id.id,
-                'inciso_id':  self.manager_id.job_id.contract_id.inciso_id.id,
-                'operating_unit_id':  self.manager_id.job_id.contract_id.operating_unit_id.id,
-                'occupation_id':  self.manager_id.job_id.contract_id.occupation_id.id,
+                'evaluation_type': 'leader_evaluation',
+                'uo_id': self.manager_id.job_id.department_id.id,
+                'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
+                'operating_unit_id': self.manager_id.job_id.contract_id.operating_unit_id.id,
+                'occupation_id': self.manager_id.job_id.contract_id.occupation_id.id,
                 'level_id': level_id.id,
                 'evaluation_stage_id': self.evaluation_stage_id.id,
                 'general_cycle_id': self.evaluation_stage_id.general_cycle_id.id,
@@ -406,8 +406,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_list_action')
         return action.read()[0]
 
-
-    def _get_records_random(self,records):
+    def _get_records_random(self, records):
 
         if len(records) < 5:
             records_random = records
@@ -416,6 +415,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             records_random = random.sample(records, 4)
 
         return records_random
+
 
 class ONSCDesempenoEvaluationListLine(models.Model):
     _name = 'onsc.desempeno.evaluation.list.line'
