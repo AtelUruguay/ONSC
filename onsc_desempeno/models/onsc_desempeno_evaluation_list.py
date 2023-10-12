@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import random
 from collections import defaultdict
 
 from odoo import fields, models, api, tools, _
@@ -180,10 +181,11 @@ class ONSCDesempenoEvaluationList(models.Model):
             for line in valid_lines:
                 try:
                     new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                    self.suspend_security()._create_leader_evaluation(line)
+                    self.suspend_security()._create_collaborator_evaluation(line)
+                    self.suspend_security()._create_leader_evaluation()
                     if fields.Date.today() <= self.end_date:
                         self.suspend_security()._create_environment_definition(line)
-                        self.suspend_security()._create_collaborator_evaluation(line)
+
                     line.suspend_security().write({
                         'state': 'generated',
                         'error_log': False,
@@ -194,6 +196,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                     line.write({
                         'state': 'error',
                         'error_log': 'Error al generar formulario contacte al administrador. %s' % (tools.ustr(e))})
+
         return lines_evaluated
 
     # INTELIGENCIA
@@ -274,7 +277,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
-        is_manager = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id == data.employee_id.id
+        hierachy_manager_id = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id
+        is_manager = hierachy_manager_id == data.employee_id.id
         level_id = Level.suspend_security().search(
             [('hierarchical_level_id', '=', data.job_id.department_id.hierarchical_level_id.id),
              ('is_uo_manager', '=', is_manager)]).mapped("level_id")
@@ -308,16 +312,90 @@ class ONSCDesempenoEvaluationList(models.Model):
 
         return evaluation
 
-    def _create_leader_evaluation(self, data):
-        # TODO Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        return True
+    def _create_collaborator_evaluation(self, data):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        hierachy_manager_id = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id
+        is_manager = hierachy_manager_id == data.employee_id.id
+        level_id = Level.suspend_security().search(
+            [('hierarchical_level_id', '=', data.job_id.department_id.hierarchical_level_id.id),
+             ('is_uo_manager', '=', is_manager)]).mapped("level_id")
+        if not level_id:
+            raise ValidationError(
+                _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+        skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+            [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+        if not skills:
+            raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+
+        evaluation = Evaluation.create({
+            'evaluated_id': data.employee_id.id,
+            'evaluator_id': self.manager_id.id,
+            'evaluation_type': 'collaborator',
+            'uo_id': data.job_id.department_id.id,
+            'inciso_id': data.contract_id.inciso_id.id,
+            'operating_unit_id': data.contract_id.operating_unit_id.id,
+            'occupation_id': data.contract_id.occupation_id.id,
+            'level_id': level_id.id,
+            'evaluation_stage_id': data.evaluation_list_id.evaluation_stage_id.id,
+            'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
+            'state': 'draft',
+        })
+        for skill in skills:
+            Competency.create({'evaluation_id': evaluation.id,
+                               'skill_id': skill.id,
+                               'skill_line_ids': skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids
+                               })
+
+        return evaluation
 
     def _create_environment_definition(self, data):
         # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         return True
 
-    def _create_collaborator_evaluation(self, data):
-        # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+    def _create_leader_evaluation(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
+        if len(valid_lines) == 1:
+            return
+
+        for data in self._get_records_random(valid_lines):
+
+            level_id = Level.suspend_security().search(
+                [('hierarchical_level_id', '=', self.manager_id.job_id.department_id.hierarchical_level_id.id),
+                 ('is_uo_manager', '=', True)]).mapped("level_id")
+            if not level_id:
+                raise ValidationError(
+                    _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+            skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+                [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+            if not skills:
+                raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+
+            evaluation = Evaluation.create({
+                'evaluated_id': self.manager_id.id,
+                'evaluator_id': data.employee_id.id,
+                'evaluation_type': 'leader_evaluation',
+                'uo_id': self.manager_id.job_id.department_id.id,
+                'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
+                'operating_unit_id': self.manager_id.job_id.contract_id.operating_unit_id.id,
+                'occupation_id': self.manager_id.job_id.contract_id.occupation_id.id,
+                'level_id': level_id.id,
+                'evaluation_stage_id': self.evaluation_stage_id.id,
+                'general_cycle_id': self.evaluation_stage_id.general_cycle_id.id,
+                'state': 'draft',
+            })
+            for skill in skills:
+                Competency.create({'evaluation_id': evaluation.id,
+                                   'skill_id': skill.id,
+                                   'skill_line_ids': skill.skill_line_ids.filtered(
+                                       lambda r: r.level_id.id == evaluation.level_id.id).ids
+                                   })
+
         return True
 
     def _action_desempeno_evaluation_list(self):
@@ -327,6 +405,16 @@ class ONSCDesempenoEvaluationList(models.Model):
         else:
             action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_list_action')
         return action.read()[0]
+
+    def _get_records_random(self, records):
+
+        if len(records) < 5:
+            records_random = records
+        else:
+            # Selecciona 4 registros al azar de la grilla
+            records_random = random.sample(records, 4)
+
+        return records_random
 
 
 class ONSCDesempenoEvaluationListLine(models.Model):

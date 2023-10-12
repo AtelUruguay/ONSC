@@ -95,8 +95,26 @@
               parent="onsc_desempeno_evaluaciones_menu"
               sequence="1"/>
 
+    <menuitem id="onsc_desempeno_leader_evaluation_menu"
+              name="Evaluación del Líder al Colaborador"
+              action="onsc_desempeno_leader_evaluation_action"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
+              parent="onsc_desempeno_evaluaciones_menu"
+              sequence="5"/>
 
+    <menuitem id="onsc_desempeno_collaborator_evaluation_menu"
+              name="Evaluación de Colaborador/a al Líder"
+              action="onsc_desempeno_collaborator_evaluation_action"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
+              parent="onsc_desempeno_evaluaciones_menu"
+              sequence="10"/>
 
+<!--     <menuitem id="onsc_desempeno_environment_definition_menu"-->
+<!--              name="Evaluación de entorno"-->
+<!--              action="onsc_desempeno_environment_definition_action"-->
+<!--              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"-->
+<!--              parent="onsc_desempeno_evaluaciones_menu"-->
+<!--              sequence="15"/>-->
 
 
 </odoo>
