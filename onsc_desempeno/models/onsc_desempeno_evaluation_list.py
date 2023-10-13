@@ -333,7 +333,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
             'evaluation_type': 'leader_evaluation',
-            'original_evaluator_id':self.manager_id.id,
+            'original_evaluator_id': self.manager_id.id,
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
             'operating_unit_id': data.contract_id.operating_unit_id.id,
@@ -354,7 +354,6 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     def _create_environment_definition(self, data):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
         hierachy_manager_id = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id
         is_manager = hierachy_manager_id == data.employee_id.id
@@ -385,8 +384,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
         return evaluation
 
-
-    def _create_collaborator_evaluation (self):
+    def _create_collaborator_evaluation(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()

@@ -45,7 +45,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _get_domain(self, args):
         if self._context.get('self_evaluation'):
-            args = self._get_domain_evaluation(args,'self_evaluation')
+            args = self._get_domain_evaluation(args, 'self_evaluation')
         if self._context.get('collaborator_evaluation'):
             args = expression.AND([[('evaluation_type', '=', 'collaborator'), ], args])
             args = self._get_domain_collaborator(args)
@@ -62,26 +62,27 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_evaluation(args, 'leader_evaluation')
 
         if self._context.get('environment_definition'):
-
-            args = self._get_domain_evaluation(args,'environment_definition')
-
+            args = self._get_domain_evaluation(args, 'environment_definition')
 
         return args
 
-    def _get_domain_evaluation(self, args,evaluation_type):
+    def _get_domain_evaluation(self, args, evaluation_type):
         abstract_security = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
         if self._is_group_admin_gh_inciso():
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-            args = expression.AND([[('inciso_id', '=', inciso_id),('evaluation_type', '=',evaluation_type) ], args])
+            args = expression.AND([[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args])
         elif self._is_group_admin_gh_ue():
             operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
-            args = expression.AND([[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=',evaluation_type)], args])
+            args = expression.AND(
+                [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)], args])
         elif self._is_group_usuario_evaluacion():
             if not abstract_security:
-                args = expression.AND([[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=',evaluation_type)], args])
+                args = expression.AND(
+                    [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', evaluation_type)],
+                     args])
             else:
                 args = expression.OR(
-                    [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=',evaluation_type)],
+                    [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', evaluation_type)],
                      args])
         return args
 
@@ -183,6 +184,7 @@ class ONSCDesempenoEvaluation(models.Model):
         default=lambda s: s._get_environment_evaluation_text('environment_evaluation_text', True)
     )
     collaborators = fields.Boolean(string="Colaboradores directos", default=False)
+
     def _get_evaluation_form_text(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         if is_default:
