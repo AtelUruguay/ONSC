@@ -100,5 +100,5 @@ class ResPartner(models.Model):
                 followers_emails.append(partner_email)
             except EmailNotValidError:
                 # Si el email no es válido, se captura la excepción
-                _logger.info(_("Mail de Contacto no válido: %s") % follower.partner_id.email)
+                _logger.info(_("Mail de Contacto no válido: %s") % follower.email)
         return ','.join(followers_emails)
