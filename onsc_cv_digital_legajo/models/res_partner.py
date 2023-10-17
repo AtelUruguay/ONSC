@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from email_validator import EmailNotValidError, validate_email
+from email_validator import validate_email
 
 from odoo import models, fields, api, _
 from odoo.osv import expression
@@ -98,7 +98,7 @@ class ResPartner(models.Model):
                     partner_email = follower.email
                 validate_email(partner_email)
                 followers_emails.append(partner_email)
-            except Exception as e:
+            except Exception:
                 # Si el email no es válido, se captura la excepción
                 _logger.info(_("Mail de Contacto no válido: %s") % follower.email)
         return ','.join(followers_emails) or ''
