@@ -48,6 +48,12 @@
                             attrs="{'invisible': ['|',('state', '!=', 'in_process'),('evaluation_form_edit', '=', False)]}"
                             name="button_completed_evaluation"
                             confirm="¿Está seguro de que desea dar por completado el formulario?"/>
+                    <button name="%(onsc_desempeno.onsc_desempeno_evaluation_change_wizard_action)d"
+                            class="btn btn-secundary"
+                            string="Cambio de evaluador"
+                            context="{'default_evaluation_id': active_id}"
+                            attrs="{'invisible': ['|',('state', 'not in', ['in_process','draft']),('evaluation_type', '!=', 'collaborator')]}"
+                            type="action" icon="fa-exchange"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,in_process,completed,finished"/>
                 </header>

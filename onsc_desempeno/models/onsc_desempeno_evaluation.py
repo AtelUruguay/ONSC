@@ -96,7 +96,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 args = expression.OR(
                     [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', 'self_evaluation')],
                      args])
-
+        args = expression.OR([[('original_evaluator_id', '=', self.env.user.employee_id.id)], args])
         return args
 
     @api.model
