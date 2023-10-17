@@ -1,7 +1,12 @@
 # -*- coding: utf-8 -*-
+import logging
 
-from odoo import models, fields, api
+from email_validator import EmailNotValidError, validate_email
+
+from odoo import models, fields, api, _
 from odoo.osv import expression
+
+_logger = logging.getLogger(__name__)
 
 MODIFIED_FIELDS_TO_NOTIFY_SGH = [
     'name',
@@ -84,12 +89,16 @@ class ResPartner(models.Model):
         CVDigital = self.env['onsc.cv.digital'].sudo()
         followers_emails = []
         for follower in self:
-            cv_digital = CVDigital.search([('partner_id', '=', follower.id), ('type', '=', 'cv')],
-                                          limit=1)
-            if cv_digital.institutional_email:
-                partner_email = cv_digital.institutional_email
-            else:
-                partner_email = follower.email
-            followers_emails.append(partner_email)
+            try:
+                cv_digital = CVDigital.search([('partner_id', '=', follower.id), ('type', '=', 'cv')],
+                                              limit=1)
+                if cv_digital.institutional_email:
+                    partner_email = cv_digital.institutional_email
+                else:
+                    partner_email = follower.email
+                validate_email(partner_email)
+                followers_emails.append(partner_email)
+            except EmailNotValidError:
+                # Si el email no es válido, se captura la excepción
+                _logger.info(_("Mail de Contacto no válido: %s") % follower.partner_id.email)
         return ','.join(followers_emails)
-
