@@ -256,7 +256,7 @@ class ONSCMigration(models.Model):
                         program_project_des_id = self.get_office(
                             str(row[62]),
                             str(row[63]),
-                            operating_unit_des_id and operating_unit_des_id[0]) or False
+                            operating_unit_des_id and operating_unit_des_id[0] or 0) or False
                         regime_des_id = row[64] and self.get_regime(str(row[64])) or False
                         state_place_des_id = row[68] and self.get_state_place(str(row[68])) or False
                         regime_commission_id = row[72] and self.get_commision_regime(str(row[72])) or False
