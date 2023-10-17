@@ -180,18 +180,18 @@ class ONSCDesempenoEvaluationList(models.Model):
         with self._cr.savepoint():
             for line in valid_lines:
                 try:
-                    new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                    self.suspend_security()._create_collaborator_evaluation(line)
-                    self.suspend_security()._create_leader_evaluation()
                     if fields.Date.today() <= self.end_date:
+                        new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                        self.suspend_security()._create_collaborator_evaluation(line)
+                        self.suspend_security()._create_leader_evaluation()
                         self.suspend_security()._create_environment_definition(line)
 
-                    line.suspend_security().write({
-                        'state': 'generated',
-                        'error_log': False,
-                        'evaluation_create_date': fields.Date.today(),
-                        'evaluation_ids': [(6, 0, [new_evaluation.id])]})
-                    lines_evaluated |= line
+                        line.suspend_security().write({
+                            'state': 'generated',
+                            'error_log': False,
+                            'evaluation_create_date': fields.Date.today(),
+                            'evaluation_ids': [(6, 0, [new_evaluation.id])]})
+                        lines_evaluated |= line
                 except Exception as e:
                     line.write({
                         'state': 'error',
@@ -312,7 +312,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
         return evaluation
 
-    def _create_collaborator_evaluation(self, data):
+    def _create_leader_evaluation(self, data):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
@@ -332,7 +332,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation = Evaluation.create({
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
-            'evaluation_type': 'collaborator',
+            'evaluation_type': 'leader_evaluation',
+            'original_evaluator_id': self.manager_id.id,
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
             'operating_unit_id': data.contract_id.operating_unit_id.id,
@@ -352,10 +353,38 @@ class ONSCDesempenoEvaluationList(models.Model):
         return evaluation
 
     def _create_environment_definition(self, data):
-        # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        return True
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        hierachy_manager_id = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id
+        is_manager = hierachy_manager_id == data.employee_id.id
+        level_id = Level.suspend_security().search(
+            [('hierarchical_level_id', '=', data.job_id.department_id.hierarchical_level_id.id),
+             ('is_uo_manager', '=', is_manager)]).mapped("level_id")
+        if not level_id:
+            raise ValidationError(
+                _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+        skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+            [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+        if not skills:
+            raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
-    def _create_leader_evaluation(self):
+        evaluation = Evaluation.create({
+            'evaluated_id': data.employee_id.id,
+            'evaluator_id': data.employee_id.id,
+            'evaluation_type': 'environment_definition',
+            'uo_id': data.job_id.department_id.id,
+            'inciso_id': data.contract_id.inciso_id.id,
+            'operating_unit_id': data.contract_id.operating_unit_id.id,
+            'occupation_id': data.contract_id.occupation_id.id,
+            'level_id': level_id.id,
+            'evaluation_stage_id': data.evaluation_list_id.evaluation_stage_id.id,
+            'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
+            'state': 'draft',
+        })
+
+        return evaluation
+
+    def _create_collaborator_evaluation(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
@@ -379,7 +408,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             evaluation = Evaluation.create({
                 'evaluated_id': self.manager_id.id,
                 'evaluator_id': data.employee_id.id,
-                'evaluation_type': 'leader_evaluation',
+                'evaluation_type': 'collaborator',
                 'uo_id': self.manager_id.job_id.department_id.id,
                 'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
                 'operating_unit_id': self.manager_id.job_id.contract_id.operating_unit_id.id,

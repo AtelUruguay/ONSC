@@ -173,4 +173,4 @@ class ONSCDesempenoGeneralCycle(models.Model):
         if self.env['onsc.desempeno.evaluation.stage'].suspend_security().search_count(
                 [('general_cycle_id', 'in', self.ids)]) > 0:
             raise ValidationError(
-                _("No se pueden eliminar configuraciones mientas se tenga una Etapa de evaluaciones 360° activa"))
+                _("No se pueden eliminar configuraciones mientras se tenga una Etapa de evaluaciones 360° activa"))
