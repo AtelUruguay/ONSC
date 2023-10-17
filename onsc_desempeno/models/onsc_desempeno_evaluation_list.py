@@ -192,6 +192,15 @@ class ONSCDesempenoEvaluationList(models.Model):
                             'evaluation_create_date': fields.Date.today(),
                             'evaluation_ids': [(6, 0, [new_evaluation.id])]})
                         lines_evaluated |= line
+                    elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
+                        new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                        self.suspend_security()._create_leader_evaluation(line)
+                        line.suspend_security().write({
+                            'state': 'generated',
+                            'error_log': False,
+                            'evaluation_create_date': fields.Date.today(),
+                            'evaluation_ids': [(6, 0, [new_evaluation.id])]})
+                        lines_evaluated |= line
                 except Exception as e:
                     line.write({
                         'state': 'error',
