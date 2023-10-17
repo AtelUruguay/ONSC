@@ -182,8 +182,8 @@ class ONSCDesempenoEvaluationList(models.Model):
                 try:
                     if fields.Date.today() <= self.end_date:
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                        self.suspend_security()._create_collaborator_evaluation(line)
-                        self.suspend_security()._create_leader_evaluation()
+                        self.suspend_security()._create_collaborator_evaluation()
+                        self.suspend_security()._create_leader_evaluation(line)
                         self.suspend_security()._create_environment_definition(line)
 
                         line.suspend_security().write({
@@ -436,13 +436,16 @@ class ONSCDesempenoEvaluationList(models.Model):
         return action.read()[0]
 
     def _get_records_random(self, records):
+        records_random = False
+        generated = len(self.evaluation_generated_line_ids)
+        if generated < 4:
+            if len(records) + generated < 5:
+                records_random = records
+            else:
 
-        if len(records) < 5:
-            records_random = records
-        else:
-            # Selecciona 4 registros al azar de la grilla
-            records_random = random.sample(records, 4)
-
+                count_records = 4 - generated
+                # Selecciona 4 registros al azar de la grilla
+                records_random = random.sample(records, count_records)
         return records_random
 
 
