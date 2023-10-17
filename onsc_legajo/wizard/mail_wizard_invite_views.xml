@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <record model="ir.ui.view" id="mail_wizard_invite_form">
+            <field name="name">Add Followers ONSC</field>
+            <field name="model">mail.wizard.invite</field>
+            <field name="inherit_id" ref="mail.mail_wizard_invite_form"/>
+            <field name="arch" type="xml">
+                <field name="partner_ids" position="replace">
+                    <field name="partner_ids"
+                           required="1"
+                           widget="many2many_tags"
+                           options="{'no_create_edit': True, 'no_create': True, 'no_open': True}"/>
+                </field>
+                <field name="send_mail" position="attributes">
+                    <attribute name="attrs">{'invisible': [('res_model', 'in', ['onsc.legajo.alta.vl', 'onsc.legajo.baja.vl'])]}</attribute>
+                </field>
+            </field>
+        </record>
+
+    </data>
+</odoo>
