@@ -79,3 +79,17 @@ class ResPartner(models.Model):
             if len(employee_values_to_write.keys()):
                 cv.employee_id.suspend_security().write(employee_values_to_write)
         employees.suspend_security().write({'notify_sgh': True})
+
+    def get_onsc_mails(self):
+        CVDigital = self.env['onsc.cv.digital'].sudo()
+        followers_emails = []
+        for follower in self:
+            cv_digital = CVDigital.search([('partner_id', '=', follower.id), ('type', '=', 'cv')],
+                                          limit=1)
+            if cv_digital.institutional_email:
+                partner_email = cv_digital.institutional_email
+            else:
+                partner_email = follower.email
+            followers_emails.append(partner_email)
+        return ','.join(followers_emails)
+
