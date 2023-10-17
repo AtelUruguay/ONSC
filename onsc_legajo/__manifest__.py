@@ -29,6 +29,8 @@ ONSC - Legajo
         'data/onsc_legajo_integration_error_data.xml',
         'data/mail_template_data.xml',
 
+        'wizard/mail_wizard_invite_views.xml',
+
         'views/onsc_legajo_department_views.xml',
 
         'views/onsc_legajo_settings_view.xml',

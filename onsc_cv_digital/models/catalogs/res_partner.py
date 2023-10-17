@@ -150,4 +150,4 @@ class ResPartner(models.Model):
         return list(set(by_name + by_cv_nro_doc.name_get()))
 
     def _custom_display_name(self):
-        return self.cv_nro_doc + " - " + self.cv_full_name or self.name
+        return "%s - %s" % (self.cv_nro_doc or '', self.cv_full_name or '')
