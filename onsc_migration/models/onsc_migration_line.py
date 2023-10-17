@@ -1,6 +1,5 @@
 # pylint: disable=E8102
 # pylint: disable=E8103
-import logging
 import base64
 import csv
 import io
@@ -74,7 +73,8 @@ class ONSCMigration(models.Model):
     error = fields.Text("Error")
     document_file = fields.Binary(string='Archivo de carga', required=True)
     document_filename = fields.Char('Nombre del documento', store=True)
-    line_ids = fields.One2many('onsc.migration.line', 'migration_id', domain=[('state', 'not in',[ 'error', 'error_process'])],
+    line_ids = fields.One2many('onsc.migration.line', 'migration_id',
+                               domain=[('state', 'not in', ['error', 'error_process'])],
                                string='Líneas')
     error_line_ids = fields.One2many(
         comodel_name='onsc.migration.line',
@@ -139,7 +139,8 @@ class ONSCMigration(models.Model):
         else:
             birth_country_id = None
         address_state_id = row[19] and self.get_country_state(str(row[19]), country_id and country_id[0]) or False
-        address_location_id = address_state_id and self.get_location(self.convert_int(row[20]), address_state_id[0]) or False
+        address_location_id = address_state_id and self.get_location(self.convert_int(row[20]),
+                                                                     address_state_id[0]) or False
         address_street_id = row[21] and self.get_street(str(row[21]), address_location_id and address_location_id[0])
         address_street2_id = row[23] and self.get_street(str(row[23]), address_location_id and address_location_id[0])
         address_street3_id = self.get_street(str(row[24]), address_location_id and address_location_id[0]) or False
@@ -175,7 +176,9 @@ class ONSCMigration(models.Model):
         ) or False
 
         security_job_id = row[87] and self.get_security_job(str(row[87])) or False
-        retributive_day_id = row[82] and self.get_jornada_retributiva(str(row[82]), program_project_id and program_project_id[0]) or False
+        retributive_day_id = row[82] and self.get_jornada_retributiva(str(row[82]),
+                                                                      program_project_id and program_project_id[
+                                                                          0]) or False
 
         row_dict.update({
             'country_id': country_id and country_id[0],
@@ -207,10 +210,12 @@ class ONSCMigration(models.Model):
             'security_job_id': security_job_id and security_job_id[0],
         })
         if not row[71]:
-            department_id = row[69] and self.get_department(str(row[69]), operating_unit_id and operating_unit_id[0]) or False
+            department_id = row[69] and self.get_department(str(row[69]),
+                                                            operating_unit_id and operating_unit_id[0]) or False
             row_dict.update({'department_id': department_id and department_id[0], })
         elif not inciso_id[1]:
-            department_id = row[69] and self.get_department(str(row[69]), operating_unit_id and operating_unit_id[0]) or False
+            department_id = row[69] and self.get_department(str(row[69]),
+                                                            operating_unit_id and operating_unit_id[0]) or False
             row_dict.update({'department_id': department_id and department_id[0], })
 
     def process_binary(self):
@@ -268,7 +273,9 @@ class ONSCMigration(models.Model):
                             inciso_des_id and inciso_des_id[0]) or False
 
                         if inciso_des_id[1] is True:
-                            department_id = row[69] and self.get_department(str(row[69]), operating_unit_des_id and operating_unit_des_id[0]) or False
+                            department_id = row[69] and self.get_department(
+                                str(row[69]),
+                                operating_unit_des_id and operating_unit_des_id[0]) or False
                             row_dict['department_id'] = department_id and department_id[0]
                         row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
                         row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
@@ -1310,7 +1317,6 @@ class ONSCMigrationLine(models.Model):
                 'norm_code_id': self.norm_comm_id.id,
                 'date_start': self.date_start_commission or fields.Date.today(),
                 'reason_description': self.reason_commision,
-
 
             })
 

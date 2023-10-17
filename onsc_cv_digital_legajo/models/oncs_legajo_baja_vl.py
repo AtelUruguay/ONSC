@@ -1,9 +1,7 @@
 # -*- coding:utf-8 -*-
 import logging
 
-from email_validator import EmailNotValidError, validate_email
-
-from odoo import models, _
+from odoo import models
 
 _logger = logging.getLogger(__name__)
 
