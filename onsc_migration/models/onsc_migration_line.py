@@ -1,6 +1,6 @@
 # pylint: disable=E8102
 # pylint: disable=E8103
-
+import logging
 import base64
 import csv
 import io
@@ -74,7 +74,7 @@ class ONSCMigration(models.Model):
     error = fields.Text("Error")
     document_file = fields.Binary(string='Archivo de carga', required=True)
     document_filename = fields.Char('Nombre del documento', store=True)
-    line_ids = fields.One2many('onsc.migration.line', 'migration_id', domain=[('state', 'not in', ['error', 'error_process'])],
+    line_ids = fields.One2many('onsc.migration.line', 'migration_id', domain=[('state', 'not in',[ 'error', 'error_process'])],
                                string='Líneas')
     error_line_ids = fields.One2many(
         comodel_name='onsc.migration.line',
