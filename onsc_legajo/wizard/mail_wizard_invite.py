@@ -7,6 +7,14 @@ from odoo import api, fields, models
 class Invite(models.TransientModel):
     _inherit = 'mail.wizard.invite'
 
+    def _default_send_mail(self):
+        if self._context.get('default_res_model', '') in ['onsc.legajo.alta.vl', 'onsc.legajo.baja.vl']:
+            return False
+        return True
+
+    send_mail = fields.Boolean('Send Email', default=_default_send_mail,
+                               help="If checked, the partners will receive an email warning they have been added in the document's followers.")
+
     @api.depends('res_model', 'res_id')
     def _get_domain_partner_ids(self):
         context = self.env.context.copy()
