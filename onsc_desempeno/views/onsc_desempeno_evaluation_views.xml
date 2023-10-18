@@ -1,19 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
-    <record id="onsc_desempeno_evaluation_search" model="ir.ui.view">
-        <field name="name">onsc.desempeno.evaluation.search</field>
-        <field name="model">onsc.desempeno.evaluation</field>
-        <field name="arch" type="xml">
-            <search string="Evaluación de Desempeño">
-                <field name="evaluation_type"/>
-                <field name="general_cycle_id"/>
-                <field name="evaluator_id"/>
-                <field name="evaluated_id"/>
-                <field name="original_evaluator_id"/>
-                <field name="occupation_id"/>
-            </search>
-        </field>
-    </record>
+
     <record id="onsc_desempeno_evaluation_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.evaluation.tree</field>
         <field name="model">onsc.desempeno.evaluation</field>
@@ -38,6 +25,7 @@
         <field name="arch" type="xml">
             <form string="Evaluación de Desempeño" create="0" delete="0" duplicate="0">
                 <header>
+                    <field name="collaborators" invisible="1"/>
                     <field name="evaluation_form_edit" invisible="1"/>
                     <button type="object" class="btn btn-primary"
                             string=" Comenzar Evaluación"
@@ -168,7 +156,24 @@
             </form>
         </field>
     </record>
+    <record id="onsc_desempeno_evaluation_search" model="ir.ui.view">
+            <field name="name">onsc.desempeno.evaluation.search</field>
+            <field name="model">onsc.desempeno.evaluation</field>
+            <field name="arch" type="xml">
+                <search string="Evaluación de Desempeño">
+                    <field name="evaluation_type"/>
+                    <field name="general_cycle_id"/>
+                    <field name="evaluator_id"/>
+                    <field name="evaluated_id"/>
+                    <field name="original_evaluator_id"/>
+                    <field name="occupation_id"/>
 
+                    <filter name="leader_evaluation_filter"
+                                domain="[('collaborators', '=',True)]"
+                                string="Mis colaboradores/ras"/>
+                </search>
+            </field>
+        </record>
 
     <record id='onsc_desempeno_evaluation_action' model='ir.actions.act_window'>
         <field name="name">Evaluación de Desempeño</field>
@@ -185,7 +190,7 @@
     <record id='onsc_desempeno_leader_evaluation_action' model='ir.actions.act_window'>
         <field name="name">Evaluación del Líder al Colaborador</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
-        <field name="context">{'is_from_menu': True,'collaborator_evaluation':True}</field>
+        <field name="context">{'is_from_menu': True,'leader_evaluation':True, 'search_default_leader_evaluation_filter': 1}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -197,7 +202,7 @@
     <record id='onsc_desempeno_collaborator_evaluation_action' model='ir.actions.act_window'>
         <field name="name">Evaluación de Colaborador/a al Líder</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
-        <field name="context">{'is_from_menu': True,'leader_evaluation':True}</field>
+        <field name="context">{'is_from_menu': True,'collaborator_evaluation':True}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

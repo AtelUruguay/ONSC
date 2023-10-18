@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Legajo',
-    'version': '15.0.11.1.0',
+    'version': '15.0.12.2.0',
     'summary': 'ONSC - Legajo',
     'sequence': 11,
     'description': """
@@ -28,6 +28,8 @@ ONSC - Legajo
         'data/onsc_legajo_commission_regime_data.xml',
         'data/onsc_legajo_integration_error_data.xml',
         'data/mail_template_data.xml',
+
+        'wizard/mail_wizard_invite_views.xml',
 
         'views/onsc_legajo_department_views.xml',
 
