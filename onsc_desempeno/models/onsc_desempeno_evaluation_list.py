@@ -178,6 +178,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         with self._cr.savepoint():
+            if fields.Date.today() <= self.end_date:
+                  self.suspend_security()._create_collaborator_evaluation()
             for line in valid_lines:
                 try:
                     if fields.Date.today() <= self.end_date:
@@ -342,7 +344,6 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
             'evaluation_type': 'leader_evaluation',
-            'original_evaluator_id': self.manager_id.id,
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
             'operating_unit_id': data.contract_id.operating_unit_id.id,
