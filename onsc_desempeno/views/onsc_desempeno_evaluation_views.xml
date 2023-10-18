@@ -51,7 +51,7 @@
                             class="btn btn-secundary"
                             string="Cambio de evaluador"
                             context="{'default_evaluation_id': active_id}"
-                            attrs="{'invisible': ['|',('state', 'not in', ['in_process','draft']),('evaluation_type', '!=', 'collaborator')]}"
+                            attrs="{'invisible': ['|',('state', 'not in', ['in_process','draft']),('evaluation_type', '!=', 'leader_evaluation')]}"
                             type="action"
                             icon="fa-exchange"/>
                     <field name="state" widget="statusbar"
