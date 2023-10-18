@@ -145,7 +145,7 @@ class ONSCDesempenoEvaluation(models.Model):
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
-    year = fields.Integer(string='Año a Evaluar', readonly=True, related='general_cycle_id.year')
+    year = fields.Integer(string='Año a Evaluar', related='general_cycle_id.year')
     evaluation_start_date = fields.Date(
         string='Fecha inicio ciclo evaluación',
         related='evaluation_stage_id.start_date',
@@ -165,7 +165,6 @@ class ONSCDesempenoEvaluation(models.Model):
     locked = fields.Boolean(string='Bloqueado')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    change_evaluator = fields.Boolean(string="Cambio de evaluador", default=False)
     evaluation_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_evaluation_form_edit')
     is_evaluation_form_active = fields.Boolean(
         compute=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active'),
@@ -242,6 +241,9 @@ class ONSCDesempenoEvaluation(models.Model):
     def button_completed_evaluation(self):
         self._check_complete_evaluation()
         self.write({'state': 'completed'})
+
+    def button_reopen_evaluation(self):
+        self.write({'state': 'in_process'})
 
     def _check_complete_evaluation(self):
         if self.evaluation_type != 'environment_definition' and not self.general_comments:

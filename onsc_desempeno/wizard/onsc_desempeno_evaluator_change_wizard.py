@@ -31,7 +31,9 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
             rec.evaluator_id_domain = json.dumps([('id', 'in', employees.ids)])
 
     def action_confirm(self):
-        self.evaluation_id.suspend_security().write({
-            'evaluator_id': self.evaluator_id,
-            'original_evaluator_id': self.evaluation_id.evaluator_id.id
-        })
+        vals = {
+            'evaluator_id': self.evaluator_id
+        }
+        if not self.evaluation_id.original_evaluator_id:
+            vals['original_evaluator_id'] = self.evaluation_id.evaluator_id.id
+        self.evaluation_id.suspend_security().write(vals)
