@@ -23,12 +23,17 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
 
         for rec in self:
             employees = self.env.user.employee_id
-            if is_usuario_gh and not is_responsable_uo:
+            if is_usuario_gh:
                 employees |= Job.search([
                     ('department_id.parent_id', '=', self.evaluation_id.uo_id.id),
                     ('department_id.function_nature', '=', 'adviser'),
                     '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())]).mapped('employee_id')
-            rec.evaluator_id_domain = json.dumps([('id', 'in', employees.ids)])
+                employees |= Job.search([
+                    ('department_id', '=', self.evaluation_id.uo_id.id),
+                    '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())]).mapped('employee_id')
+            rec.evaluator_id_domain = json.dumps([
+                ('id', 'in', employees.ids),
+                ('id', '!=', self.evaluation_id.evaluator_id.id)])
 
     def action_confirm(self):
         vals = {
