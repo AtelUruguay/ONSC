@@ -49,16 +49,15 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_evaluation(args, 'self_evaluation')
         if self._context.get('collaborator_evaluation'):
             args = self._get_domain_collaborator(args)
-        if self._context.get('leader_evaluation') :
+        if self._context.get('leader_evaluation'):
 
             collaborators = [x for x in args if x[0] == 'collaborators' and x[2] is True]
             if not collaborators:
 
-
                 department_id = self.env.user.employee_id.job_id.department_id.id
                 manager_ids = self.env['hr.department'].search(['|',
-                                                                   ('id', 'child_of', department_id),
-                                                                   ('id', '=', department_id)]).manager_id.ids
+                                                                ('id', 'child_of', department_id),
+                                                                ('id', '=', department_id)]).manager_id.ids
                 args = expression.AND([[('evaluator_id', 'in', manager_ids), ], args])
             else:
                 args.remove(collaborators[0])

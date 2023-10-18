@@ -179,7 +179,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         with self._cr.savepoint():
             if fields.Date.today() <= self.end_date:
-                  self.suspend_security()._create_collaborator_evaluation()
+                self.suspend_security()._create_collaborator_evaluation()
             for line in valid_lines:
                 try:
                     if fields.Date.today() <= self.end_date:
