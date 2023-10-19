@@ -216,7 +216,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             })
             if record.occupation_id:
                 altaDetalle.update({
-                    'codigoOcupacion': record.occupation_id.name,
+                    'codigoOcupacion': record.occupation_id.code,
                 })
             if record.graduation_date:
                 altaDetalle.update({
