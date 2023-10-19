@@ -137,7 +137,7 @@ class ONSCDesempenoEvaluation(models.Model):
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     name = fields.Char(string="Nombre", compute="_compute_name", store=True)
-    evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', required=True)
+    evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', required=True, readonly=True)
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
     evaluator_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
     original_evaluator_id = fields.Many2one('hr.employee', string='Evaluador Original', readonly=True)
