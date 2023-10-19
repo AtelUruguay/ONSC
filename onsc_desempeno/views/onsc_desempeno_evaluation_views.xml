@@ -228,7 +228,7 @@
     </record>
 
     <record id='onsc_desempeno_environment_definition_action' model='ir.actions.act_window'>
-        <field name="name">Evaluación de entorno</field>
+        <field name="name">Definición de entorno</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
         <field name="context">{'is_from_menu': True,'environment_definition':True}</field>
         <field name="view_mode">tree,form</field>
