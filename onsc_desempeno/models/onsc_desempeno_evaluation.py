@@ -51,23 +51,51 @@ class ONSCDesempenoEvaluation(models.Model):
         if self._context.get('collaborator_evaluation'):
             args = self._get_domain_collaborator(args)
         if self._context.get('leader_evaluation'):
-
-            collaborators = [x for x in args if x[0] == 'collaborators' and x[2] is True]
-            if not collaborators:
-
-                department_id = self.env.user.employee_id.job_id.department_id.id
-                manager_ids = self.env['hr.department'].search(['|',
-                                                                ('id', 'child_of', department_id),
-                                                                ('id', '=', department_id)]).manager_id.ids
-                args = expression.AND([[('evaluator_id', 'in', manager_ids), ], args])
-            else:
-                args.remove(collaborators[0])
-                args = expression.AND([[('evaluator_id', '=', self.env.user.employee_id.id)], args])
-            args = self._get_domain_evaluation(args, 'leader_evaluation')
-
+            args = self._get_domain_leader_evaluation(args, )
         if self._context.get('environment_definition'):
             args = expression.AND([[('evaluator_id', '=', self.env.user.employee_id.id)], args])
             args = self._get_domain_evaluation(args, 'environment_definition')
+
+        return args
+
+    def _get_domain_leader_evaluation(self, args):
+        abstract_security = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
+        collaborators = [x for x in args if x[0] == 'collaborators' and x[2] is True]
+        if collaborators:
+            args.remove(collaborators[0])
+        if self._is_group_admin_gh_inciso():
+            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
+            args = expression.AND(
+                [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', 'leader_evaluation')], args])
+        elif self._is_group_admin_gh_ue():
+            operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+            args = expression.AND(
+                [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', 'leader_evaluation')], args])
+        elif self._is_group_usuario_evaluacion():
+            if not abstract_security:
+                args = expression.AND(
+                    [[('evaluation_type', '=', 'leader_evaluation'),
+                      ('evaluator_id', '=', self.env.user.employee_id.id)],
+                     args])
+            else:
+                args = expression.OR(
+                    [[('evaluation_type', '=', 'leader_evaluation'),
+                      ('evaluator_id', '=', self.env.user.employee_id.id)],
+                     args])
+
+        if not collaborators:
+
+            department_id = self.env.user.employee_id.job_id.department_id.id
+            manager_ids = self.env['hr.department'].search(['|',
+                                                            ('id', 'child_of', department_id),
+                                                            ('id', '=', department_id)]).manager_id.ids
+            if not abstract_security:
+                args = expression.AND([[('evaluator_id', 'in', manager_ids)], args])
+            else:
+                args = expression.OR(
+                    [[('evaluation_type', '=', 'leader_evaluation'),
+                      ('evaluator_id', 'in', manager_ids)],
+                     args])
 
         return args
 
