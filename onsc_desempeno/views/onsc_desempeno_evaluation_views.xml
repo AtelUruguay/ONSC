@@ -13,7 +13,7 @@
                 <field name="evaluation_start_date"/>
                 <field name="evaluation_end_date"/>
                 <field name="environment_definition_end_date"
-                       attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
+                       invisible="context.get('environment_definition', False) is False"/>
                 <field name="state"/>
             </tree>
         </field>
@@ -164,6 +164,11 @@
                                attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
                     </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>

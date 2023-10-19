@@ -46,6 +46,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _get_domain(self, args):
         if self._context.get('self_evaluation'):
+            args = expression.AND([[('evaluator_id', '=', self.env.user.employee_id.id)], args])
             args = self._get_domain_evaluation(args, 'self_evaluation')
         if self._context.get('collaborator_evaluation'):
             args = self._get_domain_collaborator(args)
@@ -65,6 +66,7 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_evaluation(args, 'leader_evaluation')
 
         if self._context.get('environment_definition'):
+            args = expression.AND([[('evaluator_id', '=', self.env.user.employee_id.id)], args])
             args = self._get_domain_evaluation(args, 'environment_definition')
 
         return args
@@ -101,6 +103,9 @@ class ONSCDesempenoEvaluation(models.Model):
             args = expression.AND([[('evaluated_id', '!=', self.env.user.employee_id.id),
                                     ('uo_id', 'in', available_department_ids),
                                     ('evaluation_type', '=', 'collaborator')], args])
+            args = expression.OR(
+                [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', 'collaborator')],
+                 args])
         elif self._is_group_admin_gh_inciso():
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
             args = expression.AND([[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
