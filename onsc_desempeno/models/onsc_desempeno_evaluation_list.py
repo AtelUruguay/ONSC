@@ -178,6 +178,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         with self._cr.savepoint():
+            if fields.Date.today() <= self.end_date:
+                self.suspend_security()._create_collaborator_evaluation()
             for line in valid_lines:
                 try:
                     if fields.Date.today() <= self.end_date:
@@ -186,6 +188,15 @@ class ONSCDesempenoEvaluationList(models.Model):
                         self.suspend_security()._create_leader_evaluation(line)
                         self.suspend_security()._create_environment_definition(line)
 
+                        line.suspend_security().write({
+                            'state': 'generated',
+                            'error_log': False,
+                            'evaluation_create_date': fields.Date.today(),
+                            'evaluation_ids': [(6, 0, [new_evaluation.id])]})
+                        lines_evaluated |= line
+                    elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
+                        new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                        self.suspend_security()._create_leader_evaluation(line)
                         line.suspend_security().write({
                             'state': 'generated',
                             'error_log': False,
@@ -333,7 +344,6 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
             'evaluation_type': 'leader_evaluation',
-            'original_evaluator_id': self.manager_id.id,
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
             'operating_unit_id': data.contract_id.operating_unit_id.id,
