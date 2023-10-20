@@ -126,11 +126,11 @@ class ONSCDesempenoEvaluation(models.Model):
         elif self._is_group_usuario_evaluacion():
             if not abstract_security:
                 args = expression.AND(
-                    [[('evaluator_id', '=', self.env.user.employee_id.id),('evaluation_type', '=', evaluation_type)],
+                    [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', evaluation_type)],
                      args])
             else:
                 args = expression.OR(
-                    [[('evaluator_id', '=', self.env.user.employee_id.id),('evaluation_type', '=', evaluation_type)],
+                    [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', evaluation_type)],
                      args])
         return args
 
