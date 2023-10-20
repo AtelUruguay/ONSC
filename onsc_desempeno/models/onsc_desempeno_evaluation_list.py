@@ -184,7 +184,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         if not self.is_notify_leader:
             message_partner_ids.append(self.manager_id.partner_id)
         with self._cr.savepoint():
-            if fields.Date.today() <= self.end_date:
+            if fields.Date.today() <= self.end_date and len(valid_lines) > 0:
                 self.suspend_security()._create_collaborator_evaluation()
             for line in valid_lines:
                 try:
@@ -407,8 +407,11 @@ class ONSCDesempenoEvaluationList(models.Model):
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
-        if len(valid_lines) == 1 and self.end_date_environment <= fields.Date.today() :
-            self._create_environment_evaluation(valid_lines)
+        if len(valid_lines) == 1:
+            if  self.end_date_environment >= fields.Date.today():
+                self._create_environment_evaluation(valid_lines)
+            else:
+                return
         generated = len(self.evaluation_generated_line_ids)
         if generated < 4:
 
