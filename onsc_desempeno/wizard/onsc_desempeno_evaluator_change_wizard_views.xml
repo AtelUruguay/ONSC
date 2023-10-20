@@ -11,7 +11,7 @@
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="reason_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="evaluator_id_domain" invisible="1"/>
-                    <field name="evaluation_id"/>
+                    <field name="evaluation_id" invisible="1"/>
                 </group>
                 <footer>
                     <button string="Actualizar" name="action_confirm" type="object" class="oe_highlight" data-hotkey="s"/>
