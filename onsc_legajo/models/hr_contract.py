@@ -159,7 +159,7 @@ class HrContract(models.Model):
                                                            'contract_id',
                                                            string='Documentos adjuntos baja',
                                                            domain=[('type', '=', 'deregistration')])
-    job_ids = fields.One2many('hr.job', 'contract_id', string='Puestos')
+    job_ids = fields.One2many('hr.job', 'contract_id', string='Puestos', context={'active_test': False})
     commission_regime_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen comisión', history=True)
 
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')

@@ -178,14 +178,24 @@ class ONSCDesempenoEvaluationList(models.Model):
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         with self._cr.savepoint():
+            if fields.Date.today() <= self.end_date:
+                self.suspend_security()._create_collaborator_evaluation()
             for line in valid_lines:
                 try:
                     if fields.Date.today() <= self.end_date:
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                        self.suspend_security()._create_collaborator_evaluation()
                         self.suspend_security()._create_leader_evaluation(line)
                         self.suspend_security()._create_environment_definition(line)
 
+                        line.suspend_security().write({
+                            'state': 'generated',
+                            'error_log': False,
+                            'evaluation_create_date': fields.Date.today(),
+                            'evaluation_ids': [(6, 0, [new_evaluation.id])]})
+                        lines_evaluated |= line
+                    elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
+                        new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                        self.suspend_security()._create_leader_evaluation(line)
                         line.suspend_security().write({
                             'state': 'generated',
                             'error_log': False,
@@ -333,7 +343,6 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
             'evaluation_type': 'leader_evaluation',
-            'original_evaluator_id': self.manager_id.id,
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
             'operating_unit_id': data.contract_id.operating_unit_id.id,
@@ -389,43 +398,81 @@ class ONSCDesempenoEvaluationList(models.Model):
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
-        if len(valid_lines) == 1:
-            return
+        if len(valid_lines) == 1 and self.end_date_environment <= fields.Date.today() :
+            self._create_environment_evaluation(valid_lines)
+        generated = len(self.evaluation_generated_line_ids)
+        if generated < 4:
 
-        for data in self._get_records_random(valid_lines):
+            for data in self._get_records_random(valid_lines, generated):
 
-            level_id = Level.suspend_security().search(
-                [('hierarchical_level_id', '=', self.manager_id.job_id.department_id.hierarchical_level_id.id),
-                 ('is_uo_manager', '=', True)]).mapped("level_id")
-            if not level_id:
-                raise ValidationError(
-                    _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
-            skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
-                [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
-            if not skills:
-                raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+                level_id = Level.suspend_security().search(
+                    [('hierarchical_level_id', '=', self.manager_id.job_id.department_id.hierarchical_level_id.id),
+                     ('is_uo_manager', '=', True)]).mapped("level_id")
+                if not level_id:
+                    raise ValidationError(
+                        _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+                skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+                    [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+                if not skills:
+                    raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
-            evaluation = Evaluation.create({
-                'evaluated_id': self.manager_id.id,
-                'evaluator_id': data.employee_id.id,
-                'evaluation_type': 'collaborator',
-                'uo_id': self.manager_id.job_id.department_id.id,
-                'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
-                'operating_unit_id': self.manager_id.job_id.contract_id.operating_unit_id.id,
-                'occupation_id': self.manager_id.job_id.contract_id.occupation_id.id,
-                'level_id': level_id.id,
-                'evaluation_stage_id': self.evaluation_stage_id.id,
-                'general_cycle_id': self.evaluation_stage_id.general_cycle_id.id,
-                'state': 'draft',
-            })
-            for skill in skills:
-                Competency.create({'evaluation_id': evaluation.id,
-                                   'skill_id': skill.id,
-                                   'skill_line_ids': skill.skill_line_ids.filtered(
-                                       lambda r: r.level_id.id == evaluation.level_id.id).ids
-                                   })
+                evaluation = Evaluation.create({
+                    'evaluated_id': self.manager_id.id,
+                    'evaluator_id': data.employee_id.id,
+                    'evaluation_type': 'collaborator',
+                    'uo_id': self.manager_id.job_id.department_id.id,
+                    'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
+                    'operating_unit_id': self.manager_id.job_id.contract_id.operating_unit_id.id,
+                    'occupation_id': self.manager_id.job_id.contract_id.occupation_id.id,
+                    'level_id': level_id.id,
+                    'evaluation_stage_id': self.evaluation_stage_id.id,
+                    'general_cycle_id': self.evaluation_stage_id.general_cycle_id.id,
+                    'state': 'draft',
+                })
+                for skill in skills:
+                    Competency.create({'evaluation_id': evaluation.id,
+                                       'skill_id': skill.id,
+                                       'skill_line_ids': skill.skill_line_ids.filtered(
+                                           lambda r: r.level_id.id == evaluation.level_id.id).ids
+                                       })
 
         return True
+
+    def _create_environment_evaluation(self, data):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+
+        level_id = Level.suspend_security().search(
+            [('hierarchical_level_id', '=', self.manager_id.job_id.department_id.hierarchical_level_id.id),
+             ('is_uo_manager', '=', True)]).mapped("level_id")
+        if not level_id:
+            raise ValidationError(
+                _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+        skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+            [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+        if not skills:
+            raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+
+        evaluation = Evaluation.create({
+            'evaluated_id': self.manager_id.id,
+            'evaluator_id': data.employee_id.id,
+            'evaluation_type': 'environment_evaluation',
+            'uo_id': self.manager_id.job_id.department_id.id,
+            'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
+            'operating_unit_id': self.manager_id.job_id.contract_id.operating_unit_id.id,
+            'occupation_id': self.manager_id.job_id.contract_id.occupation_id.id,
+            'level_id': level_id.id,
+            'evaluation_stage_id': self.evaluation_stage_id.id,
+            'general_cycle_id': self.evaluation_stage_id.general_cycle_id.id,
+            'state': 'draft',
+        })
+        for skill in skills:
+            Competency.create({'evaluation_id': evaluation.id,
+                               'skill_id': skill.id,
+                               'skill_line_ids': skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids
+                               })
 
     def _action_desempeno_evaluation_list(self):
         if self.user_has_groups(
@@ -435,17 +482,16 @@ class ONSCDesempenoEvaluationList(models.Model):
             action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_list_action')
         return action.read()[0]
 
-    def _get_records_random(self, records):
+    def _get_records_random(self, records, generated):
         records_random = False
-        generated = len(self.evaluation_generated_line_ids)
-        if generated < 4:
-            if len(records) + generated < 5:
-                records_random = records
-            else:
 
-                count_records = 4 - generated
-                # Selecciona 4 registros al azar de la grilla
-                records_random = random.sample(records, count_records)
+        if len(records) + generated < 5:
+            records_random = records
+        else:
+
+            count_records = 4 - generated
+            # Selecciona 4 registros al azar de la grilla
+            records_random = random.sample(records, count_records)
         return records_random
 
 
