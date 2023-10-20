@@ -19,8 +19,6 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
         Job = self.env['hr.job'].sudo()
         is_usuario_gh = self.user_has_groups(
             'onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_usuario_gh_inciso')
-        is_responsable_uo = self.user_has_groups('onsc_desempeno.group_desempeno_responsable_uo')
-
         for rec in self:
             employees = self.env.user.employee_id
             if is_usuario_gh:
