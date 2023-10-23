@@ -18,6 +18,7 @@ class ONSCDesempenoSettings(models.Model):
                                                            readonly=False, related_sudo=True)
     environment_evaluation_text = fields.Text(related="company_id.environment_evaluation_text", readonly=False,
                                               related_sudo=True)
+    max_desempenno_evaluation_forms = fields.Integer(string='Tope de formularios de desempeño',)
 
     def execute(self):
         return {
