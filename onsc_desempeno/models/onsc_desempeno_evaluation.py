@@ -97,7 +97,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 manager_ids = self.env['hr.department'].search(['|',
                                                                 ('id', 'child_of', department_id),
                                                                 ('id', '=', department_id)]).manager_id.ids
-                manager_ids.extend(self.env.user.employee_id.job_id.department_id.get_all_managers_in_department_tree())
+
                 if not abstract_security and not self._is_group_usuario_evaluacion():
                     args = expression.AND([[('evaluator_id', 'in', manager_ids)], args])
                 else:
