@@ -13,7 +13,7 @@ class Department(models.Model):
     _history_model = 'hr.department.history'
 
     code = fields.Char('Identificador',
-                       default=lambda self: self.env['ir.sequence'].next_by_code('onsc.catalog.inciso.identifier'),
+                       default=lambda self: self.env['ir.sequence'].next_by_code('onsc.catalog.uo.identifier'),
                        copy=False)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso',
                                 ondelete='restrict',
