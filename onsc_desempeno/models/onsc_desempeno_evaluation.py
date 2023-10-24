@@ -105,8 +105,8 @@ class ONSCDesempenoEvaluation(models.Model):
                         [[('evaluation_type', '=', 'leader_evaluation'),
                           ('evaluator_id', 'in', manager_ids)],
                          args])
-
-        return args
+        args2 = [('original_evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', 'leader_evaluation')]
+        return expression.OR([args2, args])
 
     def _get_domain_evaluation(self, args, evaluation_type):
         abstract_security = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
@@ -188,15 +188,17 @@ class ONSCDesempenoEvaluation(models.Model):
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', required=True, readonly=True)
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
     evaluator_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
+    evaluator_uo_id = fields.Many2one('hr.department', string='UO del Evaluador', readonly=True)
     original_evaluator_id = fields.Many2one('hr.employee', string='Evaluador Original', readonly=True)
+    reason_change_id = fields.Many2one('onsc.desempeno.reason.change.evaluator', string='Motivo de cambio de Evaluador')
     environment_evaluation_ids = fields.Many2many('hr.employee', 'enviroment_evaluator_evaluation_rel', 'evaluation_id',
                                                   'enviroment_evaluator_id', string='Evaluación de Entorno',
                                                   readonly=True)
     environment_ids = fields.Many2many('hr.employee', 'enviroment_evaluation_rel', 'evaluation_id', 'enviroment_id',
                                        string='Entorno')
-    uo_id = fields.Many2one('hr.department', string='UO', readonly=True)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
+    uo_id = fields.Many2one('hr.department', string='UO', readonly=True)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
@@ -240,6 +242,11 @@ class ONSCDesempenoEvaluation(models.Model):
     )
     collaborators = fields.Boolean(string="Colaboradores directos", default=False)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
+
+    is_evaluation_change_available = fields.Boolean(
+        string='Botón de cambio de evaluador disponible',
+        compute='_compute_is_evaluation_change_available')
+
 
     def _get_evaluation_form_text(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -295,6 +302,14 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             # is_am_evaluated = record.evaluated_id.id == user_employee_id
             record.evaluation_form_edit = record.evaluator_id.id == user_employee_id
+
+    @api.depends('state')
+    def _compute_is_evaluation_change_available(self):
+        is_gh_user = self._is_group_usuario_gh_inciso() or self._is_group_usuario_gh_ue()
+        is_gh_admin = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
+        for record in self:
+            user_gh_cond = not is_gh_user or (is_gh_user and record.evaluator_uo_id.hierarchical_level_id.order == 1)
+            record.is_evaluation_change_available = not is_gh_admin and user_gh_cond
 
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})

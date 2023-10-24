@@ -51,13 +51,14 @@
                             class="btn btn-secundary"
                             string="Cambio de evaluador"
                             context="{'default_evaluation_id': active_id}"
-                            attrs="{'invisible': ['|',('state', 'not in', ['in_process','draft']),('evaluation_type', '!=', 'leader_evaluation')]}"
+                            attrs="{'invisible': ['|',('state', 'not in', ['in_process','draft']),('is_evaluation_change_available', '=', False)]}"
                             type="action"
                             icon="fa-exchange"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,in_process,completed,finished"/>
                 </header>
                 <sheet>
+                    <field name="is_evaluation_change_available" invisible="1"/>
                     <field name="should_disable_form_edit" invisible="1"/>
                     <field name="is_evaluation_form_active" invisible="1"/>
                     <field name="is_environment_evaluation_form_active" invisible="1"/>
@@ -72,10 +73,14 @@
                         <group  style="min-width: 100px !important;">
                             <label for="evaluation_type" style="min-width: 100px !important;">Tipo</label>
                             <field name="evaluation_type" nolabel="1" style="margin-bottom: 5px!important; min-width: 100px !important;"/>
+                            <field name="evaluator_uo_id"/>
                             <field name="evaluator_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': [('evaluation_type', 'in',['self_evaluation', 'environment_definition'])]}"/>
                             <field name="original_evaluator_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
+                            <field name="reason_change_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
                             <field name="year"/>
@@ -164,11 +169,11 @@
                                attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
                     </group>
                 </sheet>
-                <div class="oe_chatter">
-                    <field name="message_follower_ids" groups="base.group_user"/>
-                    <field name="activity_ids"/>
-                    <field name="message_ids"/>
-                </div>
+<!--                <div class="oe_chatter">-->
+<!--                    <field name="message_follower_ids" groups="base.group_user"/>-->
+<!--                    <field name="activity_ids"/>-->
+<!--                    <field name="message_ids" context="{'is_from_menu':False}"/>-->
+<!--                </div>-->
             </form>
         </field>
     </record>
