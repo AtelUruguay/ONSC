@@ -169,11 +169,11 @@
 <!--                               attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>-->
                     </group>
                 </sheet>
-<!--                <div class="oe_chatter">-->
-<!--                    <field name="message_follower_ids" groups="base.group_user"/>-->
-<!--                    <field name="activity_ids"/>-->
-<!--                    <field name="message_ids" context="{'is_from_menu':False}"/>-->
-<!--                </div>-->
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
             </form>
         </field>
     </record>
@@ -190,7 +190,7 @@
                     <field name="occupation_id"/>
 
                     <filter name="leader_evaluation_filter"
-                                domain="[('collaborators', '=',True)]"
+                                domain="[('collaborators', 'in', [True, False])]"
                                 string="Mis colaboradores/ras"/>
                 </search>
             </field>
