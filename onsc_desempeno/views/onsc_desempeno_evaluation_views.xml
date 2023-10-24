@@ -160,12 +160,12 @@
                                placeholder="Comentarios Generales"/>
                     </group>
                     <group name="block">
-                        <field name="locked" string="Bloqueado"
-                               attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
+                        <field name="locked" string="Bloqueado" invisible="1"/>
+<!--                               attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>-->
                     </group>
                 </sheet>
                 <div class="oe_chatter">
-                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="message_follower_ids"/>
                     <field name="activity_ids"/>
                     <field name="message_ids"/>
                 </div>

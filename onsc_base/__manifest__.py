@@ -9,8 +9,17 @@ ONSC - Base
 ====================
     """,
     'category': 'ONSC',
-    'depends': ['base', 'web_responsive', 'website', 'auth_iduy_primary_login', 'base_user_role',
-                'web_edit_button_conditional_disable', 'mail_outbound_static', 'auth_session_timeout_clean'],
+    'depends': [
+        'base',
+        'web_responsive',
+        'website',
+        'auth_iduy_primary_login',
+        'base_user_role',
+        'web_edit_button_conditional_disable',
+        'mail_outbound_static',
+        'auth_session_timeout_clean',
+        'fields_many2one_restrict'
+    ],
     'data': [
         'security/onsc_base_security.xml',
         'security/ir.model.access.csv',

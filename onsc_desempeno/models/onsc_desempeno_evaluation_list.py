@@ -408,7 +408,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         if len(valid_lines) == 1:
-            if  self.end_date_environment >= fields.Date.today():
+            if self.end_date_environment >= fields.Date.today():
                 self._create_environment_evaluation(valid_lines)
             else:
                 return
