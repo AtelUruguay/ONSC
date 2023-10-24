@@ -165,8 +165,8 @@
                                placeholder="Comentarios Generales"/>
                     </group>
                     <group name="block">
-                        <field name="locked" string="Bloqueado"
-                               attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
+                        <field name="locked" string="Bloqueado" invisible="1"/>
+<!--                               attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>-->
                     </group>
                 </sheet>
 <!--                <div class="oe_chatter">-->
