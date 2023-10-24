@@ -83,6 +83,11 @@ class ONSCDesempenoEvaluationList(models.Model):
         compute='_compute_manager_id',
         search='_search_manager_id',
         store=False)
+    manager_uo_id = fields.Many2one(
+        "hr.department",
+        string="UO del Líder",
+        compute='_compute_manager_id',
+        store=False)
     year = fields.Integer(
         u'Año a evaluar',
         related="evaluation_stage_id.year",
@@ -145,7 +150,9 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     def _compute_manager_id(self):
         for rec in self:
-            rec.manager_id = rec.department_id.get_first_department_withmanager_in_tree().manager_id.id
+            manager_department = rec.department_id.get_first_department_withmanager_in_tree()
+            rec.manager_id = manager_department.manager_id.id
+            rec.manager_uo_id = manager_department.id
 
     def _search_is_imanager(self, operator, value):
         all_evaluation_list = self.search([])
@@ -303,6 +310,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation = Evaluation.create({
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
+            'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
             'evaluation_type': 'self_evaluation',
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
@@ -316,8 +324,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         for skill in skills:
             Competency.create({'evaluation_id': evaluation.id,
                                'skill_id': skill.id,
-                               'skill_line_ids': skill.skill_line_ids.filtered(
-                                   lambda r: r.level_id.id == evaluation.level_id.id).ids
+                               'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                })
 
         return evaluation
@@ -342,6 +350,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation = Evaluation.create({
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
+            'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
             'evaluation_type': 'leader_evaluation',
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
@@ -355,8 +364,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         for skill in skills:
             Competency.create({'evaluation_id': evaluation.id,
                                'skill_id': skill.id,
-                               'skill_line_ids': skill.skill_line_ids.filtered(
-                                   lambda r: r.level_id.id == evaluation.level_id.id).ids
+                               'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                })
 
         return evaluation
@@ -380,6 +389,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation = Evaluation.create({
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
+            'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
             'evaluation_type': 'environment_definition',
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
@@ -422,6 +432,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                 evaluation = Evaluation.create({
                     'evaluated_id': self.manager_id.id,
                     'evaluator_id': data.employee_id.id,
+                    'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
                     'evaluation_type': 'collaborator',
                     'uo_id': self.manager_id.job_id.department_id.id,
                     'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
@@ -435,8 +446,8 @@ class ONSCDesempenoEvaluationList(models.Model):
                 for skill in skills:
                     Competency.create({'evaluation_id': evaluation.id,
                                        'skill_id': skill.id,
-                                       'skill_line_ids': skill.skill_line_ids.filtered(
-                                           lambda r: r.level_id.id == evaluation.level_id.id).ids
+                                       'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                                           lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                        })
 
         return True
@@ -460,6 +471,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation = Evaluation.create({
             'evaluated_id': self.manager_id.id,
             'evaluator_id': data.employee_id.id,
+            'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
             'evaluation_type': 'environment_evaluation',
             'uo_id': self.manager_id.job_id.department_id.id,
             'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
@@ -473,8 +485,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         for skill in skills:
             Competency.create({'evaluation_id': evaluation.id,
                                'skill_id': skill.id,
-                               'skill_line_ids': skill.skill_line_ids.filtered(
-                                   lambda r: r.level_id.id == evaluation.level_id.id).ids
+                               'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                })
 
     def _action_desempeno_evaluation_list(self):

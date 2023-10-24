@@ -11,11 +11,25 @@ class HrJob(models.Model):
     _inherit = 'hr.job'
     _order = 'start_date desc'
 
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        result = super(HrJob, self).name_search(name, args=args, operator=operator, limit=limit)
+        if self._context.get('show_employee_as_display_name', False):
+            by_employee_domain = [('employee_id.name', operator, name)]
+            by_employee_domain += args
+            by_employee = self.search(by_employee_domain, limit=limit)
+            result = list(set(result + by_employee.name_get()))
+        return result
+
     def name_get(self):
         res = []
         for record in self:
             if self._context.get('custom_display_name', False):
                 _custom_name = record._custom_display_name()
+            elif self._context.get('show_employee_as_display_name', False):
+                _custom_name = record.employee_id.display_name
             else:
                 _custom_name = record.name
             res.append((record.id, _custom_name))
