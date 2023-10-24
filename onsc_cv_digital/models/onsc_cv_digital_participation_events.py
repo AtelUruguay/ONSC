@@ -14,13 +14,13 @@ class ONSCCVDigitalParticipationEvent(models.Model):
     _order = 'start_date desc'
 
     name_event = fields.Char(string=u"Nombre del evento", required=True)
-    type_event_id = fields.Many2one('onsc.cv.type.event', string=u'Tipo de evento', ondelete='cascade')
+    type_event_id = fields.Many2one('onsc.cv.type.event', string=u'Tipo de evento')
     mode = fields.Selection(MODES, u'Modalidad', required=True)
     country_id = fields.Many2one("res.country", string=u"País del evento", required=True)
     city_id = fields.Many2one("onsc.cv.location", string=u"Ciudad")
     name_institution = fields.Char(string=u"Nombre de institución organizadora", required=True)
     description_event = fields.Text(string=u"Descripción del evento")
-    roll_event_id = fields.Many2one('onsc.cv.roll.event', string=u'Rol en evento', required=True, ondelete='cascade')
+    roll_event_id = fields.Many2one('onsc.cv.roll.event', string=u'Rol en evento', required=True)
     is_roll_event = fields.Boolean(compute='_compute_is_roll_event')
     description_topic = fields.Char(string=u"Descripción de la temática abordada en el rol")
     hourly_load = fields.Char('Carga horaria en el rol (en horas)')
