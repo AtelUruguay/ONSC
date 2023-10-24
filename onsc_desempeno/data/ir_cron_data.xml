@@ -20,4 +20,14 @@
         <field name="numbercall">-1</field>
     </record>
 
+    <record id="desempeno_notification_end_evaluation" model="ir.cron">
+        <field name="name">Desempeño - Notificación fin de etapa de evaluación</field>
+        <field name="model_id" ref="model_onsc_desempeno_evaluation"/>
+        <field name="state">code</field>
+        <field name="code">model.notification_end_evaluation()</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+    </record>
+
 </odoo>

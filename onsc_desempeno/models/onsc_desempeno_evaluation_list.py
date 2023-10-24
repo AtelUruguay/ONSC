@@ -125,7 +125,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         compute='_compute_is_line_availables'
     )
 
-    message_partner_ids = fields.Many2many('res.partner', 'desempeno_evaluation_partner', 'evaluationevual_id', 'partner_id',string='Followers (Partners)')
+    message_partner_ids = fields.Many2many('res.partner', 'desempeno_evaluation_partner', 'evaluation_id', 'partner_id',string='Followers (Partners)')
     is_notify_leader = fields.Boolean(string='¿Se envio notificacion al leader?')
 
     _sql_constraints = [
@@ -203,6 +203,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                     elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
                         self.suspend_security()._create_leader_evaluation(line)
+                        message_partner_ids.append(line.employee_id.partner_id)
                         line.suspend_security().write({
                             'state': 'generated',
                             'error_log': False,

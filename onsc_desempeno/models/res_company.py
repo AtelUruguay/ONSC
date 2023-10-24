@@ -12,14 +12,15 @@ class ResCompany(models.Model):
     evaluation_form_text = fields.Text('Ayuda para formulario de evaluación')
     is_environment_evaluation_form_active = fields.Boolean('Activar ayuda para formulario de definición de entorno')
     environment_evaluation_text = fields.Text('Ayuda para formulario de definición de entorno')
-
+    days_notification_end_ev = fields.Integer(u"Días antes de llegada la fecha fin de la evaluación")
     def write(self, vals):
         _fields = [
             "is_evaluation_form_active",
             "evaluation_form_text",
             "is_environment_evaluation_form_active",
             "environment_evaluation_text",
-            "descriptor1_ids"
+            "descriptor1_ids",
+            "days_notification_end_ev"
         ]
         if any(x in vals.keys() for x in _fields):
             return super(ResCompany, self.suspend_security()).write(vals)

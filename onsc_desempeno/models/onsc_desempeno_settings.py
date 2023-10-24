@@ -19,6 +19,9 @@ class ONSCDesempenoSettings(models.Model):
     environment_evaluation_text = fields.Text(related="company_id.environment_evaluation_text", readonly=False,
                                               related_sudo=True)
 
+    days_notification_end_ev = fields.Integer(related="company_id.days_notification_end_ev", readonly=False,
+                                              related_sudo=True)
+
     def execute(self):
         return {
             'type': 'ir.actions.client',

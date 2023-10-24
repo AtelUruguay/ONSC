@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -203,7 +205,7 @@ class ONSCDesempenoEvaluation(models.Model):
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
-    year = fields.Integer(string='Año a Evaluar', related='general_cycle_id.year')
+    year = fields.Integer(string='Año a Evaluar', related='general_cycle_id.year',store =True)
     evaluation_start_date = fields.Date(
         string='Fecha inicio ciclo evaluación',
         related='evaluation_stage_id.start_date',
@@ -225,46 +227,29 @@ class ONSCDesempenoEvaluation(models.Model):
                                               compute='_compute_should_disable_form_edit')
     evaluation_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_evaluation_form_edit')
     is_evaluation_form_active = fields.Boolean(
-        compute=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active'),
-        default=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active', True)
+        compute=lambda s: s._get_value_config('is_evaluation_form_active'),
+        default=lambda s: s._get_value_config('is_evaluation_form_active', True)
     )
     evaluation_form_text = fields.Text(
-        compute=lambda s: s._get_evaluation_form_text('evaluation_form_text'),
-        default=lambda s: s._get_evaluation_form_text('evaluation_form_text', True)
+        compute=lambda s: s._get_value_config('evaluation_form_text'),
+        default=lambda s: s._get_value_config('evaluation_form_text', True)
     )
     is_environment_evaluation_form_active = fields.Boolean(
-        compute=lambda s: s._get_is_environment_evaluation_form_active('is_environment_evaluation_form_active'),
-        default=lambda s: s._get_is_environment_evaluation_form_active('is_environment_evaluation_form_active', True)
+        compute=lambda s: s._get_value_config('is_environment_evaluation_form_active'),
+        default=lambda s: s._get_value_config('is_environment_evaluation_form_active', True)
     )
     environment_evaluation_text = fields.Text(
-        compute=lambda s: s._get_environment_evaluation_text('environment_evaluation_text'),
-        default=lambda s: s._get_environment_evaluation_text('environment_evaluation_text', True)
+        compute=lambda s: s._get_value_config('environment_evaluation_text'),
+        default=lambda s: s._get_value_config('environment_evaluation_text', True)
     )
     collaborators = fields.Boolean(string="Colaboradores directos", default=False)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
+    days_notification_end_ev = fields.Boolean(
+        compute=lambda s: s._get_value_config('days_notification_end_ev'),
+        default=lambda s: s._get_value_config('days_notification_end_ev', True)
+    )
 
-    def _get_evaluation_form_text(self, help_field='', is_default=False):
-        _url = eval('self.env.user.company_id.%s' % help_field)
-        if is_default:
-            return _url
-        for rec in self:
-            setattr(rec, help_field, _url)
-
-    def _get_is_evaluation_form_active(self, help_field='', is_default=False):
-        _url = eval('self.env.user.company_id.%s' % help_field)
-        if is_default:
-            return _url
-        for rec in self:
-            setattr(rec, help_field, _url)
-
-    def _get_environment_evaluation_text(self, help_field='', is_default=False):
-        _url = eval('self.env.user.company_id.%s' % help_field)
-        if is_default:
-            return _url
-        for rec in self:
-            setattr(rec, help_field, _url)
-
-    def _get_is_environment_evaluation_form_active(self, help_field='', is_default=False):
+    def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         if is_default:
             return _url
@@ -316,3 +301,35 @@ class ONSCDesempenoEvaluation(models.Model):
             if not competency.degree_id or not competency.improvement_areas:
                 raise ValidationError(
                     _('Deben estar todas las evaluaciones de competencias completas para poder pasar a "Completado"'))
+
+    def notification_end_evaluation(self):
+
+        if self.evaluation_end_date == fields.Date.today() - relativedelta(days=self.days_notification_end_ev):
+            generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_evaluation')
+            generated_form_email_template_id.send_mail(self.id, force_send=True)
+
+        if self.environment_definition_end_date == fields.Date.today() - relativedelta(
+                days=self.days_notification_end_ev):
+            generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_evaluation')
+            generated_form_email_template_id.send_mail(self.id, force_send=True)
+
+    def get_followers_mails(self):
+        Partner = self.env['res.partner'].suspend_security()
+        year = fields.Date.today().strftime('%Y')
+        message_partner_ids = Partner.search(
+            [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
+             ('year', '==', year)])
+        message_partner_ids.get_onsc_mails()
+
+        return True
+
+    def get_environment_definition_followers_mails(self):
+        Partner = self.env['res.partner'].suspend_security()
+        year = fields.Date.today().strftime('%Y')
+        message_partner_ids = Partner.search(
+            [('evaluation_type', '==', 'environment_definition'), ('state', '!=', 'canceled'),
+             ('year', '==', year)])
+        message_partner_ids.get_onsc_mails()
+
+        return True
+
