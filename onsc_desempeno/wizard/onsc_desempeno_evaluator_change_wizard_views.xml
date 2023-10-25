@@ -1,17 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <record id="onsc_desempeno_change_wizard_job_id_tree" model="ir.ui.view">
+        <field name="name">onsc_desempeno.hr.job.tree</field>
+        <field name="model">hr.job</field>
+        <field name="arch" type="xml">
+            <tree string="Puestos en UO">
+                <field name="employee_id" string="Funcionario"/>
+            </tree>
+        </field>
+    </record>
+    
+    <record id="onsc_desempeno_change_wizard_job_id_search" model="ir.ui.view">
+        <field name="name">onsc_desempeno.hr.job.search</field>
+        <field name="model">hr.job</field>
+        <field name="arch" type="xml">
+            <search string="Puestos en UO">
+                <field name="employee_id" string="Funcionario"/>
+            </search>
+        </field>
+    </record>
+
     <record id="onsc_desempeno_evaluation_change_wizard_form" model="ir.ui.view">
         <field name="name">onsc.desempeno.evaluation.change.wizard.form</field>
         <field name="model">onsc.desempeno.evaluation.change.wizard</field>
         <field name="arch" type="xml">
             <form>
                 <group>
-                    <field name="evaluator_id"
-                           domain="evaluator_id_domain"
+                    <field name="reasign_tome"
+                           attrs="{'invisible': [('is_reasign_tome_available', '=', False)]}"
+                           widget="boolean_toggle"/>
+                    <field name="job_id"
+                           attrs="{'invisible': [('reasign_tome', '=', True)],'required': [('reasign_tome', '=', False)]}"
+                           context="{'show_employee_as_display_name': True,'tree_view_ref': 'onsc_desempeno.onsc_desempeno_change_wizard_job_id_tree','search_view_ref': 'onsc_desempeno.onsc_desempeno_change_wizard_job_id_search'}"
+                           domain="job_id_domain"
                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="reason_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                    <field name="evaluator_id_domain" invisible="1"/>
+                    <field name="job_id_domain" invisible="1"/>
                     <field name="evaluation_id" invisible="1"/>
+                    <field name="is_reasign_tome_available" invisible="1"/>
                 </group>
                 <footer>
                     <button string="Actualizar" name="action_confirm" type="object" class="oe_highlight" data-hotkey="s"/>

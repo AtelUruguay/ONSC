@@ -25,8 +25,10 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
     skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True, ondelete='restrict')
-    skill_line_ids = fields.One2many(comodel_name="onsc.desempeno.skill.line", inverse_name="competency_id",
-                                     string="Lineas de competencia")
+    skill_line_ids = fields.Many2many(
+        comodel_name="onsc.desempeno.skill.line",
+        relation="competency_skill_line_rel",
+        string="Lineas de competencia")
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo',
                                 required=False, ondelete='restrict')
     improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=False,
