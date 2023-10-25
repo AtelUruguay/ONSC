@@ -60,8 +60,10 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="row mt16 o_settings_container"
-                             groups="onsc_desempeno.group_desempeno_administrador">
+                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">
+                            Días notificación antes de llegada la fecha fin de la evaluación
+                        </h6>
+                        <div class="row mt16 o_settings_container">
                             <div class="col-xs-12 col-md-6 o_setting_box">
                                 <div class="col-12 col-lg-12 o_setting_box" id="environment_evaluation_settings">
                                     <field name="days_notification_end_ev" />

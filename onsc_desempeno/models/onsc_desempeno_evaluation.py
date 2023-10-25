@@ -249,10 +249,10 @@ class ONSCDesempenoEvaluation(models.Model):
     )
     collaborators = fields.Boolean(string="Colaboradores directos", default=False)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
-    days_notification_end_ev = fields.Boolean(
-        compute=lambda s: s._get_value_config('days_notification_end_ev'),
-        default=lambda s: s._get_value_config('days_notification_end_ev', True)
-    )
+    # days_notification_end_ev = fields.Boolean(
+    #     compute=lambda s: s._get_value_config('days_notification_end_ev'),
+    #     default=lambda s: s._get_value_config('days_notification_end_ev', True)
+    # )
     is_evaluation_change_available = fields.Boolean(
         string='Botón de cambio de evaluador disponible',
         compute='_compute_is_evaluation_change_available')
@@ -320,32 +320,41 @@ class ONSCDesempenoEvaluation(models.Model):
                     _('Deben estar todas las evaluaciones de competencias completas para poder pasar a "Completado"'))
 
     def notification_end_evaluation(self):
-
-        if self.evaluation_end_date == fields.Date.today() - relativedelta(days=self.days_notification_end_ev):
+        year = fields.Date.today().strftime('%Y')
+        days_notification_end_ev = self.env.user.company_id.ws7_latency_inseconds
+        date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
+        count_message = self.search_count(
+            [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
+             ('year', '=', year),('evaluation_end_date', '=',date_end)])
+        if count_message > 0 :
             generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_evaluation')
             generated_form_email_template_id.send_mail(self.id, force_send=True)
 
-        if self.environment_definition_end_date == fields.Date.today() - relativedelta(
-                days=self.days_notification_end_ev):
+        count_message_env = self.search_count(
+            [('evaluation_type', 'in', ['environment_definition']), ('state', '!=', 'canceled'),
+             ('year', '=', year),
+             ('environment_definition_end_date', '=', date_end)])
+
+        if count_message_env > 0:
             generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_evaluation')
             generated_form_email_template_id.send_mail(self.id, force_send=True)
 
     def get_followers_mails(self):
-        Partner = self.env['res.partner'].suspend_security()
+
         year = fields.Date.today().strftime('%Y')
-        message_partner_ids = Partner.search(
+        message_partner_ids = self.search(
             [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
-             ('year', '==', year)])
+             ('year', '=', year)]).mapped('evaluator_id.partner_id')
         message_partner_ids.get_onsc_mails()
 
         return True
 
     def get_environment_definition_followers_mails(self):
-        Partner = self.env['res.partner'].suspend_security()
+
         year = fields.Date.today().strftime('%Y')
-        message_partner_ids = Partner.search(
-            [('evaluation_type', '==', 'environment_definition'), ('state', '!=', 'canceled'),
-             ('year', '==', year)])
+        message_partner_ids = self.search(
+            [('evaluation_type', '=', 'environment_definition'), ('state', '!=', 'canceled'),
+             ('year', '=', year)]).mapped('evaluated_id.partner_id')
         message_partner_ids.get_onsc_mails()
 
         return True
