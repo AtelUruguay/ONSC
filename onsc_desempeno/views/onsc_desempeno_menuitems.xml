@@ -96,7 +96,7 @@
                   sequence="1"/>
 
         <menuitem id="onsc_desempeno_leader_evaluation_menu"
-                  name="Evaluación del Líder al Colaborador"
+                  name="Evaluación del Líder al Colaborador/a"
                   action="onsc_desempeno_leader_evaluation_action"
                   groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_responsable_uo"
                   parent="onsc_desempeno_evaluations_menu"
@@ -105,7 +105,7 @@
         <menuitem id="onsc_desempeno_collaborator_evaluation_menu"
                   name="Evaluación de Colaborador/a al Líder"
                   action="onsc_desempeno_collaborator_evaluation_action"
-                  groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_responsable_uo"
+                  groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
                   parent="onsc_desempeno_evaluations_menu"
                   sequence="10"/>
 

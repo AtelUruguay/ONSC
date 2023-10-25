@@ -437,9 +437,9 @@ class ONSCLegajoAltaVL(models.Model):
     # ALTAVL WS5
     def _create_legajo(self):
         employee = self._get_legajo_employee()
+        legajo = self._get_legajo(employee)
         contract = self._get_legajo_contract(employee)
         self._get_legajo_job(contract)
-        legajo = self._get_legajo(employee)
         return legajo
 
     def _get_legajo(self, employee):
