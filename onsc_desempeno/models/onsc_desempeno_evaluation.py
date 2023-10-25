@@ -190,9 +190,10 @@ class ONSCDesempenoEvaluation(models.Model):
     name = fields.Char(string="Nombre", compute="_compute_name", store=True)
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', required=True, readonly=True)
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
-    evaluator_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
+    evaluator_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True, tracking=True, index=True)
     evaluator_uo_id = fields.Many2one('hr.department', string='UO del Evaluador', readonly=True)
     original_evaluator_id = fields.Many2one('hr.employee', string='Evaluador Original', readonly=True)
+    original_evaluator_uo_id = fields.Many2one('hr.department', string='UO del Evaluador Original', readonly=True)
     reason_change_id = fields.Many2one('onsc.desempeno.reason.change.evaluator', string='Motivo de cambio de Evaluador')
     environment_evaluation_ids = fields.Many2many('hr.employee', 'enviroment_evaluator_evaluation_rel', 'evaluation_id',
                                                   'enviroment_evaluator_id', string='Evaluación de Entorno',

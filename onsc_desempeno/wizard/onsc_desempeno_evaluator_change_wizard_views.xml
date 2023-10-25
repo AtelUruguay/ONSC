@@ -26,13 +26,18 @@
         <field name="arch" type="xml">
             <form>
                 <group>
-                   <field name="job_id"
-                          context="{'show_employee_as_display_name': True,'tree_view_ref': 'onsc_desempeno.onsc_desempeno_change_wizard_job_id_tree','search_view_ref': 'onsc_desempeno.onsc_desempeno_change_wizard_job_id_search'}"
-                          domain="job_id_domain"
-                          options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="reasign_tome"
+                           attrs="{'invisible': [('is_reasign_tome_available', '=', False)]}"
+                           widget="boolean_toggle"/>
+                    <field name="job_id"
+                           attrs="{'invisible': [('reasign_tome', '=', True)],'required': [('reasign_tome', '=', False)]}"
+                           context="{'show_employee_as_display_name': True,'tree_view_ref': 'onsc_desempeno.onsc_desempeno_change_wizard_job_id_tree','search_view_ref': 'onsc_desempeno.onsc_desempeno_change_wizard_job_id_search'}"
+                           domain="job_id_domain"
+                           options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="reason_id" options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="job_id_domain" invisible="1"/>
                     <field name="evaluation_id" invisible="1"/>
+                    <field name="is_reasign_tome_available" invisible="1"/>
                 </group>
                 <footer>
                     <button string="Actualizar" name="action_confirm" type="object" class="oe_highlight" data-hotkey="s"/>
