@@ -311,7 +311,8 @@ class ONSCDesempenoEvaluation(models.Model):
         is_gh_admin = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
         for record in self:
             user_gh_cond = not is_gh_user or (is_gh_user and record.evaluator_uo_id.hierarchical_level_id.order == 1)
-            record.is_evaluation_change_available = not is_gh_admin and user_gh_cond
+            is_leader_eval = record.evaluation_type == 'leader_evaluation'
+            record.is_evaluation_change_available = not is_gh_admin and user_gh_cond and is_leader_eval
 
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})
