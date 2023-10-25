@@ -80,6 +80,7 @@
                             <field name="original_evaluator_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
+                            <field name="original_evaluator_uo_id"/>
                             <field name="reason_change_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
