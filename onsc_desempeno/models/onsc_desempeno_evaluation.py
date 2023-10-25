@@ -310,11 +310,11 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.depends('state')
     def _compute_is_evaluation_change_available(self):
         is_gh_user = self._is_group_usuario_gh_inciso() or self._is_group_usuario_gh_ue()
-        is_gh_admin = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
+        is_gh_responsable = self._is_group_responsable_uo()
         for record in self:
-            user_gh_cond = not is_gh_user or (is_gh_user and record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1)
+            is_user_gh_cond = is_gh_user and record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
             is_leader_eval = record.evaluation_type == 'leader_evaluation'
-            record.is_evaluation_change_available = not is_gh_admin and user_gh_cond and is_leader_eval
+            record.is_evaluation_change_available = (is_user_gh_cond or is_gh_responsable) and is_leader_eval
 
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})
