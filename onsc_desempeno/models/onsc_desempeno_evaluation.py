@@ -80,7 +80,7 @@ class ONSCDesempenoEvaluation(models.Model):
                         self.env['hr.department'].search([('id', 'child_of', user_department.id)]).ids)
                 args_extended = expression.AND([[('evaluated_id', '!=', self.env.user.employee_id.id),
                                                  ('uo_id', 'in', available_department_ids),
-                                                 ('evaluation_type', '=', 'collaborator')], args_extended])
+                                                 ('evaluation_type', '=', 'leader_evaluation')], args_extended])
 
             elif self._is_group_admin_gh_inciso() or self._is_group_usuario_gh_inciso():
                 inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
@@ -127,8 +127,9 @@ class ONSCDesempenoEvaluation(models.Model):
         args_extended = []
         if self._is_group_admin_gh_inciso():
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-            args_extended = expression.AND([[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
-                                    ('evaluation_type', '=', evaluation_type)], args_extended])
+            args_extended = expression.AND(
+                [[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
+                  ('evaluation_type', '=', evaluation_type)], args_extended])
             args_extended = expression.OR(
                 [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', evaluation_type)],
                  args_extended])
@@ -152,7 +153,7 @@ class ONSCDesempenoEvaluation(models.Model):
         return expression.AND([args_extended, args])
 
     def _get_domain_collaborator(self, args):
-        abstract_security = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue() or self._is_group_responsable_uo()
+        abstract_security = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
         if self._is_group_admin_gh_inciso():
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
             args = expression.AND([[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
@@ -167,10 +168,10 @@ class ONSCDesempenoEvaluation(models.Model):
                 args = expression.AND(
                     [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', 'collaborator')],
                      args])
-            else:
-                args = expression.OR(
-                    [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', 'collaborator')],
-                     args])
+            # else:
+            #     args = expression.OR(
+            #         [[('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', 'collaborator')],
+            #          args])
         return args
 
     @api.model
@@ -311,7 +312,7 @@ class ONSCDesempenoEvaluation(models.Model):
         is_gh_user = self._is_group_usuario_gh_inciso() or self._is_group_usuario_gh_ue()
         is_gh_admin = self._is_group_admin_gh_inciso() or self._is_group_admin_gh_ue()
         for record in self:
-            user_gh_cond = not is_gh_user or (is_gh_user and record.evaluator_uo_id.hierarchical_level_id.order == 1)
+            user_gh_cond = not is_gh_user or (is_gh_user and record.evaluator_uo_id.suspend_security().hierarchical_level_id.order == 1)
             is_leader_eval = record.evaluation_type == 'leader_evaluation'
             record.is_evaluation_change_available = not is_gh_admin and user_gh_cond and is_leader_eval
 
