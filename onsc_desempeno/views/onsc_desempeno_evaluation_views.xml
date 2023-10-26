@@ -154,7 +154,6 @@
                                     <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <button type="object"
                                             name="button_open_current_skill"
-                                            attrs="{'invisible': ['|',('state', '!=','in_process'),('evaluation_form_edit', '=',False)]}"
                                             context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
                                             icon="fa-edit"/>
                                 </tree>
