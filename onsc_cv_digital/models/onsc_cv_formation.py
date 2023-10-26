@@ -72,6 +72,7 @@ class ONSCCVFormationAdvanced(models.Model):
     tutor = fields.Char(string="Tutor")
     knowledge_thesis_ids = fields.Many2many('onsc.cv.knowledge', 'knowledge_thesis_id',
                                             string=u'Conocimientos aplicados a su tesis',
+                                            ondelete='restrict',
                                             help='Sólo se pueden seleccionar 5 tipos de conocimientos')
     final_note_thesis = fields.Float(string="Nota final de tesis")
     max_note_thesis = fields.Float(string="Nota máxima posible de tesis")
@@ -98,6 +99,7 @@ class ONSCCVFormationAdvanced(models.Model):
                                               string=u'Conocimientos adquiridos',
                                               copy=True,
                                               required=True,
+                                              ondelete='restrict',
                                               store=True)
 
     @api.onchange('homologated_title_date')

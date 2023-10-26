@@ -83,6 +83,7 @@ class ONSCCVAcademicProgramSubject(models.Model):
                                               relation='knowledge_teaching_program_rel',
                                               required=True,
                                               copy=True,
+                                              ondelete='restrict',
                                               store=True)
 
     def _get_json_dict(self):
