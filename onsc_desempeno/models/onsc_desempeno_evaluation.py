@@ -130,12 +130,13 @@ class ONSCDesempenoEvaluation(models.Model):
             ('evaluation_type', '=', 'collaborator')
         ]
         if self._is_group_admin_gh_inciso():
-            args_extended = expression.OR([[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
-                                   ('evaluation_type', '=', 'collaborator')], args_extended])
+            args_extended = expression.OR(
+                [[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
+                  ('evaluation_type', '=', 'collaborator')], args_extended])
         elif self._is_group_admin_gh_ue():
             args_extended = expression.OR([[('evaluated_id', '!=', self.env.user.employee_id.id),
-                                    ('operating_unit_id', '=', operating_unit_id),
-                                    ('evaluation_type', '=', 'collaborator')], args_extended])
+                                            ('operating_unit_id', '=', operating_unit_id),
+                                            ('evaluation_type', '=', 'collaborator')], args_extended])
         return expression.AND([args_extended, args])
 
     @api.model
@@ -172,7 +173,7 @@ class ONSCDesempenoEvaluation(models.Model):
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
-    year = fields.Integer(string='Año a Evaluar', related='general_cycle_id.year',store =True)
+    year = fields.Integer(string='Año a Evaluar', related='general_cycle_id.year', store=True)
     evaluation_start_date = fields.Date(
         string='Fecha inicio ciclo evaluación',
         related='evaluation_stage_id.start_date',
@@ -211,10 +212,7 @@ class ONSCDesempenoEvaluation(models.Model):
     )
     collaborators = fields.Boolean(string="Colaboradores directos", default=False)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
-    # days_notification_end_ev = fields.Boolean(
-    #     compute=lambda s: s._get_value_config('days_notification_end_ev'),
-    #     default=lambda s: s._get_value_config('days_notification_end_ev', True)
-    # )
+
     is_evaluation_change_available = fields.Boolean(
         string='Botón de cambio de evaluador disponible',
         compute='_compute_is_evaluation_change_available')
@@ -287,8 +285,8 @@ class ONSCDesempenoEvaluation(models.Model):
         date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
         count_message = self.search_count(
             [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
-             ('year', '=', year),('evaluation_end_date', '=',date_end)])
-        if count_message > 0 :
+             ('year', '=', year), ('evaluation_end_date', '=', date_end)])
+        if count_message > 0:
             generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_evaluation')
             generated_form_email_template_id.send_mail(self.id, force_send=True)
 
@@ -321,3 +319,27 @@ class ONSCDesempenoEvaluation(models.Model):
 
         return True
 
+    def process_end_block_evaluation(self):
+        GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
+        general_ids = GeneralCycle.search([('end_date_max', '=', fields.Date.today())]).ids
+
+        for record in self.search(
+                [('general_cycle_id', 'in', general_ids), ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation'])]):
+            if record.state == 'completed':
+                record.write({'state': 'finished'})
+            else:
+                record.write({'state': 'uncompleted'})
+
+        for record in self.search(
+                [('environment_definition_end_date', '=', fields.Date.today()),
+                 ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['environment_definition'])]):
+            if record.state == 'completed':
+                record.write({'state': 'finished'})
+            else:
+                record.write({'state': 'uncompleted'})
+
+        self.search([('evaluation_end_date', '=', fields.Date.today()), ('state', '!=', 'canceled'),
+                     ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]).write(
+            {'locked': True})
