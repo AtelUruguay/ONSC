@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import json
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -102,9 +103,12 @@ class ONSCDesempenoEvaluation(models.Model):
     def _get_domain_evaluation(self, args, evaluation_type):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
-        args_extended = [('evaluated_id', '=', self.env.user.employee_id.id),
-                         ('inciso_id', '=', inciso_id),
-                         ('operating_unit_id', '=', operating_unit_id)]
+        args_extended = [
+            ('evaluation_type', '=', evaluation_type),
+            ('evaluated_id', '=', self.env.user.employee_id.id),
+            ('inciso_id', '=', inciso_id),
+            ('operating_unit_id', '=', operating_unit_id)
+        ]
         if self._is_group_admin_gh_inciso():
             args_extended = expression.OR(
                 [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
@@ -155,11 +159,16 @@ class ONSCDesempenoEvaluation(models.Model):
     original_evaluator_id = fields.Many2one('hr.employee', string='Evaluador Original', readonly=True)
     original_evaluator_uo_id = fields.Many2one('hr.department', string='UO del Evaluador Original', readonly=True)
     reason_change_id = fields.Many2one('onsc.desempeno.reason.change.evaluator', string='Motivo de cambio de Evaluador')
+
+    # DEFINICION DE ENTORNO
+    evaluatior_list__id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
     environment_evaluation_ids = fields.Many2many('hr.employee', 'enviroment_evaluator_evaluation_rel', 'evaluation_id',
                                                   'enviroment_evaluator_id', string='Evaluación de Entorno',
                                                   readonly=True)
     environment_ids = fields.Many2many('hr.employee', 'enviroment_evaluation_rel', 'evaluation_id', 'enviroment_id',
                                        string='Entorno')
+    environment_ids_domain = fields.Char(compute='_compute_environment_ids_domain')
+
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
     uo_id = fields.Many2one('hr.department', string='UO', readonly=True)
@@ -274,6 +283,13 @@ class ONSCDesempenoEvaluation(models.Model):
             is_user_gh_cond = is_gh_user and record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
             is_leader_eval = record.evaluation_type == 'leader_evaluation'
             record.is_evaluation_change_available = (is_user_gh_cond or is_gh_responsable) and is_leader_eval
+
+    @api.depends('state')
+    def _compute_environment_ids_domain(self):
+        user_employee = self.env.user.employee_id
+        for rec in self:
+            domain = [('id', '!=', user_employee.id)]
+            self.operating_unit_id_domain = json.dumps(domain)
 
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})
