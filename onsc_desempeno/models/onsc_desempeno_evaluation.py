@@ -271,7 +271,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
     @api.depends('state')
     def _compute_is_evaluation_change_available(self):
-        Department = self.env['hr.department']
+        Department = self.env['hr.department'].sudo()
         is_gh_user = self._is_group_usuario_gh_inciso() or self._is_group_usuario_gh_ue()
         is_gh_responsable = self._is_group_responsable_uo()
         employee = self.env.user.employee_id
