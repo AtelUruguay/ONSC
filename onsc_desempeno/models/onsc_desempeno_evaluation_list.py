@@ -308,6 +308,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
@@ -348,6 +349,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
@@ -387,6 +389,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
@@ -430,6 +433,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                     raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
                 evaluation = Evaluation.create({
+                    'evaluation_list_id': data.evaluation_list_id.id,
                     'evaluated_id': self.manager_id.id,
                     'evaluator_id': data.employee_id.id,
                     'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
@@ -469,6 +473,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': self.manager_id.id,
             'evaluator_id': data.employee_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,

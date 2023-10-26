@@ -161,14 +161,16 @@ class ONSCDesempenoEvaluation(models.Model):
     reason_change_id = fields.Many2one('onsc.desempeno.reason.change.evaluator', string='Motivo de cambio de Evaluador')
 
     # DEFINICION DE ENTORNO
-    evaluatior_list__id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
+    list_manager_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
     environment_evaluation_ids = fields.Many2many('hr.employee', 'enviroment_evaluator_evaluation_rel', 'evaluation_id',
                                                   'enviroment_evaluator_id', string='Evaluación de Entorno',
                                                   readonly=True)
-    environment_ids = fields.Many2many('hr.employee', 'enviroment_evaluation_rel', 'evaluation_id', 'enviroment_id',
-                                       string='Entorno')
+    environment_ids = fields.Many2many('hr.employee', string='Entorno')
     environment_ids_domain = fields.Char(compute='_compute_environment_ids_domain')
-
+    environment_in_hierarchy = fields.Boolean(
+        string='Definir entorno en la misma estructura jerárquica',
+        default=True
+    )
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
     uo_id = fields.Many2one('hr.department', string='UO', readonly=True)
@@ -176,6 +178,7 @@ class ONSCDesempenoEvaluation(models.Model):
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
+    evaluation_list_id = fields.Many2one('onsc.desempeno.evaluation.list', string='Lista de participante', readonly=True)
     year = fields.Integer(string='Año a Evaluar', related='general_cycle_id.year')
     evaluation_start_date = fields.Date(
         string='Fecha inicio ciclo evaluación',
@@ -284,12 +287,34 @@ class ONSCDesempenoEvaluation(models.Model):
             is_leader_eval = record.evaluation_type == 'leader_evaluation'
             record.is_evaluation_change_available = (is_user_gh_cond or is_gh_responsable) and is_leader_eval
 
-    @api.depends('state')
+    @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
         user_employee = self.env.user.employee_id
+        EvaluationList = self.env['onsc.desempeno.evaluation.list'].sudo()
+        Job = self.env['hr.job'].sudo()
         for rec in self:
-            domain = [('id', '!=', user_employee.id)]
-            self.operating_unit_id_domain = json.dumps(domain)
+            if rec.evaluation_type == 'environment_definition':
+                evaluation_lists = EvaluationList.search([
+                    ('evaluation_stage_id.general_cycle_id', '=', rec.general_cycle_id.id)
+                ])
+                same_cycle_my_eval_lists = evaluation_lists.filtered(lambda x: x.manager_id.id == user_employee.id)
+                same_cycle_collaborators = same_cycle_my_eval_lists.line_ids.mapped('employee_id')
+                same_cycle_collaborators |= same_cycle_my_eval_lists.evaluation_generated_line_ids.mapped('employee_id')
+
+                employees_2exclude = same_cycle_collaborators
+                employees_2exclude |= user_employee
+                employees_2exclude |= rec.list_manager_id
+
+                domain = [
+                    ('id', 'not in', employees_2exclude.ids)
+                ]
+
+                if rec.environment_in_hierarchy:
+                    jobs = Job.get_active_jobs_in_hierarchy()
+                    domain = expression.AND([domain, [('id', 'in', jobs.mapped('employee_id').ids)]])
+            else:
+                domain = [('id','in',[])]
+            rec.environment_ids_domain = json.dumps(domain)
 
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})

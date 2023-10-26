@@ -104,17 +104,6 @@
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
                     </group>
-
-                    <group name="entorno">
-                        <field name="environment_ids" string="Entorno"
-                               attrs="{'readonly': [('state', '!=', 'environment_definition')],'invisible': [('evaluation_type', '!=', 'environment_definition')]}"
-                               widget="many2many_tags"
-                               options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                        <field name="environment_evaluation_ids" string="Evaluación de entorno"
-                               attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"
-                               widget="many2many_tags"
-                               options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                    </group>
                      <div class="alert alert-info" role="alert"
                          name="div_alert_form"
                          style="overflow:hidden;"
@@ -159,6 +148,26 @@
                                             icon="fa-edit"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Entorno" attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}">
+                            <group>
+                                <field name="environment_in_hierarchy"
+                                   attrs="{'readonly': [('state', '!=', 'in_process')]}"
+                                   widget="boolean_toggle"/>
+                                <field name="environment_ids" string="Entorno"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree','search_view_ref': 'onsc_desempeno.onsc_desempeno_change_wizard_job_id_search'}"
+                                       domain="environment_ids_domain"
+                                       attrs="{'readonly': [('state', '!=', 'in_process')]}">
+                                    <tree>
+                                        <field name="name"/>
+                                    </tree>
+                                </field>
+                                <field name="environment_evaluation_ids" string="Evaluación de entorno"
+                                       widget="many2many_tags"
+                                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                <field name="environment_ids_domain"/>
+                            </group>
+
                         </page>
                     </notebook>
                     <group name="general_comments" string="Comentarios Generales"
