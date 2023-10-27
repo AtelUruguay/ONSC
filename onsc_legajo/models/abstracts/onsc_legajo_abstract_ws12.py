@@ -66,7 +66,7 @@ class ONSCLegajoAbstractSyncWS12(models.AbstractModel):
                         str(response.movimiento.pdaId), str(id_accion)))
                 return True
             if response.movimiento.estado.upper() == 'AUDITADO':
-                if accion.secPlaza != str(response.movimiento.secPlaza):
+                if self._context.get('alta_vl') and accion.secPlaza != str(response.movimiento.secPlaza):
                     accion.secPlaza = str(response.movimiento.secPlaza)
                 accion.action_aprobado_cgn()
             elif response.movimiento.estado.upper() == 'RECHAZADO':
