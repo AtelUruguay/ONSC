@@ -6,7 +6,6 @@
         <field name="model">onsc.desempeno.evaluation</field>
         <field name="arch" type="xml">
             <tree string="Evaluación de Desempeño">
-                <field name="evaluation_type"/>
                 <field name="general_cycle_id"/>
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
@@ -71,16 +70,13 @@
 
                     <group>
                         <group  style="min-width: 100px !important;">
-                            <label for="evaluation_type" style="min-width: 100px !important;">Tipo</label>
-                            <field name="evaluation_type" nolabel="1" style="margin-bottom: 5px!important; min-width: 100px !important;"/>
-                            <field name="evaluator_uo_id"/>
+                            <field name="evaluation_type" nolabel="1" invisible="1"/>
                             <field name="evaluator_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': [('evaluation_type', 'in',['self_evaluation', 'environment_definition'])]}"/>
                             <field name="original_evaluator_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
-                            <field name="original_evaluator_uo_id"/>
+                                   readonly="1"/>
                             <field name="reason_change_id"
                                    readonly="1"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
@@ -183,7 +179,6 @@
             <field name="model">onsc.desempeno.evaluation</field>
             <field name="arch" type="xml">
                 <search string="Evaluación de Desempeño">
-                    <field name="evaluation_type"/>
                     <field name="general_cycle_id"/>
                     <field name="evaluator_id"/>
                     <field name="evaluated_id"/>
