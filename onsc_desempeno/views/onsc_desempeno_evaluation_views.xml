@@ -75,6 +75,7 @@
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': [('evaluation_type', 'in',['self_evaluation', 'environment_definition'])]}"/>
                             <field name="original_evaluator_id"
+                                   attrs="{'invisible': [('original_evaluator_id', '=', False)]}"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    readonly="1"/>
                             <field name="reason_change_id"
