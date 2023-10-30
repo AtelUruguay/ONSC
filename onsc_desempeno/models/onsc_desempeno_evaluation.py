@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
+from dateutil.relativedelta import relativedelta
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
@@ -175,7 +177,7 @@ class ONSCDesempenoEvaluation(models.Model):
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
-    year = fields.Integer(string='Año a Evaluar', related='general_cycle_id.year')
+    year = fields.Integer(string='Año a Evaluar', related='general_cycle_id.year', store=True)
     evaluation_start_date = fields.Date(
         string='Fecha inicio ciclo evaluación',
         related='evaluation_stage_id.start_date',
@@ -197,20 +199,20 @@ class ONSCDesempenoEvaluation(models.Model):
                                               compute='_compute_should_disable_form_edit')
     evaluation_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_evaluation_form_edit')
     is_evaluation_form_active = fields.Boolean(
-        compute=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active'),
-        default=lambda s: s._get_is_evaluation_form_active('is_evaluation_form_active', True)
+        compute=lambda s: s._get_value_config('is_evaluation_form_active'),
+        default=lambda s: s._get_value_config('is_evaluation_form_active', True)
     )
     evaluation_form_text = fields.Text(
-        compute=lambda s: s._get_evaluation_form_text('evaluation_form_text'),
-        default=lambda s: s._get_evaluation_form_text('evaluation_form_text', True)
+        compute=lambda s: s._get_value_config('evaluation_form_text'),
+        default=lambda s: s._get_value_config('evaluation_form_text', True)
     )
     is_environment_evaluation_form_active = fields.Boolean(
-        compute=lambda s: s._get_is_environment_evaluation_form_active('is_environment_evaluation_form_active'),
-        default=lambda s: s._get_is_environment_evaluation_form_active('is_environment_evaluation_form_active', True)
+        compute=lambda s: s._get_value_config('is_environment_evaluation_form_active'),
+        default=lambda s: s._get_value_config('is_environment_evaluation_form_active', True)
     )
     environment_evaluation_text = fields.Text(
-        compute=lambda s: s._get_environment_evaluation_text('environment_evaluation_text'),
-        default=lambda s: s._get_environment_evaluation_text('environment_evaluation_text', True)
+        compute=lambda s: s._get_value_config('environment_evaluation_text'),
+        default=lambda s: s._get_value_config('environment_evaluation_text', True)
     )
     collaborators = fields.Boolean(string="Colaboradores directos", default=False)
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
@@ -219,28 +221,7 @@ class ONSCDesempenoEvaluation(models.Model):
         string='Botón de cambio de evaluador disponible',
         compute='_compute_is_evaluation_change_available')
 
-    def _get_evaluation_form_text(self, help_field='', is_default=False):
-        _url = eval('self.env.user.company_id.%s' % help_field)
-        if is_default:
-            return _url
-        for rec in self:
-            setattr(rec, help_field, _url)
-
-    def _get_is_evaluation_form_active(self, help_field='', is_default=False):
-        _url = eval('self.env.user.company_id.%s' % help_field)
-        if is_default:
-            return _url
-        for rec in self:
-            setattr(rec, help_field, _url)
-
-    def _get_environment_evaluation_text(self, help_field='', is_default=False):
-        _url = eval('self.env.user.company_id.%s' % help_field)
-        if is_default:
-            return _url
-        for rec in self:
-            setattr(rec, help_field, _url)
-
-    def _get_is_environment_evaluation_form_active(self, help_field='', is_default=False):
+    def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         if is_default:
             return _url
@@ -314,3 +295,89 @@ class ONSCDesempenoEvaluation(models.Model):
             if not competency.degree_id or not competency.improvement_areas:
                 raise ValidationError(
                     _('Deben estar todas las evaluaciones de competencias completas para poder pasar a "Completado"'))
+
+    def notification_end_evaluation(self):
+        year = fields.Date.today().strftime('%Y')
+        days_notification_end_ev = self.env.user.company_id.days_notification_end_ev
+        date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
+        count_message = self.search_count(
+            [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
+             ('year', '=', year), ('evaluation_end_date', '=', date_end)])
+        if count_message > 0:
+            generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_evaluation')
+            generated_form_email_template_id.send_mail(self.id, force_send=True)
+
+        count_message_env = self.search_count(
+            [('evaluation_type', 'in', ['environment_definition']), ('state', '!=', 'canceled'),
+             ('year', '=', year),
+             ('environment_definition_end_date', '=', date_end)])
+
+        if count_message_env > 0:
+            generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_evaluation')
+            generated_form_email_template_id.send_mail(self.id, force_send=True)
+
+    def get_followers_mails(self):
+
+        year = fields.Date.today().strftime('%Y')
+        message_partner_ids = self.search(
+            [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
+             ('year', '=', year)]).mapped('evaluator_id.partner_id')
+        return message_partner_ids.get_onsc_mails()
+
+    def get_environment_definition_followers_mails(self):
+
+        year = fields.Date.today().strftime('%Y')
+        message_partner_ids = self.search(
+            [('evaluation_type', '=', 'environment_definition'), ('state', '!=', 'canceled'),
+             ('year', '=', year)]).mapped('evaluated_id.partner_id')
+        return message_partner_ids.get_onsc_mails()
+
+    def process_end_block_evaluation(self):
+        GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
+        general_ids = GeneralCycle.search([('end_date_max', '=', fields.Date.today())]).ids
+
+        for record in self.search(
+                [('general_cycle_id', 'in', general_ids), ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation'])]):
+            if record.state == 'completed':
+                record.write({'state': 'finished'})
+            else:
+                record.write({'state': 'uncompleted'})
+
+        for record in self.search(
+                [('environment_definition_end_date', '=', fields.Date.today()),
+                 ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['environment_definition'])]):
+            if record.state == 'completed':
+                record.write({'state': 'finished'})
+            else:
+                record.write({'state': 'uncompleted'})
+
+        self.search([('evaluation_end_date', '=', fields.Date.today()), ('state', '!=', 'canceled'),
+                     ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]).write(
+            {'locked': True})
+
+    def process_create_consolidated(self):
+        GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
+        general_ids = GeneralCycle.search([('end_date_max', '=', fields.Date.today())]).ids
+
+        for record in self.search(
+                [('general_cycle_id', 'in', general_ids), ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation'])]):
+            if record.state == 'completed':
+                record.write({'state': 'finished'})
+            else:
+                record.write({'state': 'uncompleted'})
+
+        for record in self.search(
+                [('environment_definition_end_date', '=', fields.Date.today()),
+                 ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['environment_definition'])]):
+            if record.state == 'completed':
+                record.write({'state': 'finished'})
+            else:
+                record.write({'state': 'uncompleted'})
+
+        self.search([('evaluation_end_date', '=', fields.Date.today()), ('state', '!=', 'canceled'),
+                     ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]).write(
+            {'locked': True})
