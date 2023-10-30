@@ -41,8 +41,12 @@
                                         </div>
                                         <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuraciones</h6>
                                         <div class="row">
-                                            <label for="max_desempenno_evaluation_forms" class="col-md-3 o_light_label"/>
-                                            <field name="max_desempenno_evaluation_forms"/>
+                                            <label for="max_environment_evaluation_forms" class="col-md-3 o_light_label"/>
+                                            <field name="max_environment_evaluation_forms"/>
+                                        </div>
+                                        <div class="row">
+                                            <label for="random_environment_evaluation_forms" class="col-md-3 o_light_label"/>
+                                            <field name="random_environment_evaluation_forms"/>
                                         </div>
                                     </div>
                                 </div>
