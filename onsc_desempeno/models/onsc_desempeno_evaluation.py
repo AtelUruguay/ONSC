@@ -305,9 +305,7 @@ class ONSCDesempenoEvaluation(models.Model):
         message_partner_ids = self.search(
             [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
              ('year', '=', year)]).mapped('evaluator_id.partner_id')
-        message_partner_ids.get_onsc_mails()
-
-        return True
+        return message_partner_ids.get_onsc_mails()
 
     def get_environment_definition_followers_mails(self):
 
