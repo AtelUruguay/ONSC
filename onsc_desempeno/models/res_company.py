@@ -13,6 +13,7 @@ class ResCompany(models.Model):
     is_environment_evaluation_form_active = fields.Boolean('Activar ayuda para formulario de definición de entorno')
     environment_evaluation_text = fields.Text('Ayuda para formulario de definición de entorno')
     days_notification_end_ev = fields.Integer(u"Días antes de llegada la fecha fin de la evaluación")
+
     def write(self, vals):
         _fields = [
             "is_evaluation_form_active",

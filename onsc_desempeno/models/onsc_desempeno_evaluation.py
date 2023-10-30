@@ -281,7 +281,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def notification_end_evaluation(self):
         year = fields.Date.today().strftime('%Y')
-        days_notification_end_ev = self.env.user.company_id.ws7_latency_inseconds
+        days_notification_end_ev = self.env.user.company_id.days_notification_end_ev
         date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
         count_message = self.search_count(
             [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
@@ -315,11 +315,34 @@ class ONSCDesempenoEvaluation(models.Model):
         message_partner_ids = self.search(
             [('evaluation_type', '=', 'environment_definition'), ('state', '!=', 'canceled'),
              ('year', '=', year)]).mapped('evaluated_id.partner_id')
-        message_partner_ids.get_onsc_mails()
-
-        return True
+        return message_partner_ids.get_onsc_mails()
 
     def process_end_block_evaluation(self):
+        GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
+        general_ids = GeneralCycle.search([('end_date_max', '=', fields.Date.today())]).ids
+
+        for record in self.search(
+                [('general_cycle_id', 'in', general_ids), ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation'])]):
+            if record.state == 'completed':
+                record.write({'state': 'finished'})
+            else:
+                record.write({'state': 'uncompleted'})
+
+        for record in self.search(
+                [('environment_definition_end_date', '=', fields.Date.today()),
+                 ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['environment_definition'])]):
+            if record.state == 'completed':
+                record.write({'state': 'finished'})
+            else:
+                record.write({'state': 'uncompleted'})
+
+        self.search([('evaluation_end_date', '=', fields.Date.today()), ('state', '!=', 'canceled'),
+                     ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]).write(
+            {'locked': True})
+
+    def process_create_consolidated(self):
         GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
         general_ids = GeneralCycle.search([('end_date_max', '=', fields.Date.today())]).ids
 
