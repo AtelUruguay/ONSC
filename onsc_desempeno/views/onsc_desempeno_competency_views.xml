@@ -19,8 +19,14 @@
                                     <field name="skill_tooltip"/>
                                 </div>
                             </div>
-                            <field colspan="4" name="degree_id" required="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field colspan="4" name="improvement_areas" required="1"/>
+                            <field colspan="4" name="degree_id"
+                                   attrs="{'readonly':[('state', '!=','in_process')]}"
+                                   required="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field colspan="4"
+                                   name="improvement_areas"
+                                   attrs="{'readonly':[('state', '!=','in_process')]}"
+                                   required="1"/>
+                            <field name="state" invisible="1"/>
                         </group>
                     </group>
                     <notebook>
@@ -42,15 +48,22 @@
                                         </group>
                                     </group>
                                  </form>
-
-
                             </field>
                         </page>
                     </notebook>
                 </sheet>
                <footer>
-                    <button string="Guardar" name="action_close_dialog" type="object" class="btn-primary"/>
-                    <button string="Cancelar" class="btn-secondary" special="cancel"/>
+                    <button string="Guardar" name="action_close_dialog"
+                            attrs="{'invisible':[('state', '!=','in_process')]}"
+                            type="object" class="btn-primary"/>
+                    <button string="Cancelar"
+                            class="btn-secondary"
+                            attrs="{'invisible':[('state', '!=','in_process')]}"
+                            special="cancel"/>
+                    <button string="Cerrar"
+                            class="btn-secondary"
+                            attrs="{'invisible':[('state', '=','in_process')]}"
+                            special="cancel"/>
                </footer>
             </form>
          </field>

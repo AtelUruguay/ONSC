@@ -64,13 +64,17 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _get_domain_leader_evaluation(self, args):
         collaborators = [x for x in args if x[0] == 'collaborators']
+        inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
+        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         if collaborators:
-            args_extended = [('evaluation_type', '=', 'leader_evaluation'),
-                             ('evaluator_id', '=', self.env.user.employee_id.id)]
+            args_extended = [
+                ('evaluation_type', '=', 'leader_evaluation'),
+                ('evaluator_id', '=', self.env.user.employee_id.id),
+                ('inciso_id', '=', inciso_id),
+                ('operating_unit_id', '=', operating_unit_id)
+            ]
         else:
             # BREAKPOINT - Todos los usuarios deben ver las evaluaciones en las que es evaluador
-            inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-            operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
             args_extended = [
                 ('evaluation_type', '=', 'leader_evaluation'),
                 ('evaluator_id', '=', self.env.user.employee_id.id),
@@ -129,12 +133,13 @@ class ONSCDesempenoEvaluation(models.Model):
             ('evaluation_type', '=', 'collaborator')
         ]
         if self._is_group_admin_gh_inciso():
-            args_extended = expression.OR([[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
-                                   ('evaluation_type', '=', 'collaborator')], args_extended])
+            args_extended = expression.OR(
+                [[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
+                  ('evaluation_type', '=', 'collaborator')], args_extended])
         elif self._is_group_admin_gh_ue():
             args_extended = expression.OR([[('evaluated_id', '!=', self.env.user.employee_id.id),
-                                    ('operating_unit_id', '=', operating_unit_id),
-                                    ('evaluation_type', '=', 'collaborator')], args_extended])
+                                            ('operating_unit_id', '=', operating_unit_id),
+                                            ('evaluation_type', '=', 'collaborator')], args_extended])
         return expression.AND([args_extended, args])
 
     @api.model
@@ -275,17 +280,30 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_evaluation_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            # is_am_evaluated = record.evaluated_id.id == user_employee_id
             record.evaluation_form_edit = record.evaluator_id.id == user_employee_id
 
     @api.depends('state')
     def _compute_is_evaluation_change_available(self):
-        is_gh_user = self._is_group_usuario_gh_inciso() or self._is_group_usuario_gh_ue()
+        Department = self.env['hr.department'].sudo()
+        is_gh_user_ue = self._is_group_usuario_gh_ue()
+        is_gh_user_inciso = self._is_group_usuario_gh_inciso()
         is_gh_responsable = self._is_group_responsable_uo()
+        employee = self.env.user.employee_id
         for record in self:
-            is_user_gh_cond = is_gh_user and record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
             is_leader_eval = record.evaluation_type == 'leader_evaluation'
-            record.is_evaluation_change_available = (is_user_gh_cond or is_gh_responsable) and is_leader_eval
+            is_am_evaluator = record.evaluator_id.id == employee.id
+            is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
+            same_operating_unit = record.operating_unit_id.id == employee.job_id.contract_id.operating_unit_id.id
+            same_inciso = record.inciso_id.id == employee.job_id.contract_id.inciso_id.id
+            hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
+            hierarchy_deparments |= employee.job_id.department_id
+
+            is_user_gh_ue_cond = is_gh_user_ue and is_order_1 and same_operating_unit
+            is_user_gh_inc_cond = is_gh_user_inciso and is_order_1 and same_inciso
+            is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
+            base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable)
+
+            record.is_evaluation_change_available = base_condition and is_leader_eval and not is_am_evaluator
 
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):

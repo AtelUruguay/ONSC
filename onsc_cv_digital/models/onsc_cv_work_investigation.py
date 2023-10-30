@@ -38,6 +38,7 @@ class ONSCCVWorkInvestigation(models.Model):
                                               string="Conocimientos adquiridos",
                                               required=True,
                                               copy=True,
+                                              ondelete='restrict',
                                               store=True)
 
     additional_information = fields.Text(string="Información adicional")

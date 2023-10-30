@@ -50,6 +50,7 @@ class ONSCCVCourseCertificate(models.Model):
                                               string=u'Conocimientos adquiridos',
                                               required=True,
                                               copy=True,
+                                              ondelete='restrict',
                                               store=True)
     certificate_start_date = fields.Date('Fecha de obtención del certificado / constancia',
                                          related='start_date', readonly=False)

@@ -79,9 +79,6 @@
                             <field name="manager_id"
                                    readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
-                            <field name="manager_uo_id"
-                                   readonly="1"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="should_disable_form_edit" invisible="1"/>
                             <field name="is_line_availables" invisible="1"/>
                             <field name="is_line_generated_availables" invisible="1"/>
