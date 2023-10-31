@@ -39,6 +39,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                                          'comportamientos esperados, contenidos en las dimensiones de '
                                          'cada competencia.')
     evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit', )
+    order = fields.Integer('Orden')
 
     skill_tooltip = fields.Html(
         compute=lambda s: s._get_help('skill_tooltip'),

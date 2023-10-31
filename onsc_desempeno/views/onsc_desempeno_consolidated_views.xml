@@ -52,18 +52,23 @@
                     </group>
                    <notebook>
                         <page string="Evaluación de Competencias" >
-                            <field name="evaluation_competency_ids" nolabel="1"
-                                   options="{'no_open': True}" create="0" delete="0" edit="0">
-                                <tree nolabel="1" create="0" edit="0">
+                            <field name="evaluation_competency_ids" nolabel="1" widget="widget_section_and_note_one2many"
+                                   options="{'no_open': True}" create="0" delete="0" edit="0"  mode="tree">
+
+                                <tree editable="top" nolabel="1" create="0" edit="0">
+                                      <control>
+                                        <create name="add_line_control" string="Add a line"/>
+                                        <create name="add_section_control" string="Add a section" context="{'default_display_type': 'line_section'}"/>
+                                        <create name="add_note_control" string="Add a note" context="{'default_display_type': 'line_note'}"/>
+                                    </control>
                                     <field name="state"  invisible="1"/>
-                                    <field name="evaluation_form_edit" invisible="1" />
-                                    <field name="evaluation_id"  invisible="1"/>
-                                    <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+
+                                    <field name="consolidate_id"  invisible="1"/>
+                                    <field name="skill_id" widget="widget_section_and_note_text" colspan="4" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <field name="degree_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <button type="object"
                                             name="button_open_current_skill"
-                                            attrs="{'invisible': ['|',('state', '!=','in_process'),('evaluation_form_edit', '=',False)]}"
                                             context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
                                             icon="fa-edit"/>
                                 </tree>
@@ -91,7 +96,7 @@
     <record id='onsc_desempeno_environment_consolidated_action' model='ir.actions.act_window'>
         <field name="name">Consolidado de Entorno</field>
         <field name="res_model">onsc.desempeno.consolidated</field>
-        <field name="context">{'is_from_menu': True,'environment':True}</field>
+        <field name="context">{'is_from_consolidated_menu': True,'environment':True}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
