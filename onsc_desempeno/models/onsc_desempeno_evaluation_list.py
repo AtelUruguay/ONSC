@@ -192,33 +192,33 @@ class ONSCDesempenoEvaluationList(models.Model):
                 try:
                     if fields.Date.today() <= self.end_date:
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                        self.suspend_security()._create_leader_evaluation(line)
-                        self.suspend_security()._create_environment_definition(line)
-
+                        leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
+                        env_def_evaluation = self.suspend_security()._create_environment_definition(line)
                         line.suspend_security().write({
                             'state': 'generated',
                             'error_log': False,
                             'evaluation_create_date': fields.Date.today(),
-                            'evaluation_ids': [(4, new_evaluation.id)]})
-                        # message_partner_ids.append(line.employee_id.partner_id.id)
+                            'evaluation_ids': [
+                                (4, new_evaluation.id),
+                                (4, leader_evaluation.id),
+                                (4, env_def_evaluation.id)
+                            ]})
                         lines_evaluated |= line
                     elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                        self.suspend_security()._create_leader_evaluation(line)
-                        # message_partner_ids.append(line.employee_id.partner_id.id)
+                        leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
                         line.suspend_security().write({
                             'state': 'generated',
                             'error_log': False,
                             'evaluation_create_date': fields.Date.today(),
-                            'evaluation_ids': [(4, new_evaluation.id)]})
+                            'evaluation_ids': [(4, new_evaluation.id), (4, leader_evaluation.id)]})
                         lines_evaluated |= line
                     partners_to_notify |= line.employee_id.partner_id
                 except Exception as e:
                     line.write({
                         'state': 'error',
                         'error_log': 'Error al generar formulario contacte al administrador. %s' % (tools.ustr(e))})
-        self.with_context(partners_to_notify = partners_to_notify)._send_generated_form_notification()
-        # self.write({'is_notify_leader': True})
+        self.with_context(partners_to_notify=partners_to_notify)._send_generated_form_notification()
         return lines_evaluated
 
     # INTELIGENCIA
@@ -264,8 +264,6 @@ class ONSCDesempenoEvaluationList(models.Model):
                 departments_grouped_info[job.department_id]['department_id'] = job.department_id
                 departments_grouped_info[job.department_id]['job_ids'].add(job)
             elif eval1 and not eval2 and job.department_id.parent_id.id and parent_manager.id != job.employee_id.id:
-                # departments_responsible_grouped_info[job.department_id.parent_id]['department_id'] = job.department_id.parent_id
-                # departments_responsible_grouped_info[job.department_id.parent_id]['job_ids'].add(job)
                 departments_grouped_info[job.department_id.parent_id]['department_id'] = job.department_id.parent_id
                 departments_grouped_info[job.department_id.parent_id]['job_ids'].add(job)
 
@@ -276,9 +274,6 @@ class ONSCDesempenoEvaluationList(models.Model):
                 'evaluation_stage_id': evaluation_stage.id,
                 'department_id': department.id,
             }
-            # for department_responsible,info_responsible in departments_responsible_grouped_info.items():
-            #     if department_responsible.id == department.id:
-            #         info['job_ids'] |= info_responsible['job_ids']
             line_vals = []
             for job in info.get('job_ids', []):
                 line_vals.append([0, 0, {
@@ -417,7 +412,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         generated_evaluations = self.evaluation_generated_line_ids.mapped('evaluation_ids')
-        generated_evaluations_collaborator_qty = len(generated_evaluations.filtered(lambda x: x.evaluation_type == 'collaborator'))
+        generated_evaluations_collaborator_qty = len(
+            generated_evaluations.filtered(lambda x: x.evaluation_type == 'collaborator'))
         if len(valid_lines) == 1 and generated_evaluations_collaborator_qty == 0:
             if self.end_date_environment >= fields.Date.today():
                 self._create_environment_evaluation(valid_lines)
