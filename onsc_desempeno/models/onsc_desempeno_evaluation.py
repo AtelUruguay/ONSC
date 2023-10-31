@@ -317,7 +317,6 @@ class ONSCDesempenoEvaluation(models.Model):
             generated_form_email_template_id.send_mail(self.id, force_send=True)
 
     def get_followers_mails(self):
-
         year = fields.Date.today().strftime('%Y')
         message_partner_ids = self.search(
             [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
@@ -325,7 +324,6 @@ class ONSCDesempenoEvaluation(models.Model):
         return message_partner_ids.get_onsc_mails()
 
     def get_environment_definition_followers_mails(self):
-
         year = fields.Date.today().strftime('%Y')
         message_partner_ids = self.search(
             [('evaluation_type', '=', 'environment_definition'), ('state', '!=', 'canceled'),

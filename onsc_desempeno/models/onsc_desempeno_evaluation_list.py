@@ -190,7 +190,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         if not self.is_notify_leader:
-            message_partner_ids.append(self.manager_id.partner_id)
+            message_partner_ids.append(self.manager_id.partner_id.id)
         with self._cr.savepoint():
             if fields.Date.today() <= self.end_date and len(valid_lines) > 0:
                 self.suspend_security()._create_collaborator_evaluation()
