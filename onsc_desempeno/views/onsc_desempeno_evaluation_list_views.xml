@@ -138,6 +138,7 @@
                                     <field name="regime_id" readonly="1"/>
                                     <field name="contract_date_start"/>
                                     <field name="evaluation_create_date"/>
+                                    <field name="evaluation_ids"/>
                                     <button type="object"
                                             string="Ver contrato"
                                             name="button_open_current_contract"
@@ -153,6 +154,7 @@
                                                 options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                             <field name="contract_date_start"/>
                                             <field name="evaluation_create_date"/>
+                                            <field name="evaluation_ids"/>
                                         </group>
                                     </group>
                                 </form>

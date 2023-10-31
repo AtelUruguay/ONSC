@@ -130,10 +130,6 @@ class ONSCDesempenoEvaluationList(models.Model):
         compute='_compute_is_line_availables'
     )
 
-    message_partner_ids = fields.Many2many('res.partner', 'desempeno_evaluation_partner', 'evaluation_id', 'partner_id',
-                                           string='Followers (Partners)')
-    is_notify_leader = fields.Boolean(string='¿Se envio notificacion al leader?')
-
     _sql_constraints = [
         ('recordset_uniq', 'unique(department_id,evaluation_stage_id)',
          u'Ya existe una lista de evaluación para esta unidad organizativa y ciclo de evaluación.'),
@@ -186,11 +182,9 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     def button_generate_evaluations(self):
         self.ensure_one()
-        message_partner_ids = []
+        partners_to_notify = self.manager_id.partner_id
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
-        if not self.is_notify_leader:
-            message_partner_ids.append(self.manager_id.partner_id.id)
         with self._cr.savepoint():
             if fields.Date.today() <= self.end_date and len(valid_lines) > 0:
                 self.suspend_security()._create_collaborator_evaluation()
@@ -205,27 +199,26 @@ class ONSCDesempenoEvaluationList(models.Model):
                             'state': 'generated',
                             'error_log': False,
                             'evaluation_create_date': fields.Date.today(),
-                            'evaluation_ids': [(6, 0, [new_evaluation.id])]})
-                        message_partner_ids.append(line.employee_id.partner_id.id)
+                            'evaluation_ids': [(4, new_evaluation.id)]})
+                        # message_partner_ids.append(line.employee_id.partner_id.id)
                         lines_evaluated |= line
                     elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
                         self.suspend_security()._create_leader_evaluation(line)
-                        message_partner_ids.append(line.employee_id.partner_id.id)
+                        # message_partner_ids.append(line.employee_id.partner_id.id)
                         line.suspend_security().write({
                             'state': 'generated',
                             'error_log': False,
                             'evaluation_create_date': fields.Date.today(),
-                            'evaluation_ids': [(6, 0, [new_evaluation.id])]})
+                            'evaluation_ids': [(4, new_evaluation.id)]})
                         lines_evaluated |= line
-
-                    self.message_partner_ids = [(6, 0, message_partner_ids)]
+                    partners_to_notify |= line.employee_id.partner_id
                 except Exception as e:
                     line.write({
                         'state': 'error',
                         'error_log': 'Error al generar formulario contacte al administrador. %s' % (tools.ustr(e))})
-        self._send_generated_form_notification()
-        self.write({'is_notify_leader': True})
+        self.with_context(partners_to_notify = partners_to_notify)._send_generated_form_notification()
+        # self.write({'is_notify_leader': True})
         return lines_evaluated
 
     # INTELIGENCIA
@@ -423,18 +416,16 @@ class ONSCDesempenoEvaluationList(models.Model):
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
-        if len(valid_lines) == 1:
+        generated_evaluations = self.evaluation_generated_line_ids.mapped('evaluation_ids')
+        generated_evaluations_collaborator_qty = len(generated_evaluations.filtered(lambda x: x.evaluation_type == 'collaborator'))
+        if len(valid_lines) == 1 and generated_evaluations_collaborator_qty == 0:
             if self.end_date_environment >= fields.Date.today():
                 self._create_environment_evaluation(valid_lines)
-            else:
-                return
-        generated = len(self.evaluation_generated_line_ids)
-        if generated < 4:
-
-            for data in self._get_records_random(valid_lines, generated):
-
+            return True
+        if generated_evaluations_collaborator_qty < 4:
+            for data in self._get_records_random(valid_lines, generated_evaluations_collaborator_qty):
                 level_id = Level.suspend_security().search(
-                    [('hierarchical_level_id', '=', self.manager_id.job_id.department_id.hierarchical_level_id.id),
+                    [('hierarchical_level_id', '=', self.manager_uo_id.hierarchical_level_id.id),
                      ('is_uo_manager', '=', True)]).mapped("level_id")
                 if not level_id:
                     raise ValidationError(
@@ -465,7 +456,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                                        'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
                                            lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                        })
-
+                data.write({'evaluation_ids': [(4, evaluation.id)]})
         return True
 
     def _create_environment_evaluation(self, data):
@@ -474,7 +465,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
 
         level_id = Level.suspend_security().search(
-            [('hierarchical_level_id', '=', self.manager_id.job_id.department_id.hierarchical_level_id.id),
+            [('hierarchical_level_id', '=', self.manager_uo_id.hierarchical_level_id.id),
              ('is_uo_manager', '=', True)]).mapped("level_id")
         if not level_id:
             raise ValidationError(
@@ -505,6 +496,8 @@ class ONSCDesempenoEvaluationList(models.Model):
                                'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
                                    lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                })
+        data.write({'evaluation_ids': [(4, evaluation.id)]})
+        return True
 
     def _action_desempeno_evaluation_list(self):
         if self.user_has_groups(
@@ -515,15 +508,11 @@ class ONSCDesempenoEvaluationList(models.Model):
         return action.read()[0]
 
     def _get_records_random(self, records, generated):
-        records_random = False
-
-        if len(records) + generated < 5:
+        qty_to_take = 4 - generated
+        if qty_to_take >= len(records):
             records_random = records
         else:
-
-            count_records = 4 - generated
-            # Selecciona 4 registros al azar de la grilla
-            records_random = random.sample(records, count_records)
+            records_random = random.sample(records, qty_to_take)
         return records_random
 
     def _send_generated_form_notification(self):
@@ -531,7 +520,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         generated_form_email_template_id.send_mail(self.id, force_send=True)
 
     def get_followers_mails(self):
-        return self.message_partner_ids.get_onsc_mails()
+        return self._context.get('partners_to_notify').get_onsc_mails()
 
 
 class ONSCDesempenoEvaluationListLine(models.Model):
