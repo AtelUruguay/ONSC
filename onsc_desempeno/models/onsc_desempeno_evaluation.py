@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
+import json
 import logging
+import random
 
 from dateutil.relativedelta import relativedelta
 
@@ -61,6 +63,8 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_leader_evaluation(args, )
         if self._context.get('environment_definition'):
             args = self._get_domain_evaluation(args, 'environment_definition')
+        if self._context.get('environment_evaluation'):
+            args = self._get_domain_evaluation(args, 'environment_evaluation', show_evaluator=True)
         return args
 
     def _get_domain_leader_evaluation(self, args):
@@ -105,15 +109,21 @@ class ONSCDesempenoEvaluation(models.Model):
                                         ('evaluation_type', '=', 'leader_evaluation')], args_extended])
         return expression.AND([args_extended, args])
 
-    def _get_domain_evaluation(self, args, evaluation_type):
+    def _get_domain_evaluation(self, args, evaluation_type, show_evaluator=False):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         args_extended = [
             ('evaluation_type', '=', evaluation_type),
-            ('evaluated_id', '=', self.env.user.employee_id.id),
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id)
         ]
+        if show_evaluator:
+            args_extended = expression.AND(
+                [[('evaluator_id', '=', self.env.user.employee_id.id)], args_extended])
+        else:
+            args_extended = expression.AND(
+                [[('evaluated_id', '=', self.env.user.employee_id.id)], args_extended])
+
         if self._is_group_admin_gh_inciso():
             args_extended = expression.OR(
                 [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
@@ -145,7 +155,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
             args = self._get_domain(args)
         return super(ONSCDesempenoEvaluation, self)._search(args, offset=offset, limit=limit, order=order,
                                                             count=count,
@@ -153,7 +163,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
@@ -165,11 +175,19 @@ class ONSCDesempenoEvaluation(models.Model):
     original_evaluator_id = fields.Many2one('hr.employee', string='Evaluador Original', readonly=True)
     original_evaluator_uo_id = fields.Many2one('hr.department', string='UO del Evaluador Original', readonly=True)
     reason_change_id = fields.Many2one('onsc.desempeno.reason.change.evaluator', string='Motivo de cambio de Evaluador')
+
+    # DEFINICION DE ENTORNO
+    list_manager_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
     environment_evaluation_ids = fields.Many2many('hr.employee', 'enviroment_evaluator_evaluation_rel', 'evaluation_id',
                                                   'enviroment_evaluator_id', string='Evaluación de Entorno',
                                                   readonly=True)
-    environment_ids = fields.Many2many('hr.employee', 'enviroment_evaluation_rel', 'evaluation_id', 'enviroment_id',
-                                       string='Entorno')
+    environment_ids = fields.Many2many('hr.employee', string='Entorno')
+    environment_ids_domain = fields.Char(compute='_compute_environment_ids_domain')
+    environment_in_hierarchy = fields.Boolean(
+        string='Definir entorno en la misma estructura jerárquica',
+        default=True
+    )
+
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
     uo_id = fields.Many2one('hr.department', string='UO', readonly=True)
@@ -177,6 +195,8 @@ class ONSCDesempenoEvaluation(models.Model):
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', readonly=True)
+    evaluation_list_id = fields.Many2one('onsc.desempeno.evaluation.list', string='Lista de participante',
+                                         readonly=True)
     year = fields.Integer(string='Año a Evaluar', related='general_cycle_id.year', store=True)
     evaluation_start_date = fields.Date(
         string='Fecha inicio ciclo evaluación',
@@ -232,6 +252,22 @@ class ONSCDesempenoEvaluation(models.Model):
         return self.env['onsc.desempeno.evaluation'].suspend_security().search_count(
             [('evaluator_id', '=', self.env.user.employee_id.id), ('evaluation_type', '=', 'collaborator')])
 
+    @api.constrains('environment_ids')
+    def _check_environment_ids(self):
+        max_environment_evaluation_forms = self.env.user.company_id.max_environment_evaluation_forms
+        for rec in self:
+            _len_environment_ids = len(rec.environment_ids)
+            if _len_environment_ids < 2 or _len_environment_ids > 10:
+                raise ValidationError(
+                    _('La cantidad de evaluadores de entorno debe ser mayor a 2 y menor a 10!'))
+            for environment_id in rec.environment_ids:
+                if self.with_context(ignore_security_rules=True).search_count([
+                    ('evaluation_type', '=', 'environment_evaluation'),
+                    ('evaluator_id', '=', environment_id.id),
+                    ('general_cycle_id', '=', rec.general_cycle_id.id),
+                ]) > max_environment_evaluation_forms:
+                    raise ValidationError(_('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (environment_id.full_name))
+
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):
         for record in self:
@@ -277,6 +313,35 @@ class ONSCDesempenoEvaluation(models.Model):
 
             record.is_evaluation_change_available = base_condition and is_leader_eval and not is_am_evaluator
 
+    @api.depends('state', 'environment_in_hierarchy')
+    def _compute_environment_ids_domain(self):
+        user_employee = self.env.user.employee_id
+        EvaluationList = self.env['onsc.desempeno.evaluation.list'].sudo()
+        Job = self.env['hr.job'].sudo()
+        for rec in self:
+            if rec.evaluation_type == 'environment_definition':
+                evaluation_lists = EvaluationList.search([
+                    ('evaluation_stage_id.general_cycle_id', '=', rec.general_cycle_id.id)
+                ])
+                same_cycle_my_eval_lists = evaluation_lists.filtered(lambda x: x.manager_id.id == user_employee.id)
+                same_cycle_collaborators = same_cycle_my_eval_lists.line_ids.mapped('employee_id')
+                same_cycle_collaborators |= same_cycle_my_eval_lists.evaluation_generated_line_ids.mapped('employee_id')
+
+                employees_2exclude = same_cycle_collaborators
+                employees_2exclude |= user_employee
+                employees_2exclude |= rec.list_manager_id
+
+                domain = [
+                    ('id', 'not in', employees_2exclude.ids)
+                ]
+
+                if rec.environment_in_hierarchy:
+                    jobs = Job.get_active_jobs_in_hierarchy()
+                    domain = expression.AND([domain, [('id', 'in', jobs.mapped('employee_id').ids)]])
+            else:
+                domain = [('id', 'in', [])]
+            rec.environment_ids_domain = json.dumps(domain)
+
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})
 
@@ -284,8 +349,56 @@ class ONSCDesempenoEvaluation(models.Model):
         self._check_complete_evaluation()
         self.write({'state': 'completed'})
 
+    def button_environment_designated(self):
+        self._check_environment_ids()
+        self._generate_environment_evaluations()
+        self.write({'state': 'completed'})
+
     def button_reopen_evaluation(self):
         self.write({'state': 'in_process'})
+
+    def _generate_environment_evaluations(self):
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        for rec in self:
+            random_environment_ids = []
+            random_environments = random.sample(rec.environment_ids,
+                                                   self.env.user.company_id.random_environment_evaluation_forms)
+            hierachy_manager_id = rec.uo_id.get_first_department_withmanager_in_tree().manager_id.id
+            is_manager = hierachy_manager_id == rec.evaluated_id.id
+            level_id = Level.suspend_security().search(
+                [('hierarchical_level_id', '=', rec.uo_id.hierarchical_level_id.id),
+                 ('is_uo_manager', '=', is_manager)]).mapped("level_id")
+            if not level_id:
+                raise ValidationError(
+                    _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+            skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+                [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+            if not skills:
+                raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+            for random_environment in random_environments:
+                random_environment_ids.append(random_environment.id)
+                evaluation = self.suspend_security().create({
+                    'evaluated_id': rec.evaluated_id.id,
+                    'evaluator_id': random_environment.id,
+                    # 'evaluator_uo_id': rec.evaluator_uo_id.id,
+                    'evaluation_type': 'environment_evaluation',
+                    'uo_id': rec.uo_id.id,
+                    'inciso_id': rec.inciso_id.id,
+                    'operating_unit_id': rec.operating_unit_id.id,
+                    'occupation_id': rec.occupation_id.id,
+                    'level_id': level_id.id,
+                    'evaluation_stage_id': rec.evaluation_stage_id.id,
+                    'general_cycle_id': rec.general_cycle_id.id,
+                    'state': 'draft',
+                })
+                for skill in skills:
+                    Competency.create({'evaluation_id': evaluation.id,
+                                       'skill_id': skill.id,
+                                       'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                                           lambda r: r.level_id.id == evaluation.level_id.id).ids)]
+                                       })
+            rec.write({'environment_evaluation_ids': [(6, 0, random_environment_ids)]})
 
     def _check_complete_evaluation(self):
         if self.evaluation_type != 'environment_definition' and not self.general_comments:
