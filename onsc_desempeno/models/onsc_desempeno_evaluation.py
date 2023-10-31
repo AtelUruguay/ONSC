@@ -266,7 +266,9 @@ class ONSCDesempenoEvaluation(models.Model):
                     ('evaluator_id', '=', environment_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
                 ]) > max_environment_evaluation_forms:
-                    raise ValidationError(_('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (environment_id.full_name))
+                    raise ValidationError(
+                        _('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (
+                            environment_id.full_name))
 
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):
@@ -363,7 +365,7 @@ class ONSCDesempenoEvaluation(models.Model):
         for rec in self:
             random_environment_ids = []
             random_environments = random.sample(rec.environment_ids,
-                                                   self.env.user.company_id.random_environment_evaluation_forms)
+                                                self.env.user.company_id.random_environment_evaluation_forms)
             hierachy_manager_id = rec.uo_id.get_first_department_withmanager_in_tree().manager_id.id
             is_manager = hierachy_manager_id == rec.evaluated_id.id
             level_id = Level.suspend_security().search(
@@ -467,5 +469,3 @@ class ONSCDesempenoEvaluation(models.Model):
         self.search([('evaluation_end_date', '=', fields.Date.today()), ('state', '!=', 'canceled'),
                      ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]).write(
             {'locked': True})
-
-
