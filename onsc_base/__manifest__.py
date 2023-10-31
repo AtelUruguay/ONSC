@@ -17,6 +17,7 @@ ONSC - Base
         'base_user_role',
         'web_edit_button_conditional_disable',
         'mail_outbound_static',
+        'mail_outbound_static_fixed',
         'auth_session_timeout_clean',
         'fields_many2one_restrict'
     ],

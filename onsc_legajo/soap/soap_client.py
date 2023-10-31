@@ -10,6 +10,7 @@ from odoo import _
 from odoo.exceptions import ValidationError
 
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
+logging.getLogger('suds.transport').setLevel(logging.DEBUG)
 
 _logger = logging.getLogger(__name__)
 
