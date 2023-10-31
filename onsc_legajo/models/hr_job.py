@@ -5,6 +5,7 @@ from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_respons
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 
 class HrJob(models.Model):
@@ -138,12 +139,35 @@ class HrJob(models.Model):
         return super(HrJob, self.suspend_security()).write(values)
 
     def get_available_jobs(self, user=False):
+        """
+        Devuelve los puestos activos del funcionario asociado el usuario logueado
+        :param user: Recordser de res.users
+        :return: Recordset de hr.job
+        """
         today = fields.Date.today()
         user = user or self.env.user
         employee_ids = user.employee_ids.ids
         return self.search([
             '&', ('employee_id', 'in', employee_ids.ids),
             '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False)])
+
+    def get_active_jobs_in_hierarchy(self, user=False, force_same_uo=False):
+        """
+        Devuelve los puestos activos de la estructura asociada el usuario logueado
+        :param user: Recordser de res.users
+        :param force_same_uo: Boolean. Si es True busca hasta el tercer nivel (UO), si es False busca hasta el segundo nivel (UE)
+        :return: Recordset de hr.job
+        """
+        today = fields.Date.today()
+        user = user or self.env.user
+        job_id = user.employee_id.job_id
+        if force_same_uo:
+            base_args = [('department_id', '=', job_id.department_id.id)]
+        else:
+            base_args = [('contract_id.operating_unit_id', '=', job_id.contract_id.operating_unit_id.id)]
+        args = expression.AND([base_args, ['&', ('start_date', '<=', today),
+                                           '|', ('end_date', '>=', today), ('end_date', '=', False)]])
+        return self.sudo().search(args)
 
     def button_open_current_job(self):
         ctx = self.env.context.copy()
@@ -201,11 +225,11 @@ class HrJob(models.Model):
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
             job.end_date = date_end
             job.suspend_security().onchange_end_date()
-        if date_end < fields.Date.today() and self.security_job_id.is_uo_manager:
-            self.suspend_security().mapped('department_id').filtered(
-                lambda x: x.manager_id.id or x.is_manager_reserved).write(
-                {'manager_id': False, 'is_manager_reserved': False
-                 })
+            if date_end < fields.Date.today() and job.security_job_id.is_uo_manager:
+                job.suspend_security().mapped('department_id').filtered(
+                    lambda x: x.manager_id.id or x.is_manager_reserved).write(
+                    {'manager_id': False, 'is_manager_reserved': False
+                     })
 
     def update_start_date(self, start_date):
         self.suspend_security().write({'start_date': start_date})

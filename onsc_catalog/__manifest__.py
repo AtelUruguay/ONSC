@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Catálogos',
-    'version': '15.0.4.7.0',
+    'version': '15.0.4.9.0',
     'summary': 'ONSC - Catálogos',
     'sequence': 11,
     'description': """

@@ -6,7 +6,6 @@
         <field name="model">onsc.desempeno.evaluation</field>
         <field name="arch" type="xml">
             <tree string="Evaluación de Desempeño">
-                <field name="evaluation_type"/>
                 <field name="general_cycle_id"/>
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
@@ -36,14 +35,21 @@
                     <button type="object"
                             class="btn btn-primary"
                             string="Completar evaluación"
-                            attrs="{'invisible': ['|',('state', '!=', 'in_process'),('evaluation_form_edit', '=', False)]}"
+                            attrs="{'invisible': ['|','|',('state', '!=', 'in_process'),('evaluation_form_edit', '=', False),('evaluation_type', '=', 'environment_definition')]}"
                             name="button_completed_evaluation"
+                            confirm="¿Está seguro de que desea dar por completado el formulario?"
+                            icon="fa-lock"/>
+                    <button type="object"
+                            class="btn btn-primary"
+                            string="Entorno designado"
+                            attrs="{'invisible': ['|','|',('state', '!=', 'in_process'),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'environment_definition')]}"
+                            name="button_environment_designated"
                             confirm="¿Está seguro de que desea dar por completado el formulario?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-secundary"
                             string="Reabrir evaluación"
-                            attrs="{'invisible': ['|',('state', '!=', 'completed'),('evaluation_form_edit', '=', False)]}"
+                            attrs="{'invisible': ['|','|',('state', '!=', 'completed'),('evaluation_form_edit', '=', False),('evaluation_type', '=', 'environment_definition')]}"
                             name="button_reopen_evaluation"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir la evaluación?"/>
@@ -71,16 +77,14 @@
 
                     <group>
                         <group  style="min-width: 100px !important;">
-                            <label for="evaluation_type" style="min-width: 100px !important;">Tipo</label>
-                            <field name="evaluation_type" nolabel="1" style="margin-bottom: 5px!important; min-width: 100px !important;"/>
-                            <field name="evaluator_uo_id"/>
+                            <field name="evaluation_type" nolabel="1" invisible="1"/>
                             <field name="evaluator_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': [('evaluation_type', 'in',['self_evaluation', 'environment_definition'])]}"/>
                             <field name="original_evaluator_id"
+                                   attrs="{'invisible': [('original_evaluator_id', '=', False)]}"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
-                            <field name="original_evaluator_uo_id"/>
+                                   readonly="1"/>
                             <field name="reason_change_id"
                                    readonly="1"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
@@ -103,17 +107,6 @@
                             <field name="occupation_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </group>
-                    </group>
-
-                    <group name="entorno">
-                        <field name="environment_ids" string="Entorno"
-                               attrs="{'readonly': [('state', '!=', 'environment_definition')],'invisible': [('evaluation_type', '!=', 'environment_definition')]}"
-                               widget="many2many_tags"
-                               options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                        <field name="environment_evaluation_ids" string="Evaluación de entorno"
-                               attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"
-                               widget="many2many_tags"
-                               options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     </group>
                      <div class="alert alert-info" role="alert"
                          name="div_alert_form"
@@ -154,11 +147,40 @@
                                     <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <button type="object"
                                             name="button_open_current_skill"
-                                            attrs="{'invisible': ['|',('state', '!=','in_process'),('evaluation_form_edit', '=',False)]}"
                                             context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
                                             icon="fa-edit"/>
                                 </tree>
                             </field>
+                        </page>
+                        <page string="Entorno" attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}">
+                            <group>
+                                <field name="environment_in_hierarchy"
+                                       class="oe_edit_only"
+                                       attrs="{'readonly': [('state', '!=', 'in_process')]}"
+                                       widget="boolean_toggle"/>
+                                <field name="environment_ids" string="Entorno"
+                                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree'}"
+                                       domain="environment_ids_domain"
+                                       attrs="{'readonly': [('state', '!=', 'in_process')]}">
+                                    <tree>
+                                        <field name="name" string="Entorno"/>
+                                    </tree>
+                                </field>
+                                <field name="environment_evaluation_ids" string="Evaluación de entorno"
+                                       readonly="1"
+                                       create="0" delete="0" edit="0"
+                                       style="pointer-events:none;"
+                                       attrs="{'invisible': [('state', 'not in', ['completed','finished'])]}"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree'}"
+                                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}">
+                                    <tree editable="top">
+                                        <field name="name" string="Entorno"/>
+                                    </tree>
+                                </field>
+                                <field name="environment_ids_domain" invisible="1"/>
+                            </group>
+
                         </page>
                     </notebook>
                     <group name="general_comments" string="Comentarios Generales"
@@ -184,7 +206,6 @@
             <field name="model">onsc.desempeno.evaluation</field>
             <field name="arch" type="xml">
                 <search string="Evaluación de Desempeño">
-                    <field name="evaluation_type"/>
                     <field name="general_cycle_id"/>
                     <field name="evaluator_id"/>
                     <field name="evaluated_id"/>
@@ -226,6 +247,18 @@
         <field name="name">Evaluación de Colaborador/a al Líder</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
         <field name="context">{'is_from_menu': True,'collaborator_evaluation':True}</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Evaluación de desempeño
+            </p>
+        </field>
+    </record>
+
+    <record id='onsc_desempeno_environment_evaluation_action' model='ir.actions.act_window'>
+        <field name="name">Evaluación de Entorno</field>
+        <field name="res_model">onsc.desempeno.evaluation</field>
+        <field name="context">{'is_from_menu': True,'environment_evaluation':True}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

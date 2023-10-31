@@ -18,6 +18,14 @@ class ONSCDesempenoSettings(models.Model):
                                                            readonly=False, related_sudo=True)
     environment_evaluation_text = fields.Text(related="company_id.environment_evaluation_text", readonly=False,
                                               related_sudo=True)
+    max_environment_evaluation_forms = fields.Integer(
+        related="company_id.max_environment_evaluation_forms",
+        readonly=False,
+        related_sudo=True)
+    random_environment_evaluation_forms = fields.Integer(
+        related="company_id.random_environment_evaluation_forms",
+        readonly=False,
+        related_sudo=True)
 
     days_notification_end_ev = fields.Integer(related="company_id.days_notification_end_ev", readonly=False,
                                               related_sudo=True)

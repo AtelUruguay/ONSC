@@ -50,7 +50,7 @@
     </record>
 
     <record id='onsc_legajo_department_action' model='ir.actions.act_window'>
-        <field name="name">Consulta de legajos por UO</field>
+        <field name="name">Consulta de información vínculo por UO</field>
         <field name="res_model">onsc.legajo.department</field>
         <field name="view_mode">tree</field>
         <field name="domain">[('is_job_open','=',True)]</field>

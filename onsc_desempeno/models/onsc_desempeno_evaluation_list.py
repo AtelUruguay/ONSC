@@ -190,7 +190,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         if not self.is_notify_leader:
-            message_partner_ids.append(self.manager_id.partner_id)
+            message_partner_ids.append(self.manager_id.partner_id.id)
         with self._cr.savepoint():
             if fields.Date.today() <= self.end_date and len(valid_lines) > 0:
                 self.suspend_security()._create_collaborator_evaluation()
@@ -320,6 +320,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
@@ -360,6 +361,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
@@ -399,6 +401,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
@@ -442,6 +445,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                     raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
                 evaluation = Evaluation.create({
+                    'evaluation_list_id': data.evaluation_list_id.id,
                     'evaluated_id': self.manager_id.id,
                     'evaluator_id': data.employee_id.id,
                     'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
@@ -481,6 +485,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': self.manager_id.id,
             'evaluator_id': data.employee_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
