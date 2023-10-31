@@ -149,7 +149,7 @@
     </record>
 
     <record id='onsc_legajo_action' model='ir.actions.act_window'>
-        <field name="name">Consulta de legajos</field>
+        <field name="name">Consulta de información vínculo</field>
         <field name="res_model">onsc.legajo</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="context">{'is_legajo':True}</field>
@@ -161,7 +161,7 @@
     </record>
 
     <record id="onsc_milegajo_action_server" model="ir.actions.server">
-        <field name="name">Mi legajo</field>
+        <field name="name">Mi información vínculo</field>
         <field name="type">ir.actions.server</field>
         <field name="state">code</field>
         <field name="model_id" ref="model_onsc_legajo"/>

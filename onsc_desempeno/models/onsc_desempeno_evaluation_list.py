@@ -130,6 +130,10 @@ class ONSCDesempenoEvaluationList(models.Model):
         compute='_compute_is_line_availables'
     )
 
+    message_partner_ids = fields.Many2many('res.partner', 'desempeno_evaluation_partner', 'evaluation_id', 'partner_id',
+                                           string='Followers (Partners)')
+    is_notify_leader = fields.Boolean(string='¿Se envio notificacion al leader?')
+
     _sql_constraints = [
         ('recordset_uniq', 'unique(department_id,evaluation_stage_id)',
          u'Ya existe una lista de evaluación para esta unidad organizativa y ciclo de evaluación.'),
@@ -182,8 +186,11 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     def button_generate_evaluations(self):
         self.ensure_one()
+        message_partner_ids = []
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
+        if not self.is_notify_leader:
+            message_partner_ids.append(self.manager_id.partner_id.id)
         with self._cr.savepoint():
             if fields.Date.today() <= self.end_date and len(valid_lines) > 0:
                 self.suspend_security()._create_collaborator_evaluation()
@@ -199,21 +206,26 @@ class ONSCDesempenoEvaluationList(models.Model):
                             'error_log': False,
                             'evaluation_create_date': fields.Date.today(),
                             'evaluation_ids': [(6, 0, [new_evaluation.id])]})
+                        message_partner_ids.append(line.employee_id.partner_id.id)
                         lines_evaluated |= line
                     elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
                         self.suspend_security()._create_leader_evaluation(line)
+                        message_partner_ids.append(line.employee_id.partner_id.id)
                         line.suspend_security().write({
                             'state': 'generated',
                             'error_log': False,
                             'evaluation_create_date': fields.Date.today(),
                             'evaluation_ids': [(6, 0, [new_evaluation.id])]})
                         lines_evaluated |= line
+
+                    self.message_partner_ids = [(6, 0, message_partner_ids)]
                 except Exception as e:
                     line.write({
                         'state': 'error',
                         'error_log': 'Error al generar formulario contacte al administrador. %s' % (tools.ustr(e))})
-
+        self._send_generated_form_notification()
+        self.write({'is_notify_leader': True})
         return lines_evaluated
 
     # INTELIGENCIA
@@ -513,6 +525,13 @@ class ONSCDesempenoEvaluationList(models.Model):
             # Selecciona 4 registros al azar de la grilla
             records_random = random.sample(records, count_records)
         return records_random
+
+    def _send_generated_form_notification(self):
+        generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_generated_form')
+        generated_form_email_template_id.send_mail(self.id, force_send=True)
+
+    def get_followers_mails(self):
+        return self.message_partner_ids.get_onsc_mails()
 
 
 class ONSCDesempenoEvaluationListLine(models.Model):

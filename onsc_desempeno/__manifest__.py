@@ -15,6 +15,7 @@ ONSC - Gestión de Desempeño
         'security/onsc_desempeno_security.xml',
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',
+        'data/mail_template_data.xml',
         'wizard/onsc_desempeno_evaluator_change_wizard_views.xml',
         'views/catalogs/onsc_legajo_base_views.xml',
         'views/catalogs/onsc_desempeno_dimension_views.xml',
@@ -30,6 +31,7 @@ ONSC - Gestión de Desempeño
         'views/onsc_desempeno_evaluation_list_views.xml',
         'views/onsc_desempeno_evaluation_views.xml',
         'views/onsc_desempeno_competency_views.xml',
+        'views/onsc_desempeno_consolidated_views.xml',
         'views/onsc_desempeno_menuitems.xml'
     ],
     'demo': [],

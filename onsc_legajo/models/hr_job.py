@@ -225,11 +225,11 @@ class HrJob(models.Model):
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
             job.end_date = date_end
             job.suspend_security().onchange_end_date()
-        if date_end < fields.Date.today() and self.security_job_id.is_uo_manager:
-            self.suspend_security().mapped('department_id').filtered(
-                lambda x: x.manager_id.id or x.is_manager_reserved).write(
-                {'manager_id': False, 'is_manager_reserved': False
-                 })
+            if date_end < fields.Date.today() and job.security_job_id.is_uo_manager:
+                job.suspend_security().mapped('department_id').filtered(
+                    lambda x: x.manager_id.id or x.is_manager_reserved).write(
+                    {'manager_id': False, 'is_manager_reserved': False
+                     })
 
     def update_start_date(self, start_date):
         self.suspend_security().write({'start_date': start_date})

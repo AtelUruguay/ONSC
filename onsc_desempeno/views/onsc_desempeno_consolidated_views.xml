@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="onsc_desempeno_consolidated_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.consolidated.tree</field>
+        <field name="model">onsc.desempeno.consolidated</field>
+        <field name="arch" type="xml">
+            <tree string="Consolidado de Evaluación de Desempeño">
+                <field name="general_cycle_id"/>
+                 <field name="evaluated_id"/>
+                <field name="evaluation_start_date"/>
+                <field name="evaluation_end_date"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_desempeno_consolidated_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.consolidated.form</field>
+        <field name="model">onsc.desempeno.consolidated</field>
+        <field name="arch" type="xml">
+            <form string="Consolidado de Evaluación de Desempeño" create="0" delete="0" edit= "0" duplicate="0">
+                <header/>
+                  <sheet>
+
+                    <div class="oe_title" name="div_title">
+                        <label for="evaluated_id"/>
+                        <h4>
+                            <field name="evaluated_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </h4>
+                    </div>
+
+                    <group>
+                        <group  style="min-width: 100px !important;">
+                             <field name="year"/>
+                            <field name="evaluation_start_date"/>
+                            <field name="evaluation_end_date"/>
+                            <field name="environment_definition_end_date"/>
+                        </group>
+                        <group>
+                            <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="uo_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="level_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="occupation_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </group>
+                    </group>
+                   <notebook>
+                        <page string="Evaluación de Competencias" >
+                            <field name="evaluation_competency_ids" nolabel="1"
+                                   options="{'no_open': True}" create="0" delete="0" edit="0">
+                                <tree nolabel="1" create="0" edit="0">
+                                    <field name="state"  invisible="1"/>
+                                    <field name="evaluation_form_edit" invisible="1" />
+                                    <field name="evaluation_id"  invisible="1"/>
+                                    <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="degree_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <button type="object"
+                                            name="button_open_current_skill"
+                                            attrs="{'invisible': ['|',('state', '!=','in_process'),('evaluation_form_edit', '=',False)]}"
+                                            context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
+                                            icon="fa-edit"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+
+                </sheet>
+
+            </form>
+        </field>
+    </record>
+    <record id="onsc_desempeno_consolidated_search" model="ir.ui.view">
+            <field name="name">onsc.desempeno.consolidated.search</field>
+            <field name="model">onsc.desempeno.consolidated</field>
+            <field name="arch" type="xml">
+                <search string="Evaluación de Desempeño">
+                    <field name="general_cycle_id"/>
+                    <field name="evaluated_id"/>
+                    <field name="occupation_id"/>
+                </search>
+            </field>
+        </record>
+
+    <record id='onsc_desempeno_environment_consolidated_action' model='ir.actions.act_window'>
+        <field name="name">Consolidado de Entorno</field>
+        <field name="res_model">onsc.desempeno.consolidated</field>
+        <field name="context">{'is_from_menu': True,'environment':True}</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+               Consolidado de Entorno
+            </p>
+        </field>
+    </record>
+
+    <record id='onsc_desempeno_collaborator_consolidated_action' model='ir.actions.act_window'>
+        <field name="name">Consolidado de Colaborador/a</field>
+        <field name="res_model">onsc.desempeno.consolidated</field>
+        <field name="context">{'is_from_menu': True,'collaborator':True}</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Consolidado de Colaborador/a
+            </p>
+        </field>
+    </record>
+
+
+</odoo>
