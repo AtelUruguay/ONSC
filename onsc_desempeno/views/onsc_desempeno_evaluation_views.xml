@@ -49,7 +49,7 @@
                     <button type="object"
                             class="btn btn-secundary"
                             string="Reabrir evaluación"
-                            attrs="{'invisible': ['|',('state', '!=', 'completed'),('evaluation_form_edit', '=', False)]}"
+                            attrs="{'invisible': ['|','|',('state', '!=', 'completed'),('evaluation_form_edit', '=', False),('evaluation_type', '=', 'environment_definition')]}"
                             name="button_reopen_evaluation"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir la evaluación?"/>
@@ -159,7 +159,6 @@
                                        attrs="{'readonly': [('state', '!=', 'in_process')]}"
                                        widget="boolean_toggle"/>
                                 <field name="environment_ids" string="Entorno"
-                                       style="pointer-events:none;"
                                        options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree'}"
                                        domain="environment_ids_domain"
@@ -172,6 +171,7 @@
                                        readonly="1"
                                        create="0" delete="0" edit="0"
                                        style="pointer-events:none;"
+                                       attrs="{'invisible': [('state', 'not in', ['completed','finished'])]}"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree'}"
                                        options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}">
                                     <tree editable="top">

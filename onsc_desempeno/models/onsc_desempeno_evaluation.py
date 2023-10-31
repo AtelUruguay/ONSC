@@ -64,7 +64,7 @@ class ONSCDesempenoEvaluation(models.Model):
         if self._context.get('environment_definition'):
             args = self._get_domain_evaluation(args, 'environment_definition')
         if self._context.get('environment_evaluation'):
-            args = self._get_domain_evaluation(args, 'environment_evaluation')
+            args = self._get_domain_evaluation(args, 'environment_evaluation', show_evaluator=True)
         return args
 
     def _get_domain_leader_evaluation(self, args):
@@ -109,15 +109,21 @@ class ONSCDesempenoEvaluation(models.Model):
                                         ('evaluation_type', '=', 'leader_evaluation')], args_extended])
         return expression.AND([args_extended, args])
 
-    def _get_domain_evaluation(self, args, evaluation_type):
+    def _get_domain_evaluation(self, args, evaluation_type, show_evaluator=False):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         args_extended = [
             ('evaluation_type', '=', evaluation_type),
-            ('evaluated_id', '=', self.env.user.employee_id.id),
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id)
         ]
+        if show_evaluator:
+            args_extended = expression.AND(
+                [[('evaluator_id', '=', self.env.user.employee_id.id)], args_extended])
+        else:
+            args_extended = expression.AND(
+                [[('evaluated_id', '=', self.env.user.employee_id.id)], args_extended])
+
         if self._is_group_admin_gh_inciso():
             args_extended = expression.OR(
                 [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
@@ -260,9 +266,7 @@ class ONSCDesempenoEvaluation(models.Model):
                     ('evaluator_id', '=', environment_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
                 ]) > max_environment_evaluation_forms:
-                    raise ValidationError(
-                        _('El funcionario % no puede ser seleccionado como entorno, favor seleccionar otra persona') % (
-                            environment_id.full_name))
+                    raise ValidationError(_('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (environment_id.full_name))
 
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):

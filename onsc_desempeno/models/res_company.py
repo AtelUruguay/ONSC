@@ -14,7 +14,7 @@ class ResCompany(models.Model):
     environment_evaluation_text = fields.Text('Ayuda para formulario de definición de entorno')
     max_environment_evaluation_forms = fields.Integer(string='Tope de formularios de desempeño')
     random_environment_evaluation_forms = fields.Integer(string='Cantidad random de formularios de desempeño',)
-    days_notification_end_ev = fields.Integer(u"Días antes de llegada la fecha fin de la evaluación")
+    days_notification_end_ev = fields.Integer(u"Días notificación antes de llegada de la fecha fin de la evaluación")
 
     def write(self, vals):
         _fields = [
