@@ -92,15 +92,23 @@
                                 <tree delete="0">
                                     <field name="user_role_id"
                                            domain="user_role_id_domain"
+                                           attrs="{'readonly': [('create_date', '!=', False)]}"
                                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                     <field name="start_date" required="True"
                                            attrs="{'readonly': [('id', '!=', False)]}"/>
-                                    <field name="end_date"/>
-                                    <field name="file" widget="binary" filename="filename" required="1"/>
+                                    <field name="end_date"
+                                           attrs="{'readonly': [('id', '!=', False)]}"/>
+                                    <field name="file"
+                                           attrs="{'readonly': [('id', '!=', False)]}"
+                                           widget="binary"
+                                           filename="filename"
+                                           required="1"/>
                                     <field name="filename" invisible="1"/>
-                                    <field name="active" widget="toggle_button"  attrs="{'column_invisible': [('parent.role_extra_is_readonly', '=', True)]}"/>
+                                    <field name="active" widget="toggle_button"
+                                           attrs="{'column_invisible': [('parent.role_extra_is_readonly', '=', True)], 'readonly': ['&amp;',('id', '!=', False),('active', '=', False)]}"/>
                                     <field name="type" invisible="1"/>
                                     <field name="user_role_id_domain" invisible="1"/>
+                                    <field name="id" invisible="1"/>
                                 </tree>
                                 <form>
                                     <group>
