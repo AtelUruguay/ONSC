@@ -243,8 +243,9 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 evaluation_type = 'environment'
             elif res.evaluation_type == 'collaborator':
                 evaluation_type = 'collaborator'
-            search_domain_consolidated = [('evaluated_id', '=', res.evaluated_id.id),('evaluation_stage_id', '=', self.id)]
-            if len(results.filtered( lambda r: r.evaluation_type == res.evaluation_type)) > 1:
+            search_domain_consolidated = [('evaluated_id', '=', res.evaluated_id.id),
+                                          ('evaluation_stage_id', '=', self.id)]
+            if len(results.filtered(lambda r: r.evaluation_type == res.evaluation_type)) > 1:
                 if Consolidated.search_count(search_domain_consolidated) == 0:
                     data = {'general_cycle_id': res.general_cycle_id.id,
                             'evaluated_id': res.evaluated_id.id,
@@ -260,7 +261,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     number = random.randint(1, 100)
                     for competency in res.evaluation_competency_ids:
                         competency.write({'consolidate_id': consolidate.id,
-                                         'order': number})
+                                          'order': number})
 
                 else:
                     consolidate = Consolidated.search(search_domain_consolidated)
