@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 _logger = logging.getLogger(__name__)
 
@@ -50,7 +50,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         if is_default:
             return eval("_html2construct")
         for rec in self:
-            _html2construct = HTML_HELP % (rec.skill_id.definition or '')
+            _html2construct = HTML_HELP % (rec.suspend_security().skill_id.definition or '')
             setattr(rec, help_field, _html2construct)
 
     def button_open_current_skill(self):
