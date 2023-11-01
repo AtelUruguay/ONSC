@@ -13,7 +13,7 @@
     </record>
 
     <menuitem id="onsc_legajo_root_menu"
-              name="Legajos"
+              name="Vínculos"
               web_icon="onsc_catalog,static/description/icon.png"
               sequence="4"/>
 
