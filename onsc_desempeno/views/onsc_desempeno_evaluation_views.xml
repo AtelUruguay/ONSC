@@ -140,6 +140,7 @@
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree nolabel="1" create="0" edit="0">
                                     <field name="state"  invisible="1"/>
+                                    <field name="locked"  invisible="1"/>
                                     <field name="evaluation_form_edit" invisible="1" />
                                     <field name="evaluation_id"  invisible="1"/>
                                     <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
@@ -148,6 +149,8 @@
                                     <button type="object"
                                             name="button_open_current_skill"
                                             context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
+                                              attrs="{'invisible': [('locked', '=', True)]}"
+
                                             icon="fa-edit"/>
                                 </tree>
                             </field>
@@ -189,8 +192,7 @@
                                placeholder="Comentarios Generales"/>
                     </group>
                     <group name="block">
-                        <field name="locked" string="Bloqueado" invisible="1"/>
-<!--                               attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>-->
+                        <field name="locked" string="Bloqueado" readonly="1" attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
