@@ -40,8 +40,12 @@ class ONSCCVDigitalPPEvaluations(models.Model):
                                   copy=True)
     activity_area_ids = fields.One2many('onsc.cv.activity.area', 'publications_productions_evaluations_id',
                                         string=u'Área de Actividad', copy=True)
-    applied_knowledge_ids = fields.Many2many('onsc.cv.knowledge', 'applied_knowledge_id',
-                                             string=u'Conocimientos aplicados', copy=True)
+    applied_knowledge_ids = fields.Many2many(
+        'onsc.cv.knowledge',
+        'applied_knowledge_id',
+        string=u'Conocimientos aplicados',
+        ondelete='restrict',
+        copy=True)
     additional_information = fields.Text(string="Información adicional")
 
     @api.depends('type', 'subtype_publication_id', 'subtype_production_id', 'subtype_evaluation_id', 'subtype_other_id')

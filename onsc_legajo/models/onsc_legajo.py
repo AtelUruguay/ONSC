@@ -118,7 +118,7 @@ class ONSCLegajo(models.Model):
                 "res_model": self._name,
                 "res_id": self.id,
             })
-            url = "{}/web/content/ir.attachment/{}/datas/{}?download=true".format(
+            url = "{}/web/content/ir.attachment/{}/datas/{}".format(
                 self.env["ir.config_parameter"].sudo().get_param("web.base.url"),
                 attachment.id,
                 attachment.name,

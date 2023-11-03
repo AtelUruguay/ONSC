@@ -19,7 +19,12 @@ class ONSCCVAbstractFormation(models.AbstractModel):
     end_date = fields.Date(string="Fecha finalización")
     other_relevant_information = fields.Text(string="Otra información relevante")
     # Campo para redefinir
-    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', "Conocimientos adquiridos", store=False)
+    knowledge_acquired_ids = fields.Many2many(
+        'onsc.cv.knowledge',
+        "Conocimientos adquiridos",
+        ondelete='restrict',
+        store=False
+    )
 
     @api.onchange('start_date')
     def onchange_start_date(self):

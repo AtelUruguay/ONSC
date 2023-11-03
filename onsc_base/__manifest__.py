@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Base',
-    'version': '15.0.6.3.0',
+    'version': '15.0.6.4.0',
     'summary': 'ONSC - Base',
     'sequence': 11,
     'description': """
@@ -17,6 +17,7 @@ ONSC - Base
         'base_user_role',
         'web_edit_button_conditional_disable',
         'mail_outbound_static',
+        'mail_outbound_static_fixed',
         'auth_session_timeout_clean',
         'fields_many2one_restrict'
     ],
