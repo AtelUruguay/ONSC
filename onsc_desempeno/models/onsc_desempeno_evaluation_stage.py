@@ -217,7 +217,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     def action_close_stage(self):
         self.process_create_consolidated()
-        # self.write({'closed_stage': True})
+        self.write({'closed_stage': True})
         return True
 
     def _check_toggle_active(self):
@@ -234,8 +234,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
 
-        search_domain = [('evaluation_stage_id', '=', self.id), ('state', '=', 'finished'), ]
-        # ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])
+        search_domain = [('evaluation_stage_id', '=', self.id), ('state', '=', 'finished'),
+                         ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]
 
         results = Evaluation.search(search_domain)
         for res in results:
