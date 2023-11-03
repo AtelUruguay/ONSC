@@ -88,8 +88,7 @@
                                        context="{'show_descriptors':True}"
                                        required="1"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
-                                />
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                 <field name="end_date"/>
                             </group>
                             <group name="contract_right">
@@ -101,7 +100,6 @@
                         <group name="motivo" string="Ingreso de motivo">
                             <group name="motivo_left">
                                 <field name="reason_description" colspan="4"/>
-
                                 <field name="norm_id" colspan="3"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
@@ -129,7 +127,7 @@
                         </group>
                         <group name="documentacion" string="Documentación">
                             <field name="attached_document_discharge_ids" nolabel="1">
-                                <tree editable="top">
+                                <tree>
                                     <field name="name" required="1"/>
                                     <field name="document_type_id" required="1"
                                         options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
@@ -138,6 +136,20 @@
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="document_file_name" invisible="1"/>
                                 </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="name" required="1"/>
+                                            <field name="document_type_id" required="1"
+                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                        </group>
+                                        <group>
+                                            <field name="document_file" required="1" widget="binary" filename="document_file_name"
+                                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                                            <field name="document_file_name" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
                             </field>
                         </group>
                         <group name="group6">

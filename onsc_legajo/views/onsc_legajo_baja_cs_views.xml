@@ -71,7 +71,6 @@
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}" domain="employee_id_domain"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-
                                 <field name="end_date"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"/>
                                 <field name="contract_id"
                                        context="{'show_descriptors':True}"
@@ -85,7 +84,7 @@
                         </group>
                         <group name="puesto" string="Datos del Origen">
                             <group name="puesto_left">
-                                <field name="show_contract" invisible="1" />
+                                <field name="show_contract" invisible="1"/>
                                 <field name="inciso_id" invisible="1" force_save="1"/>
                                 <field name="operating_unit_id" invisible="1" force_save="1"/>
                                 <field name="contract_origen_id" context="{'show_descriptors':True}"
@@ -109,14 +108,11 @@
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="descriptor4_id" readonly="1"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-
-
                             </group>
                         </group>
                         <group name="motivo" string="Ingreso de motivo">
                             <group name="motivo_left">
                                 <field name="reason_description" colspan="4"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"/>
-
                                 <field name="norm_id" colspan="3"  attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_norm_min_tree','show_concatenated_description':True}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
@@ -147,8 +143,8 @@
                         </group>
                         <group name="documentacion" string="Documentación">
                             <field name="attached_document_discharge_ids" nolabel="1" attrs="{'readonly': [('should_disable_form_edit', '=', True),]}">
-                                <tree editable="top" >
-                                    <field name="name" required="1" />
+                                <tree>
+                                    <field name="name" required="1"/>
                                     <field name="document_type_id" required="1"
                                         options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                     <field name="document_file" widget="binary" required="1"
@@ -156,10 +152,25 @@
                                            options="{'accepted_file_extensions': '.pdf'}"/>
                                     <field name="document_file_name" invisible="1"/>
                                 </tree>
+                                <form>
+                                    <group>
+                                        <group>
+                                            <field name="name" required="1"/>
+                                            <field name="document_type_id" required="1"
+                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                        </group>
+                                        <group>
+                                            <field name="document_file" required="1" widget="binary" filename="document_file_name"
+                                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                                            <field name="document_file_name" invisible="1"/>
+                                        </group>
+                                    </group>
+                                </form>
                             </field>
                         </group>
                         <group name="adicional" string="Información Adicional">
-                            <field name="additional_information" nolabel="1" attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
+                            <field name="additional_information" nolabel="1" 
+                                   attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
                                    placeholder="Información Adicional"/>
                         </group>
                     </sheet>

@@ -90,8 +90,6 @@
                         </group>
                     </group>
                     <br></br>
-
-
                     <group string="Datos del contrato seleccionado"
                            attrs="{'invisible': [('is_inciso_origin_ac', '!=', True)]}">
                         <group>
@@ -113,7 +111,6 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                         </group>
                     </group>
-
                     <group string="Destino">
                         <group>
                             <field name="inciso_destination_id"
@@ -180,10 +177,9 @@
                             <field name="resolution_type"/>
                         </group>
                     </group>
-
                     <group name="documentacion" string="Documentación">
                         <field name="attached_document_ids" nolabel="1">
-                            <tree editable="top">
+                            <tree>
                                 <field name="name" required="1"/>
                                 <field name="document_type_id" required="1"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
@@ -191,6 +187,20 @@
                                        filename="document_file_name" widget="binary"/>
                                 <field name="document_file_name" invisible="1"/>
                             </tree>
+                            <form>
+                                <group>
+                                    <group>
+                                        <field name="name" required="1"/>
+                                        <field name="document_type_id" required="1"
+                                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                    </group>
+                                    <group>
+                                        <field name="document_file" required="1" widget="binary" filename="document_file_name"
+                                               options="{'accepted_file_extensions': '.pdf'}"/>
+                                        <field name="document_file_name" invisible="1"/>
+                                    </group>
+                                </group>
+                            </form>
                         </field>
                         <group name="adicional" string="Información Adicional">
                             <field name="additional_information" nolabel="1" placeholder="Información Adicional"/>
