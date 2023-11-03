@@ -878,7 +878,7 @@ class ONSCMigrationLine(models.Model):
                 'is_public_information_victim_violent': cv_digital_id.is_public_information_victim_violent,
                 'cv_race2': cv_digital_id.cv_race2,
                 'cv_race_ids': [(6, 0, cv_digital_id.cv_race_ids.ids)],
-                'cv_first_race_id': cv_digital_id.cv_first_race_id,
+                'cv_first_race_id': cv_digital_id.cv_first_race_id.id,
                 'afro_descendants_filename': cv_digital_id.afro_descendants_filename,
                 'afro_descendants_file': cv_digital_id.afro_descendants_file,
                 'is_afro_descendants': cv_digital_id.is_afro_descendants,
