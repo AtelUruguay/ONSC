@@ -159,7 +159,7 @@
                             <field name="norm_number" colspan="2"/>
                             <field name="norm_year" colspan="1"/>
                             <field name="norm_article" colspan="2"/>
-                            <div class="alert alert-info" colspan="6"
+                            <div class="alert alert-info" colspan="2"
                                  role="alert"
                                  style="margin-bottom:0px;">
                                 <p>
@@ -184,8 +184,9 @@
                                 <field name="document_type_id" required="1"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                 <field name="document_file" options="{'accepted_file_extensions': '.pdf'}" required="1"
-                                       filename="document_file_name" widget="binary"/>
-                                <field name="document_file_name" invisible="1"/>
+                                       filename="document_file_name" widget="binary"
+                                       invisible="1"/>
+                                <field name="document_file_name" string="Archivo"/>
                             </tree>
                             <form>
                                 <group>
