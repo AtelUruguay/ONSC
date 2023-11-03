@@ -239,9 +239,14 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
         results = Evaluation.search(search_domain)
         for res in results:
-            if len(results.filtered(
-                    lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id == res.evaluated_id.id)) > 1:
-                if Consolidated.search_count([('evaluated_id', '', res.evaluated_id.id)]) == 0:
+            if res.evaluation_type == 'environment_evaluation':
+                evaluation_type = 'environment'
+            elif res.evaluation_type == 'collaborator':
+                evaluation_type = 'collaborator'
+            search_domain_consolidated = [('evaluated_id', '=', res.evaluated_id.id),
+                                          ('evaluation_stage_id', '=', self.id)]
+            if len(results.filtered(lambda r: r.evaluation_type == res.evaluation_type)) > 1:
+                if Consolidated.search_count(search_domain_consolidated) == 0:
                     data = {'general_cycle_id': res.general_cycle_id.id,
                             'evaluated_id': res.evaluated_id.id,
                             'inciso_id': res.inciso_id.id,
@@ -249,15 +254,17 @@ class ONSCDesempenoEvaluationStage(models.Model):
                             'uo_id': res.uo_id.id,
                             'occupation_id': res.occupation_id.id,
                             'level_id': res.level_id.id,
-                            'evaluation_stage_id': res.evaluation_stage_id.id, }
+                            'evaluation_stage_id': res.evaluation_stage_id.id,
+                            'evaluation_type': evaluation_type}
 
-                    consolidate = Consolidated.suspend_security().create(data)
+                    consolidate = Consolidated.create(data)
                     number = random.randint(1, 100)
                     for competency in res.evaluation_competency_ids:
-                        competency.wrie({'consolidate_id': consolidate.id,
-                                         'order': number})
+                        competency.write({'consolidate_id': consolidate.id,
+                                          'order': number})
 
                 else:
+                    consolidate = Consolidated.search(search_domain_consolidated)
                     number = random.randint(1, 100)
                     for competency in res.evaluation_competency_ids:
                         competency.write({'consolidate_id': consolidate.id,
