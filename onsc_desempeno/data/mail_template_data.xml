@@ -32,7 +32,7 @@
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
                         Estimado Colaborador/a,
                         <br/>
-                        Los formularios de Evaluación de desempeño vencen el <strong t-out="object.evaluation_end_date"/>
+                        Los formularios de Evaluación de desempeño vencen el  <t t-out="object.evaluation_end_date"></t>
                         <br/>
                     </p>
                 </div>
