@@ -177,7 +177,8 @@ class ONSCDesempenoEvaluationList(models.Model):
     @api.depends('end_date', 'state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            valid_edit = record.state == 'closed' or record.end_date < fields.Date.today() or not record.end_date
+            condition = record.evaluation_stage_id.general_cycle_id.end_date_max < fields.Date.today()
+            valid_edit = record.state == 'closed' or condition or not record.end_date
             record.should_disable_form_edit = valid_edit
 
     def button_generate_evaluations(self):
@@ -186,34 +187,53 @@ class ONSCDesempenoEvaluationList(models.Model):
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         with self._cr.savepoint():
-            if fields.Date.today() <= self.end_date and len(valid_lines) > 0:
+            if fields.Date.today() < self.end_date and len(valid_lines) > 0:
                 self.suspend_security()._create_collaborator_evaluation()
             for line in valid_lines:
                 try:
-                    if fields.Date.today() <= self.end_date:
+                    _evaluation_ids = []
+                    if fields.Date.today() < self.evaluation_stage_id.general_cycle_id.end_date_max:
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
                         leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
+                        _evaluation_ids.extend([(4, new_evaluation.id), (4, leader_evaluation.id)])
+                    if fields.Date.today() < self.end_date and fields.Date.today() <= self.end_date_environment:
                         env_def_evaluation = self.suspend_security()._create_environment_definition(line)
+                        _evaluation_ids.append((4, env_def_evaluation.id))
+
+                    if len(_evaluation_ids) > 0:
                         line.suspend_security().write({
                             'state': 'generated',
                             'error_log': False,
                             'evaluation_create_date': fields.Date.today(),
-                            'evaluation_ids': [
-                                (4, new_evaluation.id),
-                                (4, leader_evaluation.id),
-                                (4, env_def_evaluation.id)
-                            ]})
-                        lines_evaluated |= line
-                    elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
-                        new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                        leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
-                        line.suspend_security().write({
-                            'state': 'generated',
-                            'error_log': False,
-                            'evaluation_create_date': fields.Date.today(),
-                            'evaluation_ids': [(4, new_evaluation.id), (4, leader_evaluation.id)]})
+                            'evaluation_ids': _evaluation_ids
+                        })
                         lines_evaluated |= line
                     partners_to_notify |= line.employee_id.partner_id
+
+                    # if fields.Date.today() <= self.end_date:
+                    #     new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                    #     leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
+                    #     env_def_evaluation = self.suspend_security()._create_environment_definition(line)
+                    #     line.suspend_security().write({
+                    #         'state': 'generated',
+                    #         'error_log': False,
+                    #         'evaluation_create_date': fields.Date.today(),
+                    #         'evaluation_ids': [
+                    #             (4, new_evaluation.id),
+                    #             (4, leader_evaluation.id),
+                    #             (4, env_def_evaluation.id)
+                    #         ]})
+                    #     lines_evaluated |= line
+                    # elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
+                    #     new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                    #     leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
+                    #     line.suspend_security().write({
+                    #         'state': 'generated',
+                    #         'error_log': False,
+                    #         'evaluation_create_date': fields.Date.today(),
+                    #         'evaluation_ids': [(4, new_evaluation.id), (4, leader_evaluation.id)]})
+                    #     lines_evaluated |= line
+                    # partners_to_notify |= line.employee_id.partner_id
                 except Exception as e:
                     line.write({
                         'state': 'error',
@@ -224,7 +244,8 @@ class ONSCDesempenoEvaluationList(models.Model):
     # INTELIGENCIA
     def manage_evaluations_lists(self):
         # cerrar las listas que ya pasaron la fecha de cierre
-        self.search([('end_date', '<', fields.Date.today())]).write({'state': 'closed'})
+        self.search([('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())]).write(
+            {'state': 'closed'})
 
         evaluation_stages = self.env['onsc.desempeno.evaluation.stage'].search([
             ('start_date', '<=', fields.Date.today()),
@@ -311,6 +332,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
+            'list_manager_id': data.evaluation_list_id.manager_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
             'evaluation_type': 'self_evaluation',
             'uo_id': data.job_id.department_id.id,
@@ -352,6 +374,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
+            'list_manager_id': data.evaluation_list_id.manager_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
             'evaluation_type': 'leader_evaluation',
             'uo_id': data.job_id.department_id.id,
@@ -392,6 +415,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
+            'list_manager_id': data.evaluation_list_id.manager_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
             'evaluation_type': 'environment_definition',
             'uo_id': data.job_id.department_id.id,
@@ -435,6 +459,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                     'evaluation_list_id': data.evaluation_list_id.id,
                     'evaluated_id': self.manager_id.id,
                     'evaluator_id': data.employee_id.id,
+                    'list_manager_id': data.evaluation_list_id.manager_id.id,
                     'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
                     'evaluation_type': 'collaborator',
                     'uo_id': self.manager_id.job_id.department_id.id,
@@ -476,6 +501,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             'evaluated_id': self.manager_id.id,
             'evaluator_id': data.employee_id.id,
             'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
+            'list_manager_id': data.evaluation_list_id.manager_id.id,
             'evaluation_type': 'environment_evaluation',
             'uo_id': self.manager_id.job_id.department_id.id,
             'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
