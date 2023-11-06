@@ -39,6 +39,8 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                                          'comportamientos esperados, contenidos en las dimensiones de '
                                          'cada competencia.')
     evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit', )
+    order = fields.Integer('Orden')
+    locked = fields.Boolean('Bloqueado', related ='evaluation_id.locked')
 
     skill_tooltip = fields.Html(
         compute=lambda s: s._get_help('skill_tooltip'),
@@ -49,7 +51,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         if is_default:
             return eval("_html2construct")
         for rec in self:
-            _html2construct = HTML_HELP % (rec.skill_id.definition or '')
+            _html2construct = HTML_HELP % (rec.suspend_security().skill_id.definition or '')
             setattr(rec, help_field, _html2construct)
 
     def button_open_current_skill(self):

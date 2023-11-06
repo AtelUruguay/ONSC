@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
 import logging
+import random
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
@@ -215,6 +216,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
         return True
 
     def action_close_stage(self):
+        self.process_create_consolidated()
         self.write({'closed_stage': True})
         return True
 
@@ -227,3 +229,43 @@ class ONSCDesempenoEvaluationStage(models.Model):
             self._check_unique_config()
             self._check_date()
         return True
+
+    def process_create_consolidated(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
+
+        search_domain = [('evaluation_stage_id', '=', self.id), ('state', '=', 'finished'),
+                         ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]
+
+        results = Evaluation.search(search_domain)
+        for res in results:
+            if res.evaluation_type == 'environment_evaluation':
+                evaluation_type = 'environment'
+            elif res.evaluation_type == 'collaborator':
+                evaluation_type = 'collaborator'
+            search_domain_consolidated = [('evaluated_id', '=', res.evaluated_id.id),
+                                          ('evaluation_stage_id', '=', self.id)]
+            if len(results.filtered(lambda r: r.evaluation_type == res.evaluation_type)) > 1:
+                if Consolidated.search_count(search_domain_consolidated) == 0:
+                    data = {'general_cycle_id': res.general_cycle_id.id,
+                            'evaluated_id': res.evaluated_id.id,
+                            'inciso_id': res.inciso_id.id,
+                            'operating_unit_id': res.operating_unit_id.id,
+                            'uo_id': res.uo_id.id,
+                            'occupation_id': res.occupation_id.id,
+                            'level_id': res.level_id.id,
+                            'evaluation_stage_id': res.evaluation_stage_id.id,
+                            'evaluation_type': evaluation_type}
+
+                    consolidate = Consolidated.create(data)
+                    number = random.randint(1, 100)
+                    for competency in res.evaluation_competency_ids:
+                        competency.write({'consolidate_id': consolidate.id,
+                                          'order': number})
+
+                else:
+                    consolidate = Consolidated.search(search_domain_consolidated)
+                    number = random.randint(1, 100)
+                    for competency in res.evaluation_competency_ids:
+                        competency.write({'consolidate_id': consolidate.id,
+                                          'order': number})

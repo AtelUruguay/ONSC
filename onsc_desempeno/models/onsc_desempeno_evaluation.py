@@ -284,14 +284,14 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id
+            condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id or record.locked
             record.should_disable_form_edit = condition
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            record.evaluation_form_edit = record.evaluator_id.id == user_employee_id
+            record.evaluation_form_edit = record.evaluator_id.id == user_employee_id and not record.locked
 
     @api.depends('state')
     def _compute_is_evaluation_change_available(self):
@@ -366,7 +366,7 @@ class ONSCDesempenoEvaluation(models.Model):
         for rec in self:
             random_environment_ids = []
             random_environments = random.sample(rec.environment_ids,
-                                                   self.env.user.company_id.random_environment_evaluation_forms)
+                                                self.env.user.company_id.random_environment_evaluation_forms)
             hierachy_manager_id = rec.uo_id.get_first_department_withmanager_in_tree().manager_id.id
             is_manager = hierachy_manager_id == rec.evaluated_id.id
             level_id = Level.suspend_security().search(
@@ -429,7 +429,7 @@ class ONSCDesempenoEvaluation(models.Model):
              ('environment_definition_end_date', '=', date_end)])
 
         if count_message_env > 0:
-            generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_evaluation')
+            generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_environment_definition')
             generated_form_email_template_id.send_mail(self.id, force_send=True)
 
     def get_followers_mails(self):
@@ -447,31 +447,6 @@ class ONSCDesempenoEvaluation(models.Model):
         return message_partner_ids.get_onsc_mails()
 
     def process_end_block_evaluation(self):
-        GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
-        general_ids = GeneralCycle.search([('end_date_max', '=', fields.Date.today())]).ids
-
-        for record in self.search(
-                [('general_cycle_id', 'in', general_ids), ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
-                 ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation'])]):
-            if record.state == 'completed':
-                record.write({'state': 'finished'})
-            else:
-                record.write({'state': 'uncompleted'})
-
-        for record in self.search(
-                [('environment_definition_end_date', '=', fields.Date.today()),
-                 ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
-                 ('evaluation_type', 'in', ['environment_definition'])]):
-            if record.state == 'completed':
-                record.write({'state': 'finished'})
-            else:
-                record.write({'state': 'uncompleted'})
-
-        self.search([('evaluation_end_date', '=', fields.Date.today()), ('state', '!=', 'canceled'),
-                     ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]).write(
-            {'locked': True})
-
-    def process_create_consolidated(self):
         GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
         general_ids = GeneralCycle.search([('end_date_max', '=', fields.Date.today())]).ids
 
