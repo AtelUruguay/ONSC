@@ -217,6 +217,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     def action_close_stage(self):
         self.process_create_consolidated()
+        self.process_create_gap_deal()  # TODO
         self.write({'closed_stage': True})
         return True
 
@@ -269,3 +270,9 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     for competency in res.evaluation_competency_ids:
                         competency.write({'consolidate_id': consolidate.id,
                                           'order': number})
+
+    def process_create_gap_deal(self):
+        for record in self:
+            valid_days = (record.end_date - fields.Date.from_string(fields.Date.today())).days
+            if self.env.user.company_id.days_gap_deal_eval_creation <= valid_days:
+                a = 5  # TODO: Sebastian, aca va el codigo para crear los acuerdos de brechas

@@ -301,7 +301,7 @@ class ONSCDesempenoEvaluation(models.Model):
         is_gh_responsable = self._is_group_responsable_uo()
         employee = self.env.user.employee_id
         for record in self:
-            is_leader_eval = record.evaluation_type == 'leader_evaluation'
+            is_valid_evaluation = record.evaluation_type in ['leader_evaluation', 'gap_deal']
             is_am_evaluator = record.evaluator_id.id == employee.id
             is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
             same_operating_unit = record.operating_unit_id.id == employee.job_id.contract_id.operating_unit_id.id
@@ -314,7 +314,7 @@ class ONSCDesempenoEvaluation(models.Model):
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
             base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable)
 
-            record.is_evaluation_change_available = base_condition and is_leader_eval and not is_am_evaluator
+            record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
 
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
