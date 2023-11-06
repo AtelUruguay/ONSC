@@ -283,14 +283,14 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             # is_self_evaluation = record.evaluation_type == 'self_evaluation'
-            second_condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id
+            second_condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id or record.locked
             record.should_disable_form_edit = second_condition
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            record.evaluation_form_edit = record.evaluator_id.id == user_employee_id
+            record.evaluation_form_edit = record.evaluator_id.id == user_employee_id and not record.locked
 
     @api.depends('state')
     def _compute_is_evaluation_change_available(self):
@@ -428,7 +428,7 @@ class ONSCDesempenoEvaluation(models.Model):
              ('environment_definition_end_date', '=', date_end)])
 
         if count_message_env > 0:
-            generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_evaluation')
+            generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_environment_definition')
             generated_form_email_template_id.send_mail(self.id, force_send=True)
 
     def get_followers_mails(self):
