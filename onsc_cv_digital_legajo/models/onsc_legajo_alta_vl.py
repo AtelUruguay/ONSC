@@ -76,8 +76,8 @@ class ONSCLegajoAltaVL(models.Model):
                                states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     cv_sex = fields.Selection(string=u'Sexo', copy=False, readonly=True,
                               states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone')
-    mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile')
+    personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone', tracking=False)
+    mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile', tracking=False)
     email = fields.Char(string="e-mail", related='partner_id.email')
     digitized_document_file = fields.Binary(string=digitized_document_full_name)
     digitized_document_filename = fields.Char('Nombre del documento Digitalizado')

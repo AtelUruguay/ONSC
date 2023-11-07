@@ -232,7 +232,7 @@ class ONSCLegajoStagingWS7(models.Model):
             regime_id = self.regime_id.id
         vals.update({'regime_id': regime_id})
         if self.cod_desc1 and not self.descriptor1_id:
-            descriptor1_id = BaseUtils._get_catalog_id(Descriptor1, 'code', self, 'cod_desc1', log_list)
+            descriptor1_id = BaseUtils._get_catalog_id(Descriptor1, 'description', self, 'cod_desc1', log_list)
         else:
             descriptor1_id = self.descriptor1_id.id
         vals.update({'descriptor1_id': descriptor1_id})
