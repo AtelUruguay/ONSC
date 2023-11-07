@@ -17,6 +17,7 @@ ONSC - Gestión de Desempeño
         'data/ir_cron_data.xml',
         'data/mail_template_data.xml',
         'wizard/onsc_desempeno_evaluator_change_wizard_views.xml',
+        'wizard/onsc_desempeno_extend_deadline_views.xml',
         'views/catalogs/onsc_legajo_base_views.xml',
         'views/catalogs/onsc_desempeno_dimension_views.xml',
         'views/catalogs/onsc_desempeno_skill_views.xml',
