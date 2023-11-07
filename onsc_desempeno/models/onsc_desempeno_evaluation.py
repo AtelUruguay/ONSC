@@ -416,6 +416,7 @@ class ONSCDesempenoEvaluation(models.Model):
         year = fields.Date.today().strftime('%Y')
         days_notification_end_ev = self.env.user.company_id.days_notification_end_ev
         date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
+
         count_message = self.search_count(
             [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
              ('year', '=', year), ('evaluation_end_date', '=', date_end)])
