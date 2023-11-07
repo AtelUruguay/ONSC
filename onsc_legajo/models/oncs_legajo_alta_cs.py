@@ -493,10 +493,11 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_is_available_send_destination(self):
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         is_user_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_user_ue_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
         for record in self:
             condition1 = record.state in ['draft', 'returned'] and record.type_cs == 'ac2ac'
             condition2 = record.is_edit_destination and record.inciso_origin_id == inciso_id
-            if condition1 and (not condition2 or is_user_alta_cs):
+            if condition1 and (not condition2 or is_user_alta_cs or is_user_ue_alta_cs):
                 record.is_available_send_destination = True
             else:
                 record.is_available_send_destination = False
