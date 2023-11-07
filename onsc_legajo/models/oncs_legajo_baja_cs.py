@@ -203,8 +203,11 @@ class ONSCLegajoBajaCS(models.Model):
                                      related='contract_origen_id.descriptor3_id')
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4',
                                      related='contract_origen_id.descriptor4_id')
-    end_date = fields.Date(string="Fecha hasta de  la Comisión", default=lambda *a: fields.Date.today(), required=True,
-                           copy=False)
+    end_date = fields.Date(
+        string="Fecha hasta de la Comisión",
+        default=lambda *a: fields.Date.today(),
+        required=True,
+        copy=False)
     extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
                                                string="Motivo extinción de la comisión", copy=False)
     attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'baja_cs_id',

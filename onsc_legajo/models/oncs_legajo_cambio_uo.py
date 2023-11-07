@@ -96,8 +96,11 @@ class ONSCLegajoCambioUO(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string="Funcionario")
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
-    date_start = fields.Date(string="Fecha desde", default=lambda *a: fields.Date.today(), required=True, copy=False)
-
+    date_start = fields.Date(
+        string="Fecha desde",
+        default=lambda *a: fields.Date.today(),
+        required=True,
+        copy=False)
     department_id = fields.Many2one("hr.department", string="UO")
     department_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_department_id_domain')
     job_id = fields.Many2one("hr.job", string="Puesto origen")

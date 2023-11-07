@@ -43,7 +43,7 @@ class ONSCActionsCommonData(models.AbstractModel):
         copy=True,
         string='Tipo de resolución'
     )
-    state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
+    state = fields.Selection(STATES, string='Estado', default='borrador', copy=False, tracking=True)
     additional_information = fields.Text(string='Información adicional', copy=False)
 
     is_error_synchronization = fields.Boolean(copy=False)
