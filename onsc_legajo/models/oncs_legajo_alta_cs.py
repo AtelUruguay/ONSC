@@ -149,12 +149,13 @@ class ONSCLegajoAltaCS(models.Model):
     operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     operating_unit_destination_id_domain = fields.Char(compute='_compute_operating_unit_destination_id_domain')
 
-    program_project_destination_id = fields.Many2one('onsc.legajo.office',
-                                                     string='Programa - Proyecto',
-                                                     copy=False,
-                                                     domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
-                                                     readonly=False, states={'confirmed': [('readonly', True)],
-                                                                             'cancelled': [('readonly', True)]})
+    program_project_destination_id = fields.Many2one(
+        'onsc.legajo.office',
+        string='Programa - Proyecto',
+        copy=False,
+        domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
+        readonly=False, states={'confirmed': [('readonly', True)],
+                                'cancelled': [('readonly', True)]})
     program_destination = fields.Char(string='Programa',
                                       related='program_project_destination_id.programaDescripcion')
     project_destination = fields.Char(string='Proyecto',
@@ -202,9 +203,15 @@ class ONSCLegajoAltaCS(models.Model):
     code_regime_start_commission_id = fields.Many2one('onsc.legajo.commission.regime',
                                                       string='Código del régimen de Inicio de Comisión', copy=False)
     state = fields.Selection(
-        [('draft', 'Borrador'), ('to_process', 'A procesar en destino'), ('returned', 'Devuelto a origen'),
-         ('cancelled', 'Cancelado'), ('error_sgh', 'Error SGH'), ('confirmed', 'Confirmado')],
-        string='Estado', default='draft')
+        [('draft', 'Borrador'),
+         ('to_process', 'A procesar en destino'),
+         ('returned', 'Devuelto a origen'),
+         ('cancelled', 'Cancelado'),
+         ('error_sgh', 'Error SGH'),
+         ('confirmed', 'Confirmado')],
+        string='Estado',
+        tracking=True,
+        default='draft')
     additional_information = fields.Text(string='Información adicional', copy=False,
                                          readonly=False, states={'confirmed': [('readonly', True)],
                                                                  'cancelled': [('readonly', True)]})

@@ -262,13 +262,15 @@ class ONSCDesempenoEvaluation(models.Model):
                     _('La cantidad de evaluadores de entorno debe ser mayor a 2 y menor a 10!'))
             for environment_id in rec.environment_ids:
                 if self.with_context(ignore_security_rules=True).search_count([
-                    ('evaluation_type', '=', 'environment_evaluation'),
+                    ('evaluation_type', 'in', ['environment_evaluation',
+                                               'self_evaluation',
+                                               'leader_evaluation',
+                                               'collaborator'
+                                               ]),
                     ('evaluator_id', '=', environment_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
                 ]) > max_environment_evaluation_forms:
-                    raise ValidationError(
-                        _('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (
-                            environment_id.full_name))
+                    raise ValidationError(_('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (environment_id.full_name))
 
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):
@@ -282,9 +284,8 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            # is_self_evaluation = record.evaluation_type == 'self_evaluation'
-            second_condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id or record.locked
-            record.should_disable_form_edit = second_condition
+            condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id or record.locked
+            record.should_disable_form_edit = condition
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
