@@ -40,7 +40,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                                          'cada competencia.')
     evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit', )
     order = fields.Integer('Orden')
-    locked = fields.Boolean('Bloqueado', related ='evaluation_id.locked')
+    locked = fields.Boolean('Bloqueado', related='evaluation_id.locked')
 
     skill_tooltip = fields.Html(
         compute=lambda s: s._get_help('skill_tooltip'),

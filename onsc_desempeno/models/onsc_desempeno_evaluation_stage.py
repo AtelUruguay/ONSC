@@ -272,10 +272,9 @@ class ONSCDesempenoEvaluationStage(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
 
         for record in Evaluation.search(
-            [('evaluation_stage_id', '=', self.id), ('state', 'not in', ['canceled','finished','uncompleted']),
-             ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]):
+                [('evaluation_stage_id', '=', self.id), ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]):
             if record.state == 'completed':
                 record.write({'state': 'finished'})
             else:
                 record.write({'state': 'uncompleted'})
-
