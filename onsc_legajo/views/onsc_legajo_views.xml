@@ -12,14 +12,14 @@
                 <field name="full_name"/>
                 <field name="nro_doc"/>
                 <field name="emissor_country_id"/>
-                <field name="avatar_128"/>
+                <field name="image_1920"/>
                 <field name="contracts_count"/>
                 <field name="legajo_state"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
                             <div class="o_kanban_image_fill_left o_kanban_image_full"
-                                 t-attf-style="background-image: url(#{kanban_image('onsc.legajo', 'avatar_128', record.id.raw_value)})"
+                                 t-attf-style="background-image: url(#{kanban_image('onsc.legajo', 'image_1920', record.id.raw_value)})"
                                  role="img"/>
                             <div class="oe_kanban_details d-flex flex-column">
                                 <strong class="o_kanban_record_title oe_partner_heading">
