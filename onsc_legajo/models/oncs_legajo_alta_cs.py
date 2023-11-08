@@ -243,6 +243,7 @@ class ONSCLegajoAltaCS(models.Model):
 
     filter_destination = fields.Boolean(string="Filtrar destino", compute='_compute_filter_destination',
                                         search='_search_filter_destination')
+    norm_id_domain = fields.Char(compute='_compute_norm_id_domain')
 
     # DATOS DEL WS10
     nroPuesto = fields.Char(string='Puesto', copy=False)
@@ -386,6 +387,12 @@ class ONSCLegajoAltaCS(models.Model):
                     ('id', '!=', rec.operating_unit_origin_id.id)
                 ]
             self.operating_unit_destination_id_domain = json.dumps(domain)
+
+    @api.depends('inciso_destination_id')
+    def _compute_norm_id_domain(self):
+        Norm = self.env['onsc.legajo.norm'].sudo()
+        for rec in self:
+            rec.norm_id_domain = json.dumps([('inciso_ids', 'in', [rec.inciso_destination_id.id])])
 
     @api.depends('inciso_origin_id', 'inciso_destination_id')
     def _compute_type_cs(self):
@@ -574,6 +581,7 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.onchange('inciso_destination_id')
     def onchange_inciso_destination_id(self):
+        self.norm_id = False
         self.operating_unit_destination_id = False
 
     @api.onchange('operating_unit_destination_id')
