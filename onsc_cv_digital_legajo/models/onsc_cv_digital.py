@@ -1,9 +1,25 @@
 # -*- coding: utf-8 -*-
 
+EMPLOYEE_MODIFIED_FIELDS_TO_NOTIFY_SGH = [
+    'cv_nro_doc',
+    'full_name',
+    'cv_full_name',
+    'cv_last_name_1',
+    'cv_last_name_2',
+    'cv_first_name',
+    'cv_second_name',
+    'marital_status_id',
+    'cv_birthdate',
+    'cv_sex',
+    'country_of_birth_id',
+    'personal_phone',
+    'mobile_phone',
+    'email',
+]
 
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_documentary_validation import \
     DOCUMENTARY_VALIDATION_STATES
-from odoo.addons.onsc_legajo.models.hr_employee import MODIFIED_FIELDS_TO_NOTIFY_SGH, MODIFIED_FIELDS
+from odoo.addons.onsc_legajo.models.hr_employee import MODIFIED_FIELDS
 
 from odoo import fields, models, api, _
 
@@ -290,7 +306,7 @@ class ONSCCVDigital(models.Model):
         for record in self.filtered(lambda x: x.is_docket_active and x.employee_id):
             employee_values_to_write = {}
             values_filtered = BaseUtils.get_really_values_changed(record, values)
-            for modified_field in MODIFIED_FIELDS_TO_NOTIFY_SGH:
+            for modified_field in EMPLOYEE_MODIFIED_FIELDS_TO_NOTIFY_SGH:
                 if modified_field in values_filtered:
                     employees |= record.employee_id
 

@@ -52,25 +52,25 @@ MODIFIED_FIELDS = [
     'cv_birthdate',
     'cv_sex',
     'country_of_birth_id',
-    'crendencial_serie',
-    'credential_number',
+    # 'crendencial_serie',
+    # 'credential_number',
     'personal_phone',
     'mobile_phone',
     'email',
-    'cv_address_state_id',
-    'cv_address_location_id',
-    'cv_address_street',
-    'cv_address_street_id',
-    'cv_address_nro_door',
-    'cv_address_street2_id',
-    'cv_address_street3_id',
-    'cv_address_is_cv_bis',
-    'cv_address_apto',
-    'cv_address_place',
+    # 'cv_address_state_id',
+    # 'cv_address_location_id',
+    # 'cv_address_street',
+    # 'cv_address_street_id',
+    # 'cv_address_nro_door',
+    # 'cv_address_street2_id',
+    # 'cv_address_street3_id',
+    # 'cv_address_is_cv_bis',
+    # 'cv_address_apto',
+    # 'cv_address_place',
     'uy_citizenship',
-    'cv_address_zip',
-    'cv_address_block',
-    'cv_address_sandlot',
+    # 'cv_address_zip',
+    # 'cv_address_block',
+    # 'cv_address_sandlot',
     'health_provider_id',
     'allow_content_public',
     'situation_disability',
@@ -260,15 +260,14 @@ class HrEmployee(models.Model):
             values.update({
                 'eff_date': fields.Date.today()
             })
-
         self._set_binary_history(values)
+        self._notify_sgh(values)
         if self.env.context.get('is_legajo'):
             res = super(HrEmployee, self.suspend_security()).write(values)
         else:
             res = super(HrEmployee, self).write(values)
         for rec in self.filtered(lambda x: x.name != x.full_name and x.full_name):
             rec.name = rec.full_name
-        self._notify_sgh(values)
         return res
 
     def unlink(self):
@@ -353,10 +352,12 @@ class HrEmployee(models.Model):
 
     def _notify_sgh(self, values):
         BaseUtils = self.env['onsc.base.utils'].sudo()
+        employees_notified_ids = []
         for record in self.filtered(lambda x: x.legajo_state == 'active'):
             values_filtered = BaseUtils.get_really_values_changed(record, values)
             for modified_field in MODIFIED_FIELDS_TO_NOTIFY_SGH:
-                if modified_field in values_filtered:
+                if modified_field in values_filtered and record.id not in employees_notified_ids:
+                    employees_notified_ids.append(record.id)
                     record.notify_sgh = True
 
     @api.model

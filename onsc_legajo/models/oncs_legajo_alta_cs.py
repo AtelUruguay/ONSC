@@ -149,12 +149,13 @@ class ONSCLegajoAltaCS(models.Model):
     operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     operating_unit_destination_id_domain = fields.Char(compute='_compute_operating_unit_destination_id_domain')
 
-    program_project_destination_id = fields.Many2one('onsc.legajo.office',
-                                                     string='Programa - Proyecto',
-                                                     copy=False,
-                                                     domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
-                                                     readonly=False, states={'confirmed': [('readonly', True)],
-                                                                             'cancelled': [('readonly', True)]})
+    program_project_destination_id = fields.Many2one(
+        'onsc.legajo.office',
+        string='Programa - Proyecto',
+        copy=False,
+        domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
+        readonly=False, states={'confirmed': [('readonly', True)],
+                                'cancelled': [('readonly', True)]})
     program_destination = fields.Char(string='Programa',
                                       related='program_project_destination_id.programaDescripcion')
     project_destination = fields.Char(string='Proyecto',
@@ -202,9 +203,15 @@ class ONSCLegajoAltaCS(models.Model):
     code_regime_start_commission_id = fields.Many2one('onsc.legajo.commission.regime',
                                                       string='Código del régimen de Inicio de Comisión', copy=False)
     state = fields.Selection(
-        [('draft', 'Borrador'), ('to_process', 'A procesar en destino'), ('returned', 'Devuelto a origen'),
-         ('cancelled', 'Cancelado'), ('error_sgh', 'Error SGH'), ('confirmed', 'Confirmado')],
-        string='Estado', default='draft')
+        [('draft', 'Borrador'),
+         ('to_process', 'A procesar en destino'),
+         ('returned', 'Devuelto a origen'),
+         ('cancelled', 'Cancelado'),
+         ('error_sgh', 'Error SGH'),
+         ('confirmed', 'Confirmado')],
+        string='Estado',
+        tracking=True,
+        default='draft')
     additional_information = fields.Text(string='Información adicional', copy=False,
                                          readonly=False, states={'confirmed': [('readonly', True)],
                                                                  'cancelled': [('readonly', True)]})
@@ -486,10 +493,11 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_is_available_send_destination(self):
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         is_user_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_user_ue_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
         for record in self:
             condition1 = record.state in ['draft', 'returned'] and record.type_cs == 'ac2ac'
             condition2 = record.is_edit_destination and record.inciso_origin_id == inciso_id
-            if condition1 and (not condition2 or is_user_alta_cs):
+            if condition1 and (not condition2 or is_user_alta_cs or is_user_ue_alta_cs):
                 record.is_available_send_destination = True
             else:
                 record.is_available_send_destination = False

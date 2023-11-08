@@ -212,11 +212,9 @@ class ONSCDesempenoEvaluationStage(models.Model):
         self._check_toggle_active()
         return super(ONSCDesempenoEvaluationStage, self.with_context(no_check_write=True)).toggle_active()
 
-    def action_extend_deadline(self):
-        return True
-
     def action_close_stage(self):
-        self.process_create_consolidated()
+        self._process_end_stage()
+        self._process_create_consolidated()
         self.process_create_gap_deal()  # TODO
         self.write({'closed_stage': True})
         return True
@@ -231,7 +229,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
             self._check_date()
         return True
 
-    def process_create_consolidated(self):
+    def _process_create_consolidated(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
 
@@ -270,6 +268,17 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     for competency in res.evaluation_competency_ids:
                         competency.write({'consolidate_id': consolidate.id,
                                           'order': number})
+
+    def _process_end_stage(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+
+        for record in Evaluation.search(
+                [('evaluation_stage_id', '=', self.id), ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
+                 ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]):
+            if record.state == 'completed':
+                record.write({'state': 'finished'})
+            else:
+                record.write({'state': 'uncompleted'})
 
     def process_create_gap_deal(self):
         for record in self:
