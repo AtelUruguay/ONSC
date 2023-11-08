@@ -135,8 +135,28 @@
                         </div>
                     </div>
                     <notebook>
-                        <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '=', 'environment_definition')],'readonly':[('locked', '=', True)]}">
+                        <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', 'in',['environment_definition','gap_deal'])],'readonly':[('locked', '=', True)]}">
                             <field name="evaluation_competency_ids" nolabel="1" attrs="{'readonly':[('locked', '=', True)]}"
+                                   options="{'no_open': True}" create="0" delete="0" edit="0">
+                                <tree nolabel="1" create="0" edit="0">
+                                    <field name="state"  invisible="1"/>
+                                    <field name="locked"  invisible="1"/>
+                                    <field name="evaluation_form_edit" invisible="1" />
+                                    <field name="evaluation_id"  invisible="1"/>
+                                    <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="degree_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <button type="object"
+                                            name="button_open_current_skill"
+                                            context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
+                                              attrs="{'invisible': [('locked', '=', True)]}"
+
+                                            icon="fa-edit"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '!=', 'gap_deal')],'readonly':[('locked', '=', True)]}">
+                            <field name="gap_deal_competency_ids" nolabel="1" attrs="{'readonly':[('locked', '=', True)]}"
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree nolabel="1" create="0" edit="0">
                                     <field name="state"  invisible="1"/>
@@ -273,6 +293,18 @@
         <field name="name">Definición de entorno</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
         <field name="context">{'is_from_menu': True,'environment_definition':True}</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Evaluación de desempeño
+            </p>
+        </field>
+    </record>
+
+     <record id='onsc_desempeno_gap_deal_evaluation_action' model='ir.actions.act_window'>
+        <field name="name">Acuerdo de Brecha</field>
+        <field name="res_model">onsc.desempeno.evaluation</field>
+        <field name="context">{'is_from_menu': True,'gap_deal':True}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

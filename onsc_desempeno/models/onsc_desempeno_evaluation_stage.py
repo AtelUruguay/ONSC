@@ -215,6 +215,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
     def action_close_stage(self):
         self._process_end_stage()
         self._process_create_consolidated()
+        self._process_gap_deal()
         self.write({'closed_stage': True})
         return True
 
@@ -278,3 +279,22 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 record.write({'state': 'finished'})
             else:
                 record.write({'state': 'uncompleted'})
+
+    def _process_gap_deal(self):
+
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        for record in Evaluation.search(
+                [('evaluation_stage_id', '=', self.id),
+                 ('evaluation_type', 'in', ['leader_evaluation'])]):
+            evaluation = record.copy_data()
+            evaluation[0]["evaluation_type"] = "gap_deal"
+
+            gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
+
+            for competency in record.evaluation_competency_ids:
+                Competency.create({'gap_deal_id': gap_deal.id,
+                                   'skill_id': competency.skill_id.id,
+                                   'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
+                                       lambda r: r.level_id.id == record.level_id.id).ids)]
+                                   })
