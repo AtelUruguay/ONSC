@@ -58,7 +58,6 @@ class ONSCActionsCommonData(models.AbstractModel):
 
     @api.depends('inciso_id')
     def _compute_norm_id_domain(self):
-        Norm = self.env['onsc.legajo.norm'].sudo()
         for rec in self:
             rec.norm_id_domain = json.dumps([('inciso_ids', 'in', [rec.inciso_id.id])])
 
