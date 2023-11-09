@@ -84,9 +84,12 @@ class ONSCLegajoAbstractSyncW10(models.AbstractModel):
             'destinoEstaEnADM': 'S' if record.inciso_destination_id.is_central_administration else 'N',
             'incisoDestino': record.inciso_destination_id.budget_code,
             'unidadEjecutoraDestino': record.operating_unit_destination_id.budget_code,
-            'programaDestino': record.program_project_destination_id.programa,
-            'proyectoDestino': record.program_project_destination_id.proyecto,
         })
+        if record.program_project_destination_id:
+            altaDetalle.update({
+                'programaDestino': record.program_project_destination_id.programa,
+                'proyectoDestino': record.program_project_destination_id.proyecto,
+            })
         if not record.inciso_destination_id.is_central_administration:
             altaDetalle.update({
                 'codigoInstitucionDestino': record.inciso_destination_id.budget_code,
