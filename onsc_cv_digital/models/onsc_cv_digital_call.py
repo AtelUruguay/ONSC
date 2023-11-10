@@ -197,25 +197,28 @@ class ONSCCVDigitalCall(models.Model):
             #     record.call_conditional_state = 'validated'
 
     def _get_documentary_validation_models(self, only_fields=False):
-        if not bool(self._context):
-            return ['civical_credential_documentary_validation_state',
-                    'nro_doc_documentary_validation_state',
-                    'disabilitie_documentary_validation_state']
-        configs = self.env['onsc.cv.documentary.validation.config'].get_config()
-        if only_fields:
-            validation_models = []
-            for config in configs.filtered(lambda x: x.field_id):
-                validation_models.append('%s' % config.field_id.name)
-        else:
-            validation_models = ['civical_credential_documentary_validation_state',
-                                 'nro_doc_documentary_validation_state',
-                                 'disabilitie_documentary_validation_state']
-            for config in configs.filtered(lambda x: x.field_id):
-                if config.model_id.model == 'onsc.cv.course.certificate':
-                    validation_models.extend(['course_ids.documentary_validation_state',
-                                              'certificate_ids.documentary_validation_state'])
-                else:
-                    validation_models.append('%s.documentary_validation_state' % config.field_id.name)
+        try:
+            configs = self.env['onsc.cv.documentary.validation.config'].get_config()
+            if only_fields:
+                validation_models = []
+                for config in configs.filtered(lambda x: x.field_id):
+                    validation_models.append('%s' % config.field_id.name)
+            else:
+                validation_models = ['civical_credential_documentary_validation_state',
+                                     'nro_doc_documentary_validation_state',
+                                     'disabilitie_documentary_validation_state']
+                for config in configs.filtered(lambda x: x.field_id):
+                    if config.model_id.model == 'onsc.cv.course.certificate':
+                        validation_models.extend(['course_ids.documentary_validation_state',
+                                                  'certificate_ids.documentary_validation_state'])
+                    else:
+                        validation_models.append('%s.documentary_validation_state' % config.field_id.name)
+        except Exception as e:
+            validation_models = [
+                'civical_credential_documentary_validation_state',
+                'nro_doc_documentary_validation_state',
+                'disabilitie_documentary_validation_state'
+            ]
         return validation_models
 
     @api.depends(lambda self: self._get_documentary_validation_models())
