@@ -823,6 +823,7 @@ class ONSCCVDigital(models.Model):
 
     def write(self, values):
         records = super(ONSCCVDigital, self).write(values)
+        self._check_licenses()
         if not self._context.get('no_update_header_documentary_validation'):
             self.with_context(
                 consolidate_history_version=str(fields.Datetime.now()),
@@ -849,7 +850,8 @@ class ONSCCVDigital(models.Model):
             self.civical_credential_write_date = fields.Datetime.now()
             self.civical_credential_documentary_validation_state = 'to_validate'
         self.update_disabilitie_documentary_validation(values)
-        self.update_license_documentary_validation(values)
+        # FIXME: No se deben pasar automaticamente a validado los documentos de licencia de conducir
+        # self.update_license_documentary_validation(values)
 
     def update_disabilitie_documentary_validation(self, values):
         document_certificate_file_value = values.get('document_certificate_file')
@@ -864,11 +866,11 @@ class ONSCCVDigital(models.Model):
                     record.disabilitie_documentary_validation_state = 'to_validate'
             self.disabilitie_write_date = fields.Datetime.now()
 
-    def update_license_documentary_validation(self, values):
-        if 'is_driver_license' in values:
-            for record in self:
-                if record.is_driver_license is False:
-                    record.drivers_license_ids.button_documentary_approve()
+    # def update_license_documentary_validation(self, values):
+    #     if 'is_driver_license' in values:
+    #         for record in self:
+    #             if record.is_driver_license is False:
+    #                 record.drivers_license_ids.button_documentary_approve()
 
     # REPORTE DE CV: UTILITIES
     def _get_report_cv_formation_seccion(self):
@@ -930,6 +932,14 @@ class ONSCCVDigital(models.Model):
                 'show_victim': show_victim,
             }
 
+    def _check_licenses(self):
+        """
+        Elimina las licencias de conducir que no estan validadas
+        :rtype: Boolean
+        """
+        licenses = self.filtered(lambda x: not x.is_driver_license).mapped('drivers_license_ids')
+        licenses.filtered(lambda x: x.documentary_validation_state == 'to_validate').unlink()
+        return True
 
 class ONSCCVOtherRelevantInformation(models.Model):
     _name = 'onsc.cv.other.relevant.information'
