@@ -38,7 +38,7 @@ MODIFIED_FIELDS_TO_NOTIFY_SGH = [
     'cv_address_zip',
     'cv_address_block',
     'cv_address_sandlot',
-    'occupational_health_care_date'
+    'occupational_health_card_date'
 ]
 
 
