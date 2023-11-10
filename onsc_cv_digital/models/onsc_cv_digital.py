@@ -945,6 +945,7 @@ class ONSCCVDigital(models.Model):
         licenses.filtered(lambda x: x.documentary_validation_state == 'to_validate').unlink()
         return True
 
+
 class ONSCCVOtherRelevantInformation(models.Model):
     _name = 'onsc.cv.other.relevant.information'
     _inherit = 'onsc.cv.abstract.documentary.validation'

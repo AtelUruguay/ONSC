@@ -213,7 +213,7 @@ class ONSCCVDigitalCall(models.Model):
                                                   'certificate_ids.documentary_validation_state'])
                     else:
                         validation_models.append('%s.documentary_validation_state' % config.field_id.name)
-        except Exception as e:
+        except Exception:
             validation_models = [
                 'civical_credential_documentary_validation_state',
                 'nro_doc_documentary_validation_state',
