@@ -366,6 +366,10 @@ class ONSCCVDigital(models.Model):
             # DOMICILIO
             if not record.is_cv_address_populated and record.cv_address_documentary_validation_state != 'validated':
                 record.cv_address_documentary_validation_state = 'validated'
+            # CREDENCIAL CIVICA
+            cc_state_no_validated = record.civical_credential_documentary_validation_state != 'validated'
+            if record.uy_citizenship == 'extranjero' and cc_state_no_validated:
+                record.civical_credential_documentary_validation_state = 'validated'
 
 
     def update_header_documentary_validation(self, values):
