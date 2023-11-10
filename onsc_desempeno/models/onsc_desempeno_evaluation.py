@@ -334,8 +334,7 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             condition = record.state not in [
                 'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
-            record.should_disable_form_edit = condition and (
-                    record.state != 'draft' and record.evaluation_type == 'gap_deal')
+            record.should_disable_form_edit = condition and (record.state != 'draft' and record.evaluation_type == 'gap_deal')
 
     @api.depends('state')
     def _compute_is_agree_evaluation_leader_available(self):
