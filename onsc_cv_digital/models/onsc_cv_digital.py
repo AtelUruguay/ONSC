@@ -836,6 +836,10 @@ class ONSCCVDigital(models.Model):
             # DISCAPACIDAD
             if record.people_disabilitie != 'si':
                 record.disabilitie_documentary_validation_state = 'validated'
+            # CREDENCIAL CIVICA
+            cc_state_no_validated = record.civical_credential_documentary_validation_state != 'validated'
+            if record.uy_citizenship == 'extranjero' and cc_state_no_validated:
+                record.civical_credential_documentary_validation_state = 'validated'
 
     def update_header_documentary_validation(self, values):
         cv_expiration_date_value = values.get('cv_expiration_date')
