@@ -37,7 +37,7 @@
                             class="btn btn-primary"  type="action"
                             string="Extender plazo"
                              context="{'default_stage_id': active_id}"
-                            attrs="{'invisible': [('show_buttons', '=', False)]}"/>
+                            attrs="{'invisible': ['|',('show_buttons', '=', False),('closed_stage', '=', True)]}"/>
                     <button name="action_close_stage" class="btn btn-primary" type="object" string="Cerrar etapa"
                             attrs="{'invisible': ['|',('show_buttons', '=', False),('closed_stage', '=', True)]}"/>
 

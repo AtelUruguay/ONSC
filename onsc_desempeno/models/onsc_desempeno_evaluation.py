@@ -27,7 +27,16 @@ STATE = [
     ('completed', 'Completado'),
     ('finished', 'Finalizado'),
     ('uncompleted', 'Sin Finalizar'),
-    ('canceled', 'Cancelado')
+    ('canceled', 'Cancelado'),
+    ('deal_close', "Acuerdo cerrado")
+]
+
+GAP_DEAL_STATES = [
+    ('no_deal', 'Sin acordar'),
+    ('agree_leader', 'Acordado Líder'),
+    ('agree_evaluated', 'Acordado Evaluado'),
+    ('agree', 'Acordado'),
+
 ]
 
 
@@ -265,6 +274,18 @@ class ONSCDesempenoEvaluation(models.Model):
     is_evaluation_change_available = fields.Boolean(
         string='Botón de cambio de evaluador disponible',
         compute='_compute_is_evaluation_change_available')
+    is_exonerated_evaluation = fields.Boolean(string='Exonerado de Evaluación')
+    is_agree_evaluation_evaluated_available = fields.Boolean(
+        string='Botón de Acordar Evaluación Evaluado',
+        compute='_compute_is_agree_evaluation_evaluated_available')
+    is_agree_evaluation_leader_available = fields.Boolean(
+        string='Botón de Acordar Evaluación Líder',
+        compute='_compute_is_agree_evaluation_leader_available')
+    gap_deal_state = fields.Selection(
+        selection=GAP_DEAL_STATES,
+        string="Estado de acuerdo de brecha",
+        default='no_deal'
+    )
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -313,7 +334,20 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             condition = record.state not in [
                 'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
-            record.should_disable_form_edit = condition
+            record.should_disable_form_edit = condition and (
+                    record.state != 'draft' and record.evaluation_type == 'gap_deal')
+
+    @api.depends('state')
+    def _compute_is_agree_evaluation_leader_available(self):
+        user_employee_id = self.env.user.employee_id.id
+        for record in self:
+            record.is_agree_evaluation_leader_available = record.evaluator_id.id == user_employee_id and record.evaluation_type == 'gap_deal' and not record.gap_deal_state == 'agree_leader'
+
+    @api.depends('state')
+    def _compute_is_agree_evaluation_evaluated_available(self):
+        user_employee_id = self.env.user.employee_id.id
+        for record in self:
+            record.is_agree_evaluation_evaluated_available = record.evaluated_id.id == user_employee_id and record.evaluation_type == 'gap_deal' and not record.gap_deal_state == 'agree_evaluated'
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
@@ -387,6 +421,18 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def button_reopen_evaluation(self):
         self.write({'state': 'in_process'})
+
+    def button_agree_evaluation_leader(self):
+        if self.gap_deal_state == 'no_deal':
+            self.write({'gap_deal_state': 'agree_leader'})
+        elif self.gap_deal_state == 'agree_evaluated':
+            self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
+
+    def button_agree_evaluation_evaluated(self):
+        if self.gap_deal_state == 'no_deal':
+            self.write({'gap_deal_state': 'agree_evaluated'})
+        elif self.gap_deal_state == 'agree_leader':
+            self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
 
     def _generate_environment_evaluations(self):
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
