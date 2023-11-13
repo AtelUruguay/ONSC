@@ -18,7 +18,8 @@ ONSC - Base
         'web_edit_button_conditional_disable',
         'mail_outbound_static',
         'auth_session_timeout_clean',
-        'fields_many2one_restrict'
+        'fields_many2one_restrict',
+        'base_restrict_access'
     ],
     'data': [
         'security/onsc_base_security.xml',
