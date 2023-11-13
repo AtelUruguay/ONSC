@@ -209,7 +209,7 @@
                                                     string="Validar"
                                                     icon="fa-thumbs-o-up"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'validated')]}"
+                                                    attrs="{'invisible': ['|',('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '=', 'validated')]}"
                                                     class="btn btn-sm btn-outline-success"/>
                                             <button name="button_documentary_reject"
                                                     groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
@@ -218,7 +218,7 @@
                                                     string="Rechazar"
                                                     icon="fa-thumbs-o-down"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': [('civical_credential_documentary_validation_state', '=', 'rejected')]}"
+                                                    attrs="{'invisible': ['|',('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '=', 'rejected')]}"
                                                     class="btn btn-sm btn-outline-danger"/>
                                         </span>
                                     </div>
@@ -227,7 +227,7 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
-                                            attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
+                                            attrs="{'invisible': ['|',('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La sección credencial cívica ha sido rechazada. Motivo del rechazo: <field name="civical_credential_documentary_reject_reason" class="oe_inline"/>
@@ -238,7 +238,7 @@
                                         </div>
                                         <div class="alert alert-success" role="alert" style="width:70%"
                                              invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                             attrs="{'invisible': [('civical_credential_documentary_validation_state', '!=', 'validated')]}">
+                                             attrs="{'invisible': ['|',('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '!=', 'validated')]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La sección credencial cívica ha sido validada

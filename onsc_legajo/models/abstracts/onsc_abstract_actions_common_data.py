@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import json
 
 from odoo import fields, models, api
 
@@ -24,6 +25,7 @@ class ONSCActionsCommonData(models.AbstractModel):
     reason_description = fields.Char(string='Descripción del motivo', copy=True)
 
     norm_id = fields.Many2one('onsc.legajo.norm', string='Norma', copy=True)
+    norm_id_domain = fields.Char(compute='_compute_norm_id_domain')
     norm_type = fields.Char(string='Tipo de norma', related="norm_id.tipoNorma",
                             store=True, readonly=True)
     norm_number = fields.Integer(string='Número de norma', related="norm_id.numeroNorma",
@@ -53,3 +55,12 @@ class ONSCActionsCommonData(models.AbstractModel):
     def _compute_should_disable_form_edit(self):
         for record in self:
             record.should_disable_form_edit = record.state not in ['borrador', 'error_sgh']
+
+    @api.depends('inciso_id')
+    def _compute_norm_id_domain(self):
+        for rec in self:
+            rec.norm_id_domain = json.dumps([('inciso_ids', 'in', [rec.inciso_id.id])])
+
+    @api.onchange('inciso_id')
+    def onchange_component_inciso_id(self):
+        self.norm_id = False

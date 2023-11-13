@@ -65,6 +65,9 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_evaluation(args, 'environment_definition')
         if self._context.get('environment_evaluation'):
             args = self._get_domain_evaluation(args, 'environment_evaluation', show_evaluator=True)
+        if self._context.get('gap_deal'):
+            args = self._get_domain_gap_deal(args)
+
         return args
 
     def _get_domain_leader_evaluation(self, args):
@@ -130,6 +133,26 @@ class ONSCDesempenoEvaluation(models.Model):
         elif self._is_group_admin_gh_ue():
             args_extended = expression.OR(
                 [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
+                 args_extended])
+        return expression.AND([args_extended, args])
+
+    def _get_domain_gap_deal(self, args):
+        inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
+        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+        args_extended = [
+            ('evaluation_type', '=', 'gap_deal'),
+            ('inciso_id', '=', inciso_id),
+            ('operating_unit_id', '=', operating_unit_id),
+            '|', ('evaluator_id', '=', self.env.user.employee_id.id),
+            ('evaluated_id', '=', self.env.user.employee_id.id)
+        ]
+
+        if self._is_group_admin_gh_inciso():
+            args_extended = expression.OR(
+                [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', 'gap_deal')], args_extended])
+        elif self._is_group_admin_gh_ue():
+            args_extended = expression.OR(
+                [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', 'gap_deal')],
                  args_extended])
         return expression.AND([args_extended, args])
 
@@ -212,6 +235,8 @@ class ONSCDesempenoEvaluation(models.Model):
         store=True)
     evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'evaluation_id',
                                                 string='Evaluación de Competencias')
+    gap_deal_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'gap_deal_id',
+                                              string='Evaluación de Competencias')
     general_comments = fields.Text(string='Comentarios Generales')
     state = fields.Selection(STATE, string='Estado', default='draft', readonly=True, tracking=True)
     locked = fields.Boolean(string='Bloqueado')
@@ -257,7 +282,7 @@ class ONSCDesempenoEvaluation(models.Model):
         max_environment_evaluation_forms = self.env.user.company_id.max_environment_evaluation_forms
         for rec in self:
             _len_environment_ids = len(rec.environment_ids)
-            if _len_environment_ids < 2 or _len_environment_ids > 10:
+            if not self.env.context.get("gap_deal") and (_len_environment_ids < 2 or _len_environment_ids > 10):
                 raise ValidationError(
                     _('La cantidad de evaluadores de entorno debe ser mayor a 2 y menor a 10!'))
             for environment_id in rec.environment_ids:
@@ -270,7 +295,9 @@ class ONSCDesempenoEvaluation(models.Model):
                     ('evaluator_id', '=', environment_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
                 ]) > max_environment_evaluation_forms:
-                    raise ValidationError(_('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (environment_id.full_name))
+                    raise ValidationError(
+                        _('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (
+                            environment_id.full_name))
 
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):
@@ -284,7 +311,8 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id or record.locked
+            condition = record.state not in [
+                'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
             record.should_disable_form_edit = condition
 
     @api.depends('state')
@@ -430,21 +458,28 @@ class ONSCDesempenoEvaluation(models.Model):
              ('environment_definition_end_date', '=', date_end)])
 
         if count_message_env > 0:
-            generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_end_date_environment_definition')
+            generated_form_email_template_id = self.env.ref(
+                'onsc_desempeno.email_template_end_date_environment_definition')
             generated_form_email_template_id.send_mail(self.id, force_send=True)
 
     def get_followers_mails(self):
         year = fields.Date.today().strftime('%Y')
+        days_notification_end_ev = self.env.user.company_id.days_notification_end_ev
+        date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
+
         message_partner_ids = self.search(
             [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
-             ('year', '=', year)]).mapped('evaluator_id.partner_id')
+             ('year', '=', year), ('evaluation_end_date', '=', date_end)]).mapped('evaluator_id.partner_id')
         return message_partner_ids.get_onsc_mails()
 
     def get_environment_definition_followers_mails(self):
         year = fields.Date.today().strftime('%Y')
+        days_notification_end_ev = self.env.user.company_id.days_notification_end_ev
+        date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
+
         message_partner_ids = self.search(
             [('evaluation_type', '=', 'environment_definition'), ('state', '!=', 'canceled'),
-             ('year', '=', year)]).mapped('evaluated_id.partner_id')
+             ('year', '=', year), ('environment_definition_end_date', '=', date_end)]).mapped('evaluated_id.partner_id')
         return message_partner_ids.get_onsc_mails()
 
     def process_end_block_evaluation(self):
