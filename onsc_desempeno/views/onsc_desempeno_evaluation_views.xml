@@ -26,10 +26,12 @@
                 <header>
                     <field name="collaborators" invisible="1"/>
                     <field name="evaluation_form_edit" invisible="1"/>
+                    <field name="is_agree_evaluation_leader_available" invisible="1"/>
+                    <field name="is_agree_evaluation_evaluated_available" invisible="1"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Comenzar Evaluación"
-                            attrs="{'invisible': ['|',('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
+                            attrs="{'invisible': ['|','|',('evaluation_type', '=', 'gap_deal'),('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
                             name="button_start_evaluation"
                             icon="fa-user-circle"/>
                     <button type="object"
@@ -60,20 +62,45 @@
                             attrs="{'invisible': ['|',('state', 'not in', ['in_process','draft']),('is_evaluation_change_available', '=', False)]}"
                             type="action"
                             icon="fa-exchange"/>
-                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,finished"/>
+                    <button type="object"
+                            class="btn btn-primary"
+                            string="Acordar Evaluación Evaluado"
+                            attrs="{'invisible': ['|',('state', '!=', 'draft'),('is_agree_evaluation_evaluated_available', '=', False)]}"
+                            name="button_agree_evaluation_evaluated"
+                            confirm="¿Está seguro que desea confirmar el acuerdo?"
+                            icon="fa-lock"/>
+                    <button type="object"
+                            class="btn btn-primary"
+                            string="Acordar Evaluación Líder"
+                            attrs="{'invisible': ['|',('state', '!=', 'draft'),('is_agree_evaluation_leader_available', '=', False)]}"
+                            name="button_agree_evaluation_leader"
+                            confirm="¿Está seguro que desea confirmar el acuerdo?"
+                            icon="fa-lock"/>
+
+                          <field name="state" widget="statusbar"
+                           statusbar_visible="draft,in_process,completed,finished,deal_close" />
                 </header>
                 <sheet>
                     <field name="is_evaluation_change_available" invisible="1"/>
                     <field name="should_disable_form_edit" invisible="1"/>
                     <field name="is_evaluation_form_active" invisible="1"/>
                     <field name="is_environment_evaluation_form_active" invisible="1"/>
+                    <div class="oe_avatar" style="padding-right:20px">
+                         <label for="gap_deal_state" string="Estado de acuerdo de brecha"
+                                   invisible="context.get('gap_deal', False) is False"/>
+                        <h4><field name="gap_deal_state"
+                                   align="left" style="font-size: 100%; width: 190px;" widget="label_selection"
+                                   options="{'classes': {'agree_leader': 'info','agree_evaluated': 'info', 'agree': 'success'}}"
+                                     invisible="context.get('gap_deal', False) is False"
+                                   /></h4>
+                    </div>
                     <div class="oe_title" name="div_title">
                         <label for="evaluated_id"/>
                         <h4>
                             <field name="evaluated_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </h4>
                     </div>
+
 
                     <group>
                         <group  style="min-width: 100px !important;">
@@ -94,6 +121,7 @@
                             <field name="evaluation_end_date"/>
                             <field name="environment_definition_end_date"
                                    attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
+                            <field name="locked" string="Bloqueado" readonly="1" attrs="{'invisible': ['|',('locked', '=', False),('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
                         </group>
                         <group>
                             <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
@@ -111,7 +139,7 @@
                      <div class="alert alert-info" role="alert"
                          name="div_alert_form"
                          style="overflow:hidden;"
-                         attrs="{'invisible':['|',('is_evaluation_form_active', '=', False),('evaluation_type', '=', 'environment_definition')]}">
+                         attrs="{'invisible':['|',('is_evaluation_form_active', '=', False),('evaluation_type', 'in',['gap_deal', 'environment_definition'])]}">
                         <div class="oe_left">
                             <p class="mb-0">
                                 <strong>
@@ -212,7 +240,8 @@
                                placeholder="Comentarios Generales"/>
                     </group>
                     <group name="block">
-                        <field name="locked" string="Bloqueado" readonly="1" attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
+                        <field name="is_exonerated_evaluation"  attrs="{'invisible': [('evaluation_type', '!=',  'gap_deal')], 'readonly':[('state', '!=', 'draft')]}"/>
+<!--                        <field name="locked" string="Bloqueado" readonly="1" attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>-->
                     </group>
                 </sheet>
                 <div class="oe_chatter">
