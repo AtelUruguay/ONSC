@@ -76,8 +76,9 @@
                             name="button_agree_evaluation_leader"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
-                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,finished"/>
+
+                          <field name="state" widget="statusbar"
+                           statusbar_visible="draft,in_process,completed,finished,deal_close" />
                 </header>
                 <sheet>
                     <field name="is_evaluation_change_available" invisible="1"/>
@@ -120,6 +121,7 @@
                             <field name="evaluation_end_date"/>
                             <field name="environment_definition_end_date"
                                    attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
+                            <field name="locked" string="Bloqueado" readonly="1" attrs="{'invisible': ['|',('locked', '=', False),('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
                         </group>
                         <group>
                             <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
@@ -239,7 +241,7 @@
                     </group>
                     <group name="block">
                         <field name="is_exonerated_evaluation"  attrs="{'invisible': [('evaluation_type', '!=',  'gap_deal')], 'readonly':[('state', '!=', 'draft')]}"/>
-                        <field name="locked" string="Bloqueado" readonly="1" attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
+<!--                        <field name="locked" string="Bloqueado" readonly="1" attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>-->
                     </group>
                 </sheet>
                 <div class="oe_chatter">
