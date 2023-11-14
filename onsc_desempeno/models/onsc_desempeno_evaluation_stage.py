@@ -254,18 +254,22 @@ class ONSCDesempenoEvaluationStage(models.Model):
                             'occupation_id': res.occupation_id.id,
                             'level_id': res.level_id.id,
                             'evaluation_stage_id': res.evaluation_stage_id.id,
-                            'evaluation_type': evaluation_type}
+                            'evaluation_type': evaluation_type,
+                            'evaluator_ids': [(4, res.evaluator_id.id)]}
 
                     consolidate = Consolidated.create(data)
-                    number = random.randint(1, 100)
+
                     for competency in res.evaluation_competency_ids:
+                        number = random.randint(1, 100)
                         competency.write({'consolidate_id': consolidate.id,
                                           'order': number})
 
                 else:
                     consolidate = Consolidated.search(search_domain_consolidated)
-                    number = random.randint(1, 100)
+                    consolidate.write({'evaluator_ids': [(4, res.evaluator_id.id)]})
+
                     for competency in res.evaluation_competency_ids:
+                        number = random.randint(1, 100)
                         competency.write({'consolidate_id': consolidate.id,
                                           'order': number})
 
@@ -276,14 +280,15 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 [('evaluation_stage_id', '=', self.id), ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
                  ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]):
             if record.state == 'completed':
-                record.write({'state': 'finished'})
+                record.write({'state': 'finished', 'locked': False})
             else:
-                record.write({'state': 'uncompleted'})
+                record.write({'state': 'uncompleted', 'locked': False})
 
     def _process_gap_deal(self):
 
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        partners_to_notify = self.env["res.partner"]
         for record in Evaluation.search(
                 [('evaluation_stage_id', '=', self.id),
                  ('evaluation_type', 'in', ['leader_evaluation'])]):
@@ -298,3 +303,15 @@ class ONSCDesempenoEvaluationStage(models.Model):
                                    'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
                                        lambda r: r.level_id.id == record.level_id.id).ids)]
                                    })
+
+            partners_to_notify |= record.evaluated_id.partner_id
+            partners_to_notify |= record.evaluator_id.partner_id
+
+        self.with_context(partners_to_notify=partners_to_notify)._send_start_stage_2_notification()
+
+    def _send_start_stage_2_notification(self):
+        generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_start_stage_2_form')
+        generated_form_email_template_id.send_mail(self.id, force_send=True)
+
+    def get_followers_mails(self):
+        return self._context.get('partners_to_notify').get_onsc_mails()

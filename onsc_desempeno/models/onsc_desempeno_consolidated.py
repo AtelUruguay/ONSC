@@ -34,10 +34,14 @@ class ONSCDesempenoConsolidated(models.Model):
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         args_extended = [
             ('evaluation_type', '=', evaluation_type),
-            ('evaluated_id', '=', self.env.user.employee_id.id),
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id)
         ]
+        # my_department = self.env.user.employee_id.job_id.department_id
+        # available_departments = my_department
+        # available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
+        # args_extended = expression.OR([[('uo_id', 'in', available_departments.ids),
+        #                                 ('evaluation_type', '=', evaluation_type)], args_extended])
         if self._is_group_admin_gh_inciso():
             args_extended = expression.OR(
                 [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
@@ -64,6 +68,7 @@ class ONSCDesempenoConsolidated(models.Model):
     name = fields.Char(string="Nombre", compute="_compute_name", store=True)
     evaluation_type = fields.Selection(CONSOLIDATED_TYPE, string='Tipo', required=True, readonly=True)
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
+    evaluator_ids = fields.Many2many('hr.employee', string='Evaluadores', readonly=True)
 
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
