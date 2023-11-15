@@ -629,7 +629,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'descriptor2_id': descriptor2.id,
             'descriptor3_id': descriptor3.id,
             'descriptor4_id': descriptor4.id,
-            'income_mechanism_id': contract.income_mechanism.id,
+            'income_mechanism_id': contract.income_mechanism_id.id,
             'retributive_day_id': record.retributive_day_id.id,
             # 'description_day': record.retributive_day_id.descripcionJornada,
             # 'code_day': record.retributive_day_id.codigoJornada,
