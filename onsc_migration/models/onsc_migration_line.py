@@ -557,20 +557,23 @@ class ONSCMigration(models.Model):
     def get_norm(self, tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id=None, check_inciso=True):
         if check_inciso:
             self._cr.execute(
-                """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel 
-                WHERE "tipoNormaSigla" = %s and 
-                "numeroNorma"= %s and 
-                "anioNorma" = %s and 
-                "articuloNorma"= %s and 
-                onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND 
-                onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""",
-            (tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id))
+                """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel
+                WHERE "tipoNormaSigla" = %s and
+                "numeroNorma"= %s and
+                "anioNorma" = %s and
+                "articuloNorma"= %s and
+                onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND
+                onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""", (tipoNorma,
+                                                                                          numeroNorma,
+                                                                                          anioNorma,
+                                                                                          articuloNorma,
+                                                                                          inciso_id))
         else:
             self._cr.execute(
-                """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel 
-                WHERE "tipoNormaSigla" = %s and 
-                "numeroNorma"= %s and 
-                "anioNorma" = %s and 
+                """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel
+                WHERE "tipoNormaSigla" = %s and
+                "numeroNorma"= %s and
+                "anioNorma" = %s and
                 "articuloNorma"= %s""",
                 (tipoNorma, numeroNorma, anioNorma, articuloNorma))
         return self._cr.fetchone()
