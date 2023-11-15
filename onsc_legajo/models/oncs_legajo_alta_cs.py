@@ -397,9 +397,12 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('inciso_destination_id')
     def _compute_norm_id_domain(self):
-        Norm = self.env['onsc.legajo.norm'].sudo()
         for rec in self:
-            rec.norm_id_domain = json.dumps([('inciso_ids', 'in', [rec.inciso_destination_id.id])])
+            if rec.inciso_destination_id.is_central_administration:
+                _args = [('inciso_ids', 'in', [rec.inciso_destination_id.id])]
+            else:
+                _args = []
+            rec.norm_id_domain = json.dumps(_args)
 
     @api.depends('inciso_origin_id', 'inciso_destination_id')
     def _compute_type_cs(self):
