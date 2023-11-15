@@ -60,5 +60,49 @@
             <field name="lang">{{ object.create_uid.partner_id.lang}}</field>
             <field name="auto_delete" eval="False"/>
         </record>
+
+        <record id="email_template_end_date_gap_deal" model="mail.template">
+            <field name="name">Plantilla de Acuerdo de brecha por finalizar</field>
+            <field name="model_id" ref="onsc_desempeno.model_onsc_desempeno_evaluation"/>
+            <field name="email_from"></field>
+            <field name="email_to">{{object.get_gap_deal_followers_mails()}}</field>
+            <field name="subject">Formularios de Acuerdo de brecha por finalizar</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Estimado Colaborador/a,
+                        <br/>
+                        Los formularios de Acuerdo de brecha vencen el <strong t-out="object.environment_definition_end_date"/>
+                        <br/>
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.create_uid.partner_id.lang}}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
+
+        <record id="email_template_start_stage_2_form" model="mail.template">
+            <field name="name">Plantilla de Inicio de etapa 2</field>
+            <field name="model_id" ref="onsc_desempeno.model_onsc_desempeno_evaluation_stage"/>
+            <field name="email_from"></field>
+            <field name="email_to">{{ object.get_followers_mails() }}</field>
+            <field name="subject">Inicio de etapa 2</field>
+            <field name="body_html" type="html">
+                <div style="margin: 0px; padding: 0px;">
+                    <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                        Estimado Colaborador/a,
+                        <br/>
+                      Se inicia la etapa 2 de Evaluación de desempeño
+                        <br/>
+                    </p>
+                </div>
+            </field>
+            <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
     </data>
+
+
+
+
 </odoo>

@@ -121,7 +121,7 @@
                             <field name="evaluation_end_date"/>
                             <field name="environment_definition_end_date"
                                    attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
-                            <field name="locked" string="Bloqueado" readonly="1" attrs="{'invisible': ['|',('locked', '=', False),('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
+                            <field name="locked" string="Formulario bloqueado" readonly="1" attrs="{'invisible': ['|',('locked', '=', False),('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
                         </group>
                         <group>
                             <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
@@ -203,6 +203,7 @@
                                 </tree>
                             </field>
                         </page>
+
                         <page string="Entorno" attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}">
                             <group>
                                 <field name="environment_in_hierarchy"
