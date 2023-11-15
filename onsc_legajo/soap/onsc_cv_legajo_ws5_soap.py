@@ -84,7 +84,7 @@ class WsLegajoWS5(ServiceBase):
             if not operacion_vl:
                 onsc_error_codes._raise_fault(legajo_error_codes.LOGIC_151)
             if request.codResult == 'aprobada':
-                operacion_vl.action_aprobado_cgn()
+                operacion_vl.with_context(force_notify_sgh=True).action_aprobado_cgn()
             elif request.codResult == 'rechazada':
                 operacion_vl.action_rechazado_cgn()
             else:
