@@ -49,13 +49,13 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         default=lambda s: s._get_help('skill_tooltip', True))
     competency_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_competency_form_edit')
 
-    @api.depends('state','state_deal')
+    @api.depends('state', 'state_deal')
     def _compute_competency_form_edit(self):
-       for record in self:
-           if record.gap_deal_id:
-               record.competency_form_edit = record.gap_deal_id.gap_deal_state != 'no_deal' or record.gap_deal_id.state != 'in_process'
-           else:
-               record.competency_form_edit = record.state != 'in_process'
+        for record in self:
+            if record.gap_deal_id:
+                record.competency_form_edit = record.gap_deal_id.gap_deal_state != 'no_deal' or record.gap_deal_id.state != 'in_process'
+            else:
+                record.competency_form_edit = record.state != 'in_process'
 
     def _get_help(self, help_field='', is_default=False):
         _html2construct = HTML_HELP % ('Tooltip')

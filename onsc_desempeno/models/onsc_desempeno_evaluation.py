@@ -433,7 +433,7 @@ class ONSCDesempenoEvaluation(models.Model):
         self.write({'state': 'in_process'})
 
     def button_reopen_deal(self):
-        self.write({'gap_deal_state': 'no_deal','state': 'draft'})
+        self.write({'gap_deal_state': 'no_deal', 'state': 'draft'})
 
     def button_agree_evaluation_leader(self):
         self._check_complete_evaluation()

@@ -198,7 +198,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                         _evaluation_ids.extend([(4, new_evaluation.id), (4, leader_evaluation.id)])
                         if fields.Date.today() > self.end_date:
                             gap_deal = self.suspend_security()._create_gap_deal(leader_evaluation)
-                            _evaluation_ids.extend([ (4, gap_deal.id)])
+                            _evaluation_ids.extend([(4, gap_deal.id)])
                     if fields.Date.today() < self.end_date and fields.Date.today() <= self.end_date_environment:
                         env_def_evaluation = self.suspend_security()._create_environment_definition(line)
                         _evaluation_ids.append((4, env_def_evaluation.id))
@@ -546,6 +546,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         self.with_context(partners_to_notify=partners_to_notify)._send_gap_deal_notification()
 
         return gap_deal
+
     def _action_desempeno_evaluation_list(self):
         if self.user_has_groups(
                 'onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue'):
@@ -572,6 +573,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     def get_followers_mails(self):
         return self._context.get('partners_to_notify').get_onsc_mails()
+
 
 class ONSCDesempenoEvaluationListLine(models.Model):
     _name = 'onsc.desempeno.evaluation.list.line'
