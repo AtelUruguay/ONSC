@@ -107,9 +107,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
             if int(record.start_date.strftime('%Y')) != record.year:
                 raise ValidationError(
                     _("La fecha inicio debe estar dentro del año %s") % record.year)
-            if int(record.end_date_max.strftime('%Y')) != record.year:
-                raise ValidationError(
-                    _("La fecha fin máxima debe estar dentro del año %s") % record.year)
+
             if int(record.start_date_max.strftime('%Y')) != record.year:
                 raise ValidationError(
                     _("La fecha inicio máxima debe estar dentro del año %s") % record.year)

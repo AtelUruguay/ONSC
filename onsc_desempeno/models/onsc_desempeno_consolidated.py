@@ -24,6 +24,9 @@ class ONSCDesempenoConsolidated(models.Model):
     def _is_group_usuario_evaluacion(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_usuario_evaluacion')
 
+    def _is_group_responsable_uo(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_responsable_uo')
+
     def _get_domain(self, args):
         if self._context.get('collaborator'):
             evaluation_type = 'collaborator'
@@ -37,11 +40,6 @@ class ONSCDesempenoConsolidated(models.Model):
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id)
         ]
-        # my_department = self.env.user.employee_id.job_id.department_id
-        # available_departments = my_department
-        # available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
-        # args_extended = expression.OR([[('uo_id', 'in', available_departments.ids),
-        #                                 ('evaluation_type', '=', evaluation_type)], args_extended])
         if self._is_group_admin_gh_inciso():
             args_extended = expression.OR(
                 [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
@@ -49,6 +47,13 @@ class ONSCDesempenoConsolidated(models.Model):
             args_extended = expression.OR(
                 [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
                  args_extended])
+        if self._is_group_responsable_uo():
+            my_department = self.env.user.employee_id.job_id.department_id
+            available_departments = my_department
+            available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
+            args_extended = expression.OR([[('evaluated_id', '!=', self.env.user.employee_id.id),
+                                            ('uo_id', 'in', available_departments.ids),
+                                            ('evaluation_type', '=', evaluation_type)], args_extended])
         return expression.AND([args_extended, args])
 
     @api.model
