@@ -244,7 +244,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 evaluation_type = 'collaborator'
             search_domain_consolidated = [('evaluated_id', '=', res.evaluated_id.id),
                                           ('evaluation_stage_id', '=', self.id)]
-            if len(results.filtered(lambda r: r.evaluation_type == res.evaluation_type)) > 1:
+            if len(results.filtered(lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id)) > 1:
                 if Consolidated.search_count(search_domain_consolidated) == 0:
                     data = {'general_cycle_id': res.general_cycle_id.id,
                             'evaluated_id': res.evaluated_id.id,
@@ -260,7 +260,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     consolidate = Consolidated.create(data)
 
                     for competency in res.evaluation_competency_ids:
-                        number = random.randint(1, 100)
+                        number = random.randint(1, 1000)
                         competency.write({'consolidate_id': consolidate.id,
                                           'order': number})
 
@@ -269,7 +269,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     consolidate.write({'evaluator_ids': [(4, res.evaluator_id.id)]})
 
                     for competency in res.evaluation_competency_ids:
-                        number = random.randint(1, 100)
+                        number = random.randint(1, 1000)
                         competency.write({'consolidate_id': consolidate.id,
                                           'order': number})
 

@@ -196,6 +196,9 @@ class ONSCDesempenoEvaluationList(models.Model):
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
                         leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
                         _evaluation_ids.extend([(4, new_evaluation.id), (4, leader_evaluation.id)])
+                        if fields.Date.today() > self.end_date:
+                            gap_deal = self.suspend_security()._create_gap_deal(leader_evaluation)
+                            _evaluation_ids.extend([(4, gap_deal.id)])
                     if fields.Date.today() < self.end_date and fields.Date.today() <= self.end_date_environment:
                         env_def_evaluation = self.suspend_security()._create_environment_definition(line)
                         _evaluation_ids.append((4, env_def_evaluation.id))
@@ -521,6 +524,29 @@ class ONSCDesempenoEvaluationList(models.Model):
         data.write({'evaluation_ids': [(4, evaluation.id)]})
         return True
 
+    def _create_gap_deal(self, record):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        partners_to_notify = self.env["res.partner"]
+        evaluation = record.copy_data()
+        evaluation[0]["evaluation_type"] = "gap_deal"
+
+        gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
+
+        for competency in record.evaluation_competency_ids:
+            Competency.create({'gap_deal_id': gap_deal.id,
+                               'skill_id': competency.skill_id.id,
+                               'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == record.level_id.id).ids)]
+                               })
+
+        partners_to_notify |= record.evaluated_id.partner_id
+        partners_to_notify |= record.evaluator_id.partner_id
+
+        self.with_context(partners_to_notify=partners_to_notify)._send_gap_deal_notification()
+
+        return gap_deal
+
     def _action_desempeno_evaluation_list(self):
         if self.user_has_groups(
                 'onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue'):
@@ -536,6 +562,10 @@ class ONSCDesempenoEvaluationList(models.Model):
         else:
             records_random = random.sample(records, qty_to_take)
         return records_random
+
+    def _send_gap_deal_notification(self):
+        generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_start_stage_2_form')
+        generated_form_email_template_id.send_mail(self.evaluation_stage_id.id, force_send=True)
 
     def _send_generated_form_notification(self):
         generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_generated_form')

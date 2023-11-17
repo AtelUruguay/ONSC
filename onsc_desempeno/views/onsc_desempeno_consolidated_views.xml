@@ -53,7 +53,7 @@
                   <notebook>
                          <page string="Evaluación de Competencias">
                             <field name="evaluation_competency_ids" nolabel="1" mode="tree">
-                            	<tree limit="50" editable="top" nolabel="1" default_order="order asc">
+                            	<tree limit="50" editable="top" nolabel="1" default_order="skill_id asc,order asc">
                                     <field name="order" invisible="1"/>
                                     <field name="consolidate_id"  invisible="1"/>
                                     <field name="skill_id" />
@@ -83,11 +83,11 @@
                                             <page string="Dimensiones">
                                                 <field name="skill_line_ids" options="{'no_open': True}" readonly="1" create="0" delete="0" edit="0">
                                                     <tree create="0" delete="0">
-
+                                                        <field name="dimension_tooltip" string=""/>
                                                         <field name="dimension_id" readonly="1"
                                                            options="{'fields_to_show': ['definition'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                                         <field name="behavior" style="white-space:normal;" readonly="1"/>
-                                                     </tree>
+                                                    </tree>
 
                                                      <form string="Dimensiones" create="0" delete="0">
                                                         <group>

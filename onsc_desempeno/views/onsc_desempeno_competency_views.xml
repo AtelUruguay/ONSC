@@ -9,6 +9,9 @@
                 <sheet>
                     <group>
                         <group colspan="4">
+                            <field name="state" invisible="1"/>
+                            <field name="state_deal" invisible="1"/>
+                            <field name="competency_form_edit" invisible="1"/>
                             <label for="skill_id"/>
                             <div>
                                 <field name="skill_id" readonly="1"
@@ -20,13 +23,13 @@
                                 </div>
                             </div>
                             <field colspan="4" name="degree_id"
-                                   attrs="{'readonly':[('state', '!=','in_process')]}"
+                                   attrs="{'readonly':[('competency_form_edit', '=',True)]}"
                                    required="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field colspan="4"
                                    name="improvement_areas"
-                                   attrs="{'readonly':[('state', '!=','in_process')]}"
+                                   attrs="{'readonly':[('competency_form_edit', '=',True)]}"
                                    required="1"/>
-                            <field name="state" invisible="1"/>
+
                         </group>
                     </group>
                     <notebook>
@@ -54,15 +57,15 @@
                 </sheet>
                <footer>
                     <button string="Guardar" name="action_close_dialog"
-                            attrs="{'invisible':[('state', '!=','in_process')]}"
+                            attrs="{'invisible':[('competency_form_edit', '=',True)]}"
                             type="object" class="btn-primary"/>
                     <button string="Cancelar"
                             class="btn-secondary"
-                            attrs="{'invisible':[('state', '!=','in_process')]}"
+                            attrs="{'invisible':[('competency_form_edit', '=',True)]}"
                             special="cancel"/>
                     <button string="Cerrar"
                             class="btn-secondary"
-                            attrs="{'invisible':[('state', '=','in_process')]}"
+                            attrs="{'invisible':[('competency_form_edit', '=',False)]}"
                             special="cancel"/>
                </footer>
             </form>

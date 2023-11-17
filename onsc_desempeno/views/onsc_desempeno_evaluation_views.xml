@@ -31,13 +31,13 @@
                     <button type="object"
                             class="btn btn-primary"
                             string="Comenzar Evaluación"
-                            attrs="{'invisible': ['|','|',('evaluation_type', '=', 'gap_deal'),('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
+                            attrs="{'invisible': ['|',('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
                             name="button_start_evaluation"
                             icon="fa-user-circle"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Completar evaluación"
-                            attrs="{'invisible': ['|','|',('state', '!=', 'in_process'),('evaluation_form_edit', '=', False),('evaluation_type', '=', 'environment_definition')]}"
+                            attrs="{'invisible': ['|','|',('state', '!=', 'in_process'),('evaluation_form_edit', '=', False),('evaluation_type', 'in', ['gap_deal','environment_definition'])]}"
                             name="button_completed_evaluation"
                             confirm="¿Está seguro de que desea dar por completado el formulario?"
                             icon="fa-lock"/>
@@ -55,6 +55,7 @@
                             name="button_reopen_evaluation"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir la evaluación?"/>
+
                     <button name="%(onsc_desempeno.onsc_desempeno_evaluation_change_wizard_action)d"
                             class="btn btn-secundary"
                             string="Cambio de evaluador"
@@ -65,20 +66,27 @@
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar Evaluación Evaluado"
-                            attrs="{'invisible': ['|',('state', '!=', 'draft'),('is_agree_evaluation_evaluated_available', '=', False)]}"
+                            attrs="{'invisible': ['|',('state', '!=', 'in_process'),('is_agree_evaluation_evaluated_available', '=', False)]}"
                             name="button_agree_evaluation_evaluated"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar Evaluación Líder"
-                            attrs="{'invisible': ['|',('state', '!=', 'draft'),('is_agree_evaluation_leader_available', '=', False)]}"
+                            attrs="{'invisible': ['|',('state', '!=', 'in_process'),('is_agree_evaluation_leader_available', '=', False)]}"
                             name="button_agree_evaluation_leader"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
+                    <button type="object"
+                            class="btn btn-secundary"
+                            string="Reabrir acuerdo"
+                            attrs="{'invisible': ['|','|','|',('state', '!=', 'in_process'),('gap_deal_state', '=', 'agree'),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'gap_deal')]}"
+                            name="button_reopen_deal"
+                            icon="fa-unlock"
+                            confirm="¿Está seguro de que desea reabrir la evaluación?"/>
 
-                          <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,finished,deal_close" />
+                   <field name="state" widget="statusbar"
+                           statusbar_visible="draft,in_process,completed,deal_close,finished" />
                 </header>
                 <sheet>
                     <field name="is_evaluation_change_available" invisible="1"/>
@@ -118,7 +126,8 @@
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
                             <field name="year"/>
                             <field name="evaluation_start_date"/>
-                            <field name="evaluation_end_date"/>
+                            <field name="evaluation_end_date" attrs="{'invisible': [('evaluation_type', 'in',['gap_deal'])]}"/>
+                            <field name="evaluation_end_date_max" attrs="{'invisible': [('evaluation_type', 'not in',['gap_deal'])]}"/>
                             <field name="environment_definition_end_date"
                                    attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
                             <field name="locked" string="Formulario bloqueado" readonly="1" attrs="{'invisible': ['|',('locked', '=', False),('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
@@ -183,7 +192,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '!=', 'gap_deal')],'readonly':[('locked', '=', True)]}">
+                        <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '!=', 'gap_deal')],'readonly':[('gap_deal_state', '!=', 'no_deal')]}">
                             <field name="gap_deal_competency_ids" nolabel="1" attrs="{'readonly':[('locked', '=', True)]}"
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree nolabel="1" create="0" edit="0">

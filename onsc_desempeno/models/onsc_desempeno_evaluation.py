@@ -32,7 +32,7 @@ STATE = [
 ]
 
 GAP_DEAL_STATES = [
-    ('no_deal', 'Sin acordar'),
+    ('no_deal', 'Pendiente'),
     ('agree_leader', 'Acordado Líder'),
     ('agree_evaluated', 'Acordado Evaluado'),
     ('agree', 'Acordado'),
@@ -242,6 +242,10 @@ class ONSCDesempenoEvaluation(models.Model):
         string='Fecha de Fin de la Definición de Entorno',
         related='evaluation_stage_id.end_date_environment',
         store=True)
+    evaluation_end_date_max = fields.Date(
+        string='Fecha fin ciclo evaluación',
+        related='general_cycle_id.end_date_max',
+        store=True)
     evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'evaluation_id',
                                                 string='Evaluación de Competencias')
     gap_deal_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'gap_deal_id',
@@ -332,9 +336,13 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            condition = record.state not in [
-                'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
-            record.should_disable_form_edit = condition and (record.state != 'draft' and record.evaluation_type == 'gap_deal')
+
+            if record.evaluation_type == 'gap_deal':
+                condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
+            else:
+                condition = record.state not in [
+                    'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
+            record.should_disable_form_edit = condition
 
     @api.depends('state')
     def _compute_is_agree_evaluation_leader_available(self):
@@ -352,7 +360,10 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_evaluation_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            record.evaluation_form_edit = record.evaluator_id.id == user_employee_id and not record.locked
+            if record.evaluation_type == 'gap_deal':
+                record.evaluation_form_edit = record.evaluator_id.id == user_employee_id or record.evaluated_id.id == user_employee_id
+            else:
+                record.evaluation_form_edit = record.evaluator_id.id == user_employee_id and not record.locked
 
     @api.depends('state')
     def _compute_is_evaluation_change_available(self):
@@ -421,13 +432,18 @@ class ONSCDesempenoEvaluation(models.Model):
     def button_reopen_evaluation(self):
         self.write({'state': 'in_process'})
 
+    def button_reopen_deal(self):
+        self.write({'gap_deal_state': 'no_deal', 'state': 'draft'})
+
     def button_agree_evaluation_leader(self):
+        self._check_complete_evaluation()
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_leader'})
         elif self.gap_deal_state == 'agree_evaluated':
             self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_evaluation_evaluated(self):
+        self._check_complete_evaluation()
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_evaluated'})
         elif self.gap_deal_state == 'agree_leader':
