@@ -150,7 +150,7 @@
                             <field name="cv_address_street3_id" force_save="1" readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="cv_address_street" string="Calle"
-                                   force_save="1"
+                                   force_save="1" readonly="1"
                                    attrs="{'invisible': [('country_code', '=', 'UY')]}"/>
                             <field name="cv_address_is_cv_bis" force_save="1" readonly="1"/>
                             <field name="cv_address_place" force_save="1" readonly="1"/>
