@@ -443,6 +443,7 @@ class ONSCLegajoAltaCS(models.Model):
             administrator_security = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
             inciso_security = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
             operating_unit_security = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
+            is_same_inciso = record.inciso_destination_id == record.inciso_origin_id
             if administrator_security:
                 record.is_edit_destination = True
             elif record.state == 'returned':
@@ -455,8 +456,10 @@ class ONSCLegajoAltaCS(models.Model):
             elif record.type_cs == 'ac2ac' and operating_unit_security and record.operating_unit_destination_id == operating_unit_id:
                 record.is_edit_destination = True
             # Editar por el usuario Origen
+            elif is_same_inciso and operating_unit_security:
+                record.is_edit_destination = False
             # El Usuario logueado tiene permiso por ue y la ue de destino es el mismo que el del usuario
-            elif record.type_cs == 'ac2ac' and record.inciso_destination_id == record.inciso_origin_id:
+            elif record.type_cs == 'ac2ac' and is_same_inciso:
                 record.is_edit_destination = True
             # Siempre poder editar si no es ac2ac
             elif record.type_cs != 'ac2ac':
@@ -466,12 +469,15 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs')
     def _compute_is_available_send_to_sgh(self):
-        is_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_user_ue_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
         for record in self:
             is_same_inciso = record.inciso_origin_id == record.inciso_destination_id
             # AC2AC siendo tu mismo inciso origen y destino
-            if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_alta_cs:
+            if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
                 record.is_available_send_to_sgh = True
+            elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue_alta_cs:
+                record.is_available_send_to_sgh = False
             elif record.state in ['draft', 'to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and is_same_inciso:
                 record.is_available_send_to_sgh = True
             # No AC2AC siempre enviar a SGH
@@ -499,11 +505,14 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_send_destination(self):
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
-        is_user_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_user_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_user_ue_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
         for record in self:
             condition1 = record.state in ['draft', 'returned'] and record.type_cs == 'ac2ac'
             condition2 = record.is_edit_destination and record.inciso_origin_id == inciso_id
-            if condition1 and (not condition2 or is_user_alta_cs):
+            condition3 = record.is_edit_destination and record.inciso_origin_id == record.inciso_destination_id and is_user_ue_alta_cs
+            # if condition1 and (not condition2 or is_user_administrar_altas_cs):
+            if condition1 and not is_user_administrar_altas_cs and (not condition2 or condition3):
                 record.is_available_send_destination = True
             else:
                 record.is_available_send_destination = False

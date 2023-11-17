@@ -19,7 +19,9 @@ ONSC - Base
         'mail_outbound_static',
         'mail_outbound_static_fixed',
         'auth_session_timeout_clean',
-        'fields_many2one_restrict'
+        'fields_many2one_restrict',
+        'base_restrict_access',
+        'url_access_restriction'
     ],
     'data': [
         'security/onsc_base_security.xml',
