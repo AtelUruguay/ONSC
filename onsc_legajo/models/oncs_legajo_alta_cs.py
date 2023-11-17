@@ -527,15 +527,6 @@ class ONSCLegajoAltaCS(models.Model):
                 is_available_send_destination = False
 
             record.is_available_send_destination = is_available_send_destination
-            # condition1 = record.state in ['draft'] and record.type_cs == 'ac2ac'
-            # condition2 = record.is_edit_destination and record.inciso_origin_id == inciso_id
-            # condition3 = record.is_edit_destination and record.inciso_origin_id == record.inciso_destination_id and is_user_ue_alta_cs
-            #
-            # # if condition1 and (not condition2 or is_user_administrar_altas_cs):
-            # if condition1 and not is_user_administrar_altas_cs and (not condition2 or condition3):
-            #     record.is_available_send_destination = True
-            # else:
-            #     record.is_available_send_destination = False
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_cancel(self):
