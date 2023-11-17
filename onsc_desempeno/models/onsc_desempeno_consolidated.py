@@ -37,6 +37,7 @@ class ONSCDesempenoConsolidated(models.Model):
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         args_extended = [
             ('evaluation_type', '=', evaluation_type),
+            ('evaluated_id', '=', self.env.user.employee_id.id),
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id)
         ]
