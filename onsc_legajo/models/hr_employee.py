@@ -360,6 +360,8 @@ class HrEmployee(models.Model):
                 'cv_nro_doc': partner_id.cv_nro_doc,
                 'notify_sgh': notify_sgh,
             })
+        elif self._context.get('force_notify_sgh') and employee.legajo_state == 'egresed':
+            employee.notify_sgh = True
         return employee
 
 

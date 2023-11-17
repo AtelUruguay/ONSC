@@ -33,7 +33,13 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             _logger.info('******************SYNC BASE COMPONENT******************')
             _logger.info(parameter)
             _logger.info(values)
-            response = ONSCLegajoClient.get_response(client, parameter, values, self._context.get('simpleWsdl', False))
+            response = ONSCLegajoClient.get_response(
+                client=client,
+                ws_url=parameter,
+                values=values,
+                simpleWsdl=self._context.get('simpleWsdl', False),
+                use_execute_with_args=self._context.get('use_execute_with_args', False)
+            )
         except Exception as e:
             self._process_servicecall_error(e, origin_name, integration_error)
             altas_vl = self._context.get('altas_vl', self.env['onsc.legajo.alta.vl'])

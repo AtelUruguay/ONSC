@@ -223,7 +223,6 @@ class HrEmployee(models.Model):
         record = self.sudo()
         vals = {
             'country_of_birth_id': record.cv_digital_id.country_of_birth_id.id,
-            'drivers_license_ids': record._get_driver_licences_orm(),
             # Datos del legajo
             'emergency_service_id': record.cv_digital_id.emergency_service_id.id,
             'prefix_emergency_phone_id': record.cv_digital_id.prefix_emergency_phone_id.id,
@@ -231,7 +230,6 @@ class HrEmployee(models.Model):
             'institutional_email': record.cv_digital_id.institutional_email,
             'digitized_document_file': record.cv_digital_id.digitized_document_file,
             'digitized_document_filename': record.cv_digital_id.digitized_document_filename,
-            'information_contact_ids': record._get_information_contact_orm(),
             'health_department_id': record.cv_digital_id.health_department_id.id,
             'health_provider_id': record.cv_digital_id.health_provider_id.id,
             'cv_first_name': record.cv_digital_id.partner_id.cv_first_name,
@@ -265,6 +263,12 @@ class HrEmployee(models.Model):
             'is_driver_license': record.cv_digital_id.is_driver_license,
             'is_public_information_victim_violent': record.cv_digital_id.is_public_information_victim_violent,
         }
+        # SI NO TIENE LICENCIA ES PORQUE ES FUNCIONARIO NUEVO O DIRECTAMENTE EL CV NO TIENE LICENCIAS
+        if len(record.drivers_license_ids) == 0:
+            vals.update({'drivers_license_ids': record._get_driver_licences_orm()})
+        # LO MISMO QUE LICENCIA DE CONDUCIR
+        if len(record.information_contact_ids) == 0:
+            vals.update({'information_contact_ids': record._get_information_contact_orm()})
         cv_address_documentary_validated = record.cv_digital_id.cv_address_documentary_validation_state == 'validated'
         if not self._context.get('exclusive_validated_info') or cv_address_documentary_validated:
             vals.update(record._get_info_fromcv_cv_address())
