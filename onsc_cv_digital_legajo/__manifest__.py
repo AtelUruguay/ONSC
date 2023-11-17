@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC CV Digital - Legajo',
-    'version': '15.0.12.3.0',
+    'version': '15.0.12.4.0',
     'summary': 'ONSC CV Digital - Legajo',
     'sequence': 11,
     'description': """
