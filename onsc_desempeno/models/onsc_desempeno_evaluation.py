@@ -343,7 +343,8 @@ class ONSCDesempenoEvaluation(models.Model):
             if record.evaluation_type == 'gap_deal':
                 condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
             else:
-                condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id or record.locked
+                condition = record.state not in [
+                    'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
             record.should_disable_form_edit = condition
 
     @api.depends('state')
@@ -427,7 +428,8 @@ class ONSCDesempenoEvaluation(models.Model):
             if record.evaluation_type == 'gap_deal':
                 condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
             else:
-                condition = record.state not in ['in_process'] or record.evaluator_id.id != user_employee_id or record.locked
+                condition = record.state not in [
+                    'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
             record.is_edit_general_comments = condition
 
     def button_start_evaluation(self):
@@ -631,3 +633,12 @@ class ONSCDesempenoEvaluation(models.Model):
                     record.write({'state': 'finished'})
                 elif record.state not in ['finished', 'uncompleted']:
                     record.write({'state': 'uncompleted'})
+
+    def get_end_gap_deal(self):
+        return self.evaluation_end_date_max.strftime('%d/%m/%Y')
+
+    def get_evalaution_end_date(self):
+        return self.evaluation_end_date.strftime('%d/%m/%Y')
+
+    def get_environment_definition_end_date(self):
+        return self.environment_definition_end_date.strftime('%d/%m/%Y')
