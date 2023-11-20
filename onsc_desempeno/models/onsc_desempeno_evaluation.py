@@ -18,7 +18,7 @@ EVALUATION_TYPE = [
     ('collaborator', 'Evaluación de colaborador/a'),
     ('environment_definition', 'Definición de entorno'),
     ('gap_deal', 'Acuerdo de Brecha'),
-
+    ('development_plan', 'Plan de desarrollo'),
 ]
 
 STATE = [
@@ -74,7 +74,7 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_evaluation(args, 'environment_definition')
         if self._context.get('environment_evaluation'):
             args = self._get_domain_evaluation(args, 'environment_evaluation', show_evaluator=True)
-        if self._context.get('gap_deal'):
+        if self._context.get('gap_deal') or self._context.get('develop_plan'):
             args = self._get_domain_gap_deal(args)
 
         return args
@@ -146,10 +146,15 @@ class ONSCDesempenoEvaluation(models.Model):
         return expression.AND([args_extended, args])
 
     def _get_domain_gap_deal(self, args):
+        if self._context.get('gap_deal'):
+            evaluation_type = 'gap_deal'
+        elif self._context.get('develop_plan'):
+            evaluation_type = 'development_plan'
+
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         args_extended = [
-            ('evaluation_type', '=', 'gap_deal'),
+            ('evaluation_type', '=',evaluation_type),
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id),
             '|', ('evaluator_id', '=', self.env.user.employee_id.id),
@@ -158,10 +163,10 @@ class ONSCDesempenoEvaluation(models.Model):
 
         if self._is_group_admin_gh_inciso():
             args_extended = expression.OR(
-                [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', 'gap_deal')], args_extended])
+                [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
         elif self._is_group_admin_gh_ue():
             args_extended = expression.OR(
-                [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', 'gap_deal')],
+                [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
                  args_extended])
         return expression.AND([args_extended, args])
 
