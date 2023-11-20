@@ -13,7 +13,7 @@ class Department(models.Model):
     _history_model = 'hr.department.history'
 
     code = fields.Char('Identificador',
-                       default=lambda self: self.env['ir.sequence'].next_by_code('onsc.catalog.inciso.identifier'),
+                       default=lambda self: self.env['ir.sequence'].next_by_code('onsc.catalog.uo.identifier'),
                        copy=False)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso',
                                 ondelete='restrict',
@@ -228,6 +228,25 @@ class Department(models.Model):
             return self
         else:
             return recursive_search(self.parent_id)
+
+    def get_all_managers_in_department_tree(self):
+        """
+        :return: Lista de todos los departamentos con responsables en el árbol hacia arriba
+        """
+
+        def recursive_search(department):
+            managers = []
+            if department.manager_id:
+                managers.append(department.manager_id.id)
+            if department.parent_id:
+                managers.extend(recursive_search(department.parent_id))
+            return managers
+        managers_list = []
+
+        if self.manager_id:
+            managers_list.append(self.manager_id.id)
+        managers_list.extend(recursive_search(self.parent_id))
+        return managers_list
 
 
 class DepartmentResponsability(models.Model):

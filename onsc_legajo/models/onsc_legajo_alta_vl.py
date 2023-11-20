@@ -299,12 +299,19 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.depends('regime_id')
     def _compute_security_job_id_domain(self):
+        user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
             if not rec.regime_id.is_manager:
-                domain = [('is_uo_manager', '=', False)]
+                domain = [('is_uo_manager', '=', False), ('sequence', '>=', user_level)]
             else:
-                domain = [('is_uo_manager', 'in', [True, False])]
+                domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
+
+    @api.constrains("inactivity_years")
+    def _check_inactivity_years(self):
+        for record in self:
+            if record.inactivity_years < 0:
+                raise ValidationError(_("Los años de inactividad no pueden ser negativos"))
 
     @api.constrains("attached_document_ids")
     def _check_attached_document_ids(self):
@@ -330,6 +337,14 @@ class ONSCLegajoAltaVL(models.Model):
         for record in self:
             if record.date_start and record.graduation_date and record.graduation_date > record.date_start:
                 raise ValidationError(_("La fecha de graduación debe ser menor o igual al día de alta"))
+
+    @api.constrains("date_start", "date_income_public_administration")
+    def _check_date_income_public_administration(self):
+        for record in self:
+            _date = record.date_income_public_administration
+            if _date and record.date_start and record.date_start < _date:
+                raise ValidationError(
+                    _("La Fecha de ingreso a la administración pública no puede ser mayor a la Fecha de alta"))
 
     @api.onchange('inciso_id')
     def onchange_inciso(self):
@@ -422,9 +437,9 @@ class ONSCLegajoAltaVL(models.Model):
     # ALTAVL WS5
     def _create_legajo(self):
         employee = self._get_legajo_employee()
+        legajo = self._get_legajo(employee)
         contract = self._get_legajo_contract(employee)
         self._get_legajo_job(contract)
-        legajo = self._get_legajo(employee)
         return legajo
 
     def _get_legajo(self, employee):

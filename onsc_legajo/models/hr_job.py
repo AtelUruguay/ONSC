@@ -5,17 +5,32 @@ from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_respons
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from odoo.osv import expression
 
 
 class HrJob(models.Model):
     _inherit = 'hr.job'
     _order = 'start_date desc'
 
+    @api.model
+    def name_search(self, name, args=None, operator='ilike', limit=100):
+        if args is None:
+            args = []
+        result = super(HrJob, self).name_search(name, args=args, operator=operator, limit=limit)
+        if self._context.get('show_employee_as_display_name', False):
+            by_employee_domain = [('employee_id.name', operator, name)]
+            by_employee_domain += args
+            by_employee = self.search(by_employee_domain, limit=limit)
+            result = list(set(result + by_employee.name_get()))
+        return result
+
     def name_get(self):
         res = []
         for record in self:
             if self._context.get('custom_display_name', False):
                 _custom_name = record._custom_display_name()
+            elif self._context.get('show_employee_as_display_name', False):
+                _custom_name = record.employee_id.display_name
             else:
                 _custom_name = record.name
             res.append((record.id, _custom_name))
@@ -124,12 +139,35 @@ class HrJob(models.Model):
         return super(HrJob, self.suspend_security()).write(values)
 
     def get_available_jobs(self, user=False):
+        """
+        Devuelve los puestos activos del funcionario asociado el usuario logueado
+        :param user: Recordser de res.users
+        :return: Recordset de hr.job
+        """
         today = fields.Date.today()
         user = user or self.env.user
         employee_ids = user.employee_ids.ids
         return self.search([
             '&', ('employee_id', 'in', employee_ids.ids),
             '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False)])
+
+    def get_active_jobs_in_hierarchy(self, user=False, force_same_uo=False):
+        """
+        Devuelve los puestos activos de la estructura asociada el usuario logueado
+        :param user: Recordser de res.users
+        :param force_same_uo: Boolean. Si es True busca hasta el tercer nivel (UO), si es False busca hasta el segundo nivel (UE)
+        :return: Recordset de hr.job
+        """
+        today = fields.Date.today()
+        user = user or self.env.user
+        job_id = user.employee_id.job_id
+        if force_same_uo:
+            base_args = [('department_id', '=', job_id.department_id.id)]
+        else:
+            base_args = [('contract_id.operating_unit_id', '=', job_id.contract_id.operating_unit_id.id)]
+        args = expression.AND([base_args, ['&', ('start_date', '<=', today),
+                                           '|', ('end_date', '>=', today), ('end_date', '=', False)]])
+        return self.sudo().search(args)
 
     def button_open_current_job(self):
         ctx = self.env.context.copy()
@@ -187,11 +225,11 @@ class HrJob(models.Model):
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
             job.end_date = date_end
             job.suspend_security().onchange_end_date()
-        if date_end < fields.Date.today() and self.security_job_id.is_uo_manager:
-            self.suspend_security().mapped('department_id').filtered(
-                lambda x: x.manager_id.id or x.is_manager_reserved).write(
-                {'manager_id': False, 'is_manager_reserved': False
-                 })
+            if date_end < fields.Date.today() and job.security_job_id.is_uo_manager:
+                job.suspend_security().mapped('department_id').filtered(
+                    lambda x: x.manager_id.id or x.is_manager_reserved).write(
+                    {'manager_id': False, 'is_manager_reserved': False
+                     })
 
     def update_start_date(self, start_date):
         self.suspend_security().write({'start_date': start_date})
@@ -228,6 +266,8 @@ class HrJobRoleLine(models.Model):
 
     user_role_id_domain = fields.Char(default=lambda self: self._user_role_id_domain(),
                                       compute='_compute_user_role_id_domain')
+    file = fields.Binary("Agregar adjunto")
+    filename = fields.Char('Nombre del documento adjunto')
 
     @api.constrains("start_date", "end_date", "job_id", "active", "user_role_id")
     def _check_roles_duplicated(self):

@@ -3,7 +3,7 @@
 import datetime
 import logging
 
-from odoo import models, api, tools, fields, _
+from odoo import models, api, tools, fields
 
 _logger = logging.getLogger(__name__)
 
@@ -144,7 +144,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             'tipo_doc': operation.tipo_doc,
             'cod_pais': operation.cod_pais,
             'raza': operation.raza if hasattr(operation, 'raza') else False,
-            'cod_mecing': operation.cod_mecing if hasattr(operation, 'cod_mecing') else False,
+            # 'cod_mecing': operation.cod_mecing if hasattr(operation, 'cod_mecing') else False,
             'cod_desc1': operation.cod_desc1 if hasattr(operation, 'cod_desc1') else False,
             'cod_desc2': operation.cod_desc2 if hasattr(operation, 'cod_desc2') else False,
             'cod_desc3': operation.cod_desc3 if hasattr(operation, 'cod_desc3') else False,
@@ -158,29 +158,6 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             'codigoEstadoCivil': operation.codigoEstadoCivil if hasattr(operation, 'codigoEstadoCivil') else False,
             'cod_reg': operation.cod_reg if hasattr(operation, 'cod_reg') else False,
         }
-
-    def _get_catalog_id(self, Catalog, catalog_field, operation, operation_code, log_list):
-        """
-        Get the catalog ID based on the given operation code.
-        :param Catalog: Env of Object. Ex: self.env['catalog']
-        :param catalog_field: Field name of the catalog. Ex: 'code'
-        :param operation: Record of the operation
-        :param operation_code: Var name of the operation. Ex: 'tipo_doc'
-        :param log_list: Log list to append errors
-        :return: id or False
-        """
-        if not hasattr(operation, operation_code):
-            return False
-        int_valid_operation_value = isinstance(getattr(operation, operation_code), int)
-        char_valid_operation_value = isinstance(getattr(operation, operation_code), str) and getattr(operation,
-                                                                                                     operation_code) != ""
-        if int_valid_operation_value or char_valid_operation_value:
-            recordset = Catalog.search([(catalog_field, '=', getattr(operation, operation_code))], limit=1)
-            if not recordset:
-                log_list.append(_('No se encontró en el catálogo %s el valor %s') % (
-                    Catalog._description, getattr(operation, operation_code)))
-            return recordset.id
-        return False
 
     def _is_op_unicity_valid(self, vals, onsc_legajo_integration_error_WS7_9004):
         Staging = self.env['onsc.legajo.staging.ws7'].suspend_security()

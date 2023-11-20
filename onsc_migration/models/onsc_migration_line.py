@@ -11,6 +11,8 @@ from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_
 from odoo import models, fields, tools, _
 from odoo.exceptions import ValidationError
 
+_logger = logging.getLogger(__name__)
+
 STATE = [
     ('draft', 'Borrador'),
     ('error_head', 'Error'),
@@ -259,7 +261,7 @@ class ONSCMigration(models.Model):
                         program_project_des_id = self.get_office(
                             str(row[62]),
                             str(row[63]),
-                            operating_unit_des_id and operating_unit_des_id[0]) or False
+                            operating_unit_des_id and operating_unit_des_id[0] or 0) or False
                         regime_des_id = row[64] and self.get_regime(str(row[64])) or False
                         state_place_des_id = row[68] and self.get_state_place(str(row[68])) or False
                         regime_commission_id = row[72] and self.get_commision_regime(str(row[72])) or False
@@ -268,10 +270,13 @@ class ONSCMigration(models.Model):
                             self.convert_int(row[75]),
                             self.convert_int(row[76]),
                             self.convert_int(row[77]),
-                            inciso_des_id and inciso_des_id[0]) or False
+                            inciso_des_id and inciso_des_id[0],
+                            inciso_des_id[1]) or False
 
                         if inciso_des_id[1] is True:
-                            department_id = row[69] and self.get_department(str(row[69]), operating_unit_des_id and operating_unit_des_id[0]) or False
+                            department_id = row[69] and self.get_department(
+                                str(row[69]),
+                                operating_unit_des_id and operating_unit_des_id[0]) or False
                             row_dict['department_id'] = department_id and department_id[0]
                         row_dict['inciso_des_id'] = inciso_des_id and inciso_des_id[0]
                         row_dict['operating_unit_des_id'] = operating_unit_des_id and operating_unit_des_id[0]
@@ -549,10 +554,28 @@ class ONSCMigration(models.Model):
         self._cr.execute("""SELECT id FROM onsc_legajo_income_mechanism WHERE code = %s""", (code,))
         return self._cr.fetchone()
 
-    def get_norm(self, tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id=None):
-        self._cr.execute(
-            """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel WHERE "tipoNormaSigla" = %s and "numeroNorma"= %s and "anioNorma" = %s and "articuloNorma"= %s and onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""",
-            (tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id))
+    def get_norm(self, tipoNorma, numeroNorma, anioNorma, articuloNorma, inciso_id=None, check_inciso=True):
+        if check_inciso:
+            self._cr.execute(
+                """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel
+                WHERE "tipoNormaSigla" = %s and
+                "numeroNorma"= %s and
+                "anioNorma" = %s and
+                "articuloNorma"= %s and
+                onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_legajo_norm_id = onsc_legajo_norm.id AND
+                onsc_catalog_inciso_onsc_legajo_norm_rel.onsc_catalog_inciso_id = %s""", (tipoNorma,
+                                                                                          numeroNorma,
+                                                                                          anioNorma,
+                                                                                          articuloNorma,
+                                                                                          inciso_id))
+        else:
+            self._cr.execute(
+                """SELECT id FROM onsc_legajo_norm, onsc_catalog_inciso_onsc_legajo_norm_rel
+                WHERE "tipoNormaSigla" = %s and
+                "numeroNorma"= %s and
+                "anioNorma" = %s and
+                "articuloNorma"= %s""",
+                (tipoNorma, numeroNorma, anioNorma, articuloNorma))
         return self._cr.fetchone()
 
     def get_budget_item(self, row, descriptor3_id=None, descriptor1_id=None, descriptor2_id=None, descriptor4_id=None):
@@ -873,8 +896,8 @@ class ONSCMigrationLine(models.Model):
                 'is_driver_license': cv_digital_id.is_driver_license,
                 'is_public_information_victim_violent': cv_digital_id.is_public_information_victim_violent,
                 'cv_race2': cv_digital_id.cv_race2,
-                'cv_race_ids': cv_digital_id.cv_race_ids,
-                'cv_first_race_id': cv_digital_id.cv_first_race_id,
+                'cv_race_ids': [(6, 0, cv_digital_id.cv_race_ids.ids)],
+                'cv_first_race_id': cv_digital_id.cv_first_race_id.id,
                 'afro_descendants_filename': cv_digital_id.afro_descendants_filename,
                 'afro_descendants_file': cv_digital_id.afro_descendants_file,
                 'is_afro_descendants': cv_digital_id.is_afro_descendants,
@@ -912,7 +935,10 @@ class ONSCMigrationLine(models.Model):
         BajaVL = self.env['onsc.legajo.baja.vl'].suspend_security()
         Vacante = self.env['onsc.cv.digital.vacante'].suspend_security()
 
+        line_iterator = 1
         for line in self.search([('state', 'in', ['draft'])], limit=limit):
+            _logger.info("MIGRACION INICIAL. Linea: %s", str(line_iterator))
+            line_iterator += 1
             try:
                 employee = line._get_employee(Employee)  # existe el funcionario?
 

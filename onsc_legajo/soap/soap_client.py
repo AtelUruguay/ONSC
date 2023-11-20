@@ -10,6 +10,7 @@ from odoo import _
 from odoo.exceptions import ValidationError
 
 logging.getLogger('suds.client').setLevel(logging.DEBUG)
+logging.getLogger('suds.transport').setLevel(logging.DEBUG)
 
 _logger = logging.getLogger(__name__)
 
@@ -54,13 +55,15 @@ class ONSCLegajoClient():
             raise ValidationError(_("No se pudo establecer la conexión con el servicio"))
         return client
 
-    def get_response(self, client, ws_url, values, simpleWsdl=False):
+    def get_response(self, client, ws_url, values, simpleWsdl=False, use_execute_with_args=False):
         """
         """
         ws_url_splitted = ws_url.split(';')
         method = ws_url_splitted[1]
         if len(values) and not simpleWsdl:
             url = 'client.service.%s(values)' % method
+        elif use_execute_with_args:
+            return self.execute_service_with_args(client, values)
         elif len(values):
             simple_params = []
             for key, value in values.items():
@@ -76,3 +79,8 @@ class ONSCLegajoClient():
         _logger.warning(url)
         result = eval(url)
         return result
+
+    def execute_service_with_args(self, client, args_dict):
+        _logger.warning('*********WS Request**********')
+        _logger.warning("client.service.Execute(**args_dict) - args_dict: %s" % args_dict)
+        return client.service.Execute(**args_dict)

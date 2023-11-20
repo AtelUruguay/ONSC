@@ -40,8 +40,13 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     is_relevant_work = fields.Boolean('¿Es uno de los cinco trabajos más relevantes de su producción?')
     #  Grilla área de actividad
     area_ids = fields.One2many('onsc.cv.education.area.tutoring', 'tutoring_id', 'Área de actividad', copy=True)
-    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge', relation='knowledge_acquired_tutoring_rel',
-                                              string='Conocimientos aplicados', store=True, required=True, copy=True)
+    knowledge_acquired_ids = fields.Many2many('onsc.cv.knowledge',
+                                              relation='knowledge_acquired_tutoring_rel',
+                                              string='Conocimientos aplicados',
+                                              store=True,
+                                              required=True,
+                                              ondelete='restrict',
+                                              copy=True)
     is_orientation_type_pie = fields.Boolean(compute='_compute_is_orientation_type_pie')
     receipt_file = fields.Binary("Comprobante")
     receipt_filename = fields.Char('Nombre del documento digital')

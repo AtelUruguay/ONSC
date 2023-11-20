@@ -1,10 +1,13 @@
 # -*- coding:utf-8 -*-
 import json
+import logging
 
 from lxml import etree
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 # campos requeridos para la sincronización
 REQUIRED_FIELDS = [
@@ -73,8 +76,8 @@ class ONSCLegajoAltaVL(models.Model):
                                states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     cv_sex = fields.Selection(string=u'Sexo', copy=False, readonly=True,
                               states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone')
-    mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile')
+    personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone', tracking=False)
+    mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile', tracking=False)
     email = fields.Char(string="e-mail", related='partner_id.email')
     digitized_document_file = fields.Binary(string=digitized_document_full_name)
     digitized_document_filename = fields.Char('Nombre del documento Digitalizado')
@@ -514,3 +517,6 @@ class ONSCLegajoAltaVL(models.Model):
             })
         values_filtered = self.env['onsc.base.utils'].sudo().get_really_values_changed(self, values)
         return len(values_filtered.keys()) > 0
+
+    def get_followers_mails(self):
+        return self.message_follower_ids.mapped('partner_id').get_onsc_mails()

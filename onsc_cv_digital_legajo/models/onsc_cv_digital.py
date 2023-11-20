@@ -1,11 +1,80 @@
 # -*- coding: utf-8 -*-
 
-
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_documentary_validation import \
     DOCUMENTARY_VALIDATION_STATES
-from odoo.addons.onsc_legajo.models.hr_employee import MODIFIED_FIELDS_TO_NOTIFY_SGH, MODIFIED_FIELDS
 
 from odoo import fields, models, api, _
+
+EMPLOYEE_MODIFIED_FIELDS_TO_NOTIFY_SGH = [
+    'cv_nro_doc',
+    'full_name',
+    'cv_full_name',
+    'cv_last_name_1',
+    'cv_last_name_2',
+    'cv_first_name',
+    'cv_second_name',
+    'marital_status_id',
+    'cv_birthdate',
+    'cv_sex',
+    'country_of_birth_id',
+    'personal_phone',
+    'mobile_phone',
+    'email',
+    'health_provider_id'
+]
+
+EMPLOYEE_MODIFIED_FIELDS = [
+    'cv_nro_doc',
+    'full_name',
+    'cv_full_name',
+    'cv_last_name_1',
+    'cv_last_name_2',
+    'cv_first_name',
+    'cv_second_name',
+    'marital_status_id',
+    'cv_birthdate',
+    'cv_sex',
+    'country_of_birth_id',
+    # 'crendencial_serie',
+    # 'credential_number',
+    'personal_phone',
+    'mobile_phone',
+    'email',
+    # 'cv_address_state_id',
+    # 'cv_address_location_id',
+    # 'cv_address_street',
+    # 'cv_address_street_id',
+    # 'cv_address_nro_door',
+    # 'cv_address_street2_id',
+    # 'cv_address_street3_id',
+    # 'cv_address_is_cv_bis',
+    # 'cv_address_apto',
+    # 'cv_address_place',
+    'uy_citizenship',
+    # 'cv_address_zip',
+    # 'cv_address_block',
+    # 'cv_address_sandlot',
+    'allow_content_public',
+    'situation_disability',
+    'see',
+    'hear',
+    'walk',
+    'speak',
+    'realize',
+    'lear',
+    'interaction',
+    'need_other_support',
+    'is_need_other_support',
+    'emergency_service_telephone',
+    'emergency_service_id',
+    'health_department_id',
+    'health_provider_id',
+    'is_cv_gender_public',
+    'is_cv_race_public',
+    'other_information_official',
+    'is_driver_license',
+    'is_public_information_victim_violent',
+]
 
 
 class ONSCCVDigital(models.Model):
@@ -290,12 +359,12 @@ class ONSCCVDigital(models.Model):
         for record in self.filtered(lambda x: x.is_docket_active and x.employee_id):
             employee_values_to_write = {}
             values_filtered = BaseUtils.get_really_values_changed(record, values)
-            for modified_field in MODIFIED_FIELDS_TO_NOTIFY_SGH:
+            for modified_field in EMPLOYEE_MODIFIED_FIELDS_TO_NOTIFY_SGH:
                 if modified_field in values_filtered:
                     employees |= record.employee_id
 
             for key, value in values_filtered.items():
-                if key in MODIFIED_FIELDS:
+                if key in EMPLOYEE_MODIFIED_FIELDS:
                     employee_values_to_write[key] = value
             if len(employee_values_to_write.keys()):
                 record.employee_id.suspend_security().write(employee_values_to_write)
@@ -366,6 +435,10 @@ class ONSCCVDigital(models.Model):
             # DOMICILIO
             if not record.is_cv_address_populated and record.cv_address_documentary_validation_state != 'validated':
                 record.cv_address_documentary_validation_state = 'validated'
+            # CREDENCIAL CIVICA
+            cc_state_no_validated = record.civical_credential_documentary_validation_state != 'validated'
+            if record.uy_citizenship == 'extranjero' and cc_state_no_validated:
+                record.civical_credential_documentary_validation_state = 'validated'
 
 
     def update_header_documentary_validation(self, values):

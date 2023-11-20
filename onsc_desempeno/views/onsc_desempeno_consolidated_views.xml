@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="onsc_desempeno_consolidated_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.consolidated.tree</field>
+        <field name="model">onsc.desempeno.consolidated</field>
+        <field name="arch" type="xml">
+            <tree string="Consolidado de Evaluación de Desempeño">
+                <field name="general_cycle_id"/>
+                 <field name="evaluated_id"/>
+                <field name="evaluation_start_date"/>
+                <field name="evaluation_end_date"/>
+
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_desempeno_consolidated_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.consolidated.form</field>
+        <field name="model">onsc.desempeno.consolidated</field>
+        <field name="arch" type="xml">
+            <form string="Consolidado de Evaluación de Desempeño" create="0" delete="0" edit= "0" duplicate="0">
+                <header/>
+                  <sheet>
+
+                    <div class="oe_title" name="div_title">
+                        <label for="evaluated_id"/>
+                        <h4>
+                            <field name="evaluated_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </h4>
+                    </div>
+
+                    <group>
+                        <group  style="min-width: 100px !important;">
+                             <field name="year"/>
+                            <field name="evaluation_start_date"/>
+                            <field name="evaluation_end_date"/>
+                            <field name="environment_definition_end_date"/>
+                        </group>
+                        <group>
+                            <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="uo_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="level_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="occupation_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </group>
+                    </group>
+                  <notebook>
+                         <page string="Evaluación de Competencias">
+                            <field name="evaluation_competency_ids" nolabel="1" mode="tree">
+                            	<tree limit="50" editable="top" nolabel="1" default_order="skill_id asc,order asc">
+                                    <field name="order" invisible="1"/>
+                                    <field name="consolidate_id"  invisible="1"/>
+                                    <field name="skill_id" />
+                                    <field name="degree_id"/>
+                                    <field name="improvement_areas"/>
+                                </tree>
+                                <form string="Competencias">
+                                  <header/>
+                                    <sheet>
+                                        <group>
+                                             <field name="state" invisible="1"/>
+                                            <group colspan="4">
+                                                <label for="skill_id"/>
+                                               <div>
+                                                    <field name="skill_id" readonly="1"
+                                                           widget="many2one_tooltip"
+                                                           class="float-left"
+                                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                                                    <div class="float-left">
+                                                        <field name="skill_tooltip"/>
+                                                    </div>
+                                                </div>
+
+                                            </group>
+                                        </group>
+                                        <notebook>
+                                            <page string="Dimensiones">
+                                                <field name="skill_line_ids" options="{'no_open': True}" readonly="1" create="0" delete="0" edit="0">
+                                                    <tree create="0" delete="0">
+                                                        <field name="dimension_tooltip" string=""/>
+                                                        <field name="dimension_id" readonly="1"
+                                                           options="{'fields_to_show': ['definition'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                        <field name="behavior" style="white-space:normal;" readonly="1"/>
+                                                    </tree>
+
+                                                     <form string="Dimensiones" create="0" delete="0">
+                                                        <group>
+                                                            <group>
+                                                                <field name="dimension_id"  readonly="1"
+                                                                 options="{'fields_to_show': ['definition'], 'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                                <field name="behavior" style="white-space:normal;" readonly="1"/>
+                                                            </group>
+                                                        </group>
+                                                     </form>
+                                                </field>
+                                            </page>
+                                        </notebook>
+                                    </sheet>
+
+                                </form>
+                              </field>
+                        </page>
+
+                        <page string="Evaluadores">
+                            <field name="evaluator_ids" nolabel="1" readonly="1"
+                                   options="{'no_open': True}" create="0" delete="0" edit="0">
+                                <tree nolabel="1" create="0" edit="0" default_order="name">
+                                    <field name="name" />
+                                </tree>
+                            </field>
+                        </page>
+
+                    </notebook>
+                 </sheet>
+
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_desempeno_consolidated_search" model="ir.ui.view">
+            <field name="name">onsc.desempeno.consolidated.search</field>
+            <field name="model">onsc.desempeno.consolidated</field>
+            <field name="arch" type="xml">
+                <search string="Evaluación de Desempeño">
+                    <field name="general_cycle_id"/>
+                    <field name="evaluated_id"/>
+                    <field name="occupation_id"/>
+                </search>
+            </field>
+        </record>
+
+    <record id='onsc_desempeno_environment_consolidated_action' model='ir.actions.act_window'>
+        <field name="name">Consolidado de Entorno</field>
+        <field name="res_model">onsc.desempeno.consolidated</field>
+        <field name="context">{'is_from_consolidated_menu': True,'environment':True}</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+               Consolidado de Entorno
+            </p>
+        </field>
+    </record>
+
+    <record id='onsc_desempeno_collaborator_consolidated_action' model='ir.actions.act_window'>
+        <field name="name">Consolidado de Colaborador/a</field>
+        <field name="res_model">onsc.desempeno.consolidated</field>
+        <field name="context">{'is_from_consolidated_menu': True,'collaborator':True}</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Consolidado de Colaborador/a
+            </p>
+        </field>
+    </record>
+
+
+</odoo>

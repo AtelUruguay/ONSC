@@ -33,11 +33,13 @@
         <field name="arch" type="xml">
             <form string="Etapa de evaluaciones" duplicate="0">
                 <header>
-                    <button name="action_extend_deadline" class="btn btn-primary" type="object"
+                    <button name="%(onsc_desempeno.onsc_desempeno_stage_extend_deadline_wizard_action)d"
+                            class="btn btn-primary"  type="action"
                             string="Extender plazo"
-                            attrs="{'invisible': [('show_buttons', '=', False)]}"/>
+                             context="{'default_stage_id': active_id}"
+                            attrs="{'invisible': ['|',('show_buttons', '=', False),('closed_stage', '=', True)]}"/>
                     <button name="action_close_stage" class="btn btn-primary" type="object" string="Cerrar etapa"
-                            attrs="{'invisible': [('show_buttons', '=', False)]}"/>
+                            attrs="{'invisible': ['|',('show_buttons', '=', False),('closed_stage', '=', True)]}"/>
 
                 </header>
                 <sheet>

@@ -96,8 +96,11 @@ class ONSCLegajoCambioUO(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string="Funcionario")
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
-    date_start = fields.Date(string="Fecha desde", default=lambda *a: fields.Date.today(), required=True, copy=False)
-
+    date_start = fields.Date(
+        string="Fecha desde",
+        default=lambda *a: fields.Date.today(),
+        required=True,
+        copy=False)
     department_id = fields.Many2one("hr.department", string="UO")
     department_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_department_id_domain')
     job_id = fields.Many2one("hr.job", string="Puesto origen")
@@ -176,11 +179,12 @@ class ONSCLegajoCambioUO(models.Model):
 
     @api.depends('contract_id')
     def _compute_security_job_id_domain(self):
+        user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
             if not rec.contract_id.regime_id.is_manager:
-                domain = [('is_uo_manager', '=', False)]
+                domain = [('is_uo_manager', '=', False), ('sequence', '>=', user_level)]
             else:
-                domain = [('is_uo_manager', 'in', [True, False])]
+                domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
 
     @api.constrains("date_start", "contract_id", "job_id")
@@ -319,7 +323,6 @@ class ONSCLegajoCambioUO(models.Model):
         self.ensure_one()
         Job = self.env['hr.job']
         self._validate_confirm()
-        self.contract_id.suspend_security().write({'eff_date': self.date_start, 'occupation_id': self.occupation_id.id})
         warning_message = False
         show_warning = False
         if self.job_id.start_date == self.date_start:
@@ -361,7 +364,7 @@ class ONSCLegajoCambioUO(models.Model):
         if self.env.user.employee_id.id == self.employee_id.id:
             raise ValidationError(_("No se puede confirmar un traslado a si mismo"))
 
-        for required_field in ['department_id', 'security_job_id', 'occupation_id']:
+        for required_field in ['department_id', 'security_job_id']:
             if not eval('self.%s' % required_field):
                 message.append(self._fields[required_field].string)
 

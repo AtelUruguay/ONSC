@@ -19,10 +19,9 @@ class ONSCBaseUtils(models.AbstractModel):
         """
         if not hasattr(operation, operation_code):
             return False
-        int_valid_operation_value = isinstance(getattr(operation, operation_code), int)
-        char_valid_operation_value = isinstance(getattr(operation, operation_code), str) and getattr(operation,
-                                                                                                     operation_code) != ""
-        if int_valid_operation_value or char_valid_operation_value:
+        int_valid_op = isinstance(getattr(operation, operation_code), int)
+        char_valid_op = isinstance(getattr(operation, operation_code), str) and getattr(operation, operation_code) != ""
+        if int_valid_op or char_valid_op:
             recordset = Catalog.search([(catalog_field, '=', getattr(operation, operation_code))], limit=1)
             if not recordset:
                 log_list.append(_('No se encontró en el catálogo %s el valor %s') % (

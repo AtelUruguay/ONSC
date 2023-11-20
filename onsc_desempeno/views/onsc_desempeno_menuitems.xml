@@ -95,8 +95,58 @@
               parent="onsc_desempeno_evaluaciones_menu"
               sequence="1"/>
 
+    <menuitem id="onsc_desempeno_leader_evaluation_menu"
+              name="Evaluación del Líder al Colaborador/a"
+              action="onsc_desempeno_leader_evaluation_action"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_responsable_uo,onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_usuario_gh_inciso"
+              parent="onsc_desempeno_evaluaciones_menu"
+              sequence="5"/>
 
+    <menuitem id="onsc_desempeno_collaborator_evaluation_menu"
+              name="Evaluación de Colaborador/a al Líder"
+              action="onsc_desempeno_collaborator_evaluation_action"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
+              parent="onsc_desempeno_evaluaciones_menu"
+              sequence="10"/>
 
+    <menuitem id="onsc_desempeno_environment_evaluation_menu"
+              name="Evaluación de Entorno"
+              action="onsc_desempeno_environment_evaluation_action"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
+              parent="onsc_desempeno_evaluaciones_menu"
+              sequence="12"/>
 
+    <menuitem id="onsc_desempeno_gap_deal_evaluation_menu"
+              name="Acuerdo Brecha"
+              action="onsc_desempeno_gap_deal_evaluation_action"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
+              parent="onsc_desempeno_evaluaciones_menu"
+              sequence="15"/>
+
+     <menuitem id="onsc_desempeno_environment_definition_menu"
+              name=" Definición de Entorno"
+              action="onsc_desempeno_environment_definition_action"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
+              parent="onsc_desempeno_evaluaciones_menu"
+              sequence="15"/>
+
+     <menuitem id="onsc_desempeno_consolidated_menu"
+          name="Consolidados"
+          parent="onsc_desempeno_root_menu"
+          sequence="35"/>
+
+    <menuitem id="onsc_desempeno_collaborator_consolidated_menu"
+              name="Consolidado de Colaborador/a"
+              action="onsc_desempeno_collaborator_consolidated_action"
+              groups="onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_usuario_evaluacion"
+              parent="onsc_desempeno_consolidated_menu"
+              sequence="1"/>
+
+    <menuitem id="onsc_desempeno_environment_consolidated_menu"
+              name="Consolidado de Entorno"
+              action="onsc_desempeno_environment_consolidated_action"
+              groups="onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_usuario_evaluacion"
+              parent="onsc_desempeno_consolidated_menu"
+              sequence="5"/>
 
 </odoo>

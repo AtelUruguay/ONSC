@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import random
 from collections import defaultdict
 
 from odoo import fields, models, api, tools, _
@@ -82,6 +83,11 @@ class ONSCDesempenoEvaluationList(models.Model):
         compute='_compute_manager_id',
         search='_search_manager_id',
         store=False)
+    manager_uo_id = fields.Many2one(
+        "hr.department",
+        string="UO del Líder",
+        compute='_compute_manager_id',
+        store=False)
     year = fields.Integer(
         u'Año a evaluar',
         related="evaluation_stage_id.year",
@@ -144,7 +150,9 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     def _compute_manager_id(self):
         for rec in self:
-            rec.manager_id = rec.department_id.get_first_department_withmanager_in_tree().manager_id.id
+            manager_department = rec.department_id.get_first_department_withmanager_in_tree()
+            rec.manager_id = manager_department.manager_id.id
+            rec.manager_uo_id = manager_department.id
 
     def _search_is_imanager(self, operator, value):
         all_evaluation_list = self.search([])
@@ -169,37 +177,78 @@ class ONSCDesempenoEvaluationList(models.Model):
     @api.depends('end_date', 'state')
     def _compute_should_disable_form_edit(self):
         for record in self:
-            valid_edit = record.state == 'closed' or record.end_date < fields.Date.today() or not record.end_date
+            condition = record.evaluation_stage_id.general_cycle_id.end_date_max < fields.Date.today()
+            valid_edit = record.state == 'closed' or condition or not record.end_date
             record.should_disable_form_edit = valid_edit
 
     def button_generate_evaluations(self):
         self.ensure_one()
+        partners_to_notify = self.manager_id.partner_id
         lines_evaluated = self.env['onsc.desempeno.evaluation.list.line']
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         with self._cr.savepoint():
+            if fields.Date.today() < self.end_date and len(valid_lines) > 0:
+                self.suspend_security()._create_collaborator_evaluation()
             for line in valid_lines:
                 try:
-                    new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                    self.suspend_security()._create_leader_evaluation(line)
-                    if fields.Date.today() <= self.end_date:
-                        self.suspend_security()._create_environment_definition(line)
-                        self.suspend_security()._create_collaborator_evaluation(line)
-                    line.suspend_security().write({
-                        'state': 'generated',
-                        'error_log': False,
-                        'evaluation_create_date': fields.Date.today(),
-                        'evaluation_ids': [(6, 0, [new_evaluation.id])]})
-                    lines_evaluated |= line
+                    _evaluation_ids = []
+                    if fields.Date.today() < self.evaluation_stage_id.general_cycle_id.end_date_max:
+                        new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                        leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
+                        _evaluation_ids.extend([(4, new_evaluation.id), (4, leader_evaluation.id)])
+                        if fields.Date.today() > self.end_date:
+                            gap_deal = self.suspend_security()._create_gap_deal(leader_evaluation)
+                            _evaluation_ids.extend([(4, gap_deal.id)])
+                    if fields.Date.today() < self.end_date and fields.Date.today() <= self.end_date_environment:
+                        env_def_evaluation = self.suspend_security()._create_environment_definition(line)
+                        _evaluation_ids.append((4, env_def_evaluation.id))
+
+                    if len(_evaluation_ids) > 0:
+                        line.suspend_security().write({
+                            'state': 'generated',
+                            'error_log': False,
+                            'evaluation_create_date': fields.Date.today(),
+                            'evaluation_ids': _evaluation_ids
+                        })
+                        lines_evaluated |= line
+                    partners_to_notify |= line.employee_id.partner_id
+
+                    # if fields.Date.today() <= self.end_date:
+                    #     new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                    #     leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
+                    #     env_def_evaluation = self.suspend_security()._create_environment_definition(line)
+                    #     line.suspend_security().write({
+                    #         'state': 'generated',
+                    #         'error_log': False,
+                    #         'evaluation_create_date': fields.Date.today(),
+                    #         'evaluation_ids': [
+                    #             (4, new_evaluation.id),
+                    #             (4, leader_evaluation.id),
+                    #             (4, env_def_evaluation.id)
+                    #         ]})
+                    #     lines_evaluated |= line
+                    # elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
+                    #     new_evaluation = self.suspend_security()._create_self_evaluation(line)
+                    #     leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
+                    #     line.suspend_security().write({
+                    #         'state': 'generated',
+                    #         'error_log': False,
+                    #         'evaluation_create_date': fields.Date.today(),
+                    #         'evaluation_ids': [(4, new_evaluation.id), (4, leader_evaluation.id)]})
+                    #     lines_evaluated |= line
+                    # partners_to_notify |= line.employee_id.partner_id
                 except Exception as e:
                     line.write({
                         'state': 'error',
                         'error_log': 'Error al generar formulario contacte al administrador. %s' % (tools.ustr(e))})
+        self.with_context(partners_to_notify=partners_to_notify)._send_generated_form_notification()
         return lines_evaluated
 
     # INTELIGENCIA
     def manage_evaluations_lists(self):
         # cerrar las listas que ya pasaron la fecha de cierre
-        self.search([('end_date', '<', fields.Date.today())]).write({'state': 'closed'})
+        self.search([('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())]).write(
+            {'state': 'closed'})
 
         evaluation_stages = self.env['onsc.desempeno.evaluation.stage'].search([
             ('start_date', '<=', fields.Date.today()),
@@ -239,8 +288,6 @@ class ONSCDesempenoEvaluationList(models.Model):
                 departments_grouped_info[job.department_id]['department_id'] = job.department_id
                 departments_grouped_info[job.department_id]['job_ids'].add(job)
             elif eval1 and not eval2 and job.department_id.parent_id.id and parent_manager.id != job.employee_id.id:
-                # departments_responsible_grouped_info[job.department_id.parent_id]['department_id'] = job.department_id.parent_id
-                # departments_responsible_grouped_info[job.department_id.parent_id]['job_ids'].add(job)
                 departments_grouped_info[job.department_id.parent_id]['department_id'] = job.department_id.parent_id
                 departments_grouped_info[job.department_id.parent_id]['job_ids'].add(job)
 
@@ -251,9 +298,6 @@ class ONSCDesempenoEvaluationList(models.Model):
                 'evaluation_stage_id': evaluation_stage.id,
                 'department_id': department.id,
             }
-            # for department_responsible,info_responsible in departments_responsible_grouped_info.items():
-            #     if department_responsible.id == department.id:
-            #         info['job_ids'] |= info_responsible['job_ids']
             line_vals = []
             for job in info.get('job_ids', []):
                 line_vals.append([0, 0, {
@@ -274,7 +318,8 @@ class ONSCDesempenoEvaluationList(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
-        is_manager = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id == data.employee_id.id
+        hierachy_manager_id = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id
+        is_manager = hierachy_manager_id == data.employee_id.id
         level_id = Level.suspend_security().search(
             [('hierarchical_level_id', '=', data.job_id.department_id.hierarchical_level_id.id),
              ('is_uo_manager', '=', is_manager)]).mapped("level_id")
@@ -287,8 +332,11 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
+            'list_manager_id': data.evaluation_list_id.manager_id.id,
+            'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
             'evaluation_type': 'self_evaluation',
             'uo_id': data.job_id.department_id.id,
             'inciso_id': data.contract_id.inciso_id.id,
@@ -302,23 +350,202 @@ class ONSCDesempenoEvaluationList(models.Model):
         for skill in skills:
             Competency.create({'evaluation_id': evaluation.id,
                                'skill_id': skill.id,
-                               'skill_line_ids': skill.skill_line_ids.filtered(
-                                   lambda r: r.level_id.id == evaluation.level_id.id).ids
+                               'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids)]
                                })
 
         return evaluation
 
     def _create_leader_evaluation(self, data):
-        # TODO Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        return True
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        hierachy_manager_id = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id
+        is_manager = hierachy_manager_id == data.employee_id.id
+        level_id = Level.suspend_security().search(
+            [('hierarchical_level_id', '=', data.job_id.department_id.hierarchical_level_id.id),
+             ('is_uo_manager', '=', is_manager)]).mapped("level_id")
+        if not level_id:
+            raise ValidationError(
+                _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+        skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+            [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+        if not skills:
+            raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+
+        evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
+            'evaluated_id': data.employee_id.id,
+            'evaluator_id': self.manager_id.id,
+            'list_manager_id': data.evaluation_list_id.manager_id.id,
+            'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
+            'evaluation_type': 'leader_evaluation',
+            'uo_id': data.job_id.department_id.id,
+            'inciso_id': data.contract_id.inciso_id.id,
+            'operating_unit_id': data.contract_id.operating_unit_id.id,
+            'occupation_id': data.contract_id.occupation_id.id,
+            'level_id': level_id.id,
+            'evaluation_stage_id': data.evaluation_list_id.evaluation_stage_id.id,
+            'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
+            'state': 'draft',
+        })
+        for skill in skills:
+            Competency.create({'evaluation_id': evaluation.id,
+                               'skill_id': skill.id,
+                               'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids)]
+                               })
+
+        return evaluation
 
     def _create_environment_definition(self, data):
-        # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        hierachy_manager_id = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id
+        is_manager = hierachy_manager_id == data.employee_id.id
+        level_id = Level.suspend_security().search(
+            [('hierarchical_level_id', '=', data.job_id.department_id.hierarchical_level_id.id),
+             ('is_uo_manager', '=', is_manager)]).mapped("level_id")
+        if not level_id:
+            raise ValidationError(
+                _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+        skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+            [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+        if not skills:
+            raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+
+        evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
+            'evaluated_id': data.employee_id.id,
+            'evaluator_id': data.employee_id.id,
+            'list_manager_id': data.evaluation_list_id.manager_id.id,
+            'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
+            'evaluation_type': 'environment_definition',
+            'uo_id': data.job_id.department_id.id,
+            'inciso_id': data.contract_id.inciso_id.id,
+            'operating_unit_id': data.contract_id.operating_unit_id.id,
+            'occupation_id': data.contract_id.occupation_id.id,
+            'level_id': level_id.id,
+            'evaluation_stage_id': data.evaluation_list_id.evaluation_stage_id.id,
+            'general_cycle_id': data.evaluation_list_id.evaluation_stage_id.general_cycle_id.id,
+            'state': 'draft',
+        })
+
+        return evaluation
+
+    def _create_collaborator_evaluation(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
+        generated_evaluations = self.evaluation_generated_line_ids.mapped('evaluation_ids')
+        generated_evaluations_collaborator_qty = len(
+            generated_evaluations.filtered(lambda x: x.evaluation_type == 'collaborator'))
+        if len(valid_lines) == 1 and generated_evaluations_collaborator_qty == 0:
+            if self.end_date_environment >= fields.Date.today():
+                self._create_environment_evaluation(valid_lines)
+            return True
+        if generated_evaluations_collaborator_qty < 4:
+            for data in self._get_records_random(valid_lines, generated_evaluations_collaborator_qty):
+                level_id = Level.suspend_security().search(
+                    [('hierarchical_level_id', '=', self.manager_uo_id.hierarchical_level_id.id),
+                     ('is_uo_manager', '=', True)]).mapped("level_id")
+                if not level_id:
+                    raise ValidationError(
+                        _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+                skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+                    [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+                if not skills:
+                    raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+
+                evaluation = Evaluation.create({
+                    'evaluation_list_id': data.evaluation_list_id.id,
+                    'evaluated_id': self.manager_id.id,
+                    'evaluator_id': data.employee_id.id,
+                    'list_manager_id': data.evaluation_list_id.manager_id.id,
+                    'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
+                    'evaluation_type': 'collaborator',
+                    'uo_id': self.manager_id.job_id.department_id.id,
+                    'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
+                    'operating_unit_id': self.manager_id.job_id.contract_id.operating_unit_id.id,
+                    'occupation_id': self.manager_id.job_id.contract_id.occupation_id.id,
+                    'level_id': level_id.id,
+                    'evaluation_stage_id': self.evaluation_stage_id.id,
+                    'general_cycle_id': self.evaluation_stage_id.general_cycle_id.id,
+                    'state': 'draft',
+                })
+                for skill in skills:
+                    Competency.create({'evaluation_id': evaluation.id,
+                                       'skill_id': skill.id,
+                                       'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                                           lambda r: r.level_id.id == evaluation.level_id.id).ids)]
+                                       })
+                data.write({'evaluation_ids': [(4, evaluation.id)]})
         return True
 
-    def _create_collaborator_evaluation(self, data):
-        # TODO  Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+    def _create_environment_evaluation(self, data):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Level = self.env['onsc.desempeno.level.line'].suspend_security()
+
+        level_id = Level.suspend_security().search(
+            [('hierarchical_level_id', '=', self.manager_uo_id.hierarchical_level_id.id),
+             ('is_uo_manager', '=', True)]).mapped("level_id")
+        if not level_id:
+            raise ValidationError(
+                _(u"No existe nivel configurado para la combinación de nivel jerárquico y responsable UO"))
+        skills = self.env['onsc.desempeno.skill.line'].suspend_security().search(
+            [('level_id', '=', level_id.id)]).mapped('skill_id').filtered(lambda r: r.active)
+        if not skills:
+            raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
+
+        evaluation = Evaluation.create({
+            'evaluation_list_id': data.evaluation_list_id.id,
+            'evaluated_id': self.manager_id.id,
+            'evaluator_id': data.employee_id.id,
+            'evaluator_uo_id': data.evaluation_list_id.manager_uo_id.id,
+            'list_manager_id': data.evaluation_list_id.manager_id.id,
+            'evaluation_type': 'environment_evaluation',
+            'uo_id': self.manager_id.job_id.department_id.id,
+            'inciso_id': self.manager_id.job_id.contract_id.inciso_id.id,
+            'operating_unit_id': self.manager_id.job_id.contract_id.operating_unit_id.id,
+            'occupation_id': self.manager_id.job_id.contract_id.occupation_id.id,
+            'level_id': level_id.id,
+            'evaluation_stage_id': self.evaluation_stage_id.id,
+            'general_cycle_id': self.evaluation_stage_id.general_cycle_id.id,
+            'state': 'draft',
+        })
+        for skill in skills:
+            Competency.create({'evaluation_id': evaluation.id,
+                               'skill_id': skill.id,
+                               'skill_line_ids': [(6, 0, skill.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == evaluation.level_id.id).ids)]
+                               })
+        data.write({'evaluation_ids': [(4, evaluation.id)]})
         return True
+
+    def _create_gap_deal(self, record):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        partners_to_notify = self.env["res.partner"]
+        evaluation = record.copy_data()
+        evaluation[0]["evaluation_type"] = "gap_deal"
+
+        gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
+
+        for competency in record.evaluation_competency_ids:
+            Competency.create({'gap_deal_id': gap_deal.id,
+                               'skill_id': competency.skill_id.id,
+                               'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
+                                   lambda r: r.level_id.id == record.level_id.id).ids)]
+                               })
+
+        partners_to_notify |= record.evaluated_id.partner_id
+        partners_to_notify |= record.evaluator_id.partner_id
+
+        self.with_context(partners_to_notify=partners_to_notify)._send_gap_deal_notification()
+
+        return gap_deal
 
     def _action_desempeno_evaluation_list(self):
         if self.user_has_groups(
@@ -327,6 +554,25 @@ class ONSCDesempenoEvaluationList(models.Model):
         else:
             action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_list_action')
         return action.read()[0]
+
+    def _get_records_random(self, records, generated):
+        qty_to_take = 4 - generated
+        if qty_to_take >= len(records):
+            records_random = records
+        else:
+            records_random = random.sample(records, qty_to_take)
+        return records_random
+
+    def _send_gap_deal_notification(self):
+        generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_start_stage_2_form')
+        generated_form_email_template_id.send_mail(self.evaluation_stage_id.id, force_send=True)
+
+    def _send_generated_form_notification(self):
+        generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_generated_form')
+        generated_form_email_template_id.send_mail(self.id, force_send=True)
+
+    def get_followers_mails(self):
+        return self._context.get('partners_to_notify').get_onsc_mails()
 
 
 class ONSCDesempenoEvaluationListLine(models.Model):

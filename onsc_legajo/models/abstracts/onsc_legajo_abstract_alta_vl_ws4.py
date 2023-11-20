@@ -213,8 +213,11 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             altaDetalle.update({
                 'jornadaRetributiva': record.retributive_day_id.codigoJornada,
                 'responsableUO': 'S' if record.is_responsable_uo else 'N',
-                'codigoOcupacion': record.occupation_id.code,
             })
+            if record.occupation_id:
+                altaDetalle.update({
+                    'codigoOcupacion': record.occupation_id.code,
+                })
             if record.graduation_date:
                 altaDetalle.update({
                     'fechaGradAsig': record.graduation_date.strftime('%d/%m/%Y')

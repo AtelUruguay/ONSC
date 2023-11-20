@@ -149,12 +149,13 @@ class ONSCLegajoAltaCS(models.Model):
     operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     operating_unit_destination_id_domain = fields.Char(compute='_compute_operating_unit_destination_id_domain')
 
-    program_project_destination_id = fields.Many2one('onsc.legajo.office',
-                                                     string='Programa - Proyecto',
-                                                     copy=False,
-                                                     domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
-                                                     readonly=False, states={'confirmed': [('readonly', True)],
-                                                                             'cancelled': [('readonly', True)]})
+    program_project_destination_id = fields.Many2one(
+        'onsc.legajo.office',
+        string='Programa - Proyecto',
+        copy=False,
+        domain="[('inciso', '=', inciso_destination_id),('unidadEjecutora', '=', operating_unit_destination_id)]",
+        readonly=False, states={'confirmed': [('readonly', True)],
+                                'cancelled': [('readonly', True)]})
     program_destination = fields.Char(string='Programa',
                                       related='program_project_destination_id.programaDescripcion')
     project_destination = fields.Char(string='Proyecto',
@@ -202,9 +203,15 @@ class ONSCLegajoAltaCS(models.Model):
     code_regime_start_commission_id = fields.Many2one('onsc.legajo.commission.regime',
                                                       string='Código del régimen de Inicio de Comisión', copy=False)
     state = fields.Selection(
-        [('draft', 'Borrador'), ('to_process', 'A procesar en destino'), ('returned', 'Devuelto a origen'),
-         ('cancelled', 'Cancelado'), ('error_sgh', 'Error SGH'), ('confirmed', 'Confirmado')],
-        string='Estado', default='draft')
+        [('draft', 'Borrador'),
+         ('to_process', 'A procesar en destino'),
+         ('returned', 'Devuelto a origen'),
+         ('cancelled', 'Cancelado'),
+         ('error_sgh', 'Error SGH'),
+         ('confirmed', 'Confirmado')],
+        string='Estado',
+        tracking=True,
+        default='draft')
     additional_information = fields.Text(string='Información adicional', copy=False,
                                          readonly=False, states={'confirmed': [('readonly', True)],
                                                                  'cancelled': [('readonly', True)]})
@@ -243,6 +250,7 @@ class ONSCLegajoAltaCS(models.Model):
 
     filter_destination = fields.Boolean(string="Filtrar destino", compute='_compute_filter_destination',
                                         search='_search_filter_destination')
+    norm_id_domain = fields.Char(compute='_compute_norm_id_domain')
 
     # DATOS DEL WS10
     nroPuesto = fields.Char(string='Puesto', copy=False)
@@ -387,6 +395,15 @@ class ONSCLegajoAltaCS(models.Model):
                 ]
             self.operating_unit_destination_id_domain = json.dumps(domain)
 
+    @api.depends('inciso_destination_id')
+    def _compute_norm_id_domain(self):
+        for rec in self:
+            if rec.inciso_destination_id.is_central_administration:
+                _args = [('inciso_ids', 'in', [rec.inciso_destination_id.id])]
+            else:
+                _args = []
+            rec.norm_id_domain = json.dumps(_args)
+
     @api.depends('inciso_origin_id', 'inciso_destination_id')
     def _compute_type_cs(self):
         for record in self:
@@ -429,6 +446,7 @@ class ONSCLegajoAltaCS(models.Model):
             administrator_security = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
             inciso_security = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
             operating_unit_security = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
+            is_same_inciso = record.inciso_destination_id == record.inciso_origin_id
             if administrator_security:
                 record.is_edit_destination = True
             elif record.state == 'returned':
@@ -441,8 +459,10 @@ class ONSCLegajoAltaCS(models.Model):
             elif record.type_cs == 'ac2ac' and operating_unit_security and record.operating_unit_destination_id == operating_unit_id:
                 record.is_edit_destination = True
             # Editar por el usuario Origen
+            elif is_same_inciso and operating_unit_security:
+                record.is_edit_destination = False
             # El Usuario logueado tiene permiso por ue y la ue de destino es el mismo que el del usuario
-            elif record.type_cs == 'ac2ac' and record.inciso_destination_id == record.inciso_origin_id:
+            elif record.type_cs == 'ac2ac' and is_same_inciso:
                 record.is_edit_destination = True
             # Siempre poder editar si no es ac2ac
             elif record.type_cs != 'ac2ac':
@@ -452,12 +472,15 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs')
     def _compute_is_available_send_to_sgh(self):
-        is_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_user_ue_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
         for record in self:
             is_same_inciso = record.inciso_origin_id == record.inciso_destination_id
             # AC2AC siendo tu mismo inciso origen y destino
-            if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_alta_cs:
+            if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
                 record.is_available_send_to_sgh = True
+            elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue_alta_cs:
+                record.is_available_send_to_sgh = False
             elif record.state in ['draft', 'to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and is_same_inciso:
                 record.is_available_send_to_sgh = True
             # No AC2AC siempre enviar a SGH
@@ -482,17 +505,37 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.is_available_send_origin = False
 
-    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
+    @api.depends('inciso_origin_id', 'inciso_destination_id', 'operating_unit_origin_id', 'type_cs', 'state')
     def _compute_is_available_send_destination(self):
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
-        is_user_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_user_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_user_inciso_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
+        is_user_ue_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
         for record in self:
-            condition1 = record.state in ['draft', 'returned'] and record.type_cs == 'ac2ac'
-            condition2 = record.is_edit_destination and record.inciso_origin_id == inciso_id
-            if condition1 and (not condition2 or is_user_alta_cs):
-                record.is_available_send_destination = True
+            is_destination_ac = record.inciso_destination_id.is_central_administration
+            base_cond = record.state in ['draft', 'returned'] and is_destination_ac
+            is_iam_inciso_orig = record.inciso_origin_id == inciso_id
+            is_iam_inciso_dest = record.inciso_destination_id != inciso_id
+            is_iam_ue_orig = record.operating_unit_origin_id == operating_unit_id
+            if is_user_administrar_altas_cs:
+                is_available_send_destination = False
+            elif is_user_inciso_alta_cs and is_iam_inciso_orig and is_iam_inciso_dest and base_cond:
+                is_available_send_destination = True
+            elif is_user_ue_alta_cs and is_iam_ue_orig and base_cond:
+                is_available_send_destination = True
             else:
-                record.is_available_send_destination = False
+                is_available_send_destination = False
+
+            record.is_available_send_destination = is_available_send_destination
+            # condition1 = record.state in ['draft'] and record.type_cs == 'ac2ac'
+            # condition2 = record.is_edit_destination and record.inciso_origin_id == inciso_id
+            # condition3 = record.is_edit_destination and record.inciso_origin_id == record.inciso_destination_id and is_user_ue_alta_cs
+            #
+            # # if condition1 and (not condition2 or is_user_administrar_altas_cs):
+            # if condition1 and not is_user_administrar_altas_cs and (not condition2 or condition3):
+            #     record.is_available_send_destination = True
+            # else:
+            #     record.is_available_send_destination = False
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_cancel(self):
@@ -573,6 +616,7 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.onchange('inciso_destination_id')
     def onchange_inciso_destination_id(self):
+        self.norm_id = False
         self.operating_unit_destination_id = False
 
     @api.onchange('operating_unit_destination_id')
@@ -672,7 +716,7 @@ class ONSCLegajoAltaCS(models.Model):
         new_contract = self._get_legajo_contract(employee)
         self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
         date_start = fields.Date.from_string(self.date_start_commission or fields.Date.today())
-        self.contract_id.deactivate_legajo_contract(
+        self.contract_id.with_context(no_check_write=True).deactivate_legajo_contract(
             date_end=date_start - relativedelta(days=1),
             legajo_state='outgoing_commission'
         )

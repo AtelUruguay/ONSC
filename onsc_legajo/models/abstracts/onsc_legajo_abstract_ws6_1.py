@@ -42,7 +42,6 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                         'primerApellido': record.cv_last_name_1[:20],
                         'primerNombre': record.cv_first_name[:20],
                         'sexo': 'M' if record.cv_sex == 'male' else 'F',
-                        'codigoEstadoCivil': record.marital_status_id and int(record.marital_status_id.code) or 99,
                         'tipoCiudadania': 'N',
                         'serieCredencial': record.crendencial_serie,
                         'numeroCredencial': int(record.credential_number),

@@ -12,14 +12,14 @@
                 <field name="full_name"/>
                 <field name="nro_doc"/>
                 <field name="emissor_country_id"/>
-                <field name="avatar_128"/>
+                <field name="image_1920"/>
                 <field name="contracts_count"/>
                 <field name="legajo_state"/>
                 <templates>
                     <t t-name="kanban-box">
                         <div class="oe_kanban_global_click o_kanban_record_has_image_fill o_res_partner_kanban">
                             <div class="o_kanban_image_fill_left o_kanban_image_full"
-                                 t-attf-style="background-image: url(#{kanban_image('onsc.legajo', 'avatar_128', record.id.raw_value)})"
+                                 t-attf-style="background-image: url(#{kanban_image('onsc.legajo', 'image_1920', record.id.raw_value)})"
                                  role="img"/>
                             <div class="oe_kanban_details d-flex flex-column">
                                 <strong class="o_kanban_record_title oe_partner_heading">
@@ -149,7 +149,7 @@
     </record>
 
     <record id='onsc_legajo_action' model='ir.actions.act_window'>
-        <field name="name">Consulta de legajos</field>
+        <field name="name">Consulta de información vínculo</field>
         <field name="res_model">onsc.legajo</field>
         <field name="view_mode">kanban,tree,form</field>
         <field name="context">{'is_legajo':True}</field>
@@ -161,7 +161,7 @@
     </record>
 
     <record id="onsc_milegajo_action_server" model="ir.actions.server">
-        <field name="name">Mi legajo</field>
+        <field name="name">Mi información vínculo</field>
         <field name="type">ir.actions.server</field>
         <field name="state">code</field>
         <field name="model_id" ref="model_onsc_legajo"/>

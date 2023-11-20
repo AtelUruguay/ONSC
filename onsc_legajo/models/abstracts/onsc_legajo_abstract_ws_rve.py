@@ -39,8 +39,14 @@ class ONSCLegajoAbstractSyncWSRVE(models.AbstractModel):
                 'Pe_tpodoc': record.document_type_id.code_other,
                 'Pe_docnum': record.nro_doc,
             }
-        return self.with_context(legajo=record, log_info=log_info, simpleWsdl=True).suspend_security()._syncronize(
-            wsclient, parameter,
+        self = self.with_context(
+            legajo=record,
+            log_info=log_info,
+            simpleWsdl=True,
+            use_execute_with_args=True).suspend_security()
+        return self._syncronize(
+            wsclient,
+            parameter,
             'WS_RVE',
             integration_error,
             data,

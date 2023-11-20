@@ -17,50 +17,45 @@
                         </header>
                     </div>
                     <div class="app_settings_block" id="onsc_desempeno">
-                        <h6 groups="onsc_desempeno.group_desempeno_configurador_escalafones" style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Escalafones excluidos</h6>
-                        <div class="row mt16 o_settings_container" groups="onsc_desempeno.group_desempeno_configurador_escalafones">
-                            <div class="col-xs-12 col-md-6 o_setting_box">
-                                <div class="col-12 col-lg-12 o_setting_box" id="legajo_help_settings">
-                                    <div class="o_setting_left_pane"/>
-                                    <div class="o_setting_right_pane">
-                                        <div class="text-muted content-group mt16">
+                        <div class="row mt16 o_settings_container">
+                            <div class="col-12 col-lg-6 o_setting_box" id="desempeno_settings">
+                                <div class="o_setting_left_pane"/>
+                                <div class="o_setting_right_pane">
+                                    <div class="content-group" groups="onsc_desempeno.group_desempeno_configurador_escalafones">
+                                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Escalafones excluidos</h6>
+                                        <div class="row" style="padding-left:15px">
                                             <field name="descriptor1_ids" widget="many2many_tags"
                                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                                   class="col-12 col-lg-12"
                                                    context="{'tree_view_ref': 'onsc_desempeno.onsc_desempeno_onsc_catalog_descriptor1_tree'}">
                                             </field>
+                                        </div>
+                                    </div>
+                                    <div class="content-group" groups="onsc_desempeno.group_desempeno_administrador">
+                                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Ayuda para formulario de evaluación<field name="is_evaluation_form_active" style="margin-left:20px"/></h6>
+                                        <div class="row" style="padding-left:15px">
+                                            <field name="evaluation_form_text"/>
+                                        </div>
+                                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Ayuda para formulario de definición de entorno<field name="is_environment_evaluation_form_active" style="margin-left:20px"/></h6>
+                                        <div class="row" style="padding-left:15px">
+                                            <field name="environment_evaluation_text"/>
+                                        </div>
+                                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuraciones</h6>
+                                        <div class="row">
+                                            <label for="max_environment_evaluation_forms" class="col-md-3 o_light_label"/>
+                                            <field name="max_environment_evaluation_forms"/>
+                                        </div>
+                                        <div class="row">
+                                            <label for="random_environment_evaluation_forms" class="col-md-3 o_light_label"/>
+                                            <field name="random_environment_evaluation_forms"/>
+                                        </div>
+                                        <div class="row">
+                                            <label for="days_notification_end_ev" class="col-md-3 o_light_label"/>
+                                            <field name="days_notification_end_ev"/>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px"
-                            groups="onsc_desempeno.group_desempeno_administrador">
-                            Ayuda para formulario de evaluación
-                            <field name="is_evaluation_form_active" style="margin-left:10px"/>
-                        </h6>
-                        <div class="row mt16 o_settings_container"
-                             groups="onsc_desempeno.group_desempeno_administrador">
-                            <div class="col-xs-12 col-md-6 o_setting_box">
-                                <div class="col-12 col-lg-12 o_setting_box" id="evaluation_form_settings">
-                                    <field name="evaluation_form_text" class="col-12 col-lg-12"/>
-                                </div>
-                            </div>
-                        </div>
-                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px"
-                            groups="onsc_desempeno.group_desempeno_administrador">
-                            Ayuda para formulario de definición de entorno
-                            <field name="is_environment_evaluation_form_active" style="margin-left:10px"/>
-                        </h6>
-                        <div class="row mt16 o_settings_container"
-                             groups="onsc_desempeno.group_desempeno_administrador">
-                            <div class="col-xs-12 col-md-6 o_setting_box">
-                                <div class="col-12 col-lg-12 o_setting_box" id="environment_evaluation_settings">
-                                    <field name="environment_evaluation_text" class="col-12 col-lg-12"/>
-                                </div>
-                            </div>
-                        </div>
-
                      <field name="company_id" invisible="1"/>
                     </div>
                 </form>
