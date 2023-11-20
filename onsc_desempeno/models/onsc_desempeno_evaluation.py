@@ -384,7 +384,8 @@ class ONSCDesempenoEvaluation(models.Model):
             is_user_gh_ue_cond = is_gh_user_ue and is_order_1 and same_operating_unit
             is_user_gh_inc_cond = is_gh_user_inciso and is_order_1 and same_inciso
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
-            base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable)
+            is_gap_deal_evaluator = record.evaluation_type == 'gap_deal' and record.original_evaluator_id.id == employee.id and record.state == 'draft'
+            base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
 
             record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
 
