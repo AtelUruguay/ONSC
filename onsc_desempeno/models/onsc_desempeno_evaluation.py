@@ -27,7 +27,16 @@ STATE = [
     ('completed', 'Completado'),
     ('finished', 'Finalizado'),
     ('uncompleted', 'Sin Finalizar'),
-    ('canceled', 'Cancelado')
+    ('canceled', 'Cancelado'),
+    ('deal_close', "Acuerdo cerrado")
+]
+
+GAP_DEAL_STATES = [
+    ('no_deal', 'Pendiente'),
+    ('agree_leader', 'Acordado Líder'),
+    ('agree_evaluated', 'Acordado Evaluado'),
+    ('agree', 'Acordado'),
+
 ]
 
 
@@ -233,6 +242,10 @@ class ONSCDesempenoEvaluation(models.Model):
         string='Fecha de Fin de la Definición de Entorno',
         related='evaluation_stage_id.end_date_environment',
         store=True)
+    evaluation_end_date_max = fields.Date(
+        string='Fecha fin ciclo evaluación',
+        related='general_cycle_id.end_date_max',
+        store=True)
     evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'evaluation_id',
                                                 string='Evaluación de Competencias')
     gap_deal_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'gap_deal_id',
@@ -265,6 +278,18 @@ class ONSCDesempenoEvaluation(models.Model):
     is_evaluation_change_available = fields.Boolean(
         string='Botón de cambio de evaluador disponible',
         compute='_compute_is_evaluation_change_available')
+    is_exonerated_evaluation = fields.Boolean(string='Exonerado de Evaluación')
+    is_agree_evaluation_evaluated_available = fields.Boolean(
+        string='Botón de Acordar Evaluación Evaluado',
+        compute='_compute_is_agree_evaluation_evaluated_available')
+    is_agree_evaluation_leader_available = fields.Boolean(
+        string='Botón de Acordar Evaluación Líder',
+        compute='_compute_is_agree_evaluation_leader_available')
+    gap_deal_state = fields.Selection(
+        selection=GAP_DEAL_STATES,
+        string="Estado de acuerdo de brecha",
+        default='no_deal'
+    )
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -311,15 +336,34 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            condition = record.state not in [
-                'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
+
+            if record.evaluation_type == 'gap_deal':
+                condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
+            else:
+                condition = record.state not in [
+                    'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
             record.should_disable_form_edit = condition
+
+    @api.depends('state')
+    def _compute_is_agree_evaluation_leader_available(self):
+        user_employee_id = self.env.user.employee_id.id
+        for record in self:
+            record.is_agree_evaluation_leader_available = record.evaluator_id.id == user_employee_id and record.evaluation_type == 'gap_deal' and not record.gap_deal_state == 'agree_leader'
+
+    @api.depends('state')
+    def _compute_is_agree_evaluation_evaluated_available(self):
+        user_employee_id = self.env.user.employee_id.id
+        for record in self:
+            record.is_agree_evaluation_evaluated_available = record.evaluated_id.id == user_employee_id and record.evaluation_type == 'gap_deal' and not record.gap_deal_state == 'agree_evaluated'
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            record.evaluation_form_edit = record.evaluator_id.id == user_employee_id and not record.locked
+            if record.evaluation_type == 'gap_deal':
+                record.evaluation_form_edit = record.evaluator_id.id == user_employee_id or record.evaluated_id.id == user_employee_id
+            else:
+                record.evaluation_form_edit = record.evaluator_id.id == user_employee_id and not record.locked
 
     @api.depends('state')
     def _compute_is_evaluation_change_available(self):
@@ -388,6 +432,23 @@ class ONSCDesempenoEvaluation(models.Model):
     def button_reopen_evaluation(self):
         self.write({'state': 'in_process'})
 
+    def button_reopen_deal(self):
+        self.write({'gap_deal_state': 'no_deal', 'state': 'draft'})
+
+    def button_agree_evaluation_leader(self):
+        self._check_complete_evaluation()
+        if self.gap_deal_state == 'no_deal':
+            self.write({'gap_deal_state': 'agree_leader'})
+        elif self.gap_deal_state == 'agree_evaluated':
+            self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
+
+    def button_agree_evaluation_evaluated(self):
+        self._check_complete_evaluation()
+        if self.gap_deal_state == 'no_deal':
+            self.write({'gap_deal_state': 'agree_evaluated'})
+        elif self.gap_deal_state == 'agree_leader':
+            self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
+
     def _generate_environment_evaluations(self):
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
@@ -441,6 +502,7 @@ class ONSCDesempenoEvaluation(models.Model):
                     _('Deben estar todas las evaluaciones de competencias completas para poder pasar a "Completado"'))
 
     def notification_end_evaluation(self):
+        GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
         year = fields.Date.today().strftime('%Y')
         days_notification_end_ev = self.env.user.company_id.days_notification_end_ev
         date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
@@ -462,14 +524,27 @@ class ONSCDesempenoEvaluation(models.Model):
                 'onsc_desempeno.email_template_end_date_environment_definition')
             generated_form_email_template_id.send_mail(self.id, force_send=True)
 
+        general_ids = GeneralCycle.search([('end_date_max', '=', date_end)]).ids
+        count_message_deal = self.search_count(
+            [('evaluation_type', 'in', ['gap_deal']), ('state', '!=', 'canceled'),
+             ('year', '=', year),
+             ('general_cycle_id', 'in', general_ids)])
+
+        if count_message_deal > 0:
+            generated_form_email_template_id = self.env.ref(
+                'onsc_desempeno.email_template_end_date_gap_deal')
+            generated_form_email_template_id.send_mail(self.id, force_send=True)
+
     def get_followers_mails(self):
+
         year = fields.Date.today().strftime('%Y')
         days_notification_end_ev = self.env.user.company_id.days_notification_end_ev
         date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
 
         message_partner_ids = self.search(
             [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
-             ('year', '=', year), ('evaluation_end_date', '=', date_end)]).mapped('evaluator_id.partner_id')
+             ('year', '=', year), ('general_cycle_id.end_date_max', '=', date_end)]).mapped('evaluator_id.partner_id')
+
         return message_partner_ids.get_onsc_mails()
 
     def get_environment_definition_followers_mails(self):
@@ -480,6 +555,20 @@ class ONSCDesempenoEvaluation(models.Model):
         message_partner_ids = self.search(
             [('evaluation_type', '=', 'environment_definition'), ('state', '!=', 'canceled'),
              ('year', '=', year), ('environment_definition_end_date', '=', date_end)]).mapped('evaluated_id.partner_id')
+        return message_partner_ids.get_onsc_mails()
+
+    def get_gap_deal_followers_mails(self):
+        GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
+        year = fields.Date.today().strftime('%Y')
+        days_notification_end_ev = self.env.user.company_id.days_notification_end_ev
+        date_end = fields.Date.today() + relativedelta(days=days_notification_end_ev)
+        general_ids = GeneralCycle.search([('end_date_max', '=', date_end)]).ids
+        message_partner_ids = self.search(
+            [('evaluation_type', '=', 'gap_deal'), ('state', '!=', 'canceled'),
+             ('year', '=', year), ('general_cycle_id', 'in', general_ids)]).mapped('evaluator_id.partner_id')
+        message_partner_ids |= self.search(
+            [('evaluation_type', '=', 'gap_deal'), ('state', '!=', 'canceled'),
+             ('year', '=', year), ('general_cycle_id.end_date_max', '=', date_end)]).mapped('evaluated_id.partner_id')
         return message_partner_ids.get_onsc_mails()
 
     def process_end_block_evaluation(self):
@@ -506,3 +595,20 @@ class ONSCDesempenoEvaluation(models.Model):
         self.search([('evaluation_end_date', '=', fields.Date.today()), ('state', '!=', 'canceled'),
                      ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]).write(
             {'locked': True})
+
+    def process_end_gap_deal(self):
+        GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
+        general_ids = GeneralCycle.search([('end_date_max', '=', fields.Date.today())]).ids
+
+        for record in self.search(
+                [('general_cycle_id', 'in', general_ids),
+                 ('state', 'not in', ['canceled']),
+                 ('evaluation_type', 'in', ['gap_deal'])]):
+
+            if record.is_exonerated_evaluation:
+                record.write({'state': 'canceled'})
+            else:
+                if record.state == 'deal_close':
+                    record.write({'state': 'finished'})
+                elif record.state not in ['finished', 'uncompleted']:
+                    record.write({'state': 'uncompleted'})

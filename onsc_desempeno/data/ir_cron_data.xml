@@ -40,4 +40,14 @@
         <field name="numbercall">-1</field>
     </record>
 
+     <record id="desempeno_process_end_gap_deal" model="ir.cron">
+        <field name="name">Desempeño -  Proceso para Finalizar Acuerdo de Brecha </field>
+        <field name="model_id" ref="model_onsc_desempeno_evaluation"/>
+        <field name="state">code</field>
+        <field name="code">model.process_end_gap_deal()</field>
+        <field name='interval_number'>1</field>
+        <field name='interval_type'>days</field>
+        <field name="numbercall">-1</field>
+    </record>
+
 </odoo>

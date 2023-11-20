@@ -221,11 +221,11 @@ class ONSCLegajoStagingWS7(models.Model):
         else:
             race_id = self.race_id.id
         vals.update({'race_id': race_id})
-        if self.cod_mecing and not self.income_mechanism_id:
-            income_mechanism_id = BaseUtils._get_catalog_id(IncomeMechanism, 'code', self, 'cod_mecing', log_list)
-        else:
-            income_mechanism_id = self.income_mechanism_id.id
-        vals.update({'income_mechanism_id': income_mechanism_id})
+        # if self.cod_mecing and not self.income_mechanism_id:
+        #     income_mechanism_id = BaseUtils._get_catalog_id(IncomeMechanism, 'code', self, 'cod_mecing', log_list)
+        # else:
+        #     income_mechanism_id = self.income_mechanism_id.id
+        # vals.update({'income_mechanism_id': income_mechanism_id})
         if self.cod_reg and not self.regime_id:
             regime_id = BaseUtils._get_catalog_id(Regime, 'codRegimen', self, 'cod_reg', log_list)
         else:
@@ -614,7 +614,7 @@ class ONSCLegajoStagingWS7(models.Model):
         descriptor2 = record.descriptor2_id
         descriptor3 = record.descriptor3_id
         descriptor4 = record.descriptor4_id
-        income_mechanism = record.income_mechanism_id
+        # income_mechanism = record.income_mechanism_id
         regime = record.regime_id
 
         new_contract = self.env['hr.contract'].suspend_security().create({
@@ -629,7 +629,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'descriptor2_id': descriptor2.id,
             'descriptor3_id': descriptor3.id,
             'descriptor4_id': descriptor4.id,
-            'income_mechanism_id': income_mechanism.id,
+            'income_mechanism_id': contract.income_mechanism_id.id,
             'retributive_day_id': record.retributive_day_id.id,
             # 'description_day': record.retributive_day_id.descripcionJornada,
             # 'code_day': record.retributive_day_id.codigoJornada,
