@@ -34,6 +34,7 @@ def profiler(func):
     :param func:
     :return:
     """
+    _logger.warning("***********Profiling is active***********")
     active_profiler = tools.config.get('active_profiler', False)
 
     @wraps(func)
