@@ -15,6 +15,9 @@ class HrContract(models.Model):
     _history_model = 'hr.contract.model.history'
     _history_columns = ['date_start', 'date_end']
 
+    def init(self):
+        self._cr.execute("""CREATE INDEX IF NOT EXISTS hr_contract_employee_id ON hr_contract (employee_id)""")
+
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if not self._context.get('no_scale') and self._context.get('filter_contracts') and not self._context.get(
@@ -61,8 +64,8 @@ class HrContract(models.Model):
     #         return self.env['onsc.legajo.state.square']
 
     legajo_name = fields.Char(string="Nombre", compute='_compute_legajo_name', store=True)
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True)
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True, index=True)
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True, index=True)
 
     inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso origen', history=True)
     operating_unit_origin_id = fields.Many2one("operating.unit",

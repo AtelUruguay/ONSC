@@ -11,6 +11,10 @@ class HrJob(models.Model):
     _inherit = 'hr.job'
     _order = 'start_date desc'
 
+    def init(self):
+        self._cr.execute("""CREATE INDEX IF NOT EXISTS hr_job_employee_id ON hr_job (employee_id)""")
+        self._cr.execute("""CREATE INDEX IF NOT EXISTS hr_job_contract_id ON hr_job (contract_id)""")
+
     def name_get(self):
         res = []
         for record in self:
@@ -26,15 +30,33 @@ class HrJob(models.Model):
             self.department_id.display_name,
             self.security_job_id.display_name)
 
-    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", ondelete='restrict',
-                                      tracking=True)
-    legajo_id = fields.Many2one('onsc.legajo', string='Legajo', related='contract_id.legajo_id', store=True)
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_id', store=True)
+    security_job_id = fields.Many2one(
+        "onsc.legajo.security.job",
+        string="Seguridad de puesto",
+        ondelete='restrict',
+        tracking=True
+    )
+    legajo_id = fields.Many2one(
+        'onsc.legajo',
+        string='Legajo',
+        related='contract_id.legajo_id',
+        store=True,
+        index=True
+    )
+    inciso_id = fields.Many2one(
+        'onsc.catalog.inciso',
+        string='Inciso',
+        related='contract_id.inciso_id',
+        store=True,
+        index=True
+    )
     operating_unit_id = fields.Many2one(
         "operating.unit",
         string="Unidad ejecutora",
         related='contract_id.operating_unit_id',
-        store=True)
+        store=True,
+        index=True
+    )
     is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     role_extra_is_readonly = fields.Boolean(string="Solo lectura", compute="_compute_is_readonly")
     department_id_domain = fields.Char(compute='_compute_department_domain')

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, api
+from odoo.addons.onsc_base.onsc_useful_tools import profiler
 
 from odoo.osv import expression
 
@@ -17,6 +18,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         ], args])
         return args
 
+    @profiler
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_legajo'):
@@ -46,16 +48,26 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         available_contracts = self.env['hr.contract']
         if self._context.get('mi_legajo'):
             employees = self.env.user.employee_id
+            employee_domain = [('employee_id', '=', self.env.user.employee_id.id)]
+        elif employee_id:
+            employees = employee_id
+            employee_domain = [('employee_id', '=', employee_id.id)]
         else:
-            employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
+            employees = self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
+            employee_domain = [('employee_id', '!=', self.env.user.employee_id.id)]
+
         if self._context.get('mi_legajo'):
-            available_contracts = employees.mapped('contract_ids')
+            available_contracts = self.env['hr.contract'].search(employee_domain)
+            # available_contracts = employees.mapped('contract_ids')
         elif self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo'):
             department_ids = self.env['onsc.legajo.department'].get_uo_tree()
-            available_contracts = employees.mapped('contract_ids').mapped('job_ids').filtered(
-                lambda x: x.department_id.id in department_ids).mapped('contract_id')
+            available_jobs_domain = expression.AND([[('department_id', 'in', department_ids)], employee_domain])
+            available_contracts = self.env['hr.job'].search(available_jobs_domain).mapped('contract_id')
+            # available_contracts = employees.mapped('contract_ids').mapped('job_ids').filtered(
+            #     lambda x: x.department_id.id in department_ids).mapped('contract_id')
         elif self._get_abstract_config_security():
-            available_contracts = employees.mapped('contract_ids')
+            available_contracts = self.env['hr.contract'].search(employee_domain)
+            # available_contracts = employees.mapped('contract_ids')
         elif self._get_abstract_inciso_security():
             contract = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract.inciso_id.id
@@ -82,11 +94,12 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
                 ('legajo_state', 'not in', ['baja']),
             ]
         available_contracts = self.env['hr.contract'].search(base_args)
-        available_contracts_employees = available_contracts.mapped('employee_id')
+        available_contracts_employees_ids = available_contracts.mapped('employee_id').ids
         # NO VIGENTES
         # TODO: filtrar partner is_legajo activado
-        for employee in employees.filtered(
-                lambda x: x.id not in available_contracts_employees.ids and len(x.contract_ids)):
+        for employee in employees:
+            if employee.id not in available_contracts_employees_ids:
+                continue
             is_any_active_contract = len(employee.contract_ids.filtered(
                 lambda x: x.legajo_state not in ['baja'] or x.legajo_state == 'baja' and not x.date_end)) > 0
             if is_any_active_contract:
