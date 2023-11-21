@@ -47,13 +47,13 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     def _get_user_available_contract(self, employee_id=False):
         available_contracts = self.env['hr.contract']
         if self._context.get('mi_legajo'):
-            employees = self.env.user.employee_id
+            # employees = self.env.user.employee_id
             employee_domain = [('employee_id', '=', self.env.user.employee_id.id)]
         elif employee_id:
-            employees = employee_id
+            # employees = employee_id
             employee_domain = [('employee_id', '=', employee_id.id)]
         else:
-            employees = self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
+            # employees = self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
             employee_domain = [('employee_id', '!=', self.env.user.employee_id.id)]
 
         if self._context.get('mi_legajo'):
@@ -71,40 +71,48 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         elif self._get_abstract_inciso_security():
             contract = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract.inciso_id.id
-            available_contracts = self._get_available_contracts(employees, inciso_id, 'inciso_id')
+            available_contracts = self._get_available_contracts(employee_domain, inciso_id, 'inciso_id')
         elif self._get_abstract_ue_security():
             contract = self.env.user.employee_id.job_id.contract_id
             operating_unit_id = contract.operating_unit_id.id
             if operating_unit_id:
-                available_contracts = self._get_available_contracts(employees, operating_unit_id, 'operating_unit_id')
+                available_contracts = self._get_available_contracts(
+                    employee_domain,
+                    operating_unit_id,
+                    'operating_unit_id'
+                )
         return available_contracts
 
-    def _get_available_contracts(self, employees, security_hierarchy_value, security_hierarchy_level):
+    def _get_available_contracts(self, employee_domain, security_hierarchy_value, security_hierarchy_level):
         # LEGAJOS VIGENTES
         if self._context.get('only_active_contracts'):
             base_args = [
                 (security_hierarchy_level, '=', security_hierarchy_value),
-                ('employee_id', 'in', employees.ids),
+                # ('employee_id', 'in', employees.ids),
                 ('legajo_state', 'in', ['active']),
             ]
         else:
             base_args = [
                 (security_hierarchy_level, '=', security_hierarchy_value),
-                ('employee_id', 'in', employees.ids),
+                # ('employee_id', 'in', employees.ids),
                 ('legajo_state', 'not in', ['baja']),
             ]
-        available_contracts = self.env['hr.contract'].search(base_args)
+        contract_domain = expression.AND([base_args, employee_domain])
+        available_contracts = self.env['hr.contract'].search(contract_domain)
         available_contracts_employees_ids = available_contracts.mapped('employee_id').ids
+
         # NO VIGENTES
+        second_employee_domain = expression.AND(
+            [[('id', 'not in', available_contracts_employees_ids)], employee_domain])
+        employees = self.env['hr.employee'].search(second_employee_domain)
         # TODO: filtrar partner is_legajo activado
         for employee in employees:
-            if employee.id not in available_contracts_employees_ids:
-                continue
-            is_any_active_contract = len(employee.contract_ids.filtered(
+            employee_contracts = employee.contract_ids
+            is_any_active_contract = len(employee_contracts.filtered(
                 lambda x: x.legajo_state not in ['baja'] or x.legajo_state == 'baja' and not x.date_end)) > 0
             if is_any_active_contract:
                 continue
-            last_baja_contract = employee.contract_ids.sorted(key=lambda x: x.date_end, reverse=True)
+            last_baja_contract = employee_contracts.sorted(key=lambda x: x.date_end, reverse=True)
             if last_baja_contract and eval(
                     'last_baja_contract[0].%s.id == %s' % (security_hierarchy_level, security_hierarchy_value)):
                 available_contracts |= last_baja_contract[0]
