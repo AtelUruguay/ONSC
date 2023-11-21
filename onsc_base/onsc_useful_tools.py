@@ -47,7 +47,8 @@ def profiler(func):
         result = func(*args, **kwargs)
         if active_profiler:
             new_profiler.stop()
-            new_profiler.print()
+            with open('/tmp/profile_output.txt', 'w') as f:
+                new_profiler.print(file=f)
         return result
 
     return wrapper
