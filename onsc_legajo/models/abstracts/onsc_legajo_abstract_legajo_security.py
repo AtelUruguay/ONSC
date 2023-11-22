@@ -13,8 +13,8 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     @api.model
     def _get_expression_domain(self, args):
         available_contracts = self._get_user_available_contract()
-        _sql = """SELECT DISTINCT employee_id FROM hr_contract WHERE id IN %s AND employee_id IS NOT NULL"""
-        self.env.cr.execute(_sql, str(tuple(available_contracts.ids)))
+        _sql = """SELECT DISTINCT employee_id FROM hr_contract WHERE id IN %s AND employee_id IS NOT NULL""" % (str(tuple(available_contracts.ids)))
+        self.env.cr.execute(_sql)
         results = self.env.cr.fetchall()
         employee_ids = [item[0] for item in results]
         args = expression.AND([[
