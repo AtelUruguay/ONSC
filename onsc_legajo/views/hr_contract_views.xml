@@ -35,6 +35,7 @@
                             <field name="eff_date" string="Fecha efectiva"/>
                             <field name="date_start" string="Fecha de alta"/>
                             <field name="date_end" string="Fecha de baja"/>
+                            <field name="date_end_commission"/>
                             <field name="inciso_id"
                                    required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>

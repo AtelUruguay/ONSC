@@ -164,6 +164,9 @@ class ONSCLegajoAltaCS(models.Model):
     date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False,
                                         readonly=False, states={'confirmed': [('readonly', True)],
                                                                 'cancelled': [('readonly', True)]})
+    date_end_commission = fields.Date(string='Fecha hasta de la Comisión', copy=False,
+                                        readonly=False, states={'confirmed': [('readonly', True)],
+                                                                'cancelled': [('readonly', True)]})
     department_id = fields.Many2one('hr.department', string='UO', copy=False,
                                     readonly=False, states={'confirmed': [('readonly', True)],
                                                             'cancelled': [('readonly', True)]})
@@ -527,15 +530,6 @@ class ONSCLegajoAltaCS(models.Model):
                 is_available_send_destination = False
 
             record.is_available_send_destination = is_available_send_destination
-            # condition1 = record.state in ['draft'] and record.type_cs == 'ac2ac'
-            # condition2 = record.is_edit_destination and record.inciso_origin_id == inciso_id
-            # condition3 = record.is_edit_destination and record.inciso_origin_id == record.inciso_destination_id and is_user_ue_alta_cs
-            #
-            # # if condition1 and (not condition2 or is_user_administrar_altas_cs):
-            # if condition1 and not is_user_administrar_altas_cs and (not condition2 or condition3):
-            #     record.is_available_send_destination = True
-            # else:
-            #     record.is_available_send_destination = False
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_cancel(self):
@@ -566,11 +560,13 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.employee_id = False
 
-    @api.constrains("date_start_commission")
-    def _check_date(self):
+    @api.constrains("date_start_commission", "date_end_commission")
+    def _check_dates(self):
         for record in self:
             if record.date_start_commission and record.date_start_commission > fields.Date.today():
                 raise ValidationError(_("La fecha debe ser menor o igual al día de alta"))
+            if record.date_end_commission and record.date_start_commission and record.date_end_commission < record.date_start_commission:
+                raise ValidationError(_("La fecha hasta debe ser mayor o igual que la fecha desde"))
 
     @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
@@ -606,6 +602,7 @@ class ONSCLegajoAltaCS(models.Model):
         self.project_destination = False
         self.regime_destination = False
         self.date_start_commission = False
+        self.date_end_commission = False
         self.department_id = False
         self.security_job_id = False
         self.occupation_id = False
@@ -747,6 +744,7 @@ class ONSCLegajoAltaCS(models.Model):
             'employee_id': employee.id,
             'name': employee.name,
             'date_start': self.date_start_commission or fields.Date.today(),
+            'date_end_commission': self.date_end_commission,
             'inciso_id': self.inciso_destination_id.id,
             'operating_unit_id': self.operating_unit_destination_id.id,
             'income_mechanism_id': origin_contract_id.income_mechanism_id.id,
