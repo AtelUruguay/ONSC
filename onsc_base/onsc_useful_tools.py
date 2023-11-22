@@ -49,6 +49,7 @@ def profiler(func):
             new_profiler.stop()
             with open('/tmp/profile_output.txt', 'w') as f:
                 new_profiler.print(file=f)
+            # new_profiler.print()
         return result
 
     return wrapper
