@@ -13,7 +13,6 @@
                 <field name="nro_doc"/>
                 <field name="emissor_country_id"/>
                 <field name="image_1920"/>
-                <field name="contracts_count"/>
                 <field name="legajo_state"/>
                 <templates>
                     <t t-name="kanban-box">
