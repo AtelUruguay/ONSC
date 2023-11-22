@@ -54,6 +54,7 @@ def profiler(func):
 
     return wrapper
 
+
 def get_onchange_warning_response(message, notif_type='notification'):
     return {
         'warning': {
