@@ -161,7 +161,7 @@ class HrContract(models.Model):
                                                            domain=[('type', '=', 'deregistration')])
     job_ids = fields.One2many('hr.job', 'contract_id', string='Puestos', context={'active_test': False})
     commission_regime_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen comisión', history=True)
-
+    date_end_commission = fields.Date(string='Fecha hasta de la Comisión', copy=False, history=True)
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
     is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
     notify_sgh = fields.Boolean("Notificar SGH")

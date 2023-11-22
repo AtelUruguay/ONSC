@@ -131,6 +131,8 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             <field name="date_start_commission"
                                    attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
+                            <field name="date_end_commission"
+                                   attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
                         </group>
                         <group>
                             <field name="department_id"
