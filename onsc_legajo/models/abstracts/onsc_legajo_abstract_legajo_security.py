@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, api
-from odoo.addons.onsc_base.onsc_useful_tools import profiler
 
 from odoo.osv import expression
 

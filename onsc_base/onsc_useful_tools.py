@@ -23,6 +23,8 @@ def profiler(func):
 
     Example tu use:
 
+    from odoo.addons.onsc_base.onsc_useful_tools import profiler
+
     @profiler
     @api.model
     def create(self, vals):
