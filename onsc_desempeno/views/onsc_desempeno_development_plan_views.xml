@@ -22,7 +22,7 @@
                             class="btn btn-primary"
                             string="Acordar Plan Evaluado"
                             attrs="{'invisible': ['|',('state', '!=', 'in_process'),('is_agree_evaluation_evaluated_available', '=', False)]}"
-                            name="button_agree_evaluation_evaluated"
+                            name="button_agree_plan_evaluated"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
                     <button type="object"
@@ -35,13 +35,13 @@
                     <button type="object"
                             class="btn btn-secundary"
                             string="Reabrir acuerdo"
-                            attrs="{'invisible': ['|','|','|',('state', '!=', 'in_process'),('gap_deal_state', '=', 'agree'),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'gap_deal')]}"
+                            attrs="{'invisible': ['|','|','|',('state', '!=', 'in_process'),('gap_deal_state', '=', 'agree'),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'develop_plan')]}"
                             name="button_reopen_deal"
                             icon="fa-unlock"
-                            confirm="¿Está seguro de que desea reabrir la evaluación?"/>
+                            confirm="¿Está seguro de que desea reabrir el plan?"/>
 
                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,deal_close,finished" />
+                           statusbar_visible="draft,in_process,completed,agreed_plan,finished" />
                 </header>
                 <sheet>
                     <field name="is_evaluation_change_available" invisible="1"/>
@@ -96,19 +96,66 @@
                     </group>
 
                     <notebook>
-                        <page string="Evaluación de Competencias">
-                            <field name="gap_deal_competency_ids" nolabel="1"
+                        <page string="Competencia a desarrollar">
+                            <field name="development_plan_ids" nolabel="1"
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree nolabel="1" create="0" edit="0">
-                                    <field name="state"  invisible="1"/>
-                                    <field name="locked"  invisible="1"/>
-                                    <field name="evaluation_form_edit" invisible="1" />
+
                                     <field name="evaluation_id"  invisible="1"/>
-                                    <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="degree_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="skill_id"  readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="development_goal"  optional="show"/>
 
                                 </tree>
+                                <form string="Evaluación de Competencias">
+                                  <header/>
+                                    <sheet>
+                                        <group>
+                                             <group colspan="4">
+                                                <label for="skill_id"/>
+                                               <div>
+                                                    <field name="skill_id" readonly="1"
+                                                           widget="many2one_tooltip"
+                                                           class="float-left"
+                                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+
+                                                </div>
+                                                <field name="development_goal"  />
+
+                                            </group>
+                                        </group>
+                                        <notebook>
+                                            <page string="Plan de acción">
+                                                <field name="development_means_ids"  readonly="1" create="0" delete="0" edit="0">
+                                                    <tree create="0" delete="0">
+                                                        <field name="means_id" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                                        <field name="agreed_activities" readonly="1" optional="show"/>
+                                                        <field name="detail_activities"  readonly="1" optional="hide"/>
+                                                        <field name="comments"  readonly="1" optional="hide"/>
+
+                                                    </tree>
+                                                     <form string="onsc_desempeno_evaluation_development_means_form">
+                                                      <header/>
+                                                        <sheet>
+                                                            <group>
+                                                                <group colspan="4">
+                                                                    <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                                                    <field name="agreed_activities"  />
+                                                                    <field name="detail_activities" />
+                                                                    <field name="comments" />
+                                                                </group>
+                                                            </group>
+
+                                                        </sheet>
+
+                                                    </form>
+
+
+                                                </field>
+                                            </page>
+                                        </notebook>
+                                    </sheet>
+
+                                </form>
                             </field>
                         </page>
 
