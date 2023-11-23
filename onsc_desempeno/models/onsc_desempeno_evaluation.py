@@ -155,7 +155,6 @@ class ONSCDesempenoEvaluation(models.Model):
             '|', ('evaluator_id', '=', self.env.user.employee_id.id),
             ('evaluated_id', '=', self.env.user.employee_id.id)
         ]
-
         if self._is_group_admin_gh_inciso():
             args_extended = expression.OR(
                 [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', 'gap_deal')], args_extended])
@@ -163,6 +162,14 @@ class ONSCDesempenoEvaluation(models.Model):
             args_extended = expression.OR(
                 [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', 'gap_deal')],
                  args_extended])
+        # REPONSABLE UO
+        if self._is_group_responsable_uo():
+            my_department = self.env.user.employee_id.job_id.department_id
+            available_departments = my_department
+            available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
+            args_extended = expression.OR([[
+                ('uo_id', 'in', available_departments.ids),
+                ('evaluation_type', '=', 'gap_deal')], args_extended])
         return expression.AND([args_extended, args])
 
     def _get_domain_collaborator(self, args):
@@ -285,11 +292,15 @@ class ONSCDesempenoEvaluation(models.Model):
     is_agree_evaluation_leader_available = fields.Boolean(
         string='Botón de Acordar Evaluación Líder',
         compute='_compute_is_agree_evaluation_leader_available')
+    is_agree_button_gh_available = fields.Boolean(
+        string='Botón de Acordar Evaluación Líder',
+        compute='_compute_is_agree_button_gh_available')
     gap_deal_state = fields.Selection(
         selection=GAP_DEAL_STATES,
         string="Estado de acuerdo de brecha",
         default='no_deal'
     )
+    is_gap_deal_not_generated = fields.Boolean(string='Acuerdo de brecha no generado')
     is_edit_general_comments = fields.Boolean(
         string='Editable los comentarios generales',
         compute='_compute_is_edit_general_comments')
@@ -310,9 +321,11 @@ class ONSCDesempenoEvaluation(models.Model):
         max_environment_evaluation_forms = self.env.user.company_id.max_environment_evaluation_forms
         for rec in self:
             _len_environment_ids = len(rec.environment_ids)
-            if not self.env.context.get("gap_deal") and (_len_environment_ids < 2 or _len_environment_ids > 10):
-                raise ValidationError(
-                    _('La cantidad de evaluadores de entorno debe ser mayor a 2 y menor a 10!'))
+            if not self.env.context.get("gap_deal") and _len_environment_ids < 2:
+                raise ValidationError(_('No se puede designar el entorno, debe definir un mínimo de 2 personas, '
+                                        'de lo contrario avanzará a la siguiente etapa sin el consolidado de entorno!'))
+            if not self.env.context.get("gap_deal") and _len_environment_ids > 10:
+                raise ValidationError(_('La cantidad de evaluadores de entorno debe ser menor a 10!'))
             for environment_id in rec.environment_ids:
                 if self.with_context(ignore_security_rules=True).search_count([
                     ('evaluation_type', 'in', ['environment_evaluation',
@@ -341,7 +354,8 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
 
             if record.evaluation_type == 'gap_deal':
-                condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
+                condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (
+                            record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
             else:
                 condition = record.state not in [
                     'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
@@ -349,9 +363,35 @@ class ONSCDesempenoEvaluation(models.Model):
 
     @api.depends('state')
     def _compute_is_agree_evaluation_leader_available(self):
+        Department = self.env['hr.department'].sudo()
+        employee = self.env.user.employee_id
         user_employee_id = self.env.user.employee_id.id
+        is_gh_responsable = self._is_group_responsable_uo()
         for record in self:
-            record.is_agree_evaluation_leader_available = record.evaluator_id.id == user_employee_id and record.evaluation_type == 'gap_deal' and not record.gap_deal_state == 'agree_leader'
+            is_am_evaluator = record.evaluator_id.id == user_employee_id
+            is_gap_deal = record.evaluation_type == 'gap_deal'
+            hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
+            hierarchy_deparments |= employee.job_id.department_id
+            is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
+
+            record.is_agree_evaluation_leader_available = is_am_evaluator and is_gap_deal and not record.gap_deal_state == 'agree_leader' and is_responsable
+
+    @api.depends('state')
+    def _compute_is_agree_button_gh_available(self):
+        Department = self.env['hr.department'].sudo()
+        employee = self.env.user.employee_id
+        user_employee_id = self.env.user.employee_id.id
+        is_gh_responsable = self._is_group_responsable_uo()
+        is_gh_user_ue = self._is_group_usuario_gh_ue()
+        is_gh_user_inciso = self._is_group_usuario_gh_inciso()
+        for record in self:
+            is_am_evaluator = record.evaluator_id.id == user_employee_id
+            is_gap_deal = record.evaluation_type == 'gap_deal'
+            hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
+            hierarchy_deparments |= employee.job_id.department_id
+            is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
+            user_security = not is_responsable and (is_gh_user_ue or is_gh_user_inciso)
+            record.is_agree_button_gh_available = is_am_evaluator and is_gap_deal and not record.gap_deal_state == 'agree_leader' and user_security
 
     @api.depends('state')
     def _compute_is_agree_evaluation_evaluated_available(self):
@@ -377,7 +417,9 @@ class ONSCDesempenoEvaluation(models.Model):
         employee = self.env.user.employee_id
         for record in self:
             is_valid_evaluation = record.evaluation_type in ['leader_evaluation', 'gap_deal']
+            is_gap_deal = record.sudo().evaluation_type == 'gap_deal'
             is_am_evaluator = record.evaluator_id.id == employee.id
+            is_am_original_evaluator = record.original_evaluator_id.id == employee.id
             is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
             same_operating_unit = record.operating_unit_id.id == employee.job_id.contract_id.operating_unit_id.id
             same_inciso = record.inciso_id.id == employee.job_id.contract_id.inciso_id.id
@@ -387,7 +429,8 @@ class ONSCDesempenoEvaluation(models.Model):
             is_user_gh_ue_cond = is_gh_user_ue and is_order_1 and same_operating_unit
             is_user_gh_inc_cond = is_gh_user_inciso and is_order_1 and same_inciso
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
-            is_gap_deal_evaluator = record.evaluation_type == 'gap_deal' and record.original_evaluator_id.id == employee.id and record.state == 'draft'
+            is_gap_deal_evaluator = is_gap_deal and (
+                        is_gh_user_inciso or is_user_gh_ue_cond or is_am_original_evaluator)
             base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
 
             record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
@@ -425,9 +468,9 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_is_edit_general_comments(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-
             if record.evaluation_type == 'gap_deal':
-                condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
+                condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (
+                            record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
             else:
                 condition = record.state not in [
                     'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
@@ -458,6 +501,9 @@ class ONSCDesempenoEvaluation(models.Model):
         elif self.gap_deal_state == 'agree_evaluated':
             self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
 
+    def button_agree_gh(self):
+        self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
+
     def button_agree_evaluation_evaluated(self):
         self._check_complete_evaluation()
         if self.gap_deal_state == 'no_deal':
@@ -470,8 +516,13 @@ class ONSCDesempenoEvaluation(models.Model):
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
         for rec in self:
             random_environment_ids = []
-            random_environments = random.sample(rec.environment_ids,
-                                                self.env.user.company_id.random_environment_evaluation_forms)
+            if len(rec.environment_ids) <= self.env.user.company_id.random_environment_evaluation_forms:
+                random_environments = rec.environment_ids
+            else:
+                random_environments = random.sample(
+                    rec.environment_ids,
+                    self.env.user.company_id.random_environment_evaluation_forms
+                )
             hierachy_manager_id = rec.uo_id.get_first_department_withmanager_in_tree().manager_id.id
             is_manager = hierachy_manager_id == rec.evaluated_id.id
             level_id = Level.suspend_security().search(

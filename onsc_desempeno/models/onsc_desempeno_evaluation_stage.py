@@ -287,6 +287,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     def _process_gap_deal(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
 
         valid_days = (self.end_date - fields.Date.from_string(fields.Date.today())).days
@@ -297,6 +298,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                      ('evaluation_type', 'in', ['leader_evaluation'])]):
                 evaluation = record.copy_data()
                 evaluation[0]["evaluation_type"] = "gap_deal"
+                evaluation[0]["evaluator_uo_id"] = record.evaluator_uo_id.id
 
                 gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
@@ -309,8 +311,16 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
                 partners_to_notify |= record.evaluated_id.partner_id
                 partners_to_notify |= record.evaluator_id.partner_id
-
             self.with_context(partners_to_notify=partners_to_notify)._send_start_stage_2_notification()
+        else:
+            Evaluation.with_context(ignore_security_rules=True).search([
+                ('evaluation_stage_id', '=', self.id),
+                ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation']),
+            ]).write({'is_gap_deal_not_generated': True})
+            Consolidated.with_context(ignore_security_rules=True).search([
+                ('evaluation_stage_id', '=', self.id)
+            ]).write({'is_gap_deal_not_generated': True})
+
 
     def _send_start_stage_2_notification(self):
         generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_start_stage_2_form')
@@ -321,9 +331,3 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     def get_start_stage_2(self):
         return fields.Datetime.today().strftime('%d/%m/%Y')
-
-    def is_valid_create_gap_deal(self):
-        for record in self:
-            valid_days = (record.end_date - fields.Date.from_string(fields.Date.today())).days
-            if self.env.user.company_id.days_gap_deal_eval_creation <= valid_days:
-                a = 5  # TODO: Sebastian, aca va el codigo para crear los acuerdos de brechas

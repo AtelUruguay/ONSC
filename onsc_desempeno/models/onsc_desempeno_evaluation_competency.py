@@ -23,7 +23,8 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     _description = u'Competencia'
     _order = "skill_id"
 
-    evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)
+    evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True,
+                                    ondelete='cascade')
     consolidate_id = fields.Many2one('onsc.desempeno.consolidated', string='Competencia', readonly=True)
     gap_deal_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
