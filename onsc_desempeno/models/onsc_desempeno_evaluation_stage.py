@@ -321,7 +321,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 ('evaluation_stage_id', '=', self.id)
             ]).write({'is_gap_deal_not_generated': True})
 
-
     def _send_start_stage_2_notification(self):
         generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_start_stage_2_form')
         generated_form_email_template_id.send_mail(self.id, force_send=True)

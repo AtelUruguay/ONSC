@@ -352,13 +352,13 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-
             if record.evaluation_type == 'gap_deal':
-                condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (
-                            record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
+                _cond1 = record.state != 'in_process' or record.gap_deal_state != 'no_deal'
+                _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
+                condition = _cond1 or _cond2
             else:
-                condition = record.state not in [
-                    'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
+                _cond1 = record.evaluator_id.id != user_employee_id or record.locked
+                condition = record.state not in ['in_process'] or _cond1
             record.should_disable_form_edit = condition
 
     @api.depends('state')
@@ -374,7 +374,9 @@ class ONSCDesempenoEvaluation(models.Model):
             hierarchy_deparments |= employee.job_id.department_id
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
 
-            record.is_agree_evaluation_leader_available = is_am_evaluator and is_gap_deal and not record.gap_deal_state == 'agree_leader' and is_responsable
+            _cond1 = is_am_evaluator and is_gap_deal
+            _cond2 = not record.gap_deal_state == 'agree_leader' and is_responsable
+            record.is_agree_evaluation_leader_available = _cond1 and _cond2
 
     @api.depends('state')
     def _compute_is_agree_button_gh_available(self):
@@ -419,7 +421,7 @@ class ONSCDesempenoEvaluation(models.Model):
             is_valid_evaluation = record.evaluation_type in ['leader_evaluation', 'gap_deal']
             is_gap_deal = record.sudo().evaluation_type == 'gap_deal'
             is_am_evaluator = record.evaluator_id.id == employee.id
-            is_am_original_evaluator = record.original_evaluator_id.id == employee.id
+            is_am_orig_evaluator = record.original_evaluator_id.id == employee.id
             is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
             same_operating_unit = record.operating_unit_id.id == employee.job_id.contract_id.operating_unit_id.id
             same_inciso = record.inciso_id.id == employee.job_id.contract_id.inciso_id.id
@@ -429,8 +431,7 @@ class ONSCDesempenoEvaluation(models.Model):
             is_user_gh_ue_cond = is_gh_user_ue and is_order_1 and same_operating_unit
             is_user_gh_inc_cond = is_gh_user_inciso and is_order_1 and same_inciso
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
-            is_gap_deal_evaluator = is_gap_deal and (
-                        is_gh_user_inciso or is_user_gh_ue_cond or is_am_original_evaluator)
+            is_gap_deal_evaluator = is_gap_deal and (is_gh_user_inciso or is_user_gh_ue_cond or is_am_orig_evaluator)
             base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
 
             record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
@@ -469,8 +470,9 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_type == 'gap_deal':
-                condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (
-                            record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
+                _cond1 = record.state != 'in_process' or record.gap_deal_state != 'no_deal'
+                _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
+                condition = _cond1 or _cond2
             else:
                 condition = record.state not in [
                     'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
