@@ -244,7 +244,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 evaluation_type = 'collaborator'
             search_domain_consolidated = [('evaluated_id', '=', res.evaluated_id.id),
                                           ('evaluation_stage_id', '=', self.id)]
-            if len(results.filtered(lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id)) > 1:
+            if len(results.filtered(
+                    lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id)) > 1:
                 if Consolidated.search_count(search_domain_consolidated) == 0:
                     data = {'general_cycle_id': res.general_cycle_id.id,
                             'evaluated_id': res.evaluated_id.id,
@@ -317,6 +318,9 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     def get_followers_mails(self):
         return self._context.get('partners_to_notify').get_onsc_mails()
+
+    def get_start_stage_2(self):
+        return fields.Datetime.today().strftime('%d/%m/%Y')
 
     def is_valid_create_gap_deal(self):
         for record in self:

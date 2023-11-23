@@ -10,7 +10,8 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="evaluation_start_date"/>
-                <field name="evaluation_end_date"/>
+                <field name="evaluation_end_date"  invisible="context.get('gap_deal', False) is True"/>
+                <field name="evaluation_end_date_max" invisible="context.get('gap_deal', False) is False"/>
                 <field name="environment_definition_end_date"
                        invisible="context.get('environment_definition', False) is False"/>
                 <field name="state"/>
@@ -86,7 +87,7 @@
                             confirm="¿Está seguro de que desea reabrir la evaluación?"/>
 
                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,deal_close,finished" />
+                           statusbar_visible="draft,in_process,uncompleted,finished" />
                 </header>
                 <sheet>
                     <field name="is_evaluation_change_available" invisible="1"/>
@@ -244,8 +245,10 @@
 
                         </page>
                     </notebook>
+                    <field name="is_edit_general_comments" invisible="1" />
                     <group name="general_comments" string="Comentarios Generales"
-                           attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('locked', '=', True)]}">
+
+                           attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
                         <field name="general_comments" nolabel="1"
                                placeholder="Comentarios Generales"/>
                     </group>

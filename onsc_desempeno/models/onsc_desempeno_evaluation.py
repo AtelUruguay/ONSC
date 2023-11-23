@@ -25,10 +25,10 @@ STATE = [
     ('draft', 'Borrador'),
     ('in_process', 'En Proceso'),
     ('completed', 'Completado'),
-    ('finished', 'Finalizado'),
     ('uncompleted', 'Sin Finalizar'),
     ('canceled', 'Cancelado'),
-    ('deal_close', "Acuerdo cerrado")
+    ('deal_close', "Acuerdo cerrado"),
+    ('finished', 'Finalizado'),
 ]
 
 GAP_DEAL_STATES = [
@@ -290,6 +290,9 @@ class ONSCDesempenoEvaluation(models.Model):
         string="Estado de acuerdo de brecha",
         default='no_deal'
     )
+    is_edit_general_comments = fields.Boolean(
+        string='Editable los comentarios generales',
+        compute='_compute_is_edit_general_comments')
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -332,7 +335,7 @@ class ONSCDesempenoEvaluation(models.Model):
             else:
                 record.name = ''
 
-    @api.depends('state')
+    @api.depends('state', 'gap_deal_state')
     def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
@@ -418,6 +421,18 @@ class ONSCDesempenoEvaluation(models.Model):
                 domain = [('id', 'in', [])]
             rec.environment_ids_domain = json.dumps(domain)
 
+    @api.depends('state', 'gap_deal_state')
+    def _compute_is_edit_general_comments(self):
+        user_employee_id = self.env.user.employee_id.id
+        for record in self:
+
+            if record.evaluation_type == 'gap_deal':
+                condition = record.state != 'in_process' or record.gap_deal_state != 'no_deal' or (record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id)
+            else:
+                condition = record.state not in [
+                    'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
+            record.is_edit_general_comments = condition
+
     def button_start_evaluation(self):
         self.write({'state': 'in_process'})
 
@@ -497,10 +512,16 @@ class ONSCDesempenoEvaluation(models.Model):
         if self.evaluation_type != 'environment_definition' and not self.general_comments:
             raise ValidationError(_("El campo comentarios generales es obligatorio"))
 
-        for competency in self.evaluation_competency_ids:
-            if not competency.degree_id or not competency.improvement_areas:
-                raise ValidationError(
-                    _('Deben estar todas las evaluaciones de competencias completas para poder pasar a "Completado"'))
+        if self.evaluation_type == 'gap_deal':
+            for competency in self.gap_deal_competency_ids:
+                if not competency.degree_id or not competency.improvement_areas:
+                    raise ValidationError(
+                        _('Deben estar todas las evaluaciones de competencias completas para poder acordar'))
+        else:
+            for competency in self.evaluation_competency_ids:
+                if not competency.degree_id or not competency.improvement_areas:
+                    raise ValidationError(
+                        _('Deben estar todas las evaluaciones de competencias completas para poder pasar a "Completado"'))
 
     def notification_end_evaluation(self):
         GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
@@ -613,3 +634,12 @@ class ONSCDesempenoEvaluation(models.Model):
                     record.write({'state': 'finished'})
                 elif record.state not in ['finished', 'uncompleted']:
                     record.write({'state': 'uncompleted'})
+
+    def get_end_gap_deal(self):
+        return self.evaluation_end_date_max.strftime('%d/%m/%Y')
+
+    def get_evalaution_end_date(self):
+        return self.evaluation_end_date.strftime('%d/%m/%Y')
+
+    def get_environment_definition_end_date(self):
+        return self.environment_definition_end_date.strftime('%d/%m/%Y')

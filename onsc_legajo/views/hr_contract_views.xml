@@ -64,6 +64,7 @@
                             <field name="extinction_commission_id"
                                    readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="date_end_commission"/>
                             <field name="occupation_id"
                                    attrs="{'invisible': [('is_occupation_visible', '=', False)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>

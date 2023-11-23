@@ -144,7 +144,6 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
             'tipo_doc': operation.tipo_doc,
             'cod_pais': operation.cod_pais,
             'raza': operation.raza if hasattr(operation, 'raza') else False,
-            # 'cod_mecing': operation.cod_mecing if hasattr(operation, 'cod_mecing') else False,
             'cod_desc1': operation.cod_desc1 if hasattr(operation, 'cod_desc1') else False,
             'cod_desc2': operation.cod_desc2 if hasattr(operation, 'cod_desc2') else False,
             'cod_desc3': operation.cod_desc3 if hasattr(operation, 'cod_desc3') else False,

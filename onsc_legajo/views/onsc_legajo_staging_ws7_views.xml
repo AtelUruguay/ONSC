@@ -113,14 +113,6 @@
                                        class="oe_inline"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             </div>
-<!--                            <label for="cod_mecing"/>-->
-<!--                            <div>-->
-<!--                                <field name="cod_mecing" readonly="1" class="oe_inline" style="width:20%!important"/>-->
-<!--                                <field name="income_mechanism_id"-->
-<!--                                       style="width:80%!important"-->
-<!--                                       class="oe_inline"-->
-<!--                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>-->
-<!--                            </div>-->
                             <label for="cod_reg"/>
                             <div>
                                 <field name="cod_reg" readonly="1" class="oe_inline" style="width:20%!important"/>
