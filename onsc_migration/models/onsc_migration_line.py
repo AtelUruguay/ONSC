@@ -1367,6 +1367,8 @@ class ONSCMigrationLine(models.Model):
                     'code_day': self.retributive_day_formal,
                     'description_day': self.retributive_day_formal_desc,
                     'retributive_day_id': self.retributive_day_id.id,
+                    'date_start': self.date_start or fields.Date.today(),
+                    'eff_date': self.date_start or fields.Date.today(),
                 })
                 if not self.inciso_des_id.is_central_administration:
                     vals_contract1.update({

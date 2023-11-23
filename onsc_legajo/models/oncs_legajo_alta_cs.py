@@ -282,16 +282,26 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('state', 'type_cs', 'inciso_origin_id')
     def _compute_should_disable_form_edit(self):
+        is_user_inciso = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
+        is_user_ue = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         for record in self:
+            # DESTINATION CONDITIONS
+            is_editable_dest_inciso = record.inciso_destination_id == inciso_id and is_user_inciso
+            is_editable_dest_ue = record.operating_unit_destination_id == operating_unit_id and is_user_ue
+            is_editable_dest = is_editable_dest_inciso or is_editable_dest_ue
+            # ORIGIN CONDITIONS
+            is_editable_orig_inciso = record.inciso_origin_id == inciso_id and is_user_inciso
+            is_editable_orig_ue = record.operating_unit_origin_id == operating_unit_id and is_user_ue
+            is_editable_orig = is_editable_orig_inciso or is_editable_orig_ue
             if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and self.user_has_groups(
                     'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
                 record.should_disable_form_edit = False
             elif record.state not in ['draft', 'to_process', 'returned', 'error_sgh']:
                 record.should_disable_form_edit = True
-            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and record.inciso_origin_id == inciso_id:
+            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and not is_editable_dest:
                 record.should_disable_form_edit = True
-            elif record.state == 'returned' and record.type_cs == 'ac2ac' and record.inciso_destination_id == inciso_id:
+            elif record.state == 'returned' and record.type_cs == 'ac2ac' and not is_editable_orig:
                 record.should_disable_form_edit = True
             else:
                 record.should_disable_form_edit = False
