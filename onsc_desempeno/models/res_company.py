@@ -15,6 +15,7 @@ class ResCompany(models.Model):
     max_environment_evaluation_forms = fields.Integer(string='Tope de formularios por evaluador')
     random_environment_evaluation_forms = fields.Integer(string='Cantidad de formularios de entorno a generar por definición')
     days_notification_end_ev = fields.Integer(u"Días para notificar antes de la fecha de fin de evaluación")
+    days_gap_deal_eval_creation = fields.Integer(u"Días para la creación de Acuerdos de brecha")
 
     def write(self, vals):
         _fields = [
@@ -27,7 +28,8 @@ class ResCompany(models.Model):
             "descriptor1_ids",
             "max_environment_evaluation_forms",
             "random_environment_evaluation_forms",
-            "days_notification_end_ev"
+            "days_notification_end_ev",
+            "days_gap_deal_eval_creation"
         ]
         if any(x in vals.keys() for x in _fields):
             return super(ResCompany, self.suspend_security()).write(vals)

@@ -52,6 +52,10 @@
                                             <label for="days_notification_end_ev" class="col-md-3 o_light_label"/>
                                             <field name="days_notification_end_ev"/>
                                         </div>
+                                        <div class="row">
+                                            <label for="days_gap_deal_eval_creation" class="col-md-3 o_light_label"/>
+                                            <field name="days_gap_deal_eval_creation"/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

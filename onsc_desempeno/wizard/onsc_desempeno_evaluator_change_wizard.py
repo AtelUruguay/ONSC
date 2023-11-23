@@ -12,11 +12,16 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
     reasign_tome = fields.Boolean(
         string='Reasignarme evaluación')
     job_id = fields.Many2one('hr.job', string='Nuevo evaluador', required=False)
-    reason_id = fields.Many2one('onsc.desempeno.reason.change.evaluator', string='Motivo de cambio', required=True)
+    reason_id = fields.Many2one('onsc.desempeno.reason.change.evaluator', string='Motivo de cambio', required=False)
 
     is_reasign_tome_available = fields.Boolean(
         string=u'¿Puedo reasignarme evaluación?',
         compute='_compute_is_reasign_tome_available'
+    )
+
+    is_reason_id_available = fields.Boolean(
+        string=u'¿Puedo asignar Motivo de cambio?',
+        compute='_compute_is_reason_id_available'
     )
 
     job_id_domain = fields.Char(compute='_compute_evaluator_id_domain')
@@ -33,19 +38,33 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
             rec.is_reasign_tome_available = is_iam_original_eval and not is_iam_current_eval
 
     @api.depends('evaluation_id')
+    def _compute_is_reason_id_available(self):
+        if self.evaluation_id.evaluation_type != 'gap_deal':
+            self.is_reason_id_available = True
+        else:
+            Department = self.env['hr.department'].sudo()
+            is_gh_responsable = self.evaluation_id._is_group_responsable_uo()
+            employee = self.env.user.employee_id
+            hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
+            hierarchy_deparments |= employee.job_id.department_id
+            is_responsable = is_gh_responsable and self.evaluation_id.uo_id.id in hierarchy_deparments.ids
+            self.is_reason_id_available = is_responsable
+
+    @api.depends('evaluation_id')
     def _compute_evaluator_id_domain(self):
         Job = self.env['hr.job'].sudo()
         is_usuario_gh = self.user_has_groups(
             'onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_usuario_gh_inciso')
         user_job = self.env.user.employee_id.job_id
         for rec in self:
+            is_gap_deal = self.evaluation_id.evaluation_type == 'gap_deal'
             # SI SOY RESPONSABLE EN LA LINEA JERARQUICA DE LA UO DE LA EVALUACIÓN ME PUEDO ASIGNAR A MI MISMO
             managers_in_department_tree = self.evaluation_id.evaluator_uo_id.get_all_managers_in_department_tree()
-            if self.env.user.employee_id.id in managers_in_department_tree:
+            if self.env.user.employee_id.id in managers_in_department_tree or is_gap_deal:
                 jobs = user_job
             else:
                 jobs = self.env['hr.job']
-            if is_usuario_gh:
+            if is_usuario_gh and not is_gap_deal:
                 jobs = Job.search([
                     ('department_id.parent_id', '=', self.evaluation_id.evaluator_uo_id.id),
                     ('department_id.function_nature', '=', 'adviser'),
@@ -60,15 +79,19 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
             ])
 
     def action_confirm(self):
+        if self.reason_id:
+            reason_id = self.reason_id.id
+        else:
+            reason_id = self.env['onsc.desempeno.reason.change.evaluator'].search([('agree', '=', True)], limit=1).id
         if self.reasign_tome:
             vals = {
-                'reason_change_id': self.reason_id.id,
+                'reason_change_id': reason_id,
                 'evaluator_id': self.evaluation_id.original_evaluator_id.id,
                 'evaluator_uo_id': self.evaluation_id.original_evaluator_uo_id.id
             }
         else:
             vals = {
-                'reason_change_id': self.reason_id.id,
+                'reason_change_id': reason_id,
                 'evaluator_id': self.job_id.employee_id.id,
                 'evaluator_uo_id': self.job_id.department_id.id
             }
