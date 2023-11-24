@@ -689,10 +689,17 @@ class ONSCDesempenoEvaluation(models.Model):
                     record.write({'state': 'uncompleted'})
 
     def get_end_gap_deal(self):
-        return self.evaluation_end_date_max.strftime('%d/%m/%Y')
+        year = fields.Date.today().strftime('%Y')
+        general_cycle = self.search(
+            [('evaluation_type', '=', 'gap_deal'), ('year', '=', year)], limit=1).mapped('general_cycle_id')
+        return general_cycle.end_date_max.strftime('%d/%m/%Y')
 
     def get_evalaution_end_date(self):
-        return self.evaluation_end_date.strftime('%d/%m/%Y')
+        year = fields.Date.today().strftime('%Y')
+        evaluation = self.search([('year', '=', year)], limit=1)
+        return evaluation.evaluation_end_date.strftime('%d/%m/%Y')
 
     def get_environment_definition_end_date(self):
-        return self.environment_definition_end_date.strftime('%d/%m/%Y')
+        year = fields.Date.today().strftime('%Y')
+        evaluation = self.search([('year', '=', year)], limit=1)
+        return evaluation.environment_definition_end_date.strftime('%d/%m/%Y')
