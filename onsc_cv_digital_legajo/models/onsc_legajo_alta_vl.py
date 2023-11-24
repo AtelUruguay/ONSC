@@ -276,7 +276,6 @@ class ONSCLegajoAltaVL(models.Model):
         self.check_required_fields_ws4()
         if not self.codigoJornadaFormal and self.retributive_day_id:
             self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
-            self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
         self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
             log_info=log_info).suspend_security().syncronize_multi(self)
 
@@ -286,7 +285,6 @@ class ONSCLegajoAltaVL(models.Model):
             raise ValidationError(_("Solo se pueden enviar altas en estado borrador o error SGH"))
         if not self.codigoJornadaFormal and self.retributive_day_id:
             self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
-            self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
         altas_presupuestales = self.filtered(lambda x: x.is_presupuestado)
         altas_presupuestales.syncronize_multi_ws4()
         altas_no_presupuestales = self.filtered(lambda x: not x.is_presupuestado)
