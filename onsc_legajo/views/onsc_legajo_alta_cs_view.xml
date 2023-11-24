@@ -6,8 +6,13 @@
         <field name="model">onsc.legajo.alta.cs</field>
         <field name="arch" type="xml">
             <search string="Altas de Comisión">
+                <field name="partner_id" string="CI" context="{'show_cv_nro_doc':True}"/>
+                <field name="state"/>
                 <filter string="Para procesar" name="filter_altas_draft"
                         domain="[('filter_destination','=',True)]"/>
+                <group string="Agrupar por">
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                </group>
             </search>
         </field>
     </record>
