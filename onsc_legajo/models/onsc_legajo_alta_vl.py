@@ -490,8 +490,8 @@ class ONSCLegajoAltaVL(models.Model):
             'call_number': self.call_number,
             'contract_expiration_date': self.contract_expiration_date,
             'additional_information': self.additional_information,
-            'code_day': self.retributive_day_id.codigoJornada,
-            'description_day': self.retributive_day_id.descripcionJornada,
+            'code_day': self.codigoJornadaFormal,
+            'description_day': self.descripcionJornadaFormal,
             'retributive_day_id': self.retributive_day_id.id,
             'id_alta': self.id_alta,
             #
