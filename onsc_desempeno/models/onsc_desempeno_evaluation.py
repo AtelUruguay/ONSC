@@ -637,7 +637,7 @@ class ONSCDesempenoEvaluation(models.Model):
     def get_end_gap_deal(self):
         year = fields.Date.today().strftime('%Y')
         general_cycle = self.search(
-            [('evaluation_type', '=', 'gap_deal'), ('year', '=', year)],limit=1).mapped('general_cycle_id')
+            [('evaluation_type', '=', 'gap_deal'), ('year', '=', year)], limit=1).mapped('general_cycle_id')
         return general_cycle.end_date_max.strftime('%d/%m/%Y')
 
     def get_evalaution_end_date(self):

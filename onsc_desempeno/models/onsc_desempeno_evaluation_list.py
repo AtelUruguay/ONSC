@@ -575,7 +575,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         return self._context.get('partners_to_notify').get_onsc_mails()
 
     def get_start_date(self):
-        return self.start_date.strftime('%d/%m/%Y')
+        return fields.Datetime.today().strftime('%d/%m/%Y')
 
 
 class ONSCDesempenoEvaluationListLine(models.Model):
