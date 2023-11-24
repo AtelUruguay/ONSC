@@ -79,31 +79,31 @@ class ONSCLegajoAltaVL(models.Model):
     personal_phone = fields.Char(string="Teléfono Alternativo", related='partner_id.phone', tracking=False)
     mobile_phone = fields.Char(string="Teléfono Móvil", related='partner_id.mobile', tracking=False)
     email = fields.Char(string="e-mail", related='partner_id.email')
-    digitized_document_file = fields.Binary(string=digitized_document_full_name)
-    digitized_document_filename = fields.Char('Nombre del documento Digitalizado')
+    digitized_document_file = fields.Binary(string=digitized_document_full_name, copy=False)
+    digitized_document_filename = fields.Char('Nombre del documento Digitalizado', copy=False)
 
-    cv_address_state_id = fields.Many2one('res.country.state', string='Departamento')
-    cv_address_location_id = fields.Many2one('onsc.cv.location', string="Localidad")
-    cv_address_street = fields.Char(string="Calle")
-    cv_address_nro_door = fields.Char(string="Número de puerta")
-    cv_address_is_cv_bis = fields.Boolean(string="Bis")
-    cv_address_apto = fields.Char(string="Apartamento")
-    cv_address_place = fields.Text(string="Paraje")
-    cv_address_zip = fields.Char(string="Código Postal")
-    cv_address_block = fields.Char(string="Manzana")
-    cv_address_sandlot = fields.Char(string="Solar")
-    address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
-    address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
+    cv_address_state_id = fields.Many2one('res.country.state', string='Departamento', copy=False)
+    cv_address_location_id = fields.Many2one('onsc.cv.location', string="Localidad", copy=False)
+    cv_address_street = fields.Char(string="Calle", copy=False)
+    cv_address_nro_door = fields.Char(string="Número de puerta", copy=False)
+    cv_address_is_cv_bis = fields.Boolean(string="Bis", copy=False)
+    cv_address_apto = fields.Char(string="Apartamento", copy=False)
+    cv_address_place = fields.Text(string="Paraje", copy=False)
+    cv_address_zip = fields.Char(string="Código Postal", copy=False)
+    cv_address_block = fields.Char(string="Manzana", copy=False)
+    cv_address_sandlot = fields.Char(string="Solar", copy=False)
+    address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"', copy=False)
+    address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio', copy=False)
 
-    employee_id = fields.Many2one('hr.employee', 'Employee')
+    employee_id = fields.Many2one('hr.employee', 'Employee', copy=False)
     cv_digital_id = fields.Many2one(comodel_name="onsc.cv.digital", string="CV Digital", copy=False)
     is_docket = fields.Boolean(string="Tiene legajo", related='cv_digital_id.is_docket')
     vacante_ids = fields.One2many('onsc.cv.digital.vacante', 'alta_vl_id', string="Vacantes")
-    codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
-    country_code = fields.Char("Código")
+    codigoJornadaFormal = fields.Integer(string="Código Jornada Formal", copy=False)
+    country_code = fields.Char("Código", copy=False)
     origin_type = fields.Selection([('M', 'Manual'), ('P', 'Proceso')], string='Origen',
                                    compute='_compute_origin_type', store=True)
-    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución')
+    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución', copy=False)
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -274,6 +274,9 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         self.check_required_fields_ws4()
+        if not self.codigoJornadaFormal and self.retributive_day_id:
+            self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
+            self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
         self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
             log_info=log_info).suspend_security().syncronize_multi(self)
 
@@ -281,6 +284,9 @@ class ONSCLegajoAltaVL(models.Model):
         self.check_required_fields_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
             raise ValidationError(_("Solo se pueden enviar altas en estado borrador o error SGH"))
+        if not self.codigoJornadaFormal and self.retributive_day_id:
+            self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
+            self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
         altas_presupuestales = self.filtered(lambda x: x.is_presupuestado)
         altas_presupuestales.syncronize_multi_ws4()
         altas_no_presupuestales = self.filtered(lambda x: not x.is_presupuestado)
