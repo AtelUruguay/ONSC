@@ -489,13 +489,26 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs')
     def _compute_is_available_send_to_sgh(self):
         is_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
-        is_user_ue_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
+        is_user_inciso = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
+        is_user_ue = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
+        inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         for record in self:
+            # DESTINATION CONDITIONS
+            is_editable_dest_inciso = record.inciso_destination_id == inciso_id and is_user_inciso
+            is_editable_dest_ue = record.operating_unit_destination_id == operating_unit_id and is_user_ue
+            is_editable_dest = is_editable_dest_inciso or is_editable_dest_ue
+            # ORIGIN CONDITIONS
+            is_editable_orig_inciso = record.inciso_origin_id == inciso_id and is_user_inciso
+            is_editable_orig_ue = record.operating_unit_origin_id == operating_unit_id and is_user_ue
+            is_editable_orig = is_editable_orig_inciso or is_editable_orig_ue
+
             is_same_inciso = record.inciso_origin_id == record.inciso_destination_id
             # AC2AC siendo tu mismo inciso origen y destino
             if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
                 record.is_available_send_to_sgh = True
-            elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue_alta_cs:
+            elif record.state == 'returned' and is_editable_orig:
+                record.is_available_send_to_sgh = True
+            elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue:
                 record.is_available_send_to_sgh = False
             elif record.state in ['draft', 'to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and is_same_inciso:
                 record.is_available_send_to_sgh = True
