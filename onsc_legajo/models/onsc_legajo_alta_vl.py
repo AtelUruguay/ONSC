@@ -76,7 +76,7 @@ class ONSCLegajoAltaVL(models.Model):
             res['operating_unit_id'] = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         return res
 
-    partner_id = fields.Many2one("res.partner", string="Contacto", readonly=True,
+    partner_id = fields.Many2one("res.partner", string="Contacto", readonly=True, copy=False,
                                  states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     date_start = fields.Date(string="Fecha de alta", default=lambda *a: fields.Date.today(), copy=False, readonly=True,
                              states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
@@ -88,11 +88,8 @@ class ONSCLegajoAltaVL(models.Model):
                               states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     is_call_number_required = fields.Boolean(string="¿Requiere número de llamado?",
                                              related="income_mechanism_id.is_call_number_required", store=True)
-    # inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False, readonly=True,
-    #                             states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     is_inciso_readonly = fields.Boolean(compute="_compute_is_readonly", readonly=True,
                                         states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    # operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
     is_operating_unit_readonly = fields.Boolean(compute="_compute_is_readonly")
     operating_unit_id_domain = fields.Char(compute='_compute_operating_unit_id_domain')
     department_id = fields.Many2one("hr.department", string="Unidad organizativa", copy=False, readonly=True,
@@ -179,11 +176,11 @@ class ONSCLegajoAltaVL(models.Model):
                                                                    'error_sgh': [('readonly', False)]})
     state = fields.Selection(STATES, string='Estado', default='borrador', copy=False)
     # Response WS4
-    id_alta = fields.Char(string="Id Alta")
-    secPlaza = fields.Char(string="Sec Plaza")
-    codigoJornadaFormal = fields.Char(string="Código Jornada Formal")
-    descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal")
-    ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN")
+    id_alta = fields.Char(string="Id Alta", copy=False)
+    secPlaza = fields.Char(string="Sec Plaza", copy=False)
+    codigoJornadaFormal = fields.Char(string="Código Jornada Formal", copy=False)
+    descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal", copy=False)
+    ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN", copy=False)
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
@@ -493,8 +490,8 @@ class ONSCLegajoAltaVL(models.Model):
             'call_number': self.call_number,
             'contract_expiration_date': self.contract_expiration_date,
             'additional_information': self.additional_information,
-            'code_day': self.retributive_day_id.codigoJornada,
-            'description_day': self.retributive_day_id.descripcionJornada,
+            'code_day': self.codigoJornadaFormal,
+            'description_day': self.descripcionJornadaFormal,
             'retributive_day_id': self.retributive_day_id.id,
             'id_alta': self.id_alta,
             #

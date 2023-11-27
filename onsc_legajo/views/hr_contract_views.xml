@@ -64,6 +64,7 @@
                             <field name="extinction_commission_id"
                                    readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="date_end_commission"/>
                             <field name="occupation_id"
                                    attrs="{'invisible': [('is_occupation_visible', '=', False)]}"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
@@ -147,7 +148,7 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Puestos" name="puestos">
+                        <page string="Puestos en UO" name="puestos">
                             <field name="job_ids" nolabel="1" readonly="1"
                                    context="{'form_view_ref' : 'onsc_legajo.onsc_legajo_hr_job_form_view'}">
                                 <tree editable="top">

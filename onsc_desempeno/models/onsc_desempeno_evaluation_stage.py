@@ -244,7 +244,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 evaluation_type = 'collaborator'
             search_domain_consolidated = [('evaluated_id', '=', res.evaluated_id.id),
                                           ('evaluation_stage_id', '=', self.id)]
-            if len(results.filtered(lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id)) > 1:
+            if len(results.filtered(
+                    lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id)) > 1:
                 if Consolidated.search_count(search_domain_consolidated) == 0:
                     data = {'general_cycle_id': res.general_cycle_id.id,
                             'evaluated_id': res.evaluated_id.id,
@@ -285,29 +286,40 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 record.write({'state': 'uncompleted', 'locked': False})
 
     def _process_gap_deal(self):
-
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
-        partners_to_notify = self.env["res.partner"]
-        for record in Evaluation.search(
-                [('evaluation_stage_id', '=', self.id),
-                 ('evaluation_type', 'in', ['leader_evaluation'])]):
-            evaluation = record.copy_data()
-            evaluation[0]["evaluation_type"] = "gap_deal"
 
-            gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
+        valid_days = (self.end_date - fields.Date.from_string(fields.Date.today())).days
+        if self.env.user.company_id.days_gap_deal_eval_creation <= valid_days:
+            partners_to_notify = self.env["res.partner"]
+            for record in Evaluation.search(
+                    [('evaluation_stage_id', '=', self.id),
+                     ('evaluation_type', 'in', ['leader_evaluation'])]):
+                evaluation = record.copy_data()
+                evaluation[0]["evaluation_type"] = "gap_deal"
+                evaluation[0]["evaluator_uo_id"] = record.evaluator_uo_id.id
 
-            for competency in record.evaluation_competency_ids:
-                Competency.create({'gap_deal_id': gap_deal.id,
-                                   'skill_id': competency.skill_id.id,
-                                   'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
-                                       lambda r: r.level_id.id == record.level_id.id).ids)]
-                                   })
+                gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
-            partners_to_notify |= record.evaluated_id.partner_id
-            partners_to_notify |= record.evaluator_id.partner_id
+                for competency in record.evaluation_competency_ids:
+                    Competency.create({'gap_deal_id': gap_deal.id,
+                                       'skill_id': competency.skill_id.id,
+                                       'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
+                                           lambda r: r.level_id.id == record.level_id.id).ids)]
+                                       })
 
-        self.with_context(partners_to_notify=partners_to_notify)._send_start_stage_2_notification()
+                partners_to_notify |= record.evaluated_id.partner_id
+                partners_to_notify |= record.evaluator_id.partner_id
+            self.with_context(partners_to_notify=partners_to_notify)._send_start_stage_2_notification()
+        else:
+            Evaluation.with_context(ignore_security_rules=True).search([
+                ('evaluation_stage_id', '=', self.id),
+                ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation']),
+            ]).write({'is_gap_deal_not_generated': True})
+            Consolidated.with_context(ignore_security_rules=True).search([
+                ('evaluation_stage_id', '=', self.id)
+            ]).write({'is_gap_deal_not_generated': True})
 
     def _send_start_stage_2_notification(self):
         generated_form_email_template_id = self.env.ref('onsc_desempeno.email_template_start_stage_2_form')
@@ -315,3 +327,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     def get_followers_mails(self):
         return self._context.get('partners_to_notify').get_onsc_mails()
+
+    def get_start_stage_2(self):
+        return fields.Datetime.today().strftime('%d/%m/%Y')

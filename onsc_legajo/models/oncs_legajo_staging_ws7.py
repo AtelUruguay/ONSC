@@ -221,11 +221,6 @@ class ONSCLegajoStagingWS7(models.Model):
         else:
             race_id = self.race_id.id
         vals.update({'race_id': race_id})
-        # if self.cod_mecing and not self.income_mechanism_id:
-        #     income_mechanism_id = BaseUtils._get_catalog_id(IncomeMechanism, 'code', self, 'cod_mecing', log_list)
-        # else:
-        #     income_mechanism_id = self.income_mechanism_id.id
-        # vals.update({'income_mechanism_id': income_mechanism_id})
         if self.cod_reg and not self.regime_id:
             regime_id = BaseUtils._get_catalog_id(Regime, 'codRegimen', self, 'cod_reg', log_list)
         else:

@@ -239,20 +239,24 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                         altas_vl = altas_vl.filtered(
                             lambda x: x.partner_id.cv_nro_doc[:-1] == str(response['cedula']))
                         if altas_vl:
-                            altas_vl.write({
+                            vals = {
                                 'id_alta': response['pdaId'] if 'pdaId' in response else False,
                                 'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
                                 'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
                                 'nroPlaza': response['nroPlaza'] if 'nroPlaza' in response else False,
-                                'codigoJornadaFormal': response[
-                                    'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
-                                'descripcionJornadaFormal': response[
-                                    'descripcionJornadaFormal'] if 'descripcionJornadaFormal' in response else False,
+
                                 'is_error_synchronization': False,
                                 'ws4_user_id': self.env.user.id,
                                 'state': 'pendiente_auditoria_cgn',
                                 'error_message_synchronization': ''
-                            })
+                            }
+                            if 'descripcionJornadaFormal' in response:
+                                vals.update({
+                                    'codigoJornadaFormal': response[
+                                        'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
+                                    'descripcionJornadaFormal': response['descripcionJornadaFormal'],
+                                })
+                            altas_vl.write(vals)
                             altas_vl.filtered(lambda x: x.is_responsable_uo).mapped(
                                 'department_id').suspend_security().write({'is_manager_reserved': True})
                     except Exception as e:

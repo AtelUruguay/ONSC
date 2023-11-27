@@ -37,6 +37,7 @@ class ONSCDesempenoConsolidated(models.Model):
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         args_extended = [
             ('evaluation_type', '=', evaluation_type),
+            ('evaluated_id', '=', self.env.user.employee_id.id),
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id)
         ]
@@ -58,7 +59,8 @@ class ONSCDesempenoConsolidated(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_from_consolidated_menu'):
+        if self._context.get('is_from_consolidated_menu') and self._context.get('ignore_security_rules',
+                                                                                False) is False:
             args = self._get_domain(args)
         return super(ONSCDesempenoConsolidated, self)._search(args, offset=offset, limit=limit, order=order,
                                                               count=count,
@@ -66,7 +68,8 @@ class ONSCDesempenoConsolidated(models.Model):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_from_consolidated_menu'):
+        if self._context.get('is_from_consolidated_menu') and self._context.get('ignore_security_rules',
+                                                                                False) is False:
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
@@ -97,6 +100,7 @@ class ONSCDesempenoConsolidated(models.Model):
         store=True)
     evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'consolidate_id',
                                                 string='Evaluación de Competencias')
+    is_gap_deal_not_generated = fields.Boolean(string='Acuerdo de brecha no generado')
 
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):

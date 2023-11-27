@@ -94,5 +94,6 @@ class ONSCCVDigitalVacante(models.Model):
                 'descriptor4_id': rec.descriptor4_id.id,
                 'regime_id': rec.regime_id.id,
                 'codigoJornadaFormal': rec.codigoJornadaFormal,
+                'descripcionJornadaFormal': rec.descripcionJornadaFormal,
             })
         return result

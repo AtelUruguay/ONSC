@@ -574,6 +574,9 @@ class ONSCDesempenoEvaluationList(models.Model):
     def get_followers_mails(self):
         return self._context.get('partners_to_notify').get_onsc_mails()
 
+    def get_start_date(self):
+        return fields.Datetime.today().strftime('%d/%m/%Y')
+
 
 class ONSCDesempenoEvaluationListLine(models.Model):
     _name = 'onsc.desempeno.evaluation.list.line'

@@ -5,40 +5,35 @@
             <field name="name">Plantilla de Inicio de etapa 1</field>
             <field name="model_id" ref="onsc_desempeno.model_onsc_desempeno_evaluation_list"/>
             <field name="email_from"></field>
-            <field name="email_to">{{ object.get_followers_mails() }}</field>
-            <field name="subject">Inicio de etapa 1</field>
+            <field name="email_to">{{object.get_followers_mails()}}</field>
+            <field name="subject">Gestión del Desempeño - Inicio de etapa 1 </field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                        Estimado Colaborador/a,
-                        <br/>
-                      Se generaron los formularios de Evaluación de desempeño
-                        <br/>
+                       El <t t-out="object.get_start_date()"/> da comienzo la <u>Etapa 360º</u>, que comprende: designación de entorno, confirmación de colaboradores, autoevaluación, evaluación de entorno, líder y colaborador.
                     </p>
                 </div>
             </field>
-            <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
-            <field name="auto_delete" eval="False"/>
+            <field name="lang">{{object.create_uid.partner_id.lang}}</field>
+            <field name="auto_delete" eval="True"/>
         </record>
 
         <record id="email_template_end_date_evaluation" model="mail.template">
             <field name="name">Plantilla de fecha fin de la evaluación de Colaborador y de Evaluación de entorno</field>
             <field name="model_id" ref="onsc_desempeno.model_onsc_desempeno_evaluation"/>
             <field name="email_from"></field>
-            <field name="email_to">{{ object.get_followers_mails()}}</field>
-            <field name="subject">Formularios de Colaborador y de Evaluación de entorno por finalizar</field>
+            <field name="email_to">{{object.get_followers_mails()}}</field>
+            <field name="subject">Gestión del Desempeño - Formularios de Colaborador y de Evaluación de entorno por finalizar</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                        Estimado Colaborador/a,
-                        <br/>
-                        Los formularios de Evaluación de desempeño vencen el  <t t-out="object.evaluation_end_date"></t>
+                       El <t t-out="object.get_evalaution_end_date()"/>  finaliza el período de evaluación de Colaborador y la evaluación de Entorno. Recuerde completarlas antes de la fecha de finalización de la etapa.
                         <br/>
                     </p>
                 </div>
             </field>
-            <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
-            <field name="auto_delete" eval="False"/>
+            <field name="lang">{{object.create_uid.partner_id.lang}}</field>
+            <field name="auto_delete" eval="True"/>
         </record>
 
         <record id="email_template_end_date_environment_definition" model="mail.template">
@@ -46,19 +41,16 @@
             <field name="model_id" ref="onsc_desempeno.model_onsc_desempeno_evaluation"/>
             <field name="email_from"></field>
             <field name="email_to">{{object.get_environment_definition_followers_mails()}}</field>
-            <field name="subject">Formularios de Definición de Entorno por finalizar</field>
+            <field name="subject">Gestión del Desempeño - Formularios de Definición de entorno por finalizar</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                        Estimado Colaborador/a,
-                        <br/>
-                        Los formularios de Evaluación de Definición de Entorno vencen el <strong t-out="object.environment_definition_end_date"/>
-                        <br/>
+                       El <t t-out="object.get_environment_definition_end_date()"/> culmina el plazo para la definición de Entorno. Recuerde realizar la misma antes de la fecha indicada.
                     </p>
                 </div>
             </field>
-            <field name="lang">{{ object.create_uid.partner_id.lang}}</field>
-            <field name="auto_delete" eval="False"/>
+            <field name="lang">{{object.create_uid.partner_id.lang}}</field>
+            <field name="auto_delete" eval="True"/>
         </record>
 
         <record id="email_template_end_date_gap_deal" model="mail.template">
@@ -66,39 +58,33 @@
             <field name="model_id" ref="onsc_desempeno.model_onsc_desempeno_evaluation"/>
             <field name="email_from"></field>
             <field name="email_to">{{object.get_gap_deal_followers_mails()}}</field>
-            <field name="subject">Formularios de Acuerdo de brecha por finalizar</field>
+            <field name="subject">Gestión del Desempeño - Acuerdo de brecha por finalizar</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                        Estimado Colaborador/a,
-                        <br/>
-                        Los formularios de Acuerdo de brecha vencen el <strong t-out="object.environment_definition_end_date"/>
-                        <br/>
+                       El próximo <t t-out="object.get_end_gap_deal()"/> es la fecha fin para completar el <u>Acuerdo de Brecha</u>. Luego de esa fecha no se podrán realizar modificaciones.
                     </p>
                 </div>
             </field>
-            <field name="lang">{{ object.create_uid.partner_id.lang}}</field>
-            <field name="auto_delete" eval="False"/>
+            <field name="lang">{{object.create_uid.partner_id.lang}}</field>
+            <field name="auto_delete" eval="True"/>
         </record>
 
         <record id="email_template_start_stage_2_form" model="mail.template">
-            <field name="name">Plantilla de Inicio de etapa 2</field>
+            <field name="name">Gestión del Desempeño - Inicio de etapa 2</field>
             <field name="model_id" ref="onsc_desempeno.model_onsc_desempeno_evaluation_stage"/>
             <field name="email_from"></field>
-            <field name="email_to">{{ object.get_followers_mails() }}</field>
-            <field name="subject">Inicio de etapa 2</field>
+            <field name="email_to">{{object.get_followers_mails()}}</field>
+            <field name="subject">Gestión del Desempeño - Inicio de etapa 2</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                        Estimado Colaborador/a,
-                        <br/>
-                      Se inicia la etapa 2 de Evaluación de desempeño
-                        <br/>
+                        A partir del <t t-out="object.get_start_stage_2()"/> comienza la etapa 2 correspondiente al Acuerdo de Brecha.
                     </p>
                 </div>
             </field>
-            <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
-            <field name="auto_delete" eval="False"/>
+            <field name="lang">{{object.create_uid.partner_id.lang}}</field>
+            <field name="auto_delete" eval="True"/>
         </record>
     </data>
 

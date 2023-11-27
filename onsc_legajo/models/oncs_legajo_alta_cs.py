@@ -64,7 +64,8 @@ class ONSCLegajoAltaCS(models.Model):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND([[
-                    '|', ('inciso_origin_id', '=', inciso_id.id),
+                    '|', '|', ('inciso_origin_id', '=', inciso_id.id),
+                    '&', ('is_inciso_origin_ac', '=', False), ('inciso_destination_id', '=', inciso_id.id),
                     '&', ('inciso_destination_id', '=', inciso_id.id), ('state', '!=', 'draft')
                 ], args])
         if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
@@ -73,12 +74,14 @@ class ONSCLegajoAltaCS(models.Model):
             operating_unit_id = contract_id.operating_unit_id
             if inciso_id:
                 args = expression.AND([[
-                    '|', ('inciso_origin_id', '=', inciso_id.id),
+                    '|', '|', ('inciso_origin_id', '=', inciso_id.id),
+                    '&', ('is_inciso_origin_ac', '=', False), ('inciso_destination_id', '=', inciso_id.id),
                     '&', ('inciso_destination_id', '=', inciso_id.id), ('state', '!=', 'draft')
                 ], args])
             if operating_unit_id:
                 args = expression.AND([[
-                    '|', ('operating_unit_origin_id', '=', operating_unit_id.id),
+                    '|', '|', ('operating_unit_origin_id', '=', operating_unit_id.id),
+                    '&', ('is_inciso_origin_ac', '=', False), ('operating_unit_destination_id', '=', operating_unit_id.id),
                     '&', ('operating_unit_destination_id', '=', operating_unit_id.id), ('state', '!=', 'draft')
                 ], args])
         return args
@@ -162,6 +165,9 @@ class ONSCLegajoAltaCS(models.Model):
                                       related='program_project_destination_id.proyectoDescripcion')
     regime_destination = fields.Char(string='Régimen', default='3001')
     date_start_commission = fields.Date(string='Fecha desde de la Comisión', copy=False,
+                                        readonly=False, states={'confirmed': [('readonly', True)],
+                                                                'cancelled': [('readonly', True)]})
+    date_end_commission = fields.Date(string='Fecha hasta de la Comisión', copy=False,
                                         readonly=False, states={'confirmed': [('readonly', True)],
                                                                 'cancelled': [('readonly', True)]})
     department_id = fields.Many2one('hr.department', string='UO', copy=False,
@@ -276,16 +282,26 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('state', 'type_cs', 'inciso_origin_id')
     def _compute_should_disable_form_edit(self):
+        is_user_inciso = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
+        is_user_ue = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         for record in self:
+            # DESTINATION CONDITIONS
+            is_editable_dest_inciso = record.inciso_destination_id == inciso_id and is_user_inciso
+            is_editable_dest_ue = record.operating_unit_destination_id == operating_unit_id and is_user_ue
+            is_editable_dest = is_editable_dest_inciso or is_editable_dest_ue
+            # ORIGIN CONDITIONS
+            is_editable_orig_inciso = record.inciso_origin_id == inciso_id and is_user_inciso
+            is_editable_orig_ue = record.operating_unit_origin_id == operating_unit_id and is_user_ue
+            is_editable_orig = is_editable_orig_inciso or is_editable_orig_ue
             if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and self.user_has_groups(
                     'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
                 record.should_disable_form_edit = False
             elif record.state not in ['draft', 'to_process', 'returned', 'error_sgh']:
                 record.should_disable_form_edit = True
-            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and record.inciso_origin_id == inciso_id:
+            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and not is_editable_dest:
                 record.should_disable_form_edit = True
-            elif record.state == 'returned' and record.type_cs == 'ac2ac' and record.inciso_destination_id == inciso_id:
+            elif record.state == 'returned' and record.type_cs == 'ac2ac' and not is_editable_orig:
                 record.should_disable_form_edit = True
             else:
                 record.should_disable_form_edit = False
@@ -473,13 +489,26 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs')
     def _compute_is_available_send_to_sgh(self):
         is_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
-        is_user_ue_alta_cs = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
+        is_user_inciso = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
+        is_user_ue = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
+        inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         for record in self:
+            # DESTINATION CONDITIONS
+            is_editable_dest_inciso = record.inciso_destination_id == inciso_id and is_user_inciso
+            is_editable_dest_ue = record.operating_unit_destination_id == operating_unit_id and is_user_ue
+            is_editable_dest = is_editable_dest_inciso or is_editable_dest_ue
+            # ORIGIN CONDITIONS
+            is_editable_orig_inciso = record.inciso_origin_id == inciso_id and is_user_inciso
+            is_editable_orig_ue = record.operating_unit_origin_id == operating_unit_id and is_user_ue
+            is_editable_orig = is_editable_orig_inciso or is_editable_orig_ue
+
             is_same_inciso = record.inciso_origin_id == record.inciso_destination_id
             # AC2AC siendo tu mismo inciso origen y destino
             if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
                 record.is_available_send_to_sgh = True
-            elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue_alta_cs:
+            elif record.state == 'returned' and is_editable_orig:
+                record.is_available_send_to_sgh = True
+            elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue:
                 record.is_available_send_to_sgh = False
             elif record.state in ['draft', 'to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and is_same_inciso:
                 record.is_available_send_to_sgh = True
@@ -527,15 +556,6 @@ class ONSCLegajoAltaCS(models.Model):
                 is_available_send_destination = False
 
             record.is_available_send_destination = is_available_send_destination
-            # condition1 = record.state in ['draft'] and record.type_cs == 'ac2ac'
-            # condition2 = record.is_edit_destination and record.inciso_origin_id == inciso_id
-            # condition3 = record.is_edit_destination and record.inciso_origin_id == record.inciso_destination_id and is_user_ue_alta_cs
-            #
-            # # if condition1 and (not condition2 or is_user_administrar_altas_cs):
-            # if condition1 and not is_user_administrar_altas_cs and (not condition2 or condition3):
-            #     record.is_available_send_destination = True
-            # else:
-            #     record.is_available_send_destination = False
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_cancel(self):
@@ -566,11 +586,13 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.employee_id = False
 
-    @api.constrains("date_start_commission")
-    def _check_date(self):
+    @api.constrains("date_start_commission", "date_end_commission")
+    def _check_dates(self):
         for record in self:
             if record.date_start_commission and record.date_start_commission > fields.Date.today():
                 raise ValidationError(_("La fecha debe ser menor o igual al día de alta"))
+            if record.date_end_commission and record.date_start_commission and record.date_end_commission < record.date_start_commission:
+                raise ValidationError(_("La fecha hasta debe ser mayor o igual que la fecha desde"))
 
     @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
@@ -606,6 +628,7 @@ class ONSCLegajoAltaCS(models.Model):
         self.project_destination = False
         self.regime_destination = False
         self.date_start_commission = False
+        self.date_end_commission = False
         self.department_id = False
         self.security_job_id = False
         self.occupation_id = False
@@ -747,6 +770,7 @@ class ONSCLegajoAltaCS(models.Model):
             'employee_id': employee.id,
             'name': employee.name,
             'date_start': self.date_start_commission or fields.Date.today(),
+            'date_end_commission': self.date_end_commission,
             'inciso_id': self.inciso_destination_id.id,
             'operating_unit_id': self.operating_unit_destination_id.id,
             'income_mechanism_id': origin_contract_id.income_mechanism_id.id,

@@ -15,6 +15,9 @@ class HrContract(models.Model):
     _history_model = 'hr.contract.model.history'
     _history_columns = ['date_start', 'date_end']
 
+    def init(self):
+        self._cr.execute("""CREATE INDEX IF NOT EXISTS hr_contract_employee_id ON hr_contract (employee_id)""")
+
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if not self._context.get('no_scale') and self._context.get('filter_contracts') and not self._context.get(
@@ -61,8 +64,8 @@ class HrContract(models.Model):
     #         return self.env['onsc.legajo.state.square']
 
     legajo_name = fields.Char(string="Nombre", compute='_compute_legajo_name', store=True)
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True)
-    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True)
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', history=True, index=True)
+    operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora", history=True, index=True)
 
     inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso origen', history=True)
     operating_unit_origin_id = fields.Many2one("operating.unit",
@@ -161,7 +164,7 @@ class HrContract(models.Model):
                                                            domain=[('type', '=', 'deregistration')])
     job_ids = fields.One2many('hr.job', 'contract_id', string='Puestos', context={'active_test': False})
     commission_regime_id = fields.Many2one('onsc.legajo.commission.regime', string='Régimen comisión', history=True)
-
+    date_end_commission = fields.Date(string='Fecha hasta de la Comisión', copy=False, history=True)
     show_button_update_occupation = fields.Boolean(compute='_compute_show_button_update_occupation')
     is_mi_legajo = fields.Boolean(compute='_compute_is_mi_legajo')
     notify_sgh = fields.Boolean("Notificar SGH")

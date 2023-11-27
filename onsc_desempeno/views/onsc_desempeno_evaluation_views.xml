@@ -10,7 +10,8 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="evaluation_start_date"/>
-                <field name="evaluation_end_date"/>
+                <field name="evaluation_end_date"  invisible="context.get('gap_deal', False) is True"/>
+                <field name="evaluation_end_date_max" invisible="context.get('gap_deal', False) is False"/>
                 <field name="environment_definition_end_date"
                        invisible="context.get('environment_definition', False) is False"/>
                 <field name="state"/>
@@ -27,6 +28,7 @@
                     <field name="collaborators" invisible="1"/>
                     <field name="evaluation_form_edit" invisible="1"/>
                     <field name="is_agree_evaluation_leader_available" invisible="1"/>
+                    <field name="is_agree_button_gh_available" invisible="1"/>
                     <field name="is_agree_evaluation_evaluated_available" invisible="1"/>
                     <button type="object"
                             class="btn btn-primary"
@@ -78,6 +80,13 @@
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
                     <button type="object"
+                            class="btn btn-primary"
+                            string="Acordar GH"
+                            attrs="{'invisible': ['|',('state', '!=', 'in_process'),('is_agree_button_gh_available', '=', False)]}"
+                            name="button_agree_gh"
+                            confirm="¿Está seguro que desea confirmar el acuerdo?"
+                            icon="fa-lock"/>
+                    <button type="object"
                             class="btn btn-secundary"
                             string="Reabrir acuerdo"
                             attrs="{'invisible': ['|','|','|',('state', '!=', 'in_process'),('gap_deal_state', '=', 'agree'),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'gap_deal')]}"
@@ -86,7 +95,7 @@
                             confirm="¿Está seguro de que desea reabrir la evaluación?"/>
 
                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,uncompleted,finished" invisible="context.get('gap_deal', False) is False"/>
+                           statusbar_visible="draft,in_process,uncompleted,finished" />
                 </header>
                 <sheet>
                     <field name="is_evaluation_change_available" invisible="1"/>
@@ -131,6 +140,7 @@
                             <field name="environment_definition_end_date"
                                    attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
                             <field name="locked" string="Formulario bloqueado" readonly="1" attrs="{'invisible': ['|',('locked', '=', False),('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
+                            <field name="is_gap_deal_not_generated" attrs="{'invisible': [('is_gap_deal_not_generated', '=', False)]}"/>
                         </group>
                         <group>
                             <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
@@ -244,8 +254,10 @@
 
                         </page>
                     </notebook>
+                    <field name="is_edit_general_comments" invisible="1" />
                     <group name="general_comments" string="Comentarios Generales"
-                           attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('locked', '=', True)]}">
+
+                           attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
                         <field name="general_comments" nolabel="1"
                                placeholder="Comentarios Generales"/>
                     </group>
