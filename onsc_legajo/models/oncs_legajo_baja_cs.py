@@ -79,20 +79,15 @@ class ONSCLegajoBajaCS(models.Model):
         return args
 
     def _get_domain_contract(self, args, employee_id):
-
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND([[('inciso_id', '=', inciso_id.id),
-                                        ('legajo_state', '=', 'incoming_commission'),
-                                        ('employee_id', '=', employee_id),
-                                        ('employee_id', '!=', self.env.user.employee_id.id)], args])
+                                        ('legajo_state', '=', 'incoming_commission')], args])
 
                 args = expression.OR(
                     [[('inciso_origin_id', '=', inciso_id.id), ('legajo_state', '=', 'incoming_commission'),
-                      ('inciso_id.is_central_administration', '=', False),
-                      ('employee_id', '=', employee_id),
-                      ('employee_id', '!=', self.env.user.employee_id.id)], args])
+                      ('inciso_id.is_central_administration', '=', False)], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
@@ -105,16 +100,17 @@ class ONSCLegajoBajaCS(models.Model):
                 args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id)], args])
                 args = expression.OR([[('inciso_id.is_central_administration', '=', False),
                                        ('operating_unit_origin_id', '=', operating_unit_id.id)], args])
-            if employee_id:
-                args = expression.AND(
-                    [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
+            # if employee_id:
+            #     args = expression.AND(
+            #         [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
 
             args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
-
         else:
             args = expression.AND(
-                [[('employee_id', '=', employee_id),
-                  ('legajo_state', 'in', ('incoming_commission', 'outgoing_commission'))], args])
+                [[('legajo_state', '=', 'incoming_commission')], args])
+        args = expression.AND([[
+            ('employee_id', '=', employee_id),
+            ('employee_id', '!=', self.env.user.employee_id.id)], args])
         return args
 
     def _get_domain_employee(self, args):
@@ -186,10 +182,17 @@ class ONSCLegajoBajaCS(models.Model):
                                          store=True, copy=False)
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso comisión', related='contract_id.inciso_id',
                                 store=True)
-    inciso_origen_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', related='contract_id.inciso_origin_id',
-                                       copy=False, store=True)
-    operating_unit_origen_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
-                                               related='contract_id.operating_unit_origin_id', copy=False, store=True)
+    inciso_origen_id = fields.Many2one(
+        'onsc.catalog.inciso',
+        string='Inciso',
+        compute='_compute_inciso_ue_origen_id',
+        copy=False, store=True)
+    operating_unit_origen_id = fields.Many2one(
+        "operating.unit",
+        string="Unidad ejecutora",
+        compute='_compute_inciso_ue_origen_id',
+        copy=False,
+        store=True)
     operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
                                         related='contract_id.operating_unit_id', store=True)
     program = fields.Char(string='Programa ', related='contract_origen_id.program')
@@ -214,9 +217,19 @@ class ONSCLegajoBajaCS(models.Model):
                                                       string='Documentos adjuntos', copy=False)
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain', store=True)
+    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain', store=False)
     show_contract = fields.Boolean('Show Contract')
     state = fields.Selection(STATES, string='Estado', default='borrador', tracking=True, copy=False)
+
+    @api.depends('contract_id', 'contract_origen_id')
+    def _compute_inciso_ue_origen_id(self):
+        for rec in self:
+            if rec.contract_id and rec.contract_origen_id:
+                rec.inciso_origen_id = rec.contract_origen_id.inciso_id and rec.contract_origen_id.inciso_id.id
+                rec.operating_unit_origen_id = rec.contract_origen_id.operating_unit_id and rec.contract_origen_id.operating_unit_id.id
+            else:
+                rec.inciso_origen_id = rec.contract_id.inciso_origin_id.id
+                rec.operating_unit_origen_id = rec.contract_id.operating_unit_origin_id.id
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
@@ -241,6 +254,8 @@ class ONSCLegajoBajaCS(models.Model):
                 contracts = rec._get_employee_contracts()
                 rec.show_contract = len(contracts) > 1
                 rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
+            else:
+                rec.contract_id_domain = json.dumps([('id', 'in', [])])
 
     @api.constrains("end_date")
     def _check_date(self):
@@ -293,19 +308,17 @@ class ONSCLegajoBajaCS(models.Model):
         return True
 
     def action_actualizar_puesto(self):
-        ContratoOrigen = self.env['hr.contract'].sudo().search([("cs_contract_id", "=", self.contract_id.id)])
-        if self.inciso_id.is_central_administration and ContratoOrigen.inciso_id.is_central_administration:
-            ContratoOrigen.suspend_security().activate_legajo_contract()
-            ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
+        contrato_origen = self.contract_origen_id
+        if self.inciso_id.is_central_administration and contrato_origen.inciso_id.is_central_administration:
+            contrato_origen.suspend_security().activate_legajo_contract()
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
             self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
         elif not self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission':
             self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)
             self.contract_id.cs_contract_id.suspend_security().activate_legajo_contract()
-            ContratoOrigen.suspend_security().write({'cs_contract_id': False, })
         elif self.contract_id.inciso_id.is_central_administration and self.contract_id.legajo_state == 'incoming_commission' \
-                and not ContratoOrigen:
+                and not contrato_origen:
             self.contract_id.suspend_security().job_ids.filtered(lambda x: x.end_date is False).write(
                 {'end_date': self.end_date})
             self.contract_id.suspend_security().deactivate_legajo_contract(self.end_date)

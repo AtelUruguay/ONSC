@@ -200,6 +200,9 @@ class HrContract(models.Model):
         for rec in self.filtered(lambda x: x.employee_id):
             rec.legajo_id = self.env['onsc.legajo'].sudo().search([('employee_id', '=', rec.employee_id.id)], limit=1)
 
+    def test_legajo(self):
+        self._compute_legajo_id()
+
     @api.depends('employee_id', 'position', 'workplace', 'sec_position', )
     def _compute_legajo_name(self):
         for rec in self:
