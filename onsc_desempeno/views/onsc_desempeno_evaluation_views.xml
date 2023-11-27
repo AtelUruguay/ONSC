@@ -86,7 +86,7 @@
                             confirm="¿Está seguro de que desea reabrir la evaluación?"/>
 
                    <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,deal_close,finished" />
+                           statusbar_visible="draft,in_process,uncompleted,finished" invisible="context.get('gap_deal', False) is False"/>
                 </header>
                 <sheet>
                     <field name="is_evaluation_change_available" invisible="1"/>

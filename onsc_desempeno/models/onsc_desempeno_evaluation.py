@@ -24,10 +24,10 @@ STATE = [
     ('draft', 'Borrador'),
     ('in_process', 'En Proceso'),
     ('completed', 'Completado'),
+    ('deal_close', "Acuerdo cerrado"),
     ('finished', 'Finalizado'),
     ('uncompleted', 'Sin Finalizar'),
     ('canceled', 'Cancelado'),
-    ('deal_close', "Acuerdo cerrado"),
     ('agreed_plan', "Plan Acordado")
 ]
 
@@ -450,6 +450,8 @@ class ONSCDesempenoEvaluation(models.Model):
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_leader'})
         elif self.gap_deal_state == 'agree_evaluated':
+            if not self.is_exonerated_evaluation:
+                self.create_development_plan()
             self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_evaluation_evaluated(self):
@@ -457,6 +459,8 @@ class ONSCDesempenoEvaluation(models.Model):
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_evaluated'})
         elif self.gap_deal_state == 'agree_leader':
+            if not self.is_exonerated_evaluation:
+                self.create_development_plan()
             self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_plan_leader(self):
@@ -630,7 +634,7 @@ class ONSCDesempenoEvaluation(models.Model):
                  ('evaluation_type', 'in', ['gap_deal', 'development_plan'])]):
 
             if record.evaluation_type == 'development_plan':
-                if record.state == 'deal_close':
+                if record.state == 'agreed_plan':
                     record.write({'state': 'finished'})
                 elif record.state not in ['finished', 'uncompleted']:
                     record.write({'state': 'uncompleted'})
@@ -642,3 +646,17 @@ class ONSCDesempenoEvaluation(models.Model):
                         record.write({'state': 'finished'})
                     elif record.state not in ['finished', 'uncompleted']:
                         record.write({'state': 'uncompleted'})
+    def create_development_plan(self):
+        Skill = self.env['onsc.desempeno.skill'].suspend_security()
+        Competency = self.env['onsc.desempeno.evaluation.development.competency'].suspend_security()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        evaluation = self.copy_data()
+        evaluation[0]["evaluation_type"] = "development_plan"
+        evaluation[0]["gap_deal_state"] = "no_deal"
+        plan = Evaluation.with_context(gap_deal=True).create(evaluation)
+
+        for competency in Skill.search([]):
+            Competency.create({'evaluation_id': plan.id,
+                               'skill_id': competency.id,
+                               })
+        return True

@@ -24,7 +24,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     _name = 'onsc.desempeno.evaluation.development.competency'
     _description = u'Medios de desarrollo'
 
-    evaluation_id = fields.Many2one('onsc.desempeno.evaluation.', string='Evaluacion')
+    evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True)
     skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True, ondelete='restrict')
     development_goal = fields.Text('Objetivo de desarrollo', requierd=True)
     development_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
