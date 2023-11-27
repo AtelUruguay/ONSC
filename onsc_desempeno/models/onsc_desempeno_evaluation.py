@@ -12,13 +12,13 @@ from odoo.osv import expression
 _logger = logging.getLogger(__name__)
 
 EVALUATION_TYPE = [('self_evaluation', 'Autoevaluación'),
-    ('leader_evaluation', 'Evaluación de líder'),
-    ('environment_evaluation', 'Evaluación de entorno'),
-    ('collaborator', 'Evaluación de colaborador/a'),
-    ('environment_definition', 'Definición de entorno'),
-    ('gap_deal', 'Acuerdo de Brecha'),
-    ('development_plan', 'Plan de desarrollo'),
-]
+                   ('leader_evaluation', 'Evaluación de líder'),
+                   ('environment_evaluation', 'Evaluación de entorno'),
+                   ('collaborator', 'Evaluación de colaborador/a'),
+                   ('environment_definition', 'Definición de entorno'),
+                   ('gap_deal', 'Acuerdo de Brecha'),
+                   ('development_plan', 'Plan de desarrollo'),
+                   ]
 
 STATE = [
     ('draft', 'Borrador'),
@@ -173,7 +173,7 @@ class ONSCDesempenoEvaluation(models.Model):
             available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
             args_extended = expression.OR([[
                 ('uo_id', 'in', available_departments.ids),
-                ('evaluation_type', '=', 'gap_deal')], args_extended])
+                ('evaluation_type', '=', evaluation_type)], args_extended])
         return expression.AND([args_extended, args])
 
     def _get_domain_collaborator(self, args):
@@ -309,9 +309,9 @@ class ONSCDesempenoEvaluation(models.Model):
         string='Editable los comentarios generales',
         compute='_compute_is_edit_general_comments')
 
-
     development_plan_ids = fields.One2many('onsc.desempeno.evaluation.development.competency', 'evaluation_id',
                                            string='Competencia a desarrollar')
+    is_development_plan_not_generated = fields.Boolean(string='Plan de desarrollo no generado')
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -378,11 +378,12 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
             is_gap_deal = record.evaluation_type == 'gap_deal'
+            is_development_plan = record.evaluation_type == 'development_plan'
             hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
             hierarchy_deparments |= employee.job_id.department_id
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
 
-            _cond1 = is_am_evaluator and is_gap_deal
+            _cond1 = is_am_evaluator and (is_gap_deal or is_development_plan)
             _cond2 = not record.gap_deal_state == 'agree_leader' and is_responsable
             record.is_agree_evaluation_leader_available = _cond1 and _cond2
 
@@ -408,7 +409,7 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             record.is_agree_evaluation_evaluated_available = record.evaluated_id.id == user_employee_id and record.evaluation_type in (
-            'gap_deal', 'develop_plan') and not record.gap_deal_state == 'agree_evaluated'
+                'gap_deal', 'development_plan') and not record.gap_deal_state == 'agree_evaluated'
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
@@ -720,19 +721,26 @@ class ONSCDesempenoEvaluation(models.Model):
                         record.write({'state': 'finished'})
                     elif record.state not in ['finished', 'uncompleted']:
                         record.write({'state': 'uncompleted'})
+
     def create_development_plan(self):
         Skill = self.env['onsc.desempeno.skill'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.development.competency'].suspend_security()
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        evaluation = self.copy_data()
-        evaluation[0]["evaluation_type"] = "development_plan"
-        evaluation[0]["gap_deal_state"] = "no_deal"
-        plan = Evaluation.with_context(gap_deal=True).create(evaluation)
 
-        for competency in Skill.search([]):
-            Competency.create({'evaluation_id': plan.id,
-                               'skill_id': competency.id,
-                               })
+        valid_days = (self.general_cycle_id.end_date - fields.Date.from_string(fields.Date.today())).days
+        if self.env.user.company_id.days_gap_develop_plan_creation <= valid_days:
+
+            evaluation = self.copy_data()
+            evaluation[0]["evaluation_type"] = "development_plan"
+            evaluation[0]["gap_deal_state"] = "no_deal"
+            plan = Evaluation.with_context(gap_deal=True).create(evaluation)
+
+            for competency in Skill.search([]):
+                Competency.create({'evaluation_id': plan.id,
+                                   'skill_id': competency.id,
+                                   })
+        else:
+            self.write({'is_development_plan_not_generated': True})
         return True
 
     def get_end_gap_deal(self):

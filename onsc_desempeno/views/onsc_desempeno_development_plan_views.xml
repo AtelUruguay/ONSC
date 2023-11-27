@@ -105,7 +105,7 @@
                                     <field name="development_goal"  optional="show"/>
 
                                 </tree>
-                                <form string="Evaluación de Competencias">
+                               <form string="Evaluación de Competencias">
                                   <header/>
                                     <sheet>
                                         <group>
@@ -124,40 +124,18 @@
                                         </group>
                                         <notebook>
                                             <page string="Plan de acción">
-                                                <field name="development_means_ids"  >
-                                                    <tree editable="top">
-                                                        <field name="means_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
-                                                        <field name="agreed_activities" readonly="1" optional="show"/>
-                                                        <field name="detail_activities"  readonly="1" optional="hide"/>
-                                                        <field name="comments"  readonly="1" optional="hide"/>
-
-                                                    </tree>
-                                                     <form string="onsc_desempeno_evaluation_development_means_form">
-                                                      <header/>
-                                                        <sheet>
-                                                            <group>
-                                                                <group colspan="4">
-                                                                    <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
-                                                                    <field name="agreed_activities"  />
-                                                                    <field name="detail_activities" />
-                                                                    <field name="comments" />
-                                                                </group>
-                                                            </group>
-
-                                                        </sheet>
-
-                                                    </form>
+                                                <field name="development_means_ids" nolabel="1"  options="{'reload_on_button': True}" context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_development_means_form'}"  force_save="1" >
 
 
                                                 </field>
                                             </page>
                                         </notebook>
                                     </sheet>
+                               </form>
 
-                                </form>
-                            </field>
+                                </field>`
                         </page>
-                </notebook>
+                    </notebook>
 
                 </sheet>
                 <div class="oe_chatter">
@@ -168,6 +146,41 @@
             </form>
         </field>
     </record>
+
+   <record id="onsc_desempeno_development_means_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.development.means.form</field>
+        <field name="model">onsc.desempeno.evaluation.development.means</field>
+        <field name="arch" type="xml">
+            <form string="Medios de desarrollo">
+              <header/>
+                <sheet>
+                    <group>
+                        <group colspan="4">
+                            <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                            <field name="agreed_activities"  />
+                            <field name="detail_activities" />
+                            <field name="comments" />
+                        </group>
+                    </group>
+
+                </sheet>
+
+            </form>
+        </field>
+   </record>
+    <record id="onsc_desempeno_development_means_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.development.means.tree</field>
+        <field name="model">onsc.desempeno.evaluation.development.means</field>
+        <field name="arch" type="xml">
+            <tree  string="Medios de desarrollo">
+                <field name="means_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                <field name="agreed_activities" readonly="1" optional="show"/>
+                <field name="detail_activities"  readonly="1" optional="hide"/>
+                <field name="comments"  readonly="1" optional="hide"/>
+
+            </tree>
+        </field>
+   </record>
 
      <record id='onsc_desempeno_develop_plan_action' model='ir.actions.act_window'>
         <field name="name">Plan de Desarrollo</field>
