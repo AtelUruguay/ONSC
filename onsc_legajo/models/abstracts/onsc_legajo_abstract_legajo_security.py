@@ -53,23 +53,17 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         if self._context.get('mi_legajo'):
             base_employee_domain = [('id', '=', self.env.user.employee_id.id)]
             employee_domain = [('employee_id', '=', self.env.user.employee_id.id)]
-            # employees = self.env.user.employee_id
         elif employee_id:
             base_employee_domain = [('id', '=', employee_id.id)]
             employee_domain = [('employee_id', '=', employee_id.id)]
-            # employees = employee_id
         else:
             base_employee_domain = [('id', '!=', self.env.user.employee_id.id)]
             employee_domain = [('employee_id', '!=', self.env.user.employee_id.id)]
-            # employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
         if self._context.get('mi_legajo'):
             available_contracts = self.env['hr.contract'].sudo().search(employee_domain)
-            # available_contracts = employees.mapped('contract_ids')
         elif self._get_abstract_config_security():
             available_contracts = self.env['hr.contract'].sudo().search(employee_domain)
-            # available_contracts = employees.mapped('contract_ids')
         elif self._get_abstract_inciso_security():
-            # employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
             contract = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract.inciso_id.id
             available_contracts = self._get_available_contracts(
@@ -79,7 +73,6 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
                 'inciso_id'
             )
         elif self._get_abstract_ue_security():
-            # employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
             contract = self.env.user.employee_id.job_id.contract_id
             operating_unit_id = contract.operating_unit_id.id
             if operating_unit_id:
@@ -124,7 +117,6 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
             self.env.cr.execute(sql_query, [tuple(available_contracts.ids)])
             results = self.env.cr.fetchall()
             available_contracts_employees_ids = [item[0] for item in results]
-        # available_contracts_employees = available_contracts.mapped('employee_id')
         # NO VIGENTES
         # TODO: filtrar partner is_legajo activado
 
@@ -135,15 +127,6 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         employees = self.env['hr.employee'].search(base_employee_domain)
         for employee in employees:
             employee_contracts = employee.contract_ids
-            # sql_query = """SELECT COUNT(id) FROM hr_contract WHERE
-            #     employee_id = %s AND
-            #     (legajo_state <> 'baja' OR (legajo_state = 'baja' AND date_end IS NULL))"""
-            # self.env.cr.execute(sql_query, [employee.id])
-            # is_any_active_contract = self.env.cr.fetchone()[0]
-            # is_any_active_contract = len(employee_contracts.filtered(
-            #     lambda x: x.legajo_state not in ['baja'] or x.legajo_state == 'baja' and not x.date_end)) > 0
-            # if is_any_active_contract > 0:
-            #     continue
             last_baja_contract = employee_contracts.sorted(key=lambda x: x.date_end, reverse=True)
             if last_baja_contract and eval(
                     'last_baja_contract[0].%s.id == %s' % (security_hierarchy_level, security_hierarchy_value)):
