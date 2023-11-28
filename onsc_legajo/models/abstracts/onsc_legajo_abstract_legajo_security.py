@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, api
+from odoo.addons.onsc_base.onsc_useful_tools import profiler
 
 from odoo.osv import expression
 
@@ -9,6 +10,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     _name = 'onsc.legajo.abstract.legajo.security'
     _description = 'Modelo abstracto para la seguridad'
 
+    @profiler
     @api.model
     def _get_expression_domain(self, args):
         available_contracts = self._get_user_available_contract()
@@ -49,53 +51,100 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     def _get_user_available_contract(self, employee_id=False):
         available_contracts = self.env['hr.contract']
         if self._context.get('mi_legajo'):
-            employees = self.env.user.employee_id
+            base_employee_domain = [('id', '=', self.env.user.employee_id.id)]
+            employee_domain = [('employee_id', '=', self.env.user.employee_id.id)]
+            # employees = self.env.user.employee_id
+        elif employee_id:
+            base_employee_domain = [('id', '=', employee_id.id)]
+            employee_domain = [('employee_id', '=', employee_id.id)]
+            # employees = employee_id
         else:
-            employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
+            base_employee_domain = [('id', '!=', self.env.user.employee_id.id)]
+            employee_domain = [('employee_id', '!=', self.env.user.employee_id.id)]
+            # employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
         if self._context.get('mi_legajo'):
-            available_contracts = employees.mapped('contract_ids')
+            available_contracts = self.env['hr.contract'].sudo().search(employee_domain)
+            # available_contracts = employees.mapped('contract_ids')
         elif self._get_abstract_config_security():
-            available_contracts = employees.mapped('contract_ids')
+            available_contracts = self.env['hr.contract'].sudo().search(employee_domain)
+            # available_contracts = employees.mapped('contract_ids')
         elif self._get_abstract_inciso_security():
+            # employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
             contract = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract.inciso_id.id
-            available_contracts = self._get_available_contracts(employees, inciso_id, 'inciso_id')
+            available_contracts = self._get_available_contracts(
+                base_employee_domain,
+                employee_domain,
+                inciso_id,
+                'inciso_id'
+            )
         elif self._get_abstract_ue_security():
+            # employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
             contract = self.env.user.employee_id.job_id.contract_id
             operating_unit_id = contract.operating_unit_id.id
             if operating_unit_id:
-                available_contracts = self._get_available_contracts(employees, operating_unit_id, 'operating_unit_id')
+                available_contracts = self._get_available_contracts(
+                    base_employee_domain,
+                    employee_domain,
+                    operating_unit_id,
+                    'operating_unit_id'
+                )
         elif self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo'):
+            employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
             department_ids = self.env['onsc.legajo.department'].get_uo_tree()
             available_contracts = employees.mapped('contract_ids').mapped('job_ids').filtered(
                 lambda x: x.department_id.id in department_ids).mapped('contract_id')
         return available_contracts
 
-    def _get_available_contracts(self, employees, security_hierarchy_value, security_hierarchy_level):
+    def _get_available_contracts(
+            self,
+            base_employee_domain,
+            employee_domain,
+            security_hierarchy_value,
+            security_hierarchy_level
+    ):
+        base_args = employee_domain
         # LEGAJOS VIGENTES
         if self._context.get('only_active_contracts'):
-            base_args = [
+            base_args = expression.AND([[
                 (security_hierarchy_level, '=', security_hierarchy_value),
-                ('employee_id', 'in', employees.ids),
-                ('legajo_state', 'in', ['active']),
-            ]
+                ('legajo_state', 'in', ['active'])],
+                base_args])
         else:
-            base_args = [
+            base_args = expression.AND([[
                 (security_hierarchy_level, '=', security_hierarchy_value),
-                ('employee_id', 'in', employees.ids),
-                ('legajo_state', 'not in', ['baja']),
-            ]
+                ('legajo_state', 'not in', ['baja']),],
+                base_args])
         available_contracts = self.env['hr.contract'].search(base_args)
-        available_contracts_employees = available_contracts.mapped('employee_id')
+
+        if not available_contracts:
+            available_contracts_employees_ids = []
+        else:
+            sql_query = """SELECT DISTINCT employee_id FROM hr_contract WHERE id IN %s AND employee_id IS NOT NULL"""
+            self.env.cr.execute(sql_query, [tuple(available_contracts.ids)])
+            results = self.env.cr.fetchall()
+            available_contracts_employees_ids = [item[0] for item in results]
+        # available_contracts_employees = available_contracts.mapped('employee_id')
         # NO VIGENTES
         # TODO: filtrar partner is_legajo activado
-        for employee in employees.filtered(
-                lambda x: x.id not in available_contracts_employees.ids and len(x.contract_ids)):
-            is_any_active_contract = len(employee.contract_ids.filtered(
-                lambda x: x.legajo_state not in ['baja'] or x.legajo_state == 'baja' and not x.date_end)) > 0
-            if is_any_active_contract:
-                continue
-            last_baja_contract = employee.contract_ids.sorted(key=lambda x: x.date_end, reverse=True)
+
+        base_employee_domain = expression.AND([
+            [('id', 'not in', available_contracts_employees_ids),
+             ('legajo_state', '=', 'egresed')],
+            base_employee_domain])
+        employees = self.env['hr.employee'].search(base_employee_domain)
+        for employee in employees:
+            employee_contracts = employee.contract_ids
+            # sql_query = """SELECT COUNT(id) FROM hr_contract WHERE
+            #     employee_id = %s AND
+            #     (legajo_state <> 'baja' OR (legajo_state = 'baja' AND date_end IS NULL))"""
+            # self.env.cr.execute(sql_query, [employee.id])
+            # is_any_active_contract = self.env.cr.fetchone()[0]
+            # is_any_active_contract = len(employee_contracts.filtered(
+            #     lambda x: x.legajo_state not in ['baja'] or x.legajo_state == 'baja' and not x.date_end)) > 0
+            # if is_any_active_contract > 0:
+            #     continue
+            last_baja_contract = employee_contracts.sorted(key=lambda x: x.date_end, reverse=True)
             if last_baja_contract and eval(
                     'last_baja_contract[0].%s.id == %s' % (security_hierarchy_level, security_hierarchy_value)):
                 available_contracts |= last_baja_contract[0]

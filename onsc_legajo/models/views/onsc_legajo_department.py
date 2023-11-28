@@ -149,10 +149,18 @@ RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
 ) AS main_query)''' % (self._table,))
 
     def _search_is_job_open(self, operator, value):
-        system_records = self.search([('type', '=', 'system')])
         _today = fields.Date.today()
-        open_system_records = system_records.filtered(
-            lambda x: x.start_date and x.start_date <= _today and (x.end_date is False or x.end_date >= _today))
+        base_args = [
+            ('type', '=', 'system'),
+        ]
+        job_expression = ['&', ('start_date', '<=', _today), '|', ('end_date', '>=', _today),
+                             ('end_date', '=', False)]
+        nojob_expression = [('job_id', '=', False), ('contract_legajo_state', '!=', 'baja')]
+        second_expression = expression.OR([job_expression, nojob_expression])
+        base_args = expression.AND([base_args, second_expression])
+        open_system_records = self.search(base_args)
+        # open_system_records = system_records.filtered(
+        #     lambda x: x.start_date and x.start_date <= _today and (x.end_date is False or x.end_date >= _today))
 
         joker_records = self.search([('type', '=', 'joker')])
         joker_valid_records = joker_records.filtered(lambda x: x.legajo_state == 'egresed')
