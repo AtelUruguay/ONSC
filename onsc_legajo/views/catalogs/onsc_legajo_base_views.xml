@@ -267,4 +267,16 @@
             </p>
         </field>
     </record>
+
+<!--    PARTNER-->
+    <record id="onsc_legajo_partner_tree_view" model="ir.ui.view">
+        <field name="name">onsc.legajo.res.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="arch" type="xml">
+            <tree string="CI">
+                <field name="cv_nro_doc"/>
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
 </odoo>
