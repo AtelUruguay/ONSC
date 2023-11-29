@@ -74,7 +74,8 @@
                             <field name="is_available_cancel" invisible="1"/>
                         </group>
                         <group>
-                            <field name="partner_id" domain="partner_id_domain" context="{'show_cv_nro_doc':True}"
+                            <field name="partner_id" domain="partner_id_domain"
+                                   context="{'show_cv_nro_doc':True, 'tree_view_ref': 'onsc_legajo.onsc_legajo_partner_tree_view'}"
                                    required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"/>
