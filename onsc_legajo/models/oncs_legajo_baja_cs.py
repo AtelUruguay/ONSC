@@ -86,25 +86,24 @@ class ONSCLegajoBajaCS(models.Model):
                                         ('legajo_state', '=', 'incoming_commission')], args])
 
                 args = expression.OR(
-                    [[('inciso_origin_id', '=', inciso_id.id), ('legajo_state', '=', 'incoming_commission'),
+                    [['&', '&', '|',
+                      ('inciso_origin_id', '=', inciso_id.id),
+                      ('cs_contract_id.inciso_id', '=', inciso_id.id),
+                      ('legajo_state', '=', 'incoming_commission'),
                       ('inciso_id.is_central_administration', '=', False)], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
-            inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
-            if inciso_id:
-                args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
-                args = expression.OR([[('inciso_id.is_central_administration', '=', False),
-                                       ('inciso_origin_id', '=', inciso_id.id)], args])
-            if operating_unit_id:
-                args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id)], args])
-                args = expression.OR([[('inciso_id.is_central_administration', '=', False),
-                                       ('operating_unit_origin_id', '=', operating_unit_id.id)], args])
-            # if employee_id:
-            #     args = expression.AND(
-            #         [[('employee_id', '=', employee_id), ('employee_id', '!=', self.env.user.employee_id.id)], args])
 
-            args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
+            args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id),
+                                    ('legajo_state', '=', 'incoming_commission')], args])
+
+            args = expression.OR(
+                [['&', '&', '|',
+                  ('operating_unit_origin_id', '=', operating_unit_id.id),
+                  ('cs_contract_id.operating_unit_id', '=', operating_unit_id.id),
+                  ('legajo_state', '=', 'incoming_commission'),
+                  ('inciso_id.is_central_administration', '=', False)], args])
         else:
             args = expression.AND(
                 [[('legajo_state', '=', 'incoming_commission')], args])
@@ -116,28 +115,24 @@ class ONSCLegajoBajaCS(models.Model):
     def _get_domain_employee(self, args):
         if self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_inciso'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
-            if inciso_id:
-                args = expression.AND([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'incoming_commission'),
-                                        ('employee_id', '!=', self.env.user.employee_id.id)], args])
-
-                args = expression.OR([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'outgoing_commission'),
-                                       ('cs_contract_id.inciso_id.is_central_administration', '=', False),
-                                       ('employee_id', '!=', self.env.user.employee_id.id)], args])
+            args = expression.AND([[('inciso_id', '=', inciso_id.id), ('legajo_state', '=', 'incoming_commission'),
+                                    ('employee_id', '!=', self.env.user.employee_id.id)], args])
+            # CS_CONTRACT_ID
+            args = expression.OR([[('cs_contract_id.inciso_id', '=', inciso_id.id),
+                                   ('legajo_state', '=', 'incoming_commission'),
+                                   ('inciso_id.is_central_administration', '=', False),
+                                   ('employee_id', '!=', self.env.user.employee_id.id)], args])
         elif self.user_has_groups('onsc_legajo.group_legajo_baja_cs_recursos_humanos_ue'):
             contract_id = self.env.user.employee_id.job_id.contract_id
-            inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
-            if inciso_id:
-                args = expression.AND([[('inciso_id', '=', inciso_id.id)], args])
-            if operating_unit_id:
-                args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id)], args])
+            args = expression.AND([[('operating_unit_id', '=', operating_unit_id.id), ('legajo_state', '=', 'incoming_commission'),
+                                    ('employee_id', '!=', self.env.user.employee_id.id)], args])
 
-            args = expression.AND([[('employee_id', '!=', self.env.user.employee_id.id)], args])
-            args2 = args
-            args = expression.AND([[('legajo_state', '=', 'incoming_commission')], args])
-            args2 = expression.AND([[('legajo_state', '=', 'outgoing_commission'),
-                                     ('cs_contract_id.inciso_id.is_central_administration', '=', False)], args2])
-            args = expression.OR([args2, args])
+            # cs_contract_id
+            args = expression.OR([[('cs_contract_id.operating_unit_id', '=', operating_unit_id.id),
+                                   ('legajo_state', '=', 'incoming_commission'),
+                                   ('inciso_id.is_central_administration', '=', False),
+                                   ('employee_id', '!=', self.env.user.employee_id.id)], args])
         else:
             args = expression.AND(
                 [[('employee_id', '!=', self.env.user.employee_id.id),
