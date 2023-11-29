@@ -72,14 +72,16 @@ class HrEmployee(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        cv_nro_doc_args = []
+        new_args = []
         for args_item in args:
-            if args_item[0] == 'name' and len(args_item) == 3:
-                cv_nro_doc_args = [('cv_nro_doc', args_item[1], args_item[2])]
-
-        if len(cv_nro_doc_args) > 0:
-            args = expression.OR([cv_nro_doc_args, args])
-        return super(HrEmployee, self)._search(args, offset=offset, limit=limit, order=order, count=count,
+            if (isinstance(args_item, tuple) or isinstance(args_item, list)) and args_item[0] == 'name' and len(
+                    args_item) == 3:
+                new_args.append('|')
+                new_args.append(args_item)
+                new_args.append(('cv_nro_doc', args_item[1], args_item[2]))
+            else:
+                new_args.append(args_item)
+        return super(HrEmployee, self)._search(new_args, offset=offset, limit=limit, order=order, count=count,
                                                access_rights_uid=access_rights_uid)
 
     partner_id = fields.Many2one('res.partner', string='Contacto', compute='_compute_partner_id', store=True)
@@ -145,6 +147,7 @@ class HrEmployee(models.Model):
     notify_sgh = fields.Boolean("Notificar SGH")
 
     def name_get(self):
+        # return super(HrEmployeePrivate, self).name_get()
         res = []
         for record in self:
             name = record.full_name or record.name
