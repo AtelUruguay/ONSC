@@ -155,10 +155,10 @@ class ONSCDesempenoEvaluation(models.Model):
             '|', ('evaluator_id', '=', self.env.user.employee_id.id),
             ('evaluated_id', '=', self.env.user.employee_id.id)
         ]
-        if self._is_group_admin_gh_inciso():
+        if self._is_group_admin_gh_inciso() or self._is_group_usuario_gh_inciso():
             args_extended = expression.OR(
                 [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', 'gap_deal')], args_extended])
-        elif self._is_group_admin_gh_ue():
+        elif self._is_group_admin_gh_ue() or self._is_group_usuario_gh_ue():
             args_extended = expression.OR(
                 [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', 'gap_deal')],
                  args_extended])
@@ -390,6 +390,7 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
             is_gap_deal = record.evaluation_type == 'gap_deal'
+
             hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
             hierarchy_deparments |= employee.job_id.department_id
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
@@ -419,23 +420,26 @@ class ONSCDesempenoEvaluation(models.Model):
         is_gh_responsable = self._is_group_responsable_uo()
         employee = self.env.user.employee_id
         for record in self:
-            is_valid_evaluation = record.evaluation_type in ['leader_evaluation', 'gap_deal']
-            is_gap_deal = record.sudo().evaluation_type == 'gap_deal'
-            is_am_evaluator = record.evaluator_id.id == employee.id
-            is_am_orig_evaluator = record.original_evaluator_id.id == employee.id
-            is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
-            same_operating_unit = record.operating_unit_id.id == employee.job_id.contract_id.operating_unit_id.id
-            same_inciso = record.inciso_id.id == employee.job_id.contract_id.inciso_id.id
-            hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
-            hierarchy_deparments |= employee.job_id.department_id
+            if record.evaluated_id.id == employee.id:
+                record.is_evaluation_change_available = False
+            else:
+                is_valid_evaluation = record.evaluation_type in ['leader_evaluation', 'gap_deal']
+                is_gap_deal = record.sudo().evaluation_type == 'gap_deal'
+                is_am_evaluator = record.evaluator_id.id == employee.id
+                is_am_orig_evaluator = record.original_evaluator_id.id == employee.id
+                is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
+                same_operating_unit = record.operating_unit_id.id == employee.job_id.contract_id.operating_unit_id.id
+                same_inciso = record.inciso_id.id == employee.job_id.contract_id.inciso_id.id
+                hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
+                hierarchy_deparments |= employee.job_id.department_id
 
-            is_user_gh_ue_cond = is_gh_user_ue and is_order_1 and same_operating_unit
-            is_user_gh_inc_cond = is_gh_user_inciso and is_order_1 and same_inciso
-            is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
-            is_gap_deal_evaluator = is_gap_deal and (is_gh_user_inciso or is_user_gh_ue_cond or is_am_orig_evaluator)
-            base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
+                is_user_gh_ue_cond = is_gh_user_ue and is_order_1 and same_operating_unit
+                is_user_gh_inc_cond = is_gh_user_inciso and is_order_1 and same_inciso
+                is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
+                is_gap_deal_evaluator = is_gap_deal and (is_user_gh_inc_cond or is_user_gh_ue_cond or is_am_orig_evaluator)
+                base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
 
-            record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
+                record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
 
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
