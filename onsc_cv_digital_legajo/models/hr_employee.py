@@ -61,42 +61,62 @@ class HrEmployee(models.Model):
     # -------- INFO DE CV QUE PASA DIRECTO AL LEGAJO SIN VALIDACION
     marital_status_id = fields.Many2one(
         "onsc.cv.status.civil", string="Estado civil",
-        related='cv_digital_id.marital_status_id',
         store=True,
         history=True)
-
     cjppu_affiliate_number = fields.Integer(
         string="Numero de afiliado a la CJPPU",
-        related='cv_digital_id.cjppu_affiliate_number',
         store=True,
         history=True)
-    professional_resume = fields.Text(string="Resumen profesional", related='cv_digital_id.professional_resume',
-                                      store=True, history=True)
-    user_linkedIn = fields.Char(string="Usuario en LinkedIn", related='cv_digital_id.user_linkedIn', store=True,
+    professional_resume = fields.Text(
+        string="Resumen profesional",
+        store=True,
+        history=True)
+    user_linkedIn = fields.Char(string="Usuario en LinkedIn",
+                                store=True,
                                 history=True)
+    gender_public_visualization_date = fields.Date(
+        string="Fecha información visualización pública de género",
+        store=True,
+        history=True)
+    cv_address_amplification = fields.Text(
+        u"Aclaraciones",
+        store=True)
+    lear = fields.Selection(
+        selection=SELECTION_RADIO,
+        string=u'Entender y/o aprender',
+        store=True,
+        history=True)
+    is_need_other_support = fields.Boolean(store=True, history=True)
+    type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo',
+                                        related='cv_digital_id.type_support_ids')
+    last_modification_date = fields.Date(
+        string=u'Fecha última modificación',
+        store=True,
+        history=True)
+    institutional_email = fields.Char(
+        string=u'Correo electrónico institucional',
+        store=True,
+        history=True)
+    blood_type = fields.Selection(
+        BLOOD_TYPE,
+        string=u'Tipo de sangre',
+        store=True,
+        history=True)
+    # --------- END OF RELATED
+
     is_driver_license = fields.Boolean(
         string="¿Tiene licencia de conducir?",
         history=True)
     is_cv_gender_public = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?",
         history=True)
-    gender_public_visualization_date = fields.Date(
-        string="Fecha información visualización pública de género",
-        related='cv_digital_id.gender_public_visualization_date',
-        store=True,
-        history=True)
+
     is_public_information_victim_violent = fields.Boolean(
         string="¿Desea que esta información se incluya en la versión impresa de su CV?",
         history=True)
     is_cv_race_public = fields.Boolean(
         string="¿Permite que su identidad étnico-racial se visualice en su CV?",
         history=True)
-
-    cv_address_amplification = fields.Text(
-        u"Aclaraciones",
-        related='cv_digital_id.cv_address_amplification',
-        store=True)
-
     allow_content_public = fields.Selection(
         selection=[('si', u'Si'), ('no', u'No')],
         string=u'¿Permite que el contenido de esta sección se visualice en su CV?',
@@ -115,28 +135,18 @@ class HrEmployee(models.Model):
     realize = fields.Selection(selection=SELECTION_RADIO,
                                string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo',
                                history=True)
-    lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender', related='cv_digital_id.lear',
-                            history=True)
+
     interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas',
                                    history=True)
     need_other_support = fields.Text(string=u"¿Necesita otro apoyo?", history=True)
-    is_need_other_support = fields.Boolean(related='cv_digital_id.is_need_other_support', store=True, history=True)
 
-    type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo',
-                                        related='cv_digital_id.type_support_ids')
-    last_modification_date = fields.Date(string=u'Fecha última modificación',
-                                         related='cv_digital_id.last_modification_date', store=True, history=True)
-    institutional_email = fields.Char(string=u'Correo electrónico institucional',
-                                      related='cv_digital_id.institutional_email', store=True, history=True)
+
     emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia',
                                               history=True)
     health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
                                            history=True)
     health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud", history=True)
     emergency_service_id = fields.Many2one("onsc.legajo.emergency", u"Servicio de emergencia móvil", history=True)
-    blood_type = fields.Selection(BLOOD_TYPE,
-                                  string=u'Tipo de sangre',
-                                  related='cv_digital_id.blood_type', store=True, history=True)
     other_information_official = fields.Text(
         string="Otra información del funcionario/a",
         history=True)
