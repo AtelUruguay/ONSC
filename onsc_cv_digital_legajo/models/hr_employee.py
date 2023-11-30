@@ -139,10 +139,7 @@ class HrEmployee(models.Model):
     interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas',
                                    history=True)
     need_other_support = fields.Text(string=u"¿Necesita otro apoyo?", history=True)
-
-
-    emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia',
-                                              history=True)
+    emergency_service_telephone = fields.Char(string=u'Teléfono del servicio de emergencia', history=True)
     health_department_id = fields.Many2one('res.country.state', string=u'Departamento del prestador de salud',
                                            history=True)
     health_provider_id = fields.Many2one("onsc.legajo.health.provider", u"Prestador de Salud", history=True)
