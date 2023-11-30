@@ -9,7 +9,6 @@ from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
-# campos requeridos para la sincronización
 REQUIRED_FIELDS = [
     'inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
     'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description', 'resolution_date',
@@ -120,6 +119,12 @@ class ONSCLegajoAltaVL(models.Model):
         ]).mapped('partner_id.id')
         for record in self:
             record.partner_id_domain = json.dumps([('id', 'in', partner_ids)])
+
+    def copy(self, default=None):
+        self.ensure_one()
+        default = dict(default or {},
+                       full_name=_('Registro duplicado sin concluir'))
+        return super(ONSCLegajoAltaVL, self).copy(default)
 
     def action_call_ws1(self):
         return self.syncronize_ws1(log_info=True)

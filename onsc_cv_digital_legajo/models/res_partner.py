@@ -4,7 +4,6 @@ import logging
 from email_validator import validate_email
 
 from odoo import models, fields, api, _
-from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 

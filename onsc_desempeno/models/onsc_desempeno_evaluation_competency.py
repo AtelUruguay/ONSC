@@ -44,6 +44,8 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit', )
     order = fields.Integer('Orden')
     locked = fields.Boolean('Bloqueado', related='evaluation_id.locked')
+    is_exonerated_evaluation = fields.Boolean('Exonerado de la evaluacion',
+                                              related='evaluation_id.is_exonerated_evaluation')
 
     skill_tooltip = fields.Html(
         compute=lambda s: s._get_help('skill_tooltip'),
@@ -54,7 +56,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     def _compute_competency_form_edit(self):
         for record in self:
             if record.gap_deal_id:
-                record.competency_form_edit = record.gap_deal_id.gap_deal_state != 'no_deal' or record.gap_deal_id.state != 'in_process'
+                record.competency_form_edit = record.gap_deal_id.gap_deal_state != 'no_deal' or record.gap_deal_id.state_gap_deal != 'in_process' or record.gap_deal_id.is_exonerated_evaluation
             else:
                 record.competency_form_edit = record.state != 'in_process'
 

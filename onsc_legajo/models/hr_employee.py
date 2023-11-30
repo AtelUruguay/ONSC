@@ -5,7 +5,6 @@ from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import models, fields, api
-from odoo.osv import expression
 
 MODIFIED_FIELDS_TO_NOTIFY_SGH = [
     'cv_nro_doc',
