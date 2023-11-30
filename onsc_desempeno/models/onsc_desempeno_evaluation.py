@@ -263,6 +263,7 @@ class ONSCDesempenoEvaluation(models.Model):
                                               string='Evaluación de Competencias')
     general_comments = fields.Text(string='Comentarios Generales')
     state = fields.Selection(STATE, string='Estado', default='draft', readonly=True, tracking=True)
+    state_gap_deal = fields.Selection(STATE, string="Estado", default='draft', readonly=True, tracking=True)
     locked = fields.Boolean(string='Bloqueado')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
@@ -361,7 +362,7 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_type == 'gap_deal':
-                _cond1 = record.state != 'in_process' or record.gap_deal_state != 'no_deal'
+                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal'
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             else:
@@ -383,7 +384,7 @@ class ONSCDesempenoEvaluation(models.Model):
             hierarchy_deparments |= employee.job_id.department_id
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
 
-            _cond1 = is_am_evaluator and (is_gap_deal or is_development_plan)
+            _cond1 = is_am_evaluator and is_gap_deal
             _cond2 = not record.gap_deal_state == 'agree_leader' and is_responsable
             record.is_agree_evaluation_leader_available = _cond1 and _cond2
 
@@ -416,7 +417,7 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_type in ('develop_plan', 'gap_deal'):
-                record.evaluation_form_edit = record.evaluator_id.id == user_employee_id or record.evaluated_id.id == user_employee_id
+                record.evaluation_form_edit = (record.evaluator_id.id == user_employee_id or record.evaluated_id.id == user_employee_id) and not record.is_exonerated_evaluation
             else:
                 record.evaluation_form_edit = record.evaluator_id.id == user_employee_id and not record.locked
 
@@ -489,7 +490,11 @@ class ONSCDesempenoEvaluation(models.Model):
             record.is_edit_general_comments = condition
 
     def button_start_evaluation(self):
-        self.write({'state': 'in_process'})
+        if self.evaluation_type == 'gap_deal':
+            self.write({'state_gap_deal': 'in_process'})
+
+        else:
+            self.write({'state': 'in_process'})
 
     def button_completed_evaluation(self):
         self._check_complete_evaluation()
@@ -504,7 +509,7 @@ class ONSCDesempenoEvaluation(models.Model):
         self.write({'state': 'in_process'})
 
     def button_reopen_deal(self):
-        self.write({'gap_deal_state': 'no_deal', 'state': 'draft'})
+        self.write({'gap_deal_state': 'no_deal', 'state_gap_deal': 'in_process'})
 
     def button_agree_evaluation_leader(self):
         self._check_complete_evaluation()
@@ -513,10 +518,10 @@ class ONSCDesempenoEvaluation(models.Model):
         elif self.gap_deal_state == 'agree_evaluated':
             if not self.is_exonerated_evaluation:
                 self.create_development_plan()
-            self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
+            self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_gh(self):
-        self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
+        self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_evaluation_evaluated(self):
         self._check_complete_evaluation()
@@ -525,21 +530,21 @@ class ONSCDesempenoEvaluation(models.Model):
         elif self.gap_deal_state == 'agree_leader':
             if not self.is_exonerated_evaluation:
                 self.create_development_plan()
-            self.write({'state': 'deal_close', 'gap_deal_state': 'agree'})
+            self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_plan_leader(self):
         self._check_complete_evaluation()
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_leader'})
         elif self.gap_deal_state == 'agree_evaluated':
-            self.write({'state': 'agreed_plan', 'gap_deal_state': 'agree'})
+            self.write({'state_gap_deal': 'agreed_plan', 'gap_deal_state': 'agree'})
 
     def button_agree_plan_evaluated(self):
         self._check_complete_evaluation()
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_evaluated'})
         elif self.gap_deal_state == 'agree_leader':
-            self.write({'state': 'agreed_plan', 'gap_deal_state': 'agree'})
+            self.write({'state_gap_deal': 'agreed_plan', 'gap_deal_state': 'agree'})
 
     def _generate_environment_evaluations(self):
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
@@ -579,7 +584,7 @@ class ONSCDesempenoEvaluation(models.Model):
                     'level_id': level_id.id,
                     'evaluation_stage_id': rec.evaluation_stage_id.id,
                     'general_cycle_id': rec.general_cycle_id.id,
-                    'state': 'draft',
+                    'state_gap_deal': 'draft',
                 })
                 for skill in skills:
                     Competency.create({'evaluation_id': evaluation.id,
@@ -646,7 +651,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
         message_partner_ids = self.search(
             [('evaluation_type', 'in', ['environment_evaluation', 'collaborator']), ('state', '!=', 'canceled'),
-             ('year', '=', year), ('general_cycle_id.end_date_max', '=', date_end)]).mapped('evaluator_id.partner_id')
+             ('year', '=', year), ('evaluation_end_date', '=', date_end)]).mapped('evaluator_id.partner_id')
 
         return message_partner_ids.get_onsc_mails()
 
@@ -705,22 +710,22 @@ class ONSCDesempenoEvaluation(models.Model):
 
         for record in self.search(
                 [('general_cycle_id', 'in', general_ids),
-                 ('state', 'not in', ['canceled']),
+                 ('state_gap_deal', 'not in', ['canceled']),
                  ('evaluation_type', 'in', ['gap_deal', 'development_plan'])]):
 
             if record.evaluation_type == 'development_plan':
                 if record.state == 'agreed_plan':
-                    record.write({'state': 'finished'})
+                    record.write({'state_gap_deal': 'finished'})
                 elif record.state not in ['finished', 'uncompleted']:
-                    record.write({'state': 'uncompleted'})
+                    record.write({'state_gap_deal': 'uncompleted'})
             else:
                 if record.is_exonerated_evaluation:
-                    record.write({'state': 'canceled'})
+                    record.write({'state_gap_deal': 'canceled'})
                 else:
                     if record.state == 'agreed_plan':
-                        record.write({'state': 'finished'})
+                        record.write({'state_gap_deal': 'finished'})
                     elif record.state not in ['finished', 'uncompleted']:
-                        record.write({'state': 'uncompleted'})
+                        record.write({'state_gap_deal': 'uncompleted'})
 
     def create_development_plan(self):
         Skill = self.env['onsc.desempeno.skill'].suspend_security()
