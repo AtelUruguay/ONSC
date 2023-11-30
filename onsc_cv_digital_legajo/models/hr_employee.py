@@ -59,6 +59,8 @@ class HrEmployee(models.Model):
                                     store=True)
 
     # -------- INFO DE CV QUE PASA DIRECTO AL LEGAJO SIN VALIDACION
+    is_need_other_support = fields.Boolean(store=True, history=True, related='cv_digital_id.is_need_other_support')
+
     marital_status_id = fields.Many2one(
         "onsc.cv.status.civil", string="Estado civil",
         store=True,
@@ -86,13 +88,10 @@ class HrEmployee(models.Model):
         string=u'Entender y/o aprender',
         store=True,
         history=True)
-    is_need_other_support = fields.Boolean(store=True, history=True)
     type_support_ids = fields.Many2many('onsc.cv.type.support', string=u'Tipos de apoyo',
                                         related='cv_digital_id.type_support_ids')
-    last_modification_date = fields.Date(
-        string=u'Fecha última modificación',
-        store=True,
-        history=True)
+    last_modification_date = fields.Date(string=u'Fecha última modificación', store=True,
+                                         compute='_compute_last_modification_date', readonly=True)
     institutional_email = fields.Char(
         string=u'Correo electrónico institucional',
         store=True,
@@ -192,6 +191,14 @@ class HrEmployee(models.Model):
             record.is_cv_race_option_other_enable = len(
                 record.cv_race_ids.filtered(lambda x: x.is_option_other_enable)) > 0
             record.is_multiple_cv_race_selected = len(record.cv_race_ids) > 1
+
+    @api.depends(lambda model: ('create_date', 'write_date') if model._log_access else ())
+    def _compute_last_modification_date(self):
+        if self._log_access:
+            for record in self:
+                record.last_modification_date = record.write_date or record.create_date or fields.Date.today()
+        else:
+            self.last_modification_date = fields.Date.today()
 
     def button_get_info_fromcv(self):
         for record in self:
