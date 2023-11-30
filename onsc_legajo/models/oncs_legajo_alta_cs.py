@@ -737,7 +737,7 @@ class ONSCLegajoAltaCS(models.Model):
         else:
             employee = self.employee_id
         new_contract = self._get_legajo_contract(employee)
-        self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
+        # self.contract_id.suspend_security().write({'cs_contract_id': new_contract.id})
         date_start = fields.Date.from_string(self.date_start_commission or fields.Date.today())
         self.contract_id.with_context(no_check_write=True).deactivate_legajo_contract(
             date_end=date_start - relativedelta(days=1),
