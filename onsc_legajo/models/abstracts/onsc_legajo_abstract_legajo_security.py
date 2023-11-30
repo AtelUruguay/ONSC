@@ -106,7 +106,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         else:
             base_args = expression.AND([[
                 (security_hierarchy_level, '=', security_hierarchy_value),
-                ('legajo_state', 'not in', ['baja']),],
+                ('legajo_state', 'not in', ['baja'])],
                 base_args])
         available_contracts = self.env['hr.contract'].search(base_args)
 
