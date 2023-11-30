@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
     <data>
+        <record id="onsc_legajo_hr_employee_basic_search" model="ir.ui.view">
+            <field name="name">onsc.legajo.hr.employee.basic.search</field>
+            <field name="model">hr.employee</field>
+            <field name="arch" type="xml">
+                <search string="Funcionarios">
+                    <field name="name" string="Funcionario"/>
+                </search>
+            </field>
+        </record>
+
         <record id="onsc_legajo_hr_employee_search" model="ir.ui.view">
             <field name="name">onsc.legajo.hr.employee.search</field>
             <field name="model">hr.employee</field>
