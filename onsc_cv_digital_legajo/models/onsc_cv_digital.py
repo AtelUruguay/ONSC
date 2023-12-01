@@ -35,25 +35,10 @@ EMPLOYEE_MODIFIED_FIELDS = [
     'cv_birthdate',
     'cv_sex',
     'country_of_birth_id',
-    # 'crendencial_serie',
-    # 'credential_number',
     'personal_phone',
     'mobile_phone',
     'email',
-    # 'cv_address_state_id',
-    # 'cv_address_location_id',
-    # 'cv_address_street',
-    # 'cv_address_street_id',
-    # 'cv_address_nro_door',
-    # 'cv_address_street2_id',
-    # 'cv_address_street3_id',
-    # 'cv_address_is_cv_bis',
-    # 'cv_address_apto',
-    # 'cv_address_place',
     'uy_citizenship',
-    # 'cv_address_zip',
-    # 'cv_address_block',
-    # 'cv_address_sandlot',
     'allow_content_public',
     'situation_disability',
     'see',
@@ -74,6 +59,14 @@ EMPLOYEE_MODIFIED_FIELDS = [
     'other_information_official',
     'is_driver_license',
     'is_public_information_victim_violent',
+    'marital_status_id',
+    'cjppu_affiliate_number',
+    'professional_resume',
+    'user_linkedIn',
+    'cv_address_amplification',
+    'lear',
+    'institutional_email',
+    'blood_type',
 ]
 
 
@@ -366,6 +359,8 @@ class ONSCCVDigital(models.Model):
             for key, value in values_filtered.items():
                 if key in EMPLOYEE_MODIFIED_FIELDS:
                     employee_values_to_write[key] = value
+                if key == 'is_cv_gender_public':
+                    employee_values_to_write['gender_public_visualization_date'] = fields.Date.today()
             if len(employee_values_to_write.keys()):
                 record.employee_id.suspend_security().write(employee_values_to_write)
         employees.suspend_security().write({'notify_sgh': True})
@@ -600,23 +595,24 @@ class ONSCCVDigital(models.Model):
             return
         for record in self.with_context(no_update_header_documentary_validation=True):
             employee_id = record.employee_id.suspend_security()
-            employee_vals = {}
-            if update_employee_gender and record.cv_gender_id.record is False:
-                employee_vals = {
-                    'cv_gender_id': record.cv_gender_id.id,
-                    'cv_gender_record_file': record.cv_gender_record_file,
-                    'cv_gender_record_filename': record.cv_gender_record_filename,
-                    'gender_date': record.gender_date,
-                }
-            if update_employee_afro and not record.is_afro_descendants:
-                employee_vals.update({
-                    'is_afro_descendants': False,
-                    'afro_descendants_file': False,
-                    'afro_descendants_filename': False,
-                    'afro_descendant_date': False,
-                })
-            if employee_vals:
-                employee_id.write(employee_vals)
+            if record.is_docket_active and employee_id:
+                employee_vals = {}
+                if update_employee_gender and record.cv_gender_id.record is False:
+                    employee_vals = {
+                        'cv_gender_id': record.cv_gender_id.id,
+                        'cv_gender_record_file': record.cv_gender_record_file,
+                        'cv_gender_record_filename': record.cv_gender_record_filename,
+                        'gender_date': record.gender_date,
+                    }
+                if update_employee_afro and not record.is_afro_descendants:
+                    employee_vals.update({
+                        'is_afro_descendants': False,
+                        'afro_descendants_file': False,
+                        'afro_descendants_filename': False,
+                        'afro_descendant_date': False,
+                    })
+                if employee_vals:
+                    employee_id.write(employee_vals)
 
     def documentary_reject(self, reject_reason):
         self._legajo_update_documentary(self._context.get('documentary_validation'), 'rejected', reject_reason)

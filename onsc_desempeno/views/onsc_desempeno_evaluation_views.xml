@@ -63,27 +63,27 @@
                             class="btn btn-secundary"
                             string="Cambio de evaluador"
                             context="{'default_evaluation_id': active_id}"
-                            attrs="{'invisible': ['|','|','|',('is_exonerated_evaluation', '=', True),('state_gap_deal', 'not in', ['in_process','draft']),('state', 'not in', ['in_process','draft']),('is_evaluation_change_available', '=', False)]}"
+                            attrs="{'invisible': [('is_evaluation_change_available', '=', False)]}"
                             type="action"
                             icon="fa-exchange"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar Evaluación Evaluado"
-                            attrs="{'invisible': ['|','|',('is_exonerated_evaluation', '=', True),('state_gap_deal', '!=', 'in_process'),('is_agree_evaluation_evaluated_available', '=', False)]}"
+                            attrs="{'invisible': [('is_agree_evaluation_evaluated_available', '=', False)]}"
                             name="button_agree_evaluation_evaluated"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar Evaluación Líder"
-                            attrs="{'invisible': ['|','|',('is_exonerated_evaluation', '=', True),('state_gap_deal', '!=', 'in_process'),('is_agree_evaluation_leader_available', '=', False)]}"
+                            attrs="{'invisible': [('is_agree_evaluation_leader_available', '=', False)]}"
                             name="button_agree_evaluation_leader"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar GH"
-                            attrs="{'invisible': ['|',('state', '!=', 'in_process'),('is_agree_button_gh_available', '=', False)]}"
+                            attrs="{'invisible': [('is_agree_button_gh_available', '=', False)]}"
                             name="button_agree_gh"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
@@ -192,7 +192,7 @@
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree nolabel="1" create="0" edit="0">
                                     <field name="state"  invisible="1"/>
-                                    <field name="locked"  invisible="1"/>
+                                    <field name="locked" invisible="1"  />
                                     <field name="evaluation_form_edit" invisible="1" />
                                     <field name="evaluation_id"  invisible="1"/>
                                     <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
@@ -201,8 +201,6 @@
                                     <button type="object"
                                             name="button_open_current_skill"
                                             context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
-                                              attrs="{'invisible': ['|',('locked', '=', True),('state', '!=', 'in_process')]}"
-
                                             icon="fa-edit"/>
                                 </tree>
                             </field>
@@ -212,7 +210,7 @@
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree nolabel="1" create="0" edit="0">
                                     <field name="state"  invisible="1"/>
-                                    <field name="is_exonerated_evaluation"  />
+                                    <field name="is_exonerated_evaluation" invisible="1" />
                                     <field name="evaluation_form_edit" invisible="1" />
                                     <field name="evaluation_id"  invisible="1"/>
                                     <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
@@ -221,8 +219,6 @@
                                     <button type="object"
                                             name="button_open_current_skill"
                                             context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
-                                              attrs="{'invisible': [('is_exonerated_evaluation', '=', True)]}"
-
                                             icon="fa-edit"/>
                                 </tree>
                             </field>
@@ -236,7 +232,7 @@
                                        widget="boolean_toggle"/>
                                 <field name="environment_ids" string="Entorno"
                                        options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"
-                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree'}"
+                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree','search_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_search'}"
                                        domain="environment_ids_domain"
                                        attrs="{'readonly': [('state', '!=', 'in_process')]}">
                                     <tree>

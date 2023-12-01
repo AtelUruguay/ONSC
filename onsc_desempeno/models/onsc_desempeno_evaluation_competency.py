@@ -54,11 +54,16 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
 
     @api.depends('state', 'state_deal')
     def _compute_competency_form_edit(self):
+        user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.gap_deal_id:
-                record.competency_form_edit = record.gap_deal_id.gap_deal_state != 'no_deal' or record.gap_deal_id.state_gap_deal != 'in_process' or record.gap_deal_id.is_exonerated_evaluation
+                _cond1 = record.gap_deal_id.state_gap_deal != 'in_process' or record.gap_deal_id.gap_deal_state != 'no_deal'
+                _cond2 = record.gap_deal_id.evaluator_id.id != user_employee_id and record.gap_deal_id.evaluated_id.id != user_employee_id
+                condition = _cond1 or _cond2
             else:
-                record.competency_form_edit = record.state != 'in_process'
+                _cond1 = record.evaluation_id.evaluator_id.id != user_employee_id or record.evaluation_id.locked
+                condition = record.state not in ['in_process'] or _cond1
+            record.competency_form_edit = condition
 
     def _get_help(self, help_field='', is_default=False):
         _html2construct = HTML_HELP % ('Tooltip')
