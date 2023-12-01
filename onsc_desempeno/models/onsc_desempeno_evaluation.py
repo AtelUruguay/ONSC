@@ -370,14 +370,14 @@ class ONSCDesempenoEvaluation(models.Model):
         is_gh_responsable = self._is_group_responsable_uo()
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
-            is_gap_deal = record.evaluation_type == 'gap_deal'
+            is_valid_gap_deal = record.evaluation_type == 'gap_deal' and record.state_gap_deal == 'in_process'
             hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
             hierarchy_deparments |= employee.job_id.department_id
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
 
-            _cond1 = is_am_evaluator and is_gap_deal
+            _cond1 = is_am_evaluator and is_valid_gap_deal
             _cond2 = not record.gap_deal_state == 'agree_leader' and is_responsable
-            record.is_agree_evaluation_leader_available = _cond1 and _cond2
+            record.is_agree_evaluation_leader_available = _cond1 and _cond2 and not record.is_exonerated_evaluation
 
     @api.depends('state')
     def _compute_is_agree_button_gh_available(self):
@@ -387,21 +387,22 @@ class ONSCDesempenoEvaluation(models.Model):
         is_gh_responsable = self._is_group_responsable_uo()
         is_gh_user_ue = self._is_group_usuario_gh_ue()
         is_gh_user_inciso = self._is_group_usuario_gh_inciso()
+        hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
+        hierarchy_deparments |= employee.job_id.department_id
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
-            is_gap_deal = record.evaluation_type == 'gap_deal'
-
-            hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
-            hierarchy_deparments |= employee.job_id.department_id
+            is_gap_deal_valid = record.evaluation_type == 'gap_deal' and record.state_gap_deal in ['draft','in_process']
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
             user_security = not is_responsable and (is_gh_user_ue or is_gh_user_inciso)
-            record.is_agree_button_gh_available = is_am_evaluator and is_gap_deal and not record.gap_deal_state == 'agree_leader' and user_security
+            record.is_agree_button_gh_available = is_am_evaluator and is_gap_deal_valid and user_security
 
     @api.depends('state')
     def _compute_is_agree_evaluation_evaluated_available(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            record.is_agree_evaluation_evaluated_available = record.evaluated_id.id == user_employee_id and record.evaluation_type == 'gap_deal' and not record.gap_deal_state == 'agree_evaluated'
+            is_am_evaluated = record.evaluated_id.id == user_employee_id
+            is_valid = record.evaluation_type == 'gap_deal' and not record.gap_deal_state == 'agree_evaluated' and record.state_gap_deal == 'in_process'
+            record.is_agree_evaluation_evaluated_available = is_am_evaluated and is_valid and not record.is_exonerated_evaluation
 
     @api.depends('state')
     def _compute_evaluation_form_edit(self):
@@ -422,8 +423,14 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             if record.evaluated_id.id == employee.id:
                 record.is_evaluation_change_available = False
+            elif record.is_exonerated_evaluation:
+                record.is_evaluation_change_available = False
             else:
-                is_valid_evaluation = record.evaluation_type in ['leader_evaluation', 'gap_deal']
+                is_valid_gap_deal = record.evaluation_type == 'gap_deal' and \
+                                    record.state_gap_deal in ['draft', 'in_process']
+                is_valid_leader_evaluation = record.evaluation_type == 'leader_evaluation' and \
+                                             record.state in ['draft', 'in_process']
+                is_valid_evaluation = is_valid_gap_deal or is_valid_leader_evaluation
                 is_gap_deal = record.sudo().evaluation_type == 'gap_deal'
                 is_am_evaluator = record.evaluator_id.id == employee.id
                 is_am_orig_evaluator = record.original_evaluator_id.id == employee.id
@@ -437,6 +444,8 @@ class ONSCDesempenoEvaluation(models.Model):
                 is_user_gh_inc_cond = is_gh_user_inciso and is_order_1 and same_inciso
                 is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
                 is_gap_deal_evaluator = is_gap_deal and (is_user_gh_inc_cond or is_user_gh_ue_cond or is_am_orig_evaluator)
+
+
                 base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
 
                 record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
