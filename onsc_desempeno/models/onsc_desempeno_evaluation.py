@@ -18,6 +18,7 @@ EVALUATION_TYPE = [('self_evaluation', 'Autoevaluación'),
                    ('environment_definition', 'Definición de entorno'),
                    ('gap_deal', 'Acuerdo de Brecha'),
                    ('development_plan', 'Plan de desarrollo'),
+                   ('tracing_plan', 'Seguimiento del Plan de desarrollo'),
                    ]
 
 STATE = [
@@ -73,7 +74,7 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_evaluation(args, 'environment_definition')
         if self._context.get('environment_evaluation'):
             args = self._get_domain_evaluation(args, 'environment_evaluation', show_evaluator=True)
-        if self._context.get('gap_deal') or self._context.get('develop_plan'):
+        if self._context.get('gap_deal') or self._context.get('develop_plan') or  self._context.get('tracing_plan') :
             args = self._get_domain_gap_deal(args)
 
         return args
@@ -149,6 +150,9 @@ class ONSCDesempenoEvaluation(models.Model):
             evaluation_type = 'gap_deal'
         elif self._context.get('develop_plan'):
             evaluation_type = 'development_plan'
+        elif self._context.get('tracing_plan'):
+            evaluation_type = 'tracing_plan'
+
 
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
@@ -533,17 +537,19 @@ class ONSCDesempenoEvaluation(models.Model):
             self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_plan_leader(self):
-        self._check_complete_evaluation()
+
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_leader'})
         elif self.gap_deal_state == 'agree_evaluated':
+            self.create_tracing_plan()
             self.write({'state_gap_deal': 'agreed_plan', 'gap_deal_state': 'agree'})
 
     def button_agree_plan_evaluated(self):
-        self._check_complete_evaluation()
+
         if self.gap_deal_state == 'no_deal':
             self.write({'gap_deal_state': 'agree_evaluated'})
         elif self.gap_deal_state == 'agree_leader':
+            self.create_tracing_plan()
             self.write({'state_gap_deal': 'agreed_plan', 'gap_deal_state': 'agree'})
 
     def _generate_environment_evaluations(self):
@@ -746,6 +752,19 @@ class ONSCDesempenoEvaluation(models.Model):
                                    })
         else:
             self.write({'is_development_plan_not_generated': True})
+        return True
+
+    def create_tracing_plan(self):
+        Competency = self.env['onsc.desempeno.evaluation.development.competency'].suspend_security()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+
+        evaluation = self.copy_data()
+        evaluation[0]["evaluation_type"] = "tracing__plan"
+        evaluation[0]["gap_deal_state"] = "no_deal"
+        plan = Evaluation.with_context(gap_deal=True).create(evaluation)
+
+        for competency in evaluation.development_plan_ids:
+            Competency.write({'tracing_planid': competency.id})
         return True
 
     def get_end_gap_deal(self):
