@@ -60,9 +60,6 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
                 _cond1 = record.gap_deal_id.state_gap_deal != 'in_process' or record.gap_deal_id.gap_deal_state != 'no_deal'
                 _cond2 = record.gap_deal_id.evaluator_id.id != user_employee_id and record.gap_deal_id.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
-            elif record.consolidate_id:
-                _cond1 = record.consolidate_id.evaluator_id.id != user_employee_id or record.consolidate_id.locked
-                condition = record.state not in ['in_process'] or _cond1
             else:
                 _cond1 = record.evaluation_id.evaluator_id.id != user_employee_id or record.evaluation_id.locked
                 condition = record.state not in ['in_process'] or _cond1
