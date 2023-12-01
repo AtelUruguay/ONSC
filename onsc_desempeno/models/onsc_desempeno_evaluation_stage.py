@@ -290,7 +290,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
 
-        valid_days = (self.end_date - fields.Date.from_string(fields.Date.today())).days
+        valid_days = (self.general_cycle_id.end_date - fields.Date.from_string(fields.Date.today())).days
         if self.env.user.company_id.days_gap_deal_eval_creation < valid_days:
             partners_to_notify = self.env["res.partner"]
             for record in Evaluation.search(
