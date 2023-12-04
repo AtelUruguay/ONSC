@@ -234,6 +234,9 @@
                                     <tree>
                                         <field name="name" string="Entorno"/>
                                     </tree>
+                                    <form edit="0">
+                                        <field name="name" string="Entorno"/>
+                                    </form>
                                 </field>
                                 <field name="environment_evaluation_ids" string="Evaluación de entorno"
                                        readonly="1"
