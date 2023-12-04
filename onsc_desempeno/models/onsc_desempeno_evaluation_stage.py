@@ -290,7 +290,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
 
-        valid_days = (self.end_date - fields.Date.from_string(fields.Date.today())).days
+        valid_days = (self.general_cycle_id.end_date - fields.Date.from_string(fields.Date.today())).days
         if self.env.user.company_id.days_gap_deal_eval_creation < valid_days:
             partners_to_notify = self.env["res.partner"]
             for record in Evaluation.search(
@@ -298,6 +298,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                      ('evaluation_type', 'in', ['leader_evaluation'])]):
                 evaluation = record.copy_data()
                 evaluation[0]["evaluation_type"] = "gap_deal"
+                evaluation[0]["is_gap_deal_not_generated"] = False
                 evaluation[0]["evaluator_uo_id"] = record.evaluator_uo_id.id
 
                 gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)

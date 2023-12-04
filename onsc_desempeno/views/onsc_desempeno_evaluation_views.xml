@@ -34,7 +34,7 @@
                     <button type="object"
                             class="btn btn-primary"
                             string="Comenzar Evaluación"
-                            attrs="{'invisible': ['|','|',('state_gap_deal', '!=', 'draft'),('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
+                            attrs="{'invisible': ['|','|','|',('is_agree_button_gh_available', '=', True),('state_gap_deal', '!=', 'draft'),('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
                             name="button_start_evaluation"
                             icon="fa-user-circle"/>
                     <button type="object"
@@ -120,8 +120,6 @@
                             <field name="evaluated_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </h4>
                     </div>
-
-
                     <group>
                         <group  style="min-width: 100px !important;">
                             <field name="evaluation_type" nolabel="1" invisible="1"/>
@@ -238,6 +236,9 @@
                                     <tree>
                                         <field name="name" string="Entorno"/>
                                     </tree>
+                                    <form edit="0">
+                                        <field name="name" string="Entorno"/>
+                                    </form>
                                 </field>
                                 <field name="environment_evaluation_ids" string="Evaluación de entorno"
                                        readonly="1"

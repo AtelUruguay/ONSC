@@ -119,7 +119,7 @@
     <menuitem id="onsc_desempeno_gap_deal_evaluation_menu"
               name="Acuerdo Brecha"
               action="onsc_desempeno_gap_deal_evaluation_action"
-              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_usuario_gh_inciso"
               parent="onsc_desempeno_evaluaciones_menu"
               sequence="15"/>
 
