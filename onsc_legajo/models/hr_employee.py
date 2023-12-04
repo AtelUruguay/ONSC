@@ -47,6 +47,18 @@ class HrEmployee(models.Model):
     _history_model = 'hr.employee.history'
 
     @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(HrEmployee, self).fields_get(allfields, attributes)
+        basic_search = 'onsc_legajo.onsc_legajo_hr_employee_basic_search'
+        if len(self._context) and \
+                self._context.get('search_view_ref', '') == basic_search and \
+                not self._context.get('no_restrict_fields', False):
+            for field in self._fields:
+                if field in res:
+                    res[field]['searchable'] = False
+        return res
+
+    @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(HrEmployee, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                       submenu=submenu)
@@ -321,7 +333,7 @@ class HrEmployee(models.Model):
         :return: Dict of values: los que realmente cambiaron
         """
         values_filtered = {}
-        _fields_get = self.fields_get()
+        _fields_get = self.with_context(no_restrict_fields=True).fields_get()
         for key, value in values.items():
             field_type = _fields_get.get(key).get('type')
             if field_type in ('integer', 'binary', 'date', 'datetime'):
