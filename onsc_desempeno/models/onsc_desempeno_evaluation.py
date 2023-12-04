@@ -301,7 +301,7 @@ class ONSCDesempenoEvaluation(models.Model):
         string="Estado de acuerdo de brecha",
         default='no_deal'
     )
-    is_gap_deal_not_generated = fields.Boolean(string='Acuerdo de brecha no generado')
+    is_gap_deal_not_generated = fields.Boolean(string='Acuerdo de brecha no generado', copy=False)
     is_edit_general_comments = fields.Boolean(
         string='Editable los comentarios generales',
         compute='_compute_is_edit_general_comments')
@@ -404,7 +404,7 @@ class ONSCDesempenoEvaluation(models.Model):
             is_valid = record.evaluation_type == 'gap_deal' and not record.gap_deal_state == 'agree_evaluated' and record.state_gap_deal == 'in_process'
             record.is_agree_evaluation_evaluated_available = is_am_evaluated and is_valid and not record.is_exonerated_evaluation
 
-    @api.depends('state')
+    @api.depends('state', 'evaluator_id', 'evaluated_id')
     def _compute_evaluation_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
@@ -426,22 +426,23 @@ class ONSCDesempenoEvaluation(models.Model):
             elif record.is_exonerated_evaluation:
                 record.is_evaluation_change_available = False
             else:
+                is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
                 is_valid_gap_deal = record.evaluation_type == 'gap_deal' and \
                                     record.state_gap_deal in ['draft', 'in_process']
                 is_valid_leader_evaluation = record.evaluation_type == 'leader_evaluation' and \
-                                             record.state in ['draft', 'in_process']
+                                             record.state in ['draft', 'in_process'] and \
+                                             is_order_1
                 is_valid_evaluation = is_valid_gap_deal or is_valid_leader_evaluation
                 is_gap_deal = record.sudo().evaluation_type == 'gap_deal'
                 is_am_evaluator = record.evaluator_id.id == employee.id
                 is_am_orig_evaluator = record.original_evaluator_id.id == employee.id
-                is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
+
                 same_operating_unit = record.operating_unit_id.id == employee.job_id.contract_id.operating_unit_id.id
                 same_inciso = record.inciso_id.id == employee.job_id.contract_id.inciso_id.id
                 hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
                 hierarchy_deparments |= employee.job_id.department_id
-
-                is_user_gh_ue_cond = is_gh_user_ue and is_order_1 and same_operating_unit
-                is_user_gh_inc_cond = is_gh_user_inciso and is_order_1 and same_inciso
+                is_user_gh_ue_cond = is_gh_user_ue and same_operating_unit
+                is_user_gh_inc_cond = is_gh_user_inciso and same_inciso
                 is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
                 is_gap_deal_evaluator = is_gap_deal and (is_user_gh_inc_cond or is_user_gh_ue_cond or is_am_orig_evaluator)
 
