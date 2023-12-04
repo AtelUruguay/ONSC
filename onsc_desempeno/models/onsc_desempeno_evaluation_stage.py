@@ -300,6 +300,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 evaluation[0]["evaluation_type"] = "gap_deal"
                 evaluation[0]["is_gap_deal_not_generated"] = False
                 evaluation[0]["evaluator_uo_id"] = record.evaluator_uo_id.id
+                evaluation[0]["general_comments"] = False
 
                 gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
