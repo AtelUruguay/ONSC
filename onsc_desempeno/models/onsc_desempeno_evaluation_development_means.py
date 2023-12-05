@@ -32,13 +32,11 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
                                             string='Medios de desarrollo')
 
 
-class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
+class ONSCDesempenoEvaluatioTracingPlan(models.Model):
     _name = 'onsc.desempeno.evaluation.tracing.plan'
     _description = u'Seguimiento del plan de desarrollo'
 
-    development_means_id = fields.Many2one('onsc.desempeno.evaluation.development.means', string='Medio de desarrollo',
-                                    requiered=True)
+    development_means_id = fields.Many2one('onsc.desempeno.evaluation.development.means', string='Medio de desarrollo', requiered=True)
     tracing_plan_date = fields.Date('Fecha de seguimiento de la actividad', required=True)
     comments = fields.Text('Observaciones')
-    degree_progress_id = fields.Many2one('onsc.desempeno.degree.progress', string='Grado de avance',
-                               required=True)
+    degree_progress_id = fields.Many2one('onsc.desempeno.degree.progress', string='Grado de avance', required=True)
