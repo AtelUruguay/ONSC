@@ -109,7 +109,7 @@
 
                                     <field name="evaluation_id"  invisible="1"/>
                                     <field name="skill_id"  readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="development_goal"  optional="show"/>
+                                    <field name="development_goal"  optional="show" required="1"/>
 
                                 </tree>
                                <form string="Evaluación de Competencias">
