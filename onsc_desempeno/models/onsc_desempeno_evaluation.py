@@ -11,15 +11,16 @@ from odoo.osv import expression
 
 _logger = logging.getLogger(__name__)
 
-EVALUATION_TYPE = [('self_evaluation', 'Autoevaluación'),
-                   ('leader_evaluation', 'Evaluación de líder'),
-                   ('environment_evaluation', 'Evaluación de entorno'),
-                   ('collaborator', 'Evaluación de colaborador/a'),
-                   ('environment_definition', 'Definición de entorno'),
-                   ('gap_deal', 'Acuerdo de Brecha'),
-                   ('development_plan', 'Plan de desarrollo'),
-                   ('tracing_plan', 'Seguimiento del Plan de desarrollo'),
-                   ]
+EVALUATION_TYPE = [
+    ('self_evaluation', 'Autoevaluación'),
+    ('leader_evaluation', 'Evaluación de líder'),
+    ('environment_evaluation', 'Evaluación de entorno'),
+    ('collaborator', 'Evaluación de colaborador/a'),
+    ('environment_definition', 'Definición de entorno'),
+    ('gap_deal', 'Acuerdo de Brecha'),
+    ('development_plan', 'Plan de desarrollo'),
+    ('tracing_plan', 'Seguimiento del Plan de desarrollo'),
+]
 
 STATE = [
     ('draft', 'Borrador'),
@@ -390,7 +391,8 @@ class ONSCDesempenoEvaluation(models.Model):
         is_gh_responsable = self._is_group_responsable_uo()
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
-            is_valid_gap_deal = record.evaluation_type in ('gap_deal', 'development_plan') and record.state_gap_deal == 'in_process'
+            is_valid_gap_deal = record.evaluation_type in (
+                'gap_deal', 'development_plan') and record.state_gap_deal == 'in_process'
             hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
             hierarchy_deparments |= employee.job_id.department_id
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
@@ -451,9 +453,11 @@ class ONSCDesempenoEvaluation(models.Model):
                 is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
                 is_valid_gap_deal = record.evaluation_type == 'gap_deal' and record.state_gap_deal in ['draft',
                                                                                                        'in_process']
-                is_valid_leader_evaluation = record.evaluation_type == 'leader_evaluation' and record.state in ['draft',
-                                                                                                                'in_process'] and is_order_1
-                is_valid_evaluation = is_valid_gap_deal or is_valid_leader_evaluation
+                is_valid_development_plan = record.evaluation_type == 'development_plan' and record.state in [
+                    'draft', 'in_process']
+                is_valid_leader_evaluation = record.evaluation_type == 'leader_evaluation' and record.state in [
+                    'draft', 'in_process'] and is_order_1
+                is_valid_evaluation = is_valid_gap_deal or is_valid_leader_evaluation or is_valid_development_plan
                 is_gap_deal = record.sudo().evaluation_type == 'gap_deal'
                 is_am_evaluator = record.evaluator_id.id == employee.id
                 is_am_orig_evaluator = record.original_evaluator_id.id == employee.id
@@ -465,7 +469,9 @@ class ONSCDesempenoEvaluation(models.Model):
                 is_user_gh_ue_cond = is_gh_user_ue and same_operating_unit
                 is_user_gh_inc_cond = is_gh_user_inciso and same_inciso
                 is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
-                is_gap_deal_evaluator = is_gap_deal and (is_user_gh_inc_cond or is_user_gh_ue_cond or is_am_orig_evaluator)
+                is_gap_deal_evaluator = is_gap_deal and (is_user_gh_inc_cond
+                                                         or is_user_gh_ue_cond
+                                                         or is_am_orig_evaluator)
                 base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
                 record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
 

@@ -19,6 +19,13 @@ class ResCompany(models.Model):
     days_gap_deal_eval_creation = fields.Integer(u"Días para la creación de Acuerdos de brecha")
     days_gap_develop_plan_creation = fields.Integer(u"Días para la creación de Plan de desarrollo")
 
+    # PUNTAJE
+    eval_360_score = fields.Integer(string='Puntaje de Evaluación 360')
+    gap_deal_score = fields.Integer(string='Puntaje de Acuerdo de brecha')
+    development_plan_score = fields.Integer(string='Puntaje de Plan de desarrollo')
+    tracing_plan_score = fields.Integer(string='Puntaje de Seguimiento de Plan de desarrollo')
+    tracing_plan_activity_score = fields.Integer(string='Puntaje de Actividad de Seguimiento de Plan de desarrollo')
+
     def write(self, vals):
         _fields = [
             "is_evaluation_form_active",
@@ -33,6 +40,11 @@ class ResCompany(models.Model):
             "days_notification_end_ev",
             "days_gap_deal_eval_creation",
             "days_gap_develop_plan_creation"
+            "eval_360_score"
+            "gap_deal_score"
+            "development_plan_score"
+            "tracing_plan_score"
+            "tracing_plan_activity_score"
         ]
         if any(x in vals.keys() for x in _fields):
             return super(ResCompany, self.suspend_security()).write(vals)

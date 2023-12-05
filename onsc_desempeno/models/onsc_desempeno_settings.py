@@ -36,6 +36,28 @@ class ONSCDesempenoSettings(models.Model):
                                                     readonly=False,
                                                     related_sudo=True)
 
+    # PUNTAJE
+    eval_360_score = fields.Integer(
+        related="company_id.eval_360_score",
+        readonly=False,
+        related_sudo=True)
+    gap_deal_score = fields.Integer(
+        related="company_id.gap_deal_score",
+        readonly=False,
+        related_sudo=True)
+    development_plan_score = fields.Integer(
+        related="company_id.development_plan_score",
+        readonly=False,
+        related_sudo=True)
+    tracing_plan_score = fields.Integer(
+        related="company_id.tracing_plan_score",
+        readonly=False,
+        related_sudo=True)
+    tracing_plan_activity_score = fields.Integer(
+        related="company_id.tracing_plan_activity_score",
+        readonly=False,
+        related_sudo=True)
+
     def execute(self):
         return {
             'type': 'ir.actions.client',

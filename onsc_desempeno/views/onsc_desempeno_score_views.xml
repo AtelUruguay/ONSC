@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_desempeno_score_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.score.search</field>
+        <field name="model">onsc.desempeno.score</field>
+        <field name="arch" type="xml">
+            <search string="Puntajes">
+                <field name="department_id"/>
+                <field name="employee_id"/>
+                <field name="type"/>
+            </search>
+        </field>
+    </record>
+    <record id="onsc_desempeno_score_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.score.tree</field>
+        <field name="model">onsc.desempeno.score</field>
+        <field name="arch" type="xml">
+            <tree string="Puntajes">
+                <field name="department_id"/>
+                <field name="employee_id"/>
+                <field name="type"/>
+                <field name="evaluations_qty" optional="hide"/>
+                <field name="finished_evaluations_qty"/>
+                <field name="score"/>
+                <field name="finished_score"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id='onsc_desempeno_score_action' model='ir.actions.act_window'>
+        <field name="name">Puntajes</field>
+        <field name="res_model">onsc.desempeno.score</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            </p>
+        </field>
+    </record>
+</odoo>

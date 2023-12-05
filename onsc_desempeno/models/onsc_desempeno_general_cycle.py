@@ -22,7 +22,9 @@ class ONSCDesempenoGeneralCycle(models.Model):
                                                                      toolbar=toolbar,
                                                                      submenu=submenu)
         doc = etree.XML(res['arch'])
-        is_user_config = self.env.user.has_group('onsc_desempeno.group_desempeno_configurador_gh_ue') or self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_inciso')
+        is_user_config = self.env.user.has_group(
+            'onsc_desempeno.group_desempeno_configurador_gh_ue') or self.user_has_groups(
+            'onsc_desempeno.group_desempeno_configurador_gh_inciso')
         is_user_admin = self.env.user.has_group('onsc_desempeno.group_desempeno_administrador')
         if view_type in ['form', 'tree', 'kanban'] and is_user_config and not is_user_admin:
             for node_form in doc.xpath("//%s" % (view_type)):
@@ -45,6 +47,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
     start_date_max = fields.Date(string=u'Fecha inicio máx.', required=True, tracking=True)
     end_date_max = fields.Date(string=u'Fecha fin máx.', required=True, tracking=True)
     active = fields.Boolean(string="Activo", default=True, tracking=True)
+    is_score_generated = fields.Boolean(string='¿Puntajes calculados?')
 
     is_edit_start_date = fields.Boolean(
         string="Editar datos de destino",
@@ -172,3 +175,73 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 [('general_cycle_id', 'in', self.ids)]) > 0:
             raise ValidationError(
                 _("No se pueden eliminar configuraciones mientras se tenga una Etapa de evaluaciones 360° activa"))
+
+    def process_score_calculator(self):
+        """
+        Proceso de calculo de puntajes al fin del ciclo general. Debe disparase por un Cron
+        :return: True
+        """
+        config_eval_360_score = self.env.user.company_id.eval_360_score
+        Score = self.env['onsc.desempeno.score'].sudo()
+        Evaluation = self.env['onsc.desempeno.evaluation'].with_context(ignore_security_rules=True).sudo()
+        EvaluationStage = self.env['onsc.desempeno.evaluation.stage'].sudo()
+
+        valid_records = self.sudo().search([
+            ('is_score_generated', '=', False),
+            ('end_date', '<=', fields.Date.today())])
+        stages_360 = EvaluationStage.search([
+            ('general_cycle_id', 'in', valid_records.ids),
+        ])
+
+        EVALUATION_360_TYPES = [
+            'self_evaluation',
+            'leader_evaluation',
+            'environment_evaluation',
+            'collaborator',
+            'environment_definition'
+        ]
+
+        evaluations_360 = Evaluation.search([
+            ('evaluation_stage_id', 'in', stages_360.ids),
+            ('evaluation_type', 'in', EVALUATION_360_TYPES),
+            ('state', '!=', 'canceled')
+        ])
+        scores_dict = {}
+        for evaluation_360 in evaluations_360:
+            key = '%s;;%s;;%s' % (
+                evaluation_360.evaluated_id.id,
+                evaluation_360.uo_id.id,
+                evaluation_360.evaluation_stage_id.id,
+            )
+            if key in scores_dict.keys():
+                scores_dict[key]['evaluations_360_total_qty'] += 1
+            else:
+                scores_dict[key] = {
+                    'employee_id': evaluation_360.evaluated_id.id,
+                    'department_id': evaluation_360.uo_id.id,
+                    'evaluation_stage_id': evaluation_360.evaluation_stage_id.id,
+                    'evaluation_list_id': evaluation_360.evaluation_list_id.id,
+                    'evaluations_360_total_qty': 1,
+                    'evaluations_360_finished_qty': 0,
+                }
+            if evaluation_360.state == 'finished':
+                scores_dict[key]['evaluations_360_finished_qty'] += 1
+
+        bulked_vals = []
+        for key, value in scores_dict.items():
+            score = config_eval_360_score / value['evaluations_360_total_qty']
+            finished_score = value['evaluations_360_finished_qty'] * score
+            bulked_vals.append({
+                'evaluation_stage_id': value['evaluation_stage_id'],
+                'evaluation_list_id': value['evaluation_list_id'],
+                'department_id': value['department_id'],
+                'employee_id': value['employee_id'],
+                'evaluations_qty': value['evaluations_360_total_qty'],
+                'finished_evaluations_qty': value['evaluations_360_finished_qty'],
+                'score': score,
+                'finished_score': finished_score,
+                'type': 'eval_360',
+            })
+        Score.create(bulked_vals)
+        # valid_records.write({'is_score_generated': True})
+        return True

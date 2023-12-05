@@ -82,6 +82,11 @@
               parent="onsc_desempeno_config_menu"
               groups="onsc_desempeno.group_desempeno_configurador_escalafones,onsc_desempeno.group_desempeno_administrador"
               sequence="10"/>
+    <menuitem id="onsc_desempeno_config_config_menu"
+              name="Puntajes"
+              action="onsc_desempeno_score_action"
+              parent="onsc_desempeno_config_menu"
+              sequence="100"/>
 
     <menuitem id="onsc_desempeno_evaluaciones_menu"
           name="Evaluaciones"
