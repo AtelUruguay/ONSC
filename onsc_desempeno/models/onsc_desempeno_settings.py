@@ -32,6 +32,9 @@ class ONSCDesempenoSettings(models.Model):
         related="company_id.days_gap_deal_eval_creation",
         readonly=False,
         related_sudo=True)
+    days_gap_develop_plan_creation = fields.Integer(related="company_id.days_gap_develop_plan_creation",
+                                                    readonly=False,
+                                                    related_sudo=True)
 
     def execute(self):
         return {

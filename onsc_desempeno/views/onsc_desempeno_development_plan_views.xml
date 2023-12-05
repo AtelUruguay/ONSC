@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+
+    <record id="onsc_desempeno_develop_plan_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.form</field>
+        <field name="model">onsc.desempeno.evaluation</field>
+        <field name="arch" type="xml">
+            <form string="Plan de desarrollo" create="0" delete="0" duplicate="0">
+                <header>
+                    <field name="collaborators" invisible="1"/>
+                    <field name="evaluation_form_edit" invisible="1"/>
+                    <field name="is_agree_evaluation_leader_available" invisible="1"/>
+                    <field name="is_agree_evaluation_evaluated_available" invisible="1"/>
+                    <button type="object"
+                            class="btn btn-primary"
+                            string="Comenzar Evaluación"
+                            attrs="{'invisible': ['|',('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
+                            name="button_start_evaluation"
+                            icon="fa-user-circle"/>
+                    <button type="object"
+                            class="btn btn-primary"
+                            string="Acordar Plan Evaluado"
+                            attrs="{'invisible': ['|',('state', '!=', 'in_process'),('is_agree_evaluation_evaluated_available', '=', False)]}"
+                            name="button_agree_plan_evaluated"
+                            confirm="¿Está seguro que desea confirmar el acuerdo?"
+                            icon="fa-lock"/>
+                    <button type="object"
+                            class="btn btn-primary"
+                            string="Acordar Plan Líder"
+                            attrs="{'invisible': ['|',('state', '!=', 'in_process'),('is_agree_evaluation_leader_available', '=', False)]}"
+                            name="button_agree_plan_leader"
+                            confirm="¿Está seguro que desea confirmar el acuerdo?"
+                            icon="fa-lock"/>
+                    <button type="object"
+                            class="btn btn-secundary"
+                            string="Reabrir acuerdo"
+                            attrs="{'invisible': ['|','|','|',('state', '!=', 'in_process'),('gap_deal_state', '=', 'agree'),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'develop_plan')]}"
+                            name="button_reopen_deal"
+                            icon="fa-unlock"
+                            confirm="¿Está seguro de que desea reabrir el plan?"/>
+                    <button type="object"
+                            class="btn btn-primary"
+                            string="Finalizar Seguimiento"
+                            attrs="{'invisible': ['|',('state', '!=', 'draft'),('evaluation_type', '!=', 'tracing_plan')]}"
+                            name="button_finish_evaluation"
+                            icon="fa-user-circle"/>
+
+
+                   <field name="state" widget="statusbar"
+                           statusbar_visible="draft,in_process,completed,agreed_plan,finished" />
+                </header>
+                <sheet>
+                    <field name="is_evaluation_change_available" invisible="1"/>
+                    <field name="should_disable_form_edit" invisible="1"/>
+                    <field name="is_evaluation_form_active" invisible="1"/>
+                    <field name="is_environment_evaluation_form_active" invisible="1"/>
+                    <div class="oe_avatar" style="padding-right:20px">
+                         <label for="gap_deal_state" string="Estado de acordar plan"/>
+                        <h4><field name="gap_deal_state"
+                                   align="left" style="font-size: 100%; width: 190px;" widget="label_selection"
+                                   options="{'classes': {'agree_leader': 'info','agree_evaluated': 'info', 'agree': 'success'}}"
+
+                                   /></h4>
+                    </div>
+                    <div class="oe_title" name="div_title">
+                        <label for="evaluated_id"/>
+                        <h4>
+                            <field name="evaluated_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </h4>
+                    </div>
+
+
+                    <group>
+                        <group  style="min-width: 100px !important;">
+                            <field name="evaluation_type" nolabel="1" invisible="1"/>
+                            <field name="evaluator_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="original_evaluator_id"
+                                   attrs="{'invisible': [('original_evaluator_id', '=', False)]}"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   readonly="1"/>
+                            <field name="reason_change_id"
+                                   readonly="1"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
+                                   attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
+                            <field name="year"/>
+                            <field name="evaluation_start_date"/>
+                            <field name="evaluation_end_date_max"/>
+                        </group>
+                        <group>
+                            <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="uo_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="level_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="occupation_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                        </group>
+                    </group>
+
+                    <notebook>
+                        <page string="Competencia a desarrollar">
+                            <field name="development_plan_ids" nolabel="1"  create="0" delete="0" edit="0">
+                                <tree nolabel="1" create="0" edit="0" delete="0" >
+
+                                    <field name="evaluation_id"  invisible="1"/>
+                                    <field name="skill_id"  readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="development_goal"  optional="show"/>
+
+                                </tree>
+                               <form string="Evaluación de Competencias">
+                                  <header/>
+                                    <sheet>
+                                        <group>
+                                             <group colspan="4">
+                                                <label for="skill_id"/>
+                                               <div>
+                                                    <field name="skill_id" readonly="1"
+                                                           widget="many2one_tooltip"
+                                                           class="float-left"
+                                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+
+                                                </div>
+                                                <field name="development_goal"  />
+
+                                            </group>
+                                        </group>
+                                        <notebook>
+                                            <page string="Plan de acción">
+                                                <field name="development_means_ids" nolabel="1"  options="{'reload_on_button': True}" context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_development_means_form'}"  force_save="1" >
+
+
+                                                </field>
+                                            </page>
+                                        </notebook>
+                                    </sheet>
+                               </form>
+
+                                </field>`
+                        </page>
+                    </notebook>
+
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" groups="base.group_user"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+   <record id="onsc_desempeno_development_means_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.development.means.form</field>
+        <field name="model">onsc.desempeno.evaluation.development.means</field>
+        <field name="arch" type="xml">
+            <form string="Medios de desarrollo">
+              <header/>
+                <sheet>
+                    <group>
+                        <group colspan="4">
+                            <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                            <field name="agreed_activities"  />
+                            <field name="detail_activities" />
+                            <field name="comments" />
+                        </group>
+                    </group>
+
+                </sheet>
+
+            </form>
+        </field>
+   </record>
+    <record id="onsc_desempeno_development_means_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.development.means.tree</field>
+        <field name="model">onsc.desempeno.evaluation.development.means</field>
+        <field name="arch" type="xml">
+            <tree  string="Medios de desarrollo">
+                <field name="means_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                <field name="agreed_activities" readonly="1" optional="show"/>
+                <field name="detail_activities"  readonly="1" optional="hide"/>
+                <field name="comments"  readonly="1" optional="hide"/>
+
+            </tree>
+        </field>
+   </record>
+
+   <record id='onsc_desempeno_develop_plan_action' model='ir.actions.act_window'>
+        <field name="name">Plan de Desarrollo</field>
+        <field name="res_model">onsc.desempeno.evaluation</field>
+        <field name="context">{'is_from_menu': True,'develop_plan':True}</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_desempeno_evaluation_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_develop_plan_form')}),]"
+        />
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Evaluación de desempeño
+            </p>
+        </field>
+    </record>
+     <record id='onsc_desempeno_tracing_plan_action' model='ir.actions.act_window'>
+        <field name="name">Seguimiento Plan de Desarrollo</field>
+        <field name="res_model">onsc.desempeno.evaluation</field>
+        <field name="context">{'is_from_menu': True,'tracing_plan':True}</field>
+        <field
+            name="view_ids"
+            eval="[(5, 0, 0),
+                          (0, 0, {'view_mode': 'tree', 'view_id': ref('onsc_desempeno_evaluation_tree')}),
+                          (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_develop_plan_form')}),]"
+        />
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Evaluación de desempeño
+            </p>
+        </field>
+    </record>
+
+</odoo>

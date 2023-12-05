@@ -142,6 +142,8 @@
                                    attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
                             <field name="locked" string="Formulario bloqueado" readonly="1" attrs="{'invisible': ['|',('locked', '=', False),('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
                             <field name="is_gap_deal_not_generated" attrs="{'invisible': [('is_gap_deal_not_generated', '=', False)]}"/>
+                            <field name="is_development_plan_not_generated" attrs="{'invisible': [('is_development_plan_not_generated', '=', False)]}"/>
+
                         </group>
                         <group>
                             <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"

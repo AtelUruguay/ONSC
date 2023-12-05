@@ -149,4 +149,23 @@
               parent="onsc_desempeno_consolidated_menu"
               sequence="5"/>
 
+    <menuitem id="onsc_desempeno_development_plan_root_menu"
+          name="Plan de desarrollo"
+          parent="onsc_desempeno_root_menu"
+          sequence="40"/>
+
+    <menuitem id="onsc_desempeno_development_plan_menu"
+              name="Plan de desarrollo"
+              action="onsc_desempeno_develop_plan_action"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
+              parent="onsc_desempeno_development_plan_root_menu"
+              sequence="1"/>
+      <menuitem id="onsc_desempeno_tracing_plan_menu"
+              name="Seguimiento del Plan de desarrollo"
+              action="onsc_desempeno_tracing_plan_action"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion,onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso"
+              parent="onsc_desempeno_development_plan_root_menu"
+              sequence="5"/>
+
+
 </odoo>
