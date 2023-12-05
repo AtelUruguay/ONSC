@@ -546,6 +546,8 @@ class ONSCDesempenoEvaluation(models.Model):
             self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_gh(self):
+        if not self.is_exonerated_evaluation:
+            self.suspend_security().create_development_plan()
         self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_evaluation_evaluated(self):
@@ -773,6 +775,7 @@ class ONSCDesempenoEvaluation(models.Model):
             evaluation = self.copy_data()
             evaluation[0]["evaluation_type"] = "development_plan"
             evaluation[0]["gap_deal_state"] = "no_deal"
+            evaluation[0]["general_comments"] = False
             plan = Evaluation.with_context(gap_deal=True).create(evaluation)
 
             for competency in Skill.search([]):

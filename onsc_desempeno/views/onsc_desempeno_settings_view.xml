@@ -56,6 +56,10 @@
                                             <label for="days_gap_deal_eval_creation" class="col-md-3 o_light_label"/>
                                             <field name="days_gap_deal_eval_creation"/>
                                         </div>
+                                          <div class="row">
+                                            <label for="days_gap_develop_plan_creation" class="col-md-3 o_light_label"/>
+                                            <field name="days_gap_develop_plan_creation"/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
