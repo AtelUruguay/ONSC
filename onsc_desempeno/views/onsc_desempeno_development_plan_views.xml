@@ -39,6 +39,13 @@
                             name="button_reopen_deal"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir el plan?"/>
+                    <button name="%(onsc_desempeno.onsc_desempeno_evaluation_change_wizard_action)d"
+                            class="btn btn-secundary"
+                            string="Cambio de evaluador"
+                            context="{'default_evaluation_id': active_id}"
+                            attrs="{'invisible': [('is_evaluation_change_available', '=', False)]}"
+                            type="action"
+                            icon="fa-exchange"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Finalizar Seguimiento"

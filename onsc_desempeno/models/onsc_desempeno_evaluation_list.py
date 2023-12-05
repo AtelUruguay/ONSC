@@ -212,31 +212,6 @@ class ONSCDesempenoEvaluationList(models.Model):
                         })
                         lines_evaluated |= line
                     partners_to_notify |= line.employee_id.partner_id
-
-                    # if fields.Date.today() <= self.end_date:
-                    #     new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                    #     leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
-                    #     env_def_evaluation = self.suspend_security()._create_environment_definition(line)
-                    #     line.suspend_security().write({
-                    #         'state': 'generated',
-                    #         'error_log': False,
-                    #         'evaluation_create_date': fields.Date.today(),
-                    #         'evaluation_ids': [
-                    #             (4, new_evaluation.id),
-                    #             (4, leader_evaluation.id),
-                    #             (4, env_def_evaluation.id)
-                    #         ]})
-                    #     lines_evaluated |= line
-                    # elif fields.Date.today() <= self.evaluation_stage_id.general_cycle_id.end_date_max:
-                    #     new_evaluation = self.suspend_security()._create_self_evaluation(line)
-                    #     leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
-                    #     line.suspend_security().write({
-                    #         'state': 'generated',
-                    #         'error_log': False,
-                    #         'evaluation_create_date': fields.Date.today(),
-                    #         'evaluation_ids': [(4, new_evaluation.id), (4, leader_evaluation.id)]})
-                    #     lines_evaluated |= line
-                    # partners_to_notify |= line.employee_id.partner_id
                 except Exception as e:
                     line.write({
                         'state': 'error',
@@ -584,7 +559,7 @@ class ONSCDesempenoEvaluationListLine(models.Model):
 
     evaluation_list_id = fields.Many2one(
         comodel_name='onsc.desempeno.evaluation.list',
-        string='Evaluation_list_id',
+        string='Lista de participantes',
         ondelete='cascade',
         required=True)
     job_id = fields.Many2one(

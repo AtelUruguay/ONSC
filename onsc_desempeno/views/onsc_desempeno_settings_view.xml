@@ -39,25 +39,46 @@
                                         <div class="row" style="padding-left:15px">
                                             <field name="environment_evaluation_text"/>
                                         </div>
+                                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Puntajes</h6>
+                                        <div class="row">
+                                            <label string="Evaluación 360" for="eval_360_score" class="col-md-5 o_light_label" style="text-align:right;"/>
+                                            <field name="eval_360_score"/>
+                                        </div>
+                                        <div class="row">
+                                            <label string="Acuerdo de brecha" for="gap_deal_score" class="col-md-5 o_light_label" style="text-align:right;"/>
+                                            <field name="gap_deal_score"/>
+                                        </div>
+                                        <div class="row">
+                                            <label string="Plan de desarrollo" for="development_plan_score" class="col-md-5 o_light_label" style="text-align:right;"/>
+                                            <field name="development_plan_score"/>
+                                        </div>
+                                        <div class="row">
+                                            <label string="Seguimiento de Plan de desarrollo" for="tracing_plan_score" class="col-md-5 o_light_label" style="text-align:right;"/>
+                                            <field name="tracing_plan_score"/>
+                                        </div>
+                                        <div class="row">
+                                            <label string="Actividad de Seguimiento de Plan de desarrollo" for="tracing_plan_activity_score" class="col-md-5 o_light_label" style="text-align:right;"/>
+                                            <field name="tracing_plan_activity_score"/>
+                                        </div>
                                         <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuraciones</h6>
                                         <div class="row">
-                                            <label for="max_environment_evaluation_forms" class="col-md-3 o_light_label"/>
+                                            <label for="max_environment_evaluation_forms" class="col-md-5 o_light_label" style="text-align:right;"/>
                                             <field name="max_environment_evaluation_forms"/>
                                         </div>
                                         <div class="row">
-                                            <label for="random_environment_evaluation_forms" class="col-md-3 o_light_label"/>
+                                            <label for="random_environment_evaluation_forms" class="col-md-5 o_light_label" style="text-align:right;"/>
                                             <field name="random_environment_evaluation_forms"/>
                                         </div>
                                         <div class="row">
-                                            <label for="days_notification_end_ev" class="col-md-3 o_light_label"/>
+                                            <label for="days_notification_end_ev" class="col-md-5 o_light_label" style="text-align:right;"/>
                                             <field name="days_notification_end_ev"/>
                                         </div>
                                         <div class="row">
-                                            <label for="days_gap_deal_eval_creation" class="col-md-3 o_light_label"/>
+                                            <label for="days_gap_deal_eval_creation" class="col-md-5 o_light_label" style="text-align:right;"/>
                                             <field name="days_gap_deal_eval_creation"/>
                                         </div>
                                           <div class="row">
-                                            <label for="days_gap_develop_plan_creation" class="col-md-3 o_light_label"/>
+                                            <label for="days_gap_develop_plan_creation" class="col-md-5 o_light_label" style="text-align:right;"/>
                                             <field name="days_gap_develop_plan_creation"/>
                                         </div>
                                     </div>
