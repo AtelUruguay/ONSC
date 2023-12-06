@@ -51,7 +51,7 @@ class ONSCCVDigitalVacante(models.Model):
             if rec.estado:
                 rec.state_square_id = StateSquare.search([('code', '=', rec.estado)], limit=1)
             else:
-                rec.regime_id = False
+                rec.state_square_id = False
 
     @api.depends('codRegimen')
     def _compute_regime(self):
@@ -69,7 +69,6 @@ class ONSCCVDigitalVacante(models.Model):
             if rec.Dsc3Id:
                 descriptor3_id = Descriptor.search([('code', '=', rec.Dsc3Id)], limit=1)
                 rec.descriptor3_id = descriptor3_id.id if descriptor3_id else False
-
             else:
                 rec.descriptor3_id = False
 
