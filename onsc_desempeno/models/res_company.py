@@ -39,12 +39,12 @@ class ResCompany(models.Model):
             "random_environment_evaluation_forms",
             "days_notification_end_ev",
             "days_gap_deal_eval_creation",
-            "days_gap_develop_plan_creation"
-            "eval_360_score"
-            "gap_deal_score"
-            "development_plan_score"
-            "tracing_plan_score"
-            "tracing_plan_activity_score"
+            "days_gap_develop_plan_creation",
+            "eval_360_score",
+            "gap_deal_score",
+            "development_plan_score",
+            "tracing_plan_score",
+            "tracing_plan_activity_score",
         ]
         if any(x in vals.keys() for x in _fields):
             return super(ResCompany, self.suspend_security()).write(vals)
