@@ -549,19 +549,25 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             is_presupuestado = line.regime_id.presupuesto
             is_reserva_sgh = line.is_reserva_sgh
             if is_presupuestado or is_reserva_sgh:
-                data_alta_vl.update({
-                    'vacante_ids': [(0, 0, {
-                        'selected': True,
-                        'nroPuesto': line.nroPuesto,
-                        'nroPlaza': line.nroPlaza,
-                        'Dsc3Id': line.descriptor3_id.code,
-                        'Dsc4Id': line.descriptor4_id.code,
-                        'descriptor3_id': line.descriptor3_id.id,
-                        'descriptor4_id': line.descriptor4_id.id,
-                        'regime_id':line.regime_id.id,
-                        'codigoJornadaFormal': line.retributive_day_id.codigoJornada,
+                vacante_value = {
+                    'selected': True,
+                    'nroPuesto': line.nroPuesto,
+                    'nroPlaza': line.nroPlaza,
+                    'Dsc3Id': line.descriptor3_id.code,
+                    'Dsc4Id': line.descriptor4_id.code,
+                    'descriptor3_id': line.descriptor3_id.id,
+                    'descriptor4_id': line.descriptor4_id.id,
+                    'codRegimen': line.regime_id.codRegimen,
+                    'descripcionRegimen': line.regime_id.descripcionRegimen,
+                    'regime_id': line.regime_id.id,
+                }
+                if line.retributive_day_id.codigoJornada.isdigit():
+                    vacante_value.update({
+                        'codigoJornadaFormal': int(line.retributive_day_id.codigoJornada),
                         'descripcionJornadaFormal': line.retributive_day_id.descripcionJornada,
-                    })],
+                    })
+                data_alta_vl.update({
+                    'vacante_ids': [(0, 0, vacante_value)],
                 })
             try:
                 alta_vl_id = AltaVL.create(data_alta_vl)
