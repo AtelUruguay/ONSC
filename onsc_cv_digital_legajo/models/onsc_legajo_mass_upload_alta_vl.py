@@ -588,10 +588,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         else:
             self.state = 'partially'
 
-        # try:
-        #     self.syncronize_ws4()
-        # except Exception as e:
-        #     _logger.error("Error al sincronizar con WS4: " + tools.ustr(e))
+        try:
+            self.syncronize_ws4()
+        except Exception as e:
+            _logger.error("Error al sincronizar con WS4: " + tools.ustr(e))
 
     def get_partida(self, descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id):
         args = []
