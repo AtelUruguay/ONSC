@@ -67,7 +67,7 @@
                                                attrs="{'invisible': [('is_reserva_sgh', '=', False)]}"/>
                                         <field name="state_square_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
-                                               attrs="{'invisible': [('is_reserva_sgh', '=', False)]}"/>
+                                               invisible="1"/>
                                         <field name="regime_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                                attrs="{'invisible': [('is_reserva_sgh', '=', True)]}"/>
