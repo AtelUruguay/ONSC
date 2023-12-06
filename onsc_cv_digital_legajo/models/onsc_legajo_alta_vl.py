@@ -289,9 +289,10 @@ class ONSCLegajoAltaVL(models.Model):
         self.check_required_fields_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
             raise ValidationError(_("Solo se pueden enviar altas en estado borrador o error SGH"))
-        if not self.codigoJornadaFormal and self.retributive_day_id:
-            self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
-            self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
+        for record in self:
+            if not record.codigoJornadaFormal and record.retributive_day_id:
+                record.codigoJornadaFormal = record.retributive_day_id.codigoJornada
+                record.descripcionJornadaFormal = record.retributive_day_id.descripcionJornada
         altas_presupuestales = self.filtered(lambda x: x.is_presupuestado)
         altas_presupuestales.syncronize_multi_ws4()
         altas_no_presupuestales = self.filtered(lambda x: not x.is_presupuestado)

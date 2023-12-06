@@ -518,8 +518,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'cv_birthdate': line.birth_date,
                 'cv_document_type_id': cv_document_type_id,
                 'is_reserva_sgh': line.is_reserva_sgh,
-                # 'crendencial_serie': line.crendencial_serie,
-                # 'credential_number': line.credential_number,
                 'regime_id': line.regime_id.id,
                 'descriptor1_id': line.descriptor1_id.id if line.descriptor1_id else False,
                 'descriptor2_id': line.descriptor2_id.id if line.descriptor2_id else False,
@@ -541,23 +539,30 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'resolution_date': line.resolution_date,
                 'resolution_type': line.resolution_type,
                 'retributive_day_id': line.retributive_day_id.id if line.retributive_day_id else False,
+                'codigoJornadaFormal': line.retributive_day_id.codigoJornada,
+                'descripcionJornadaFormal': line.retributive_day_id.descripcionJornada,
                 'additional_information': line.additional_information,
                 'norm_id': line.norm_id.id if line.norm_id else False,
                 'call_number': line.call_number,
-
-                # 'country_code': cv_digital.country_code,
-                # 'country_of_birth_id': cv_digital.country_of_birth_id.id if cv_digital.country_of_birth_id else False,
-                # 'marital_status_id': cv_digital.marital_status_id.id if cv_digital.marital_status_id else False,
-                # 'uy_citizenship': cv_digital.uy_citizenship,
-                # 'personal_phone': cv_digital.personal_phone,
-                # 'mobile_phone': cv_digital.mobile_phone,
-                # 'email': cv_digital.email,
-                # 'cv_address_street_id': cv_digital.cv_address_street_id.id if cv_digital.cv_address_street_id else False,
-                # 'cv_address_street2_id': cv_digital.cv_address_street2_id.id if cv_digital.cv_address_street2_id else False,
-                # 'cv_address_street3_id': cv_digital.cv_address_street3_id.id if cv_digital.cv_address_street3_id else False,
-                # 'health_provider_id': cv_digital.health_provider_id.id if cv_digital.health_provider_id else False,
                 'mass_upload_id': self.id,
             }
+            is_presupuestado = line.regime_id.presupuesto
+            is_reserva_sgh = line.is_reserva_sgh
+            if is_presupuestado or is_reserva_sgh:
+                data_alta_vl.update({
+                    'vacante_ids': [(0, 0, {
+                        'selected': True,
+                        'nroPuesto': line.nroPuesto,
+                        'nroPlaza': line.nroPlaza,
+                        'Dsc3Id': line.descriptor3_id.code,
+                        'Dsc4Id': line.descriptor4_id.code,
+                        'descriptor3_id': line.descriptor3_id.id,
+                        'descriptor4_id': line.descriptor4_id.id,
+                        'regime_id':line.regime_id.id,
+                        'codigoJornadaFormal': line.retributive_day_id.codigoJornada,
+                        'descripcionJornadaFormal': line.retributive_day_id.descripcionJornada,
+                    })],
+                })
             try:
                 alta_vl_id = AltaVL.create(data_alta_vl)
                 alta_vl_id.with_context(no_update_extra=True)._update_altavl_info()
