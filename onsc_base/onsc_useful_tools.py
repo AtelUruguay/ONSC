@@ -12,7 +12,7 @@ try:
     from pyinstrument import Profiler
 except Exception:
     Profiler = False
-    _logger.warning("To use profile you need to install pyinstrument")
+    _logger.warning(_("To use profile you need to install pyinstrument"))
 
 
 def profiler(func):
@@ -41,7 +41,7 @@ def profiler(func):
     def wrapper(*args, **kwargs):
         if active_profiler:
             if not Profiler:
-                raise MissingError("To use profile you need to install pyinstrument")
+                raise MissingError(_("To use profile you need to install pyinstrument"))
             new_profiler = Profiler()
             new_profiler.start()
         result = func(*args, **kwargs)
