@@ -235,8 +235,9 @@ class HrContract(models.Model):
     @api.depends('inciso_id', 'operating_unit_id', 'regime_id', 'descriptor1_id')
     def _compute_is_occupation_visible(self):
         has_valid_group = self.user_has_groups('onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_hr_ue')
+        ue_code = ['13', '5', '7', '8']
         for rec in self:
-            cond1 = not (rec.inciso_id.budget_code == '5' and rec.operating_unit_id.budget_code in ['13', '5'])
+            cond1 = not (rec.inciso_id.budget_code == '5' and rec.operating_unit_id.budget_code in ue_code)
             cond2 = rec.descriptor1_id.is_occupation_required or not rec.descriptor1_id.id
             rec.is_occupation_visible = has_valid_group and cond1 and rec.regime_id.is_public_employee and cond2
 
