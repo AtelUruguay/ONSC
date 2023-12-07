@@ -102,7 +102,11 @@ class ONSCLegajoAltaVL(models.Model):
     country_code = fields.Char("Código", copy=False)
     origin_type = fields.Selection([('M', 'Manual'), ('P', 'Proceso')], string='Origen',
                                    compute='_compute_origin_type', store=True)
-    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución', copy=False)
+    mass_upload_id = fields.Many2one(
+        'onsc.legajo.mass.upload.alta.vl',
+        string='ID de ejecución',
+        copy=False,
+        ondelete='set null')
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):

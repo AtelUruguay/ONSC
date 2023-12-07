@@ -41,7 +41,7 @@ class ONSCCVDigitalVacante(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', compute="_compute_regime", store=True)
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
     descripcionJornadaFormal = fields.Char(string="Jornada Formal")
-    alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'vacante_id')
+    alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'vacante_id', ondelete='cascade')
     state = fields.Selection(related='alta_vl_id.state', string='Estado', readonly=True)
 
     @api.depends('estado')
