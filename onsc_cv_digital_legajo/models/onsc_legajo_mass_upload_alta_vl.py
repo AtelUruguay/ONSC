@@ -643,7 +643,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                 item['norm_id'] = (item['norm_id'][0], LegajoNorm.browse(norm_id)._custom_display_name())
         return result
 
-    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='Carga masiva')
+    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='Carga masiva', ondelete='cascade')
     state = fields.Selection([('draft', 'Borrador'), ('error', 'Procesado con Error'), ('done', 'Procesado')],
                              string='Estado', default='draft')
     message_error = fields.Text(string='Mensaje de error')
