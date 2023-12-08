@@ -21,8 +21,11 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     detail_activities = fields.Text('Detalle de actividades', required=True)
     means_id = fields.Many2one('onsc.desempeno.development.means', string='Medio de desarrollo',
                                required=True)
-    tracing_plan_ids = fields.One2many('onsc.desempeno.evaluation.tracing.plan', 'develop_means_id',
-                                       string='Seguimiento del plan de desarrollo')
+    tracing_plan_ids = fields.One2many(
+        'onsc.desempeno.evaluation.tracing.plan',
+        'develop_means_id',
+        string='Seguimiento del plan de desarrollo',
+        ondelete='cascade')
     means_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_mean_form_edit')
 
     @api.depends('competency_id')
