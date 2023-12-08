@@ -13,8 +13,11 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     def _is_group_responsable_uo(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_responsable_uo')
 
-    competency_id = fields.Many2one('onsc.desempeno.evaluation.development.competency', string='Competencia',
-                                    required=True)
+    competency_id = fields.Many2one(
+        'onsc.desempeno.evaluation.development.competency',
+        string='Competencia',
+        required=True,
+        ondelete='cascade')
     skill_id = fields.Many2one(related='competency_id.skill_id', string='Competencia')
     agreed_activities = fields.Text('Actividades acordadas', required=True)
     comments = fields.Text('Comentarios', required=True)
@@ -60,7 +63,11 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     _description = u'Competencias'
     _order = "skill_id"
 
-    evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluacion', readonly=True)
+    evaluation_id = fields.Many2one(
+        'onsc.desempeno.evaluation',
+        string='Evaluacion',
+        readonly=True,
+        ondelete='cascade')
     skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True, ondelete='restrict')
     development_goal = fields.Text('Objetivo de desarrollo')
     development_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
