@@ -46,7 +46,8 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
             altas_vl.write({
                 'is_error_synchronization': True,
                 'state': 'error_sgh',
-                'error_message_synchronization': "Error devuelto por SGH: " + tools.ustr(e)
+                'error_message_synchronization': "Error devuelto por SGH: " + tools.ustr(e),
+                'is_processing': False
             })
             return "Error devuelto por SGH: " + tools.ustr(e)
         if hasattr(response, 'servicioResultado'):

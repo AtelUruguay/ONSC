@@ -248,7 +248,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                 'is_error_synchronization': False,
                                 'ws4_user_id': self.env.user.id,
                                 'state': 'pendiente_auditoria_cgn',
-                                'error_message_synchronization': ''
+                                'error_message_synchronization': '',
+                                'is_processing': False
                             }
                             if 'descripcionJornadaFormal' in response:
                                 vals.update({
@@ -271,7 +272,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                         altas_vl.write({
                             'is_error_synchronization': True,
                             'state': 'error_sgh',
-                            'error_message_synchronization': long_description
+                            'error_message_synchronization': long_description,
+                            'is_processing': False
                         })
 
             else:
@@ -285,7 +287,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 altas_vl.write({
                     'is_error_synchronization': True,
                     'state': 'error_sgh',
-                    'error_message_synchronization': long_description
+                    'error_message_synchronization': long_description,
+                    'is_processing': False
                 })
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
@@ -310,19 +313,22 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                     altas_vl_id.write({
                         'is_error_synchronization': True,
                         'state': 'error_sgh',
-                        'error_message_synchronization': str(long_description) + "." + message
+                        'error_message_synchronization': str(long_description) + "." + message,
+                        'is_processing': False
                     })
                 else:
                     altas_vl.write({
                         'is_error_synchronization': True,
                         'state': 'error_sgh',
-                        'error_message_synchronization': str(long_description) + "." + message
+                        'error_message_synchronization': str(long_description) + "." + message,
+                        'is_processing': False
                     })
         else:
             altas_vl.write({
                 'is_error_synchronization': True,
                 'state': 'error_sgh',
-                'error_message_synchronization': long_description
+                'error_message_synchronization': long_description,
+                'is_processing': False
             })
             super(ONSCLegajoAbstractSyncW4, self)._process_response_witherror(
                 response,
