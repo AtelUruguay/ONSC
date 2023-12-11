@@ -10,7 +10,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     _name = 'onsc.legajo.abstract.legajo.security'
     _description = 'Modelo abstracto para la seguridad'
 
-    # @profiler
+    @profiler
     @api.model
     def _get_expression_domain(self, args):
         available_contracts = self._get_user_available_contract()

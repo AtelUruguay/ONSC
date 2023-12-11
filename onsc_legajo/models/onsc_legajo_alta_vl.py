@@ -184,8 +184,6 @@ class ONSCLegajoAltaVL(models.Model):
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    
-    is_processing = fields.Boolean(string='En proceso')
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):

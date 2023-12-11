@@ -283,12 +283,9 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         self.check_required_fields_ws4()
-        if self.is_processing:
-            return True
         if not self.codigoJornadaFormal and self.retributive_day_id:
             self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
             self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
-        self.is_processing = True
         self.env['onsc.legajo.abstract.alta.vl.ws4'].with_context(
             log_info=log_info).suspend_security().syncronize_multi(self)
 
