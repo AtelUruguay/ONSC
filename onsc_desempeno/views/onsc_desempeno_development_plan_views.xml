@@ -78,11 +78,11 @@
                     <field name="is_environment_evaluation_form_active" invisible="1"/>
                     <div class="oe_avatar" style="padding-right:20px">
                          <label for="gap_deal_state" string="Estado de acordar plan"
-                                invisible="context.get('tracing_plan', False) is False"/>
+                                invisible="context.get('develop_plan', False) is False"/>
                         <h4><field name="gap_deal_state"
                                    align="left" style="font-size: 100%; width: 190px;" widget="label_selection"
                                    options="{'classes': {'agree_leader': 'info','agree_evaluated': 'info', 'agree': 'success'}}"
-                                    invisible="context.get('tracing_plan', False) is False"/></h4>
+                                    invisible="context.get('develop_plan', False) is False"/></h4>
                     </div>
                     <div class="oe_title" name="div_title">
                         <label for="evaluated_id"/>
@@ -155,12 +155,14 @@
                                                 <field name="development_means_ids"
                                                        nolabel="1"  options="{'reload_on_button': True}" context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"  force_save="1" >
                                                      <tree nolabel="1" >
-                                                        <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                                         <field name="show_buttons" invisible="1" />
+                                                         <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
                                                         <field name="agreed_activities" optional="show" />
                                                         <field name="detail_activities" optional="hide"  />
                                                         <field name="comments" optional="hide" />
                                                         <button name="button_open_tracing" context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form'}"
-                                                         class="o_icon_button fa fa-list" title="Seguimiento" type="object"/>
+                                                         class="o_icon_button fa fa-list" title="Seguimiento" type="object"
+                                                          attrs="{'invisible': [('show_buttons', '=', False)]}"/>
                                                      </tree>
 
 

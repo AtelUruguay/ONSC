@@ -8,7 +8,7 @@ _logger = logging.getLogger(__name__)
 
 class ONSCDesempenoDevelopmentMeans(models.Model):
     _name = 'onsc.desempeno.development.means'
-    _description = 'Medios de desarrollo'
+    _description = 'Catalogo Medios de desarrollo'
 
     name = fields.Char(string="Nombre del medio de desarrollo", required=True)
     description = fields.Text(string="Descripción")

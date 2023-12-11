@@ -399,7 +399,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
             _cond1 = is_am_evaluator and is_valid_gap_deal
             _cond2 = not record.gap_deal_state == 'agree_leader' and is_responsable
-            record.is_agree_evaluation_leader_available = _cond1 and _cond2 and not record.is_exonerated_evaluation
+            record.is_agree_evaluation_leader_available = (_cond1 or _cond2) and not record.is_exonerated_evaluation
 
     @api.depends('state')
     def _compute_is_agree_button_gh_available(self):

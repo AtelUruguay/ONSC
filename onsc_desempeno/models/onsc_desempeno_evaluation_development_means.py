@@ -30,6 +30,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
         string='Seguimiento del plan de desarrollo',
         ondelete='cascade')
     means_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_mean_form_edit')
+    show_buttons = fields.Boolean(string="Boton seguimiento", compute='_compute_show_buttons')
 
     @api.depends('competency_id')
     def _compute_mean_form_edit(self):
@@ -41,6 +42,11 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
             hierarchy_deparments |= employee_id.job_id.department_id
             _cond2 = self._is_group_responsable_uo() and record.competency_id.evaluation_id.uo_id.id in hierarchy_deparments.ids
             record.means_form_edit = _cond1 or not _cond2
+
+    @api.depends('competency_id')
+    def _compute_show_buttons(self):
+        for record in self:
+            record.show_buttons = record.competency_id.evaluation_id.evaluation_type == 'tracing_plan'
 
     def button_open_tracing(self):
         return {
