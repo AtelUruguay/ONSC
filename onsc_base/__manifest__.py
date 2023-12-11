@@ -26,6 +26,7 @@ ONSC - Base
         'security/onsc_base_security.xml',
         'security/ir.model.access.csv',
         'data/res_user_role_data.xml',
+        'wizard/onsc_confirm_wizard_views.xml',
         'views/onsc_log_views.xml'
     ],
     'demo': [],
