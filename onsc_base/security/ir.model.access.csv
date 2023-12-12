@@ -2,3 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_onsc_migrations_qa_all,onsc_migrations_qa_all,model_onsc_migrations_qa,,1,1,0,0
 access_onsc_log_all,onsc_log_all,model_onsc_log,,1,0,0,0
 access_model_ir_model_group_base_onsc,onsc_model_ir_model_group_base_onsc,base.model_ir_model,group_base_onsc,1,0,0,0
+access_model_onsc_confirm_wizard_group_base_onsc,onsc_model_onsc_confirm_wizard_group_base_onsc,model_onsc_confirm_wizard,group_base_onsc,1,1,1,1
