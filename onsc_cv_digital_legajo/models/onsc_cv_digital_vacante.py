@@ -41,7 +41,7 @@ class ONSCCVDigitalVacante(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', compute="_compute_regime", store=True)
     codigoJornadaFormal = fields.Integer(string="Código Jornada Formal")
     descripcionJornadaFormal = fields.Char(string="Jornada Formal")
-    alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'vacante_id')
+    alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'vacante_id', ondelete='cascade')
     state = fields.Selection(related='alta_vl_id.state', string='Estado', readonly=True)
 
     @api.depends('estado')
@@ -51,7 +51,7 @@ class ONSCCVDigitalVacante(models.Model):
             if rec.estado:
                 rec.state_square_id = StateSquare.search([('code', '=', rec.estado)], limit=1)
             else:
-                rec.regime_id = False
+                rec.state_square_id = False
 
     @api.depends('codRegimen')
     def _compute_regime(self):
@@ -69,7 +69,6 @@ class ONSCCVDigitalVacante(models.Model):
             if rec.Dsc3Id:
                 descriptor3_id = Descriptor.search([('code', '=', rec.Dsc3Id)], limit=1)
                 rec.descriptor3_id = descriptor3_id.id if descriptor3_id else False
-
             else:
                 rec.descriptor3_id = False
 
