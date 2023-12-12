@@ -158,7 +158,7 @@ class ONSCDesempenoEvaluation(models.Model):
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         if collaborators:
             args_extended = [
-                ('evaluation_type', '=',evaluation_type),
+                ('evaluation_type', '=', evaluation_type),
                 ('evaluator_id', '=', self.env.user.employee_id.id),
                 ('inciso_id', '=', inciso_id),
                 ('operating_unit_id', '=', operating_unit_id)
@@ -439,7 +439,7 @@ class ONSCDesempenoEvaluation(models.Model):
     @api.depends('state', 'evaluator_id', 'evaluated_id')
     def _compute_evaluation_form_edit(self):
         user_employee_id = self.env.user.employee_id
-        Department = self.env['hr.department'].sudo()
+
         for record in self:
             if record.evaluation_type in ('development_plan', 'gap_deal'):
                 record.evaluation_form_edit = (record.evaluator_id.id == user_employee_id.id or record.evaluated_id.id == user_employee_id.id) and not record.is_exonerated_evaluation
@@ -540,7 +540,6 @@ class ONSCDesempenoEvaluation(models.Model):
         if Tracing.search_count([('develop_means_id', 'in', self.development_plan_ids.development_means_ids.ids)]) == 0:
             raise ValidationError(
                 _('Deben tener al menos un plan de acción para poder acordar'))
-
 
         self.write({'state': 'finished'})
 
@@ -663,9 +662,8 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _check_development_plan(self):
 
-       if len(self.development_plan_ids.development_means_ids.ids) == 0:
-                raise ValidationError(
-                    _('Deben tener al menos un plan de acción para poder acordar'))
+        if len(self.development_plan_ids.development_means_ids.ids) == 0:
+            raise ValidationError(_('Deben tener al menos un plan de acción para poder acordar'))
 
     def notification_end_evaluation(self):
         GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
@@ -789,7 +787,8 @@ class ONSCDesempenoEvaluation(models.Model):
                 [('general_cycle_id', 'in', general_ids),
                  ('state', 'not in', ['finished']),
                  ('evaluation_type', 'in', ['tracing_plan'])]):
-            if record.state in ['in_process'] and Tracing.search_count([('develop_means_id', 'in', record.development_plan_ids.development_means_ids.ids)]) > 0:
+            if record.state in ['in_process'] and Tracing.search_count(
+                    [('develop_means_id', 'in', record.development_plan_ids.development_means_ids.ids)]) > 0:
                 record.write({'state': 'finished'})
             elif record.state not in ['finished', 'uncompleted']:
                 record.write({'state': 'uncompleted'})

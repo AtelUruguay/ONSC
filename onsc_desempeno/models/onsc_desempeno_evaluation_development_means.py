@@ -53,6 +53,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     def action_close_dialog(self):
         return {'type': 'ir.actions.act_window_close'}
 
+
 STATE = [
     ('draft', 'Borrador'),
     ('in_process', 'En Proceso'),
@@ -63,6 +64,8 @@ STATE = [
     ('finished', 'Finalizado'),
     ('canceled', 'Cancelado')
 ]
+
+
 class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.development.competency'
     _description = u'Competencias'
@@ -101,7 +104,6 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
 
     def action_close_dialog(self):
         return {'type': 'ir.actions.act_window_close'}
-
 
 
 class ONSCDesempenoEvaluatioTracingPlan(models.Model):
