@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, api
-from odoo.addons.onsc_base.onsc_useful_tools import profiler
+# from odoo.addons.onsc_base.onsc_useful_tools import profiler
 
 from odoo.osv import expression
 
@@ -10,18 +10,20 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     _name = 'onsc.legajo.abstract.legajo.security'
     _description = 'Modelo abstracto para la seguridad'
 
-    @profiler
     @api.model
     def _get_expression_domain(self, args):
-        available_contracts = self._get_user_available_contract()
-        if not available_contracts:
-            employee_ids = []
+        if self._context.get('is_legajo'):
+            available_contracts = self._get_user_available_contract()
+            if not available_contracts:
+                employee_ids = []
+            else:
+                sql_query = """SELECT DISTINCT employee_id FROM hr_contract WHERE id IN %s AND employee_id IS NOT NULL"""
+                self.env.cr.execute(sql_query, [tuple(available_contracts.ids)])
+                results = self.env.cr.fetchall()
+                employee_ids = [item[0] for item in results]
+            return expression.AND([[('employee_id', 'in', employee_ids)], args])
         else:
-            sql_query = """SELECT DISTINCT employee_id FROM hr_contract WHERE id IN %s AND employee_id IS NOT NULL"""
-            self.env.cr.execute(sql_query, [tuple(available_contracts.ids)])
-            results = self.env.cr.fetchall()
-            employee_ids = [item[0] for item in results]
-        return expression.AND([[('employee_id', 'in', employee_ids)], args])
+            return args
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -106,7 +108,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         else:
             base_args = expression.AND([[
                 (security_hierarchy_level, '=', security_hierarchy_value),
-                ('legajo_state', 'not in', ['baja']),],
+                ('legajo_state', 'not in', ['baja'])],
                 base_args])
         available_contracts = self.env['hr.contract'].search(base_args)
 
