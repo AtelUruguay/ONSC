@@ -33,28 +33,32 @@ class ONSCDesempenoConsolidated(models.Model):
         elif self._context.get('environment'):
             evaluation_type = 'environment'
 
+        collaborators = [x for x in args if x[0] == 'collaborators']
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+
         args_extended = [
             ('evaluation_type', '=', evaluation_type),
             ('evaluated_id', '=', self.env.user.employee_id.id),
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id)
         ]
-        if self._is_group_admin_gh_inciso():
-            args_extended = expression.OR(
-                [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
-        elif self._is_group_admin_gh_ue():
-            args_extended = expression.OR(
-                [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
-                 args_extended])
-        if self._is_group_responsable_uo():
-            my_department = self.env.user.employee_id.job_id.department_id
-            available_departments = my_department
-            available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
-            args_extended = expression.OR([[('evaluated_id', '!=', self.env.user.employee_id.id),
-                                            ('uo_id', 'in', available_departments.ids),
-                                            ('evaluation_type', '=', evaluation_type)], args_extended])
+
+        if not collaborators:
+            if self._is_group_admin_gh_inciso():
+                args_extended = expression.OR(
+                    [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
+            elif self._is_group_admin_gh_ue():
+                args_extended = expression.OR(
+                    [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
+                     args_extended])
+            if self._is_group_responsable_uo():
+                my_department = self.env.user.employee_id.job_id.department_id
+                available_departments = my_department
+                available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
+                args_extended = expression.OR([[('evaluated_id', '!=', self.env.user.employee_id.id),
+                                                ('uo_id', 'in', available_departments.ids),
+                                                ('evaluation_type', '=', evaluation_type)], args_extended])
         return expression.AND([args_extended, args])
 
     @api.model
@@ -101,6 +105,7 @@ class ONSCDesempenoConsolidated(models.Model):
     evaluation_competency_ids = fields.One2many('onsc.desempeno.evaluation.competency', 'consolidate_id',
                                                 string='Evaluación de Competencias')
     is_gap_deal_not_generated = fields.Boolean(string='Acuerdo de brecha no generado')
+    collaborators = fields.Boolean(string="Colaboradores directos", default=False)
 
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):

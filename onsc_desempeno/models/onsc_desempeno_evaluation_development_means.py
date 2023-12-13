@@ -35,13 +35,9 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     @api.depends('competency_id')
     def _compute_mean_form_edit(self):
         employee_id = self.env.user.employee_id
-        Department = self.env['hr.department'].sudo()
+
         for record in self:
-            _cond1 = record.competency_id.evaluation_id.state_gap_deal != 'in_process' or record.competency_id.evaluation_id.evaluator_id.id != employee_id.id
-            hierarchy_deparments = Department.search([('id', 'child_of', employee_id.job_id.department_id.id)])
-            hierarchy_deparments |= employee_id.job_id.department_id
-            _cond2 = self._is_group_responsable_uo() and record.competency_id.evaluation_id.uo_id.id in hierarchy_deparments.ids
-            record.means_form_edit = _cond1 or not _cond2
+            record.means_form_edit = record.competency_id.evaluation_id.state != 'in_process' or record.competency_id.evaluation_id.evaluator_id.id != employee_id.id
 
     @api.depends('competency_id')
     def _compute_show_buttons(self):
@@ -49,19 +45,25 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
             record.show_buttons = record.competency_id.evaluation_id.evaluation_type == 'tracing_plan'
 
     def button_open_tracing(self):
-        return {
-            'view_mode': 'form',
-            'res_model': 'onsc.desempeno.evaluation.development.means',
-            'res_id': self.id,
-            'type': 'ir.actions.act_window',
-            'context': self._context,
-            'target': 'new',
-            'views': [[self.env.ref('onsc_desempeno.onsc_desempeno_tracing_development_means_form').id, 'form'],
-                      [False, 'list']],
-        }
+
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_development_means_action').read()[0]
+        action.update({'res_id': self.id})
+        return action
 
     def action_close_dialog(self):
         return {'type': 'ir.actions.act_window_close'}
+
+
+STATE = [
+    ('draft', 'Borrador'),
+    ('in_process', 'En Proceso'),
+    ('completed', 'Completado'),
+    ('deal_close', "Acuerdo cerrado"),
+    ('agreed_plan', "Plan Acordado"),
+    ('uncompleted', 'Sin Finalizar'),
+    ('finished', 'Finalizado'),
+    ('canceled', 'Cancelado')
+]
 
 
 class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
@@ -78,6 +80,30 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     development_goal = fields.Text('Objetivo de desarrollo')
     development_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
                                             string='Medios de desarrollo')
+    state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
+    competency_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_competency_form_edit')
+
+    @api.depends('evaluation_id')
+    def _compute_competency_form_edit(self):
+        user_employee_id = self.env.user.employee_id.id
+        for record in self:
+            if record.evaluation_id.evaluation_type == 'development_plan':
+                _cond1 = record.evaluation_id.state_gap_deal != 'in_process' or record.evaluation_id.gap_deal_state != 'no_deal'
+            else:
+                _cond1 = record.evaluation_id.state != 'in_process' or record.evaluation_id.gap_deal_state != 'no_deal'
+
+            _cond2 = record.evaluation_id.evaluator_id.id != user_employee_id
+            condition = _cond1 or _cond2
+
+            record.competency_form_edit = condition
+
+    def button_open_current_competency(self):
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_competency_action').read()[0]
+        action.update({'res_id': self.id})
+        return action
+
+    def action_close_dialog(self):
+        return {'type': 'ir.actions.act_window_close'}
 
 
 class ONSCDesempenoEvaluatioTracingPlan(models.Model):
