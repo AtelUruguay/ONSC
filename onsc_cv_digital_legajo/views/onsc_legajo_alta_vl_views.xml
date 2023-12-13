@@ -7,10 +7,18 @@
             <field name="arch" type="xml">
                 <tree string="Alta VL">
                     <header>
-                        <button name="action_call_multi_ws4"
-                                confirm="Al aceptar estará aprobando datos pendiente de validación del CVD"
+                        <button name="%(onsc_base.onsc_confirm_wizard_form_action)d"
+                                class="btn btn-primary"
+                                string="Enviar a SGH"
+                                context="{
+                                    'default_message': 'Al aceptar estará aprobando datos pendiente de validación del CV',
+                                    'model_ids': active_ids,
+                                    'model_name': 'onsc.legajo.alta.vl',
+                                    'method_name':  'action_call_multi_ws4',
+                                }"
                                 groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
-                                type="object" string="Enviar a SGH"/>
+                                type="action"
+                        />
                     </header>
                     <field name="full_name"/>
                     <field name="state"/>
@@ -27,9 +35,19 @@
             <field name="arch" type="xml">
                 <tree string="Alta VL">
                     <header>
-                        <button name="action_call_multi_ws4" type="object" string="Enviar a SGH"
+                        <button name="%(onsc_base.onsc_confirm_wizard_form_action)d"
+                                class="btn btn-primary"
+                                string="Enviar a SGH"
+                                context="{
+                                    'default_message': 'Al aceptar estará aprobando datos pendiente de validación del CV',
+                                    'model_ids': active_ids,
+                                    'model_name': 'onsc.legajo.alta.vl',
+                                    'method_name':  'action_call_multi_ws4',
+                                    'not_check_attached_document': True
+                                }"
                                 groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
-                                context="{'not_check_attached_document': True}"/>
+                                type="action"
+                        />
                     </header>
                     <field name="full_name"/>
                     <field name="state"/>
@@ -44,11 +62,23 @@
             <field name="inherit_id" ref="onsc_legajo.onsc_legajo_alta_vl_form"/>
             <field name="arch" type="xml">
                 <header position="inside">
+                    <button name="%(onsc_base.onsc_confirm_wizard_form_action)d"
+                            class="btn btn-primary"
+                            string="Enviar a SGH"
+                            context="{
+                                'default_message': 'Al aceptar estará aprobando datos pendiente de validación del CV',
+                                'model_ids': active_ids,
+                                'model_name': 'onsc.legajo.alta.vl',
+                                'method_name':  'action_call_ws4',
+                            }"
+                            groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
+                            type="action"
+                            states="borrador"
+                    />
                     <button name="action_call_ws4" class="btn btn-primary"
                             type="object" string="Enviar a SGH"
-                            confirm="Al aceptar estará aprobando datos pendiente de validación del CVD"
                             groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
-                            states="borrador,error_sgh"/>
+                            states="error_sgh"/>
                 </header>
                 <xpath expr="//div[hasclass('oe_title')]" position="before">
                     <field name="is_error_synchronization" invisible="1"/>
