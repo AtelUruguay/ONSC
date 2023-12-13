@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from odoo.addons.onsc_base.onsc_useful_tools import profiler
+
 from odoo import fields, models, tools, api
 from odoo.osv import expression
 
@@ -32,23 +34,27 @@ class ONSCLegajoDepartment(models.Model):
             'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo')
         is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
         is_ue_security = self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
+
         if is_config_security:
-            legajos = Legajo.search([])
+            # legajos = Legajo.search([])
+            legajo_ids = self._get_legajo_ids()
             args = expression.AND([[
-                ('legajo_id', 'in', legajos.ids),
+                ('legajo_id', 'in', legajo_ids),
             ], args])
         elif is_inciso_security:
-            legajos = Legajo.search([])
+            # legajos = Legajo.search([])
+            legajo_ids = self._get_legajo_ids()
             contract = self.env.user.employee_id.job_id.contract_id
             args = expression.AND([[
-                ('legajo_id', 'in', legajos.ids),
+                ('legajo_id', 'in', legajo_ids),
                 ('inciso_id', '=', contract.inciso_id.id)
             ], args])
         elif is_ue_security:
-            legajos = Legajo.search([])
+            # legajos = Legajo.search([])
+            legajo_ids = self._get_legajo_ids()
             contract = self.env.user.employee_id.job_id.contract_id
             args = expression.AND([[
-                ('legajo_id', 'in', legajos.ids),
+                ('legajo_id', 'in', legajo_ids),
                 ('operating_unit_id', '=', contract.operating_unit_id.id)
             ], args])
         elif self._is_group_responsable_uo_security():
@@ -57,6 +63,13 @@ class ONSCLegajoDepartment(models.Model):
                 ('department_id', 'in', department_ids)
             ], args])
         return args
+
+    def _get_legajo_ids(self):
+        available_contracts = self.env['onsc.legajo']._get_user_available_contract()
+        sql_query = """SELECT DISTINCT legajo_id FROM hr_contract WHERE id IN %s AND employee_id IS NOT NULL"""
+        self.env.cr.execute(sql_query, [tuple(available_contracts.ids)])
+        results = self.env.cr.fetchall()
+        return [item[0] for item in results]
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -98,6 +111,8 @@ class ONSCLegajoDepartment(models.Model):
                    ('joker', 'Comodity')],
         required=False)
 
+    active_job_qty = fields.Integer(string='Cantidad de puestos activos (por Legajo)')
+
     is_job_open = fields.Boolean(string='¿Puesto vigente?',
                                  compute='_compute_is_job_open',
                                  search='_search_is_job_open')
@@ -122,11 +137,15 @@ FROM
     job.department_id,
     job.start_date AS start_date,
     job.end_date AS end_date,
-    'system' AS type
+    'system' AS type,
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND legajo_id = legajo.id) AS active_job_qty
 FROM
     hr_contract contract
 LEFT JOIN hr_job job ON job.contract_id = contract.id
 LEFT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
+WHERE 
+    (job.start_date <= CURRENT_DATE AND (job.end_date IS NULL OR job.end_date >= CURRENT_DATE)) OR
+	job.id IS NULL AND contract.legajo_state <> 'baja'
 UNION ALL
 SELECT
     legajo.id AS legajo_id,
@@ -142,35 +161,57 @@ SELECT
     NULL AS department_id,
     NULL AS start_date,
     NULL AS end_date,
-    'joker' AS type
+    'joker' AS type,
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND legajo_id = legajo.id) AS active_job_qty
 FROM
     hr_contract contract
 RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
 ) AS main_query)''' % (self._table,))
 
+    @profiler
     def _search_is_job_open(self, operator, value):
         _today = fields.Date.today()
         base_args = [
             ('type', '=', 'system'),
         ]
-        job_expression = ['&', ('start_date', '<=', _today), '|', ('end_date', '>=', _today), ('end_date', '=', False)]
-        nojob_expression = [('job_id', '=', False), ('contract_legajo_state', '!=', 'baja')]
-        second_expression = expression.OR([job_expression, nojob_expression])
-        base_args = expression.AND([base_args, second_expression])
+        # job_expression = ['&', ('start_date', '<=', _today), '|', ('end_date', '>=', _today), ('end_date', '=', False)]
+        # nojob_expression = [('job_id', '=', False), ('contract_legajo_state', '!=', 'baja')]
+        # second_expression = expression.OR([job_expression, nojob_expression])
+        # base_args = expression.AND([base_args, second_expression])
         open_system_records = self.search(base_args)
+        open_system_records_ids = open_system_records.ids
+        sql_legajo_ids_query = """SELECT legajo_id FROM onsc_legajo_department WHERE id IN %s"""
+        self.env.cr.execute(sql_legajo_ids_query, [tuple(open_system_records_ids)])
+        results = self.env.cr.fetchall()
 
-        joker_records = self.search([('type', '=', 'joker')])
-        joker_valid_records = joker_records.filtered(lambda x: x.legajo_state == 'egresed')
-        joker_valid_records |= joker_records.filtered(
-            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
-                x.legajo_id.job_ids) == 0)
-        joker_valid_records |= joker_records.filtered(
-            lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
-                x.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= _today)) == 0)
+        # CANDIDATOS A INDEFINIDOS
+        unicity_joker_legajo_ids = [item[0] for item in results]
+        joker_args = [
+            ('type', '=', 'joker'),
+            ('legajo_id', 'not in', unicity_joker_legajo_ids),
+            '|',
+            ('legajo_state', '=', 'egresed'),  # los egresados
+            '&', '&', ('legajo_state', '!=', 'egresed'), ('contract_legajo_state', '!=', 'baja'),
+            ('active_job_qty', '=', 0),
+            # los egresados
+        ]
+        joker_records = self.search(joker_args)
 
-        unicity_joker_legajo_ids = open_system_records.mapped('legajo_id.id')
+        # joker_records = self.search([('type', '=', 'joker')])
+        # joker_valid_records = joker_records.filtered(lambda x: x.legajo_state == 'egresed')
+        # joker_valid_records |= joker_records.filtered(
+        #     lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
+        #         x.legajo_id.job_ids) == 0)
+        #
+        #
+        # joker_valid_records |= joker_records.filtered(
+        #     lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
+        #         x.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= _today)) == 0)
+
+        # unicity_joker_legajo_ids = open_system_records.mapped('legajo_id.id')
+
         unicity_joker = self
-        for joker_valid_record in joker_valid_records:
+        for joker_valid_record in joker_records:
             if joker_valid_record.legajo_id.id not in unicity_joker_legajo_ids:
                 unicity_joker |= joker_valid_record
                 unicity_joker_legajo_ids.append(joker_valid_record.legajo_id.id)
@@ -220,7 +261,7 @@ RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
             'type': 'ir.actions.act_window',
             'view_mode': 'form',
             'res_model': 'onsc.legajo',
-            'name': 'Editar puesto',
+            'name': 'Ver legajo',
             'context': ctx,
             "target": "current",
             "res_id": self.legajo_id.id,
