@@ -36,20 +36,15 @@ class ONSCDesempenoConsolidated(models.Model):
         collaborators = [x for x in args if x[0] == 'collaborators']
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
-        if collaborators:
-            args_extended = [
-                ('evaluation_type', '=', evaluation_type),
-                ('evaluated_id', '=', self.env.user.employee_id.id),
-                ('inciso_id', '=', inciso_id),
-                ('operating_unit_id', '=', operating_unit_id)
-            ]
-        else:
-            args_extended = [
-                ('evaluation_type', '=', evaluation_type),
-                ('evaluated_id', '=', self.env.user.employee_id.id),
-                ('inciso_id', '=', inciso_id),
-                ('operating_unit_id', '=', operating_unit_id)
-            ]
+
+        args_extended = [
+            ('evaluation_type', '=', evaluation_type),
+            ('evaluated_id', '=', self.env.user.employee_id.id),
+            ('inciso_id', '=', inciso_id),
+            ('operating_unit_id', '=', operating_unit_id)
+        ]
+
+        if not collaborators:
             if self._is_group_admin_gh_inciso():
                 args_extended = expression.OR(
                     [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
