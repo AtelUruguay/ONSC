@@ -544,6 +544,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'additional_information': line.additional_information,
                 'norm_id': line.norm_id.id if line.norm_id else False,
                 'call_number': line.call_number,
+                'is_cv_validation_ok': True,
                 'mass_upload_id': self.id,
             }
             is_presupuestado = line.regime_id.presupuesto

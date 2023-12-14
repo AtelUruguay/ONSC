@@ -49,11 +49,11 @@
                             states="borrador,error_sgh"/>
                 </header>
                 <header position="after">
-                    <div class="alert alert-info" role="alert" t-if="o.state == 'borrador'" >
+                    <div class="alert alert-info" role="alert" attrs="{'invisible': [('state', '!=', 'borrador')]}">
                         <p class="mb-0">
                             <field name="is_cv_validation_ok"/>
                             <strong>
-                                Al Enviar a SGH estará aprobando datos pendiente de validación del CV (MEJORAR TEXTO)
+                                Seleccione para indicar que está aprobando los datos pendiente de validación del CV
                             </strong>
                         </p>
                     </div>
