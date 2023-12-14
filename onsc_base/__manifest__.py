@@ -21,7 +21,7 @@ ONSC - Base
         'fields_many2one_restrict',
         'base_restrict_access',
         'url_access_restriction',
-
+        'disable_userprofile_menuitems'
     ],
     'data': [
         'security/onsc_base_security.xml',
