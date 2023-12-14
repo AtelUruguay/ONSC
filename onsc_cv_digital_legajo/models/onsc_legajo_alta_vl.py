@@ -103,6 +103,7 @@ class ONSCLegajoAltaVL(models.Model):
     origin_type = fields.Selection([('M', 'Manual'), ('P', 'Proceso')], string='Origen',
                                    compute='_compute_origin_type', store=True)
     mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución', copy=False)
+    is_cv_validation_ok = fields.Boolean(string='Al aceptar estará aprobando datos pendiente de validación del CV')
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -278,6 +279,8 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.model
     def syncronize_ws4(self, log_info=False):
+        if self.state == 'borrador' and not self.is_cv_validation_ok:
+            raise ValidationError(_("Antes de continuar marcar check (mejorar texto)"))
         self.check_required_fields_ws4()
         if not self.codigoJornadaFormal and self.retributive_day_id:
             self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
