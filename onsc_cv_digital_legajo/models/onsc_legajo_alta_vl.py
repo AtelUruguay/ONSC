@@ -280,7 +280,7 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         if self.state == 'borrador' and not self.is_cv_validation_ok:
-            raise ValidationError(_("Antes de continuar marcar check (mejorar texto)"))
+            raise ValidationError(_("Para continuar debe indicar que está aprobando los datos pendiente de validación del CV"))
         self.check_required_fields_ws4()
         if not self.codigoJornadaFormal and self.retributive_day_id:
             self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
