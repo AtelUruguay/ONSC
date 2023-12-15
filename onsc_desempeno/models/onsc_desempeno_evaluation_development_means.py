@@ -37,12 +37,12 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
         employee_id = self.env.user.employee_id
 
         for record in self:
-            record.means_form_edit = record.competency_id.evaluation_id.state != 'in_process' or record.competency_id.evaluation_id.evaluator_id.id != employee_id.id
+            record.means_form_edit = record.competency_id.tracing_id.state != 'in_process' or record.competency_id.tracing_id.evaluator_id.id != employee_id.id
 
     @api.depends('competency_id')
     def _compute_show_buttons(self):
         for record in self:
-            record.show_buttons = record.competency_id.evaluation_id.evaluation_type == 'tracing_plan'
+            record.show_buttons = record.competency_id.tracing_id.evaluation_type == 'tracing_plan'
 
     def button_open_tracing(self):
 
@@ -76,23 +76,30 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
         string='Evaluacion',
         readonly=True,
         ondelete='cascade')
+    tracing_id = fields.Many2one(
+        'onsc.desempeno.evaluation',
+        string='Evaluacion',
+        readonly=True,
+        ondelete='cascade')
     skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True, ondelete='restrict')
     development_goal = fields.Text('Objetivo de desarrollo')
     development_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
                                             string='Medios de desarrollo')
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
     competency_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_competency_form_edit')
+    state_deal = fields.Selection(STATE, string='Estado', related='evaluation_id.state_gap_deal', readonly=True)
 
-    @api.depends('evaluation_id')
+    @api.depends('state_deal', 'state')
     def _compute_competency_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_id.evaluation_type == 'development_plan':
                 _cond1 = record.evaluation_id.state_gap_deal != 'in_process' or record.evaluation_id.gap_deal_state != 'no_deal'
+                _cond2 = record.evaluation_id.evaluator_id.id != user_employee_id and record.evaluation_id.evaluated_id.id != user_employee_id
             else:
-                _cond1 = record.evaluation_id.state != 'in_process' or record.evaluation_id.gap_deal_state != 'no_deal'
+                _cond1 = record.tracing_id.state != 'in_process' or record.tracing_id.gap_deal_state != 'no_deal'
 
-            _cond2 = record.evaluation_id.evaluator_id.id != user_employee_id
+                _cond2 = record.tracing_id.evaluator_id.id != user_employee_id
             condition = _cond1 or _cond2
 
             record.competency_form_edit = condition
