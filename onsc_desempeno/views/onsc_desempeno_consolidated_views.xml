@@ -135,7 +135,7 @@
     <record id='onsc_desempeno_environment_consolidated_action' model='ir.actions.act_window'>
         <field name="name">Consolidado de Entorno</field>
         <field name="res_model">onsc.desempeno.consolidated</field>
-        <field name="context">{'is_from_consolidated_menu': True,'environment':True, 'search_default_leader_evaluation_filter': 1}</field>
+        <field name="context">{'is_from_consolidated_menu': True,'environment':True}</field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

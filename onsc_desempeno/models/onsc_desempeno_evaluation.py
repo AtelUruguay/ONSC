@@ -47,7 +47,7 @@ class ONSCDesempenoEvaluation(models.Model):
     _description = u'Evaluación'
 
     def _is_group_admin_gh_inciso(self):
-        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso')
+        return self.user_has_groups('onsc_desempeno.')
 
     def _is_group_admin_gh_ue(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue')
@@ -162,6 +162,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 ('evaluator_id', '=', self.env.user.employee_id.id),
                 ('inciso_id', '=', inciso_id),
                 ('operating_unit_id', '=', operating_unit_id)
+
             ]
         else:
             args_extended = [
@@ -317,7 +318,7 @@ class ONSCDesempenoEvaluation(models.Model):
         compute='_compute_is_agree_button_gh_available')
     gap_deal_state = fields.Selection(
         selection=GAP_DEAL_STATES,
-        string="Estado de acuerdo de brecha",
+        string="Subestado",
         default='no_deal', tracking=True
     )
     is_gap_deal_not_generated = fields.Boolean(string='Acuerdo de brecha no generado', copy=False)
@@ -328,7 +329,8 @@ class ONSCDesempenoEvaluation(models.Model):
     development_plan_ids = fields.One2many('onsc.desempeno.evaluation.development.competency', 'evaluation_id',
                                            string='Competencia a desarrollar')
     is_development_plan_not_generated = fields.Boolean(string='Plan de desarrollo no generado')
-    tracing_plan_ids = fields.One2many('onsc.desempeno.evaluation.development.competency', 'tracing_id', string='Competencia a desarrollar')
+    tracing_plan_ids = fields.One2many('onsc.desempeno.evaluation.development.competency', 'tracing_id',
+                                       string='Competencia a desarrollar')
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -398,7 +400,8 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
             is_valid_gap_deal = record.evaluation_type in (
-                'gap_deal', 'development_plan') and record.state_gap_deal == 'in_process' and record.gap_deal_state == 'no_deal'
+                'gap_deal',
+                'development_plan') and record.state_gap_deal == 'in_process' and not record.gap_deal_state == 'agree_leader'
             hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
             hierarchy_deparments |= employee.job_id.department_id
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids and record.evaluated_id.id != user_employee_id
@@ -822,6 +825,7 @@ class ONSCDesempenoEvaluation(models.Model):
         evaluation[0]["evaluation_type"] = "tracing_plan"
         evaluation[0]["gap_deal_state"] = "no_deal"
         evaluation[0]["state"] = 'draft'
+        evaluation[0]["state_gap_deal"] = 'draft'
         evaluation[0]["general_comments"] = False
         tracing_plan = Evaluation.with_context(gap_deal=True).create(evaluation)
 
@@ -829,8 +833,9 @@ class ONSCDesempenoEvaluation(models.Model):
             Competency.create({'tracing_id': tracing_plan.id,
                                'skill_id': competency.skill_id.id,
                                'development_goal': competency.development_goal,
-                               'development_means_ids': [(4, id) for id in competency.development_means_ids.ids]
+                               'tracing_means_ids': [(6, 0, competency.development_means_ids.ids)]
                                })
+
         return True
 
     def get_end_gap_deal(self):

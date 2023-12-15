@@ -18,6 +18,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
         string='Competencia',
         required=True,
         ondelete='cascade')
+
     skill_id = fields.Many2one(related='competency_id.skill_id', string='Competencia')
     agreed_activities = fields.Text('Actividades acordadas', required=True)
     comments = fields.Text('Comentarios', required=True)
@@ -42,7 +43,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     @api.depends('competency_id')
     def _compute_show_buttons(self):
         for record in self:
-            record.show_buttons = record.competency_id.tracing_id.evaluation_type == 'tracing_plan'
+            record.show_buttons = record.competency_id.tracing_id.evaluation_type != 'tracing_plan'
 
     def button_open_tracing(self):
 
@@ -85,9 +86,12 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     development_goal = fields.Text('Objetivo de desarrollo')
     development_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
                                             string='Medios de desarrollo')
+    tracing_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
+                                        string='Medios de desarrollo')
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
     competency_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_competency_form_edit')
     state_deal = fields.Selection(STATE, string='Estado', related='evaluation_id.state_gap_deal', readonly=True)
+    is_tracing = fields.Boolean("Es seguimiento?", compute='_compute_is_tracing')
 
     @api.depends('state_deal', 'state')
     def _compute_competency_form_edit(self):
@@ -103,6 +107,16 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
             condition = _cond1 or _cond2
 
             record.competency_form_edit = condition
+
+    @api.depends('state_deal', 'state')
+    def _compute_is_tracing(self):
+
+        for record in self:
+            if record.evaluation_id.evaluation_type == 'development_plan':
+                condition = False
+            else:
+                condition = True
+            record.is_tracing = condition
 
     def button_open_current_competency(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_competency_action').read()[0]
