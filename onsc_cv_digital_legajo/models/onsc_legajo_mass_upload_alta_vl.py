@@ -518,8 +518,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'cv_birthdate': line.birth_date,
                 'cv_document_type_id': cv_document_type_id,
                 'is_reserva_sgh': line.is_reserva_sgh,
-                # 'crendencial_serie': line.crendencial_serie,
-                # 'credential_number': line.credential_number,
                 'regime_id': line.regime_id.id,
                 'descriptor1_id': line.descriptor1_id.id if line.descriptor1_id else False,
                 'descriptor2_id': line.descriptor2_id.id if line.descriptor2_id else False,
@@ -544,18 +542,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'additional_information': line.additional_information,
                 'norm_id': line.norm_id.id if line.norm_id else False,
                 'call_number': line.call_number,
-
-                # 'country_code': cv_digital.country_code,
-                # 'country_of_birth_id': cv_digital.country_of_birth_id.id if cv_digital.country_of_birth_id else False,
-                # 'marital_status_id': cv_digital.marital_status_id.id if cv_digital.marital_status_id else False,
-                # 'uy_citizenship': cv_digital.uy_citizenship,
-                # 'personal_phone': cv_digital.personal_phone,
-                # 'mobile_phone': cv_digital.mobile_phone,
-                # 'email': cv_digital.email,
-                # 'cv_address_street_id': cv_digital.cv_address_street_id.id if cv_digital.cv_address_street_id else False,
-                # 'cv_address_street2_id': cv_digital.cv_address_street2_id.id if cv_digital.cv_address_street2_id else False,
-                # 'cv_address_street3_id': cv_digital.cv_address_street3_id.id if cv_digital.cv_address_street3_id else False,
-                # 'health_provider_id': cv_digital.health_provider_id.id if cv_digital.health_provider_id else False,
+                'is_cv_validation_ok': True,
                 'mass_upload_id': self.id,
             }
             try:
