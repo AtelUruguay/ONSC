@@ -314,6 +314,7 @@
                 <sheet>
                     <group>
                          <group colspan="4">
+                             <field name="is_tracing" invisible="1"/>
                             <field name="competency_form_edit" invisible="1"/>
                             <label for="skill_id"/>
                            <div>
@@ -329,7 +330,20 @@
                     </group>
                     <notebook>
                         <page string="Plan de acción"  >
-                            <field name="development_means_ids" attrs="{'readonly':[('competency_form_edit', '=',True)]}"
+                            <field name="development_means_ids" attrs="{'invisible': [('is_tracing', '=', True)],'readonly':[('competency_form_edit', '=',True)]}"
+                                   nolabel="1"  options="{'reload_on_button': True}"
+                                   context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"  force_save="1" >
+                                 <tree nolabel="1" delete="0" >
+
+                                     <field name="show_buttons" invisible="1" />
+                                     <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                    <field name="agreed_activities" optional="show" />
+                                    <field name="detail_activities" optional="hide"  />
+                                    <field name="comments" optional="hide" />
+
+                                 </tree>
+                              </field>
+                             <field name="tracing_means_ids" attrs="{'invisible': [('is_tracing', '=', False)],'readonly':[('competency_form_edit', '=',True)]}"
                                    nolabel="1"  options="{'reload_on_button': True}"
                                    context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"  force_save="1" >
                                  <tree nolabel="1" delete="0" >
@@ -344,8 +358,8 @@
                                       attrs="{'invisible': [('show_buttons', '=', False)]}"/>
                                  </tree>
 
-
                             </field>
+
                         </page>
                     </notebook>
                 </sheet>
