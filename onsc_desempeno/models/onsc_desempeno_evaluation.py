@@ -47,7 +47,7 @@ class ONSCDesempenoEvaluation(models.Model):
     _description = u'Evaluación'
 
     def _is_group_admin_gh_inciso(self):
-        return self.user_has_groups('onsc_desempeno.')
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso')
 
     def _is_group_admin_gh_ue(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue')
@@ -162,7 +162,6 @@ class ONSCDesempenoEvaluation(models.Model):
                 ('evaluator_id', '=', self.env.user.employee_id.id),
                 ('inciso_id', '=', inciso_id),
                 ('operating_unit_id', '=', operating_unit_id)
-
             ]
         else:
             args_extended = [

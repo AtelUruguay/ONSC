@@ -110,13 +110,8 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
 
     @api.depends('state_deal', 'state')
     def _compute_is_tracing(self):
-
         for record in self:
-            if record.evaluation_id.evaluation_type == 'development_plan':
-                condition = False
-            else:
-                condition = True
-            record.is_tracing = condition
+            record.is_tracing = record.evaluation_id.evaluation_type != 'development_plan'
 
     def button_open_current_competency(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_competency_action').read()[0]
