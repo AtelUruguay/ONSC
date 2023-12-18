@@ -5,6 +5,71 @@ from odoo import fields, models, api
 
 _logger = logging.getLogger(__name__)
 
+STATE = [
+    ('draft', 'Borrador'),
+    ('in_process', 'En Proceso'),
+    ('completed', 'Completado'),
+    ('deal_close', "Acuerdo cerrado"),
+    ('agreed_plan', "Plan Acordado"),
+    ('uncompleted', 'Sin Finalizar'),
+    ('finished', 'Finalizado'),
+    ('canceled', 'Cancelado')
+]
+
+class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
+    _name = 'onsc.desempeno.evaluation.development.competency'
+    _description = u'Competencias'
+    _order = "skill_id"
+
+    evaluation_id = fields.Many2one(
+        'onsc.desempeno.evaluation',
+        string='Evaluacion',
+        readonly=True,
+        ondelete='cascade')
+    tracing_id = fields.Many2one(
+        'onsc.desempeno.evaluation',
+        string='Evaluacion',
+        readonly=True,
+        ondelete='cascade')
+    skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True, ondelete='restrict')
+    development_goal = fields.Text('Objetivo de desarrollo')
+    development_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
+                                            string='Medios de desarrollo')
+    tracing_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
+                                        string='Medios de desarrollo')
+    state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
+    competency_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_competency_form_edit')
+    state_deal = fields.Selection(STATE, string='Estado', related='evaluation_id.state_gap_deal', readonly=True)
+    is_tracing = fields.Boolean("Es seguimiento?", compute='_compute_is_tracing')
+
+    @api.depends('state_deal', 'state')
+    def _compute_competency_form_edit(self):
+        user_employee_id = self.env.user.employee_id.id
+        for record in self:
+            if record.evaluation_id.evaluation_type == 'development_plan':
+                _cond1 = record.evaluation_id.state_gap_deal != 'in_process' or record.evaluation_id.gap_deal_state != 'no_deal'
+                _cond2 = record.evaluation_id.evaluator_id.id != user_employee_id and record.evaluation_id.evaluated_id.id != user_employee_id
+            else:
+                _cond1 = record.tracing_id.state != 'in_process' or record.tracing_id.gap_deal_state != 'no_deal'
+
+                _cond2 = record.tracing_id.evaluator_id.id != user_employee_id
+            condition = _cond1 or _cond2
+
+            record.competency_form_edit = condition
+
+    @api.depends('state_deal', 'state')
+    def _compute_is_tracing(self):
+        for record in self:
+            record.is_tracing = record.evaluation_id.evaluation_type != 'development_plan'
+
+    def button_open_current_competency(self):
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_competency_action').read()[0]
+        action.update({'res_id': self.id})
+        return action
+
+    def action_close_dialog(self):
+        return {'type': 'ir.actions.act_window_close'}
+
 
 class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     _name = 'onsc.desempeno.evaluation.development.means'
@@ -69,73 +134,6 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
 
     def button_open_tracing(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_development_means_action').read()[0]
-        action.update({'res_id': self.id})
-        return action
-
-    def action_close_dialog(self):
-        return {'type': 'ir.actions.act_window_close'}
-
-
-STATE = [
-    ('draft', 'Borrador'),
-    ('in_process', 'En Proceso'),
-    ('completed', 'Completado'),
-    ('deal_close', "Acuerdo cerrado"),
-    ('agreed_plan', "Plan Acordado"),
-    ('uncompleted', 'Sin Finalizar'),
-    ('finished', 'Finalizado'),
-    ('canceled', 'Cancelado')
-]
-
-
-class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
-    _name = 'onsc.desempeno.evaluation.development.competency'
-    _description = u'Competencias'
-    _order = "skill_id"
-
-    evaluation_id = fields.Many2one(
-        'onsc.desempeno.evaluation',
-        string='Evaluacion',
-        readonly=True,
-        ondelete='cascade')
-    tracing_id = fields.Many2one(
-        'onsc.desempeno.evaluation',
-        string='Evaluacion',
-        readonly=True,
-        ondelete='cascade')
-    skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True, ondelete='restrict')
-    development_goal = fields.Text('Objetivo de desarrollo')
-    development_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
-                                            string='Medios de desarrollo')
-    tracing_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
-                                        string='Medios de desarrollo')
-    state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
-    competency_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_competency_form_edit')
-    state_deal = fields.Selection(STATE, string='Estado', related='evaluation_id.state_gap_deal', readonly=True)
-    is_tracing = fields.Boolean("Es seguimiento?", compute='_compute_is_tracing')
-
-    @api.depends('state_deal', 'state')
-    def _compute_competency_form_edit(self):
-        user_employee_id = self.env.user.employee_id.id
-        for record in self:
-            if record.evaluation_id.evaluation_type == 'development_plan':
-                _cond1 = record.evaluation_id.state_gap_deal != 'in_process' or record.evaluation_id.gap_deal_state != 'no_deal'
-                _cond2 = record.evaluation_id.evaluator_id.id != user_employee_id and record.evaluation_id.evaluated_id.id != user_employee_id
-            else:
-                _cond1 = record.tracing_id.state != 'in_process' or record.tracing_id.gap_deal_state != 'no_deal'
-
-                _cond2 = record.tracing_id.evaluator_id.id != user_employee_id
-            condition = _cond1 or _cond2
-
-            record.competency_form_edit = condition
-
-    @api.depends('state_deal', 'state')
-    def _compute_is_tracing(self):
-        for record in self:
-            record.is_tracing = record.evaluation_id.evaluation_type != 'development_plan'
-
-    def button_open_current_competency(self):
-        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_competency_action').read()[0]
         action.update({'res_id': self.id})
         return action
 

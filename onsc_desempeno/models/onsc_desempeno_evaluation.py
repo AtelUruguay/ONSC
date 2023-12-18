@@ -421,11 +421,11 @@ class ONSCDesempenoEvaluation(models.Model):
         hierarchy_deparments |= employee.job_id.department_id
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
-            is_gap_deal_valid = record.evaluation_type == 'gap_deal' and record.state_gap_deal in ['draft',
-                                                                                                   'in_process']
+            valid_state = record.state_gap_deal in ['draft', 'in_process'] and not record.is_exonerated_evaluation
+            is_valid = record.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan'] and valid_state
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
             user_security = not is_responsable and (is_gh_user_ue or is_gh_user_inciso)
-            record.is_agree_button_gh_available = is_am_evaluator and is_gap_deal_valid and user_security
+            record.is_agree_button_gh_available = is_am_evaluator and is_valid and user_security
 
     @api.depends('state', 'is_exonerated_evaluation', 'gap_deal_state', 'state_gap_deal')
     def _compute_is_agree_evaluation_evaluated_available(self):
@@ -464,7 +464,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
                 is_valid_gap_deal = record.evaluation_type == 'gap_deal' and record.state_gap_deal in ['draft',
                                                                                                        'in_process']
-                is_valid_development_plan = record.evaluation_type == 'development_plan' and record.state in [
+                is_valid_development_plan = record.evaluation_type == 'development_plan' and record.state_gap_deal in [
                     'draft', 'in_process']
                 is_valid_leader_evaluation = record.evaluation_type == 'leader_evaluation' and record.state in [
                     'draft', 'in_process'] and is_order_1
@@ -568,9 +568,15 @@ class ONSCDesempenoEvaluation(models.Model):
             self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_gh(self):
-        if not self.is_exonerated_evaluation:
+        if self.evaluation_type == 'gap_deal':
             self.suspend_security()._create_development_plan()
-        self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
+            state_gap_deal = 'deal_close'
+        elif self.evaluation_type == 'development_plan':
+            self.suspend_security()._create_tracing_plan()
+            state_gap_deal = 'agreed_plan'
+        else:
+            state_gap_deal = 'finished'
+        self.write({'state_gap_deal': state_gap_deal, 'gap_deal_state': 'agree'})
 
     def button_agree_evaluation_evaluated(self):
         self._check_complete_evaluation()
@@ -800,7 +806,6 @@ class ONSCDesempenoEvaluation(models.Model):
 
         valid_days = (self.general_cycle_id.end_date - fields.Date.from_string(fields.Date.today())).days
         if self.env.user.company_id.days_gap_develop_plan_creation < valid_days:
-
             evaluation = self.copy_data()
             evaluation[0]["evaluation_type"] = "development_plan"
             evaluation[0]["gap_deal_state"] = "no_deal"
@@ -829,12 +834,20 @@ class ONSCDesempenoEvaluation(models.Model):
         tracing_plan = Evaluation.with_context(gap_deal=True).create(evaluation)
 
         for competency in self.development_plan_ids:
-            Competency.create({'tracing_id': tracing_plan.id,
-                               'skill_id': competency.skill_id.id,
-                               'development_goal': competency.development_goal,
-                               'tracing_means_ids': [(6, 0, competency.development_means_ids.ids)]
-                               })
-
+            tracing_means_vals = []
+            for development_means_id in competency.development_means_ids:
+                tracing_means_vals.append([0, 0, {
+                    'comments': development_means_id.comments,
+                    'agreed_activities': development_means_id.agreed_activities,
+                    'detail_activities': development_means_id.detail_activities,
+                    'means_id': development_means_id.means_id.id,
+                }])
+            Competency.create({
+                'tracing_id': tracing_plan.id,
+                'skill_id': competency.skill_id.id,
+                'development_goal': competency.development_goal,
+                'tracing_means_ids': tracing_means_vals
+            })
         return True
 
     def get_end_gap_deal(self):
