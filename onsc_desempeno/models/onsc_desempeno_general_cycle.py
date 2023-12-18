@@ -187,7 +187,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
         valid_records = self.sudo().search([
             ('is_score_generated', '=', False),
-            ('id', '=', 130)])
+            ('end_date', '<=', fields.Date.today())])
         stages_360 = EvaluationStage.search([
             ('general_cycle_id', 'in', valid_records.ids),
         ])
