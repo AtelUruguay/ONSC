@@ -39,7 +39,7 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
 
     @api.depends('evaluation_id')
     def _compute_is_reason_id_available(self):
-        if self.evaluation_id.evaluation_type != 'gap_deal':
+        if self.evaluation_id.evaluation_type == 'leader_evaluation':
             self.is_reason_id_available = True
         else:
             Department = self.env['hr.department'].sudo()
@@ -57,15 +57,15 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
             'onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_usuario_gh_inciso')
         user_job = self.env.user.employee_id.job_id
         for rec in self:
+            # SI SOY RESPONSABLE EN LA LINEA JERARQUICA DE LA UO ORIGINAL DE LA EVALUACIÓN ME PUEDO ASIGNAR A MI MISMO
             is_gap_deal = self.evaluation_id.evaluation_type == 'gap_deal'
-            # SI SOY RESPONSABLE EN LA LINEA JERARQUICA DE LA UO DE LA EVALUACIÓN ME PUEDO ASIGNAR A MI MISMO
-            managers_in_department_tree = self.evaluation_id.evaluator_uo_id.get_all_managers_in_department_tree()
-            if self.env.user.employee_id.id in managers_in_department_tree or is_gap_deal:
+            managers_in_department_tree = self.evaluation_id.original_evaluator_uo_id.get_all_managers_in_department_tree()
+            if self.env.user.employee_id.id in managers_in_department_tree or is_usuario_gh:
                 jobs = user_job
             else:
                 jobs = self.env['hr.job']
-            if is_usuario_gh and not is_gap_deal:
-                jobs = Job.search([
+            if is_usuario_gh and self.evaluation_id.evaluation_type == 'leader_evaluation':
+                jobs |= Job.search([
                     ('department_id.parent_id', '=', self.evaluation_id.evaluator_uo_id.id),
                     ('department_id.function_nature', '=', 'adviser'),
                     '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())])
