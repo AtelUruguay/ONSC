@@ -181,7 +181,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
         Proceso de calculo de puntajes al fin del ciclo general. Debe disparase por un Cron
         :return: True
         """
-        config_eval_360_score = self.env.user.company_id.eval_360_score
         Score = self.env['onsc.desempeno.score'].sudo()
         Evaluation = self.env['onsc.desempeno.evaluation'].with_context(ignore_security_rules=True).sudo()
         EvaluationStage = self.env['onsc.desempeno.evaluation.stage'].sudo()
@@ -193,6 +192,16 @@ class ONSCDesempenoGeneralCycle(models.Model):
             ('general_cycle_id', 'in', valid_records.ids),
         ])
 
+        EVALUATION_TYPES = [
+            'self_evaluation',
+            'leader_evaluation',
+            'environment_evaluation',
+            'collaborator',
+            'environment_definition',
+            'gap_deal',
+            'develop_plan',
+            'tracing_plan',
+        ]
         EVALUATION_360_TYPES = [
             'self_evaluation',
             'leader_evaluation',
@@ -201,47 +210,133 @@ class ONSCDesempenoGeneralCycle(models.Model):
             'environment_definition'
         ]
 
-        evaluations_360 = Evaluation.search([
+        evaluations = Evaluation.search([
             ('evaluation_stage_id', 'in', stages_360.ids),
-            ('evaluation_type', 'in', EVALUATION_360_TYPES),
+            ('evaluation_type', 'in', EVALUATION_TYPES),
             ('state', '!=', 'canceled')
         ])
         scores_dict = {}
-        for evaluation_360 in evaluations_360:
+        for evaluation in evaluations:
             key = '%s;;%s;;%s' % (
-                evaluation_360.evaluated_id.id,
-                evaluation_360.uo_id.id,
-                evaluation_360.evaluation_stage_id.id,
+                evaluation.evaluated_id.id,
+                evaluation.uo_id.id,
+                evaluation.evaluation_stage_id.id,
             )
-            if key in scores_dict.keys():
-                scores_dict[key]['evaluations_360_total_qty'] += 1
-            else:
-                scores_dict[key] = {
-                    'employee_id': evaluation_360.evaluated_id.id,
-                    'department_id': evaluation_360.uo_id.id,
-                    'evaluation_stage_id': evaluation_360.evaluation_stage_id.id,
-                    'evaluation_list_id': evaluation_360.evaluation_list_id.id,
-                    'evaluations_360_total_qty': 1,
-                    'evaluations_360_finished_qty': 0,
-                }
-            if evaluation_360.state == 'finished':
-                scores_dict[key]['evaluations_360_finished_qty'] += 1
+            if key not in scores_dict.keys():
+                scores_dict[key] = self._get_evaluation_key_default_dict(evaluation)
 
+            if evaluation.evaluation_type in EVALUATION_360_TYPES:
+                scores_dict[key]['evaluations_360_total_qty'] += 1
+                if evaluation.state == 'finished':
+                    scores_dict[key]['evaluations_360_finished_qty'] += 1
+            elif evaluation.evaluation_type == 'gap_deal':
+                scores_dict[key]['evaluations_gap_deal_qty'] += 1
+                if evaluation.state == 'finished':
+                    scores_dict[key]['evaluations_gap_deal_finished_qty'] += 1
+            elif evaluation.evaluation_type == 'develop_plan':
+                scores_dict[key]['evaluations_develop_plan_qty'] += 1
+                if evaluation.state == 'finished':
+                    scores_dict[key]['evaluations_develop_plan_finished_qty'] += 1
+            else:
+                scores_dict[key]['evaluations_tracing_plan_qty'] += 1
+                if evaluation.state == 'finished':
+                    scores_dict[key]['evaluations_tracing_plan_finished_qty'] += 1
+                # COMPETENCIAS
+                development_means_ids = evaluation.tracing_plan_ids.mapped('development_means_ids')
+                development_means_ids = development_means_ids.filtered(lambda x: not x.is_canceled)
+                scores_dict[key]['evaluations_tracing_plan_activity_qty'] = len(development_means_ids)
+                for development_mean_id in development_means_ids:
+                    porcent = development_mean_id.last_tracing_plan_id.degree_progress_id.porcent
+                    scores_dict[key]['evaluations_tracing_plan_percent_list'].append(porcent)
+
+        bulked_vals = self._get_score_data(scores_dict)
+        Score.create(bulked_vals)
+        # valid_records.write({'is_score_generated': True})
+        return True
+
+    def _get_evaluation_key_default_dict(self, evaluation):
+        return {
+            'employee_id': evaluation.evaluated_id.id,
+            'department_id': evaluation.uo_id.id,
+            'evaluation_stage_id': evaluation.evaluation_stage_id.id,
+            'evaluation_list_id': evaluation.evaluation_list_id.id,
+            # 360
+            'evaluations_360_total_qty': 0,
+            'evaluations_360_finished_qty': 0,
+            # gap deal
+            'evaluations_gap_deal_qty': 0,
+            'evaluations_gap_deal_finished_qty': 0,
+            # develop_plan
+            'evaluations_develop_plan_qty': 0,
+            'evaluations_develop_plan_finished_qty': 0,
+            # tracing plan
+            'evaluations_tracing_plan_qty': 0,
+            'evaluations_tracing_plan_finished_qty': 0,
+            'evaluations_tracing_plan_activity_qty': 0,
+            'evaluations_tracing_plan_percent_list': [],
+        }
+
+    def _get_score_data(self, scores_dict):
         bulked_vals = []
+        config_eval_360_score = self.env.user.company_id.eval_360_score
+        config_gap_deal_score = self.env.user.company_id.gap_deal_score
+        config_develop_plan_score = self.env.user.company_id.development_plan_score
+        config_tracing_plan_score = self.env.user.company_id.tracing_plan_score
+        config_tracing_plan_activity_score = self.env.user.company_id.tracing_plan_activity_score
         for key, value in scores_dict.items():
-            score = config_eval_360_score / value['evaluations_360_total_qty']
-            finished_score = value['evaluations_360_finished_qty'] * score
+            if value['evaluations_360_total_qty'] > 0:
+                eval_360_score = config_eval_360_score / value['evaluations_360_total_qty']
+            else:
+                eval_360_score = float(0)
+            eval_360_finished_score = value['evaluations_360_finished_qty'] * eval_360_score
+
+            if value.get('evaluations_gap_deal_finished_qty') > 0:
+                eval_gap_deal_finished_score = float(config_gap_deal_score)
+            else:
+                eval_gap_deal_finished_score = float(0)
+
+            if value.get('evaluations_develop_plan_finished_qty') > 0:
+                eval_develop_plan_finished_score = float(config_develop_plan_score)
+            else:
+                eval_develop_plan_finished_score = float(0)
+
+            if value.get('evaluations_tracing_plan_finished_qty') > 0:
+                eval_tracing_plan_finished_score = float(config_tracing_plan_score)
+            else:
+                eval_tracing_plan_finished_score = float(0)
+
+            tracing_plan_activity_qty = value['evaluations_tracing_plan_activity_qty']
+            if tracing_plan_activity_qty > 0:
+                percap_tracing_plan_activity_score = config_tracing_plan_activity_score / value[
+                    'evaluations_tracing_plan_activity_qty']
+            else:
+                percap_tracing_plan_activity_score = float(0)
+            tracing_plan_activity_score = float(0)
+            for percent in value['evaluations_tracing_plan_percent_list']:
+                tracing_plan_activity_score += percent * percap_tracing_plan_activity_score
+
             bulked_vals.append({
                 'evaluation_stage_id': value['evaluation_stage_id'],
                 'evaluation_list_id': value['evaluation_list_id'],
                 'department_id': value['department_id'],
                 'employee_id': value['employee_id'],
-                'evaluations_qty': value['evaluations_360_total_qty'],
-                'finished_evaluations_qty': value['evaluations_360_finished_qty'],
-                'score': score,
-                'finished_score': finished_score,
-                'type': 'eval_360',
+                # 360
+                'evaluations_360_total_qty': value['evaluations_360_total_qty'],
+                'evaluations_360_finished_qty': value['evaluations_360_finished_qty'],
+                'evaluations_360_score': eval_360_score,
+                'evaluations_360_finished_score': eval_360_finished_score,
+                # gap deal
+                'evaluations_gap_deal_finished_score': eval_gap_deal_finished_score,
+                # develop_plan
+                'evaluations_develop_plan_finished_score': eval_develop_plan_finished_score,
+                # tracing plan
+                'evaluations_tracing_plan_finished_score': eval_tracing_plan_finished_score,
+                'evaluations_tracing_plan_activity_score': tracing_plan_activity_score,
+                # total
+                'score': eval_360_finished_score +
+                         eval_gap_deal_finished_score +
+                         eval_tracing_plan_finished_score +
+                         tracing_plan_activity_score +
+                         eval_develop_plan_finished_score,
             })
-        Score.create(bulked_vals)
-        # valid_records.write({'is_score_generated': True})
-        return True
+        return bulked_vals

@@ -30,9 +30,16 @@ class ONSCDesempenoScore(models.Model):
         string="Evaluado",
         store=True,
         index=True)
-    type = fields.Selection(SCORE_TYPE, string='Tipo', required=True, index=True)
 
-    evaluations_qty = fields.Integer('Evaluaciones')
-    finished_evaluations_qty = fields.Integer('Evaluaciones finalizadas')
-    score = fields.Float('Puntaje')
-    finished_score = fields.Float('Puntaje de Finalizados')
+    evaluations_360_total_qty = fields.Integer('Evaluaciones 360')
+    evaluations_360_finished_qty = fields.Integer('Evaluaciones 360 finalizadas')
+    evaluations_360_score = fields.Float('Puntaje 360 base')
+    evaluations_360_finished_score = fields.Float('Puntaje 360')
+    evaluations_gap_deal_finished_score = fields.Float('Puntaje Acuerdo de brecha')
+    evaluations_develop_plan_finished_score = fields.Float('Puntaje Plan de desarrollo')
+    evaluations_tracing_plan_finished_score = fields.Float('Puntaje Seguimiento del Plan de desarrollo')
+    evaluations_tracing_plan_activity_score = fields.Float('Puntaje de Actividad de Seguimiento del Plan de desarrollo')
+    score = fields.Float('Puntaje final')
+
+
+

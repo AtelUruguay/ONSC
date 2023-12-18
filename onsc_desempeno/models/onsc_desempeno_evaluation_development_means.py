@@ -33,10 +33,21 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     means_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_mean_form_edit')
     show_buttons = fields.Boolean(string="Boton seguimiento", compute='_compute_show_buttons')
 
+    last_tracing_plan_id = fields.Many2one(
+        'onsc.desempeno.evaluation.tracing.plan',
+        string='Ultimo seguimiento',
+        compute='_compute_last_tracing_plan_id',
+        store=True
+    )
+    is_canceled = fields.Boolean(
+        string='¿Está cancelada?',
+        compute='_compute_last_tracing_plan_id',
+        store=True
+    )
+
     @api.depends('competency_id')
     def _compute_mean_form_edit(self):
         employee_id = self.env.user.employee_id
-
         for record in self:
             record.means_form_edit = record.competency_id.tracing_id.state != 'in_process' or record.competency_id.tracing_id.evaluator_id.id != employee_id.id
 
@@ -45,8 +56,18 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
         for record in self:
             record.show_buttons = record.competency_id.tracing_id.evaluation_type != 'tracing_plan'
 
-    def button_open_tracing(self):
+    @api.depends('tracing_plan_ids')
+    def _compute_last_tracing_plan_id(self):
+        for record in self:
+            if len(record.tracing_plan_ids):
+                last_tracing_plan_id = record.tracing_plan_ids[-1]
+                record.last_tracing_plan_id = last_tracing_plan_id.id
+                record.is_canceled = last_tracing_plan_id.degree_progress_id.is_cancel_flow
+            else:
+                record.last_tracing_plan_id = False
+                record.is_canceled = False
 
+    def button_open_tracing(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_development_means_action').read()[0]
         action.update({'res_id': self.id})
         return action

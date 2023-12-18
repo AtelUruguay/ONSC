@@ -18,6 +18,7 @@
                 <field name="description"/>
                 <field name="porcent"/>
                 <field name="name"/>
+                <field name="is_cancel_flow"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -35,6 +36,7 @@
                             <field name="description" width="50%"/>
                             <field name="porcent" width="10%"/>
                              <field name="name"/>
+                            <field name="is_cancel_flow"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group/>
