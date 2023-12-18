@@ -509,6 +509,8 @@ class ONSCLegajoAltaCS(models.Model):
                 record.is_available_send_to_sgh = True
             elif record.state == 'returned' and is_editable_orig:
                 record.is_available_send_to_sgh = True
+            elif record.state == 'to_process' and is_editable_dest:
+                record.is_available_send_to_sgh = True
             elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue:
                 record.is_available_send_to_sgh = False
             elif record.state in ['draft', 'to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and is_same_inciso:
