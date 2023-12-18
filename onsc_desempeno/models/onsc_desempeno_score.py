@@ -36,7 +36,9 @@ class ONSCDesempenoScore(models.Model):
     evaluations_360_score = fields.Float('Puntaje 360 base')
     evaluations_360_finished_score = fields.Float('Puntaje 360')
     evaluations_gap_deal_finished_score = fields.Float('Puntaje Acuerdo de brecha')
+    evaluations_develop_plan_finished_score = fields.Float('Puntaje Plan de desarrollo')
     evaluations_tracing_plan_finished_score = fields.Float('Puntaje Seguimiento del Plan de desarrollo')
+    evaluations_tracing_plan_activity_score = fields.Float('Puntaje de Actividad de Seguimiento del Plan de desarrollo')
     score = fields.Float('Puntaje final')
 
 

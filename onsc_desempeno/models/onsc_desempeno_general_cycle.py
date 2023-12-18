@@ -187,7 +187,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
         valid_records = self.sudo().search([
             ('is_score_generated', '=', False),
-            ('end_date', '<=', fields.Date.today())])
+            ('id', '=', 130)])
         stages_360 = EvaluationStage.search([
             ('general_cycle_id', 'in', valid_records.ids),
         ])
@@ -199,6 +199,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
             'collaborator',
             'environment_definition',
             'gap_deal',
+            'develop_plan',
             'tracing_plan',
         ]
         EVALUATION_360_TYPES = [
@@ -232,10 +233,21 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 scores_dict[key]['evaluations_gap_deal_qty'] += 1
                 if evaluation.state == 'finished':
                     scores_dict[key]['evaluations_gap_deal_finished_qty'] += 1
+            elif evaluation.evaluation_type == 'develop_plan':
+                scores_dict[key]['evaluations_develop_plan_qty'] += 1
+                if evaluation.state == 'finished':
+                    scores_dict[key]['evaluations_develop_plan_finished_qty'] += 1
             else:
                 scores_dict[key]['evaluations_tracing_plan_qty'] += 1
                 if evaluation.state == 'finished':
                     scores_dict[key]['evaluations_tracing_plan_finished_qty'] += 1
+                # COMPETENCIAS
+                development_means_ids = evaluation.tracing_plan_ids.mapped('development_means_ids')
+                development_means_ids = development_means_ids.filtered(lambda x: not x.is_canceled)
+                scores_dict[key]['evaluations_tracing_plan_activity_qty'] = len(development_means_ids)
+                for development_mean_id in development_means_ids:
+                    porcent = development_mean_id.last_tracing_plan_id.degree_progress_id.porcent
+                    scores_dict[key]['evaluations_tracing_plan_percent_list'].append(porcent)
 
         bulked_vals = self._get_score_data(scores_dict)
         Score.create(bulked_vals)
@@ -254,19 +266,28 @@ class ONSCDesempenoGeneralCycle(models.Model):
             # gap deal
             'evaluations_gap_deal_qty': 0,
             'evaluations_gap_deal_finished_qty': 0,
+            # develop_plan
+            'evaluations_develop_plan_qty': 0,
+            'evaluations_develop_plan_finished_qty': 0,
             # tracing plan
             'evaluations_tracing_plan_qty': 0,
             'evaluations_tracing_plan_finished_qty': 0,
-            'evaluations_tracing_plan_act_score': float(0),
+            'evaluations_tracing_plan_activity_qty': 0,
+            'evaluations_tracing_plan_percent_list': [],
         }
 
     def _get_score_data(self, scores_dict):
         bulked_vals = []
         config_eval_360_score = self.env.user.company_id.eval_360_score
         config_gap_deal_score = self.env.user.company_id.gap_deal_score
+        config_develop_plan_score = self.env.user.company_id.development_plan_score
         config_tracing_plan_score = self.env.user.company_id.tracing_plan_score
+        config_tracing_plan_activity_score = self.env.user.company_id.tracing_plan_activity_score
         for key, value in scores_dict.items():
-            eval_360_score = config_eval_360_score / value['evaluations_360_total_qty']
+            if value['evaluations_360_total_qty'] > 0:
+                eval_360_score = config_eval_360_score / value['evaluations_360_total_qty']
+            else:
+                eval_360_score = float(0)
             eval_360_finished_score = value['evaluations_360_finished_qty'] * eval_360_score
 
             if value.get('evaluations_gap_deal_finished_qty') > 0:
@@ -274,11 +295,25 @@ class ONSCDesempenoGeneralCycle(models.Model):
             else:
                 eval_gap_deal_finished_score = float(0)
 
+            if value.get('evaluations_develop_plan_finished_qty') > 0:
+                eval_develop_plan_finished_score = float(config_develop_plan_score)
+            else:
+                eval_develop_plan_finished_score = float(0)
+
             if value.get('evaluations_tracing_plan_finished_qty') > 0:
                 eval_tracing_plan_finished_score = float(config_tracing_plan_score)
             else:
                 eval_tracing_plan_finished_score = float(0)
 
+            tracing_plan_activity_qty = value['evaluations_tracing_plan_activity_qty']
+            if tracing_plan_activity_qty > 0:
+                percap_tracing_plan_activity_score = config_tracing_plan_activity_score / value[
+                    'evaluations_tracing_plan_activity_qty']
+            else:
+                percap_tracing_plan_activity_score = float(0)
+            tracing_plan_activity_score = float(0)
+            for percent in value['evaluations_tracing_plan_percent_list']:
+                tracing_plan_activity_score += percent * percap_tracing_plan_activity_score
 
             bulked_vals.append({
                 'evaluation_stage_id': value['evaluation_stage_id'],
@@ -292,9 +327,16 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 'evaluations_360_finished_score': eval_360_finished_score,
                 # gap deal
                 'evaluations_gap_deal_finished_score': eval_gap_deal_finished_score,
+                # develop_plan
+                'evaluations_develop_plan_finished_score': eval_develop_plan_finished_score,
                 # tracing plan
                 'evaluations_tracing_plan_finished_score': eval_tracing_plan_finished_score,
+                'evaluations_tracing_plan_activity_score': tracing_plan_activity_score,
                 # total
-                'score': eval_360_finished_score + eval_gap_deal_finished_score + eval_tracing_plan_finished_score,
+                'score': eval_360_finished_score +
+                         eval_gap_deal_finished_score +
+                         eval_tracing_plan_finished_score +
+                         tracing_plan_activity_score +
+                         eval_develop_plan_finished_score,
             })
         return bulked_vals

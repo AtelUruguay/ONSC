@@ -27,6 +27,7 @@
                 <field name="evaluations_360_score" optional="hide"/>
                 <field name="evaluations_360_finished_score" optional="hide"/>
                 <field name="evaluations_gap_deal_finished_score" optional="hide"/>
+                <field name="evaluations_develop_plan_finished_score" optional="hide"/>
                 <field name="evaluations_tracing_plan_finished_score" optional="hide"/>
                 <field name="score"/>
             </tree>
