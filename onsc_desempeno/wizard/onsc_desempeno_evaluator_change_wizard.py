@@ -59,7 +59,8 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
         for rec in self:
             # SI SOY RESPONSABLE EN LA LINEA JERARQUICA DE LA UO ORIGINAL DE LA EVALUACIÓN ME PUEDO ASIGNAR A MI MISMO
             is_gap_deal = self.evaluation_id.evaluation_type == 'gap_deal'
-            managers_in_department_tree = self.evaluation_id.original_evaluator_uo_id.get_all_managers_in_department_tree()
+            uo = self.evaluation_id.original_evaluator_uo_id or self.evaluation_id.evaluator_uo_id
+            managers_in_department_tree = uo.get_all_managers_in_department_tree()
             if self.env.user.employee_id.id in managers_in_department_tree or is_usuario_gh:
                 jobs = user_job
             else:
