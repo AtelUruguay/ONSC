@@ -176,6 +176,7 @@ class ONSCLegajoAltaCS(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", copy=False,
                                       readonly=False, states={'confirmed': [('readonly', True)],
                                                               'cancelled': [('readonly', True)]})
+    security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False,
                                     readonly=False, states={'confirmed': [('readonly', True)],
                                                             'cancelled': [('readonly', True)]})
@@ -588,6 +589,16 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.employee_id = False
 
+    @api.depends('regime_origin_id')
+    def _compute_security_job_id_domain(self):
+        user_level = self.env.user.employee_id.job_id.security_job_id.sequence
+        for rec in self:
+            if not rec.regime_origin_id.is_manager:
+                domain = [('is_uo_manager', '=', False), ('sequence', '>=', user_level)]
+            else:
+                domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
+            rec.security_job_id_domain = json.dumps(domain)
+
     @api.constrains("date_start_commission", "date_end_commission")
     def _check_dates(self):
         for record in self:
@@ -654,6 +665,10 @@ class ONSCLegajoAltaCS(models.Model):
             if rec.operating_unit_destination_id and rec.operating_unit_origin_id and \
                     rec.operating_unit_origin_id == rec.operating_unit_destination_id:
                 raise ValidationError(_('La unidad ejecutora de origen y destino no pueden ser iguales'))
+
+    @api.onchange('regime_origin_id')
+    def onchange_regime_origin_id(self):
+        self.security_job_id = False
 
     # flake8: noqa: C901
     def check_send_sgh(self):
