@@ -392,22 +392,22 @@ class ONSCDesempenoEvaluation(models.Model):
 
     @api.depends('state', 'is_exonerated_evaluation', 'gap_deal_state', 'state_gap_deal')
     def _compute_is_agree_evaluation_leader_available(self):
-        Department = self.env['hr.department'].sudo()
-        employee = self.env.user.employee_id
+        # Department = self.env['hr.department'].sudo()
+        # employee = self.env.user.employee_id
         user_employee_id = self.env.user.employee_id.id
-        is_gh_responsable = self._is_group_responsable_uo()
+        # is_gh_responsable = self._is_group_responsable_uo()
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
             is_valid_gap_deal = record.evaluation_type in (
                 'gap_deal',
                 'development_plan') and record.state_gap_deal == 'in_process' and not record.gap_deal_state == 'agree_leader'
-            hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
-            hierarchy_deparments |= employee.job_id.department_id
-            is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids and record.evaluated_id.id != user_employee_id
+            # hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
+            # hierarchy_deparments |= employee.job_id.department_id
+            # is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids and record.evaluated_id.id != user_employee_id
 
             _cond1 = is_am_evaluator and is_valid_gap_deal
-            _cond2 = is_valid_gap_deal and is_responsable
-            record.is_agree_evaluation_leader_available = (_cond1 or _cond2) and not record.is_exonerated_evaluation
+            # _cond2 = is_valid_gap_deal and is_responsable
+            record.is_agree_evaluation_leader_available = _cond1 and not record.is_exonerated_evaluation
 
     @api.depends('state')
     def _compute_is_agree_button_gh_available(self):

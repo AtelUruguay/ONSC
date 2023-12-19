@@ -37,14 +37,14 @@
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar Plan Evaluado"
-                            attrs="{'invisible': [('is_agree_evaluation_evaluated_available', '=', False)]}"
+                            attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_evaluated_available', '=', False)]}"
                             name="button_agree_plan_evaluated"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar Plan Líder"
-                            attrs="{'invisible': [('is_agree_evaluation_leader_available', '=', False)]}"
+                            attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_leader_available', '=', False)]}"
                             name="button_agree_plan_leader"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
@@ -58,7 +58,7 @@
                     <button type="object"
                             class="btn btn-secundary"
                             string="Reabrir acuerdo"
-                            attrs="{'invisible': ['|','|','|',('state_gap_deal', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'development_plan')]}"
+                            attrs="{'invisible': ['|','|','|','|',('is_agree_button_gh_available', '=', True),('state_gap_deal', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'development_plan')]}"
                             name="button_reopen_deal"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir el plan?"/>
@@ -73,7 +73,7 @@
                     <button type="object"
                             class="btn btn-primary"
                             string="Finalizar Seguimiento"
-                            attrs="{'invisible': ['|','|',('state', '!=', 'in_process'),('evaluation_type', '!=', 'tracing_plan'),('evaluation_form_edit', '=', False)]}"
+                            attrs="{'invisible': ['|','|','|',('is_agree_button_gh_available', '=', True),('state', '!=', 'in_process'),('evaluation_type', '!=', 'tracing_plan'),('evaluation_form_edit', '=', False)]}"
                             name="button_finish_evaluation"
                             icon="fa-user-circle"/>
 

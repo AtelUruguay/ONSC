@@ -10,7 +10,6 @@
                  <field name="evaluated_id"/>
                 <field name="evaluation_start_date"/>
                 <field name="evaluation_end_date"/>
-
             </tree>
         </field>
     </record>
