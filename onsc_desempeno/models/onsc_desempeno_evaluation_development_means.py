@@ -119,7 +119,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     @api.depends('competency_id')
     def _compute_show_buttons(self):
         for record in self:
-            record.show_buttons = record.competency_id.tracing_id.evaluation_type != 'tracing_plan'
+            record.show_buttons = record.competency_id.tracing_id.evaluation_type == 'tracing_plan'
 
     @api.depends('tracing_plan_ids')
     def _compute_last_tracing_plan_id(self):
