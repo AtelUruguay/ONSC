@@ -29,7 +29,7 @@ class ONSCLegajoDepartment(models.Model):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
 
     def _get_domain(self, args):
-        Legajo = self.env['onsc.legajo']
+
         is_config_security = self.user_has_groups(
             'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo')
         is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
@@ -143,11 +143,9 @@ FROM
     hr_contract contract
 LEFT JOIN hr_job job ON job.contract_id = contract.id
 LEFT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
-WHERE 
-    (job.start_date <= CURRENT_DATE AND (job.end_date IS NULL OR job.end_date >= CURRENT_DATE)) OR
-	job.id IS NULL AND contract.legajo_state <> 'baja'
-UNION ALL
-SELECT
+WHERE  (job.start_date <= CURRENT_DATE AND (job.end_date IS NULL OR job.end_date >= CURRENT_DATE)) OR
+job.id IS NULL AND contract.legajo_state <> 'baja'
+UNION ALL SELECT
     legajo.id AS legajo_id,
     contract.id AS contract_id,
     legajo.legajo_state AS legajo_state,
@@ -170,10 +168,8 @@ RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
 
     @profiler
     def _search_is_job_open(self, operator, value):
-        _today = fields.Date.today()
-        base_args = [
-            ('type', '=', 'system'),
-        ]
+
+        base_args = [('type', '=', 'system')]
         # job_expression = ['&', ('start_date', '<=', _today), '|', ('end_date', '>=', _today), ('end_date', '=', False)]
         # nojob_expression = [('job_id', '=', False), ('contract_legajo_state', '!=', 'baja')]
         # second_expression = expression.OR([job_expression, nojob_expression])

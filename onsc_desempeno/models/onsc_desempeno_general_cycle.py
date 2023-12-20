@@ -333,10 +333,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 'evaluations_tracing_plan_finished_score': eval_tracing_plan_finished_score,
                 'evaluations_tracing_plan_activity_score': tracing_plan_activity_score,
                 # total
-                'score': eval_360_finished_score +
-                         eval_gap_deal_finished_score +
-                         eval_tracing_plan_finished_score +
-                         tracing_plan_activity_score +
-                         eval_develop_plan_finished_score,
+                'score': eval_360_finished_score + eval_gap_deal_finished_score + eval_tracing_plan_finished_score + tracing_plan_activity_score + eval_develop_plan_finished_score,
             })
         return bulked_vals

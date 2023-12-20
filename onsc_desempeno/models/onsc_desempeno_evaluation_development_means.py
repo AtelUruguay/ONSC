@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
-from lxml import etree
+
 from odoo import fields, models, api
 
 _logger = logging.getLogger(__name__)
@@ -15,6 +15,7 @@ STATE = [
     ('finished', 'Finalizado'),
     ('canceled', 'Cancelado')
 ]
+
 
 class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.development.competency'
@@ -150,7 +151,7 @@ class ONSCDesempenoEvaluatioTracingPlan(models.Model):
                                     readonly=True)
     comments = fields.Text('Observaciones')
     degree_progress_id = fields.Many2one('onsc.desempeno.degree.progress', string='Grado de avance', required=True)
-    created = fields.Boolean("Creado",default=False)
+    created = fields.Boolean("Creado", default=False)
 
     @api.model
     def create(self, values):
