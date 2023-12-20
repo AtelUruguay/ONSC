@@ -34,7 +34,7 @@
                     <button type="object"
                             class="btn btn-primary"
                             string="Comenzar Evaluación"
-                            attrs="{'invisible': ['|','|','|',('is_agree_button_gh_available', '=', True),('state_gap_deal', '!=', 'draft'),('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
+                            attrs="{'invisible': ['|','|',('state_gap_deal', '!=', 'draft'),('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
                             name="button_start_evaluation"
                             icon="fa-user-circle"/>
                     <button type="object"
@@ -90,7 +90,7 @@
                     <button type="object"
                             class="btn btn-secundary"
                             string="Reabrir acuerdo"
-                            attrs="{'invisible': ['|','|','|','|',('is_agree_button_gh_available', '=', True),('state_gap_deal', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'gap_deal')]}"
+                            attrs="{'invisible': ['|','|','|',('state_gap_deal', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'gap_deal')]}"
                             name="button_reopen_deal"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir la evaluación?"/>

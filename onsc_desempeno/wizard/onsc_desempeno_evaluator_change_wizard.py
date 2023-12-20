@@ -98,4 +98,6 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
         if not self.evaluation_id.original_evaluator_id:
             vals['original_evaluator_id'] = self.evaluation_id.evaluator_id.id
             vals['original_evaluator_uo_id'] = self.evaluation_id.evaluator_uo_id.id
+        if not self.reason_id:
+            vals['use_original_evaluator'] = True
         self.evaluation_id.suspend_security().write(vals)
