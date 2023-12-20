@@ -58,7 +58,7 @@
                     <button type="object"
                             class="btn btn-secundary"
                             string="Reabrir acuerdo"
-                            attrs="{'invisible': ['|','|','|','|',('is_agree_button_gh_available', '=', True),('state_gap_deal', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'development_plan')]}"
+                            attrs="{'invisible': ['|','|','|',('state_gap_deal', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'development_plan')]}"
                             name="button_reopen_deal"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir el plan?"/>
@@ -334,8 +334,8 @@
                                      <field name="comments" optional="hide"/>
                                  </tree>
                               </field>
-                             <field name="tracing_means_ids" attrs="{'invisible': [('is_tracing', '=', False)],'readonly':[('competency_form_edit', '=',True)]}"
-                                   nolabel="1"  options="{'reload_on_button': True}"
+                             <field name="tracing_means_ids" attrs="{'invisible': [('is_tracing', '=', False)]}"
+                                   nolabel="1"
                                    context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"  force_save="1">
                                  <tree nolabel="1" delete="0">
                                      <field name="show_buttons" invisible="1"/>
@@ -344,9 +344,8 @@
                                      <field name="detail_activities" optional="hide"/>
                                      <field name="comments" optional="hide"/>
                                      <button name="button_open_tracing"
-                                             context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form'}"
                                              class="o_icon_button fa fa-list" title="Seguimiento" type="object"
-                                             attrs="{'invisible': [('show_buttons', '=', False)]}"/>
+                                            />
                                  </tree>
                             </field>
                         </page>
