@@ -107,6 +107,7 @@ class ONSCLegajoAltaVL(models.Model):
         string='ID de ejecución',
         copy=False,
         ondelete='set null')
+    is_cv_validation_ok = fields.Boolean(string='Al aceptar estará aprobando datos pendiente de validación del CV')
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -283,6 +284,8 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         self.check_required_fields_ws4()
+        if self.state == 'borrador' and not self.is_cv_validation_ok:
+            raise ValidationError(_("Para continuar debe indicar que está aprobando los datos pendiente de validación del CV"))
         if not self.codigoJornadaFormal and self.retributive_day_id:
             self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
             self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
