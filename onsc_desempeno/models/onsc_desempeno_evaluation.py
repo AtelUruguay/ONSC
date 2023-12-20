@@ -333,8 +333,7 @@ class ONSCDesempenoEvaluation(models.Model):
     is_development_plan_not_generated = fields.Boolean(string='Plan de desarrollo no generado')
     tracing_plan_ids = fields.One2many('onsc.desempeno.evaluation.development.competency', 'tracing_id',
                                        string='Competencia a desarrollar')
-    use_original_evaluator = fields.Boolean(string='Crear seguimiento con evaluador original',default= False)
-
+    use_original_evaluator = fields.Boolean(string='Crear seguimiento con evaluador original', default=False)
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
@@ -573,11 +572,11 @@ class ONSCDesempenoEvaluation(models.Model):
             self.write({'state_gap_deal': 'deal_close', 'gap_deal_state': 'agree'})
 
     def button_agree_gh(self):
-        vals={'gap_deal_state': 'agree'}
+        vals = {'gap_deal_state': 'agree'}
         if self.evaluation_type == 'gap_deal':
             self._check_complete_evaluation()
             self.suspend_security()._create_development_plan()
-            vals.update({'state_gap_deal':  'deal_close'})
+            vals.update({'state_gap_deal': 'deal_close'})
         elif self.evaluation_type == 'development_plan':
             self._check_development_plan()
             self.suspend_security()._create_tracing_plan()
@@ -794,7 +793,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 if record.is_exonerated_evaluation:
                     record.write({'state_gap_deal': 'canceled'})
                 else:
-                    if record.state_gap_deal in ['deal_close','agreed_plan'] :
+                    if record.state_gap_deal in ['deal_close', 'agreed_plan']:
                         record.write({'state_gap_deal': 'finished'})
                     elif record.state_gap_deal not in ['finished', 'uncompleted']:
                         record.write({'state_gap_deal': 'uncompleted'})
@@ -820,7 +819,7 @@ class ONSCDesempenoEvaluation(models.Model):
             evaluation[0]["gap_deal_state"] = "no_deal"
             evaluation[0]["general_comments"] = False
             evaluation[0]["state_gap_deal"] = 'draft'
-            if evaluation[0]["use_original_evaluator"] == True:
+            if evaluation[0]["use_original_evaluator"] is True:
                 evaluation[0]["evaluator_id"] = evaluation[0]["original_evaluator_id"]
                 evaluation[0]["original_evaluator_id"] = False
                 evaluation[0]["reason_change_id"] = False
@@ -844,7 +843,7 @@ class ONSCDesempenoEvaluation(models.Model):
         evaluation[0]["state"] = 'draft'
         evaluation[0]["state_gap_deal"] = 'draft'
         evaluation[0]["general_comments"] = False
-        if evaluation[0]["use_original_evaluator"] == True:
+        if evaluation[0]["use_original_evaluator"] is True:
             evaluation[0]["evaluator_id"] = evaluation[0]["original_evaluator_id"]
             evaluation[0]["original_evaluator_id"] = False
             evaluation[0]["reason_change_id"] = False
