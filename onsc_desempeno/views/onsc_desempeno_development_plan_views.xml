@@ -259,12 +259,14 @@
                     </group>
                     <notebook>
                         <page string="Seguimiento del plan">
-                            <field name="tracing_plan_ids" nolabel="1" attrs="{'readonly':[('means_form_edit', '=', True)]}">
+                            <field name="tracing_plan_ids" nolabel="1">
                                 <tree nolabel="1" editable="bottom" delete="0" edit="0">
+                                    <field name="created" invisible="1"/>
                                     <field name="tracing_plan_date" readonly="1"/>
-                                    <field name="degree_progress_id"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="comments"/>
+                                    <field name="degree_progress_id" attrs="{'readony':[('created', '=',True)]}" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="comments" attrs="{'readony':[('created', '=',True)]}"/>
                                 </tree>
+
                             </field>
                         </page>
 

@@ -34,7 +34,8 @@ class ONSCDesempenoDegreeProgress(models.Model):
     @api.constrains('is_cancel_flow')
     def _compute_is_cancel_flow(self):
         for record in self:
-            if record.is_cancel_flow and self.search_count([('is_cancel_flow','=',True), ('id', '!=', record.id)]) > 1:
+            if record.is_cancel_flow and self.search_count(
+                    [('is_cancel_flow', '=', True), ('id', '!=', record.id)]) > 1:
                 raise ValidationError(_("No puede existir más de un Grado de Avance de Cancelación"))
 
     @api.returns('self', lambda value: value.id)

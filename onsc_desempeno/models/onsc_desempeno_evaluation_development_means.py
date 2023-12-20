@@ -16,6 +16,7 @@ STATE = [
     ('canceled', 'Cancelado')
 ]
 
+
 class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.development.competency'
     _description = u'Competencias'
@@ -150,3 +151,10 @@ class ONSCDesempenoEvaluatioTracingPlan(models.Model):
                                     readonly=True)
     comments = fields.Text('Observaciones')
     degree_progress_id = fields.Many2one('onsc.desempeno.degree.progress', string='Grado de avance', required=True)
+    created = fields.Boolean("Creado", default=False)
+
+    @api.model
+    def create(self, values):
+        values['created'] = True
+        res = super(ONSCDesempenoEvaluatioTracingPlan, self).create(values)
+        return res
