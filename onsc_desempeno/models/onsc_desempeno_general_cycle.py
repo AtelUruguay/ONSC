@@ -218,7 +218,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
         scores_dict = {}
         for evaluation in evaluations:
             key = '%s;;%s;;%s' % (
-                evaluation.evaluated_id.id,
+                evaluation.evaluator_id.id,
                 evaluation.uo_id.id,
                 evaluation.evaluation_stage_id.id,
             )

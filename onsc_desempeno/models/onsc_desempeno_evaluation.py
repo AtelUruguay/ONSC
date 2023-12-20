@@ -88,9 +88,10 @@ class ONSCDesempenoEvaluation(models.Model):
             args_extended = [
                 ('evaluation_type', '=', 'leader_evaluation'),
                 ('evaluator_id', '=', self.env.user.employee_id.id),
-                ('inciso_id', '=', inciso_id),
-                ('operating_unit_id', '=', operating_unit_id)
-            ]
+                ('inciso_id', '=', inciso_id)]
+            if not self._is_group_admin_gh_inciso() and not self._is_group_usuario_gh_inciso():
+                args_extended = expression.AND(
+                    [[('operating_unit_id', '=', operating_unit_id)], args_extended])
         else:
             # BREAKPOINT - Todos los usuarios deben ver las evaluaciones en las que es evaluador
             args_extended = [
@@ -160,9 +161,11 @@ class ONSCDesempenoEvaluation(models.Model):
             args_extended = [
                 ('evaluation_type', '=', evaluation_type),
                 ('evaluator_id', '=', self.env.user.employee_id.id),
-                ('inciso_id', '=', inciso_id),
-                ('operating_unit_id', '=', operating_unit_id)
+                ('inciso_id', '=', inciso_id)
             ]
+            if not self._is_group_admin_gh_inciso() and not self._is_group_usuario_gh_inciso():
+                args_extended = expression.AND(
+                    [[('operating_unit_id', '=', operating_unit_id)], args_extended])
         else:
             args_extended = [
                 ('evaluation_type', '=', evaluation_type),
