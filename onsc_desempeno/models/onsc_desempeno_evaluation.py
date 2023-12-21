@@ -383,11 +383,11 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_type in ('gap_deal', 'development_plan'):
-                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal'
+                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or record.is_agree_button_gh_available
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             elif record.evaluation_type == 'tracing_plan':
-                condition = record.state != 'in_process' or record.evaluator_id.id != user_employee_id
+                condition = record.state != 'in_process' or record.evaluator_id.id != user_employee_id or record.is_agree_button_gh_available
 
             else:
                 _cond1 = record.evaluator_id.id != user_employee_id or record.locked
@@ -425,7 +425,7 @@ class ONSCDesempenoEvaluation(models.Model):
         hierarchy_deparments |= employee.job_id.department_id
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
-            valid_state = record.state_gap_deal in ['in_process'] and not record.is_exonerated_evaluation
+            valid_state = (record.state_gap_deal in ['in_process'] or record.state in ['in_process']) and record.gap_deal_state in ['no_deal'] and not record.is_exonerated_evaluation
             is_valid = record.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan'] and valid_state
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
             user_security = not is_responsable and (is_gh_user_ue or is_gh_user_inciso)
@@ -777,7 +777,6 @@ class ONSCDesempenoEvaluation(models.Model):
         GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
         general_ids = GeneralCycle.search([('end_date_max', '=', fields.Date.today())]).ids
         tracing_general_ids = GeneralCycle.search([('end_date', '=', fields.Date.today())]).ids
-        Tracing = self.env['onsc.desempeno.evaluation.tracing.plan'].suspend_security()
 
         for record in self.search(
                 [('general_cycle_id', 'in', general_ids),
@@ -801,8 +800,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 [('general_cycle_id', 'in', tracing_general_ids),
                  ('state', 'not in', ['finished']),
                  ('evaluation_type', 'in', ['tracing_plan'])]):
-            if record.state in ['in_process'] and Tracing.search_count(
-                    [('develop_means_id', 'in', record.tracing_plan_ids.tracing_means_ids.tracing_plan_ids.ids)]) > 0:
+            if record.state in ['in_process'] and len(record.tracing_plan_ids.tracing_means_ids.tracing_plan_ids.ids) > 0:
                 record.write({'state': 'finished'})
             elif record.state not in ['finished', 'uncompleted']:
                 record.write({'state': 'uncompleted'})
