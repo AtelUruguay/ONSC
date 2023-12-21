@@ -39,14 +39,14 @@
                             string="Acordar Plan Evaluado"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_evaluated_available', '=', False)]}"
                             name="button_agree_plan_evaluated"
-                            confirm="¿Está seguro que desea confirmar el acuerdo?"
+                            confirm="¿Está seguro que desea confirmar el plan?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar Plan Líder"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_leader_available', '=', False)]}"
                             name="button_agree_plan_leader"
-                            confirm="¿Está seguro que desea confirmar el acuerdo?"
+                            confirm="¿Está seguro que desea confirmar el plan?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
@@ -259,14 +259,12 @@
                     </group>
                     <notebook>
                         <page string="Seguimiento del plan">
-                            <field name="tracing_plan_ids" nolabel="1">
+                            <field name="tracing_plan_ids" nolabel="1" attrs="{'readonly':[('means_form_edit', '=', True)]}">
                                 <tree nolabel="1" editable="bottom" delete="0" edit="0">
-                                    <field name="created" invisible="1"/>
                                     <field name="tracing_plan_date" readonly="1"/>
-                                    <field name="degree_progress_id" attrs="{'readony':[('created', '=',True)]}" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="comments" attrs="{'readony':[('created', '=',True)]}"/>
+                                    <field name="degree_progress_id"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="comments"/>
                                 </tree>
-
                             </field>
                         </page>
 
@@ -334,8 +332,8 @@
                                      <field name="comments" optional="hide"/>
                                  </tree>
                               </field>
-                             <field name="tracing_means_ids" attrs="{'invisible': [('is_tracing', '=', False)]}"
-                                   nolabel="1"
+                             <field name="tracing_means_ids" attrs="{'invisible': [('is_tracing', '=', False)],'readonly':[('competency_form_edit', '=',True)]}"
+                                   nolabel="1"  options="{'reload_on_button': True}"
                                    context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"  force_save="1">
                                  <tree nolabel="1" delete="0">
                                      <field name="show_buttons" invisible="1"/>
@@ -344,8 +342,9 @@
                                      <field name="detail_activities" optional="hide"/>
                                      <field name="comments" optional="hide"/>
                                      <button name="button_open_tracing"
+                                             context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form'}"
                                              class="o_icon_button fa fa-list" title="Seguimiento" type="object"
-                                            />
+                                             attrs="{'invisible': [('show_buttons', '=', False)]}"/>
                                  </tree>
                             </field>
                         </page>
