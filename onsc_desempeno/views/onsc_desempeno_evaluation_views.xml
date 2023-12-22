@@ -31,6 +31,9 @@
                     <field name="is_agree_evaluation_leader_available" invisible="1"/>
                     <field name="is_agree_button_gh_available" invisible="1"/>
                     <field name="is_agree_evaluation_evaluated_available" invisible="1"/>
+                    <field name="is_cancel_available" invisible="1"/>
+                      <field name="show_button_go_back" invisible="1"/>
+                      <field name="show_button_cancel" invisible="1"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Comenzar Evaluación"
@@ -66,6 +69,28 @@
                             attrs="{'invisible': [('is_evaluation_change_available', '=', False)]}"
                             type="action"
                             icon="fa-exchange"/>
+                    <button name="%(onsc_desempeno.onsc_desempeno_evaluation_cancel_wizard_action)d"
+                            class="btn btn-primary"
+                            string="Cancelar"
+                            context="{'default_evaluation_id': active_id}"
+                            confirm="¿Está seguro de que desea cancelar el formulario?"
+                            attrs="{'invisible': ['|','|',('is_exonerated_evaluation', '=', True),('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
+                            type="action"
+                            icon="fa-exchange"/>`
+                    <button name="button_cancel_gap_deal"
+                            class="btn btn-primary"
+                            string="Cancelar"
+                            confirm="¿Está seguro de que desea cancelar el formulario?"
+                            attrs="{'invisible': ['|','|',('is_exonerated_evaluation', '=', False),('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
+                            type="object"
+                            icon="fa-lock"/>`
+                    <button  name="button_go_back"
+                            class="btn btn-primary"
+                            string="Volver atrás"
+                            attrs="{'invisible': ['|',('show_button_go_back', '=', False),('is_cancel_available', '=', False)]}"
+
+                            type="object"
+                            icon="fa-unlock"/>`
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar Evaluación Evaluado"
@@ -134,6 +159,9 @@
                                    readonly="1"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
+                            <field name="reason_cancel"
+                                   readonly="1"
+                                    attrs="{'invisible': [('show_button_go_back', '=', False)]}"/>
                             <field name="year"/>
                             <field name="evaluation_start_date"/>
                             <field name="evaluation_end_date" attrs="{'invisible': [('evaluation_type', 'in',['gap_deal'])]}"/>
