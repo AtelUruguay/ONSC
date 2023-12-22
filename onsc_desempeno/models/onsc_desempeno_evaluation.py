@@ -383,11 +383,11 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_type in ('gap_deal', 'development_plan'):
-                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or record.is_agree_button_gh_available
+                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or (record.is_agree_button_gh_available and record.evaluator_id.id == user_employee_id)
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             elif record.evaluation_type == 'tracing_plan':
-                condition = record.state != 'in_process' or record.evaluator_id.id != user_employee_id or record.is_agree_button_gh_available
+                condition = record.state != 'in_process' or record.evaluator_id.id != user_employee_id or (record.is_agree_button_gh_available and record.evaluator_id.id == user_employee_id)
 
             else:
                 _cond1 = record.evaluator_id.id != user_employee_id or record.locked
@@ -472,7 +472,9 @@ class ONSCDesempenoEvaluation(models.Model):
                     'draft', 'in_process']
                 is_valid_leader_evaluation = record.evaluation_type == 'leader_evaluation' and record.state in [
                     'draft', 'in_process'] and is_order_1
-                is_valid_evaluation = is_valid_gap_deal or is_valid_leader_evaluation or is_valid_development_plan
+                is_valid_tracing_plan = record.evaluation_type == 'tracing_plan' and record.state in [
+                    'draft', 'in_process']
+                is_valid_evaluation = is_valid_gap_deal or is_valid_leader_evaluation or is_valid_development_plan or is_valid_tracing_plan
                 is_gap_deal = record.sudo().evaluation_type == 'gap_deal'
                 is_am_evaluator = record.evaluator_id.id == employee.id
                 is_am_orig_evaluator = record.original_evaluator_id.id == employee.id
