@@ -335,6 +335,14 @@ class ONSCDesempenoEvaluation(models.Model):
                                        string='Competencia a desarrollar')
     use_original_evaluator = fields.Boolean(string='Crear seguimiento con evaluador original', default=False)
 
+    is_cancel_available = fields.Boolean(
+        string='Botón de cancelar disponible',
+        compute='_compute_is_cancel_available')
+    state_before_cancel = fields.Selection(STATE, string="Estado")
+    reason_cancel = fields.Char(string='Motivo de cancelación')
+    show_button_go_back = fields.Boolean('Ver boton volver atras', compute='_compute_show_button_go_back')
+    show_button_cancel = fields.Boolean('Ver boton cancelar atras', compute='_compute_show_button_cancel')
+
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)
         if is_default:
@@ -383,7 +391,7 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_type in ('gap_deal', 'development_plan'):
-                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or (record.is_agree_button_gh_available and record.evaluator_id.id == user_employee_id)
+                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or (record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             elif record.evaluation_type == 'tracing_plan':
@@ -413,7 +421,7 @@ class ONSCDesempenoEvaluation(models.Model):
             # _cond2 = is_valid_gap_deal and is_responsable
             record.is_agree_evaluation_leader_available = _cond1 and not record.is_exonerated_evaluation
 
-    @api.depends('state')
+    @api.depends('state', 'state_gap_deal', 'is_exonerated_evaluation')
     def _compute_is_agree_button_gh_available(self):
         Department = self.env['hr.department'].sudo()
         employee = self.env.user.employee_id
@@ -425,7 +433,8 @@ class ONSCDesempenoEvaluation(models.Model):
         hierarchy_deparments |= employee.job_id.department_id
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
-            valid_state = (record.state_gap_deal in ['in_process'] or record.state in ['in_process']) and record.gap_deal_state in ['no_deal'] and not record.is_exonerated_evaluation
+            valid_state = (record.state_gap_deal in ['in_process'] or record.state in [
+                'in_process']) and record.gap_deal_state in ['no_deal'] and not record.is_exonerated_evaluation
             is_valid = record.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan'] and valid_state
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
             user_security = not is_responsable and (is_gh_user_ue or is_gh_user_inciso)
@@ -492,6 +501,13 @@ class ONSCDesempenoEvaluation(models.Model):
                 base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
                 record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
 
+    @api.depends('state')
+    def _compute_is_cancel_available(self):
+        is_gh_user_ue = self._is_group_usuario_gh_ue()
+        is_gh_user_inciso = self._is_group_usuario_gh_inciso()
+        for record in self:
+            record.is_cancel_available = (is_gh_user_ue or is_gh_user_inciso) and not record.general_cycle_id.is_score_generated
+
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
         user_employee = self.env.user.employee_id
@@ -526,13 +542,34 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_type == 'gap_deal':
-                _cond1 = record.state != 'in_process' or record.gap_deal_state != 'no_deal'
+                _cond1 = record.state not in ['canceled', 'in_process'] or record.gap_deal_state != 'no_deal'
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             else:
-                condition = record.state not in [
-                    'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
+                condition = record.state not in ['canceled',
+                                                 'in_process'] or record.evaluator_id.id != user_employee_id or record.locked
             record.is_edit_general_comments = condition
+
+    @api.depends('state', 'gap_deal_state')
+    def _compute_show_button_go_back(self):
+        for record in self:
+            if record.evaluation_type in ('gap_deal', 'development_plan'):
+                condition = record.state_gap_deal == 'canceled'
+            else:
+                condition = record.state == 'canceled'
+            record.show_button_go_back = condition
+
+    @api.depends('state', 'gap_deal_state')
+    def _compute_show_button_cancel(self):
+
+        for record in self:
+            if record.evaluation_type in ('gap_deal'):
+                condition = record.state_gap_deal != 'canceled'
+            elif record.evaluation_type in ('development_plan'):
+                condition = record.state_gap_deal != 'canceled'
+            else:
+                condition = record.state != 'canceled'
+            record.show_button_cancel = condition
 
     def button_start_evaluation(self):
         if self.evaluation_type in ('gap_deal', 'development_plan'):
@@ -611,6 +648,26 @@ class ONSCDesempenoEvaluation(models.Model):
         elif self.gap_deal_state == 'agree_leader':
             self.suspend_security()._create_tracing_plan()
             self.write({'state_gap_deal': 'agreed_plan', 'gap_deal_state': 'agree'})
+
+    def button_go_back(self):
+        if self.evaluation_type in ('gap_deal', 'development_plan'):
+            vals = {'state_gap_deal': self.state_before_cancel,
+                    'state_before_cancel': False,
+                    'reason_cancel': False}
+        else:
+            vals = {'state': self.state_before_cancel,
+                    'state_before_cancel': False,
+                    'reason_cancel': False
+                    }
+        self.write(vals)
+
+    def button_cancel_gap_deal(self):
+        vals = {
+            'reason_cancel': "Exonerado de Evaluación",
+            'state_before_cancel': self.state_gap_deal,
+            'state_gap_deal': 'canceled',
+        }
+        self.write(vals)
 
     def _generate_environment_evaluations(self):
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
@@ -802,7 +859,8 @@ class ONSCDesempenoEvaluation(models.Model):
                 [('general_cycle_id', 'in', tracing_general_ids),
                  ('state', 'not in', ['finished']),
                  ('evaluation_type', 'in', ['tracing_plan'])]):
-            if record.state in ['in_process'] and len(record.tracing_plan_ids.tracing_means_ids.tracing_plan_ids.ids) > 0:
+            if record.state in ['in_process'] and len(
+                    record.tracing_plan_ids.tracing_means_ids.tracing_plan_ids.ids) > 0:
                 record.write({'state': 'finished'})
             elif record.state not in ['finished', 'uncompleted']:
                 record.write({'state': 'uncompleted'})
