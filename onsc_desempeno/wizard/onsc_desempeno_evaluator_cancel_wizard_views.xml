@@ -20,7 +20,7 @@
     </record>
     
     <record id='onsc_desempeno_evaluation_cancel_wizard_action' model='ir.actions.act_window'>
-        <field name="name">Cambio de evaluador</field>
+        <field name="name">Cancelación</field>
         <field name="type">ir.actions.act_window</field>
         <field name="res_model">onsc.desempeno.evaluation.cancel.wizard</field>
         <field name="view_mode">form</field>

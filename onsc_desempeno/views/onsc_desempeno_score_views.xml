@@ -30,6 +30,7 @@
                 <field name="evaluations_develop_plan_finished_score" optional="hide"/>
                 <field name="evaluations_tracing_plan_finished_score" optional="hide"/>
                 <field name="score"/>
+                <field name="notified"/>
             </tree>
         </field>
     </record>

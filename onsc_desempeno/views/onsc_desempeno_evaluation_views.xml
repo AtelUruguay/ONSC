@@ -76,7 +76,7 @@
                             confirm="¿Está seguro de que desea cancelar el formulario?"
                             attrs="{'invisible': ['|','|',('is_exonerated_evaluation', '=', True),('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
                             type="action"
-                            icon="fa-exchange"/>`
+                            icon="fa-lock"/>`
                     <button name="button_cancel_gap_deal"
                             class="btn btn-primary"
                             string="Cancelar"

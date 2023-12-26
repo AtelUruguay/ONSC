@@ -40,3 +40,4 @@ class ONSCDesempenoScore(models.Model):
     evaluations_tracing_plan_finished_score = fields.Float('Puntaje Seguimiento del Plan de desarrollo')
     evaluations_tracing_plan_activity_score = fields.Float('Puntaje de Actividad de Seguimiento del Plan de desarrollo')
     score = fields.Float('Puntaje final')
+    notified = fields.Boolean('Notificado')
