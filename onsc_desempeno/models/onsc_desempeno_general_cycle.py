@@ -260,6 +260,8 @@ class ONSCDesempenoGeneralCycle(models.Model):
         return {
             'employee_id': evaluation.evaluator_id.id,
             'department_id': evaluation.uo_id.id,
+            'operating_unit_id': evaluation.operating_unit_id.id,
+            'inciso_id': evaluation.inciso_id.id,
             'evaluation_stage_id': evaluation.evaluation_stage_id.id,
             'evaluation_list_id': evaluation.evaluation_list_id.id,
             # 360
@@ -321,6 +323,8 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 'evaluation_stage_id': value['evaluation_stage_id'],
                 'evaluation_list_id': value['evaluation_list_id'],
                 'department_id': value['department_id'],
+                'operating_unit_id': value['operating_unit_id'],
+                'inciso_id': value['inciso_id'],
                 'employee_id': value['employee_id'],
                 # 360
                 'evaluations_360_total_qty': value['evaluations_360_total_qty'],
