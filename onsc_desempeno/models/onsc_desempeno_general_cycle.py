@@ -186,8 +186,10 @@ class ONSCDesempenoGeneralCycle(models.Model):
         EvaluationStage = self.env['onsc.desempeno.evaluation.stage'].sudo()
 
         valid_records = self.sudo().search([
+            # ('id', '=', 130),
             ('is_score_generated', '=', False),
-            ('end_date', '<=', fields.Date.today())])
+            ('end_date', '<=', fields.Date.today())
+        ])
         stages_360 = EvaluationStage.search([
             ('general_cycle_id', 'in', valid_records.ids),
         ])
@@ -256,7 +258,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
     def _get_evaluation_key_default_dict(self, evaluation):
         return {
-            'employee_id': evaluation.evaluated_id.id,
+            'employee_id': evaluation.evaluator_id.id,
             'department_id': evaluation.uo_id.id,
             'evaluation_stage_id': evaluation.evaluation_stage_id.id,
             'evaluation_list_id': evaluation.evaluation_list_id.id,

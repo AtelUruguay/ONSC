@@ -78,10 +78,7 @@ class ResUser(models.Model):
         jobs = self.env['hr.job'].sudo().search(domain)
         job_id = jobs[0].id if len(jobs) == 1 else False
         self.employee_id.job_id = job_id
-        if len(jobs):
-            self.action_id = False
-        else:
-            self.action_id = self._get_default_action_id()
+        self.action_id = self._get_action(jobs)
         job_id = self.env['hr.job'].sudo().browse(job_id)
         _roles = job_id.role_ids
         _roles |= job_id.role_extra_ids
@@ -90,6 +87,12 @@ class ResUser(models.Model):
             if role.user_role_id.id not in user_role_ids:
                 role_line_ids.append((0, 0, self._prepare_data(role)))
         return role_line_ids
+
+    def _get_action(self, jobs):
+        if len(jobs):
+            return False
+        else:
+            return self._get_default_action_id()
 
     def _get_default_action_id(self):
         """PARA EXTENDER Y RETORNAR DEFAULT ACTION DESEADO SEGUN PROCESO QUE ESTE INSTALADO"""

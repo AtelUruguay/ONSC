@@ -16,6 +16,7 @@ ONSC - Gestión de Desempeño
         'security/ir.model.access.csv',
         'data/ir_cron_data.xml',
         'data/mail_template_data.xml',
+        'wizard/onsc_user_notification_atlogin_views.xml',
         'wizard/onsc_desempeno_evaluator_change_wizard_views.xml',
         'wizard/onsc_desempeno_extend_deadline_views.xml',
         'wizard/onsc_desempeno_evaluator_cancel_wizard_views.xml',
