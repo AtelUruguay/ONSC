@@ -220,7 +220,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
         scores_dict = {}
         for evaluation in evaluations:
             key = '%s;;%s;;%s' % (
-                evaluation.evaluated_id.id,
+                evaluation.evaluator_id.id,
                 evaluation.uo_id.id,
                 evaluation.evaluation_stage_id.id,
             )
@@ -335,10 +335,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 'evaluations_tracing_plan_finished_score': eval_tracing_plan_finished_score,
                 'evaluations_tracing_plan_activity_score': tracing_plan_activity_score,
                 # total
-                'score': eval_360_finished_score +
-                         eval_gap_deal_finished_score +
-                         eval_tracing_plan_finished_score +
-                         tracing_plan_activity_score +
-                         eval_develop_plan_finished_score,
+                'score': eval_360_finished_score + eval_gap_deal_finished_score + eval_tracing_plan_finished_score + tracing_plan_activity_score + eval_develop_plan_finished_score,
             })
         return bulked_vals

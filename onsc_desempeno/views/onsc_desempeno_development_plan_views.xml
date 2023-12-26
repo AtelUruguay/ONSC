@@ -28,6 +28,9 @@
                     <field name="is_agree_evaluation_leader_available" invisible="1"/>
                     <field name="is_agree_evaluation_evaluated_available" invisible="1"/>
                     <field name="is_agree_button_gh_available" invisible="1"/>
+                    <field name="is_cancel_available" invisible="1"/>
+                    <field name="show_button_go_back" invisible="1"/>
+                    <field name="show_button_cancel" invisible="1"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Comenzar Evaluación"
@@ -39,14 +42,14 @@
                             string="Acordar Plan Evaluado"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_evaluated_available', '=', False)]}"
                             name="button_agree_plan_evaluated"
-                            confirm="¿Está seguro que desea confirmar el acuerdo?"
+                            confirm="¿Está seguro que desea confirmar el plan?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Acordar Plan Líder"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_leader_available', '=', False)]}"
                             name="button_agree_plan_leader"
-                            confirm="¿Está seguro que desea confirmar el acuerdo?"
+                            confirm="¿Está seguro que desea confirmar el plan?"
                             icon="fa-lock"/>
                     <button type="object"
                             class="btn btn-primary"
@@ -55,10 +58,11 @@
                             name="button_agree_gh"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
+
                     <button type="object"
                             class="btn btn-secundary"
                             string="Reabrir acuerdo"
-                            attrs="{'invisible': ['|','|','|','|',('is_agree_button_gh_available', '=', True),('state_gap_deal', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'development_plan')]}"
+                            attrs="{'invisible': ['|','|','|',('state_gap_deal', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'development_plan')]}"
                             name="button_reopen_deal"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir el plan?"/>
@@ -70,6 +74,21 @@
                             attrs="{'invisible': [('is_evaluation_change_available', '=', False)]}"
                             type="action"
                             icon="fa-exchange"/>
+                    <button name="%(onsc_desempeno.onsc_desempeno_evaluation_cancel_wizard_action)d"
+                            class="btn btn-primary"
+                            string="Cancelar"
+                            context="{'default_evaluation_id': active_id}"
+                            confirm="¿Está seguro de que desea cancelar el formulario?"
+                            attrs="{'invisible': ['|',('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
+                            type="action"
+                            icon="fa-lock"/>`
+
+                    <button  name="button_go_back"
+                            class="btn btn-secundary"
+                            string="Volver atrás"
+                            attrs="{'invisible': ['|',('show_button_go_back', '=', False),('is_cancel_available', '=', False)]}"
+                            type="object"
+                            icon="fa-unlock"/>`
                     <button type="object"
                             class="btn btn-primary"
                             string="Finalizar Seguimiento"
@@ -117,6 +136,10 @@
                                    readonly="1"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
+                            <field name="reason_cancel"
+                                   readonly="1"
+                                    attrs="{'invisible': [('show_button_go_back', '=', False)]}"/>
+
                             <field name="year"/>
                             <field name="evaluation_start_date"/>
                             <field name="evaluation_end_date_max"/>
