@@ -8,7 +8,7 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
     _description = 'Cancelar evaluación'
 
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluación', required=True)
-    reason = fields.Char(string='Motivo de cancelación', required=True)
+    reason = fields.Text(string='Motivo de cancelación', required=True)
 
     def action_confirm(self):
 
