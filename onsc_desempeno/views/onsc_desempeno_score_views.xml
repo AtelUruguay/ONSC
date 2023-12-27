@@ -20,6 +20,8 @@
         <field name="model">onsc.desempeno.score</field>
         <field name="arch" type="xml">
             <tree string="Puntajes">
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
                 <field name="department_id"/>
                 <field name="employee_id"/>
                 <field name="evaluations_360_total_qty" optional="hide"/>
@@ -30,6 +32,7 @@
                 <field name="evaluations_develop_plan_finished_score" optional="hide"/>
                 <field name="evaluations_tracing_plan_finished_score" optional="hide"/>
                 <field name="score"/>
+                <field name="is_employee_notified"/>
                 <field name="notified"/>
             </tree>
         </field>
@@ -39,6 +42,7 @@
         <field name="name">Puntajes</field>
         <field name="res_model">onsc.desempeno.score</field>
         <field name="view_mode">tree</field>
+        <field name="context">{'is_from_menu': True}</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
             </p>

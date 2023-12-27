@@ -92,8 +92,8 @@ class ResUser(models.Model):
         if len(jobs):
             return False
         else:
-            return self._get_default_action_id()
+            return self._get_default_action().id
 
-    def _get_default_action_id(self):
+    def _get_default_action(self):
         """PARA EXTENDER Y RETORNAR DEFAULT ACTION DESEADO SEGUN PROCESO QUE ESTE INSTALADO"""
-        return self.env.ref('base.default_user').action_id.id
+        return self.env.ref('base.default_user').action_id
