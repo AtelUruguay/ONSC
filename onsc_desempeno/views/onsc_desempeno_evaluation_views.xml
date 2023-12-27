@@ -159,7 +159,7 @@
                                    readonly="1"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
-                            <field name="reason_cancel"
+                            <field name="reason_cancel" width="50%"
                                    readonly="1"
                                     attrs="{'invisible': [('show_button_go_back', '=', False)]}"/>
                             <field name="year"/>
