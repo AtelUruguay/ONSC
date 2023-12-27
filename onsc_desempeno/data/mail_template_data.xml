@@ -45,7 +45,7 @@
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
-                       El <t t-out="object.get_environment_definition_end_date()"/> culmina el plazo para la definición de Entorno. Recuerde realizar la misma antes de la fecha indicada.
+                       El <t t-out="object.get_evalaution_end_date()"/> culmina el plazo para la definición de Entorno. Recuerde realizar la misma antes de la fecha indicada.
                     </p>
                 </div>
             </field>
