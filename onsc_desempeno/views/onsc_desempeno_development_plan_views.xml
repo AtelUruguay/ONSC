@@ -162,19 +162,15 @@
                         <page string="Competencia a desarrollar">
                             <field name="development_plan_ids"  attrs="{'invisible': [('evaluation_type', '!=', 'development_plan')]}"
                                    options="{'no_open': True}" nolabel="1"   create="0" delete="0" edit="0">
-                                <tree nolabel="1"   create="0" edit="0"  delete="0">
-
+                                <tree nolabel="1" create="0" edit="0"  delete="0">
                                     <field name="evaluation_id"  invisible="1"/>
                                     <field name="skill_id"  readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <field name="development_goal"  optional="show"/>
                                      <button type="object"
                                             name="button_open_current_competency"
                                             icon="fa-edit"/>
-
                                 </tree>
-
-
-                                </field>
+                            </field>
                                 <field name="tracing_plan_ids"  attrs="{'invisible': [('evaluation_type', '!=', 'tracing_plan')]}"
                                      options="{'no_open': True}" nolabel="1" create="0" delete="0" edit="0">
                                 <tree nolabel="1"   create="0" edit="0"  delete="0">
@@ -207,13 +203,17 @@
                 <sheet>
                     <group>
                         <group colspan="4">
-                            <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="means_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="agreed_activities"/>
                             <field name="detail_activities"/>
                             <field name="comments"/>
                         </group>
                     </group>
-                  </sheet>
+                </sheet>
+                <footer>
+                    <button string="Guardar" special="save" class="btn-primary"/>
+                    <button string="Descartar" class="btn-secondary" special="cancel"/>
+                </footer>
             </form>
         </field>
    </record>
@@ -277,26 +277,28 @@
                             <field name="means_form_edit" invisible="1"/>
                             <field name="skill_id"  readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="means_id" readonly="1" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                            <field name="agreed_activities"   readonly="1"/>
+                            <field name="agreed_activities" readonly="1"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Seguimiento del plan">
                             <field name="tracing_plan_ids" nolabel="1" attrs="{'readonly':[('means_form_edit', '=', True)]}">
                                 <tree nolabel="1" editable="bottom" delete="0" edit="0">
+                                    <field name="id" invisible="1"/>
                                     <field name="tracing_plan_date" readonly="1"/>
-                                    <field name="degree_progress_id"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="comments"/>
+                                    <field name="degree_progress_id"
+                                           attrs="{'readonly':[('id', '!=', False)]}"
+                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="comments" attrs="{'readonly':[('id', '!=', False)]}"/>
                                 </tree>
                             </field>
                         </page>
-
                     </notebook>
                 </sheet>
                  <footer>
-                    <button string="Guardar" name="action_close_dialog"
+                    <button string="Guardar" special="save"
                             attrs="{'invisible':[('means_form_edit', '=',True)]}"
-                            type="object" class="btn-primary"/>
+                             class="btn-primary"/>
                     <button string="Cancelar"
                             class="btn-secondary"
                             attrs="{'invisible':[('means_form_edit', '=',True)]}"
@@ -313,25 +315,43 @@
      <record id='onsc_desempeno_tracing_action' model='ir.actions.act_window'>
          <field name="name">Seguimiento del plan</field>
          <field name="res_model">onsc.desempeno.evaluation.competency</field>
-         <field
-            name="view_ids"
-            eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_tracing_development_means_form')}),]"/>
+         <field name="view_ids"
+                eval="[(5, 0, 0),(0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_tracing_development_means_form')}),]"/>
          <field name="view_mode">form</field>
          <field name="target">new</field>
      </record>
+
+    <record id='onsc_desempeno_evaluation_development_means_action' model='ir.actions.act_window'>
+        <field name="name">Medios de desarrollo</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.desempeno.evaluation.development.means</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            </p>
+        </field>
+    </record>
 
     <record id="onsc_desempeno_evaluation_development_competency_form" model="ir.ui.view">
         <field name="name">onsc.desempeno.evaluation.development.competency.form</field>
         <field name="model">onsc.desempeno.evaluation.development.competency</field>
         <field name="arch" type="xml">
-            <form string="Evaluación de Competencias">
-              <header/>
+            <form string="Evaluación de Competencias" create="0" copy="0" delete="0">
+                <header>
+                    <button
+                          string="Volver a las Competencias"
+                          type="object"
+                          name="button_custom_navigation_back"
+                          class="btn btn-primary breadcrumb-item o_back_button"
+                          icon="fa-toggle-left"
+                          data-hotkey="b"/>
+                </header>
                 <sheet>
                     <group>
                          <group colspan="4">
                              <field name="is_tracing" invisible="1"/>
-                             <field name="competency_form_edit" invisible="1"/>
+                             <field name="should_disable_form_edit" invisible="1"/>
                              <label for="skill_id"/>
                              <div>
                                 <field name="skill_id" readonly="1"
@@ -339,12 +359,12 @@
                                        class="float-left"
                                        options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                              </div>
-                             <field name="development_goal"  attrs="{'readonly':[('competency_form_edit', '=',True)]}" required="1"/>
+                             <field name="development_goal"  attrs="{'readonly':[('should_disable_form_edit', '=',True)]}" required="1"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Plan de acción">
-                            <field name="development_means_ids" attrs="{'invisible': [('is_tracing', '=', True)],'readonly':[('competency_form_edit', '=',True)]}"
+                            <field name="development_means_ids" attrs="{'invisible': [('is_tracing', '=', True)],'readonly':[('should_disable_form_edit', '=',True)]}"
                                    nolabel="1"  options="{'reload_on_button': True}"
                                    context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"  force_save="1">
                                  <tree nolabel="1" delete="0">
@@ -354,8 +374,8 @@
                                      <field name="detail_activities" optional="hide"/>
                                      <field name="comments" optional="hide"/>
                                  </tree>
-                              </field>
-                             <field name="tracing_means_ids" attrs="{'invisible': [('is_tracing', '=', False)],'readonly':[('competency_form_edit', '=',True)]}"
+                            </field>
+                            <field name="tracing_means_ids" attrs="{'invisible': [('is_tracing', '=', False)],'readonly':[('should_disable_form_edit', '=',True)]}"
                                    nolabel="1"  options="{'reload_on_button': True}"
                                    context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"  force_save="1">
                                  <tree nolabel="1" delete="0">
@@ -365,27 +385,22 @@
                                      <field name="detail_activities" optional="hide"/>
                                      <field name="comments" optional="hide"/>
                                      <button name="button_open_tracing"
+                                             string="Seguimiento"
                                              context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form'}"
                                              class="o_icon_button fa fa-list" title="Seguimiento" type="object"
                                              attrs="{'invisible': [('show_buttons', '=', False)]}"/>
                                  </tree>
                             </field>
+                            <button name="%(onsc_desempeno.onsc_desempeno_evaluation_development_means_action)d"
+                                    attrs="{'invisible': ['|', ('is_tracing', '=', False), ('should_disable_form_edit', '=',True)]}"
+                                    class="btn btn-primary"
+                                    context="{'default_competency_id': active_id, 'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"
+                                    string="Adicionar medio de desarrollo"
+                                    type="action"
+                                    icon="fa-plus"/>
                         </page>
                     </notebook>
                 </sheet>
-                <footer>
-                    <button string="Guardar" name="action_close_dialog"
-                            attrs="{'invisible':[('competency_form_edit', '=',True)]}"
-                            type="object" class="btn-primary"/>
-                    <button string="Cancelar"
-                            class="btn-secondary"
-                            attrs="{'invisible':[('competency_form_edit', '=',True)]}"
-                            special="cancel"/>
-                    <button string="Cerrar"
-                            class="btn-secondary"
-                            attrs="{'invisible':[('competency_form_edit', '=',False)]}"
-                            special="cancel"/>
-                </footer>
            </form>
         </field>
     </record>
@@ -394,21 +409,17 @@
         <field name="name">Competencias</field>
         <field name="res_model">onsc.desempeno.evaluation.development.competency</field>
         <field name="view_mode">form</field>
-           <field
-            name="view_ids"
-            eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_evaluation_development_competency_form')}),]"/>
+           <field name="view_ids"
+                  eval="[(5, 0, 0), (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_evaluation_development_competency_form')}),]"/>
         <field name="target">new</field>
      </record>
 
-    <record id='onsc_desempeno_development_means_action' model='ir.actions.act_window'>
+    <record id='onsc_desempeno_evalution_development_means_action' model='ir.actions.act_window'>
         <field name="name">Seguimiento</field>
         <field name="res_model">onsc.desempeno.evaluation.development.means</field>
         <field name="view_mode">form</field>
-           <field
-            name="view_ids"
-            eval="[(5, 0, 0),
-            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_tracing_development_means_form')}),]"/>
+           <field name="view_ids"
+                  eval="[(5, 0, 0), (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_tracing_development_means_form')}),]"/>
         <field name="target">new</field>
      </record>
 </odoo>

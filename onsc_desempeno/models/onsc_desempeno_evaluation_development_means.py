@@ -20,6 +20,7 @@ STATE = [
 class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     _name = 'onsc.desempeno.evaluation.development.competency'
     _description = u'Competencias'
+    _rec_name = 'skill_id'
     _order = "skill_id"
 
     evaluation_id = fields.Many2one(
@@ -39,12 +40,12 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     tracing_means_ids = fields.One2many('onsc.desempeno.evaluation.development.means', 'competency_id',
                                         string='Medios de desarrollo')
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
-    competency_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_competency_form_edit')
+    should_disable_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_should_disable_form_edit')
     state_deal = fields.Selection(STATE, string='Estado', related='evaluation_id.state_gap_deal', readonly=True)
     is_tracing = fields.Boolean("Es seguimiento?", compute='_compute_is_tracing')
 
     @api.depends('state_deal', 'state')
-    def _compute_competency_form_edit(self):
+    def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_id.evaluation_type == 'development_plan':
@@ -56,7 +57,7 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
                 _cond2 = record.tracing_id.evaluator_id.id != user_employee_id
             condition = _cond1 or _cond2
 
-            record.competency_form_edit = condition
+            record.should_disable_form_edit = condition
 
     @api.depends('state_deal', 'state')
     def _compute_is_tracing(self):
@@ -65,11 +66,24 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
 
     def button_open_current_competency(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_competency_action').read()[0]
-        action.update({'res_id': self.id})
+        action.update({'res_id': self.id, 'target': 'current'})
         return action
 
     def action_close_dialog(self):
         return {'type': 'ir.actions.act_window_close'}
+
+
+    def button_custom_navigation_back(self):
+        action = {
+            'type': 'ir.actions.act_window',
+            'view_type': 'form',
+            'view_mode': 'form',
+            'view_id': self.env.ref('onsc_desempeno.onsc_desempeno_develop_plan_form').id,
+            'res_model': 'onsc.desempeno.evaluation',
+            'target': 'main',
+            'res_id': self.tracing_id.id or self.evaluation_id.id,
+        }
+        return action
 
 
 class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
@@ -134,7 +148,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
                 record.is_canceled = False
 
     def button_open_tracing(self):
-        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_development_means_action').read()[0]
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evalution_development_means_action').read()[0]
         action.update({'res_id': self.id})
         return action
 

@@ -39,6 +39,7 @@ class ONSCDesempenoScore(models.Model):
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
+    year = fields.Integer(u'Año', index=True)
     evaluation_stage_id = fields.Many2one(
         'onsc.desempeno.evaluation.stage',
         string='Evaluación 360')
@@ -60,17 +61,19 @@ class ONSCDesempenoScore(models.Model):
         index=True)
     employee_id = fields.Many2one(
         "hr.employee",
-        string="Evaluado",
+        string="Evaluador",
         store=True,
         index=True)
 
     evaluations_360_total_qty = fields.Integer('Evaluaciones 360')
     evaluations_360_finished_qty = fields.Integer('Evaluaciones 360 finalizadas')
+
     evaluations_360_score = fields.Float('Puntaje 360 base')
     evaluations_360_finished_score = fields.Float('Puntaje 360')
+
     evaluations_gap_deal_finished_score = fields.Float('Puntaje Acuerdo de brecha')
     evaluations_develop_plan_finished_score = fields.Float('Puntaje Plan de desarrollo')
     evaluations_tracing_plan_finished_score = fields.Float('Puntaje Seguimiento del Plan de desarrollo')
     evaluations_tracing_plan_activity_score = fields.Float('Puntaje de Actividad de Seguimiento del Plan de desarrollo')
     score = fields.Float('Puntaje final')
-    is_employee_notified = fields.Boolean(string='¿Fué notificado?')
+    is_employee_notified = fields.Boolean(string='¿Fue notificado?')

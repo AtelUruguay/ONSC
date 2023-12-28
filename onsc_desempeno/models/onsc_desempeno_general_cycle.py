@@ -201,7 +201,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
             'collaborator',
             'environment_definition',
             'gap_deal',
-            'develop_plan',
+            'development_plan',
             'tracing_plan',
         ]
         EVALUATION_360_TYPES = [
@@ -215,7 +215,8 @@ class ONSCDesempenoGeneralCycle(models.Model):
         evaluations = Evaluation.search([
             ('evaluation_stage_id', 'in', stages_360.ids),
             ('evaluation_type', 'in', EVALUATION_TYPES),
-            ('state', '!=', 'canceled')
+            ('state', '!=', 'canceled'),
+            ('state_gap_deal', '!=', 'canceled')
         ])
         scores_dict = {}
         for evaluation in evaluations:
@@ -233,11 +234,11 @@ class ONSCDesempenoGeneralCycle(models.Model):
                     scores_dict[key]['evaluations_360_finished_qty'] += 1
             elif evaluation.evaluation_type == 'gap_deal':
                 scores_dict[key]['evaluations_gap_deal_qty'] += 1
-                if evaluation.state == 'finished':
+                if evaluation.state_gap_deal == 'finished':
                     scores_dict[key]['evaluations_gap_deal_finished_qty'] += 1
-            elif evaluation.evaluation_type == 'develop_plan':
+            elif evaluation.evaluation_type == 'development_plan':
                 scores_dict[key]['evaluations_develop_plan_qty'] += 1
-                if evaluation.state == 'finished':
+                if evaluation.state_gap_deal == 'finished':
                     scores_dict[key]['evaluations_develop_plan_finished_qty'] += 1
             else:
                 scores_dict[key]['evaluations_tracing_plan_qty'] += 1
@@ -263,6 +264,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
             'operating_unit_id': evaluation.operating_unit_id.id,
             'inciso_id': evaluation.inciso_id.id,
             'evaluation_stage_id': evaluation.evaluation_stage_id.id,
+            'year': evaluation.evaluation_stage_id.year,
             'evaluation_list_id': evaluation.evaluation_list_id.id,
             # 360
             'evaluations_360_total_qty': 0,
@@ -294,20 +296,25 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 eval_360_score = float(0)
             eval_360_finished_score = value['evaluations_360_finished_qty'] * eval_360_score
 
-            if value.get('evaluations_gap_deal_finished_qty') > 0:
-                eval_gap_deal_finished_score = float(config_gap_deal_score)
+            if value.get('evaluations_gap_deal_finished_qty') > 0 and value.get('evaluations_gap_deal_qty') > 0:
+                eval_gap_deal_finished_score = float(config_gap_deal_score) / value['evaluations_gap_deal_qty']
             else:
                 eval_gap_deal_finished_score = float(0)
+            eval_gap_deal_finished_score = value['evaluations_gap_deal_finished_qty'] * eval_gap_deal_finished_score
 
-            if value.get('evaluations_develop_plan_finished_qty') > 0:
-                eval_develop_plan_finished_score = float(config_develop_plan_score)
+            if value.get('evaluations_develop_plan_finished_qty') > 0 and value.get('evaluations_develop_plan_qty') > 0:
+                eval_develop_plan_finished_score = float(config_develop_plan_score) / value[
+                    'evaluations_develop_plan_qty']
             else:
                 eval_develop_plan_finished_score = float(0)
+            eval_develop_plan_finished_score = value['evaluations_develop_plan_finished_qty'] * eval_develop_plan_finished_score
 
-            if value.get('evaluations_tracing_plan_finished_qty') > 0:
-                eval_tracing_plan_finished_score = float(config_tracing_plan_score)
+            if value.get('evaluations_tracing_plan_finished_qty') > 0 and value.get('evaluations_tracing_plan_qty') > 0:
+                eval_tracing_plan_finished_score = float(config_tracing_plan_score) / value[
+                    'evaluations_tracing_plan_qty']
             else:
                 eval_tracing_plan_finished_score = float(0)
+            eval_tracing_plan_finished_score = value['evaluations_tracing_plan_finished_qty'] * eval_tracing_plan_finished_score
 
             tracing_plan_activity_qty = value['evaluations_tracing_plan_activity_qty']
             if tracing_plan_activity_qty > 0:
@@ -321,7 +328,9 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
             bulked_vals.append({
                 'evaluation_stage_id': value['evaluation_stage_id'],
+                'evaluation_stage_id': value['evaluation_stage_id'],
                 'evaluation_list_id': value['evaluation_list_id'],
+                'year': value['year'],
                 'department_id': value['department_id'],
                 'operating_unit_id': value['operating_unit_id'],
                 'inciso_id': value['inciso_id'],
