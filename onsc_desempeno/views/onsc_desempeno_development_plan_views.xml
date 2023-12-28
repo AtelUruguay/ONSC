@@ -401,7 +401,7 @@
         <field name="target">new</field>
      </record>
 
-    <record id='onsc_desempeno_development_means_action' model='ir.actions.act_window'>
+    <record id='onsc_desempeno_eval_development_means_action' model='ir.actions.act_window'>
         <field name="name">Seguimiento</field>
         <field name="res_model">onsc.desempeno.evaluation.development.means</field>
         <field name="view_mode">form</field>

@@ -134,7 +134,7 @@ class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
                 record.is_canceled = False
 
     def button_open_tracing(self):
-        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_development_means_action').read()[0]
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_eval_development_means_action').read()[0]
         action.update({'res_id': self.id})
         return action
 

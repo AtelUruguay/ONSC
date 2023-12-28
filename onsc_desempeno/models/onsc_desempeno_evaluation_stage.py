@@ -195,12 +195,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
             if int(record.start_date.strftime('%Y')) != record.general_cycle_id.year:
                 raise ValidationError(
                     _("La fecha inicio debe estar dentro del año %s") % record.general_cycle_id.year)
-            if int(record.end_date.strftime('%Y')) != record.general_cycle_id.year:
-                raise ValidationError(
-                    _("La fecha fin debe estar dentro del año %s") % record.general_cycle_id.year)
-            if int(record.end_date_environment.strftime('%Y')) != record.general_cycle_id.year:
-                raise ValidationError(
-                    _("La fecha fin def. entorno debe estar dentro del año %s") % record.general_cycle_id.year)
 
     @api.onchange('general_cycle_id')
     def onchange_general_cycle_id(self):
@@ -296,23 +290,29 @@ class ONSCDesempenoEvaluationStage(models.Model):
             for record in Evaluation.search(
                     [('evaluation_stage_id', '=', self.id),
                      ('evaluation_type', 'in', ['leader_evaluation'])]):
-                evaluation = record.copy_data()
-                evaluation[0]["evaluation_type"] = "gap_deal"
-                evaluation[0]["is_gap_deal_not_generated"] = False
-                evaluation[0]["evaluator_uo_id"] = record.evaluator_uo_id.id
-                evaluation[0]["general_comments"] = False
+                if Evaluation.search_count(
+                        [('evaluation_stage_id', '=', self.id), ('evaluated_id', '=', record.evaluated_id.id),
+                         ('state', '!=', 'canceled'), ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation',
+                                                                                 'environment_evaluation',
+                                                                                 'collaborator'])]) > 0:
 
-                gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
+                    evaluation = record.copy_data()
+                    evaluation[0]["evaluation_type"] = "gap_deal"
+                    evaluation[0]["is_gap_deal_not_generated"] = False
+                    evaluation[0]["evaluator_uo_id"] = record.evaluator_uo_id.id
+                    evaluation[0]["general_comments"] = False
 
-                for competency in record.evaluation_competency_ids:
-                    Competency.create({'gap_deal_id': gap_deal.id,
-                                       'skill_id': competency.skill_id.id,
-                                       'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
-                                           lambda r: r.level_id.id == record.level_id.id).ids)]
-                                       })
+                    gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
-                partners_to_notify |= record.evaluated_id.partner_id
-                partners_to_notify |= record.evaluator_id.partner_id
+                    for competency in record.evaluation_competency_ids:
+                        Competency.create({'gap_deal_id': gap_deal.id,
+                                           'skill_id': competency.skill_id.id,
+                                           'skill_line_ids': [(6, 0, competency.skill_id.skill_line_ids.filtered(
+                                               lambda r: r.level_id.id == record.level_id.id).ids)]
+                                           })
+
+                    partners_to_notify |= record.evaluated_id.partner_id
+                    partners_to_notify |= record.evaluator_id.partner_id
             self.with_context(partners_to_notify=partners_to_notify)._send_start_stage_2_notification()
         else:
             Evaluation.with_context(ignore_security_rules=True).search([
