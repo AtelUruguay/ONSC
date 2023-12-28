@@ -507,9 +507,9 @@ class ONSCDesempenoEvaluation(models.Model):
         is_gh_user_ue = self._is_group_usuario_gh_ue()
         is_gh_user_inciso = self._is_group_usuario_gh_inciso()
         for record in self:
-            notified = Score.search_count([('evaluation_stage_id', '=', record.evaluation_stage_id.id),
+            notified_qty = Score.search_count([('evaluation_stage_id', '=', record.evaluation_stage_id.id),
                                      ('employee_id', '=', record.evaluator_id.id),('is_employee_notified', '=', True)])
-            record.is_cancel_available = (is_gh_user_ue or is_gh_user_inciso) and notified == 0
+            record.is_cancel_available = (is_gh_user_ue or is_gh_user_inciso) and notified_qty == 0
     @api.depends('state', 'environment_in_hierarchy')
     def _compute_environment_ids_domain(self):
         user_employee = self.env.user.employee_id
