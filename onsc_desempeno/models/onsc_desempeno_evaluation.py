@@ -434,8 +434,9 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
             valid_state = (record.state_gap_deal in ['in_process'] or record.state in [
-                'in_process']) and record.gap_deal_state in ['no_deal'] and not record.is_exonerated_evaluation
-            is_valid = record.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan'] and valid_state
+                'in_process']) and not record.is_exonerated_evaluation
+            valid_state_no_deal = (record.evaluation_type in ['gap_deal', 'development_plan'] and record.gap_deal_state in ['no_deal']) or record.evaluation_type == 'tracing_plan'
+            is_valid = record.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan'] and valid_state and valid_state_no_deal
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
             user_security = not is_responsable and (is_gh_user_ue or is_gh_user_inciso)
             record.is_agree_button_gh_available = is_am_evaluator and is_valid and user_security
@@ -625,6 +626,7 @@ class ONSCDesempenoEvaluation(models.Model):
             self.suspend_security()._create_tracing_plan()
             vals.update({'state_gap_deal': 'agreed_plan'})
         else:
+            self.validate_tracing_plan()
             vals.update({'state': 'finished'})
         self.write(vals)
 
@@ -672,6 +674,12 @@ class ONSCDesempenoEvaluation(models.Model):
             'state_gap_deal': 'canceled',
         }
         self.write(vals)
+
+    def validate_tracing_plan(self):
+        Tracing = self.env['onsc.desempeno.evaluation.tracing.plan'].sudo()
+        if Tracing.search_count([('develop_means_id', 'in', self.tracing_plan_ids.development_means_ids.ids)]) == 0:
+            raise ValidationError(
+                _('Debe existir al menos un seguimiento ingresado para poder finalizar'))
 
     def _generate_environment_evaluations(self):
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
