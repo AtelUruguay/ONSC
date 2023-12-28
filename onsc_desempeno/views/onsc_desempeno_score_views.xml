@@ -5,9 +5,10 @@
         <field name="model">onsc.desempeno.score</field>
         <field name="arch" type="xml">
             <search string="Puntajes">
+                <field name="year"/>
                 <field name="evaluation_list_id"/>
                 <field name="department_id"/>
-                <field name="employee_id"/>
+                <field name="employee_id" string="Evaluador"/>
                 <group string="Agrupar por">
                         <filter name="group_evaluation_list_id" string="Lista de participantes" context="{'group_by': 'evaluation_list_id'}"/>
                         <filter name="group_department_id" string="UO" context="{'group_by': 'department_id'}"/>
@@ -20,20 +21,20 @@
         <field name="model">onsc.desempeno.score</field>
         <field name="arch" type="xml">
             <tree string="Puntajes">
+                <field name="year"/>
                 <field name="inciso_id"/>
                 <field name="operating_unit_id"/>
                 <field name="department_id"/>
-                <field name="employee_id"/>
+                <field name="employee_id" string="Evaluador"/>
                 <field name="evaluations_360_total_qty" optional="hide"/>
                 <field name="evaluations_360_finished_qty" optional="hide"/>
-                <field name="evaluations_360_score" optional="hide"/>
                 <field name="evaluations_360_finished_score" optional="hide"/>
                 <field name="evaluations_gap_deal_finished_score" optional="hide"/>
                 <field name="evaluations_develop_plan_finished_score" optional="hide"/>
                 <field name="evaluations_tracing_plan_finished_score" optional="hide"/>
+                <field name="evaluations_tracing_plan_activity_score" optional="hide"/>
                 <field name="score"/>
                 <field name="is_employee_notified"/>
-
             </tree>
         </field>
     </record>
