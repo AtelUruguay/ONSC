@@ -366,8 +366,9 @@
                         <page string="Plan de acción">
                             <field name="development_means_ids" attrs="{'invisible': [('is_tracing', '=', True)],'readonly':[('should_disable_form_edit', '=',True)]}"
                                    nolabel="1"  options="{'reload_on_button': True}"
-                                   context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"  force_save="1">
-                                 <tree nolabel="1" delete="0">
+                                   context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form', 'no_save': True}"
+                                   force_save="1">
+                                 <tree nolabel="1" delete="0" create="0">
                                      <field name="show_buttons" invisible="1"/>
                                      <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                      <field name="agreed_activities" optional="show"/>
@@ -378,7 +379,7 @@
                             <field name="tracing_means_ids" attrs="{'invisible': [('is_tracing', '=', False)],'readonly':[('should_disable_form_edit', '=',True)]}"
                                    nolabel="1"  options="{'reload_on_button': True}"
                                    context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form'}"  force_save="1">
-                                 <tree nolabel="1" delete="0">
+                                 <tree nolabel="1" delete="0" create="0">
                                      <field name="show_buttons" invisible="1"/>
                                      <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                      <field name="agreed_activities" optional="show"/>
@@ -418,7 +419,8 @@
         <field name="name">Seguimiento</field>
         <field name="res_model">onsc.desempeno.evaluation.development.means</field>
         <field name="view_mode">form</field>
-           <field name="view_ids"
+        <field name="context">{'no_save': True}</field>
+        <field name="view_ids"
                   eval="[(5, 0, 0), (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_tracing_development_means_form')}),]"/>
         <field name="target">new</field>
      </record>
