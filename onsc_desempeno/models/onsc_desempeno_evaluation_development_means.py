@@ -88,7 +88,7 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
 
 class ONSCDesempenoEvaluatioDevelopmentMeans(models.Model):
     _name = 'onsc.desempeno.evaluation.development.means'
-    _description = u'Medios de desarrollo'
+    _description = u'Evaluación: Medios de desarrollo'
 
     def _is_group_responsable_uo(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_responsable_uo')

@@ -317,10 +317,9 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 eval_tracing_plan_finished_score = float(0)
             eval_tracing_plan_finished_score = value['evaluations_tracing_plan_finished_qty'] * eval_tracing_plan_finished_score
 
-            tracing_plan_activity_qty = value['evaluations_tracing_plan_activity_qty']
-            if tracing_plan_activity_qty > 0:
-                percap_tracing_plan_activity_score = config_tracing_plan_activity_score / value[
-                    'evaluations_tracing_plan_activity_qty']
+            percap_tracing_plan_activity_qty = len(value['evaluations_tracing_plan_percent_list'])
+            if percap_tracing_plan_activity_qty > 0:
+                percap_tracing_plan_activity_score = config_tracing_plan_activity_score / percap_tracing_plan_activity_qty
             else:
                 percap_tracing_plan_activity_score = float(0)
             tracing_plan_activity_score = float(0)
