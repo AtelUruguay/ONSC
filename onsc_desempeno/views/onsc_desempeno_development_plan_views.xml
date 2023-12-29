@@ -366,15 +366,28 @@
                         <page string="Plan de acción">
                             <field name="development_means_ids" attrs="{'invisible': [('is_tracing', '=', True)],'readonly':[('should_disable_form_edit', '=',True)]}"
                                    nolabel="1"  options="{'reload_on_button': True}"
-                                   context="{'form_view_ref' : 'onsc_desempeno.onsc_desempeno_evaluation_development_means_form', 'no_save': True}"
+                                   context="{
+                                   'no_save': True,
+                                   'default_competency_id': active_id
+                                   }"
                                    force_save="1">
-                                 <tree nolabel="1" delete="0" create="0">
-                                     <field name="show_buttons" invisible="1"/>
-                                     <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                     <field name="agreed_activities" optional="show"/>
-                                     <field name="detail_activities" optional="hide"/>
-                                     <field name="comments" optional="hide"/>
-                                 </tree>
+                                <tree nolabel="1" delete="0">
+                                    <field name="show_buttons" invisible="1"/>
+                                    <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                    <field name="agreed_activities" optional="show"/>
+                                    <field name="detail_activities" optional="hide"/>
+                                    <field name="comments" optional="hide"/>
+                                </tree>
+                                <form string="Medios de desarrollo">
+                                    <group>
+                                        <group colspan="4">
+                                            <field name="means_id"  options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" />
+                                            <field name="agreed_activities"  />
+                                            <field name="detail_activities" />
+                                            <field name="comments" />
+                                        </group>
+                                    </group>
+                                </form>
                             </field>
                             <field name="tracing_means_ids" attrs="{'invisible': [('is_tracing', '=', False)],'readonly':[('should_disable_form_edit', '=',True)]}"
                                    nolabel="1"  options="{'reload_on_button': True}"
