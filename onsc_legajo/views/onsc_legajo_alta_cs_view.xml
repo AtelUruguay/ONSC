@@ -149,9 +149,6 @@
                                    domain="security_job_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"/>
-                            <field name="occupation_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
-                                   attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"/>
                             <field name="regime_commission_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
