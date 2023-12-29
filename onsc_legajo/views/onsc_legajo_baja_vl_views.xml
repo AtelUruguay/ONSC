@@ -109,17 +109,6 @@
                                 <field name="norm_number" colspan="2"/>
                                 <field name="norm_year" colspan="2"/>
                                 <field name="norm_article" colspan="1"/>
-                                <div class="alert alert-info" colspan="2"
-                                     role="alert"
-                                     style="margin-bottom:0px;">
-                                    <p>
-                                        <i class="fa fa-info-circle" role="alert"/>
-                                        En caso de no encontrar la norma de referencia para el movimiento,
-                                        comunicarse con el
-                                        área de puesto de trabajos de CGN al siguiente correo
-                                        <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
-                                    </p>
-                                </div>
                             </group>
                             <group name="motivo_right">
                                 <field name="resolution_description" colspan="4"/>
