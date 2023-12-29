@@ -221,7 +221,7 @@
         <field name="name">onsc.desempeno.evaluation.development.means.tree</field>
         <field name="model">onsc.desempeno.evaluation.development.means</field>
         <field name="arch" type="xml">
-            <tree  string="Medios de desarrollo">
+            <tree string="Medios de desarrollo">
                 <field name="means_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                 <field name="agreed_activities" readonly="1" optional="show"/>
                 <field name="detail_activities"  readonly="1" optional="hide"/>
