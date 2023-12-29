@@ -699,8 +699,6 @@ class ONSCLegajoAltaCS(models.Model):
                 message.append(record._fields['department_id'].string)
             if record.type_cs != 'ac2out' and not record.security_job_id:
                 message.append(record._fields['security_job_id'].string)
-            if record.type_cs != 'ac2out' and not record.occupation_id:
-                message.append(record._fields['occupation_id'].string)
             if not record.cv_sex:
                 message.append(_("Sexo"))
             if record.regime_commission_id and not record.regime_commission_id.cgn_code:
@@ -795,7 +793,6 @@ class ONSCLegajoAltaCS(models.Model):
             'program': self.program_project_destination_id.programa,
             'project': self.program_project_destination_id.proyecto,
             'regime_id': origin_contract_id.regime_id.id,
-            'occupation_id': self.occupation_id.id,
             'descriptor1_id': origin_contract_id.descriptor1_id.id,
             'descriptor2_id': origin_contract_id.descriptor2_id.id,
             'descriptor3_id': origin_contract_id.descriptor3_id.id,
