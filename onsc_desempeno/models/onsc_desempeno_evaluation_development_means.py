@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -72,8 +73,11 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     def action_close_dialog(self):
         return {'type': 'ir.actions.act_window_close'}
 
-
     def button_custom_navigation_back(self):
+        if not self.development_goal and ((len(self.development_means_ids) > 0 and not self.is_tracing) or (
+                (len(self.tracing_means_ids) > 0 and self.is_tracing))):
+            raise ValidationError(_(" Debe completar el Objetivo de desarrollo"))
+
         action = {
             'type': 'ir.actions.act_window',
             'view_type': 'form',
@@ -164,7 +168,7 @@ class ONSCDesempenoEvaluatioTracingPlan(models.Model):
     tracing_plan_date = fields.Date('Fecha de seguimiento de la actividad', default=fields.Date.context_today,
                                     readonly=True)
     comments = fields.Text('Observaciones')
-    degree_progress_id = fields.Many2one('onsc.desempeno.degree.progress', string='Grado de avance', required=True)
+    degree_progress_id = fields.Many2one('onsc.desempeno.degree.progress', string='Es el cancelado?', required=True)
     created = fields.Boolean("Creado", default=False)
 
     @api.model

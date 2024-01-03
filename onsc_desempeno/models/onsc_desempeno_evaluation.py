@@ -64,6 +64,66 @@ class ONSCDesempenoEvaluation(models.Model):
     def _is_group_usuario_gh_ue(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_usuario_gh_ue')
 
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(ONSCDesempenoEvaluation, self).fields_get(allfields, attributes)
+        hide = ['__last_update', 'activity_date_deadline', 'activity_exception_decoration',
+                'activity_exception_icon', 'activity_ids', 'activity_state', 'activity_summary',
+                'activity_type_icon', 'activity_type_id', 'activity_user_id ', 'create_date', 'create_uid',
+                'display_name', 'environment_ids_domain', 'environment_evaluation_text',
+                'has_message', 'is_agree_button_gh_available', 'is_agree_evaluation_evaluated_available',
+                'is_agree_evaluation_leader_available', 'is_cancel_available', 'is_development_plan_not_generated',
+                'is_edit_general_comments', 'is_environment_evaluation_form_active', 'is_evaluation_change_available',
+                'is_exonerated_evaluation', 'is_gap_deal_not_generated', 'message_attachment_count',
+                'message_has_error',
+                'message_has_error_counter', 'message_has_sms_error', 'message_ids', 'message_is_follower',
+                'message_main_attachment_id', 'message_needaction', 'message_needaction_counter', 'message_partner_ids',
+                'message_unread', 'message_unread_counter', 'my_activity_date_deadline',
+                'should_disable_form_edit', 'show_button_cancel', 'show_button_go_back',
+                'state_before_cancel', 'website_message_ids', 'write_date', 'write_uid', 'general_cycle_id',
+                'list_manager_id', 'use_original_evaluator', 'environment_in_hierarchy', 'evaluation_competency_ids',
+                'gap_deal_competency_ids', 'tracing_plan_ids', 'development_plan_ids']
+
+        hide_env = ['environment_definition_end_date', 'environment_in_hierarchy', 'evaluator_id']
+
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+
+        if self._context.get('gap_deal') or self._context.get('develop_plan', False):
+            res['state']['selectable'] = False
+            res['state']['searchable'] = False
+            res['state']['sortable'] = False
+
+        else:
+            res['state_gap_deal']['selectable'] = False
+            res['state_gap_deal']['searchable'] = False
+            res['state_gap_deal']['sortable'] = False
+            res['gap_deal_state']['selectable'] = False
+            res['gap_deal_state']['searchable'] = False
+            res['gap_deal_state']['sortable'] = False
+
+        if self._context.get('gap_deal'):
+            res['evaluation_end_date']['selectable'] = False
+            res['evaluation_end_date']['searchable'] = False
+            res['evaluation_end_date']['sortable'] = False
+
+        else:
+            res['evaluation_end_date_max']['selectable'] = False
+            res['evaluation_end_date_max']['searchable'] = False
+            res['evaluation_end_date_max']['sortable'] = False
+
+        if self._context.get('environment_definition'):
+            for field in hide_env:
+                if field in res:
+                    res[field]['selectable'] = False
+                    res[field]['searchable'] = False
+                    res[field]['sortable'] = False
+
+        return res
+
     def _get_domain(self, args):
         if self._context.get('self_evaluation'):
             args = self._get_domain_evaluation(args, 'self_evaluation')
@@ -391,13 +451,11 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             if record.evaluation_type in ('gap_deal', 'development_plan'):
-                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or (
-                            record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
+                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or (record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             elif record.evaluation_type == 'tracing_plan':
-                condition = record.state != 'in_process' or record.evaluator_id.id != user_employee_id or (
-                            record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
+                condition = record.state != 'in_process' or record.evaluator_id.id != user_employee_id or (record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
             else:
                 _cond1 = record.evaluator_id.id != user_employee_id or record.locked
                 condition = record.state not in ['in_process'] or _cond1
@@ -427,8 +485,10 @@ class ONSCDesempenoEvaluation(models.Model):
             is_am_evaluator = record.evaluator_id.id == user_employee_id
             valid_state = (record.state_gap_deal in ['in_process'] or record.state in [
                 'in_process']) and not record.is_exonerated_evaluation
-            valid_state_no_deal = (record.evaluation_type in ['gap_deal', 'development_plan'] and record.gap_deal_state in ['no_deal']) or record.evaluation_type == 'tracing_plan'
-            is_valid = record.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan'] and valid_state and valid_state_no_deal
+            valid_state_no_deal = (record.evaluation_type in ['gap_deal',
+                                                              'development_plan'] and record.gap_deal_state in ['no_deal']) or record.evaluation_type == 'tracing_plan'
+            is_valid = record.evaluation_type in ['gap_deal', 'development_plan',
+                                                  'tracing_plan'] and valid_state and valid_state_no_deal
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
             user_security = not is_responsable and (is_gh_user_ue or is_gh_user_inciso)
             record.is_agree_button_gh_available = is_am_evaluator and is_valid and user_security
