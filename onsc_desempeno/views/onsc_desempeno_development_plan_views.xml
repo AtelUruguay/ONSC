@@ -398,7 +398,7 @@
                                      <field name="agreed_activities" optional="show"/>
                                      <field name="detail_activities" optional="hide"/>
                                      <field name="comments" optional="hide"/>
-                                     <field name="last_tracing_plan_id"/>
+                                     <field name="last_tracing_plan_id" optional="hide"/>
                                      <button name="button_open_tracing"
                                              string="Seguimiento"
                                              context="{'form_view_ref': 'onsc_legajo.onsc_legajo_hr_contract_view_form'}"
