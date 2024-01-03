@@ -17,7 +17,7 @@ class ONSCDesempenoDegreeProgress(models.Model):
     create_date = fields.Date(string=u'Fecha de creación', tracking=True, readonly=True)
     porcent = fields.Float(string="Grado de avance", tracking=True, required=True)
     active = fields.Boolean(string="Activo", tracking=True, default=True)
-    is_cancel_flow = fields.Boolean(string='Es el Cancelar (Mejorar label)')
+    is_cancel_flow = fields.Boolean(string='Es el cancelado?')
 
     _sql_constraints = [
         ('description_uniq', 'unique(description)', u'El nombre de grados de avance debe ser único'),

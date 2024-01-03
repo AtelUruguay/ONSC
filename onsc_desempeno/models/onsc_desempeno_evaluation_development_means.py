@@ -53,7 +53,7 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
                 _cond1 = record.evaluation_id.state_gap_deal != 'in_process' or record.evaluation_id.gap_deal_state != 'no_deal'
                 _cond2 = record.evaluation_id.evaluator_id.id != user_employee_id and record.evaluation_id.evaluated_id.id != user_employee_id
             else:
-                _cond1 = record.tracing_id.state != 'in_process' or record.tracing_id.gap_deal_state != 'no_deal'
+                _cond1 = record.tracing_id.state != 'in_process'
 
                 _cond2 = record.tracing_id.evaluator_id.id != user_employee_id
             condition = _cond1 or _cond2
@@ -65,6 +65,12 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
         for record in self:
             record.is_tracing = record.evaluation_id.evaluation_type != 'development_plan'
 
+    @api.constrains('development_goal', 'development_means_ids', 'tracing_means_ids')
+    def _check_development_goal(self):
+        if not self.development_goal and ((len(self.development_means_ids) > 0 and not self.is_tracing) or (
+                (len(self.tracing_means_ids) > 0 and self.is_tracing))):
+            raise ValidationError(_(" Debe completar el Objetivo de desarrollo"))
+
     def button_open_current_competency(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_competency_action').read()[0]
         action.update({'res_id': self.id, 'target': 'current'})
@@ -74,10 +80,6 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
         return {'type': 'ir.actions.act_window_close'}
 
     def button_custom_navigation_back(self):
-        if not self.development_goal and ((len(self.development_means_ids) > 0 and not self.is_tracing) or (
-                (len(self.tracing_means_ids) > 0 and self.is_tracing))):
-            raise ValidationError(_(" Debe completar el Objetivo de desarrollo"))
-
         action = {
             'type': 'ir.actions.act_window',
             'view_type': 'form',
@@ -168,7 +170,7 @@ class ONSCDesempenoEvaluatioTracingPlan(models.Model):
     tracing_plan_date = fields.Date('Fecha de seguimiento de la actividad', default=fields.Date.context_today,
                                     readonly=True)
     comments = fields.Text('Observaciones')
-    degree_progress_id = fields.Many2one('onsc.desempeno.degree.progress', string='Es el cancelado?', required=True)
+    degree_progress_id = fields.Many2one('onsc.desempeno.degree.progress', string='Grado de avance', required=True)
     created = fields.Boolean("Creado", default=False)
 
     @api.model
