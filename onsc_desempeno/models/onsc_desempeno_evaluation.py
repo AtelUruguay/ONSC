@@ -115,7 +115,6 @@ class ONSCDesempenoEvaluation(models.Model):
             res['evaluation_end_date_max']['searchable'] = False
             res['evaluation_end_date_max']['sortable'] = False
 
-
         if self._context.get('environment_definition'):
             for field in hide_env:
                 if field in res:
