@@ -359,7 +359,7 @@
                                        class="float-left"
                                        options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                              </div>
-                             <field name="development_goal"  attrs="{'readonly':[('should_disable_form_edit', '=',True)]}" required="1"/>
+                             <field name="development_goal"  attrs="{'readonly':[('should_disable_form_edit', '=',True)]}"/>
                         </group>
                     </group>
                     <notebook>
