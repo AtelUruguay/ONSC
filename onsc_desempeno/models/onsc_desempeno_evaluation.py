@@ -74,7 +74,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 'has_message', 'is_agree_button_gh_available', 'is_agree_evaluation_evaluated_available',
                 'is_agree_evaluation_leader_available', 'is_cancel_available', 'is_development_plan_not_generated',
                 'is_edit_general_comments', 'is_environment_evaluation_form_active', 'is_evaluation_change_available',
-                'is_exonerated_evaluation', 'is_gap_deal_not_generated', 'message_attachment_count',
+                'is_gap_deal_not_generated', 'message_attachment_count',
                 'message_has_error',
                 'message_has_error_counter', 'message_has_sms_error', 'message_ids', 'message_is_follower',
                 'message_main_attachment_id', 'message_needaction', 'message_needaction_counter', 'message_partner_ids',
@@ -114,6 +114,7 @@ class ONSCDesempenoEvaluation(models.Model):
             res['evaluation_end_date_max']['selectable'] = False
             res['evaluation_end_date_max']['searchable'] = False
             res['evaluation_end_date_max']['sortable'] = False
+
 
         if self._context.get('environment_definition'):
             for field in hide_env:
