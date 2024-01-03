@@ -329,7 +329,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
 
             bulked_vals.append({
                 'evaluation_stage_id': value['evaluation_stage_id'],
-                'evaluation_stage_id': value['evaluation_stage_id'],
                 'evaluation_list_id': value['evaluation_list_id'],
                 'year': value['year'],
                 'department_id': value['department_id'],
