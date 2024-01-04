@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
+from odoo import fields, models, api
+
 
 _logger = logging.getLogger(__name__)
 
@@ -44,6 +44,7 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
     should_disable_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_should_disable_form_edit')
     state_deal = fields.Selection(STATE, string='Estado', related='evaluation_id.state_gap_deal', readonly=True)
     is_tracing = fields.Boolean("Es seguimiento?", compute='_compute_is_tracing')
+    is_required = fields.Boolean("Es requerido?", compute='_compute_is_required')
 
     @api.depends('state_deal', 'state')
     def _compute_should_disable_form_edit(self):
@@ -60,16 +61,15 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
 
             record.should_disable_form_edit = condition
 
+    @api.depends('development_means_ids', 'tracing_means_ids')
+    def _compute_is_required(self):
+        for record in self:
+            record.is_required = len(record.development_means_ids) > 0 or len(record.tracing_means_ids) > 0
+
     @api.depends('state_deal', 'state')
     def _compute_is_tracing(self):
         for record in self:
             record.is_tracing = record.evaluation_id.evaluation_type != 'development_plan'
-
-    @api.constrains('development_goal', 'development_means_ids', 'tracing_means_ids')
-    def _check_development_goal(self):
-        if not self.development_goal and ((len(self.development_means_ids) > 0 and not self.is_tracing) or (
-                (len(self.tracing_means_ids) > 0 and self.is_tracing))):
-            raise ValidationError(_(" Debe completar el Objetivo de desarrollo"))
 
     def button_open_current_competency(self):
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_competency_action').read()[0]
@@ -80,6 +80,7 @@ class ONSCDesempenoEvaluatioDevelopmentCompetency(models.Model):
         return {'type': 'ir.actions.act_window_close'}
 
     def button_custom_navigation_back(self):
+
         action = {
             'type': 'ir.actions.act_window',
             'view_type': 'form',
