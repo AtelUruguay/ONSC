@@ -6,12 +6,19 @@
               web_icon="onsc_catalog,static/description/icon.png"
               sequence="4"/>
 
+    <menuitem id="onsc_desempeno_summary_evaluation_menu"
+              name="Resumen de evaluaciones"
+              action="onsc_desempeno_summary_evaluation_action"
+              parent="onsc_desempeno_root_menu"
+              groups="onsc_desempeno.group_desempeno_usuario_evaluacion"
+              sequence="1"/>
+
     <menuitem id="onsc_desempeno_evaluation_list_menu"
               name="Lista de participantes 360"
               action="onsc_desempeno_evaluation_list_action_server"
               parent="onsc_desempeno_root_menu"
               groups="onsc_desempeno.group_desempeno_responsable_uo,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_usuario_gh_ue"
-              sequence="1"/>
+              sequence="5"/>
 
     <menuitem id="onsc_desempeno_evaluaciones_menu"
           name="Evaluaciones"

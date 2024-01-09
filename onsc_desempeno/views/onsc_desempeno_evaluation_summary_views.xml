@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+
+    <record id="onsc_legajo_summary_evaluation_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.summary.evaluation.tree</field>
+        <field name="model">onsc.desempeno.summary.evaluation</field>
+        <field name="arch" type="xml">
+            <tree string="Evaluación de Desempeño">
+                <field name="evaluation_type" />
+                <field name="general_cycle_id"/>
+                <field name="evaluator_id"/>
+                <field name="evaluated_id"/>
+                <field name="evaluation_start_date"/>
+                <field name="evaluation_end_date"/>
+                <field name="state"/>
+             </tree>
+        </field>
+    </record>
+
+
+    <record id="onsc_desempeno_summary_evaluation_search" model="ir.ui.view">
+            <field name="name">onsc.desempeno.summary.evaluation.search</field>
+            <field name="model">onsc.desempeno.summary.evaluation</field>
+            <field name="arch" type="xml">
+                <search string="Evaluación de Desempeño">
+                    <field name="general_cycle_id"/>
+                    <field name="evaluator_id"/>
+                    <field name="evaluated_id"/>
+                    <filter name="pending_evaluations_filter"
+                                domain="[('evaluations', 'in', [True, False])]"
+                                string="Mis evaluaciones pendientes"/>
+                    <group string="Agrupar por">
+                          <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    </group>
+                </search>
+            </field>
+        </record>
+
+    <record id='onsc_desempeno_summary_evaluation_action' model='ir.actions.act_window'>
+        <field name="name">Resumen de evaluaciones</field>
+        <field name="res_model">onsc.desempeno.summary.evaluation</field>
+        <field name="context">{'is_from_menu': True, 'search_default_pending_evaluations_filter':1, 'search_default_group_state':True}</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Resumen Evaluación de desempeño
+            </p>
+        </field>
+    </record>
+
+
+</odoo>

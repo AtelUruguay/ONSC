@@ -11,3 +11,4 @@ from . import onsc_desempeno_evaluation
 from . import onsc_desempeno_evaluation_competency
 from . import onsc_desempeno_consolidated
 from . import onsc_desempeno_evaluation_development_means
+from . import onsc_desempeno_summary_evaluation
