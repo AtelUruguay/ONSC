@@ -504,27 +504,38 @@ class ONSCLegajoAltaCS(models.Model):
             is_editable_orig = is_editable_orig_inciso or is_editable_orig_ue
 
             is_same_inciso = record.inciso_origin_id == record.inciso_destination_id
-            # AC2AC siendo tu mismo inciso origen y destino
+
             if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
                 record.is_available_send_to_sgh = True
-            elif record.state == 'returned' and is_editable_orig:
+            elif record.type_cs == 'ac2ac' and is_editable_dest and record.state in ['to_process', 'error_sgh']:
                 record.is_available_send_to_sgh = True
-            elif record.state == 'to_process' and is_editable_dest:
+            elif record.type_cs == 'out2ac' and is_editable_dest and record.state in ['draft', 'error_sgh']:
                 record.is_available_send_to_sgh = True
-            elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue:
-                record.is_available_send_to_sgh = False
-            elif record.state in ['draft', 'to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and is_same_inciso:
-                record.is_available_send_to_sgh = True
-            # No AC2AC siempre enviar a SGH
-            elif record.type_cs != 'ac2ac' and record.state in ['draft',
-                                                                'error_sgh'] and record.inciso_origin_id and record.inciso_destination_id:
-                record.is_available_send_to_sgh = True
-            # Si eres el destino y esta en estado to_process o error_sgh
-            elif record.is_edit_destination and record.state in ['to_process',
-                                                                 'error_sgh'] and record.type_cs == 'ac2ac':
+            elif record.type_cs == 'ac2out' and is_editable_orig and record.state in ['draft', 'error_sgh']:
                 record.is_available_send_to_sgh = True
             else:
                 record.is_available_send_to_sgh = False
+
+            # if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
+            #     record.is_available_send_to_sgh = True
+            # elif record.state == 'returned' and is_editable_orig:
+            #     record.is_available_send_to_sgh = True
+            # elif record.state == 'to_process' and is_editable_dest:
+            #     record.is_available_send_to_sgh = True
+            # elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue:
+            #     record.is_available_send_to_sgh = False
+            # elif record.state in ['draft', 'to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and is_same_inciso:
+            #     record.is_available_send_to_sgh = True
+            # # No AC2AC siempre enviar a SGH
+            # elif record.type_cs != 'ac2ac' and record.state in ['draft',
+            #                                                     'error_sgh'] and record.inciso_origin_id and record.inciso_destination_id:
+            #     record.is_available_send_to_sgh = True
+            # # Si eres el destino y esta en estado to_process o error_sgh
+            # elif record.is_edit_destination and record.state in ['to_process',
+            #                                                      'error_sgh'] and record.type_cs == 'ac2ac':
+            #     record.is_available_send_to_sgh = True
+            # else:
+            #     record.is_available_send_to_sgh = False
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_send_origin(self):
@@ -547,11 +558,11 @@ class ONSCLegajoAltaCS(models.Model):
             is_destination_ac = record.inciso_destination_id.is_central_administration
             base_cond = record.state in ['draft', 'returned'] and is_destination_ac
             is_iam_inciso_orig = record.inciso_origin_id == inciso_id
-            is_iam_inciso_dest = record.inciso_destination_id != inciso_id
+            isnt_iam_inciso_dest = record.inciso_destination_id != inciso_id
             is_iam_ue_orig = record.operating_unit_origin_id == operating_unit_id
             if is_user_administrar_altas_cs:
                 is_available_send_destination = False
-            elif is_user_inciso_alta_cs and is_iam_inciso_orig and is_iam_inciso_dest and base_cond:
+            elif is_user_inciso_alta_cs and is_iam_inciso_orig and isnt_iam_inciso_dest and base_cond:
                 is_available_send_destination = True
             elif is_user_ue_alta_cs and is_iam_ue_orig and base_cond:
                 is_available_send_destination = True
