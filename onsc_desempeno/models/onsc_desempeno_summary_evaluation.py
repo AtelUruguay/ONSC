@@ -11,6 +11,7 @@ EVALUATION_TYPE = [
     ('gap_deal', 'Acuerdo de Brecha'),
     ('development_plan', 'Plan de desarrollo'),
     ('tracing_plan', 'Seguimiento del Plan de desarrollo'),
+
 ]
 
 STATE = [
@@ -33,7 +34,7 @@ GAP_DEAL_STATES = [
 
 
 class ONSCLegajoSummaryEvaluation(models.Model):
-    _name = "onsc.legajo.summary.evaluation"
+    _name = "onsc.desempeno.summary.evaluation"
     _description = "Resumen de evaluaciones"
     _auto = False
 
