@@ -246,7 +246,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
                     scores_dict[key]['evaluations_tracing_plan_finished_qty'] += 1
                     # COMPETENCIAS
                     development_means_ids = evaluation.tracing_plan_ids.mapped('development_means_ids')
-                    development_means_ids = development_means_ids.filtered(lambda x: not x.is_canceled)
+                    development_means_ids = development_means_ids.filtered(lambda x: not x.is_canceled and x.last_tracing_plan_id.id is not False)
                     scores_dict[key]['evaluations_tracing_plan_activity_qty'] = len(development_means_ids)
                     for development_mean_id in development_means_ids:
                         porcent = development_mean_id.last_tracing_plan_id.degree_progress_id.porcent
