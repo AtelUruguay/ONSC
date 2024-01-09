@@ -540,9 +540,9 @@ class ONSCLegajoAltaCS(models.Model):
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_send_origin(self):
         for record in self:
-            if record.state == 'to_process' and record.is_edit_destination and record.type_cs == 'ac2ac':
+            if record.state in ['to_process', 'error_sgh'] and record.is_edit_destination and record.type_cs == 'ac2ac':
                 record.is_available_send_origin = True
-            elif record.state == 'to_process' and record.type_cs == 'ac2ac' and self.env.user.has_group(
+            elif record.state in ['to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and self.env.user.has_group(
                     'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
                 record.is_available_send_origin = True
             else:
