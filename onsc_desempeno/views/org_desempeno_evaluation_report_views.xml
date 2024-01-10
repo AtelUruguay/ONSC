@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="onsc_desempeno_evaluation_report_action" model="ir.actions.act_window">
+        <field name="name">Seleccione los parámetros para visualizar el reporte</field>
+        <field name="res_model">onsc.desempeno.evaluation.report</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="onsc_desempeno_evaluation_report_tree"/>
+        <field name="context">{}</field>
+        <field name="target">new</field>
+    </record>
+
+
+    <record id="onsc_desempeno_evaluation_report_tree" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.report.tree</field>
+        <field name="model">onsc.desempeno.evaluation.report</field>
+        <field name="arch" type="xml">
+            <tree string="Evaluación de Desempeño">
+                <field name="operating_unit_id" />
+                <field name="general_cycle_id"/>
+                <field name="evaluation_type"/>
+                <field name="evaluator_id"/>
+                <field name="evaluated_id"/>
+                <field name="state"/>
+             </tree>
+
+        </field>
+    </record>
+</odoo>
