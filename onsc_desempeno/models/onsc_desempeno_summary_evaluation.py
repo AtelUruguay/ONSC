@@ -111,10 +111,11 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     )
 
     def init(self):
-        tools.drop_view_if_exists(self.env.cr, self._table)
-        self.env.cr.execute('''CREATE OR REPLACE VIEW onsc_legajo_summary_evaluation AS ( SELECT
+        tools.drop_view_if_exists(self.env.cr, 'onsc_desempeno_summary_evaluation')
+        self.env.cr.execute('''CREATE OR REPLACE VIEW onsc_desempeno_summary_evaluation AS ( SELECT
             row_number() OVER(ORDER BY order_type,order_state) AS id, *
-        FROM( SELECT evaluation_type,
+        FROM(
+        SELECT evaluation_type,
                 general_cycle_id,
                 evaluator_id,
                 evaluated_id,
@@ -141,5 +142,5 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                     ELSE 3
                 END AS order_state,
                gap_deal_state
-         FROM onsc_desempeno_evaluation
-         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) ) AS main_query)''')
+        FROM onsc_desempeno_evaluation
+        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) ) AS main_query)''')
