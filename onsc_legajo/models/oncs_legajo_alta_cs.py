@@ -504,6 +504,7 @@ class ONSCLegajoAltaCS(models.Model):
             is_editable_orig = is_editable_orig_inciso or is_editable_orig_ue
 
             is_same_inciso = record.inciso_origin_id == record.inciso_destination_id
+            is_user_any_inciso = is_editable_orig_inciso or is_editable_dest_inciso
 
             if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
                 record.is_available_send_to_sgh = True
@@ -512,6 +513,8 @@ class ONSCLegajoAltaCS(models.Model):
             elif record.type_cs == 'out2ac' and is_editable_dest and record.state in ['draft', 'error_sgh']:
                 record.is_available_send_to_sgh = True
             elif record.type_cs == 'ac2out' and is_editable_orig and record.state in ['draft', 'error_sgh']:
+                record.is_available_send_to_sgh = True
+            elif is_same_inciso and is_user_any_inciso and record.state not in ['cancelled', 'confirmed']:
                 record.is_available_send_to_sgh = True
             else:
                 record.is_available_send_to_sgh = False
