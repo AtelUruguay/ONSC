@@ -343,7 +343,8 @@ class ONSCCVDigital(models.Model):
             self.disability_date = False
 
     def write(self, vals):
-        self._update_employee_status(vals)
+        if self._context.get('no_update_employee_status', False) is False:
+            self._update_employee_status(vals)
         return super(ONSCCVDigital, self).write(vals)
 
     def _update_employee_status(self, values):
