@@ -542,11 +542,22 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_send_origin(self):
+        is_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
+        is_user_inciso = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
+        is_user_ue = self.env.user.has_group('onsc_legajo.group_legajo_hr_ue_alta_cs')
+        inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         for record in self:
-            if record.state in ['to_process', 'error_sgh'] and record.is_edit_destination and record.type_cs == 'ac2ac':
+            is_ac2ac = record.type_cs == 'ac2ac'
+            is_editable_dest_inciso = record.inciso_destination_id == inciso_id and is_user_inciso
+            is_editable_dest_ue = record.operating_unit_destination_id == operating_unit_id and is_user_ue
+
+            is_same_inciso = record.inciso_origin_id == record.inciso_destination_id
+            same_inciso_cond = (is_editable_dest_inciso and not is_same_inciso) or is_editable_dest_ue
+
+            if record.state in ['to_process',
+                                'error_sgh'] and record.is_edit_destination and is_ac2ac and same_inciso_cond:
                 record.is_available_send_origin = True
-            elif record.state in ['to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and self.env.user.has_group(
-                    'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs'):
+            elif record.state in ['to_process', 'error_sgh'] and is_ac2ac and is_administrar_altas_cs:
                 record.is_available_send_origin = True
             else:
                 record.is_available_send_origin = False
