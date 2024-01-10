@@ -343,13 +343,14 @@ class ONSCCVDigital(models.Model):
             self.disability_date = False
 
     def write(self, vals):
-        self._update_employee_status(vals)
+        if self._context.get('no_update_employee_status', False) is False:
+            self._update_employee_status(vals)
         return super(ONSCCVDigital, self).write(vals)
 
     def _update_employee_status(self, values):
         BaseUtils = self.env['onsc.base.utils'].sudo()
         employees = self.env['hr.employee']
-        for record in self.filtered(lambda x: x.is_docket_active and x.employee_id):
+        for record in self.filtered(lambda x: x.is_docket_active and x.employee_id and x.type == 'cv'):
             employee_values_to_write = {}
             values_filtered = BaseUtils.get_really_values_changed(record, values)
             for modified_field in EMPLOYEE_MODIFIED_FIELDS_TO_NOTIFY_SGH:
