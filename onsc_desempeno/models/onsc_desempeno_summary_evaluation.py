@@ -36,6 +36,7 @@ GAP_DEAL_STATES = [
 class ONSCLegajoSummaryEvaluation(models.Model):
     _name = "onsc.desempeno.summary.evaluation"
     _description = "Resumen de evaluaciones"
+    _auto = False
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
@@ -140,5 +141,5 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                     ELSE 3
                 END AS order_state,
                gap_deal_state
-         FROM onsc_desempeno_evaluation
-         WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) ) AS main_query)'''% (self._table,))
+        FROM onsc_desempeno_evaluation
+        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) ) AS main_query)''')
