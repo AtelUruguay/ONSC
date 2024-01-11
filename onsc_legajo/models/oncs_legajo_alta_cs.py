@@ -122,10 +122,10 @@ class ONSCLegajoAltaCS(models.Model):
     cv_birthdate = fields.Date(string=u'Fecha de nacimiento', copy=False)
     cv_sex = fields.Selection([('male', 'Masculino'), ('feminine', 'Femenino')], string=u'Sexo', copy=False)
     # ORIGIN
-    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso',
+    inciso_origin_id = fields.Many2one('onsc.catalog.inciso', string='Inciso origen',
                                        default=lambda self: self._get_default_inciso_id(), copy=False)
     inciso_origin_id_domain = fields.Char(compute='_compute_inciso_origin_id_domain')
-    operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora",
+    operating_unit_origin_id = fields.Many2one("operating.unit", string="Unidad ejecutora origen",
                                                default=lambda self: self._get_default_ue_id(), copy=False)
     operating_unit_origin_id_domain = fields.Char(compute='_compute_operating_unit_origin_id_domain')
     sequence_position_origin = fields.Char(string='Secuencia Plaza')
@@ -151,9 +151,9 @@ class ONSCLegajoAltaCS(models.Model):
         [('1', 'Comisión de Servicio'), ('2', 'Pase en Comisión')],
         string='Tipo de comisión', compute='_compute_type_commission_selection')
     # DESTINATION
-    inciso_destination_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', copy=False)
+    inciso_destination_id = fields.Many2one('onsc.catalog.inciso', string='Inciso destino', copy=False)
     inciso_destination_id_domain = fields.Char(compute='_compute_inciso_destination_id_domain')
-    operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora", copy=False)
+    operating_unit_destination_id = fields.Many2one("operating.unit", string="Unidad ejecutora destino", copy=False)
     operating_unit_destination_id_domain = fields.Char(compute='_compute_operating_unit_destination_id_domain')
 
     program_project_destination_id = fields.Many2one(
