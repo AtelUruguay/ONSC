@@ -271,12 +271,13 @@ class ONSCLegajoAltaCS(models.Model):
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
 
     def _search_filter_destination(self, operator, value):
+        employee_inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         return ['|',
                 '&', ('state', 'in', ['draft', 'to_process', 'error_sgh']),
-                ('inciso_destination_id', '=', self.env.user.employee_id.job_id.contract_id.inciso_id.id),
+                ('inciso_destination_id', '=', employee_inciso_id),
                 '|',
                 '&', ('state', 'in', ['draft', 'returned']),
-                ('inciso_origin_id', '=', self.env.user.employee_id.job_id.contract_id.inciso_id.id),
+                ('inciso_origin_id', '=', employee_inciso_id),
                 '&', ('state', '=', 'error_sgh'),
                 ('type_cs', 'in', ['ac2out', 'out2ac'])
                 ]
