@@ -495,6 +495,7 @@ class ONSCLegajoAltaVL(models.Model):
             'description_day': self.descripcionJornadaFormal,
             'retributive_day_id': self.retributive_day_id.id,
             'id_alta': self.id_alta,
+            'eff_date': self.date_start,
             #
             'wage': 1
         }

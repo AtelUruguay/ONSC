@@ -519,27 +519,6 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.is_available_send_to_sgh = False
 
-            # if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
-            #     record.is_available_send_to_sgh = True
-            # elif record.state == 'returned' and is_editable_orig:
-            #     record.is_available_send_to_sgh = True
-            # elif record.state == 'to_process' and is_editable_dest:
-            #     record.is_available_send_to_sgh = True
-            # elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue:
-            #     record.is_available_send_to_sgh = False
-            # elif record.state in ['draft', 'to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and is_same_inciso:
-            #     record.is_available_send_to_sgh = True
-            # # No AC2AC siempre enviar a SGH
-            # elif record.type_cs != 'ac2ac' and record.state in ['draft',
-            #                                                     'error_sgh'] and record.inciso_origin_id and record.inciso_destination_id:
-            #     record.is_available_send_to_sgh = True
-            # # Si eres el destino y esta en estado to_process o error_sgh
-            # elif record.is_edit_destination and record.state in ['to_process',
-            #                                                      'error_sgh'] and record.type_cs == 'ac2ac':
-            #     record.is_available_send_to_sgh = True
-            # else:
-            #     record.is_available_send_to_sgh = False
-
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_send_origin(self):
         is_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
