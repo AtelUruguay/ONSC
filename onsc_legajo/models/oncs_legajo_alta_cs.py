@@ -60,7 +60,10 @@ class ONSCLegajoAltaCS(models.Model):
         args = expression.AND([[
             ('partner_id', '!=', self.env.user.partner_id.id)
         ], args])
-        if self.user_has_groups('onsc_legajo.group_legajo_hr_inciso_alta_cs'):
+        if self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs,onsc_legajo.group_legajo_consulta_altas_cs'):
+            args = args
+        elif self.user_has_groups('onsc_legajo.group_legajo_hr_inciso_alta_cs'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND([[
@@ -68,7 +71,7 @@ class ONSCLegajoAltaCS(models.Model):
                     '&', ('is_inciso_origin_ac', '=', False), ('inciso_destination_id', '=', inciso_id.id),
                     '&', ('inciso_destination_id', '=', inciso_id.id), ('state', '!=', 'draft')
                 ], args])
-        if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
+        elif self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
@@ -81,7 +84,8 @@ class ONSCLegajoAltaCS(models.Model):
             if operating_unit_id:
                 args = expression.AND([[
                     '|', '|', ('operating_unit_origin_id', '=', operating_unit_id.id),
-                    '&', ('is_inciso_origin_ac', '=', False), ('operating_unit_destination_id', '=', operating_unit_id.id),
+                    '&', ('is_inciso_origin_ac', '=', False),
+                    ('operating_unit_destination_id', '=', operating_unit_id.id),
                     '&', ('operating_unit_destination_id', '=', operating_unit_id.id), ('state', '!=', 'draft')
                 ], args])
         return args
@@ -267,12 +271,13 @@ class ONSCLegajoAltaCS(models.Model):
     error_message_synchronization = fields.Char(string="Mensaje de Error", copy=False)
 
     def _search_filter_destination(self, operator, value):
+        employee_inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         return ['|',
                 '&', ('state', 'in', ['draft', 'to_process', 'error_sgh']),
-                ('inciso_destination_id', '=', self.env.user.employee_id.job_id.contract_id.inciso_id.id),
+                ('inciso_destination_id', '=', employee_inciso_id),
                 '|',
                 '&', ('state', 'in', ['draft', 'returned']),
-                ('inciso_origin_id', '=', self.env.user.employee_id.job_id.contract_id.inciso_id.id),
+                ('inciso_origin_id', '=', employee_inciso_id),
                 '&', ('state', '=', 'error_sgh'),
                 ('type_cs', 'in', ['ac2out', 'out2ac'])
                 ]
@@ -518,27 +523,6 @@ class ONSCLegajoAltaCS(models.Model):
                 record.is_available_send_to_sgh = True
             else:
                 record.is_available_send_to_sgh = False
-
-            # if record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_administrar_altas_cs:
-            #     record.is_available_send_to_sgh = True
-            # elif record.state == 'returned' and is_editable_orig:
-            #     record.is_available_send_to_sgh = True
-            # elif record.state == 'to_process' and is_editable_dest:
-            #     record.is_available_send_to_sgh = True
-            # elif record.state in ['draft', 'to_process', 'returned', 'error_sgh'] and is_same_inciso and is_user_ue:
-            #     record.is_available_send_to_sgh = False
-            # elif record.state in ['draft', 'to_process', 'error_sgh'] and record.type_cs == 'ac2ac' and is_same_inciso:
-            #     record.is_available_send_to_sgh = True
-            # # No AC2AC siempre enviar a SGH
-            # elif record.type_cs != 'ac2ac' and record.state in ['draft',
-            #                                                     'error_sgh'] and record.inciso_origin_id and record.inciso_destination_id:
-            #     record.is_available_send_to_sgh = True
-            # # Si eres el destino y esta en estado to_process o error_sgh
-            # elif record.is_edit_destination and record.state in ['to_process',
-            #                                                      'error_sgh'] and record.type_cs == 'ac2ac':
-            #     record.is_available_send_to_sgh = True
-            # else:
-            #     record.is_available_send_to_sgh = False
 
     @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
     def _compute_is_available_send_origin(self):
