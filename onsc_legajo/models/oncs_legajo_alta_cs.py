@@ -60,7 +60,10 @@ class ONSCLegajoAltaCS(models.Model):
         args = expression.AND([[
             ('partner_id', '!=', self.env.user.partner_id.id)
         ], args])
-        if self.user_has_groups('onsc_legajo.group_legajo_hr_inciso_alta_cs'):
+        if self.user_has_groups(
+                'onsc_legajo.group_legajo_alta_cs_administrar_altas_cs,onsc_legajo.group_legajo_consulta_altas_cs'):
+            args = args
+        elif self.user_has_groups('onsc_legajo.group_legajo_hr_inciso_alta_cs'):
             inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id
             if inciso_id:
                 args = expression.AND([[
@@ -68,7 +71,7 @@ class ONSCLegajoAltaCS(models.Model):
                     '&', ('is_inciso_origin_ac', '=', False), ('inciso_destination_id', '=', inciso_id.id),
                     '&', ('inciso_destination_id', '=', inciso_id.id), ('state', '!=', 'draft')
                 ], args])
-        if self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
+        elif self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs'):
             contract_id = self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
@@ -81,7 +84,8 @@ class ONSCLegajoAltaCS(models.Model):
             if operating_unit_id:
                 args = expression.AND([[
                     '|', '|', ('operating_unit_origin_id', '=', operating_unit_id.id),
-                    '&', ('is_inciso_origin_ac', '=', False), ('operating_unit_destination_id', '=', operating_unit_id.id),
+                    '&', ('is_inciso_origin_ac', '=', False),
+                    ('operating_unit_destination_id', '=', operating_unit_id.id),
                     '&', ('operating_unit_destination_id', '=', operating_unit_id.id), ('state', '!=', 'draft')
                 ], args])
         return args
