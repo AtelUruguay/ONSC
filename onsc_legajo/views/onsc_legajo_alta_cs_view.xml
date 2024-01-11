@@ -227,6 +227,9 @@
                 <field name="partner_id"/>
                 <field name="state"/>
                 <field name="inciso_origin_id"/>
+                <field name="operating_unit_origin_id" optional="hide"/>
+                <field name="inciso_destination_id" optional="hide"/>
+                <field name="operating_unit_destination_id" optional="hide"/>
             </tree>
         </field>
     </record>
