@@ -293,6 +293,19 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     message_error.append(
                         line.message_error + " \nNo se puedo encontrar la partida con datos de los descriptores")
 
+                address_nro_door = line[self.get_position(column_names, 'address_nro_door')]
+                if len(address_nro_door) > 5:
+                    message_error.append(
+                        line.message_error + " \nEl Número de puerta excede la longitud de 5")
+                address_apto = line[self.get_position(column_names, 'address_apto')]
+                if len(address_apto) > 4:
+                    message_error.append(
+                        line.message_error + " \nEl Número de apartamento excede la longitud de 4")
+                address_zip = line[self.get_position(column_names, 'address_zip')]
+                if len(address_zip) > 6:
+                    message_error.append(
+                        line.message_error + " \nEl Código Postal excede la longitud de 6")
+
                 document_number = line[self.get_position(column_names, 'document_number')]
                 sex = line[self.get_position(column_names, 'cv_sex')]
                 birth_date = line[self.get_position(column_names, 'birth_date')]
@@ -351,10 +364,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'address_street_id': address_street_id,
                     'address_street2_id': address_street2_id,
                     'address_street3_id': address_street3_id,
-                    'address_zip': line[self.get_position(column_names, 'address_zip')],
-                    'address_nro_door': line[self.get_position(column_names, 'address_nro_door')],
+                    'address_zip': address_zip,
+                    'address_nro_door': address_nro_door,
                     'address_is_bis': line[self.get_position(column_names, 'address_is_bis')],
-                    'address_apto': line[self.get_position(column_names, 'address_apto')],
+                    'address_apto': address_apto,
                     'address_place': line[self.get_position(column_names, 'address_place')],
                     'address_block': line[self.get_position(column_names, 'address_block')],
                     'address_sandlot': line[self.get_position(column_names, 'address_sandlot')],
