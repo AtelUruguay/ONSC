@@ -186,7 +186,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
         EvaluationStage = self.env['onsc.desempeno.evaluation.stage'].sudo()
 
         valid_records = self.sudo().search([
-            # ('id', '=', 130),
             ('is_score_generated', '=', False),
             ('end_date', '<=', fields.Date.today())
         ])
@@ -255,7 +254,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
         bulked_vals = self._get_score_data(scores_dict)
         Score.create(bulked_vals)
         # TODO: marcar evaluaciones que ya hicieron puntajes
-        # valid_records.write({'is_score_generated': True})
+        valid_records.write({'is_score_generated': True})
         return True
 
     def _get_evaluation_key_default_dict(self, evaluation):

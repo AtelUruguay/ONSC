@@ -283,19 +283,15 @@
                                 </field>
                                 <field name="environment_ids_domain" invisible="1"/>
                             </group>
-
                         </page>
                     </notebook>
                     <field name="is_edit_general_comments" invisible="1" />
                     <group name="general_comments" string="Comentarios Generales"
-
                            attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
-                        <field name="general_comments" nolabel="1"
-                               placeholder="Comentarios Generales"/>
+                        <field name="general_comments" nolabel="1" placeholder="Comentarios Generales"/>
                     </group>
                     <group name="block">
                         <field name="is_exonerated_evaluation"  attrs="{'invisible': [('evaluation_type', '!=',  'gap_deal')], 'readonly':[('state_gap_deal', '!=', 'in_process')]}"/>
-<!--                        <field name="locked" string="Bloqueado" readonly="1" attrs="{'invisible': [('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>-->
                     </group>
                 </sheet>
                 <div class="oe_chatter">
@@ -306,23 +302,37 @@
             </form>
         </field>
     </record>
-    <record id="onsc_desempeno_evaluation_search" model="ir.ui.view">
-            <field name="name">onsc.desempeno.evaluation.search</field>
-            <field name="model">onsc.desempeno.evaluation</field>
-            <field name="arch" type="xml">
-                <search string="Evaluación de Desempeño">
-                    <field name="general_cycle_id"/>
-                    <field name="evaluator_id"/>
-                    <field name="evaluated_id"/>
-                    <field name="original_evaluator_id"/>
-                    <field name="occupation_id"/>
 
-                    <filter name="leader_evaluation_filter"
-                                domain="[('collaborators', 'in', [True, False])]"
-                                string="Mis colaboradores/ras"/>
-                </search>
-            </field>
-        </record>
+    <record id="onsc_desempeno_evaluation_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.search</field>
+        <field name="model">onsc.desempeno.evaluation</field>
+        <field name="arch" type="xml">
+            <search string="Evaluación de Desempeño">
+                <field name="general_cycle_id"/>
+                <field name="evaluator_id"/>
+                <field name="evaluated_id"/>
+                <field name="original_evaluator_id"/>
+                <field name="occupation_id"/>
+                <filter name="leader_evaluation_filter"
+                            domain="[('collaborators', 'in', [True, False])]"
+                            string="Mis colaboradores/ras"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_desempeno_evaluation_basic_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.basic.search</field>
+        <field name="model">onsc.desempeno.evaluation</field>
+        <field name="arch" type="xml">
+            <search string="Evaluación de Desempeño">
+                <field name="general_cycle_id"/>
+                <field name="evaluator_id"/>
+                <field name="evaluated_id"/>
+                <field name="original_evaluator_id"/>
+                <field name="occupation_id"/>
+            </search>
+        </field>
+    </record>
 
     <record id='onsc_desempeno_evaluation_action' model='ir.actions.act_window'>
         <field name="name">Evaluación de Desempeño</field>
@@ -334,6 +344,7 @@
                 Evaluación de desempeño
             </p>
         </field>
+        <field name="search_view_id" ref="onsc_desempeno_evaluation_basic_search"/>
     </record>
 
     <record id='onsc_desempeno_leader_evaluation_action' model='ir.actions.act_window'>
@@ -346,6 +357,7 @@
                 Evaluación de desempeño
             </p>
         </field>
+        <field name="search_view_id" ref="onsc_desempeno_evaluation_search"/>
     </record>
 
     <record id='onsc_desempeno_collaborator_evaluation_action' model='ir.actions.act_window'>
@@ -358,6 +370,7 @@
                 Evaluación de desempeño
             </p>
         </field>
+        <field name="search_view_id" ref="onsc_desempeno_evaluation_basic_search"/>
     </record>
 
     <record id='onsc_desempeno_environment_evaluation_action' model='ir.actions.act_window'>
@@ -370,6 +383,7 @@
                 Evaluación de desempeño
             </p>
         </field>
+        <field name="search_view_id" ref="onsc_desempeno_evaluation_basic_search"/>
     </record>
 
     <record id='onsc_desempeno_environment_definition_action' model='ir.actions.act_window'>
@@ -382,6 +396,7 @@
                 Evaluación de desempeño
             </p>
         </field>
+        <field name="search_view_id" ref="onsc_desempeno_evaluation_basic_search"/>
     </record>
 
      <record id='onsc_desempeno_gap_deal_evaluation_action' model='ir.actions.act_window'>
@@ -394,6 +409,7 @@
                 Evaluación de desempeño
             </p>
         </field>
+        <field name="search_view_id" ref="onsc_desempeno_evaluation_search"/>
     </record>
 
     <record id="onsc_desempeno_evaluation_readonly_form" model="ir.ui.view">

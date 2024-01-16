@@ -245,6 +245,7 @@
                 Evaluación de desempeño
             </p>
         </field>
+        <field name="search_view_id" ref="onsc_desempeno_evaluation_search"/>
     </record>
     
      <record id='onsc_desempeno_tracing_plan_action' model='ir.actions.act_window'>
@@ -262,6 +263,7 @@
                 Evaluación de desempeño
             </p>
         </field>
+        <field name="search_view_id" ref="onsc_desempeno_evaluation_search"/>
     </record>
 
 

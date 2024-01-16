@@ -15,7 +15,7 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
         self.env['onsc.desempeno.score'].sudo().search([
             ('is_employee_notified', '=', False),
             ('employee_id', '=', employee.id),
-            ('evaluation_stage_id.year', '=', year)
+            ('year', '=', year)
         ]).write({'is_employee_notified': True})
 
         action_dict = self.env['res.users'].sudo()._get_default_action().read()[0]
