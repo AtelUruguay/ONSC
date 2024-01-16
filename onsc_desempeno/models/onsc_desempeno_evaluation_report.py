@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
+from odoo import fields, models, api
+from odoo.osv import expression
 
 EVALUATION_TYPE = [
     ('self_evaluation', 'Autoevaluación'),
@@ -36,6 +37,18 @@ class ONSCDesempenoEvaluationReport(models.Model):
     _name = "onsc.desempeno.evaluation.report"
     _description = "Reporte y Consulta General de Ciclo de Evaluación "
 
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
+        args = expression.AND([[('user_id', '=', self.env.user.id)], args])
+        return super(ONSCDesempenoEvaluationReport, self)._search(args, offset=offset, limit=limit, order=order,
+                                                                  count=count,
+                                                                  access_rights_uid=access_rights_uid)
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        domain = expression.AND([[('user_id', '=', self.env.user.id)], domain])
+        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+
     operating_unit_id = fields.Many2one('operating.unit', string='UE')
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar')
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', )
@@ -52,11 +65,16 @@ class ONSCDesempenoEvaluationReport(models.Model):
 
         if self.evaluation_type in ('collaborator_consolidate', 'environment_consolidate'):
             ctx.update({'readonly_evaluation': True})
-            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_collaborator_consolidated_readonly_action').read()[0]
+            action = \
+                self.sudo().env.ref('onsc_desempeno.onsc_desempeno_collaborator_consolidated_readonly_action').read()[0]
             action.update({'res_id': self.consolidated_id.id, 'context': ctx, })
             return action
         else:
-            ctx.update({'readonly_evaluation': True})
+
+            if self.evaluation_type in ['gap_deal', 'development_plan']:
+                ctx.update({'readonly_evaluation': True, 'gap_deal': True})
+            else:
+                ctx.update({'readonly_evaluation': True, 'gap_deal': False})
             action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
             action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
             return action
