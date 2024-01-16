@@ -56,7 +56,9 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
     def _compute_competency_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            if record.gap_deal_id:
+            if self._context.get('readonly_evaluation'):
+                condition = True
+            elif record.gap_deal_id:
                 _cond1 = record.gap_deal_id.state_gap_deal != 'in_process' or record.gap_deal_id.gap_deal_state != 'no_deal' or record.gap_deal_id.is_exonerated_evaluation
                 _cond2 = record.gap_deal_id.evaluator_id.id != user_employee_id and record.gap_deal_id.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2

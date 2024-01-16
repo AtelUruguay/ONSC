@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, tools, api
-from odoo.osv import expression
+from odoo import fields, models
 
 EVALUATION_TYPE = [
     ('self_evaluation', 'Autoevaluación'),
@@ -12,7 +11,7 @@ EVALUATION_TYPE = [
     ('development_plan', 'Plan de desarrollo'),
     ('tracing_plan', 'Seguimiento del Plan de desarrollo'),
     ('collaborator_consolidate', 'Consolidado de colaborador'),
-    ('environment_consolidate', 'Consolidado de entorno'),]
+    ('environment_consolidate', 'Consolidado de entorno'), ]
 
 STATE = [
     ('draft', 'Borrador'),
@@ -31,23 +30,33 @@ GAP_DEAL_STATES = [
     ('agree_evaluated', 'Acordado Evaluado'),
     ('agree', 'Acordado'),
 ]
+
+
 class ONSCDesempenoEvaluationReport(models.Model):
     _name = "onsc.desempeno.evaluation.report"
     _description = "Reporte y Consulta General de Ciclo de Evaluación "
-
-    def _is_group_usuario_gh_inciso(self):
-        return self.user_has_groups('onsc_desempeno.group_desempeno_usuario_gh_inciso')
-
-    def _is_group_usuario_gh_ue(self):
-        return self.user_has_groups('onsc_desempeno.group_desempeno_usuario_gh_ue')
-    def _is_group_admin(self):
-        return self.user_has_groups('onsc_desempeno.group_desempeno_administrador')
 
     operating_unit_id = fields.Many2one('operating.unit', string='UE')
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar')
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', )
     state = fields.Selection(STATE, string='Estado', )
-    gap_deal_state = fields.Selection(selection=GAP_DEAL_STATES,string="Subestado")
+    gap_deal_state = fields.Selection(selection=GAP_DEAL_STATES, string="Subestado")
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado')
     evaluator_id = fields.Many2one('hr.employee', string='Evaluador')
+    user_id = fields.Many2one('res.users', string='Usuario', readonly=True)
+    evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluación')
+    consolidated_id = fields.Many2one('onsc.desempeno.consolidated', string='Consolidado')
 
+    def button_open_evaluation(self):
+        ctx = self.env.context.copy()
+
+        if self.evaluation_type in ('collaborator_consolidate', 'environment_consolidate'):
+            ctx.update({'readonly_evaluation': True})
+            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_collaborator_consolidated_readonly_action').read()[0]
+            action.update({'res_id': self.consolidated_id.id, 'context': ctx, })
+            return action
+        else:
+            ctx.update({'readonly_evaluation': True})
+            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
+            action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
+            return action

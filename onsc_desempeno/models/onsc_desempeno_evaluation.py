@@ -450,7 +450,9 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_should_disable_form_edit(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
-            if record.evaluation_type in ('gap_deal', 'development_plan'):
+            if self._context.get('readonly_evaluation'):
+                condition = True
+            elif record.evaluation_type in ('gap_deal', 'development_plan'):
                 _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or (record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
