@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="onsc_desempeno_evaluation_report_form" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.report.wizard.form</field>
+        <field name="model">onsc.desempeno.evaluation.report.wizard</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="operating_unit_edit" invisible="1"/>
+                    <field name="operating_unit_ids_domain" invisible="1"/>
+                    <field name="operating_unit_id" domain="operating_unit_ids_domain"
+                           attrs="{'readonly': [('operating_unit_edit', '=', False)]}"
+                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="general_cycle_id"
+                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                    <field name="evaluation_type"/>
+                    <field name="state"/>
+                </group>
+                <footer>
+                    <button string="Consultar" name="action_show_report" type="object" class="oe_highlight"/>
+                    <button string="Cancelar" class="btn btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id='onsc_desempeno_report_wizard_action' model='ir.actions.act_window'>
+        <field name="name">Seleccione los parámetros para visualizar el reporte</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">onsc.desempeno.evaluation.report.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+            </p>
+        </field>
+    </record>
+</odoo>

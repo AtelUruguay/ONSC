@@ -10,12 +10,12 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="evaluation_start_date"/>
-                <field name="evaluation_end_date"  invisible="context.get('gap_deal', False) is True"/>
+                <field name="evaluation_end_date" invisible="context.get('gap_deal', False) is True"/>
                 <field name="evaluation_end_date_max" invisible="context.get('gap_deal', False) is False"/>
                 <field name="environment_definition_end_date"
                        invisible="context.get('environment_definition', False) is False"/>
-                <field name="state"  invisible="context.get('gap_deal', False) is True"/>
-                <field name="state_gap_deal"  invisible="context.get('gap_deal', False) is False"/>
+                <field name="state" invisible="context.get('gap_deal', False) is True"/>
+                <field name="state_gap_deal" invisible="context.get('gap_deal', False) is False"/>
             </tree>
         </field>
     </record>
@@ -32,18 +32,20 @@
                     <field name="is_agree_button_gh_available" invisible="1"/>
                     <field name="is_agree_evaluation_evaluated_available" invisible="1"/>
                     <field name="is_cancel_available" invisible="1"/>
-                      <field name="show_button_go_back" invisible="1"/>
-                      <field name="show_button_cancel" invisible="1"/>
+                    <field name="show_button_go_back" invisible="1"/>
+                    <field name="show_button_cancel" invisible="1"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Comenzar Evaluación"
                             attrs="{'invisible': ['|','|',('state_gap_deal', '!=', 'draft'),('state', '!=', 'draft'),('evaluation_form_edit', '=', False)]}"
                             name="button_start_evaluation"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             icon="fa-user-circle"/>
                     <button type="object"
                             class="btn btn-primary"
                             string="Completar evaluación"
                             attrs="{'invisible': ['|','|',('state', '!=', 'in_process'),('evaluation_form_edit', '=', False),('evaluation_type', 'in', ['gap_deal','environment_definition'])]}"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             name="button_completed_evaluation"
                             confirm="¿Está seguro de que desea dar por completado el formulario?"
                             icon="fa-lock"/>
@@ -51,6 +53,7 @@
                             class="btn btn-primary"
                             string="Entorno designado"
                             attrs="{'invisible': ['|','|',('state', '!=', 'in_process'),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'environment_definition')]}"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             name="button_environment_designated"
                             confirm="¿Está seguro de que desea dar por completado el formulario?"
                             icon="fa-lock"/>
@@ -58,6 +61,7 @@
                             class="btn btn-secundary"
                             string="Reabrir evaluación"
                             attrs="{'invisible': ['|','|','|',('is_agree_button_gh_available', '=', True),('state', '!=', 'completed'),('evaluation_form_edit', '=', False),('evaluation_type', '=', 'environment_definition')]}"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             name="button_reopen_evaluation"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir la evaluación?"/>
@@ -67,6 +71,7 @@
                             string="Cambio de evaluador"
                             context="{'default_evaluation_id': active_id}"
                             attrs="{'invisible': [('is_evaluation_change_available', '=', False)]}"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             type="action"
                             icon="fa-exchange"/>
                     <button name="%(onsc_desempeno.onsc_desempeno_evaluation_cancel_wizard_action)d"
@@ -74,6 +79,7 @@
                             string="Cancelar"
                             context="{'default_evaluation_id': active_id}"
                             confirm="¿Está seguro de que desea cancelar el formulario?"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             attrs="{'invisible': ['|','|',('is_exonerated_evaluation', '=', True),('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
                             type="action"
                             icon="fa-lock"/>`
@@ -81,12 +87,14 @@
                             class="btn btn-primary"
                             string="Cancelar"
                             confirm="¿Está seguro de que desea cancelar el formulario?"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             attrs="{'invisible': ['|','|',('is_exonerated_evaluation', '=', False),('show_button_cancel', '=',False),('is_cancel_available', '=', False)]}"
                             type="object"
                             icon="fa-lock"/>`
-                    <button  name="button_go_back"
+                    <button name="button_go_back"
                             class="btn btn-primary"
                             string="Volver atrás"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             attrs="{'invisible': ['|',('show_button_go_back', '=', False),('is_cancel_available', '=', False)]}"
 
                             type="object"
@@ -95,6 +103,7 @@
                             class="btn btn-primary"
                             string="Acordar Evaluación Evaluado"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_evaluated_available', '=', False)]}"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             name="button_agree_evaluation_evaluated"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
@@ -102,6 +111,7 @@
                             class="btn btn-primary"
                             string="Acordar Evaluación Líder"
                             attrs="{'invisible': ['|',('is_agree_button_gh_available', '=', True),('is_agree_evaluation_leader_available', '=', False)]}"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             name="button_agree_evaluation_leader"
                             confirm="¿Está seguro que desea confirmar el acuerdo?"
                             icon="fa-lock"/>
@@ -109,6 +119,7 @@
                             class="btn btn-primary"
                             string="Acordar GH"
                             attrs="{'invisible': [('is_agree_button_gh_available', '=', False)]}"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             name="button_agree_gh"
                             confirm="¿Está seguro que desea confirmar?"
                             icon="fa-lock"/>
@@ -116,14 +127,17 @@
                             class="btn btn-secundary"
                             string="Reabrir acuerdo"
                             attrs="{'invisible': ['|','|','|',('state_gap_deal', '!=', 'in_process'),('gap_deal_state', 'in', ['agree','no_deal']),('evaluation_form_edit', '=', False),('evaluation_type', '!=', 'gap_deal')]}"
+                            invisible="context.get('readonly_evaluation', False) is True"
                             name="button_reopen_deal"
                             icon="fa-unlock"
                             confirm="¿Está seguro de que desea reabrir la evaluación?"/>
 
-                   <field name="state" widget="statusbar"
-                           statusbar_visible="draft,in_process,completed,uncompleted,finished"  invisible="context.get('gap_deal', False) is True" />
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,in_process,completed,uncompleted,finished"
+                           invisible="context.get('gap_deal', False) is True"/>
                     <field name="state_gap_deal" widget="statusbar"
-                           statusbar_visible="draft,in_process,deal_close,uncompleted,finished"  invisible="context.get('gap_deal', False) is False" />
+                           statusbar_visible="draft,in_process,deal_close,uncompleted,finished"
+                           invisible="context.get('gap_deal', False) is False"/>
                 </header>
                 <sheet>
                     <field name="is_evaluation_change_available" invisible="1"/>
@@ -132,22 +146,25 @@
                     <field name="is_environment_evaluation_form_active" invisible="1"/>
                     <field name="evaluation_type" nolabel="1" invisible="1"/>
                     <div class="oe_avatar" style="padding-right:20px">
-                         <label for="gap_deal_state" string="Estado de acuerdo de brecha"
-                                   invisible="context.get('gap_deal', False) is False"/>
-                        <h4><field name="gap_deal_state"
+                        <label for="gap_deal_state" string="Estado de acuerdo de brecha"
+                               invisible="context.get('gap_deal', False) is False"/>
+                        <h4>
+                            <field name="gap_deal_state"
                                    align="left" style="font-size: 100%; width: 190px;" widget="label_selection"
                                    options="{'classes': {'agree_leader': 'info','agree_evaluated': 'info', 'agree': 'success'}}"
-                                     invisible="context.get('gap_deal', False) is False"
-                                   /></h4>
+                                   invisible="context.get('gap_deal', False) is False"
+                            />
+                        </h4>
                     </div>
                     <div class="oe_title" name="div_title">
                         <label for="evaluated_id"/>
                         <h4>
-                            <field name="evaluated_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="evaluated_id"
+                                   options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                         </h4>
                     </div>
                     <group>
-                        <group >
+                        <group>
 
                             <field name="evaluator_id"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
@@ -160,16 +177,22 @@
                                    readonly="1"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    attrs="{'invisible': ['|',('original_evaluator_id', '=', False),('evaluation_type', 'in',['self_evaluation'])]}"/>
-                            <field name="reason_cancel" readonly="1" attrs="{'invisible': [('show_button_go_back', '=', False)]}"/>
+                            <field name="reason_cancel" readonly="1"
+                                   attrs="{'invisible': [('show_button_go_back', '=', False)]}"/>
                             <field name="year"/>
                             <field name="evaluation_start_date"/>
-                            <field name="evaluation_end_date" attrs="{'invisible': [('evaluation_type', 'in',['gap_deal'])]}"/>
-                            <field name="evaluation_end_date_max" attrs="{'invisible': [('evaluation_type', 'not in',['gap_deal'])]}"/>
+                            <field name="evaluation_end_date"
+                                   attrs="{'invisible': [('evaluation_type', 'in',['gap_deal'])]}"/>
+                            <field name="evaluation_end_date_max"
+                                   attrs="{'invisible': [('evaluation_type', 'not in',['gap_deal'])]}"/>
                             <field name="environment_definition_end_date"
                                    attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}"/>
-                            <field name="locked" string="Formulario bloqueado" readonly="1" attrs="{'invisible': ['|',('locked', '=', False),('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
-                            <field name="is_gap_deal_not_generated" attrs="{'invisible': [('is_gap_deal_not_generated', '=', False)]}"/>
-                            <field name="is_development_plan_not_generated" attrs="{'invisible': [('is_development_plan_not_generated', '=', False)]}"/>
+                            <field name="locked" string="Formulario bloqueado" readonly="1"
+                                   attrs="{'invisible': ['|',('locked', '=', False),('evaluation_type', 'not in',  ['collaborator', 'environment_evaluation'])],}"/>
+                            <field name="is_gap_deal_not_generated"
+                                   attrs="{'invisible': [('is_gap_deal_not_generated', '=', False)]}"/>
+                            <field name="is_development_plan_not_generated"
+                                   attrs="{'invisible': [('is_development_plan_not_generated', '=', False)]}"/>
 
                             <field name="evaluation_type" nolabel="1" invisible="1"/>
 
@@ -177,19 +200,21 @@
                         <group>
                             <field name="inciso_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="operating_unit_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                            <field name="operating_unit_id"
+                                   style="margin-bottom: 5px!important; min-width: 100px !important;"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="uo_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="level_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="occupation_id" style="margin-bottom: 5px!important; min-width: 100px !important;"
+                            <field name="occupation_id"
+                                   style="margin-bottom: 5px!important; min-width: 100px !important;"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
 
                         </group>
                     </group>
 
-                     <div class="alert alert-info" role="alert"
+                    <div class="alert alert-info" role="alert"
                          name="div_alert_form"
                          style="overflow:hidden;"
                          attrs="{'invisible':['|',('is_evaluation_form_active', '=', False),('evaluation_type', 'in',['gap_deal', 'environment_definition'])]}">
@@ -216,17 +241,22 @@
                         </div>
                     </div>
                     <notebook>
-                        <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', 'in',['environment_definition','gap_deal'])],'readonly':[('locked', '=', True)]}">
-                            <field name="evaluation_competency_ids" nolabel="1" attrs="{'readonly':[('locked', '=', True)]}"
+                        <page string="Evaluación de Competencias"
+                              attrs="{'invisible': [('evaluation_type', 'in',['environment_definition','gap_deal'])],'readonly':[('locked', '=', True)]}">
+                            <field name="evaluation_competency_ids" nolabel="1"
+                                   attrs="{'readonly':[('locked', '=', True)]}"
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree nolabel="1" create="0" edit="0">
-                                    <field name="state"  invisible="1"/>
-                                    <field name="locked" invisible="1"  />
-                                    <field name="evaluation_form_edit" invisible="1" />
-                                    <field name="evaluation_id"  invisible="1"/>
-                                    <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="degree_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="state" invisible="1"/>
+                                    <field name="locked" invisible="1"/>
+                                    <field name="evaluation_form_edit" invisible="1"/>
+                                    <field name="evaluation_id" invisible="1"/>
+                                    <field name="skill_id"
+                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="degree_id" readonly="1"
+                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="improvement_areas" readonly="1"
+                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <button type="object"
                                             name="button_open_current_skill"
                                             context="{'form_view_ref': 'onsc_desempeno.onsc_desempeno_evaluation_competency_form'}"
@@ -234,25 +264,31 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Evaluación de Competencias" attrs="{'invisible': [('evaluation_type', '!=', 'gap_deal')],'readonly':['|',('gap_deal_state', '!=', 'no_deal'),('is_exonerated_evaluation', '=', True)]}">
-                            <field name="gap_deal_competency_ids" nolabel="1" attrs="{'readonly':[('is_exonerated_evaluation', '=', True)]}"
+                        <page string="Evaluación de Competencias"
+                              attrs="{'invisible': [('evaluation_type', '!=', 'gap_deal')],'readonly':['|',('gap_deal_state', '!=', 'no_deal'),('is_exonerated_evaluation', '=', True)]}">
+                            <field name="gap_deal_competency_ids" nolabel="1"
+                                   attrs="{'readonly':[('is_exonerated_evaluation', '=', True)]}"
                                    options="{'no_open': True}" create="0" delete="0" edit="0">
                                 <tree nolabel="1" create="0" edit="0">
-                                    <field name="state"  invisible="1"/>
-                                    <field name="is_exonerated_evaluation" invisible="1" />
-                                    <field name="evaluation_form_edit" invisible="1" />
-                                    <field name="evaluation_id"  invisible="1"/>
-                                    <field name="skill_id" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="degree_id" readonly="1" options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
-                                    <field name="improvement_areas" readonly="1"  options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="state" invisible="1"/>
+                                    <field name="is_exonerated_evaluation" invisible="1"/>
+                                    <field name="evaluation_form_edit" invisible="1"/>
+                                    <field name="evaluation_id" invisible="1"/>
+                                    <field name="skill_id"
+                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="degree_id" readonly="1"
+                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                    <field name="improvement_areas" readonly="1"
+                                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                     <button type="object"
                                             name="button_open_current_skill"
-                                             icon="fa-edit"/>
+                                            icon="fa-edit"/>
                                 </tree>
                             </field>
                         </page>
 
-                        <page string="Entorno" attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}">
+                        <page string="Entorno"
+                              attrs="{'invisible': [('evaluation_type', '!=', 'environment_definition')]}">
                             <group>
                                 <field name="environment_in_hierarchy"
                                        class="oe_edit_only"
@@ -285,13 +321,14 @@
                             </group>
                         </page>
                     </notebook>
-                    <field name="is_edit_general_comments" invisible="1" />
+                    <field name="is_edit_general_comments" invisible="1"/>
                     <group name="general_comments" string="Comentarios Generales"
                            attrs="{'invisible': [('evaluation_type','in', ['environment_definition'])],'readonly':[('is_edit_general_comments', '=', True)]}">
                         <field name="general_comments" nolabel="1" placeholder="Comentarios Generales"/>
                     </group>
                     <group name="block">
-                        <field name="is_exonerated_evaluation"  attrs="{'invisible': [('evaluation_type', '!=',  'gap_deal')], 'readonly':[('state_gap_deal', '!=', 'in_process')]}"/>
+                        <field name="is_exonerated_evaluation"
+                               attrs="{'invisible': [('evaluation_type', '!=',  'gap_deal')], 'readonly':[('state_gap_deal', '!=', 'in_process')]}"/>
                     </group>
                 </sheet>
                 <div class="oe_chatter">
@@ -314,8 +351,8 @@
                 <field name="original_evaluator_id"/>
                 <field name="occupation_id"/>
                 <filter name="leader_evaluation_filter"
-                            domain="[('collaborators', 'in', [True, False])]"
-                            string="Mis colaboradores/ras"/>
+                        domain="[('collaborators', 'in', [True, False])]"
+                        string="Mis colaboradores/ras"/>
             </search>
         </field>
     </record>
@@ -350,7 +387,9 @@
     <record id='onsc_desempeno_leader_evaluation_action' model='ir.actions.act_window'>
         <field name="name">Evaluación del Líder al Colaborador</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
-        <field name="context">{'is_from_menu': True,'leader_evaluation':True, 'search_default_leader_evaluation_filter': 1}</field>
+        <field name="context">{'is_from_menu': True,'leader_evaluation':True, 'search_default_leader_evaluation_filter':
+            1}
+        </field>
         <field name="view_mode">tree,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
@@ -399,7 +438,7 @@
         <field name="search_view_id" ref="onsc_desempeno_evaluation_basic_search"/>
     </record>
 
-     <record id='onsc_desempeno_gap_deal_evaluation_action' model='ir.actions.act_window'>
+    <record id='onsc_desempeno_gap_deal_evaluation_action' model='ir.actions.act_window'>
         <field name="name">Acuerdo de Brecha</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
         <field name="context">{'is_from_menu': True,'gap_deal':True}</field>
@@ -411,5 +450,16 @@
         </field>
         <field name="search_view_id" ref="onsc_desempeno_evaluation_search"/>
     </record>
+
+
+    <record id='onsc_desempeno_evaluation_readonly_action' model='ir.actions.act_window'>
+        <field name="name">Evaluación de desempeño</field>
+        <field name="res_model">onsc.desempeno.evaluation</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="view_ids"
+               eval="[(5, 0, 0),(0, 0, {'view_mode': 'form', 'view_id': ref('onsc_desempeno_evaluation_form')}),]"/>
+    </record>
+
 
 </odoo>

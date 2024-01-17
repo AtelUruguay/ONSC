@@ -42,6 +42,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu'):
             args = self._get_domain(args)
+
         return super(ONSCLegajoSummaryEvaluation, self)._search(args, offset=offset, limit=limit, order=order,
                                                                 count=count,
                                                                 access_rights_uid=access_rights_uid)
@@ -53,45 +54,54 @@ class ONSCLegajoSummaryEvaluation(models.Model):
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     def _get_domain(self, args):
+        inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
+        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         evaluations = [x for x in args if x[0] == 'evaluations']
         if evaluations:
             args_extended = [('state', 'in', ['draft', 'in_process']),
                              ('evaluation_type', 'in',
                               ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator',
-                               'tracing_plan']),
+                               'tracing_plan']), ('inciso_id', '=', inciso_id),
+                             ('operating_unit_id', '=', operating_unit_id),
                              ('evaluator_id', '=', self.env.user.employee_id.id), ]
 
             args_extended = expression.OR(
                 [[('state', 'in', ['draft', 'in_process']), ('evaluated_id', '=', self.env.user.employee_id.id),
-                  ('evaluation_type', '=', 'environment_definition')], args_extended])
+                  ('evaluation_type', '=', 'environment_definition'),
+                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)], args_extended])
 
             args_extended = expression.OR(
                 [[('state', 'in', ['draft', 'in_process']), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
                   ('gap_deal_state', '=', 'no_deal'), '|', ('evaluated_id', '=', self.env.user.employee_id.id),
-                  ('evaluator_id', '=', self.env.user.employee_id.id)], args_extended])
+                  ('evaluator_id', '=', self.env.user.employee_id.id),
+                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)], args_extended])
             args_extended = expression.OR(
                 [[('state', '=', 'in_process'), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
-                  ('gap_deal_state', '=', 'agree_leader'), ('evaluated_id', '=', self.env.user.employee_id.id)],
+                  ('gap_deal_state', '=', 'agree_leader'), ('evaluated_id', '=', self.env.user.employee_id.id),
+                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)],
                  args_extended])
             args_extended = expression.OR(
                 [[('state', '=', 'in_process'), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
-                  ('gap_deal_state', '=', 'agree_evaluated'), ('evaluator_id', '=', self.env.user.employee_id.id)],
+                  ('gap_deal_state', '=', 'agree_evaluated'), ('evaluator_id', '=', self.env.user.employee_id.id),
+                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)],
                  args_extended])
         else:
             args_extended = [
                 ('evaluation_type', 'in',
                  ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator',
-                  'tracing_plan']),
+                  'tracing_plan']), ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id),
                 ('evaluator_id', '=', self.env.user.employee_id.id), ]
 
             args_extended = expression.OR(
                 [[('evaluated_id', '=', self.env.user.employee_id.id),
-                  ('evaluation_type', '=', 'environment_definition')], args_extended])
+                  ('evaluation_type', '=', 'environment_definition'),
+                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)], args_extended])
 
             args_extended = expression.OR(
                 [[('evaluation_type', 'in', ['gap_deal', 'development_plan']),
                   '|', ('evaluated_id', '=', self.env.user.employee_id.id),
-                  ('evaluator_id', '=', self.env.user.employee_id.id)], args_extended])
+                  ('evaluator_id', '=', self.env.user.employee_id.id),
+                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)], args_extended])
 
         return expression.AND([args_extended, args])
 
@@ -109,6 +119,19 @@ class ONSCLegajoSummaryEvaluation(models.Model):
         selection=GAP_DEAL_STATES,
         string="Subestado",
     )
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
+    operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
+    evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluación')
+
+    def button_open_evaluation(self):
+        ctx = self.env.context.copy()
+        if self.evaluation_type in ['gap_deal', 'development_plan']:
+            ctx.update({'readonly_evaluation': True, 'gap_deal': True})
+        else:
+            ctx.update({'readonly_evaluation': True, 'gap_deal': False})
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
+        action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
+        return action
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, 'onsc_desempeno_summary_evaluation')
@@ -141,6 +164,9 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                     WHEN  state = 'in_process' THEN 2
                     ELSE 3
                 END AS order_state,
-               gap_deal_state
+               gap_deal_state,
+               operating_unit_id,
+               inciso_id,
+               id as evaluation_id
         FROM onsc_desempeno_evaluation
-        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) ) AS main_query)''')
+        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state != 'finished') AS main_query)''')
