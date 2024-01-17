@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="view_users_form_iduy" model="ir.ui.view">
+        <field name="name">IDUY User</field>
+        <field name="model">onsc.legajo</field>
+        <field name="inherit_id" ref="onsc_cv_digital_legajo.onsc_legajo_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='formation']"  position="after">
+                <page name="desempenio" string="Evaluación de desempeño">
+                        <div>
+                            <h4>Puntajes</h4>
+                        </div>
+                        <field name="course_ids"
+                               context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
+                        <br/>
+                    </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>
