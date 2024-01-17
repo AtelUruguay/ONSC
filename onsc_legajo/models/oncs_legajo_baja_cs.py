@@ -30,6 +30,11 @@ class ONSCLegajoBajaCS(models.Model):
     _description = 'Baja de Comisión  Servicio'
     _rec_name = 'employee_id'
 
+    def write(self, vals):
+        if self._context.get('no_update_employee_status', False) is False:
+            self._update_employee_status(vals)
+        return super(ONSCLegajoBajaCS, self).write(vals)
+
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCLegajoBajaCS, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
@@ -167,7 +172,6 @@ class ONSCLegajoBajaCS(models.Model):
         res['cv_emissor_country_id'] = self.env.ref('base.uy').id
         res['cv_document_type_id'] = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
                                                                                      limit=1).id or False
-        res['show_contract'] = False
         return res
 
     employee_id = fields.Many2one("hr.employee", string="Funcionario", copy=False)
@@ -212,8 +216,8 @@ class ONSCLegajoBajaCS(models.Model):
                                                       string='Documentos adjuntos', copy=False)
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
-    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain', store=False)
-    show_contract = fields.Boolean('Show Contract')
+    contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
+    show_contract = fields.Boolean('Show Contract', compute='_compute_contract_id_domain')
     state = fields.Selection(STATES, string='Estado', default='borrador', tracking=True, copy=False)
 
     @api.depends('contract_id', 'contract_origen_id')
@@ -250,6 +254,7 @@ class ONSCLegajoBajaCS(models.Model):
                 rec.show_contract = len(contracts) > 1
                 rec.contract_id_domain = json.dumps([('id', 'in', contracts.ids)])
             else:
+                rec.show_contract = False
                 rec.contract_id_domain = json.dumps([('id', 'in', [])])
 
     @api.constrains("end_date")
