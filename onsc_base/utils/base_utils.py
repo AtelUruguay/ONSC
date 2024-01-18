@@ -182,7 +182,7 @@ class ONSCTools(models.AbstractModel):
             ('is_docket_active', '=', True),
             ('employee_id', '!=', False),
             ('type', '=', 'cv'),
-            ('legajo_gral_info_documentary_validation_state', '!=', 'to_validate')
+            ('legajo_gral_info_documentary_validation_state', '!=', 'validated')
         ], limit=limit, offset=offset)
         cvs.with_context(ignore_base_restrict=True).button_legajo_update_documentary_validation_sections_tovalidate()
         _logger.info("******** 20.10 VDL STATE FIN **********")
