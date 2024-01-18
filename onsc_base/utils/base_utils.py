@@ -178,7 +178,11 @@ class ONSCTools(models.AbstractModel):
         _logger.info("******** 20.10 VDL LIMIT %s **********" % (str(limit)))
         _logger.info("******** 20.10 VDL OFFSET %s **********" % (str(offset)))
         CVDigital = self.env['onsc.cv.digital'].sudo()
-        cvs = CVDigital.search([('is_docket_active', '=', True), ('employee_id', '!=', False), ('type', '=', 'cv')],
-                               limit=limit, offset=offset)
-        cvs.with_context(ignore_base_restrict = True).button_legajo_update_documentary_validation_sections_tovalidate()
+        cvs = CVDigital.search([
+            ('is_docket_active', '=', True),
+            ('employee_id', '!=', False),
+            ('type', '=', 'cv'),
+            ('legajo_gral_info_documentary_validation_state', '!=', 'to_validate')
+        ], limit=limit, offset=offset)
+        cvs.with_context(ignore_base_restrict=True).button_legajo_update_documentary_validation_sections_tovalidate()
         _logger.info("******** 20.10 VDL STATE FIN **********")
