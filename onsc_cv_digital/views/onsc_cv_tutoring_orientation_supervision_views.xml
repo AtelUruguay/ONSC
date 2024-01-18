@@ -60,7 +60,8 @@
                             <field name="start_date" required="1" string="Periodo desde"/>
                             <field name="end_date" string="Periodo hasta"
                                    attrs="{'invisible': [('is_tutoring_finished', '!=', True)],'required': [('is_tutoring_finished', '=', True)]}"/>
-                            <field name="knowledge_acquired_ids" widget="many2many_tags"/>
+                            <field name="knowledge_acquired_ids" widget="many2many_tags"
+                                required="context.get('is_call_documentary_validation', False) is False"/>
                             <field name="is_relevant_work"/>
                             <field name="receipt_file"
                                    filename="receipt_filename"
