@@ -58,9 +58,9 @@ class ONSCOrganizationalWizard(models.TransientModel):
     def _is_group_admin(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_administrador')
 
-    operating_unit_id = fields.Many2one('operating.unit', string='UE', required=1,
+    operating_unit_id = fields.Many2one('operating.unit', string='UE',
                                         default=lambda self: self._default_operating_unit())
-    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', required=1,
+    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar',
                                        default=lambda self: self._default_general_cycle())
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', )
     state = fields.Selection(STATE, string='Estado', )
@@ -92,41 +92,60 @@ class ONSCOrganizationalWizard(models.TransientModel):
                 rec.operating_unit_edit = False
 
     def action_show_report(self):
+        where_clause = []
+        _where = ""
+        if self.operating_unit_id:
+            where_clause.append(" operating_unit_id = '%s' " % str(self.operating_unit_id.id))
 
-        _where = " where operating_unit_id = " + str(self.operating_unit_id.id) + " and general_cycle_id = " \
-                 + str(self.general_cycle_id.id)
+        if self.general_cycle_id:
+            where_clause.append(" general_cycle_id = '%s' " % str(self.general_cycle_id.id))
 
         if self.evaluation_type:
-            _where += " and evaluation_type = '%s' " % self.evaluation_type
+            where_clause.append(" evaluation_type = '%s' " % self.evaluation_type)
 
         if self.state:
+            where_clause = " AND ".join(where_clause)
+            _where = "where  evaluation_type not in ('gap_deal','development_plan') and state = '%s' and " % self.state + where_clause
+            _where_gap_deal = "where  evaluation_type in ('gap_deal','development_plan') and state_gap_deal = '%s' and " % self.state + where_clause
             _query = """INSERT INTO onsc_desempeno_evaluation_report(operating_unit_id, general_cycle_id, evaluation_type,
-                                state, gap_deal_state, evaluated_id, evaluator_id, user_id,evaluation_id,consolidated_id)
+                                state, gap_deal_state, evaluated_id, evaluator_id, user_id,evaluation_id,inciso_id)
                             SELECT operating_unit_id, general_cycle_id, evaluation_type, state, gap_deal_state,
-                            evaluated_id, evaluator_id, %s as user_id,id,NULL
-                            FROM onsc_desempeno_evaluation %s and state = '%s'""" % (
-                self.env.user.id, _where, self.state)
-        else:
-            _query = """INSERT INTO onsc_desempeno_evaluation_report(operating_unit_id, general_cycle_id, evaluation_type,
-                                state, gap_deal_state, evaluated_id, evaluator_id, user_id,evaluation_id, consolidated_id)
-                            SELECT operating_unit_id, general_cycle_id, evaluation_type, state, gap_deal_state,
-                            evaluated_id, evaluator_id, %s as user_id,id,NULL
+                            evaluated_id, evaluator_id, %s as user_id,id,inciso_id
                             FROM onsc_desempeno_evaluation %s
+                            UNION
+                            SELECT operating_unit_id, general_cycle_id, evaluation_type, state_gap_deal, gap_deal_state,
+                            evaluated_id, evaluator_id, %s as user_id,id,inciso_id
+                            FROM onsc_desempeno_evaluation %s""" % (
+                self.env.user.id, _where, self.env.user.id, _where_gap_deal)
+            cr = self.env.cr
+            cr.execute("DELETE FROM onsc_desempeno_evaluation_report WHERE user_id = '%s'" % self.env.user.id)
+            cr.execute(_query)
+
+        else:
+            if where_clause:
+                where_clause = " AND ".join(where_clause)
+
+            _query = """INSERT INTO onsc_desempeno_evaluation_report(operating_unit_id, general_cycle_id, evaluation_type,
+                                state, gap_deal_state, evaluated_id, evaluator_id, user_id,evaluation_id, consolidated_id,inciso_id)
+                            SELECT operating_unit_id, general_cycle_id, evaluation_type, state, gap_deal_state,
+                            evaluated_id, evaluator_id, %s as user_id,id,NULL,inciso_id
+                            FROM onsc_desempeno_evaluation  WHERE %s
                             UNION
                             SELECT operating_unit_id, general_cycle_id,
                             CASE
                                 WHEN evaluation_type = 'environment' THEN 'environment_consolidate'
                                 WHEN  evaluation_type = 'collaborator' THEN 'collaborator_consolidate'
                             END AS evaluation_type, '','', evaluated_id, hr_employee_id as evaluator_id, %s as user_id,
-                            NULL,id
+                            NULL,id,inciso_id
                             FROM onsc_desempeno_consolidated cons
                             INNER JOIN hr_employee_onsc_desempeno_consolidated_rel rel
-                            ON cons.id = rel.onsc_desempeno_consolidated_id %s""" % (
-                self.env.user.id, _where, self.env.user.id, _where)
+                            ON cons.id = rel.onsc_desempeno_consolidated_id WHERE %s""" % (
+                self.env.user.id, where_clause or "TRUE", self.env.user.id, where_clause or "TRUE")
 
         cr = self.env.cr
         cr.execute("DELETE FROM onsc_desempeno_evaluation_report WHERE user_id = '%s'" % self.env.user.id)
         cr.execute(_query)
 
-        action = self.env.ref('onsc_desempeno.action_onsc_desempeno_evaluation_report').read()[0]
+
+        action = self.env.ref('onsc_desempeno.action_onsc_desempeno_evaluation_report').suspend_security().read()[0]
         return action

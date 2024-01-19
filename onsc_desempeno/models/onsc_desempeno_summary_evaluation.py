@@ -169,4 +169,4 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                inciso_id,
                id as evaluation_id
         FROM onsc_desempeno_evaluation
-        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state != 'finished') AS main_query)''')
+        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1)) AS main_query)''')

@@ -37,16 +37,32 @@ class ONSCDesempenoEvaluationReport(models.Model):
     _name = "onsc.desempeno.evaluation.report"
     _description = "Reporte y Consulta General de Ciclo de Evaluación "
 
+    def _is_group_admin_gh_inciso(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso')
+
+    def _is_group_admin_gh_ue(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue')
+    def _get_domain_evaluation(self, args):
+        inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
+        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+        args_extended = expression.AND([[('user_id', '=', self.env.user.id)], args])
+        if self._is_group_admin_gh_inciso():
+            args_extended = expression.AND(
+                [[ ('inciso_id', '=', inciso_id)], args_extended])
+        elif self._is_group_admin_gh_ue() and not self._is_group_admin_gh_inciso():
+            args_extended = expression.AND(
+                [[('operating_unit_id', '=', operating_unit_id)], args_extended])
+        return args_extended
+
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        args = expression.AND([[('user_id', '=', self.env.user.id)], args])
+        args = self._get_domain_evaluation(args)
         return super(ONSCDesempenoEvaluationReport, self)._search(args, offset=offset, limit=limit, order=order,
                                                                   count=count,
                                                                   access_rights_uid=access_rights_uid)
-
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        domain = expression.AND([[('user_id', '=', self.env.user.id)], domain])
+        domain =  self._get_domain_evaluation(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     operating_unit_id = fields.Many2one('operating.unit', string='UE')
@@ -59,6 +75,7 @@ class ONSCDesempenoEvaluationReport(models.Model):
     user_id = fields.Many2one('res.users', string='Usuario', readonly=True)
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluación')
     consolidated_id = fields.Many2one('onsc.desempeno.consolidated', string='Consolidado')
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
 
     def button_open_evaluation(self):
         ctx = self.env.context.copy()

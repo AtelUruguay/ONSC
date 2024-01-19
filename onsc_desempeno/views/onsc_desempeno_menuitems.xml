@@ -18,7 +18,7 @@
               action="onsc_desempeno_report_wizard_action"
               parent="onsc_desempeno_root_menu"
               sequence="3"
-              groups="onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_usuario_gh_inciso,onsc_desempeno.group_desempeno_administrador"/>
+              groups="onsc_desempeno.group_desempeno_admin_gh_ue,onsc_desempeno.group_desempeno_admin_gh_inciso,onsc_desempeno.group_desempeno_administrador"/>
 
     <menuitem id="onsc_desempeno_evaluation_list_menu"
               name="Lista de participantes 360"
