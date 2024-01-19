@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     'name': 'ONSC - Base',
-    'version': '15.0.6.7.0',
+    'version': '15.0.6.7.1',
     'summary': 'ONSC - Base',
     'sequence': 11,
     'description': """
