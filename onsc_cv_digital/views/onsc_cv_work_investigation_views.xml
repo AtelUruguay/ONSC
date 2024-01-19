@@ -66,6 +66,7 @@
                             <field name="position" required="1"/>
                             <field name="is_paid_activity" required="1"/>
                             <field name="knowledge_acquired_ids" string="Conocimientos aplicados en esta investigación"
+                                   required="context.get('is_call_documentary_validation', False) is False"
                                    widget="many2many_tags"/>
                         </group>
                         <group>

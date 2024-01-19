@@ -6,6 +6,12 @@
         <field name="model">onsc.desempeno.summary.evaluation</field>
         <field name="arch" type="xml">
             <tree string="Evaluación de Desempeño">
+                <header>
+                    <button name="button_show_joker"
+                            type="object"
+                            attrs="{'always_visible': True}"
+                            string="Mostrar evaluaciones CARTEL A DEFINIR"/>
+                </header>
                 <field name="evaluation_type" />
                 <field name="general_cycle_id"/>
                 <field name="evaluator_id"/>
