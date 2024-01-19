@@ -30,11 +30,6 @@ class ONSCLegajoBajaCS(models.Model):
     _description = 'Baja de Comisión  Servicio'
     _rec_name = 'employee_id'
 
-    def write(self, vals):
-        if self._context.get('no_update_employee_status', False) is False:
-            self._update_employee_status(vals)
-        return super(ONSCLegajoBajaCS, self).write(vals)
-
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         res = super(ONSCLegajoBajaCS, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
