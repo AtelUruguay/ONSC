@@ -159,7 +159,7 @@ class ONSCTools(models.AbstractModel):
         _logger.info("******** 20.10 VDL INICIO **********")
         _logger.info("******** 20.10 VDL LIMIT %s **********" % (str(limit)))
         _logger.info("******** 20.10 VDL OFFSET %s **********" % (str(offset)))
-        _logger.info("CVS: %s" % (str(cvs.ids)))
+        _logger.info("CVS: %s" % (str(len(cvs))))
         for cv in cvs:
             values = {}
             for _field in FIELDS_TO_APPLY_INEMPLOYEE:
@@ -186,6 +186,6 @@ class ONSCTools(models.AbstractModel):
             ('type', '=', 'cv'),
             ('legajo_gral_info_documentary_validation_state', '!=', 'validated')
         ], limit=limit, offset=offset)
-        _logger.info("CVS: %s" % (str(cvs.ids)))
+        _logger.info("CVS: %s" % (str(len(cvs))))
         cvs.with_context(ignore_base_restrict=True).button_legajo_update_documentary_validation_sections_tovalidate()
         _logger.info("******** 20.10 VDL STATE FIN **********")
