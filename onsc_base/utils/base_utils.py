@@ -62,6 +62,8 @@ class ONSCTools(models.AbstractModel):
     _description = 'Base tools ONSC'
 
     def _20_5_postulations_fix(self, create_date, calls_number_tofix=False):
+        # METODO PARA CORREGIR DATOS PROVOCADOS POR EL BUG PS07 12480 Error en Producción- No trae valor de credencial para validar
+        # LIBERADO EN LA release/v20.6.1
         Calls = self.env['onsc.cv.digital.call'].suspend_security()
         args = [('create_date', '>=', create_date), ('country_of_birth_id', '=', False)]
         if calls_number_tofix:
