@@ -416,8 +416,7 @@ class ONSCCVDigital(models.Model):
     @api.depends('cv_emissor_country_id', 'cv_document_type_id')
     def _compute_is_cv_uruguay_ci(self):
         for record in self:
-            record.is_cv_uruguay_ci = record.cv_emissor_country_id.code == 'UY' and \
-                                      record.cv_document_type_id.code == 'ci'
+            record.is_cv_uruguay_ci = record.cv_emissor_country_id.code == 'UY' and record.cv_document_type_id.code == 'ci'
 
     @api.depends('crendencial_serie', 'credential_number', 'civical_credential_file')
     def _compute_is_civical_credential_populated(self):
