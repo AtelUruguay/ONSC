@@ -158,6 +158,7 @@ class ONSCLegajoAltaVL(models.Model):
     def _update_altavl_info(self):
         Employee = self.env['hr.employee'].sudo()
         CVDigital = self.env['onsc.cv.digital'].sudo()
+        Legajo = self.env['onsc.legajo'].sudo()
         for record in self.sudo():
             if record.partner_id:
                 employee = Employee.search([
@@ -178,6 +179,11 @@ class ONSCLegajoAltaVL(models.Model):
                 elif cv_digital_id and not self._context.get('no_update_extra'):
                     record.cv_birthdate = cv_digital_id.cv_birthdate
                     record.cv_sex = cv_digital_id.cv_sex
+
+                legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
+                if legajo:
+                    record.date_income_public_administration = legajo.public_admin_entry_date
+                    record.inactivity_years = legajo.public_admin_inactivity_years_qty
 
                 record.cv_digital_id = cv_digital_id
                 record.country_code = cv_digital_id.country_id.code
