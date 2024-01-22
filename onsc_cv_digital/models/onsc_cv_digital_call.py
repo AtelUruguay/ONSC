@@ -233,7 +233,7 @@ class ONSCCVDigitalCall(models.Model):
                     if len(documentary_validation_model_split) == 2:
                         sections_tovalidate.append(
                             eval("record.%s._description" % documentary_validation_model_split[0]))
-                    elif documentary_validation_model == 'civical_credential_documentary_validation_state':
+                    elif documentary_validation_model == 'civical_credential_documentary_validation_state' and record.is_civical_credential_populated:
                         sections_tovalidate.append(_('Credencial cívica'))
                     elif documentary_validation_model == 'nro_doc_documentary_validation_state':
                         sections_tovalidate.append(_('Documento de identidad'))

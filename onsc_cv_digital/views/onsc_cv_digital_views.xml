@@ -160,9 +160,9 @@
                                     <field name="marital_status_id" required="True"/>
                                     <field name="uy_citizenship" required="True"/>
                                     <field name="crendencial_serie"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <field name="credential_number"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <field name="civical_credential_file" options="{'accepted_file_extensions': '.pdf'}"
                                            filename="civical_credential_filename"
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>

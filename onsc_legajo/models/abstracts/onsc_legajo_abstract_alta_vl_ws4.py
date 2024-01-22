@@ -107,9 +107,17 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             altaDetalle.update({
                 'tipoCiudadania': 'N',  # FIXME Hardcode WS4 solo permite nacionalidad uruguaya
                 'nacionalidad': 'URUGUAYA',  # FIXME Hardcode WS4 solo permite nacionalidad uruguaya
-                'serieCredencial': record.crendencial_serie,
-                'numeroCredencial': record.credential_number,
             })
+
+            if record.crendencial_serie:
+                altaDetalle.update({
+                    'serieCredencial': record.crendencial_serie,
+                })
+
+            if record.credential_number:
+                altaDetalle.update({
+                    'numeroCredencial': record.credential_number,
+                })
 
             if record.personal_phone:
                 altaDetalle.update({
