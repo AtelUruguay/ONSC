@@ -152,11 +152,11 @@
                                     <field name="marital_status_id"/>
                                     <field name="uy_citizenship" required="True"/>
                                     <field name="crendencial_serie"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <label for="credential_number" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <div class="request-partner-author-field o_row" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}">
                                         <field name="credential_number"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                         <span>
                                             <button name="button_documentary_approve"
                                                     groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
@@ -165,7 +165,7 @@
                                                     string="Validar"
                                                     icon="fa-thumbs-o-up"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': ['|',('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '=', 'validated')]}"
+                                                    attrs="{'invisible': ['|',('is_civical_credential_populated', '=', False),('civical_credential_documentary_validation_state', '=', 'validated')]}"
                                                     class="btn btn-sm btn-outline-success"/>
                                             <button name="button_documentary_reject"
                                                     groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
@@ -174,7 +174,7 @@
                                                     string="Rechazar"
                                                     icon="fa-thumbs-o-down"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': ['|',('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '=', 'rejected')]}"
+                                                    attrs="{'invisible': ['|',('is_civical_credential_populated', '=', False),('civical_credential_documentary_validation_state', '=', 'rejected')]}"
                                                     class="btn btn-sm btn-outline-danger"/>
                                         </span>
                                     </div>
@@ -206,6 +206,7 @@
                                     </div>
                                     <field name="document_identity_filename" invisible="1"/>
                                     <field name="civical_credential_filename" invisible="1"/>
+                                    <field name="is_civical_credential_populated" invisible="1"/>
 
                                 </group>
                                 <group>

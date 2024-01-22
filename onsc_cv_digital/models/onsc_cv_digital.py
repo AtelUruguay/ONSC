@@ -326,6 +326,10 @@ class ONSCCVDigital(models.Model):
     nro_doc_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
                                                   tracking=True)
     # CREDENCIAL CIVICA
+    is_civical_credential_populated = fields.Boolean(
+        string='¿Hay datos de credencial cívica llenos?',
+        compute='_compute_is_civical_credential_populated'
+    )
     civical_credential_documentary_validation_state = fields.Selection(
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
@@ -414,6 +418,13 @@ class ONSCCVDigital(models.Model):
         for record in self:
             record.is_cv_uruguay_ci = record.cv_emissor_country_id.code == 'UY' and record.cv_document_type_id.code == 'ci'
 
+    @api.depends('crendencial_serie', 'credential_number', 'civical_credential_file')
+    def _compute_is_civical_credential_populated(self):
+        for record in self:
+            cond1 = record.uy_citizenship != 'extranjero'
+            cond2 = record.crendencial_serie or record.credential_number or record.civical_credential_file
+            record.is_civical_credential_populated = cond1 and cond2
+
     @api.constrains('partner_id')
     def _check_partner_id_unique(self):
         for record in self.filtered(lambda x: x.type == 'cv'):
@@ -479,6 +490,14 @@ class ONSCCVDigital(models.Model):
         if self.to_date and self.certificate_date and self.to_date <= self.certificate_date:
             self.to_date = False
             return cv_warning(_("La fecha hasta no puede ser menor que la fecha de certificado"))
+
+    @api.onchange('uy_citizenship')
+    def onchange_uy_citizenship(self):
+        if self.uy_citizenship == 'extranjero':
+            self.crendencial_serie = False
+            self.credential_number = False
+            self.civical_credential_file = False
+            self.civical_credential_filename = False
 
     @api.onchange('crendencial_serie')
     def onchange_crendencial_serie(self):

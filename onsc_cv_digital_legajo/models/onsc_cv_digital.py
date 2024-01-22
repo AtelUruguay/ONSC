@@ -318,10 +318,14 @@ class ONSCCVDigital(models.Model):
                             eval("record.%s._description" % documentary_validation_model_split[0]))
                     else:
                         section_value = documentary_values.get(documentary_validation_model, '')
-                        if documentary_validation_model != 'disabilitie_documentary_validation_state':
+                        if documentary_validation_model not in ['disabilitie_documentary_validation_state',
+                                                                'civical_credential_documentary_validation_state']:
                             sections_tovalidate.append(section_value)
                         elif documentary_validation_model == 'disabilitie_documentary_validation_state' and \
                                 record.situation_disability == 'si':
+                            sections_tovalidate.append(section_value)
+                        elif documentary_validation_model == 'civical_credential_documentary_validation_state' and \
+                                record.is_civical_credential_populated:
                             sections_tovalidate.append(section_value)
             if len(sections_tovalidate) > 0:
                 documentary_validation_state = 'to_validate'

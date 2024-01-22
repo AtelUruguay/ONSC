@@ -349,10 +349,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                                                                                     'marital_status_id')]),
                     'birth_country_id': country_uy_id.id if country_uy_id else False,
                     'citizenship': line[self.get_position(column_names, 'citizenship')],
-                    'crendencial_serie': str(crendencial_serie).upper() if crendencial_serie else message_error.append(
-                        " \nLa serie de credencial es obligatoria"),
-                    'credential_number': credential_number if credential_number else message_error.append(
-                        " \nEl número de credencial es obligatorio"),
+                    'crendencial_serie': str(crendencial_serie).upper(),
+                    'credential_number': credential_number,
                     'personal_phone': line[self.get_position(column_names, 'personal_phone')],
                     'mobile_phone': line[self.get_position(column_names, 'mobile_phone')],
                     'email': line[self.get_position(column_names, 'email')],

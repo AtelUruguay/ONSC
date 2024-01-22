@@ -198,7 +198,7 @@
                                     <field name="marital_status_id" required="True"/>
                                     <field name="uy_citizenship" required="True"/>
                                     <field name="crendencial_serie"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <label for="credential_number" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <div class="request-partner-author-field o_row" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}">
                                         <field name="credential_number"
@@ -211,7 +211,7 @@
                                                     string="Validar"
                                                     icon="fa-thumbs-o-up"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'validated'),('is_zip','=',True),('uy_citizenship', '=', 'extranjero')]}"
+                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'validated'),('is_zip','=',True),('is_civical_credential_populated', '=', False)]}"
                                                     class="btn btn-sm btn-outline-success"/>
                                             <button name="button_documentary_reject"
                                                     groups="onsc_cv_digital.group_validador_documental_cv"
@@ -220,14 +220,14 @@
                                                     string="Rechazar"
                                                     icon="fa-thumbs-o-down"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'rejected'),('is_zip','=',True),('uy_citizenship', '=', 'extranjero')]}"
+                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'rejected'),('is_zip','=',True),('is_civical_credential_populated', '=', False)]}"
                                                     class="btn btn-sm btn-outline-danger"/>
                                             <button name="button_documentary_tovalidate"
                                                     groups="onsc_cv_digital.group_validador_documental_cv"
                                                     context="{'documentary_validation':'civical_credential'}"
                                                     type="object"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'to_validate'),('is_zip','=',True),('uy_citizenship', '=', 'extranjero')]}"
+                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'to_validate'),('is_zip','=',True),('is_civical_credential_populated', '=', False)]}"
                                                     string="Para validar"
                                                     icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                         </span>
@@ -261,6 +261,7 @@
                                     <field name="document_identity_filename" invisible="1"/>
                                     <field name="civical_credential_filename" invisible="1"/>
                                     <field name="civical_credential_documentary_validation_state" invisible="1"/>
+                                    <field name="is_civical_credential_populated" invisible="1"/>
                                 </group>
                                 <group>
                                     <label for="personal_phone"/>
