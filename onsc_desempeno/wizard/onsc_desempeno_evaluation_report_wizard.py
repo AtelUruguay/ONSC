@@ -43,17 +43,21 @@ class ONSCOrganizationalWizard(models.TransientModel):
         return self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
 
     @api.model
+    def _default_inciso(self):
+        return self.env.user.employee_id.job_id.contract_id.inciso_id.id
+
+    @api.model
     def _default_general_cycle(self):
         year = fields.Date.today().strftime('%Y')
         GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
         general_cycle_id = GeneralCycle.search([('year', '=', year)], limit=1)
         return general_cycle_id.id
 
-    def _is_group_usuario_gh_inciso(self):
-        return self.user_has_groups('onsc_desempeno.group_desempeno_usuario_gh_inciso')
+    def _is_group_desempeno_admin_gh_inciso(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso')
 
-    def _is_group_usuario_gh_ue(self):
-        return self.user_has_groups('onsc_desempeno.group_desempeno_usuario_gh_ue')
+    def _is_group_desempeno_admin_gh_ue(self):
+        return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_ue')
 
     def _is_group_admin(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_administrador')
@@ -66,34 +70,64 @@ class ONSCOrganizationalWizard(models.TransientModel):
     state = fields.Selection(STATE, string='Estado', )
     operating_unit_ids_domain = fields.Char(compute='_compute_operating_unit_ids_domain')
     operating_unit_edit = fields.Boolean('Puede editar el form?', compute='_compute_operating_unit_edit')
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', default=lambda self: self._default_inciso())
+    inciso_edit = fields.Boolean('Puede editar el form?', compute='_compute_inciso_edit')
+    inciso_ids_domain = fields.Char(compute='_compute_inciso_ids_domain')
 
-    @api.depends('state')
+    @api.depends('inciso_id')
     def _compute_operating_unit_ids_domain(self):
 
         OperatingUnit = self.env['operating.unit'].suspend_security()
-        inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         for rec in self:
-            if self._is_group_usuario_gh_inciso():
-                operating_unit = OperatingUnit.suspend_security().search([('inciso_id', '=', inciso_id), ])
-                domain = [('id', 'not in', operating_unit.ids)]
-            elif self._is_group_usuario_gh_ue():
+            if self._is_group_desempeno_admin_gh_inciso():
+                if rec.inciso_id:
+                    operating_unit = OperatingUnit.suspend_security().search([('inciso_id', '=', rec.inciso_id.id), ])
+                    domain = [('id', 'in', operating_unit.ids)]
+                else:
+                    domain = [('id', '=', False)]
+            elif self._is_group_desempeno_admin_gh_ue():
                 domain = [('id', '=', operating_unit_id)]
             else:
-                domain = [('id', 'in', [])]
+                if rec.inciso_id:
+                    operating_unit = OperatingUnit.suspend_security().search([('inciso_id', '=', rec.inciso_id.id), ])
+                    domain = [('id', 'in', operating_unit.ids)]
+                else:
+                    domain = [('id', 'in', [])]
             rec.operating_unit_ids_domain = json.dumps(domain)
 
     @api.depends('operating_unit_id')
     def _compute_operating_unit_edit(self):
         for rec in self:
-            if self._is_group_usuario_gh_inciso() or self._is_group_admin():
+            if self._is_group_desempeno_admin_gh_inciso() or self._is_group_admin():
                 rec.operating_unit_edit = True
             else:
                 rec.operating_unit_edit = False
 
+    @api.depends('inciso_id')
+    def _compute_inciso_edit(self):
+        for rec in self:
+            if self._is_group_admin():
+                rec.inciso_edit = True
+            else:
+                rec.inciso_edit = False
+
+    @api.depends('state')
+    def _compute_inciso_ids_domain(self):
+
+        inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
+        for rec in self:
+            if self._is_group_desempeno_admin_gh_inciso() or self.group_desempeno_admin_gh_ue():
+                domain = [('id', '=', inciso_id)]
+            else:
+                domain = [('id', 'in', [])]
+            rec.inciso_ids_domain = json.dumps(domain)
+
     def action_show_report(self):
         where_clause = []
         _where = ""
+        if self.inciso_id:
+            where_clause.append(" inciso_id = '%s' " % str(self.inciso_id.id))
         if self.operating_unit_id:
             where_clause.append(" operating_unit_id = '%s' " % str(self.operating_unit_id.id))
 
@@ -127,7 +161,12 @@ class ONSCOrganizationalWizard(models.TransientModel):
 
             _query = """INSERT INTO onsc_desempeno_evaluation_report(operating_unit_id, general_cycle_id, evaluation_type,
                                 state, gap_deal_state, evaluated_id, evaluator_id, user_id,evaluation_id, consolidated_id,inciso_id)
-                            SELECT operating_unit_id, general_cycle_id, evaluation_type, state, gap_deal_state,
+                            SELECT operating_unit_id, general_cycle_id, evaluation_type,
+                            CASE
+                                WHEN evaluation_type in ('gap_deal','development_plan') THEN state_gap_deal
+                                WHEN  evaluation_type not in ('gap_deal','development_plan') THEN state
+                            END AS state,
+                            gap_deal_state,
                             evaluated_id, evaluator_id, %s as user_id,id,NULL,inciso_id
                             FROM onsc_desempeno_evaluation  WHERE %s
                             UNION
@@ -145,7 +184,5 @@ class ONSCOrganizationalWizard(models.TransientModel):
         cr = self.env.cr
         cr.execute("DELETE FROM onsc_desempeno_evaluation_report WHERE user_id = '%s'" % self.env.user.id)
         cr.execute(_query)
-
-
         action = self.env.ref('onsc_desempeno.action_onsc_desempeno_evaluation_report').suspend_security().read()[0]
         return action
