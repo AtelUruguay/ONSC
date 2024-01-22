@@ -158,11 +158,19 @@ class ONSCLegajoSummaryEvaluation(models.Model):
 
     def button_open_evaluation(self):
         ctx = self.env.context.copy()
-        if self.evaluation_type in ['gap_deal', 'development_plan']:
-            ctx.update({'readonly_evaluation': True, 'gap_deal': True})
+        if self.evaluation_type == 'gap_deal':
+            ctx.update({'gap_deal': True})
         else:
-            ctx.update({'readonly_evaluation': True, 'gap_deal': False})
-        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
+            ctx.update({'gap_deal': False})
+
+        if self.evaluation_type == 'development_plan':
+            ctx.update({'develop_plan': True})
+            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+        elif self.evaluation_type == 'tracing_plan':
+            ctx.update({'tracing_plan': True})
+            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+        else:
+            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
         action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
         return action
 
