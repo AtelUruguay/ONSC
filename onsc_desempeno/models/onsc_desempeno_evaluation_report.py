@@ -90,6 +90,10 @@ class ONSCDesempenoEvaluationReport(models.Model):
                 ctx.update({'readonly_evaluation': True, 'gap_deal': True})
             else:
                 ctx.update({'readonly_evaluation': True, 'gap_deal': False})
-            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
+
+            if self.evaluation_type in ['development_plan', 'tracing_plan']:
+                action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            else:
+                action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
             action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
             return action
