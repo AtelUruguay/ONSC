@@ -242,7 +242,7 @@ class HrJob(models.Model):
             })
         return job
 
-    def deactivate(self, date_end):
+    def deactivate(self, date_end, is_job_change=False):
         for job in self.suspend_security().filtered(
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
             job.end_date = date_end

@@ -717,12 +717,20 @@ class ONSCDesempenoEvaluation(models.Model):
         self.write(vals)
 
     def button_cancel_gap_deal(self):
-        vals = {
-            'reason_cancel': "Exonerado de Evaluación",
-            'state_before_cancel': self.state_gap_deal,
-            'state_gap_deal': 'canceled',
-        }
-        self.write(vals)
+        for record in self:
+            record.write({
+                'reason_cancel': "Exonerado de Evaluación",
+                'state_before_cancel': self.state_gap_deal,
+                'state_gap_deal': 'canceled',
+            })
+
+    def button_cancel(self):
+        for record in self:
+            record.write({
+                'reason_cancel': "Baja",
+                'state_before_cancel': self.state,
+                'state': 'canceled',
+            })
 
     def validate_tracing_plan(self):
         Tracing = self.env['onsc.desempeno.evaluation.tracing.plan'].sudo()

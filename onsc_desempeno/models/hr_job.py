@@ -1,28 +1,99 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, api
+from odoo import models, api, fields
 
 
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
+    evaluation_list_line_id = fields.Many2one(
+        comodel_name='onsc.desempeno.evaluation.list.line',
+        string='Línea de evaluación de Lista de participantes')
+
     @api.model
     def create(self, vals):
         record = super(HrJob, self).create(vals)
+        record._update_evaluation_list_in()
         return record
 
-    def _update_evaluation_list(self):
-        if self.contrato_id.legajo_state in ['active', 'incoming_commission']:
-            EvaluationList = self.env['onsc.desempeno.evaluation.list'].suspend_security()
-            evaluation_list = EvaluationList.search([
-                ('state', '=', 'in_progress'),
-                ('department_id', '=', self.department_id.id),
-            ], limit=1)
-            evaluation_employees = evaluation_list.line_ids.mapped('employee_id')
-            evaluation_employees |= evaluation_list.evaluation_generated_line_ids.filtered(
-                lambda x: x.state == 'generated').mapped('employee_id')
-            if self.employee_id not in evaluation_employees.ids:
-                evaluation_list.write({0, 0, {
-                    'job_id': self.id,
-                }})
+    def deactivate(self, date_end, is_job_change=False):
+        results = super(HrJob, self).deactivate(date_end)
+        for record in self:
+            if not is_job_change:
+                record._update_evaluation_list_out()
+            else:
+                record._update_evaluation_list_changejob()
+
+
+    def _update_evaluation_list_in(self):
+        if self.contrato_id.legajo_state not in ['baja', 'reserved']:
+            EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
+            evaluation_list_lines = EvaluationListLine.with_context(active_test=False).search([
+                ('evaluation_list_id.state', '=', 'in_progress'),
+                ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
+                ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
+                ('evaluation_list_id.department_id', '=', self.department_id.id),
+            ])
+            evaluation_employees = evaluation_list_lines.mapped('employee_id')
+            if len(evaluation_list_lines) and self.employee_id not in evaluation_employees.ids:
+                new_evaluation_list_line = EvaluationListLine.create({
+                    'evaluation_list_id': evaluation_list_lines[0].evaluation_list_id.id,
+                    'job_id': self.id
+                })
+                self.write({'evaluation_list_line_id': new_evaluation_list_line.id})
         return True
+
+    def _update_evaluation_list_out(self):
+        user_employee = self.env.user.employee_id
+        EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        evaluation_list_lines = EvaluationListLine.with_context(active_test=False).search([
+            ('evaluation_list_id.state', '=', 'in_progress'),
+            ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
+            ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
+            ('evaluation_list_id.department_id', '=', self.department_id.id),
+            ('job_id', '=', self.id),
+        ])
+        for evaluation in evaluation_list_lines.mapped('evaluation_ids'):
+            if evaluation.type in ['self_evaluation', 'environment_definition', 'collaborator']:
+                evaluation.button_cancel()
+            elif evaluation.type in ['environment_evaluation']:
+                if evaluation.evaluated_id == user_employee:
+                    evaluation.button_cancel()
+                elif evaluation.evaluator_id == user_employee and evaluation.state in ['draft', 'in_process']:
+                    evaluation.button_cancel()
+            elif evaluation.type in ['leader_evaluation']:
+                if evaluation.evaluated_id == user_employee and evaluation.state in ['draft', 'in_process', 'completed', 'finished']:
+                    evaluation.button_cancel()
+
+        Consolidated.search([
+            ('evaluated_id', '=', user_employee.id),
+            ('uo_id', '=', self.department_id.id),
+            ('evaluation_stage_id.start_date', '<=', self.start_date),
+            ('general_cycle_id.end_date_max', '>=', self.start_date),
+        ]).toggle_active()
+
+        Evaluation.search([
+            ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'tracing_plan']),
+            ('evaluated_id', '=', user_employee.id),
+            ('uo_id', '=', self.department_id.id),
+            ('evaluation_stage_id.start_date', '<=', self.start_date),
+            ('general_cycle_id.end_date_max', '>=', self.start_date),
+        ]).button_cancel()
+
+        evaluation_list_lines.filtered(lambda x: x.state != 'generated').unlink()
+
+    def _update_evaluation_list_changejob(self):
+        user_employee = self.env.user.employee_id
+        EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        EvaluationListLine.with_context(active_test=False).search([
+            ('evaluation_list_id.state', '=', 'in_progress'),
+            ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
+            ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
+            ('evaluation_list_id.department_id', '=', self.department_id.id),
+            ('generated', '=', False),
+            ('job_id', '=', self.id),
+        ]).unlink()
