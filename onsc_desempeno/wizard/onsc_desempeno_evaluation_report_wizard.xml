@@ -6,9 +6,14 @@
         <field name="arch" type="xml">
             <form>
                 <group>
+                    <field name="inciso_edit" invisible="1"/>
+                    <field name="inciso_ids_domain" invisible="1"/>
                     <field name="operating_unit_edit" invisible="1"/>
                     <field name="operating_unit_ids_domain" invisible="1"/>
-                    <field name="operating_unit_id" domain="operating_unit_ids_domain"
+                    <field name="inciso_id"  domain="inciso_ids_domain"
+                           attrs="{'readonly': [('inciso_edit', '=', False)]}"
+                           options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                      <field name="operating_unit_id" domain="operating_unit_ids_domain"
                            attrs="{'readonly': [('operating_unit_edit', '=', False)]}"
                            options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                     <field name="general_cycle_id"

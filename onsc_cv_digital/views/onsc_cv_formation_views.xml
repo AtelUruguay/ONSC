@@ -125,7 +125,7 @@
                             <field name="credits_training"
                                    attrs="{'invisible': [('state', '=', 'completed')],'required': [('state', '!=', 'completed')]}"/>
                             <field name="knowledge_acquired_ids" string="Conocimientos adquiridos" options="{'limit':5}"
-                                   widget="many2many_tags" required="1"/>
+                                   widget="many2many_tags" required="context.get('is_call_documentary_validation', False) is False"/>
                             <field name="egress_certificate_file" filename="egress_certificate_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="revalidated_certificate_file" filename="revalidated_certificate_filename"

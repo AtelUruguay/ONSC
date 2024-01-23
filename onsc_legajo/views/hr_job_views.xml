@@ -119,7 +119,7 @@
                                             <field name="start_date" required="True"
                                                    attrs="{'readonly': [('id', '!=', False)]}"/>
                                             <field name="end_date"
-                                                   attrs="{'readonly': [('id', '!=', False)]}"/>
+                                                   attrs="{'readonly': [('id', '!=', False),('active', '=', False)]}"/>
                                         </group>
                                         <group>
                                             <field name="file" string="Agregar adjunto"

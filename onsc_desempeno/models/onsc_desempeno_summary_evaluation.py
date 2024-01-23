@@ -39,26 +39,47 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     _auto = False
 
     @api.model
+    def search(self, args, offset=0, limit=None, order=None, count=False):
+
+        result = super(ONSCLegajoSummaryEvaluation, self).search(
+            args,
+            offset=offset,
+            limit=limit,
+            order=order,
+            count=count
+        )
+        if not result and not self._context.get('avoid_recursion', False):
+            result = super(ONSCLegajoSummaryEvaluation, self).search([('show_evaluation_finished', '=', True)])
+        return result
+
+    @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         if self._context.get('is_from_menu'):
             args = self._get_domain(args)
 
-        return super(ONSCLegajoSummaryEvaluation, self)._search(args, offset=offset, limit=limit, order=order,
-                                                                count=count,
-                                                                access_rights_uid=access_rights_uid)
+        return super(ONSCLegajoSummaryEvaluation, self)._search(
+            args, offset=offset, limit=limit, order=order,
+            count=count,
+            access_rights_uid=access_rights_uid)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         if self._context.get('is_from_menu'):
             domain = self._get_domain(domain)
-        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+        result = super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+        if len(result) == 0:
+            jokey_domain = [('show_evaluation_finished', '=', True)]
+            result = super().read_group(jokey_domain, fields, groupby, offset=offset, limit=limit, orderby=orderby,
+                                        lazy=lazy)
+        return result
 
     def _get_domain(self, args):
+
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         evaluations = [x for x in args if x[0] == 'evaluations']
         if evaluations:
-            args_extended = [('state', 'in', ['draft', 'in_process']),
+            args_extended = [('state_summary', 'in', ['draft', 'in_process']),
                              ('evaluation_type', 'in',
                               ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator',
                                'tracing_plan']), ('inciso_id', '=', inciso_id),
@@ -66,22 +87,23 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                              ('evaluator_id', '=', self.env.user.employee_id.id), ]
 
             args_extended = expression.OR(
-                [[('state', 'in', ['draft', 'in_process']), ('evaluated_id', '=', self.env.user.employee_id.id),
+                [[('state_summary', 'in', ['draft', 'in_process']), ('evaluated_id', '=', self.env.user.employee_id.id),
                   ('evaluation_type', '=', 'environment_definition'),
                   ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)], args_extended])
 
             args_extended = expression.OR(
-                [[('state', 'in', ['draft', 'in_process']), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
+                [[('state_summary', 'in', ['draft', 'in_process']),
+                  ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
                   ('gap_deal_state', '=', 'no_deal'), '|', ('evaluated_id', '=', self.env.user.employee_id.id),
                   ('evaluator_id', '=', self.env.user.employee_id.id),
                   ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)], args_extended])
             args_extended = expression.OR(
-                [[('state', '=', 'in_process'), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
+                [[('state_summary', '=', 'in_process'), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
                   ('gap_deal_state', '=', 'agree_leader'), ('evaluated_id', '=', self.env.user.employee_id.id),
                   ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)],
                  args_extended])
             args_extended = expression.OR(
-                [[('state', '=', 'in_process'), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
+                [[('state_summary', '=', 'in_process'), ('evaluation_type', 'in', ['gap_deal', 'development_plan']),
                   ('gap_deal_state', '=', 'agree_evaluated'), ('evaluator_id', '=', self.env.user.employee_id.id),
                   ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)],
                  args_extended])
@@ -99,9 +121,9 @@ class ONSCLegajoSummaryEvaluation(models.Model):
 
             args_extended = expression.OR(
                 [[('evaluation_type', 'in', ['gap_deal', 'development_plan']),
+                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id),
                   '|', ('evaluated_id', '=', self.env.user.employee_id.id),
-                  ('evaluator_id', '=', self.env.user.employee_id.id),
-                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)], args_extended])
+                  ('evaluator_id', '=', self.env.user.employee_id.id)], args_extended])
 
         return expression.AND([args_extended, args])
 
@@ -111,7 +133,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
     evaluation_start_date = fields.Date(string='Fecha inicio ciclo evaluación')
     evaluation_end_date = fields.Date(string='Fecha fin ciclo evaluación')
-    state = fields.Selection(STATE, string='Estado', readonly=True)
+    state_summary = fields.Selection(STATE, string='Estado', readonly=True)
     order_type = fields.Integer(string='Orden del tipo')
     evaluations = fields.Boolean(string="Mis evaluaciones pendientes")
     order_state = fields.Integer(string='Orden del tipo')
@@ -122,6 +144,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluación')
+
+    type = fields.Selection(
+        string='Tipo',
+        selection=[('system', 'Sistema'),
+                   ('joker', 'Comodity')],
+        required=False)
+
+    show_evaluation_finished = fields.Boolean(string='¿Ultimas evaluaciones finalizadas?',
+                                              compute='_compute_show_evaluation_finished',
+                                              search='_search_show_evaluation_finished')
+    write_date = fields.Datetime('Fecha de última modificación', index=True, readonly=True)
 
     def button_open_evaluation(self):
         ctx = self.env.context.copy()
@@ -148,7 +181,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                     WHEN evaluation_type = 'gap_deal' THEN state_gap_deal
                     WHEN  evaluation_type = 'development_plan' THEN state_gap_deal
                     ELSE state
-               END AS state,
+               END AS state_summary,
                CASE
                     WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
                     WHEN evaluation_type = 'leader_evaluation' THEN 2
@@ -167,6 +200,160 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                gap_deal_state,
                operating_unit_id,
                inciso_id,
-               id as evaluation_id
+               id as evaluation_id,
+               'system' AS type,
+               write_date
         FROM onsc_desempeno_evaluation
-        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state != 'finished') AS main_query)''')
+        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state != 'finished' and
+        evaluation_type not in ('gap_deal','development_plan')
+        UNION ALL
+         SELECT evaluation_type,
+                general_cycle_id,
+                evaluator_id,
+                evaluated_id,
+                evaluation_start_date,
+                evaluation_end_date,
+                CASE
+                    WHEN evaluation_type = 'gap_deal' THEN state_gap_deal
+                    WHEN  evaluation_type = 'development_plan' THEN state_gap_deal
+                    ELSE state
+               END AS state_summary,
+               CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+               END AS order_type,
+               False as evaluations,
+               CASE WHEN state = 'draft' THEN 1
+                    WHEN  state = 'in_process' THEN 2
+                    ELSE 3
+                END AS order_state,
+               gap_deal_state,
+               operating_unit_id,
+               inciso_id,
+               id as evaluation_id,
+               'system' AS type,
+               write_date
+        FROM onsc_desempeno_evaluation
+        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and
+         state_gap_deal != 'finished' and evaluation_type in ('gap_deal','development_plan')
+        UNION ALL
+        SELECT evaluation_type,
+                general_cycle_id,
+                evaluator_id,
+                evaluated_id,
+                evaluation_start_date,
+                evaluation_end_date,
+                CASE
+                    WHEN evaluation_type = 'gap_deal' THEN state_gap_deal
+                    WHEN  evaluation_type = 'development_plan' THEN state_gap_deal
+                    ELSE state
+               END AS state_summary,
+               CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+               END AS order_type,
+               False as evaluations,
+               CASE WHEN state = 'draft' THEN 1
+                    WHEN  state = 'in_process' THEN 2
+                    ELSE 3
+                END AS order_state,
+               gap_deal_state,
+               operating_unit_id,
+               inciso_id,
+               id as evaluation_id,
+               'joker' AS type,
+               write_date
+        FROM onsc_desempeno_evaluation
+        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and
+        state_gap_deal = 'finished' and evaluation_type in ('gap_deal','development_plan')
+        UNION ALL
+        SELECT evaluation_type,
+                general_cycle_id,
+                evaluator_id,
+                evaluated_id,
+                evaluation_start_date,
+                evaluation_end_date,
+                CASE
+                    WHEN evaluation_type = 'gap_deal' THEN state_gap_deal
+                    WHEN  evaluation_type = 'development_plan' THEN state_gap_deal
+                    ELSE state
+               END AS state_summary,
+               CASE
+                    WHEN evaluation_type = 'self_evaluation' THEN 1  -- Asigna un valor según el tipo de evaluación
+                    WHEN evaluation_type = 'leader_evaluation' THEN 2
+                    WHEN evaluation_type = 'environment_definition' THEN 3
+                    WHEN evaluation_type = 'environment_evaluation' THEN 4
+                    WHEN evaluation_type = 'collaborator' THEN 5
+                    WHEN evaluation_type = 'gap_deal' THEN 6
+                    WHEN evaluation_type = 'development_plan' THEN 7
+                    WHEN evaluation_type = 'tracing_plan' THEN 8
+               END AS order_type,
+               False as evaluations,
+               CASE WHEN state = 'draft' THEN 1
+                    WHEN  state = 'in_process' THEN 2
+                    ELSE 3
+                END AS order_state,
+               gap_deal_state,
+               operating_unit_id,
+               inciso_id,
+               id as evaluation_id,
+               'joker' AS type,
+               write_date
+        FROM onsc_desempeno_evaluation
+        WHERE year IN (EXTRACT(YEAR FROM CURRENT_DATE), EXTRACT(YEAR FROM CURRENT_DATE) - 1) and state = 'finished' and
+        evaluation_type not in ('gap_deal','development_plan')) as main_query)''')
+
+    def _search_show_evaluation_finished(self, operator, value):
+        inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
+        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+        result = self.browse()
+        args_extended = [('type', '=', 'joker'),
+                         ('evaluation_type', 'in',
+                          ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator',
+                           'tracing_plan', 'gap_deal', 'development_plan']), ('inciso_id', '=', inciso_id),
+                         ('operating_unit_id', '=', operating_unit_id),
+                         ('evaluator_id', '=', self.env.user.employee_id.id), ]
+
+        joker_records = self.with_context(avoid_recursion=True).search(args_extended,
+                                                                       order='evaluation_type, evaluator_id, write_date DESC', )
+        seen_combinations = set()
+        for record in joker_records:
+            combination = (record.evaluation_type, record.evaluator_id.id)
+            if combination not in seen_combinations:
+                result += record
+                seen_combinations.add(combination)
+
+        args_extended = [('type', '=', 'joker'), ('evaluated_id', '=', self.env.user.employee_id.id),
+                         ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'environment_definition']),
+                         ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)]
+        joker_records = self.with_context(avoid_recursion=True).search(args_extended,
+                                                                       order='evaluation_type, evaluated_id, write_date DESC')
+
+        seen_combinations = set()
+        for record in joker_records:
+            combination = (record.evaluation_type, record.evaluated_id.id)
+            if combination not in seen_combinations:
+                result += record
+                seen_combinations.add(combination)
+
+        if operator == '=' and value is False:
+            _operator = 'not in'
+        else:
+            _operator = 'in'
+        return [('id', _operator, result.ids)]
+
+    def _compute_show_evaluation_finished(self):
+        for record in self:
+            record.show_evaluation_finished = True

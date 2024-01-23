@@ -179,7 +179,8 @@
                                    attrs="{'invisible': [('currently_working_state', '!=', 'no')],
                                                    'required': [('currently_working_state', '=', 'no')]}"/>
                             <field name="level_teaching_type"/>
-                            <field name="knowledge_acquired_ids" widget="many2many_tags"/>
+                            <field name="knowledge_acquired_ids" widget="many2many_tags"
+                                required="context.get('is_call_documentary_validation', False) is False"/>
                         </group>
                     </group>
                 </sheet>

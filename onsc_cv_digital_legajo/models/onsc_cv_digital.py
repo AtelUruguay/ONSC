@@ -55,7 +55,6 @@ EMPLOYEE_MODIFIED_FIELDS = [
     'health_department_id',
     'health_provider_id',
     'is_cv_gender_public',
-    'is_cv_race_public',
     'other_information_official',
     'is_driver_license',
     'is_public_information_victim_violent',
@@ -67,6 +66,24 @@ EMPLOYEE_MODIFIED_FIELDS = [
     'lear',
     'institutional_email',
     'blood_type',
+    'cv_gender_id',
+    'cv_gender2',
+    'gender_date',
+    'cv_gender_record_file',
+    'cv_gender_record_filename',
+    'is_cv_gender_public',
+    'cv_race_ids',
+    'cv_race2',
+    'cv_first_race_id',
+    'is_cv_race_public',
+    'is_afro_descendants',
+    'afro_descendants_file',
+    'afro_descendants_filename',
+    'afro_descendant_date',
+    'is_victim_violent',
+    'relationship_victim_violent_file',
+    'relationship_victim_violent_filename',
+
 ]
 
 
@@ -282,19 +299,18 @@ class ONSCCVDigital(models.Model):
             'disabilitie_documentary_validation_state': _('Discapacidad'),
             'marital_status_documentary_validation_state': _('Estado civil'),
             'photo_documentary_validation_state': _('Foto'),
-            'gender_documentary_validation_state': _('Género'),
-            'cv_race_documentary_validation_state': _('Identidad étnico racial'),
-            'afro_descendant_documentary_validation_state': _('Afrodescendiente'),
             'occupational_health_card_documentary_validation_state': _('Carné de salud laboral'),
             'medical_aptitude_certificate_documentary_validation_state': _('Certificado de aptitud médico-deportiva'),
-            'victim_violent_documentary_validation_state': _('Víctima de delitos violento'),
             'cv_address_documentary_validation_state': _('Domicilio'),
         }
         field_documentary_validation_models = self._get_legajo_documentary_validation_models()
         for record in self:
             sections_tovalidate = []
             for documentary_validation_model in field_documentary_validation_models:
-                documentary_states = eval("record.mapped('%s')" % documentary_validation_model)
+                if '_ids' in documentary_validation_model:
+                    documentary_states = eval("record.mapped('%s')" % documentary_validation_model)
+                else:
+                    documentary_states = eval("record.%s" % documentary_validation_model)
                 if len(documentary_states) and 'to_validate' in documentary_states:
                     documentary_validation_model_split = documentary_validation_model.split('.')
                     if len(documentary_validation_model_split) == 2:
@@ -302,10 +318,14 @@ class ONSCCVDigital(models.Model):
                             eval("record.%s._description" % documentary_validation_model_split[0]))
                     else:
                         section_value = documentary_values.get(documentary_validation_model, '')
-                        if documentary_validation_model != 'disabilitie_documentary_validation_state':
+                        if documentary_validation_model not in ['disabilitie_documentary_validation_state',
+                                                                'civical_credential_documentary_validation_state']:
                             sections_tovalidate.append(section_value)
                         elif documentary_validation_model == 'disabilitie_documentary_validation_state' and \
                                 record.situation_disability == 'si':
+                            sections_tovalidate.append(section_value)
+                        elif documentary_validation_model == 'civical_credential_documentary_validation_state' and \
+                                record.is_civical_credential_populated:
                             sections_tovalidate.append(section_value)
             if len(sections_tovalidate) > 0:
                 documentary_validation_state = 'to_validate'
@@ -456,20 +476,9 @@ class ONSCCVDigital(models.Model):
         update_employee_gender = cv_gender_id or cv_gender_record_file or gender_date
         if update_employee_gender:
             for record in self.with_context(no_update_header_documentary_validation=True):
-                employee_id = record.employee_id.suspend_security()
                 if record.cv_gender_id.record is False:
                     record.gender_documentary_validation_state = 'validated'
-                else:
-                    record.gender_documentary_validation_state = 'to_validate'
             self.gender_write_date = fields.Datetime.now()
-
-        # IDENTIDAD ETNICO RACIAL
-        cv_race_ids = values.get('cv_race_ids')
-        cv_first_race_id = values.get('cv_first_race_id')
-        cv_race2 = values.get('cv_race2')
-        if cv_race_ids or cv_first_race_id or cv_race2:
-            self.cv_race_documentary_validation_state = 'to_validate'
-            self.cv_race_write_date = fields.Datetime.now()
 
         # AFRODESCENDIENTES
         is_afro_descendants_in_values = 'is_afro_descendants' in values
@@ -482,8 +491,6 @@ class ONSCCVDigital(models.Model):
                     'is_afro_descendants') or record.is_afro_descendants
                 if is_afro_descendants is False:
                     record.afro_descendant_documentary_validation_state = 'validated'
-                else:
-                    record.afro_descendant_documentary_validation_state = 'to_validate'
             self.afro_descendant_write_date = fields.Datetime.now()
 
         # CARNE SALUD LABORAL
@@ -523,22 +530,6 @@ class ONSCCVDigital(models.Model):
                     record.medical_aptitude_certificate_documentary_validation_state = 'to_validate'
             self.medical_aptitude_certificate_write_date = fields.Datetime.now()
 
-        # VICTIMA DE DELITOS VIOLENTOS
-        is_victim_violent_in_values = 'is_victim_violent' in values
-        relationship_victim_violent_file = values.get('relationship_victim_violent_file')
-        if is_victim_violent_in_values or relationship_victim_violent_file:
-            for record in self.with_context(no_update_header_documentary_validation=True):
-                is_victim_violent = is_victim_violent_in_values and values.get(
-                    'is_victim_violent') or record.is_victim_violent
-                if is_victim_violent is False:
-                    record.is_victim_violent = False
-                    record.relationship_victim_violent_file = False
-                    record.relationship_victim_violent_filename = False
-                    record.with_context(documentary_validation='victim_violent').button_documentary_approve()
-                else:
-                    record.victim_violent_documentary_validation_state = 'to_validate'
-            self.victim_violent_write_date = fields.Datetime.now()
-
         # DISCAPACIDAD
         is_situation_disability_in_values = 'people_disabilitie' in values
         document_certificate_file = values.get('document_certificate_file')
@@ -572,7 +563,6 @@ class ONSCCVDigital(models.Model):
         cv_address_nro_door = 'cv_address_nro_door' in values
         cv_address_is_cv_bis = 'cv_address_is_cv_bis' in values
         cv_address_apto = 'cv_address_apto' in values
-        # cv_address_amplification = 'cv_address_amplification' in values
         cv_addres_apto = 'cv_addres_apto' in values
         cv_address_zip = 'cv_address_zip' in values
         cv_address_place = 'cv_address_place' in values
@@ -659,35 +649,6 @@ class ONSCCVDigital(models.Model):
                     'civical_credential_file': record.civical_credential_file,
                     'civical_credential_filename': record.civical_credential_filename,
                 })
-            # GENERO
-            elif seccion == 'gender':
-                vals.update({
-                    'cv_gender_id': record.cv_gender_id.id,
-                    'cv_gender2': record.cv_gender2,
-                    'gender_date': record.gender_date,
-                    'cv_gender_record_file': record.cv_gender_record_file,
-                    'cv_gender_record_filename': record.cv_gender_record_filename,
-                    'is_cv_gender_public': record.is_cv_gender_public,
-                })
-            # RAZA
-            elif seccion == 'cv_race':
-                cv_race_ids = [(5,)]
-                for cv_race_id in record.cv_race_ids:
-                    cv_race_ids.append((4, cv_race_id.id))
-                vals.update({
-                    'cv_race_ids': cv_race_ids,
-                    'cv_race2': record.cv_race2,
-                    'cv_first_race_id': record.cv_first_race_id.id,
-                    'is_cv_race_public': record.is_cv_race_public,
-                })
-            # AFRODESCENDIENTE
-            elif seccion == 'afro_descendant':
-                vals.update({
-                    'is_afro_descendants': record.is_afro_descendants,
-                    'afro_descendants_file': record.afro_descendants_file,
-                    'afro_descendants_filename': record.afro_descendants_filename,
-                    'afro_descendant_date': record.afro_descendant_date,
-                })
             # CARNE SALUD LABORAL
             elif seccion == 'occupational_health_card':
                 vals.update({
@@ -703,13 +664,6 @@ class ONSCCVDigital(models.Model):
                     'medical_aptitude_certificate_date': record.medical_aptitude_certificate_date,
                     'medical_aptitude_certificate_file': record.medical_aptitude_certificate_file,
                     'medical_aptitude_certificate_filename': record.medical_aptitude_certificate_filename,
-                })
-            # VICTIMA
-            elif seccion == 'victim_violent':
-                vals.update({
-                    'is_victim_violent': record.is_victim_violent,
-                    'relationship_victim_violent_file': record.relationship_victim_violent_file,
-                    'relationship_victim_violent_filename': record.relationship_victim_violent_filename,
                 })
             # DIRECCION
             elif seccion == 'cv_address':
@@ -798,12 +752,8 @@ class ONSCCVDigital(models.Model):
         if not bool(self._context):
             return ['marital_status_documentary_validation_state',
                     'photo_documentary_validation_state',
-                    'gender_documentary_validation_state',
-                    'cv_race_documentary_validation_state',
-                    'afro_descendant_documentary_validation_state',
                     'occupational_health_card_documentary_validation_state',
                     'medical_aptitude_certificate_documentary_validation_state',
-                    'victim_violent_documentary_validation_state',
                     'cv_address_documentary_validation_state',
                     'civical_credential_documentary_validation_state',
                     'nro_doc_documentary_validation_state',
@@ -816,12 +766,8 @@ class ONSCCVDigital(models.Model):
         else:
             validation_models = ['marital_status_documentary_validation_state',
                                  'photo_documentary_validation_state',
-                                 'gender_documentary_validation_state',
-                                 'cv_race_documentary_validation_state',
-                                 'afro_descendant_documentary_validation_state',
                                  'occupational_health_card_documentary_validation_state',
                                  'medical_aptitude_certificate_documentary_validation_state',
-                                 'victim_violent_documentary_validation_state',
                                  'cv_address_documentary_validation_state',
                                  'civical_credential_documentary_validation_state',
                                  'nro_doc_documentary_validation_state',

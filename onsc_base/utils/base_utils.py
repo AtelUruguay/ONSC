@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 
+import logging
+
 from odoo import models, _
+
+_logger = logging.getLogger(__name__)
 
 
 class ONSCBaseUtils(models.AbstractModel):
@@ -128,3 +132,60 @@ class ONSCTools(models.AbstractModel):
                     'interaction': cv_digital_id.interaction,
                     'need_other_support': cv_digital_id.need_other_support,
                 })
+
+    def _20_10_vdl_seccions_ps07_12168_seccions(self, limit=10000, offset=0):
+        FIELDS_TO_APPLY_INEMPLOYEE = [
+            'cv_gender_id',
+            'cv_gender2',
+            'gender_date',
+            'cv_gender_record_file',
+            'cv_gender_record_filename',
+            'is_cv_gender_public',
+            'cv_race_ids',
+            'cv_race2',
+            'cv_first_race_id',
+            'is_cv_race_public',
+            'is_afro_descendants',
+            'afro_descendants_file',
+            'afro_descendants_filename',
+            'afro_descendant_date',
+            'is_victim_violent',
+            'relationship_victim_violent_file',
+            'relationship_victim_violent_filename',
+        ]
+        CVDigital = self.env['onsc.cv.digital'].sudo()
+        cvs = CVDigital.search([('is_docket_active', '=', True), ('employee_id', '!=', False), ('type', '=', 'cv')],
+                               limit=limit, offset=offset)
+        _logger.info("******** 20.10 VDL INICIO **********")
+        _logger.info("******** 20.10 VDL LIMIT %s **********" % (str(limit)))
+        _logger.info("******** 20.10 VDL OFFSET %s **********" % (str(offset)))
+        _logger.info("CVS: %s" % (str(len(cvs))))
+        for cv in cvs:
+            values = {}
+            for _field in FIELDS_TO_APPLY_INEMPLOYEE:
+                if _field == 'cv_race_ids':
+                    cv_race_ids = [(5,)]
+                    for cv_race_id in getattr(cv, _field):
+                        cv_race_ids.append((4, cv_race_id.id))
+                    values[_field] = cv_race_ids
+                elif "_id" in _field:
+                    values[_field] = getattr(cv, _field).id
+                else:
+                    values[_field] = getattr(cv, _field)
+            cv.employee_id.suspend_security().write(values)
+        _logger.info("******** 20.10 VDL FIN **********")
+
+    def _20_10_vdl_seccions_ps07_12168_vdl_state(self, limit=10000, offset=0):
+        _logger.info("******** 20.10 VDL STATE INICIO **********")
+        _logger.info("******** 20.10 VDL LIMIT %s **********" % (str(limit)))
+        _logger.info("******** 20.10 VDL OFFSET %s **********" % (str(offset)))
+        CVDigital = self.env['onsc.cv.digital'].sudo()
+        cvs = CVDigital.search([
+            ('is_docket_active', '=', True),
+            ('employee_id', '!=', False),
+            ('type', '=', 'cv'),
+            ('legajo_gral_info_documentary_validation_state', '!=', 'validated')
+        ], limit=limit, offset=offset)
+        _logger.info("CVS: %s" % (str(len(cvs))))
+        cvs.with_context(ignore_base_restrict=True).button_legajo_update_documentary_validation_sections_tovalidate()
+        _logger.info("******** 20.10 VDL STATE FIN **********")
