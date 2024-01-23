@@ -135,7 +135,7 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_evaluation(args, 'environment_definition')
         if self._context.get('environment_evaluation'):
             args = self._get_domain_evaluation(args, 'environment_evaluation', show_evaluator=True)
-        if self._context.get('gap_deal_type') or self._context.get('develop_plan') or self._context.get('tracing_plan'):
+        if self._context.get('gap_deal_type') or self._context.get('develop_plan') or self._context.get('tracing_plan_type'):
             args = self._get_domain_gap_deal(args)
 
         return args
@@ -212,7 +212,7 @@ class ONSCDesempenoEvaluation(models.Model):
             evaluation_type = 'gap_deal'
         elif self._context.get('develop_plan'):
             evaluation_type = 'development_plan'
-        elif self._context.get('tracing_plan'):
+        elif self._context.get('tracing_plan_type'):
             evaluation_type = 'tracing_plan'
         collaborators = [x for x in args if x[0] == 'collaborators']
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
