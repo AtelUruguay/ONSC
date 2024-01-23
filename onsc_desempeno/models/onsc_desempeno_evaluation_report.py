@@ -88,6 +88,8 @@ class ONSCDesempenoEvaluationReport(models.Model):
 
             if self.evaluation_type in ['gap_deal', 'development_plan']:
                 ctx.update({'readonly_evaluation': True, 'gap_deal': True})
+            elif self.evaluation_type == 'tracing_plan':
+                ctx.update({'readonly_evaluation': True, 'gap_deal': False, 'tracing_plan': True})
             else:
                 ctx.update({'readonly_evaluation': True, 'gap_deal': False})
 
