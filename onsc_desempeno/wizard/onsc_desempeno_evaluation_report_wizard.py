@@ -120,7 +120,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
             if self._is_group_desempeno_admin_gh_inciso() or self._is_group_desempeno_admin_gh_ue():
                 domain = [('id', '=', inciso_id)]
             else:
-                domain = [('id', 'in', [])]
+                domain = []
             rec.inciso_ids_domain = json.dumps(domain)
 
     def action_show_report(self):
