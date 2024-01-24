@@ -575,6 +575,7 @@ class ONSCCVDigital(models.Model):
                 else:
                     record.cv_address_documentary_validation_state = 'to_validate'
                     record.cv_address_write_date = fields.Datetime.now()
+
         super(ONSCCVDigital, self).update_header_documentary_validation(values)
         self._update_employee_atheader_documentary_validation(update_employee_gender, update_employee_afro)
 
@@ -601,6 +602,13 @@ class ONSCCVDigital(models.Model):
                         'afro_descendants_file': False,
                         'afro_descendants_filename': False,
                         'afro_descendant_date': False,
+                    })
+                if not record.is_civical_credential_populated:
+                    employee_vals.update({
+                        'crendencial_serie': False,
+                        'credential_number': False,
+                        'civical_credential_file': False,
+                        'civical_credential_filename': False,
                     })
                 if employee_vals:
                     employee_id.write(employee_vals)
