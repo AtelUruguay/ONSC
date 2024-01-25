@@ -321,24 +321,9 @@ class ONSCLegajoCambioUO(models.Model):
 
     def action_confirm(self):
         self.ensure_one()
-        Job = self.env['hr.job']
         self._validate_confirm()
-        warning_message = False
-        show_warning = False
-        if self.job_id.start_date == self.date_start:
-            self.suspend_security().job_id.deactivate(self.date_start)
-            self.suspend_security().job_id.write({'active': False})
-            show_warning = True
-            warning_message = u"No pueden existir dos puestos activos para el mismo contrato, " \
-                              u"se inactivará el puesto anterior"
-        else:
-            self.suspend_security().job_id.deactivate(self.date_start - relativedelta(days=1))
-        Job.suspend_security().create_job(self.contract_id,
-                                          self.department_id,
-                                          self.date_start,
-                                          self.security_job_id)
-        self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
-                    'error_message_synchronization': warning_message})
+        self._action_confirm()
+
 
     def action_show_organigram(self):
         return {
@@ -372,3 +357,25 @@ class ONSCLegajoCambioUO(models.Model):
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
+
+    def _action_confirm(self):
+        self.ensure_one()
+        Job = self.env['hr.job']
+        warning_message = False
+        show_warning = False
+        if self.job_id.start_date == self.date_start:
+            self.suspend_security().job_id.deactivate(self.date_start)
+            self.suspend_security().job_id.write({'active': False})
+            show_warning = True
+            warning_message = u"No pueden existir dos puestos activos para el mismo contrato, " \
+                              u"se inactivará el puesto anterior"
+        else:
+            self.suspend_security().job_id.deactivate(self.date_start - relativedelta(days=1))
+        new_job = Job.suspend_security().create_job(self.contract_id,
+                                                    self.department_id,
+                                                    self.date_start,
+                                                    self.security_job_id)
+        self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
+                    'error_message_synchronization': warning_message})
+        return new_job
+

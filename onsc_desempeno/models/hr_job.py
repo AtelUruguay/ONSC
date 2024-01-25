@@ -84,11 +84,8 @@ class HrJob(models.Model):
 
         evaluation_list_lines.filtered(lambda x: x.state != 'generated').unlink()
 
-    def _update_evaluation_list_changejob(self):
-        user_employee = self.env.user.employee_id
+    def _update_evaluation_list_out_changejob(self):
         EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
-        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         EvaluationListLine.with_context(active_test=False).search([
             ('evaluation_list_id.state', '=', 'in_progress'),
             ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),

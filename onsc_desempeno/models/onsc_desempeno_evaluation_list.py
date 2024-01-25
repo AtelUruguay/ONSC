@@ -505,6 +505,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         partners_to_notify = self.env["res.partner"]
         evaluation = record.copy_data()
         evaluation[0]["evaluation_type"] = "gap_deal"
+        if record.current_job_id
 
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 

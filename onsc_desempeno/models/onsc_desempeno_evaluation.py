@@ -297,6 +297,12 @@ class ONSCDesempenoEvaluation(models.Model):
     original_evaluator_uo_id = fields.Many2one('hr.department', string='UO del Evaluador Original', readonly=True)
     reason_change_id = fields.Many2one('onsc.desempeno.reason.change.evaluator', string='Motivo de cambio de Evaluador')
 
+    current_job_id = fields.Many2one(
+        'hr.job',
+        string='Puesto actual',
+        help=u'Usado para en caso de cambio de puesto saber el Puesto actual '
+             'en el que se encuentra el Funcionario')
+
     # DEFINICION DE ENTORNO
     list_manager_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
     environment_evaluation_ids = fields.Many2many('hr.employee', 'enviroment_evaluator_evaluation_rel', 'evaluation_id',
