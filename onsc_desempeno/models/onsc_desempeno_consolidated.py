@@ -28,6 +28,9 @@ class ONSCDesempenoConsolidated(models.Model):
         return self.user_has_groups('onsc_desempeno.group_desempeno_responsable_uo')
 
     def _get_domain(self, args):
+        if self._context.get('readonly_evaluation'):
+            return args
+
         if self._context.get('collaborator'):
             evaluation_type = 'collaborator'
         elif self._context.get('environment'):
