@@ -78,7 +78,13 @@ class ONSCDesempenoEvaluationReport(models.Model):
     def button_open_evaluation(self):
         ctx = self.env.context.copy()
 
-        if self.evaluation_type in ('collaborator_consolidate', 'environment_consolidate'):
+        if self.evaluation_type == 'collaborator_consolidate':
+            ctx.update({'readonly_evaluation': True})
+            action = \
+                self.sudo().env.ref('onsc_desempeno.onsc_desempeno_collaborator_consolidated_readonly_action').read()[0]
+            action.update({'res_id': self.consolidated_id.id, 'context': ctx, })
+            return action
+        elif self.evaluation_type == 'environment_consolidate':
             ctx.update({'readonly_evaluation': True})
             action = \
                 self.sudo().env.ref('onsc_desempeno.onsc_desempeno_collaborator_consolidated_readonly_action').read()[0]
