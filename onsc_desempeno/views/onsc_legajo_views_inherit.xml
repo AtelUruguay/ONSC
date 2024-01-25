@@ -24,9 +24,9 @@
                         <div>
                             <h4>Puntajes</h4>
                         </div>
-                        <field name="score_ids" >
-                            <tree readonly="1"
+                        <field name="score_ids" options="{'no_open': True}" readonly="1"
                                        create="0" delete="0" edit="0">
+                            <tree >
                                 <field name="year"/>
                                 <field name="employee_id" string="Evaluador"/>
                                 <button type="object"

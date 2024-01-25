@@ -58,8 +58,7 @@ class ONSCDesempenoSettings(models.Model):
         readonly=False,
         related_sudo=True)
     notification_pending_text = fields.Text(related="company_id.notification_pending_text", readonly=False,
-                                              related_sudo=True)
-
+                                            related_sudo=True)
 
     def execute(self):
         return {

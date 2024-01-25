@@ -39,6 +39,10 @@
                                         <div class="row" style="padding-left:15px">
                                             <field name="environment_evaluation_text"/>
                                         </div>
+                                        <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Aviso de notificaciones pendiente</h6>
+                                        <div class="row" style="padding-left:15px">
+                                            <field name="notification_pending_text"/>
+                                        </div>
                                         <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Puntajes</h6>
                                         <div class="row">
                                             <label string="Evaluación 360" for="eval_360_score" class="col-md-5 o_light_label" style="text-align:right;"/>
