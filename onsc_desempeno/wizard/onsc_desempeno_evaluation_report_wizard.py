@@ -55,12 +55,12 @@ class ONSCOrganizationalWizard(models.TransientModel):
 
     @api.onchange("inciso_id")
     def _onchange_inciso_id(self):
-        OperatingUnit = self.env['operating.unit'].suspend_security()
-        if self.inciso_id and self._is_group_admin():
-            if self.inciso_id.id == self.env.user.employee_id.job_id.contract_id.inciso_id.id:
+
+        if self._is_group_admin():
+            if self.inciso_id and self.inciso_id.id == self.env.user.employee_id.job_id.contract_id.inciso_id.id:
                 self.operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
             else:
-                self.operating_unit_id = OperatingUnit.suspend_security().search([('inciso_id', '=', self.inciso_id.id)], limit=1).id
+                self.operating_unit_id = False
 
     def _is_group_desempeno_admin_gh_inciso(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso')

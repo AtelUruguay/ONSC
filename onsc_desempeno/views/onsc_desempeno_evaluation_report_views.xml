@@ -8,6 +8,7 @@
             <tree string="Evaluación de Desempeño">
                 <field name="evaluation_id" invisible="1"/>
                 <field name="consolidated_id" invisible="1"/>
+                <field name="inciso_id"/>
                 <field name="operating_unit_id"/>
                 <field name="general_cycle_id"/>
                 <field name="evaluation_type"/>
