@@ -25,6 +25,7 @@ class ResCompany(models.Model):
     development_plan_score = fields.Integer(string='Puntaje de Plan de desarrollo')
     tracing_plan_score = fields.Integer(string='Puntaje de Seguimiento de Plan de desarrollo')
     tracing_plan_activity_score = fields.Integer(string='Puntaje de Actividad de Seguimiento de Plan de desarrollo')
+    notification_pending_text = fields.Text('Aviso de noticaciones pendientes')
 
     def write(self, vals):
         _fields = [

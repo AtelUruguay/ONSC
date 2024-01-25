@@ -77,3 +77,36 @@ class ONSCDesempenoScore(models.Model):
     evaluations_tracing_plan_activity_score = fields.Float('Puntaje de Actividad de Seguimiento del Plan de desarrollo')
     score = fields.Float('Puntaje final')
     is_employee_notified = fields.Boolean(string='¿Fue notificado?')
+    legajo_id = fields.Many2one('onsc.legajo', string='Legajo')
+
+    def button_open_gap_deal(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        employee = self.env.user.employee_id
+        ids = Evaluation.search([('evaluation_type', '=', 'gap_deal'),
+                                 ('evaluated_id', '=', employee.id),
+                                 ('evaluation_stage_id', '=', self.evaluation_stage_id.id)])
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_gap_deal_evaluation_action').read()[0]
+        action.update({'res_id': ids, 'target': 'current'})
+        return action
+
+    def button_open_development_plan(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        employee = self.env.user.employee_id
+        ids = Evaluation.search([('evaluation_type', '=', 'development_plan'),
+                                 ('evaluated_id', '=', employee.id),
+                                 ('evaluation_stage_id', '=', self.evaluation_stage_id.id)])
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_plan_action').read()[0]
+        action.update({'res_id': ids, 'target': 'current'})
+        return action
+
+    def button_open_tracing_plan(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        employee = self.env.user.employee_id
+        ids = Evaluation.search([('evaluation_type', '=', 'tracing_plan'),
+                                 ('evaluated_id', '=', employee.id),
+                                 ('evaluation_stage_id', '=', self.evaluation_stage_id.id)])
+        action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_tracing_plan_action').read()[0]
+        action.update({'res_id': ids, 'target': 'current'})
+        return action
+
+
