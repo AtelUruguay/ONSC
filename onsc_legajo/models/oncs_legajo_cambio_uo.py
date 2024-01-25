@@ -324,7 +324,6 @@ class ONSCLegajoCambioUO(models.Model):
         self._validate_confirm()
         self._action_confirm()
 
-
     def action_show_organigram(self):
         return {
             'type': 'ir.actions.client',
@@ -364,18 +363,20 @@ class ONSCLegajoCambioUO(models.Model):
         warning_message = False
         show_warning = False
         if self.job_id.start_date == self.date_start:
-            self.suspend_security().job_id.deactivate(self.date_start)
+            self.suspend_security().job_id.deactivate(self.date_start, is_job_change=True)
             self.suspend_security().job_id.write({'active': False})
             show_warning = True
             warning_message = u"No pueden existir dos puestos activos para el mismo contrato, " \
                               u"se inactivará el puesto anterior"
         else:
-            self.suspend_security().job_id.deactivate(self.date_start - relativedelta(days=1))
-        new_job = Job.suspend_security().create_job(self.contract_id,
-                                                    self.department_id,
-                                                    self.date_start,
-                                                    self.security_job_id)
+            self.suspend_security().job_id.deactivate(self.date_start - relativedelta(days=1), is_job_change=True)
+        new_job = Job.suspend_security().create_job(
+            self.contract_id,
+            self.department_id,
+            self.date_start,
+            self.security_job_id,
+            is_job_change=True
+        )
         self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
                     'error_message_synchronization': warning_message})
         return new_job
-

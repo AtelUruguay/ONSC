@@ -21,7 +21,6 @@ class ONSCLegajoCambioUO(models.Model):
             ('evaluation_list_id.state', '=', 'in_progress'),
             ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
             ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
-            ('evaluation_list_id.department_id', '=', self.department_id.id),
             ('generated', '=', True),
             ('job_id', '=', self.id),
         ])

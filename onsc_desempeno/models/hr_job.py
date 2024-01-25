@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, api, fields
+from odoo import models, fields
 
 
 class HrJob(models.Model):
@@ -10,11 +10,21 @@ class HrJob(models.Model):
         comodel_name='onsc.desempeno.evaluation.list.line',
         string='Línea de evaluación de Lista de participantes')
 
-    @api.model
-    def create(self, vals):
-        record = super(HrJob, self).create(vals)
-        record._update_evaluation_list_in()
-        return record
+    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False,
+                   is_job_change=False):
+        new_job = super(HrJob, self).create_job(
+            contract,
+            department,
+            start_date,
+            security_job,
+            extra_security_roles=extra_security_roles,
+            is_job_change=is_job_change
+        )
+        if not is_job_change:
+            new_job._update_evaluation_list_in()
+        else:
+            new_job._update_evaluation_list_in_changejob()
+        return new_job
 
     def deactivate(self, date_end, is_job_change=False):
         results = super(HrJob, self).deactivate(date_end)
@@ -24,8 +34,25 @@ class HrJob(models.Model):
             else:
                 record._update_evaluation_list_changejob()
 
-
     def _update_evaluation_list_in(self):
+        if self.contrato_id.legajo_state not in ['baja', 'reserved']:
+            EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
+            evaluation_list_lines = EvaluationListLine.with_context(active_test=False).search([
+                ('evaluation_list_id.state', '=', 'in_progress'),
+                ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
+                ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
+                ('evaluation_list_id.department_id', '=', self.department_id.id),
+            ])
+            evaluation_employees = evaluation_list_lines.mapped('employee_id')
+            if len(evaluation_list_lines) and self.employee_id not in evaluation_employees.ids:
+                new_evaluation_list_line = EvaluationListLine.create({
+                    'evaluation_list_id': evaluation_list_lines[0].evaluation_list_id.id,
+                    'job_id': self.id
+                })
+                self.write({'evaluation_list_line_id': new_evaluation_list_line.id})
+        return True
+
+    def _update_evaluation_list_in_changejob(self):
         if self.contrato_id.legajo_state not in ['baja', 'reserved']:
             EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
             evaluation_list_lines = EvaluationListLine.with_context(active_test=False).search([
@@ -64,7 +91,8 @@ class HrJob(models.Model):
                 elif evaluation.evaluator_id == user_employee and evaluation.state in ['draft', 'in_process']:
                     evaluation.button_cancel()
             elif evaluation.type in ['leader_evaluation']:
-                if evaluation.evaluated_id == user_employee and evaluation.state in ['draft', 'in_process', 'completed', 'finished']:
+                if evaluation.evaluated_id == user_employee and evaluation.state in ['draft', 'in_process', 'completed',
+                                                                                     'finished']:
                     evaluation.button_cancel()
 
         Consolidated.search([
