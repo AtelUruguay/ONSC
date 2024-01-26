@@ -315,6 +315,8 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                                     'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
                                 'descripcionJornadaFormal': response['descripcionJornadaFormal'],
                             })
+                        if len(alta_vl) > 1:
+                            alta_vl = alta_vl[0]
                         alta_vl.suspend_security().write(vals)
                         if alta_vl.is_responsable_uo:
                             alta_vl.department_id.suspend_security().write({'is_manager_reserved': True})
