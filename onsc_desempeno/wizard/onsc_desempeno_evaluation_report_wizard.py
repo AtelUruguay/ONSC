@@ -134,6 +134,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
 
     def action_show_report(self):
         where_clause = []
+
         _where = ""
         if self.inciso_id:
             where_clause.append(" inciso_id = '%s' " % str(self.inciso_id.id))
@@ -143,7 +144,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
         if self.general_cycle_id:
             where_clause.append(" general_cycle_id = '%s' " % str(self.general_cycle_id.id))
 
-        if self.evaluation_type:
+        if self.evaluation_type :
             where_clause.append(" evaluation_type = '%s' " % self.evaluation_type)
 
         if self.state:
@@ -167,6 +168,11 @@ class ONSCOrganizationalWizard(models.TransientModel):
         else:
             if where_clause:
                 where_clause = " AND ".join(where_clause)
+            where_consolidate = where_clause
+            if self.evaluation_type and self.evaluation_type == 'environment_consolidate':
+                where_consolidate = where_consolidate.replace('environment_consolidate', 'environment')
+            elif self.evaluation_type and self.evaluation_type == 'collaborator_consolidate':
+                where_consolidate = where_consolidate.replace('collaborator_consolidate', 'collaborator')
 
             _query = """INSERT INTO onsc_desempeno_evaluation_report(operating_unit_id, general_cycle_id, evaluation_type,
                                 state, gap_deal_state, evaluated_id, evaluator_id, user_id,evaluation_id, consolidated_id,inciso_id)
@@ -188,7 +194,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
                             FROM onsc_desempeno_consolidated cons
                             INNER JOIN hr_employee_onsc_desempeno_consolidated_rel rel
                             ON cons.id = rel.onsc_desempeno_consolidated_id WHERE %s""" % (
-                self.env.user.id, where_clause or "TRUE", self.env.user.id, where_clause or "TRUE")
+                self.env.user.id, where_clause or "TRUE", self.env.user.id, where_consolidate or "TRUE")
 
         cr = self.env.cr
         cr.execute("DELETE FROM onsc_desempeno_evaluation_report WHERE user_id = '%s'" % self.env.user.id)
