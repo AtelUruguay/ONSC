@@ -10,7 +10,7 @@ ONSC - Gestión de Desempeño
     """,
     'category': 'ONSC',
     'depends': ['mail', 'model_history', 'base_suspend_security' , 'onsc_base',
-                'onsc_catalog', 'onsc_legajo', 'onsc_cv_digital_legajo'],
+                'onsc_catalog', 'onsc_cv_digital_legajo'],
     'data': [
         'security/onsc_desempeno_security.xml',
         'security/ir.model.access.csv',
