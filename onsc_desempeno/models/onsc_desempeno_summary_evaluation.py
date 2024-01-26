@@ -39,6 +39,17 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     _auto = False
 
     @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(ONSCLegajoSummaryEvaluation, self).fields_get(allfields, attributes)
+        hide = ['type', 'order_type', 'order_state']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
+
+    @api.model
     def search(self, args, offset=0, limit=None, order=None, count=False):
 
         result = super(ONSCLegajoSummaryEvaluation, self).search(
@@ -334,8 +345,9 @@ class ONSCLegajoSummaryEvaluation(models.Model):
                          ('operating_unit_id', '=', operating_unit_id),
                          ('evaluator_id', '=', self.env.user.employee_id.id), ]
 
-        joker_records = self.with_context(avoid_recursion=True).search(args_extended,
-                                                                       order='evaluation_type, evaluator_id, write_date DESC', )
+        joker_records = self.with_context(avoid_recursion=True).search(
+            args_extended,
+            order='evaluation_type, evaluator_id, write_date DESC', )
         seen_combinations = set()
         for record in joker_records:
             combination = (record.evaluation_type, record.evaluator_id.id)
@@ -346,8 +358,9 @@ class ONSCLegajoSummaryEvaluation(models.Model):
         args_extended = [('type', '=', 'joker'), ('evaluated_id', '=', self.env.user.employee_id.id),
                          ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'environment_definition']),
                          ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)]
-        joker_records = self.with_context(avoid_recursion=True).search(args_extended,
-                                                                       order='evaluation_type, evaluated_id, write_date DESC')
+        joker_records = self.with_context(avoid_recursion=True).search(
+            args_extended,
+            order='evaluation_type, evaluated_id, write_date DESC')
 
         seen_combinations = set()
         for record in joker_records:
