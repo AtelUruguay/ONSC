@@ -30,6 +30,7 @@
                             <tree >
                                 <field name="year"/>
                                 <field name="employee_id" string="Evaluador"/>
+                                <field name="score" />
                                 <button type="object"
                                         name="button_open_gap_deal"
                                         string="Ver acuerdo de brecha"

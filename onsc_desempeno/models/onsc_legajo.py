@@ -19,27 +19,19 @@ class ONSCLegajoScore(models.Model):
 
     def _compute_onsc_desempeno_score(self):
         Score = self.env['onsc.desempeno.score'].suspend_security()
-        employee = self.env.user.employee_id
-        inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         for rec in self:
             try:
                 rec.score_ids = Score.with_context(ignore_security_rules=True).search(
-                    [('employee_id', '=', employee.id), ('is_employee_notified', '=', True),
-                     ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)])
+                    [('employee_id', '=', self.employee_id.id), ('is_employee_notified', '=', True)])
 
             except Exception as e:
                 _logger.error(f"Error en el método de cálculo de score_ids: {e}")
 
     def _compute_show_alert(self):
         Score = self.env['onsc.desempeno.score'].suspend_security()
-        employee = self.env.user.employee_id
-        inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
-        operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         for rec in self:
             count_score = Score.with_context(ignore_security_rules=True).search_count(
-                [('employee_id', '=', employee.id), ('is_employee_notified', '=', False),
-                 ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id),
+                [('employee_id', '=', self.employee_id.id), ('is_employee_notified', '=', False),
                  ('evaluation_stage_id.closed_stage', '=', True)])
             if count_score > 0:
                 rec.show_alert = True
