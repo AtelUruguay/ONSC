@@ -37,6 +37,16 @@ class ONSCLegajoSummaryEvaluation(models.Model):
     _name = "onsc.desempeno.summary.evaluation"
     _description = "Resumen de evaluaciones"
     _auto = False
+    @api.model
+    def fields_get(self, allfields=None, attributes=None):
+        res = super(ONSCLegajoSummaryEvaluation, self).fields_get(allfields, attributes)
+        hide = ['type', 'order_type', 'order_state']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
+        return res
 
     @api.model
     def search(self, args, offset=0, limit=None, order=None, count=False):

@@ -3,9 +3,10 @@
     <record id="onsc_legajo_desempeno_puntaje_form" model="ir.ui.view">
         <field name="name">onsc.legajo.desempeno.puntaje</field>
         <field name="model">onsc.legajo</field>
-        <field name="inherit_id" ref="onsc_cv_digital_legajo.onsc_legajo_form"/>
+        <field name="inherit_id" ref="onsc_legajo.onsc_legajo_form"/>
+        <field name="priority">20</field>
         <field name="arch" type="xml">
-            <xpath expr="//page[2]"  position="after">
+            <xpath expr="//notebook[last()]"  position="inside">
                 <page name="desempenio" string="Evaluación de desempeño">
                      <field name="show_alert" invisible ="1"/>
                      <div class="alert alert-info" role="alert"
