@@ -20,6 +20,7 @@ ONSC - Gestión de Desempeño
         'wizard/onsc_desempeno_evaluator_change_wizard_views.xml',
         'wizard/onsc_desempeno_extend_deadline_views.xml',
         'wizard/onsc_desempeno_evaluator_cancel_wizard_views.xml',
+        'wizard/onsc_desempeno_evaluation_report_wizard.xml',
         'views/catalogs/onsc_legajo_base_views.xml',
         'views/catalogs/onsc_desempeno_dimension_views.xml',
         'views/catalogs/onsc_desempeno_skill_views.xml',
@@ -39,7 +40,7 @@ ONSC - Gestión de Desempeño
         'views/onsc_desempeno_development_plan_views.xml',
         'views/onsc_desempeno_evaluation_summary_views.xml',
         'views/onsc_desempeno_evaluation_report_views.xml',
-        'wizard/onsc_desempeno_evaluation_report_wizard.xml',
+        'views/onsc_legajo_views_inherit.xml',
         'views/onsc_desempeno_menuitems.xml'
     ],
     'demo': [],

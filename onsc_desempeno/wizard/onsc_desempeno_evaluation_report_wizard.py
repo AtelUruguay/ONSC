@@ -53,6 +53,15 @@ class ONSCOrganizationalWizard(models.TransientModel):
         general_cycle_id = GeneralCycle.search([('year', '=', year)], limit=1)
         return general_cycle_id.id
 
+    @api.onchange("inciso_id")
+    def _onchange_inciso_id(self):
+
+        if self._is_group_admin():
+            if self.inciso_id and self.inciso_id.id == self.env.user.employee_id.job_id.contract_id.inciso_id.id:
+                self.operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+            else:
+                self.operating_unit_id = False
+
     def _is_group_desempeno_admin_gh_inciso(self):
         return self.user_has_groups('onsc_desempeno.group_desempeno_admin_gh_inciso')
 
@@ -117,10 +126,10 @@ class ONSCOrganizationalWizard(models.TransientModel):
 
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         for rec in self:
-            if self._is_group_desempeno_admin_gh_inciso() or self.group_desempeno_admin_gh_ue():
+            if self._is_group_desempeno_admin_gh_inciso() or self._is_group_desempeno_admin_gh_ue():
                 domain = [('id', '=', inciso_id)]
             else:
-                domain = [('id', 'in', [])]
+                domain = []
             rec.inciso_ids_domain = json.dumps(domain)
 
     def action_show_report(self):

@@ -30,7 +30,7 @@
                     <field name="evaluated_id"/>
                     <filter name="pending_evaluations_filter"
                                 domain="[('evaluations', 'in', [True, False])]"
-                                string="Mis evaluaciones pendientes"/>
+                                string="Mis evaluaciones pendientes o últimas finalizadas"/>
                     <filter name="finish_evaluations_filter"
                                 domain="[('show_evaluation_finished', '=', True)]"
                                 string="Ultimas evaluaciones finalizadas"/>

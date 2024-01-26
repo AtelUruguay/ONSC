@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 REQUIRED_FIELDS = [
     'inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
     'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description', 'resolution_date',
-    'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
+    'resolution_type', 'cv_birthdate', 'cv_sex',
     'retributive_day_id', 'date_income_public_administration', 'department_id', 'security_job_id'
 ]
 name_doc_one = u'Documento digitalizado "Partida de matrimonio / Partida de unión concubinaria / '
@@ -140,6 +140,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     def action_aprobado_cgn(self):
         legajo = super(ONSCLegajoAltaVL, self).action_aprobado_cgn()
+        legajo_vals = dict()
         vals = dict()
         if self.employee_id.cv_birthdate != self.cv_birthdate:
             vals.update({'cv_birthdate': self.cv_birthdate, })
@@ -148,6 +149,14 @@ class ONSCLegajoAltaVL(models.Model):
         if vals:
             self.cv_digital_id.with_context(can_update_contact_cv=True).suspend_security().write(vals)
             self.employee_id.suspend_security().write(vals)
+
+        # LEGAJO
+        if self.date_income_public_administration != legajo.public_admin_entry_date:
+            legajo_vals.update({'public_admin_entry_date': self.date_income_public_administration})
+        if self.inactivity_years != legajo.public_admin_inactivity_years_qty:
+            legajo_vals.update({'public_admin_inactivity_years_qty': self.inactivity_years})
+        if legajo_vals:
+            legajo.write(legajo_vals)
         return legajo
 
     @api.onchange('partner_id')

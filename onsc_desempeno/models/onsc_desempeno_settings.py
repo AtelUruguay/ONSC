@@ -57,6 +57,8 @@ class ONSCDesempenoSettings(models.Model):
         related="company_id.tracing_plan_activity_score",
         readonly=False,
         related_sudo=True)
+    notification_pending_text = fields.Text(related="company_id.notification_pending_text", readonly=False,
+                                            related_sudo=True)
 
     def execute(self):
         return {

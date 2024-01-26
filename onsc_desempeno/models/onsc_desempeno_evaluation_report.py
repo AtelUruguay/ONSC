@@ -78,7 +78,13 @@ class ONSCDesempenoEvaluationReport(models.Model):
     def button_open_evaluation(self):
         ctx = self.env.context.copy()
 
-        if self.evaluation_type in ('collaborator_consolidate', 'environment_consolidate'):
+        if self.evaluation_type == 'collaborator_consolidate':
+            ctx.update({'readonly_evaluation': True})
+            action = \
+                self.sudo().env.ref('onsc_desempeno.onsc_desempeno_collaborator_consolidated_readonly_action').read()[0]
+            action.update({'res_id': self.consolidated_id.id, 'context': ctx, })
+            return action
+        elif self.evaluation_type == 'environment_consolidate':
             ctx.update({'readonly_evaluation': True})
             action = \
                 self.sudo().env.ref('onsc_desempeno.onsc_desempeno_collaborator_consolidated_readonly_action').read()[0]
@@ -88,8 +94,14 @@ class ONSCDesempenoEvaluationReport(models.Model):
 
             if self.evaluation_type in ['gap_deal', 'development_plan']:
                 ctx.update({'readonly_evaluation': True, 'gap_deal': True})
+            elif self.evaluation_type == 'tracing_plan':
+                ctx.update({'readonly_evaluation': True, 'gap_deal': False, 'tracing_plan': True})
             else:
                 ctx.update({'readonly_evaluation': True, 'gap_deal': False})
-            action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
+
+            if self.evaluation_type in ['development_plan', 'tracing_plan']:
+                action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_devlop_action').read()[0]
+            else:
+                action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
             action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
             return action
