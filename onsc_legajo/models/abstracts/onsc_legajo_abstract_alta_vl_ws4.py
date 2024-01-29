@@ -23,11 +23,12 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         _logger.info('******************WS4')
         _logger.info(data)
         _logger.info('******************WS4')
-        return self.with_context(altas_vl=records, log_info=log_info).suspend_security()._syncronize(wsclient,
-                                                                                                     parameter,
-                                                                                                     'WS4',
-                                                                                                     integration_error,
-                                                                                                     data)
+        return self.with_context(altas_vl=records, log_info=log_info).suspend_security()._syncronize(
+            wsclient,
+            parameter,
+            'WS4',
+            integration_error,
+            data)
 
     # flake8: noqa: C901
     def _get_data_multi(self, records):
@@ -234,46 +235,7 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
             onsc_legajo_integration_error_WS4_9004 = self.env.ref(
                 "onsc_legajo.onsc_legajo_integration_error_WS4_9004")
             if hasattr(response, 'altaSGHMovimientoRespuesta') and response.altaSGHMovimientoRespuesta:
-                for response in response.altaSGHMovimientoRespuesta:
-                    try:
-                        altas_vl = altas_vl.filtered(
-                            lambda x: x.partner_id.cv_nro_doc[:-1] == str(response['cedula']))
-                        if altas_vl:
-                            vals = {
-                                'id_alta': response['pdaId'] if 'pdaId' in response else False,
-                                'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
-                                'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
-                                'nroPlaza': response['nroPlaza'] if 'nroPlaza' in response else False,
-
-                                'is_error_synchronization': False,
-                                'ws4_user_id': self.env.user.id,
-                                'state': 'pendiente_auditoria_cgn',
-                                'error_message_synchronization': ''
-                            }
-                            if 'descripcionJornadaFormal' in response:
-                                vals.update({
-                                    'codigoJornadaFormal': response[
-                                        'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
-                                    'descripcionJornadaFormal': response['descripcionJornadaFormal'],
-                                })
-                            altas_vl.write(vals)
-                            altas_vl.filtered(lambda x: x.is_responsable_uo).mapped(
-                                'department_id').suspend_security().write({'is_manager_reserved': True})
-                    except Exception as e:
-                        long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
-                        _logger.warning(long_description)
-                        self.create_new_log(
-                            origin='WS4',
-                            type='error',
-                            integration_log=onsc_legajo_integration_error_WS4_9004,
-                            long_description=long_description
-                        )
-                        altas_vl.write({
-                            'is_error_synchronization': True,
-                            'state': 'error_sgh',
-                            'error_message_synchronization': long_description
-                        })
-
+                self._process_response_details(response)
             else:
                 long_description = "No se pudo conectar con el servicio web. Verifique la configuración o consulte con el administrador."
                 self.create_new_log(
@@ -289,35 +251,9 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 })
 
     def _process_response_witherror(self, response, origin_name, integration_error, long_description=''):
-        IntegrationError = self.env['onsc.legajo.integration.error']
         altas_vl = self._context.get('altas_vl')
         if hasattr(response, 'altaSGHMovimientoRespuesta'):
-            for v_error in response.altaSGHMovimientoRespuesta:
-                error = IntegrationError.search([
-                    ('integration_code', '=', origin_name),
-                    ('code_error', '=', str(v_error.codigo)),
-                ], limit=1)
-                message = error.description if error else v_error.mensaje
-                self.create_new_log(
-                    origin=origin_name,
-                    type='error',
-                    integration_log=error or integration_error,
-                    ws_tuple=False,
-                    long_description=v_error.mensaje)
-                altas_vl_id = altas_vl.filtered(
-                    lambda x: x.partner_id.cv_nro_doc[:-1] == str(v_error['cedula']))
-                if altas_vl_id:
-                    altas_vl_id.write({
-                        'is_error_synchronization': True,
-                        'state': 'error_sgh',
-                        'error_message_synchronization': str(long_description) + "." + message
-                    })
-                else:
-                    altas_vl.write({
-                        'is_error_synchronization': True,
-                        'state': 'error_sgh',
-                        'error_message_synchronization': str(long_description) + "." + message
-                    })
+            self._process_response_details(response)
         else:
             altas_vl.write({
                 'is_error_synchronization': True,
@@ -330,3 +266,72 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 integration_error,
                 long_description
             )
+
+    def _process_response_details(self, response):
+        IntegrationError = self.env['onsc.legajo.integration.error']
+        onsc_legajo_integration_error_WS4_9004 = self.env.ref(
+            "onsc_legajo.onsc_legajo_integration_error_WS4_9004")
+        origin_name = 'WS4'
+        integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS4_9005")
+        altas_vl = self._context.get('altas_vl')
+        for v_error in response.altaSGHMovimientoRespuesta:
+            with self._cr.savepoint():
+                alta_vl = altas_vl.filtered(lambda x: x.partner_id.cv_nro_doc[:-1] == str(v_error['cedula']))
+                long_description = v_error.mensaje
+                try:
+                    if v_error.codigo != 0:
+                        error = IntegrationError.search([
+                            ('integration_code', '=', origin_name),
+                            ('code_error', '=', str(v_error.codigo)),
+                        ], limit=1)
+                        message = error.description if error else v_error.mensaje
+                        self.create_new_log(
+                            origin=origin_name,
+                            type='error',
+                            integration_log=error or integration_error,
+                            ws_tuple=False,
+                            long_description=v_error.mensaje)
+                        if alta_vl:
+                            alta_vl.suspend_security().write({
+                                'is_error_synchronization': True,
+                                'state': 'error_sgh',
+                                'error_message_synchronization': str(long_description) + "." + message
+                            })
+                    else:
+                        vals = {
+                            'id_alta': response['pdaId'] if 'pdaId' in response else False,
+                            'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
+                            'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
+                            'nroPlaza': response['nroPlaza'] if 'nroPlaza' in response else False,
+
+                            'is_error_synchronization': False,
+                            'ws4_user_id': self.env.user.id,
+                            'state': 'pendiente_auditoria_cgn',
+                            'error_message_synchronization': ''
+                        }
+                        if 'descripcionJornadaFormal' in response:
+                            vals.update({
+                                'codigoJornadaFormal': response[
+                                    'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
+                                'descripcionJornadaFormal': response['descripcionJornadaFormal'],
+                            })
+                        if len(alta_vl) > 1:
+                            alta_vl = alta_vl[0]
+                        alta_vl.suspend_security().write(vals)
+                        if alta_vl.is_responsable_uo:
+                            alta_vl.department_id.suspend_security().write({'is_manager_reserved': True})
+                except Exception as e:
+                    long_description = "Error devuelto por SGH: %s" % tools.ustr(e)
+                    _logger.warning(long_description)
+                    self.create_new_log(
+                        origin='WS4',
+                        type='error',
+                        integration_log=onsc_legajo_integration_error_WS4_9004,
+                        long_description=long_description
+                    )
+                    if alta_vl:
+                        alta_vl.suspend_security().write({
+                            'is_error_synchronization': True,
+                            'state': 'error_sgh',
+                            'error_message_synchronization': long_description
+                        })

@@ -290,8 +290,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     self.get_position(column_names, 'descriptor4_id')])
                 budget_item_id = self.get_partida(descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id)
                 if not budget_item_id:
-                    message_error.append(
-                        line.message_error + " \nNo se puedo encontrar la partida con datos de los descriptores")
+                    message_error.append("No se puedo encontrar la partida con datos de los descriptores")
 
                 document_number = line[self.get_position(column_names, 'document_number')]
                 sex = line[self.get_position(column_names, 'cv_sex')]
