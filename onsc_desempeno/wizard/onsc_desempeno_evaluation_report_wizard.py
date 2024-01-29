@@ -146,7 +146,7 @@ class ONSCOrganizationalWizard(models.TransientModel):
         if self.general_cycle_id:
             where_clause.append(" general_cycle_id = '%s' " % str(self.general_cycle_id.id))
 
-        if self.evaluation_type :
+        if self.evaluation_type:
             where_clause.append(" evaluation_type = '%s' " % self.evaluation_type)
 
         if self.state:

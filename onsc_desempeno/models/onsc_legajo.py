@@ -24,7 +24,7 @@ class ONSCLegajoScore(models.Model):
         for rec in self:
             try:
                 rec.score_ids = Score.with_context(ignore_security_rules=True).search(
-                    [('employee_id', '=', self.employee_id.id), ('is_employee_notified', '=', True),
+                    [('employee_id', '=', rec.employee_id.id), ('is_employee_notified', '=', True),
                      ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id)])
 
             except Exception as e:
@@ -36,7 +36,7 @@ class ONSCLegajoScore(models.Model):
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         for rec in self:
             count_score = Score.with_context(ignore_security_rules=True).search_count(
-                [('employee_id', '=', self.employee_id.id), ('is_employee_notified', '=', False),
+                [('employee_id', '=', rec.employee_id.id), ('is_employee_notified', '=', False),
                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id),
                  ('evaluation_stage_id.closed_stage', '=', True)])
             if count_score > 0:
