@@ -1,13 +1,6 @@
 # -*- coding:utf-8 -*-
-import json
 
-from dateutil.relativedelta import relativedelta
-from lxml import etree
-from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
-
-from odoo import fields, models, api, _
-from odoo.exceptions import ValidationError
-from odoo.osv import expression
+from odoo import models
 
 
 class ONSCLegajoCambioUO(models.Model):
