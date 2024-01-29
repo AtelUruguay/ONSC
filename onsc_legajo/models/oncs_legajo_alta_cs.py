@@ -401,7 +401,7 @@ class ONSCLegajoAltaCS(models.Model):
                 domain = [('id', 'in', [])]
             rec.operating_unit_origin_id_domain = json.dumps(domain)
 
-    @api.depends('inciso_destination_id')
+    @api.depends('inciso_destination_id', 'type_cs')
     def _compute_operating_unit_destination_id_domain(self):
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         group1 = self.user_has_groups('onsc_legajo.group_legajo_hr_ue_alta_cs')
