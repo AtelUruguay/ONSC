@@ -205,7 +205,8 @@ class HrJob(models.Model):
         }
 
     # INTELIGENCIA DE ENTIDAD
-    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False):
+    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False,
+                   is_job_change=False):
         """
         CREA NUEVO PUESTO A PARTIR DE LA DATA DE ENTRADA
         :param contract: Recordset a hr.contract
@@ -213,6 +214,7 @@ class HrJob(models.Model):
         :param start_date: Date
         :param security_job: Recordset a onsc.legajo.security.job
         :param extra_security_roles: Extra security to apply
+        :param is_job_change: Identificar si es por un cambio de UO
         :return: nuevo recordet de hr.job
         """
         role_extra_ids = [(5,)]
@@ -242,7 +244,7 @@ class HrJob(models.Model):
             })
         return job
 
-    def deactivate(self, date_end):
+    def deactivate(self, date_end, is_job_change=False):
         for job in self.suspend_security().filtered(
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
             job.end_date = date_end

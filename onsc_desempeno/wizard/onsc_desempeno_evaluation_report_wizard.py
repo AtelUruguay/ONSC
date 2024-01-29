@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+# pylint: disable=E8102
+# pylint: disable=E8103
 import json
 
 from odoo import fields, models, api
