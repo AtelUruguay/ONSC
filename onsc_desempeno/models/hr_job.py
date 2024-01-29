@@ -32,12 +32,13 @@ class HrJob(models.Model):
             if not is_job_change:
                 record._update_evaluation_list_out()
             else:
-                record._update_evaluation_list_changejob()
+                record._update_evaluation_list_out_changejob()
+        return results
 
     def _update_evaluation_list_in(self):
-        if self.contrato_id.legajo_state not in ['baja', 'reserved']:
+        if self.contract_id.legajo_state not in ['baja', 'reserved']:
             EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
-            evaluation_list_lines = EvaluationListLine.with_context(active_test=False).search([
+            evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
                 ('evaluation_list_id.state', '=', 'in_progress'),
                 ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
                 ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
@@ -53,9 +54,9 @@ class HrJob(models.Model):
         return True
 
     def _update_evaluation_list_in_changejob(self):
-        if self.contrato_id.legajo_state not in ['baja', 'reserved']:
+        if self.contract_id.legajo_state not in ['baja', 'reserved']:
             EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
-            evaluation_list_lines = EvaluationListLine.with_context(active_test=False).search([
+            evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
                 ('evaluation_list_id.state', '=', 'in_progress'),
                 ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
                 ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
@@ -75,7 +76,7 @@ class HrJob(models.Model):
         EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        evaluation_list_lines = EvaluationListLine.with_context(active_test=False).search([
+        evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
             ('evaluation_list_id.state', '=', 'in_progress'),
             ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
             ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
@@ -114,7 +115,7 @@ class HrJob(models.Model):
 
     def _update_evaluation_list_out_changejob(self):
         EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
-        EvaluationListLine.with_context(active_test=False).search([
+        EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
             ('evaluation_list_id.state', '=', 'in_progress'),
             ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
             ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),

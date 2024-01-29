@@ -299,6 +299,7 @@ class ONSCDesempenoEvaluation(models.Model):
 
     current_job_id = fields.Many2one(
         'hr.job',
+        copy=False,
         string='Puesto actual',
         help=u'Usado para en caso de cambio de puesto saber el Puesto actual '
              'en el que se encuentra el Funcionario')
@@ -951,7 +952,12 @@ class ONSCDesempenoEvaluation(models.Model):
             evaluation[0]["gap_deal_state"] = "no_deal"
             evaluation[0]["general_comments"] = False
             evaluation[0]["state_gap_deal"] = 'draft'
-            if evaluation[0]["use_original_evaluator"] is True:
+            if self.current_job_id:
+                manager_department = self.current_job_id.department_id.get_first_department_withmanager_in_tree()
+                evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+                evaluation[0]["original_evaluator_id"] = False
+                evaluation[0]["reason_change_id"] = False
+            elif evaluation[0]["use_original_evaluator"] is True:
                 evaluation[0]["evaluator_id"] = evaluation[0]["original_evaluator_id"]
                 evaluation[0]["original_evaluator_id"] = False
                 evaluation[0]["reason_change_id"] = False
@@ -976,7 +982,12 @@ class ONSCDesempenoEvaluation(models.Model):
         evaluation[0]["state"] = 'draft'
         evaluation[0]["state_gap_deal"] = 'draft'
         evaluation[0]["general_comments"] = False
-        if evaluation[0]["use_original_evaluator"] is True:
+        if self.current_job_id:
+            manager_department = self.current_job_id.department_id.get_first_department_withmanager_in_tree()
+            evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+            evaluation[0]["original_evaluator_id"] = False
+            evaluation[0]["reason_change_id"] = False
+        elif evaluation[0]["use_original_evaluator"] is True:
             evaluation[0]["evaluator_id"] = evaluation[0]["original_evaluator_id"]
             evaluation[0]["original_evaluator_id"] = False
             evaluation[0]["reason_change_id"] = False
