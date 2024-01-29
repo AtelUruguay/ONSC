@@ -727,7 +727,7 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             record.write({
                 'reason_cancel': "Exonerado de Evaluación",
-                'state_before_cancel': self.state_gap_deal,
+                'state_before_cancel': record.state_gap_deal,
                 'state_gap_deal': 'canceled',
             })
 
@@ -735,7 +735,7 @@ class ONSCDesempenoEvaluation(models.Model):
         for record in self:
             record.write({
                 'reason_cancel': "Baja",
-                'state_before_cancel': self.state,
+                'state_before_cancel': record.state,
                 'state': 'canceled',
             })
 
