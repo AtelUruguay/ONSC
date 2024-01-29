@@ -19,7 +19,6 @@ class ONSCLegajoScore(models.Model):
 
     def _compute_onsc_desempeno_score(self):
         Score = self.env['onsc.desempeno.score'].suspend_security()
-        employee = self.env.user.employee_id
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         for rec in self:
@@ -33,7 +32,6 @@ class ONSCLegajoScore(models.Model):
 
     def _compute_show_alert(self):
         Score = self.env['onsc.desempeno.score'].suspend_security()
-        employee = self.env.user.employee_id
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         for rec in self:
