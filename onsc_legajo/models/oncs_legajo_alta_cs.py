@@ -495,7 +495,8 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.is_edit_destination = False
 
-    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs')
+    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state', 'operating_unit_destination_id',
+                 'operating_unit_origin_id')
     def _compute_is_available_send_to_sgh(self):
         is_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
         is_user_inciso = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
@@ -527,7 +528,8 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.is_available_send_to_sgh = False
 
-    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state')
+    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state', 'operating_unit_destination_id',
+                 'operating_unit_origin_id')
     def _compute_is_available_send_origin(self):
         is_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
         is_user_inciso = self.env.user.has_group('onsc_legajo.group_legajo_hr_inciso_alta_cs')
@@ -549,7 +551,8 @@ class ONSCLegajoAltaCS(models.Model):
             else:
                 record.is_available_send_origin = False
 
-    @api.depends('inciso_origin_id', 'inciso_destination_id', 'operating_unit_origin_id', 'type_cs', 'state')
+    @api.depends('inciso_origin_id', 'inciso_destination_id', 'type_cs', 'state',
+                 'operating_unit_destination_id', 'operating_unit_origin_id')
     def _compute_is_available_send_destination(self):
         inciso_id, operating_unit_id = self.get_inciso_operating_unit_by_user()
         is_user_administrar_altas_cs = self.env.user.has_group('onsc_legajo.group_legajo_alta_cs_administrar_altas_cs')
