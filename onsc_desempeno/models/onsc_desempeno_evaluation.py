@@ -297,6 +297,13 @@ class ONSCDesempenoEvaluation(models.Model):
     original_evaluator_uo_id = fields.Many2one('hr.department', string='UO del Evaluador Original', readonly=True)
     reason_change_id = fields.Many2one('onsc.desempeno.reason.change.evaluator', string='Motivo de cambio de Evaluador')
 
+    current_job_id = fields.Many2one(
+        'hr.job',
+        copy=False,
+        string='Puesto actual',
+        help=u'Usado para en caso de cambio de puesto saber el Puesto actual '
+             'en el que se encuentra el Funcionario')
+
     # DEFINICION DE ENTORNO
     list_manager_id = fields.Many2one('hr.employee', string='Evaluador', readonly=True)
     environment_evaluation_ids = fields.Many2many('hr.employee', 'enviroment_evaluator_evaluation_rel', 'evaluation_id',
@@ -717,12 +724,20 @@ class ONSCDesempenoEvaluation(models.Model):
         self.write(vals)
 
     def button_cancel_gap_deal(self):
-        vals = {
-            'reason_cancel': "Exonerado de Evaluación",
-            'state_before_cancel': self.state_gap_deal,
-            'state_gap_deal': 'canceled',
-        }
-        self.write(vals)
+        for record in self:
+            record.write({
+                'reason_cancel': "Exonerado de Evaluación",
+                'state_before_cancel': record.state_gap_deal,
+                'state_gap_deal': 'canceled',
+            })
+
+    def button_cancel(self):
+        for record in self:
+            record.write({
+                'reason_cancel': "Baja",
+                'state_before_cancel': record.state,
+                'state': 'canceled',
+            })
 
     def validate_tracing_plan(self):
         Tracing = self.env['onsc.desempeno.evaluation.tracing.plan'].sudo()
@@ -937,7 +952,12 @@ class ONSCDesempenoEvaluation(models.Model):
             evaluation[0]["gap_deal_state"] = "no_deal"
             evaluation[0]["general_comments"] = False
             evaluation[0]["state_gap_deal"] = 'draft'
-            if evaluation[0]["use_original_evaluator"] is True:
+            if self.current_job_id:
+                manager_department = self.current_job_id.department_id.get_first_department_withmanager_in_tree()
+                evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+                evaluation[0]["original_evaluator_id"] = False
+                evaluation[0]["reason_change_id"] = False
+            elif evaluation[0]["use_original_evaluator"] is True:
                 evaluation[0]["evaluator_id"] = evaluation[0]["original_evaluator_id"]
                 evaluation[0]["original_evaluator_id"] = False
                 evaluation[0]["reason_change_id"] = False
@@ -962,7 +982,12 @@ class ONSCDesempenoEvaluation(models.Model):
         evaluation[0]["state"] = 'draft'
         evaluation[0]["state_gap_deal"] = 'draft'
         evaluation[0]["general_comments"] = False
-        if evaluation[0]["use_original_evaluator"] is True:
+        if self.current_job_id:
+            manager_department = self.current_job_id.department_id.get_first_department_withmanager_in_tree()
+            evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+            evaluation[0]["original_evaluator_id"] = False
+            evaluation[0]["reason_change_id"] = False
+        elif evaluation[0]["use_original_evaluator"] is True:
             evaluation[0]["evaluator_id"] = evaluation[0]["original_evaluator_id"]
             evaluation[0]["original_evaluator_id"] = False
             evaluation[0]["reason_change_id"] = False

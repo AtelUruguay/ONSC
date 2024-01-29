@@ -505,7 +505,9 @@ class ONSCDesempenoEvaluationList(models.Model):
         partners_to_notify = self.env["res.partner"]
         evaluation = record.copy_data()
         evaluation[0]["evaluation_type"] = "gap_deal"
-
+        if record.current_job_id:
+            manager_department = record.current_job_id.department_id.get_first_department_withmanager_in_tree()
+            evaluation[0]["evaluator_id"] = manager_department.manager_id.id
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
         for competency in record.evaluation_competency_ids:
