@@ -32,6 +32,7 @@ ONSC - Legajo
         'wizard/mail_wizard_invite_views.xml',
 
         'views/onsc_legajo_department_views.xml',
+        'views/onsc_legajo_department_old_views.xml',
 
         'views/onsc_legajo_settings_view.xml',
         'views/catalogs/onsc_catalog_descriptors.xml',
