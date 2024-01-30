@@ -173,6 +173,7 @@
                                    attrs="{'invisible': [('original_evaluator_id', '=', False)]}"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    readonly="1"/>
+                            <field name="evaluation_type" invisible="context.get('readonly_evaluation', False) is False"/>
                             <field name="reason_change_id"
                                    readonly="1"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
@@ -372,7 +373,7 @@
     </record>
 
     <record id='onsc_desempeno_evaluation_action' model='ir.actions.act_window'>
-        <field name="name">Evaluación de Desempeño</field>
+        <field name="name">Autoevaluación</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
         <field name="context">{'is_from_menu': True,'self_evaluation':True}</field>
         <field name="view_mode">tree,form</field>
