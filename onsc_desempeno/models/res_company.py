@@ -26,6 +26,7 @@ class ResCompany(models.Model):
     tracing_plan_score = fields.Integer(string='Puntaje de Seguimiento de Plan de desarrollo')
     tracing_plan_activity_score = fields.Integer(string='Puntaje de Actividad de Seguimiento de Plan de desarrollo')
     notification_pending_text = fields.Text('Aviso de noticaciones pendientes')
+    is_notification_pending_form_active = fields.Boolean('Activar aviso para formulario de pendiente de noticar')
 
     def write(self, vals):
         _fields = [
@@ -46,7 +47,8 @@ class ResCompany(models.Model):
             "development_plan_score",
             "tracing_plan_score",
             "tracing_plan_activity_score",
-            "notification_pending_text"
+            "notification_pending_text",
+            "is_notification_pending_form_active"
         ]
         if any(x in vals.keys() for x in _fields):
             return super(ResCompany, self.suspend_security()).write(vals)
