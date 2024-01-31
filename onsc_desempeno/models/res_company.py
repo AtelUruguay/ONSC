@@ -46,6 +46,7 @@ class ResCompany(models.Model):
             "development_plan_score",
             "tracing_plan_score",
             "tracing_plan_activity_score",
+            "notification_pending_text"
         ]
         if any(x in vals.keys() for x in _fields):
             return super(ResCompany, self.suspend_security()).write(vals)
