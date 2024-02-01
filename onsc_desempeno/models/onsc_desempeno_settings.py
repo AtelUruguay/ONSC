@@ -59,6 +59,8 @@ class ONSCDesempenoSettings(models.Model):
         related_sudo=True)
     notification_pending_text = fields.Text(related="company_id.notification_pending_text", readonly=False,
                                             related_sudo=True)
+    is_notification_pending_form_active = fields.Boolean(related="company_id.is_notification_pending_form_active",
+                                                         readonly=False, related_sudo=True)
 
     def execute(self):
         return {

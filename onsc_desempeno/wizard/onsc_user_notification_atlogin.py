@@ -11,11 +11,9 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
 
     def action_confirm(self):
         employee = self.env.user.employee_id
-        year = fields.Date.from_string(fields.Date.today()).year
         self.env['onsc.desempeno.score'].sudo().search([
             ('is_employee_notified', '=', False),
             ('employee_id', '=', employee.id),
-            ('year', '=', year)
         ]).write({'is_employee_notified': True})
 
         action_dict = self.env['res.users'].sudo()._get_default_action().read()[0]
