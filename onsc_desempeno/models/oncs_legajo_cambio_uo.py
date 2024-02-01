@@ -14,7 +14,7 @@ class ONSCLegajoCambioUO(models.Model):
             ('evaluation_list_id.state', '=', 'in_progress'),
             ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.date_start),
             ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.date_start),
-            ('generated', '=', True),
+            ('state', '=', 'generated'),
             ('job_id', '=', self.id),
         ])
         evaluation_list_lines.suspend_security().mapped('evaluation_ids').write(
