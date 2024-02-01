@@ -12,8 +12,8 @@ class ONSCLegajoCambioUO(models.Model):
         # OBTENIENDO COLABORADORES
         evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
             ('evaluation_list_id.state', '=', 'in_progress'),
-            ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
-            ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
+            ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.date_start),
+            ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.date_start),
             ('generated', '=', True),
             ('job_id', '=', self.id),
         ])
