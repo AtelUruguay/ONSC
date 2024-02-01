@@ -16,6 +16,10 @@ class ONSCLegajoScore(models.Model):
         compute=lambda s: s._get_value_config('notification_pending_text'),
         default=lambda s: s._get_value_config('notification_pending_text', True)
     )
+    is_notification_pending_form_active = fields.Boolean(
+        compute=lambda s: s._get_value_config('is_notification_pending_form_active'),
+        default=lambda s: s._get_value_config('is_notification_pending_form_active', True)
+    )
 
     def _compute_onsc_desempeno_score(self):
         Score = self.env['onsc.desempeno.score'].suspend_security()
@@ -39,7 +43,7 @@ class ONSCLegajoScore(models.Model):
                 [('employee_id', '=', rec.employee_id.id), ('is_employee_notified', '=', False),
                  ('inciso_id', '=', inciso_id), ('operating_unit_id', '=', operating_unit_id),
                  ('evaluation_stage_id.closed_stage', '=', True)])
-            if count_score > 0:
+            if count_score > 0 and rec.is_notification_pending_form_active:
                 rec.show_alert = True
             else:
                 rec.show_alert = False
