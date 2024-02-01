@@ -322,7 +322,7 @@ class ONSCLegajoCambioUO(models.Model):
     def action_confirm(self):
         self.ensure_one()
         self._validate_confirm()
-        self._action_confirm()
+        self.with_context(no_check_write=True)._action_confirm()
 
     def action_show_organigram(self):
         return {

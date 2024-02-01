@@ -101,7 +101,7 @@ class HrJob(models.Model):
             ('uo_id', '=', self.department_id.id),
             ('evaluation_stage_id.start_date', '<=', self.start_date),
             ('general_cycle_id.end_date_max', '>=', self.start_date),
-        ]).toggle_active()
+        ]).write({'active': False})
 
         Evaluation.search([
             ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'tracing_plan']),
@@ -120,6 +120,6 @@ class HrJob(models.Model):
             ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
             ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
             ('evaluation_list_id.department_id', '=', self.department_id.id),
-            ('generated', '=', False),
+            ('state', '=', 'generated'),
             ('job_id', '=', self.id),
         ]).unlink()
