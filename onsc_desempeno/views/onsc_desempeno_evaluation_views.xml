@@ -96,7 +96,6 @@
                             string="Volver atrás"
                             invisible="context.get('readonly_evaluation', False) is True"
                             attrs="{'invisible': ['|',('show_button_go_back', '=', False),('is_cancel_available', '=', False)]}"
-
                             type="object"
                             icon="fa-unlock"/>`
                     <button type="object"
