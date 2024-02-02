@@ -48,7 +48,8 @@ class HrJob(models.Model):
             if len(evaluation_list_lines) and self.employee_id not in evaluation_employees.ids:
                 new_evaluation_list_line = EvaluationListLine.create({
                     'evaluation_list_id': evaluation_list_lines[0].evaluation_list_id.id,
-                    'job_id': self.id
+                    'job_id': self.id,
+                    'is_included': False
                 })
                 self.write({'evaluation_list_line_id': new_evaluation_list_line.id})
         return True
@@ -66,13 +67,13 @@ class HrJob(models.Model):
             if len(evaluation_list_lines) and self.employee_id not in evaluation_employees.ids:
                 new_evaluation_list_line = EvaluationListLine.create({
                     'evaluation_list_id': evaluation_list_lines[0].evaluation_list_id.id,
-                    'job_id': self.id
+                    'job_id': self.id,
+                    'is_included': False
                 })
                 self.write({'evaluation_list_line_id': new_evaluation_list_line.id})
         return True
 
     def _update_evaluation_list_out(self):
-        user_employee = self.env.user.employee_id
         job_employee = self.employee_id
         EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
@@ -86,31 +87,49 @@ class HrJob(models.Model):
         ])
         for evaluation in evaluation_list_lines.mapped('evaluation_ids'):
             if evaluation.evaluation_type in ['self_evaluation', 'environment_definition', 'collaborator']:
-                evaluation.button_cancel()
+                evaluation.action_cancel(is_canceled_by_employee_out=True)
             elif evaluation.evaluation_type in ['environment_evaluation']:
                 if evaluation.evaluated_id == job_employee:
-                    evaluation.button_cancel()
+                    evaluation.action_cancel(is_canceled_by_employee_out=True)
                 elif evaluation.evaluator_id == job_employee and evaluation.state in ['draft', 'in_process']:
-                    evaluation.button_cancel()
+                    evaluation.action_cancel(is_canceled_by_employee_out=True)
             elif evaluation.evaluation_type in ['leader_evaluation']:
                 if evaluation.evaluated_id == job_employee and evaluation.state in ['draft', 'in_process', 'completed',
-                                                                                     'finished']:
-                    evaluation.button_cancel()
+                                                                                    'finished']:
+                    evaluation.action_cancel(is_canceled_by_employee_out=True)
 
         Consolidated.search([
             ('evaluated_id', '=', job_employee.id),
             ('uo_id', '=', self.department_id.id),
-            ('evaluation_stage_id.start_date', '<=', self.start_date),
-            ('general_cycle_id.end_date_max', '>=', self.start_date),
+            ('evaluation_stage_id.start_date', '<=', self.end_date),
+            ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).write({'active': False})
 
-        Evaluation.search([
+        # EVALUACION DE ENTORNO
+        Evaluation.with_context(ignore_security_rules=True).search([
+            ('evaluation_type', '=', 'environment_evaluation'),
+            ('evaluated_id', '=', job_employee.id),
+            ('uo_id', '=', self.department_id.id),
+            ('evaluation_stage_id.start_date', '<=', self.end_date),
+            ('general_cycle_id.end_date_max', '>=', self.end_date),
+        ]).action_cancel(is_canceled_by_employee_out=True)
+        Evaluation.with_context(ignore_security_rules=True).search([
+            ('evaluation_type', '=', 'environment_evaluation'),
+            ('evaluator_id', '=', job_employee.id),
+            ('state', 'in', ['draft', 'in_process']),
+            ('uo_id', '=', self.department_id.id),
+            ('evaluation_stage_id.start_date', '<=', self.end_date),
+            ('general_cycle_id.end_date_max', '>=', self.end_date),
+        ]).action_cancel(is_canceled_by_employee_out=True)
+        # FIN EVALUACION DE ENTORNO
+
+        Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'tracing_plan']),
             ('evaluated_id', '=', job_employee.id),
             ('uo_id', '=', self.department_id.id),
-            ('evaluation_stage_id.start_date', '<=', self.start_date),
-            ('general_cycle_id.end_date_max', '>=', self.start_date),
-        ]).button_cancel()
+            ('evaluation_stage_id.start_date', '<=', self.end_date),
+            ('general_cycle_id.end_date_max', '>=', self.end_date),
+        ]).action_cancel(is_canceled_by_employee_out=True)
 
         evaluation_list_lines.filtered(lambda x: x.state != 'generated').unlink()
 
