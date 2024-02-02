@@ -15,11 +15,12 @@ class ResUser(models.Model):
         ])
         if scores:
             message = """<p style="box-sizing:border-box;font-weight:bolder;font-size: 16px;">
-El ciclo de evaluación para el año %s ha concluido.
-</p>""" % (str(year))
+El ciclo de evaluación ha concluido.
+</p>"""
             for score in scores:
                 message += """<p style="box-sizing:border-box;font-size: 14px;">
-Para %s, %s, %s el Puntaje es: %s </p>""" % (
+Para el Año: %s, Inciso: %s, UE: %s, UO: %s el Puntaje es: %s </p>""" % (
+                    str(score.year),
                     score.inciso_id.display_name,
                     score.operating_unit_id.display_name,
                     score.department_id.display_name,
