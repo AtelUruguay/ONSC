@@ -77,7 +77,7 @@ class ONSCDesempenoEvaluationReport(models.Model):
 
     def button_open_evaluation(self):
         ctx = self.env.context.copy()
-
+        ctx.update({'show_evaluation_type': True})
         if self.evaluation_type == 'collaborator_consolidate':
             ctx.update({'readonly_evaluation': True})
             action = \
