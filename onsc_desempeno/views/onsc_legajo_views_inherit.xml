@@ -30,10 +30,10 @@
                                        create="0" delete="0" edit="0">
                             <tree >
                                 <field name="year"/>
-                                <field name="score" />
-                                <field name="inciso_id"/>
+                                 <field name="inciso_id"/>
                                 <field name="operating_unit_id" />
                                 <field name="department_id"/>
+                                <field name="score" />
                                 <button type="object"
                                         name="button_open_gap_deal"
                                         string="Ver acuerdo de brecha"
