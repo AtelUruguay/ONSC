@@ -169,6 +169,7 @@ class ONSCLegajoSummaryEvaluation(models.Model):
 
     def button_open_evaluation(self):
         ctx = self.env.context.copy()
+        ctx.update({'show_evaluation_type': True})
         if self.evaluation_type == 'gap_deal':
             ctx.update({'gap_deal': True})
         else:
