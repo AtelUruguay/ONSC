@@ -243,7 +243,16 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation_lists = self.env['onsc.desempeno.evaluation.list']
 
         exluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
+
+
+
+        self._cr.execute(
+            """SELECT DISTINCT current_job_id FROM onsc_desempeno_evaluation WHERE current_job_id IS NOT NULL""")
+        result = self._cr.fetchall()
+        evaluation_current_job_ids = [value[0] for value in result]
+
         jobs = Jobs.search([
+            ('id', 'not in', evaluation_current_job_ids),
             ('department_id.id', 'not in', department_inlist.ids),
             ('department_id.operating_unit_id', '=', evaluation_stage.operating_unit_id.id),
             ('contract_id.legajo_state', 'in', ['active', 'incoming_commission']),
@@ -252,6 +261,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             ('end_date', '>=', evaluation_stage.start_date),
             ('end_date', '=', False),
         ])
+
         # Creamos un diccionario con defaultdict para evitar comprobaciones de existencia
         departments_grouped_info = defaultdict(lambda: {'job_ids': set()})
         # departments_responsible_grouped_info = defaultdict(lambda: {'job_ids': set()})
