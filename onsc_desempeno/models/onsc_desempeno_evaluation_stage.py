@@ -103,10 +103,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
         is_user_ue = self.user_has_groups('onsc_desempeno.group_desempeno_configurador_gh_ue')
         if is_user_inciso:
             domain = [('inciso_id', '=', user_contract_id.inciso_id.id)]
-            # operating_unit_ids = self.env['operating.unit'].search([('inciso_id', '=', user_contract_id.inciso_id.id)]).ids
         elif is_user_ue:
             domain = [('id', '=', user_contract_id.operating_unit_id.id)]
-            # operating_unit_ids = [user_contract_id.operating_unit_id.id]
         else:
             domain = [('id', 'in', [])]
         if is_default:
@@ -242,6 +240,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id)) > 1:
                 if Consolidated.search_count(search_domain_consolidated) == 0:
                     data = {'general_cycle_id': res.general_cycle_id.id,
+                            'current_job_id': res.current_job_id.id,
                             'evaluated_id': res.evaluated_id.id,
                             'inciso_id': res.inciso_id.id,
                             'operating_unit_id': res.operating_unit_id.id,
@@ -300,6 +299,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     evaluation[0]["evaluation_type"] = "gap_deal"
                     evaluation[0]["is_gap_deal_not_generated"] = False
                     evaluation[0]["evaluator_uo_id"] = record.evaluator_uo_id.id
+                    evaluation[0]["current_job_id"] = record.current_job_id.id
                     evaluation[0]["general_comments"] = False
 
                     gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)

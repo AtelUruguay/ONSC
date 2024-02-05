@@ -22,8 +22,6 @@ class HrJob(models.Model):
         )
         if not is_job_change:
             new_job._update_evaluation_list_in()
-        else:
-            new_job._update_evaluation_list_in_changejob()
         return new_job
 
     def deactivate(self, date_end, is_job_change=False):
@@ -49,12 +47,16 @@ class HrJob(models.Model):
                 new_evaluation_list_line = EvaluationListLine.create({
                     'evaluation_list_id': evaluation_list_lines[0].evaluation_list_id.id,
                     'job_id': self.id,
-                    'is_included': False
+                    'is_included': True
                 })
                 self.write({'evaluation_list_line_id': new_evaluation_list_line.id})
         return True
 
-    def _update_evaluation_list_in_changejob(self):
+    def _update_evaluation_list_in_changejob(self, base_job):
+        """
+        :param base_job: Recordset de hr.job: Puesto origen
+        :return:
+        """
         if self.contract_id.legajo_state not in ['baja', 'reserved']:
             EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
             evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
@@ -140,6 +142,6 @@ class HrJob(models.Model):
             ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.end_date),
             ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.end_date),
             ('evaluation_list_id.department_id', '=', self.department_id.id),
-            ('state', '=', 'generated'),
+            ('state', '!=', 'generated'),
             ('job_id', '=', self.id),
         ]).unlink()

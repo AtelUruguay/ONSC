@@ -7,17 +7,28 @@ class ONSCLegajoCambioUO(models.Model):
     _inherit = 'onsc.legajo.cambio.uo'
 
     def _action_confirm(self):
-        EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
         new_job = super(ONSCLegajoCambioUO, self)._action_confirm()
         # OBTENIENDO COLABORADORES
-        evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
-            ('evaluation_list_id.state', '=', 'in_progress'),
-            ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.date_start),
-            ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.date_start),
-            ('state', '=', 'generated'),
-            ('job_id', '=', self.id),
+        evaluations = self.env['onsc.desempeno.evaluation'].search([
+            ('current_job_id', '=', self.job_id.id),
+            ('evaluation_type', 'in',
+             ['self_evaluation', 'environment_definition', 'collaborator', 'leader_evaluation']),
+            # 360
         ])
-        evaluation_list_lines.suspend_security().mapped('evaluation_ids').write(
+        evaluations.write(
             {'current_job_id': new_job.id}
         )
+        if len(evaluations) == 0:
+            new_job._update_evaluation_list_in()
         return new_job
+
+    def fix_evaluations(self):
+        Job = self.env['hr.job'].sudo()
+        for evaluation in self.env['onsc.desempeno.evaluation'].search([
+            ('current_job_id', '=', False),
+        ]):
+            job = Job.search([
+                ('employee_id', '=', evaluation.evaluated_id.id),
+                ('department_id', '=', evaluation.uo_id.id)
+            ], order="id desc", limit=1)
+            evaluation.write({'current_job_id': job.id})
