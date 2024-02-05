@@ -115,14 +115,6 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 raise ValidationError(
                     _("La fecha inicio máxima debe estar dentro del año %s") % record.year)
 
-            # evaluations_qty = self.env['onsc.desempeno.evaluation.stage'].suspend_security().search_count(
-            #     ['&', ("general_cycle_id", "=", record.id), '|', '|', ("start_date", ">", record.start_date_max),
-            #      ("start_date", "<", record.start_date), ("end_date", ">", record.end_date_max)])
-            # if evaluations_qty > 0:
-            #     raise ValidationError(
-            #         _(u"No se cumple las condiciones de la etapa de evaluaciones 360° por UE "
-            #           u"que esta asociada a ciclo general de evaluación de desempeño"))
-
     @api.constrains('year')
     def _check_unique_config(self):
         GeneralCycle = self.env['onsc.desempeno.general.cycle'].suspend_security()
