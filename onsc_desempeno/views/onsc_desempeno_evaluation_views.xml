@@ -172,7 +172,7 @@
                                    attrs="{'invisible': [('original_evaluator_id', '=', False)]}"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
                                    readonly="1"/>
-                            <field name="evaluation_type" invisible="context.get('readonly_evaluation', False) is False"/>
+                            <field name="evaluation_type" invisible="context.get('show_evaluation_type', False) is False"/>
                             <field name="reason_change_id"
                                    readonly="1"
                                    options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
