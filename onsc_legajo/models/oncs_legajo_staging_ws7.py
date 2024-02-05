@@ -345,7 +345,6 @@ class ONSCLegajoStagingWS7(models.Model):
             causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
         contract.write({
             'causes_discharge_id': causes_discharge.id,
-            'cs_contract_id': new_contract.id
         })
         records |= second_movement
         records.write({'state': 'processed'})
@@ -367,9 +366,12 @@ class ONSCLegajoStagingWS7(models.Model):
             return
         records |= second_movement
 
-        baja_contract = Contract.search([
-            ('cs_contract_id', '=', active_contract.id),
-            ('legajo_state', '=', 'baja')], limit=1)
+        if active_contract.cs_contract_id and active_contract.cs_contract_id.legajo_state == 'baja':
+            baja_contract = active_contract.cs_contract_id
+        else:
+            baja_contract = Contract.search([
+                ('cs_contract_id', '=', active_contract.id),
+                ('legajo_state', '=', 'baja')], limit=1)
         if len(baja_contract) == 0:
             record.write({
                 'state': 'error',
@@ -635,6 +637,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'program': str(record.programa),
             'project': str(record.proyecto),
             'state_square_id': contract.state_square_id.id,
+            'cs_contract_id': contract.id,
             #
             'wage': contract.wage
         })

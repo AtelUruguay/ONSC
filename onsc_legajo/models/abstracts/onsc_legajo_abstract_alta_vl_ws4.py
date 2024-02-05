@@ -282,23 +282,23 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
         origin_name = 'WS4'
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS4_9005")
         altas_vl = self._context.get('altas_vl')
-        for v_error in response.altaSGHMovimientoRespuesta:
+        for response_detail in response.altaSGHMovimientoRespuesta:
             with self._cr.savepoint():
-                alta_vl = altas_vl.filtered(lambda x: x.partner_id.cv_nro_doc[:-1] == str(v_error['cedula']))
-                long_description = v_error.mensaje
+                alta_vl = altas_vl.filtered(lambda x: x.partner_id.cv_nro_doc[:-1] == str(response_detail['cedula']))
+                long_description = response_detail.mensaje
                 try:
-                    if v_error.codigo != 0:
+                    if response_detail.codigo != 0:
                         error = IntegrationError.search([
                             ('integration_code', '=', origin_name),
-                            ('code_error', '=', str(v_error.codigo)),
+                            ('code_error', '=', str(response_detail.codigo)),
                         ], limit=1)
-                        message = error.description if error else v_error.mensaje
+                        message = error.description if error else response_detail.mensaje
                         self.create_new_log(
                             origin=origin_name,
                             type='error',
                             integration_log=error or integration_error,
                             ws_tuple=False,
-                            long_description=v_error.mensaje)
+                            long_description=response_detail.mensaje)
                         if alta_vl:
                             alta_vl.suspend_security().write({
                                 'is_error_synchronization': True,
@@ -307,21 +307,21 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                             })
                     else:
                         vals = {
-                            'id_alta': response['pdaId'] if 'pdaId' in response else False,
-                            'secPlaza': response['secPlaza'] if 'secPlaza' in response else False,
-                            'nroPuesto': response['idPuesto'] if 'idPuesto' in response else False,
-                            'nroPlaza': response['nroPlaza'] if 'nroPlaza' in response else False,
+                            'id_alta': response_detail['pdaId'] if 'pdaId' in response_detail else False,
+                            'secPlaza': response_detail['secPlaza'] if 'secPlaza' in response_detail else False,
+                            'nroPuesto': response_detail['idPuesto'] if 'idPuesto' in response_detail else False,
+                            'nroPlaza': response_detail['nroPlaza'] if 'nroPlaza' in response_detail else False,
 
                             'is_error_synchronization': False,
                             'ws4_user_id': self.env.user.id,
                             'state': 'pendiente_auditoria_cgn',
                             'error_message_synchronization': ''
                         }
-                        if 'descripcionJornadaFormal' in response:
+                        if 'descripcionJornadaFormal' in response_detail:
                             vals.update({
-                                'codigoJornadaFormal': response[
-                                    'codigoJornadaFormal'] if 'codigoJornadaFormal' in response else False,
-                                'descripcionJornadaFormal': response['descripcionJornadaFormal'],
+                                'codigoJornadaFormal': response_detail[
+                                    'codigoJornadaFormal'] if 'codigoJornadaFormal' in response_detail else False,
+                                'descripcionJornadaFormal': response_detail['descripcionJornadaFormal'],
                             })
                         if len(alta_vl) > 1:
                             alta_vl = alta_vl[0]
