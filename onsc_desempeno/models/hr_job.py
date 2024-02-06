@@ -115,6 +115,7 @@ class HrJob(models.Model):
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
+
         Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', '=', 'environment_evaluation'),
             ('evaluator_id', '=', job_employee.id),
@@ -129,6 +130,14 @@ class HrJob(models.Model):
             ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'tracing_plan']),
             ('evaluated_id', '=', job_employee.id),
             ('uo_id', '=', self.department_id.id),
+            ('evaluation_stage_id.start_date', '<=', self.end_date),
+            ('general_cycle_id.end_date_max', '>=', self.end_date),
+        ]).action_cancel(is_canceled_by_employee_out=True)
+
+        Evaluation.with_context(ignore_security_rules=True).search([
+            ('evaluation_type', '=', 'collaborator'),
+            ('evaluated_id', '=', job_employee.id),
+            ('current_job_id', '=', self.id),
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)

@@ -313,6 +313,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
                     partners_to_notify |= record.evaluated_id.partner_id
                     partners_to_notify |= record.evaluator_id.partner_id
+                else:
+                    record.write({'is_gap_deal_not_generated': True})
             self.with_context(partners_to_notify=partners_to_notify)._send_start_stage_2_notification()
         else:
             Evaluation.with_context(ignore_security_rules=True).search([
