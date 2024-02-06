@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+    <record id="onsc_legajo_department_old_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.department.old.tree</field>
+        <field name="model">onsc.legajo.department.old</field>
+        <field name="arch" type="xml">
+            <tree string="Legajos">
+                <field name="legajo_id" string="Funcionario"/>
+                <field name="job_name" string="Puesto"/>
+                <field name="security_job_id" optional="show"/>
+                <field name="department_id" string="UO" optional="hide"/>
+                <field name="operating_unit_id" string="Unidad ejecutora" optional="hide"/>
+                <field name="contract_id" string="Contrato" optional="hide"/>
+                <field name="legajo_state" optional="hide"/>
+                <field name="start_date"/>
+                <button name="button_open_legajo" type="object" string="Ver Legajo" icon="fa-edit"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_department_old_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.department.old.search</field>
+        <field name="model">onsc.legajo.department.old</field>
+        <field name="arch" type="xml">
+            <search string="Legajos">
+                <searchpanel>
+                    <field name="inciso_id" string="Inciso" icon="fa-building" enable_counters="1"/>
+                    <field name="operating_unit_id" string="Unidad ejecutora" icon="fa-building" enable_counters="1"/>
+                    <field name="department_id" string="Unidad organizativa" icon="fa-building" enable_counters="1"/>
+                </searchpanel>
+                <field name="legajo_id" string="Funcionario"/>
+                <field name="contract_id" string="Contrato"/>
+                <field name="department_id" string="UO"/>
+                <field name="security_job_id"/>
+                <field name="legajo_state"/>
+                <field name="job_name"/>
+                <filter string="Funcionarios activos" name="filter_legajo_state_active"
+                            domain="[('legajo_state','=','active')]"/>
+                <filter string="Funcionarios egresados" name="filter_legajo_state_egresed"
+                            domain="[('legajo_state','=','egresed')]"/>
+                <group string="Agrupar por">
+                    <filter name="group_department_id" string="Unidad organizativa" context="{'group_by': 'department_id'}"/>
+                    <filter name="group_legajo_id" string="Legajo" context="{'group_by': 'legajo_id'}"/>
+                    <filter name="group_contract_id" string="Contrato" context="{'group_by': 'contract_id'}"/>
+                    <filter name="group_legajo_state" string="Estado del funcionario" context="{'group_by': 'legajo_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id='onsc_legajo_department_old1_action' model='ir.actions.act_window'>
+        <field name="name">Consulta de información vínculo por UO OLD</field>
+        <field name="res_model">onsc.legajo.department.old</field>
+        <field name="view_mode">tree</field>
+        <field name="domain">[('is_job_open','=',True)]</field>
+        <field name="context">{'is_from_menu':True,'is_legajo':True, 'search_default_group_department_id':True,'active_test': False}</field>
+    </record>
+    </data>
+</odoo>
