@@ -36,11 +36,22 @@ class HrJob(models.Model):
     def _update_evaluation_list_in(self):
         if self.contract_id.legajo_state not in ['baja', 'reserved']:
             EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
+
+            manager = self.department_id.get_first_department_withmanager_in_tree().manager_id
+            parent_manager = self.department_id.parent_id.get_first_department_withmanager_in_tree().manager_id
+            eval1 = not (self.department_id.hierarchical_level_id.order == 1
+                         and self.department_id.manager_id.id == self.employee_id.id)
+            eval2 = self.employee_id.id != manager.id
+            if eval1 and eval2:
+                _department = self.department_id
+            elif eval1 and not eval2 and self.department_id.parent_id.id and \
+                    parent_manager.id != self.employee_id.id:
+                _department = self.department_id.parent_id
             evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
                 ('evaluation_list_id.state', '=', 'in_progress'),
                 ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
                 ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
-                ('evaluation_list_id.department_id', '=', self.department_id.id),
+                ('evaluation_list_id.department_id', '=', _department.id),
             ])
             evaluation_employees = evaluation_list_lines.mapped('employee_id')
             if len(evaluation_list_lines) and self.employee_id not in evaluation_employees.ids:
@@ -115,6 +126,7 @@ class HrJob(models.Model):
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
+
         Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', '=', 'environment_evaluation'),
             ('evaluator_id', '=', job_employee.id),
@@ -129,6 +141,14 @@ class HrJob(models.Model):
             ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'tracing_plan']),
             ('evaluated_id', '=', job_employee.id),
             ('uo_id', '=', self.department_id.id),
+            ('evaluation_stage_id.start_date', '<=', self.end_date),
+            ('general_cycle_id.end_date_max', '>=', self.end_date),
+        ]).action_cancel(is_canceled_by_employee_out=True)
+
+        Evaluation.with_context(ignore_security_rules=True).search([
+            ('evaluation_type', '=', 'collaborator'),
+            ('evaluated_id', '=', job_employee.id),
+            ('current_job_id', '=', self.id),
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)

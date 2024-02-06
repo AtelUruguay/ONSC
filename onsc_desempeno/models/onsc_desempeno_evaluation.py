@@ -957,7 +957,7 @@ class ONSCDesempenoEvaluation(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
 
         valid_days = (self.general_cycle_id.end_date - fields.Date.from_string(fields.Date.today())).days
-        if self.env.user.company_id.days_gap_develop_plan_creation < valid_days:
+        if self.env.user.company_id.days_gap_develop_plan_creation < valid_days and self.state_gap_deal != 'canceled':
             evaluation = self.copy_data()
             evaluation[0]["evaluation_type"] = "development_plan"
             evaluation[0]["gap_deal_state"] = "no_deal"
