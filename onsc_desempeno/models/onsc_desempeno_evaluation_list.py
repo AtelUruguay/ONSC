@@ -32,7 +32,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
             args = self._get_domain(args)
         return super(ONSCDesempenoEvaluationList, self)._search(args, offset=offset, limit=limit, order=order,
                                                                 count=count,
@@ -40,7 +40,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
@@ -558,6 +558,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         if record.current_job_id:
             manager_department = record.current_job_id.department_id.get_first_department_withmanager_in_tree()
             evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+            evaluation[0]["uo_id"] = record.current_job_id.department_id.id
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
         for competency in record.evaluation_competency_ids:
