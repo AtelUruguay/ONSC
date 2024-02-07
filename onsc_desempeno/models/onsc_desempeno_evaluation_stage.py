@@ -288,7 +288,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
             partners_to_notify = self.env["res.partner"]
             for record in Evaluation.search([
                 ('evaluation_stage_id', '=', self.id),
-                ('state', '"=', 'canceled'),
+                ('state', '!=', 'canceled'),
                 ('evaluation_type', 'in', ['leader_evaluation'])]):
                 if Evaluation.search_count(
                         [('evaluation_stage_id', '=', self.id), ('evaluated_id', '=', record.evaluated_id.id),

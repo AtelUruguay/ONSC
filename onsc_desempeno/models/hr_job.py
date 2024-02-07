@@ -8,6 +8,7 @@ class HrJob(models.Model):
 
     evaluation_list_line_id = fields.Many2one(
         comodel_name='onsc.desempeno.evaluation.list.line',
+        ondelete="set null",
         string='Línea de evaluación de Lista de participantes')
 
     def create_job(self, contract, department, start_date, security_job, extra_security_roles=False,
