@@ -25,7 +25,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
             args = self._get_domain(args)
         return super(ONSCDesempenoEvaluationStage, self)._search(args, offset=offset, limit=limit, order=order,
                                                                  count=count,
@@ -33,7 +33,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
@@ -286,9 +286,10 @@ class ONSCDesempenoEvaluationStage(models.Model):
         valid_days = (self.general_cycle_id.end_date - fields.Date.from_string(fields.Date.today())).days
         if self.env.user.company_id.days_gap_deal_eval_creation < valid_days:
             partners_to_notify = self.env["res.partner"]
-            for record in Evaluation.search(
-                    [('evaluation_stage_id', '=', self.id),
-                     ('evaluation_type', 'in', ['leader_evaluation'])]):
+            for record in Evaluation.search([
+                ('evaluation_stage_id', '=', self.id),
+                ('state', '"=', 'canceled'),
+                ('evaluation_type', 'in', ['leader_evaluation'])]):
                 if Evaluation.search_count(
                         [('evaluation_stage_id', '=', self.id), ('evaluated_id', '=', record.evaluated_id.id),
                          ('state', '!=', 'canceled'), ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation',
@@ -301,6 +302,12 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     evaluation[0]["evaluator_uo_id"] = record.evaluator_uo_id.id
                     evaluation[0]["current_job_id"] = record.current_job_id.id
                     evaluation[0]["general_comments"] = False
+                    evaluation[0]["reason_cancel"] = False
+
+                    if record.current_job_id:
+                        manager_department = record.current_job_id.department_id.get_first_department_withmanager_in_tree()
+                        evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+                        evaluation[0]["uo_id"] = record.current_job_id.department_id.id
 
                     gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 

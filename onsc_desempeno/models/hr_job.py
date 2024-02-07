@@ -111,9 +111,9 @@ class HrJob(models.Model):
                                                                                     'finished']:
                     evaluation.action_cancel(is_canceled_by_employee_out=True)
 
-        Consolidated.search([
+        Consolidated.with_context(ignore_security_rules=True).search([
             ('evaluated_id', '=', job_employee.id),
-            ('uo_id', '=', self.department_id.id),
+            ('current_job_id', '=', self.id),
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).write({'active': False})
@@ -122,7 +122,7 @@ class HrJob(models.Model):
         Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', '=', 'environment_evaluation'),
             ('evaluated_id', '=', job_employee.id),
-            ('uo_id', '=', self.department_id.id),
+            ('current_job_id', '=', self.id),
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
@@ -131,16 +131,15 @@ class HrJob(models.Model):
             ('evaluation_type', '=', 'environment_evaluation'),
             ('evaluator_id', '=', job_employee.id),
             ('state', 'in', ['draft', 'in_process']),
-            ('uo_id', '=', self.department_id.id),
+            ('current_job_id', '=', self.id),
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
         # FIN EVALUACION DE ENTORNO
-
         Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'tracing_plan']),
             ('evaluated_id', '=', job_employee.id),
-            ('uo_id', '=', self.department_id.id),
+            ('current_job_id', '=', self.id),
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
