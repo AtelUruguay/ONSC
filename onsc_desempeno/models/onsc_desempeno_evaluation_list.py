@@ -32,7 +32,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
             args = self._get_domain(args)
         return super(ONSCDesempenoEvaluationList, self)._search(args, offset=offset, limit=limit, order=order,
                                                                 count=count,
@@ -40,7 +40,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and self._context.get('ignore_security_rules', False) is False:
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
@@ -77,6 +77,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         string="Unidad organizativa",
         required=True,
         index=True)
+
     manager_id = fields.Many2one(
         "hr.employee",
         string="Líder",
@@ -88,6 +89,15 @@ class ONSCDesempenoEvaluationList(models.Model):
         string="UO del Líder",
         compute='_compute_manager_id',
         store=False)
+    # LUEGO DE CERRADA LA LISTA LOS DATOS DEL RESPONSABLE QUEDAN FIJOS
+    fixed_manager_id = fields.Many2one(
+        "hr.employee",
+        string="Líder al cierre de la lista")
+    fixed_manager_uo_id = fields.Many2one(
+        "hr.department",
+        string="UO del Líder al cierre de la lista")
+
+
     year = fields.Integer(
         u'Año a evaluar',
         related="evaluation_stage_id.year",
@@ -150,15 +160,23 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     def _compute_manager_id(self):
         for rec in self:
-            manager_department = rec.department_id.get_first_department_withmanager_in_tree()
-            rec.manager_id = manager_department.manager_id.id
-            rec.manager_uo_id = manager_department.id
+            if rec.state == 'closed':
+                # si esta cerrada la lista toma los valores fijos de responsables almacenados al cerrar
+                rec.manager_id = rec.fixed_manager_id.id
+                rec.manager_uo_id = rec.fixed_manager_uo_id.id
+            else:
+                manager_department = rec.department_id.get_first_department_withmanager_in_tree()
+                rec.manager_id = manager_department.manager_id.id
+                rec.manager_uo_id = manager_department.id
 
     def _search_is_imanager(self, operator, value):
         all_evaluation_list = self.search([])
         evaluation_list_filtered = self.env['onsc.desempeno.evaluation.list']
         for evaluation_list in all_evaluation_list:
-            manager_id = evaluation_list.department_id.get_first_department_withmanager_in_tree().manager_id.id
+            if evaluation_list.state == 'closed':
+                manager_id = evaluation_list.fixed_manager_id
+            else:
+                manager_id = evaluation_list.department_id.get_first_department_withmanager_in_tree().manager_id.id
             if manager_id == self.env.user.employee_id.id:
                 evaluation_list_filtered |= evaluation_list
         return [('id', 'in', evaluation_list_filtered.ids)]
@@ -167,7 +185,10 @@ class ONSCDesempenoEvaluationList(models.Model):
         all_evaluation_list = self.search([])
         evaluation_list_filtered = self.env['onsc.desempeno.evaluation.list']
         for evaluation_list in all_evaluation_list:
-            manager = evaluation_list.department_id.get_first_department_withmanager_in_tree().manager_id
+            if evaluation_list.state == 'closed':
+                manager = evaluation_list.fixed_manager_id
+            else:
+                manager = evaluation_list.department_id.get_first_department_withmanager_in_tree().manager_id
             if isinstance(value, int) and manager.id == value:
                 evaluation_list_filtered |= evaluation_list
             elif isinstance(value, str) and value.lower() in manager.display_name.lower():
@@ -221,17 +242,19 @@ class ONSCDesempenoEvaluationList(models.Model):
 
     # INTELIGENCIA
     def manage_evaluations_lists(self):
-        # cerrar las listas que ya pasaron la fecha de cierre
-        self.search([('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())]).write(
-            {'state': 'closed'})
+        # cerrar las listas que ya pasaron la fecha de cierre y fijar responsable
+        lists_toclose = self.search([('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())])
+        lists_toclose.write({'state': 'closed'})
+        for list_toclose in lists_toclose:
+            list_toclose.write({
+                'fixed_manager_id': list_toclose.manager_id.id,
+                'fixed_manager_uo_id': list_toclose.manager_uo_id.id,
+            })
 
         evaluation_stages = self.env['onsc.desempeno.evaluation.stage'].search([
             ('start_date', '<=', fields.Date.today()),
             ('end_date', '>=', fields.Date.today()),
         ])
-        # inlist_evaluation_stage_ids = self.search(
-        #     [('evaluation_stage_id', 'in', evaluation_stages.ids)]).mapped('evaluation_stage_id.id')
-        # si ya esta la lista creada para esa UE excluir
         department_inlist = self._get_evaluation_list_departments(evaluation_stages)
         for evaluation_stage in evaluation_stages:
             self._create_data(evaluation_stage, department_inlist)
@@ -535,6 +558,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         if record.current_job_id:
             manager_department = record.current_job_id.department_id.get_first_department_withmanager_in_tree()
             evaluation[0]["evaluator_id"] = manager_department.manager_id.id
+            evaluation[0]["uo_id"] = record.current_job_id.department_id.id
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
 
         for competency in record.evaluation_competency_ids:

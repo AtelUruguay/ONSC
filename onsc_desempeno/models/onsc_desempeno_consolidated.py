@@ -88,6 +88,12 @@ class ONSCDesempenoConsolidated(models.Model):
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)
     uo_id = fields.Many2one('hr.department', string='UO', readonly=True)
+    current_job_id = fields.Many2one(
+        'hr.job',
+        copy=False,
+        string='Puesto actual',
+        help=u'Usado para en caso de cambio de puesto saber el Puesto actual '
+             'en el que se encuentra el Funcionario')
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', readonly=True)
     level_id = fields.Many2one('onsc.desempeno.level', string='Nivel', readonly=True)
     evaluation_stage_id = fields.Many2one('onsc.desempeno.evaluation.stage', string='Evaluación 360', readonly=True)

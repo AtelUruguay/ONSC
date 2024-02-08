@@ -9,11 +9,9 @@ class ONSCLegajoCambioUO(models.Model):
     def _action_confirm(self):
         new_job = super(ONSCLegajoCambioUO, self)._action_confirm()
         # OBTENIENDO COLABORADORES
-        evaluations = self.env['onsc.desempeno.evaluation'].search([
+        evaluations = self.env['onsc.desempeno.evaluation'].with_context(ignore_security_rules=True).search([
             ('current_job_id', '=', self.job_id.id),
-            ('evaluation_type', 'in',
-             ['self_evaluation', 'environment_definition', 'collaborator', 'leader_evaluation']),
-            # 360
+            ('evaluation_stage_id.closed_stage', '=', False),
         ])
         evaluations.write(
             {'current_job_id': new_job.id}
