@@ -222,8 +222,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
         return True
 
     def _process_create_consolidated(self):
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security().with_context(ignore_security_rules=True)
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security().with_context(ignore_security_rules=True)
 
         search_domain = [('evaluation_stage_id', '=', self.id), ('state', '=', 'finished'),
                          ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]
