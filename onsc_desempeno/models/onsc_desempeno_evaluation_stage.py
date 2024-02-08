@@ -279,9 +279,9 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 record.write({'state': 'uncompleted', 'locked': False})
 
     def _process_gap_deal(self):
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
-        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security().with_context(ignore_security_rules=True)
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security().with_context(ignore_security_rules=True)
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security().with_context(ignore_security_rules=True)
 
         valid_days = (self.general_cycle_id.end_date - fields.Date.from_string(fields.Date.today())).days
         _valid_360_types = ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator']
@@ -292,7 +292,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 ('evaluation_stage_id', '=', self.id),
                 ('state', '!=', 'canceled'),
                 ('evaluation_type', 'in', ['leader_evaluation'])]):
-                if Evaluation.with_context(ignore_security_rules=True).search_count([
+                if Evaluation.search_count([
                     ('evaluation_stage_id', '=', self.id),
                     ('evaluated_id', '=', record.evaluated_id.id),
                     ('state', '!=', 'canceled'),
