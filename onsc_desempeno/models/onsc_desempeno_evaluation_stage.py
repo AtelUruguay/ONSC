@@ -222,8 +222,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
         return True
 
     def _process_create_consolidated(self):
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security().with_context(ignore_security_rules=True)
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security().with_context(ignore_security_rules=True)
 
         search_domain = [('evaluation_stage_id', '=', self.id), ('state', '=', 'finished'),
                          ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]
@@ -279,23 +279,25 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 record.write({'state': 'uncompleted', 'locked': False})
 
     def _process_gap_deal(self):
-        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
-        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security().with_context(ignore_security_rules=True)
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security().with_context(ignore_security_rules=True)
+        Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security().with_context(ignore_security_rules=True)
 
         valid_days = (self.general_cycle_id.end_date - fields.Date.from_string(fields.Date.today())).days
+        _valid_360_types = ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator']
+
         if self.env.user.company_id.days_gap_deal_eval_creation < valid_days:
             partners_to_notify = self.env["res.partner"]
             for record in Evaluation.search([
                 ('evaluation_stage_id', '=', self.id),
                 ('state', '!=', 'canceled'),
                 ('evaluation_type', 'in', ['leader_evaluation'])]):
-                if Evaluation.search_count(
-                        [('evaluation_stage_id', '=', self.id), ('evaluated_id', '=', record.evaluated_id.id),
-                         ('state', '!=', 'canceled'), ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation',
-                                                                                 'environment_evaluation',
-                                                                                 'collaborator'])]) > 0:
-
+                if Evaluation.search_count([
+                    ('evaluation_stage_id', '=', self.id),
+                    ('evaluated_id', '=', record.evaluated_id.id),
+                    ('state', '!=', 'canceled'),
+                    ('evaluation_type', 'in', _valid_360_types)
+                ]) > 0:
                     evaluation = record.copy_data()
                     evaluation[0]["evaluation_type"] = "gap_deal"
                     evaluation[0]["is_gap_deal_not_generated"] = False

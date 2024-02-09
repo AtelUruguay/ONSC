@@ -11,7 +11,7 @@ class ONSCLegajoCambioUO(models.Model):
         # OBTENIENDO COLABORADORES
         evaluations = self.env['onsc.desempeno.evaluation'].with_context(ignore_security_rules=True).search([
             ('current_job_id', '=', self.job_id.id),
-            ('evaluation_stage_id.closed_stage', '=', False),
+            ('create_date', '>=', self.job_id.start_date),
         ])
         evaluations.write(
             {'current_job_id': new_job.id}
