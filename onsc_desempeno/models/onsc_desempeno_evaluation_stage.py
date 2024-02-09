@@ -239,17 +239,19 @@ class ONSCDesempenoEvaluationStage(models.Model):
             if len(results.filtered(
                     lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id)) > 1:
                 if Consolidated.search_count(search_domain_consolidated) == 0:
-                    data = {'general_cycle_id': res.general_cycle_id.id,
-                            'current_job_id': res.current_job_id.id,
-                            'evaluated_id': res.evaluated_id.id,
-                            'inciso_id': res.inciso_id.id,
-                            'operating_unit_id': res.operating_unit_id.id,
-                            'uo_id': res.uo_id.id,
-                            'occupation_id': res.occupation_id.id,
-                            'level_id': res.level_id.id,
-                            'evaluation_stage_id': res.evaluation_stage_id.id,
-                            'evaluation_type': evaluation_type,
-                            'evaluator_ids': [(4, res.evaluator_id.id)]}
+                    data = {
+                        'general_cycle_id': res.general_cycle_id.id,
+                        'current_job_id': res.current_job_id.id,
+                        'evaluated_id': res.evaluated_id.id,
+                        'inciso_id': res.inciso_id.id,
+                        'operating_unit_id': res.operating_unit_id.id,
+                        'uo_id': res.uo_id.id,
+                        'occupation_id': res.occupation_id.id,
+                        'level_id': res.level_id.id,
+                        'evaluation_stage_id': res.evaluation_stage_id.id,
+                        'evaluation_type': evaluation_type,
+                        'evaluator_ids': [(4, res.evaluator_id.id)]
+                    }
 
                     consolidate = Consolidated.create(data)
 
