@@ -165,3 +165,6 @@ class HrJob(models.Model):
             ('state', '!=', 'generated'),
             ('job_id', '=', self.id),
         ]).unlink()
+
+    def force_evaluation_out(self):
+        self._update_evaluation_list_out()
