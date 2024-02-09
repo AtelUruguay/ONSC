@@ -783,6 +783,7 @@ class ONSCDesempenoEvaluation(models.Model):
             for random_environment in random_environments:
                 random_environment_ids.append(random_environment.id)
                 evaluation = self.suspend_security().create({
+                    'current_job_id': rec.current_job_id.id,
                     'evaluated_id': rec.evaluated_id.id,
                     'evaluator_id': random_environment.id,
                     # 'evaluator_uo_id': rec.evaluator_uo_id.id,
