@@ -13,6 +13,11 @@ class ONSCLegajoCambioUO(models.Model):
             ('current_job_id', '=', self.job_id.id),
             ('create_date', '>=', self.job_id.start_date),
         ])
+        self.env['onsc.desempeno.consolidated'].suspend_security().with_context(ignore_security_rules=True).search([
+            ('current_job_id', '=', self.job_id.id),
+            ('create_date', '>=', self.job_id.start_date),
+        ]).write({'current_job_id': new_job.id})
+
         evaluations.write(
             {'current_job_id': new_job.id}
         )
