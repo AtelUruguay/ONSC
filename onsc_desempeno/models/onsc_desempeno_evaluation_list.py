@@ -217,7 +217,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
                         leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
                         _evaluation_ids.extend([(4, new_evaluation.id), (4, leader_evaluation.id)])
-                        if fields.Date.today() > self.end_date:
+                        if fields.Date.today() >= self.end_date and self.evaluation_stage_id.closed_stage:
                             gap_deal = self.suspend_security()._create_gap_deal(leader_evaluation)
                             _evaluation_ids.extend([(4, gap_deal.id)])
                     if fields.Date.today() < self.end_date and fields.Date.today() <= self.end_date_environment:
