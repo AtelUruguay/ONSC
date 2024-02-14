@@ -18,9 +18,9 @@
             </xpath>
             <xpath expr="//div[@states='get']" position="replace">
                 <div states="get">
-                    <h2>
+                    <h3>
                         <field name="data" filename="name" class="oe_inline"/>
-                    </h2>
+                    </h3>
                 </div>
             </xpath>
             <xpath expr="//footer[@states='get']/button" position="attributes">
