@@ -6,7 +6,6 @@
         <field name="model">onsc.desempeno.summary.evaluation</field>
         <field name="arch" type="xml">
             <tree string="Evaluación de Desempeño">
-
                 <field name="evaluation_type" />
                 <field name="general_cycle_id"/>
                 <field name="evaluator_id"/>
