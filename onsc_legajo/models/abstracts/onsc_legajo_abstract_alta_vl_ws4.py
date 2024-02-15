@@ -131,8 +131,6 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
 
             if record.cv_address_street_id:
                 calleCod = record.cv_address_street_id.code
-            elif record.cv_address_street:
-                calleCod = record.cv_address_street
             else:
                 calleCod = '9999999999'
             if record.cv_address_location_id:
