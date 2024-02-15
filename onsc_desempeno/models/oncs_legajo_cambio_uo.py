@@ -27,11 +27,11 @@ class ONSCLegajoCambioUO(models.Model):
 
     def fix_evaluations(self):
         Job = self.env['hr.job'].sudo()
-        for evaluation in self.env['onsc.desempeno.evaluation'].search([
+        for evaluation in self.env['onsc.desempeno.evaluation'].sudo().search([
             ('current_job_id', '=', False),
         ]):
             job = Job.search([
                 ('employee_id', '=', evaluation.evaluated_id.id),
                 ('department_id', '=', evaluation.uo_id.id)
             ], order="id desc", limit=1)
-            evaluation.write({'current_job_id': job.id})
+            evaluation.sudo().write({'current_job_id': job.id})
