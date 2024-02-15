@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="report_onsc_desempeno_evaluation_report" model="ir.ui.view">
+        <field name="name">report.onsc.desempeno.evaluation.report</field>
+        <field name="model">report.onsc.desempeno.evaluation.report</field>
+        <field name="inherit_id" ref="excel_import_export.xlsx_report_view"/>
+        <field name="mode">primary</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='criteria']" position="inside">
+                <group/>
+                <group/>
+            </xpath>
+            <xpath expr="//button[@name='report_xlsx']" position="attributes">
+                <attribute name="string">Obtener Excel</attribute>
+            </xpath>
+            <xpath expr="//footer[@states='choose']/button[last()]" position="attributes">
+                <attribute name="string">Cerrar</attribute>
+            </xpath>
+            <xpath expr="//div[@states='get']" position="replace">
+                <div states="get">
+                    <h3>
+                        <field name="data" filename="name" class="oe_inline"/>
+                    </h3>
+                </div>
+            </xpath>
+            <xpath expr="//footer[@states='get']/button" position="attributes">
+                <attribute name="string">Cerrar</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_report_onsc_desempeno_evaluation_report" model="ir.actions.act_window">
+        <field name="name">Asistente del reporte XLS para Resumen de evaluaciones</field>
+        <field name="res_model">report.onsc.desempeno.evaluation.report</field>
+        <field name="binding_view_types">form</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="context">
+            {'template_domain': [('res_model', '=', 'report.onsc.desempeno.evaluation.report'),
+                                 ('fname', '=', 'report_onsc_desempeno_evaluation_report.xlsx'),
+                                 ('gname', '=', False)]}
+        </field>
+    </record>
+</odoo>

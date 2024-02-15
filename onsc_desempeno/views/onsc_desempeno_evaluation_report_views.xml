@@ -5,7 +5,12 @@
         <field name="name">onsc.desempeno.evaluation.report.tree</field>
         <field name="model">onsc.desempeno.evaluation.report</field>
         <field name="arch" type="xml">
-            <tree string="Evaluación de Desempeño">
+            <tree string="Consulta General del Ciclo de Evaluación">
+                <header>
+                    <button name="buttton_export_xls"
+                            type="object"
+                            string="Exportar a XLS"/>
+                </header>
                 <field name="evaluation_id" invisible="1"/>
                 <field name="consolidated_id" invisible="1"/>
                 <field name="inciso_id"/>

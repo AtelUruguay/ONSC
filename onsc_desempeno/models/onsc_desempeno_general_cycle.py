@@ -204,6 +204,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
         ]
 
         evaluations = Evaluation.search([
+            ('evaluator_id.legajo_state', '!=', 'egresed'),
             ('evaluation_stage_id', 'in', stages_360.ids),
             ('evaluation_type', 'in', EVALUATION_TYPES),
             ('state', '!=', 'canceled'),

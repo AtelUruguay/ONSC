@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.osv import expression
 
 EVALUATION_TYPE = [
@@ -56,7 +56,8 @@ class ONSCDesempenoEvaluationReport(models.Model):
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
         args = self._get_domain_evaluation(args)
-        return super(ONSCDesempenoEvaluationReport, self)._search(args, offset=offset, limit=limit, order=order, count=count, access_rights_uid=access_rights_uid)
+        return super(ONSCDesempenoEvaluationReport, self)._search(args, offset=offset, limit=limit, order=order,
+                                                                  count=count, access_rights_uid=access_rights_uid)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
@@ -66,7 +67,15 @@ class ONSCDesempenoEvaluationReport(models.Model):
     operating_unit_id = fields.Many2one('operating.unit', string='UE')
     general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar')
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', )
+    evaluation_type_display_name = fields.Char(
+        string='String del Tipo',
+        compute='_compute_evaluation_type_display_name',
+    )
     state = fields.Selection(STATE, string='Estado', )
+    state_display_name = fields.Char(
+        string='String del Estado',
+        compute='_compute_state_display_name',
+    )
     gap_deal_state = fields.Selection(selection=GAP_DEAL_STATES, string="Subestado")
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado')
     evaluator_id = fields.Many2one('hr.employee', string='Evaluador')
@@ -74,6 +83,18 @@ class ONSCDesempenoEvaluationReport(models.Model):
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluación')
     consolidated_id = fields.Many2one('onsc.desempeno.consolidated', string='Consolidado')
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
+
+    @api.depends('evaluation_type')
+    def _compute_evaluation_type_display_name(self):
+        valid_attrs = dict(self._fields.get('evaluation_type').selection)
+        for rec in self:
+            rec.evaluation_type_display_name = valid_attrs.get(rec.evaluation_type, _('Desconocido'))
+
+    @api.depends('state')
+    def _compute_state_display_name(self):
+        valid_attrs = dict(self._fields.get('state').selection)
+        for rec in self:
+            rec.state_display_name = valid_attrs.get(rec.state, _('Desconocido'))
 
     def button_open_evaluation(self):
         ctx = self.env.context.copy()
@@ -105,3 +126,26 @@ class ONSCDesempenoEvaluationReport(models.Model):
                 action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_evaluation_readonly_action').read()[0]
             action.update({'res_id': self.evaluation_id.id, 'context': ctx, })
             return action
+
+    def buttton_export_xls(self):
+        report = self.env['report.onsc.desempeno.evaluation.report'].with_context({
+            'template_domain': [('res_model', '=', 'report.onsc.desempeno.evaluation.report'),
+                                ('fname', '=', 'report_onsc_desempeno_evaluation_report.xlsx'),
+                                ('gname', '=', False)]
+        }).create({'results': [(6, 0, self.ids)]})
+        report.report_xlsx()
+        return {
+            'type': 'ir.actions.act_window',
+            'view_mode': 'form',
+            'view_type': 'form',
+            "res_id": report.id,
+            'target': 'new',
+            'res_model': 'report.onsc.desempeno.evaluation.report',
+            'name': 'Descargar XLSX',
+            'context': {'template_domain': [
+                ('res_model', '=', 'report.onsc.desempeno.evaluation.report'),
+                ('fname', '=', 'report_onsc_desempeno_evaluation_report.xlsx'),
+                ('gname', '=', False)
+            ]},
+            'views': [[self.env.ref('onsc_desempeno.report_onsc_desempeno_evaluation_report').id, 'form']]
+        }

@@ -84,6 +84,7 @@ class ONSCDesempenoConsolidated(models.Model):
     evaluation_type = fields.Selection(CONSOLIDATED_TYPE, string='Tipo', required=True, readonly=True)
     evaluated_id = fields.Many2one('hr.employee', string='Evaluado', readonly=True)
     evaluator_ids = fields.Many2many('hr.employee', string='Evaluadores', readonly=True)
+    active = fields.Boolean(string='Activo', default=True)
 
     inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
     operating_unit_id = fields.Many2one('operating.unit', string='UE', readonly=True)

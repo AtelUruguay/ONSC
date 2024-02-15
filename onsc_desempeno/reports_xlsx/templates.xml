@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<odoo>
+    <record id="report_onsc_desempeno_evaluation_report_template" model="xlsx.template">
+        <field name="res_model">report.onsc.desempeno.evaluation.report</field>
+        <field name="fname">report_onsc_desempeno_evaluation_report.xlsx</field>
+        <field name="name">Consulta General del Ciclo de Evaluación</field>
+        <field name="description">Consulta General del Ciclo de Evaluación</field>
+        <field name="input_instruction">
+            {
+                '__EXPORT__': {
+                    1: {
+                        '_HEAD_': {
+                        },
+                        '_EXTEND_results': {
+                            'A2': 'inciso_id.display_name${value or ""}#{style=text}',
+                            'B2': 'operating_unit_id.display_name${value or ""}#{style=text}',
+                            'C2': 'general_cycle_id.display_name${value or ""}#{style=text}',
+                            'D2': 'evaluation_type_display_name${value or ""}#{style=text}',
+                            'E2': 'evaluator_id.display_name${value or ""}#{style=text}',
+                            'F2': 'evaluated_id.display_name${value or ""}#{style=text}',
+                            'G2': 'state_display_name${value or ""}#{style=text}',
+                        },
+                    },
+                },
+            }
+        </field>
+    </record>
+    <function model="xlsx.template" name="load_xlsx_template">
+        <value eval="[ref('report_onsc_desempeno_evaluation_report_template')]" />
+    </function>
+</odoo>

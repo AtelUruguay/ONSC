@@ -96,31 +96,25 @@ class ONSCDesempenoEvaluationList(models.Model):
     fixed_manager_uo_id = fields.Many2one(
         "hr.department",
         string="UO del Líder al cierre de la lista")
-
-
     year = fields.Integer(
         u'Año a evaluar',
         related="evaluation_stage_id.year",
         store=True)
-
     is_imanager = fields.Boolean(
         string=' Responsable',
         search='_search_is_imanager',
         store=False,
         required=False)
-
     state = fields.Selection(
         string='Formulario',
         selection=[('in_progress', 'En proceso'),
                    ('closed', 'Finalizada')],
         required=True,
         default='in_progress')
-
     line_ids = fields.One2many(
         comodel_name='onsc.desempeno.evaluation.list.line',
         inverse_name='evaluation_list_id',
         string='Colaboradores')
-
     evaluation_generated_line_ids = fields.One2many(
         comodel_name='onsc.desempeno.evaluation.list.line',
         inverse_name='evaluation_list_id',
@@ -217,7 +211,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                         new_evaluation = self.suspend_security()._create_self_evaluation(line)
                         leader_evaluation = self.suspend_security()._create_leader_evaluation(line)
                         _evaluation_ids.extend([(4, new_evaluation.id), (4, leader_evaluation.id)])
-                        if fields.Date.today() > self.end_date:
+                        if fields.Date.today() >= self.end_date and self.evaluation_stage_id.closed_stage:
                             gap_deal = self.suspend_security()._create_gap_deal(leader_evaluation)
                             _evaluation_ids.extend([(4, gap_deal.id)])
                     if fields.Date.today() < self.end_date and fields.Date.today() <= self.end_date_environment:
@@ -266,8 +260,6 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation_lists = self.env['onsc.desempeno.evaluation.list']
 
         exluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
-
-
 
         self._cr.execute(
             """SELECT DISTINCT current_job_id FROM onsc_desempeno_evaluation WHERE current_job_id IS NOT NULL""")
@@ -325,7 +317,6 @@ class ONSCDesempenoEvaluationList(models.Model):
         :param evaluation_stage: Instances of onsc.desempeno.evaluation.stage
         """
         return self.search([('evaluation_stage_id', 'in', evaluation_stages.ids)]).mapped('department_id')
-
 
     def _link_jobs(self, jobs):
         for job in jobs:
