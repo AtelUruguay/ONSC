@@ -78,7 +78,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     partner_id = fields.Many2one("res.partner", string="Contacto", readonly=True, copy=False,
                                  states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    date_start = fields.Date(string="Fecha de alta", default=lambda *a: fields.Date.today(), copy=False, readonly=True,
+    date_start = fields.Date(string="Fecha de alta", copy=False, readonly=True,
                              states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     income_mechanism_id = fields.Many2one('onsc.legajo.income.mechanism', string='Mecanismo de ingreso', copy=False,
                                           readonly=True,
