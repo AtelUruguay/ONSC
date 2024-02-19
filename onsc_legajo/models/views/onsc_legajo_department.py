@@ -138,14 +138,16 @@ FROM
     job.start_date AS start_date,
     job.end_date AS end_date,
     'system' AS type,
-    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND legajo_id = legajo.id) AS active_job_qty
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND legajo_id = legajo.id) AS active_job_qty,
+    NULL AS last_job_id,
+	NULL AS last_job_operating_unit_id,
+	NULL AS last_job_inciso_id
 FROM
     hr_contract contract
 LEFT JOIN hr_job job ON job.contract_id = contract.id
 LEFT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
 WHERE 
-    (job.start_date <= CURRENT_DATE AND (job.end_date IS NULL OR job.end_date >= CURRENT_DATE)) OR
-	job.id IS NULL AND contract.legajo_state <> 'baja'
+    contract.legajo_state <> 'baja'
 UNION ALL
 SELECT
     legajo.id AS legajo_id,
@@ -162,10 +164,14 @@ SELECT
     NULL AS start_date,
     NULL AS end_date,
     'joker' AS type,
-    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND legajo_id = legajo.id) AS active_job_qty
+    0 AS active_job_qty,
+	(SELECT id FROM hr_job WHERE legajo_id = legajo.id ORDER BY start_date DESC limit 1) AS last_job_id,
+	(SELECT operating_unit_id FROM hr_job WHERE legajo_id = legajo.id ORDER BY start_date DESC limit 1) AS last_job_operating_unit_id,
+	(SELECT inciso_id FROM hr_job WHERE legajo_id = legajo.id ORDER BY start_date DESC limit 1) AS last_job_inciso_id
 FROM
-    hr_contract contract
-RIGHT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
+    onsc_legajo legajo
+LEFT JOIN hr_contract contract ON contract.legajo_id = legajo.id
+WHERE legajo.legajo_state = 'egresed'
 ) AS main_query)''' % (self._table,))
 
     @profiler
