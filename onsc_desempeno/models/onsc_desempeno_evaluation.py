@@ -497,18 +497,17 @@ class ONSCDesempenoEvaluation(models.Model):
         is_gh_user_inciso = self._is_group_usuario_gh_inciso()
         hierarchy_deparments = Department.search([('id', 'child_of', employee.job_id.department_id.id)])
         hierarchy_deparments |= employee.job_id.department_id
-        for record in self:
-            is_am_evaluator = record.evaluator_id.id == user_employee_id
-            valid_state = (record.state_gap_deal in ['in_process'] or record.state in [
-                'in_process']) and not record.is_exonerated_evaluation
-            valid_state_1 = record.evaluation_type in ['gap_deal', 'development_plan'] and \
-                            record.gap_deal_state in ['no_deal']
-            valid_state_no_deal = valid_state_1 or record.evaluation_type == 'tracing_plan'
-            valid_types = record.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan']
+        for rec in self:
+            is_am_evaluator = rec.evaluator_id.id == user_employee_id
+            valid_state = (rec.state_gap_deal in ['in_process'] or rec.state in ['in_process']) and not \
+                rec.is_exonerated_evaluation
+            valid_state1 = rec.evaluation_type in ['gap_deal', 'development_plan'] and rec.gap_deal_state in ['no_deal']
+            valid_state_no_deal = valid_state1 or rec.evaluation_type == 'tracing_plan'
+            valid_types = rec.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan']
             is_valid = valid_types and valid_state and valid_state_no_deal
-            is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
+            is_responsable = is_gh_responsable and rec.uo_id.id in hierarchy_deparments.ids
             user_security = not is_responsable and (is_gh_user_ue or is_gh_user_inciso)
-            record.is_agree_button_gh_available = is_am_evaluator and is_valid and user_security
+            rec.is_agree_button_gh_available = is_am_evaluator and is_valid and user_security
 
     @api.depends('state', 'is_exonerated_evaluation', 'gap_deal_state', 'state_gap_deal')
     def _compute_is_agree_evaluation_evaluated_available(self):
@@ -569,9 +568,10 @@ class ONSCDesempenoEvaluation(models.Model):
                 is_valid_evaluation_2 = is_valid_development_plan or is_valid_tracing_plan
                 is_valid_evaluation = is_valid_evaluation_1 or is_valid_evaluation_2
 
-                is_gap_deal_evaluator = is_gap_deal and (
-                            is_user_gh_inc_cond or is_user_gh_ue_cond or is_am_orig_evaluator)
-                base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
+                _is_gap_deal_evaluator1 = is_user_gh_inc_cond or is_user_gh_ue_cond or is_am_orig_evaluator
+                is_gap_deal_evaluator = is_gap_deal and _is_gap_deal_evaluator1
+
+                base_condition = is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator
                 record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
 
     @api.depends('state')
@@ -618,14 +618,13 @@ class ONSCDesempenoEvaluation(models.Model):
     def _compute_is_edit_general_comments(self):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
+            _states = record.state not in ['canceled', 'in_process']
             if record.evaluation_type == 'gap_deal':
-                _cond1 = record.state not in ['canceled', 'in_process'] or record.gap_deal_state != 'no_deal'
+                _cond1 = _states or record.gap_deal_state != 'no_deal'
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             else:
-                condition = record.state not in ['canceled', 'in_process'] or \
-                            record.evaluator_id.id != user_employee_id or \
-                            record.locked
+                condition = _states or record.evaluator_id.id != user_employee_id or record.locked
             record.is_edit_general_comments = condition
 
     @api.depends('state', 'gap_deal_state')
