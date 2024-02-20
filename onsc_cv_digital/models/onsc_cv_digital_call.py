@@ -89,6 +89,12 @@ class ONSCCVDigitalCall(models.Model):
     is_victim = fields.Boolean(string=u"Personas víctimas de delitos violentos (Art. 105 Ley N° 19.889)")
     preselected = fields.Selection(string="Preseleccionado", selection=[('yes', 'Si'), ('no', 'No')])
 
+    is_validated_seccions_rolleables = fields.Boolean(
+        string='¿Son las validaciones documentales rolleables?',
+        compute='_compute_is_validated_seccions_rolleables',
+        store=True
+    )
+
     call_conditional_state = fields.Selection(
         string="Estado de valores condicionales",
         selection=CONDITIONAL_VALIDATION_STATES,
@@ -144,28 +150,6 @@ class ONSCCVDigitalCall(models.Model):
     def _compute_call_conditional_state(self):
         # FIXME codigo sql es mas optimo pero no cubre todas las casuisticas(creacion todavia no esta en base de datos), se pasa a python
         # pylint: disable=sql-injection
-        #         _sql = '''
-        # SELECT SUM(count) FROM
-        # (
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_course_certificate WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_participation_event WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_experience WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_basic_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_advanced_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_tutoring_orientation_supervision WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_publication_production_evaluation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_teaching WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # ) AS conditional_state
-        #         '''
         for record in self.filtered(lambda x: x.is_json_sent is False and x.active):
             conditional_validation_state = record.course_certificate_ids.mapped('conditional_validation_state')
             conditional_validation_state.extend(record.participation_event_ids.mapped('conditional_validation_state'))
@@ -180,21 +164,6 @@ class ONSCCVDigitalCall(models.Model):
                 record.call_conditional_state = 'to_validate'
             else:
                 record.call_conditional_state = 'validated'
-
-            # self.env.cr.execute(_sql % (record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id))
-            # result = self.env.cr.dictfetchone()
-            # if not result or result['sum'] > 0 or record.cv_address_state == 'to_validate':
-            #     record.call_conditional_state = 'to_validate'
-            # else:
-            #     record.call_conditional_state = 'validated'
 
     def _get_documentary_validation_models(self, only_fields=False):
         try:
@@ -274,6 +243,10 @@ class ONSCCVDigitalCall(models.Model):
             _first_condition = record.is_cv_gender_public or record.is_trans
             first_condition = conditional_show and _first_condition and record.cv_gender_id.record
             record.show_gender_info = first_condition or not conditional_show
+
+    def _compute_is_validated_seccions_rolleables(self):
+        for record in self:
+            record.is_validated_seccions_rolleables = True
 
     def button_update_documentary_validation_sections_tovalidate(self):
         self._compute_gral_info_documentary_validation_state()
