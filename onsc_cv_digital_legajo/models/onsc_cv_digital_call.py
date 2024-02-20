@@ -2,13 +2,24 @@
 
 import logging
 
-from odoo import models
+from odoo import models, api, fields
 
 _logger = logging.getLogger(__name__)
 
 
 class ONSCCVDigitalCall(models.Model):
     _inherit = 'onsc.cv.digital.call'
+
+    is_validated_seccions_rolleables = fields.Boolean(
+        string='¿Son las validaciones documentales rolleables?',
+        compute='_compute_is_validated_seccions_rolleables',
+        store=True
+    )
+
+    @api.depends('cv_digital_origin_id.is_docket')
+    def _compute_is_validated_seccions_rolleables(self):
+        for record in self:
+            record.is_validated_seccions_rolleables = not record.cv_digital_origin_id.is_docket
 
     def _update_cv_digital_origin_documentary_values(self, documentary_field, vals):
         for record in self:
