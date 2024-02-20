@@ -8,7 +8,6 @@ class ResUser(models.Model):
 
     def _get_action(self, jobs):
         employee = self.employee_id
-        year = fields.Date.from_string(fields.Date.today()).year
         scores = self.env['onsc.desempeno.score'].search([
             ('employee_id', '=', employee.id),
             ('is_employee_notified', '=', False)

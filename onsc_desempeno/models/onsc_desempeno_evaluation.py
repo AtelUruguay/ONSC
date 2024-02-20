@@ -135,7 +135,8 @@ class ONSCDesempenoEvaluation(models.Model):
             args = self._get_domain_evaluation(args, 'environment_definition')
         if self._context.get('environment_evaluation'):
             args = self._get_domain_evaluation(args, 'environment_evaluation', show_evaluator=True)
-        if self._context.get('gap_deal_type') or self._context.get('develop_plan') or self._context.get('tracing_plan_type'):
+        if self._context.get('gap_deal_type') or self._context.get('develop_plan') or self._context.get(
+                'tracing_plan_type'):
             args = self._get_domain_gap_deal(args)
 
         return args
@@ -464,11 +465,13 @@ class ONSCDesempenoEvaluation(models.Model):
             if self._context.get('readonly_evaluation'):
                 condition = True
             elif record.evaluation_type in ('gap_deal', 'development_plan'):
-                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or (record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
+                _cond1 = record.state_gap_deal != 'in_process' or record.gap_deal_state != 'no_deal' or (
+                            record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             elif record.evaluation_type == 'tracing_plan':
-                condition = record.state != 'in_process' or record.evaluator_id.id != user_employee_id or (record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
+                condition = record.state != 'in_process' or record.evaluator_id.id != user_employee_id or (
+                            record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
             else:
                 _cond1 = record.evaluator_id.id != user_employee_id or record.locked
                 condition = record.state not in ['in_process'] or _cond1
@@ -499,7 +502,8 @@ class ONSCDesempenoEvaluation(models.Model):
             valid_state = (record.state_gap_deal in ['in_process'] or record.state in [
                 'in_process']) and not record.is_exonerated_evaluation
             valid_state_no_deal = (record.evaluation_type in ['gap_deal',
-                                                              'development_plan'] and record.gap_deal_state in ['no_deal']) or record.evaluation_type == 'tracing_plan'
+                                                              'development_plan'] and record.gap_deal_state in [
+                                       'no_deal']) or record.evaluation_type == 'tracing_plan'
             is_valid = record.evaluation_type in ['gap_deal', 'development_plan',
                                                   'tracing_plan'] and valid_state and valid_state_no_deal
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
@@ -520,7 +524,8 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id
         for record in self:
             if record.evaluation_type in ('development_plan', 'gap_deal'):
-                record.evaluation_form_edit = (record.evaluator_id.id == user_employee_id.id or record.evaluated_id.id == user_employee_id.id) and not record.is_exonerated_evaluation
+                record.evaluation_form_edit = (
+                                                          record.evaluator_id.id == user_employee_id.id or record.evaluated_id.id == user_employee_id.id) and not record.is_exonerated_evaluation
             elif record.evaluation_type == 'tracing_plan':
                 record.evaluation_form_edit = record.evaluator_id.id == user_employee_id.id
             else:
@@ -561,7 +566,8 @@ class ONSCDesempenoEvaluation(models.Model):
                     'draft', 'in_process']
                 is_valid_evaluation = is_valid_gap_deal or is_valid_leader_evaluation or is_valid_development_plan or is_valid_tracing_plan
 
-                is_gap_deal_evaluator = is_gap_deal and (is_user_gh_inc_cond or is_user_gh_ue_cond or is_am_orig_evaluator)
+                is_gap_deal_evaluator = is_gap_deal and (
+                            is_user_gh_inc_cond or is_user_gh_ue_cond or is_am_orig_evaluator)
                 base_condition = (is_user_gh_ue_cond or is_user_gh_inc_cond or is_responsable or is_gap_deal_evaluator)
                 record.is_evaluation_change_available = base_condition and not is_am_evaluator and is_valid_evaluation
 
@@ -743,12 +749,11 @@ class ONSCDesempenoEvaluation(models.Model):
                 'state_before_cancel': record.state,
                 'state': 'canceled',
             }
-            if record.evaluation_type in ['gap_deal','development_plan']:
+            if record.evaluation_type in ['gap_deal', 'development_plan']:
                 vals['state_gap_deal'] = 'canceled'
             else:
                 vals['state'] = 'canceled'
             record.write(vals)
-
 
     def validate_tracing_plan(self):
         Tracing = self.env['onsc.desempeno.evaluation.tracing.plan'].sudo()
