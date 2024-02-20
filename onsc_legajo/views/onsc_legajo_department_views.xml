@@ -5,8 +5,12 @@
         <field name="name">onsc.legajo.department.tree</field>
         <field name="model">onsc.legajo.department</field>
         <field name="arch" type="xml">
-            <tree string="Legajos">
+            <tree string="Legajos" decoration-muted="type == 'egresed'" decoration-it="type == 'egresed'">
                 <field name="legajo_id" string="Funcionario"/>
+                <field name="contract_legajo_state" widget="badge"
+                       decoration-success="contract_legajo_state == 'active'"
+                       decoration-info="contract_legajo_state == 'incoming_commission'"
+                       decoration-warning="contract_legajo_state in ['outgoing_commission', 'reserved', 'baja']"/>
                 <field name="job_name" string="Puesto"/>
                 <field name="security_job_id" optional="show"/>
                 <field name="department_id" string="UO" optional="hide"/>
@@ -14,6 +18,7 @@
                 <field name="contract_id" string="Contrato" optional="hide"/>
                 <field name="legajo_state" optional="hide"/>
                 <field name="start_date"/>
+                <field name="type" invisible="1"/>
                 <button name="button_open_legajo" type="object" string="Ver Legajo" icon="fa-edit"/>
             </tree>
         </field>
