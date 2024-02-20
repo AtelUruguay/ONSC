@@ -26,15 +26,19 @@ class ONSCLegajoDepartment(models.Model):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_from_menu'):
-            domain = self._get_domain(domain)
-        return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+        if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
+            is_legajo_id_in_base_args = False
+            for arg in domain:
+                if (isinstance(arg, tuple) or isinstance(arg, list)) and len(arg) and arg[0] == 'legajo_id':
+                    is_legajo_id_in_base_args = True
+            if not is_legajo_id_in_base_args:
+                domain = self._get_domain(domain)
+        return super(ONSCLegajoDepartment, self.with_context(avoid_recursion = True)).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
     def _is_group_responsable_uo_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
 
     def _get_domain(self, args):
-        Legajo = self.env['onsc.legajo']
         is_config_security = self.user_has_groups(
             'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo')
         is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
@@ -77,12 +81,12 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoDepartment, self).fields_get(allfields, attributes)
-        # hide = ['is_job_open', 'type', 'end_date', 'employee_id', 'job_id']
-        # for field in hide:
-        #     if field in res:
-        #         res[field]['selectable'] = False
-        #         res[field]['searchable'] = False
-        #         res[field]['sortable'] = False
+        hide = ['is_job_open', 'end_date', 'employee_id', 'job_id']
+        for field in hide:
+            if field in res:
+                res[field]['selectable'] = False
+                res[field]['searchable'] = False
+                res[field]['sortable'] = False
         return res
 
     legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
@@ -110,8 +114,8 @@ class ONSCLegajoDepartment(models.Model):
     end_date = fields.Date(string='Fecha hasta')
     type = fields.Selection(
         string='Tipo',
-        selection=[('active', 'Sistema'),
-                   ('egresed', 'Comodity')],
+        selection=[('active', 'Activo'),
+                   ('egresed', 'Egresado')],
         required=False)
 
     active_job_qty = fields.Integer(string='Cantidad de puestos activos (por Legajo)')
