@@ -470,9 +470,8 @@ class ONSCDesempenoEvaluation(models.Model):
                 _cond2 = record.evaluator_id.id != user_employee_id and record.evaluated_id.id != user_employee_id
                 condition = _cond1 or _cond2
             elif record.evaluation_type == 'tracing_plan':
-                condition = record.state != 'in_process' or \
-                            record.evaluator_id.id != user_employee_id or \
-                            (record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id)
+                _cond1 = record.is_agree_button_gh_available and record.evaluator_id.id != user_employee_id
+                condition = record.state != 'in_process' or record.evaluator_id.id != user_employee_id or _cond1
             else:
                 _cond1 = record.evaluator_id.id != user_employee_id or record.locked
                 condition = record.state not in ['in_process'] or _cond1
@@ -483,9 +482,8 @@ class ONSCDesempenoEvaluation(models.Model):
         user_employee_id = self.env.user.employee_id.id
         for record in self:
             is_am_evaluator = record.evaluator_id.id == user_employee_id
-            is_valid = record.evaluation_type in ('gap_deal', 'development_plan') and \
-                       record.state_gap_deal == 'in_process' and \
-                       record.gap_deal_state != 'agree_leader'
+            _is_valid = record.evaluation_type in ('gap_deal', 'development_plan')
+            is_valid = _is_valid and record.state_gap_deal == 'in_process' and record.gap_deal_state != 'agree_leader'
             _cond1 = is_am_evaluator and is_valid
             record.is_agree_evaluation_leader_available = _cond1 and not record.is_exonerated_evaluation
 
@@ -506,8 +504,8 @@ class ONSCDesempenoEvaluation(models.Model):
             valid_state_1 = record.evaluation_type in ['gap_deal', 'development_plan'] and \
                             record.gap_deal_state in ['no_deal']
             valid_state_no_deal = valid_state_1 or record.evaluation_type == 'tracing_plan'
-            is_valid = record.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan'] and \
-                       valid_state and valid_state_no_deal
+            valid_types = record.evaluation_type in ['gap_deal', 'development_plan', 'tracing_plan']
+            is_valid = valid_types and valid_state and valid_state_no_deal
             is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
             user_security = not is_responsable and (is_gh_user_ue or is_gh_user_inciso)
             record.is_agree_button_gh_available = is_am_evaluator and is_valid and user_security
@@ -558,20 +556,18 @@ class ONSCDesempenoEvaluation(models.Model):
                 is_responsable = is_gh_responsable and record.uo_id.id in hierarchy_deparments.ids
                 is_order_1 = record.sudo().evaluator_uo_id.hierarchical_level_id.order == 1
                 is_gap_deal = record.sudo().evaluation_type == 'gap_deal'
+                _valid_state_gap_deal = record.state_gap_deal in ['draft', 'in_process']
+                _valid_states = record.state in ['draft', 'in_process']
+                _is_leader_eval = record.evaluation_type == 'leader_evaluation'
+                _is_valid_leader_eval_1 = is_order_1 or is_responsable or is_am_orig_evaluator
 
-                is_valid_gap_deal = record.evaluation_type == 'gap_deal' and \
-                                    record.state_gap_deal in ['draft', 'in_process']
-                is_valid_development_plan = record.evaluation_type == 'development_plan' and \
-                                            record.state_gap_deal in ['draft', 'in_process']
-                is_valid_leader_evaluation = record.evaluation_type == 'leader_evaluation' and \
-                                             record.state in ['draft', 'in_process'] and \
-                                             (is_order_1 or is_responsable or is_am_orig_evaluator)
-                is_valid_tracing_plan = record.evaluation_type == 'tracing_plan' and \
-                                        record.state in ['draft', 'in_process']
-                is_valid_evaluation = is_valid_gap_deal or \
-                                      is_valid_leader_evaluation or \
-                                      is_valid_development_plan or \
-                                      is_valid_tracing_plan
+                is_valid_gap_deal = record.evaluation_type == 'gap_deal' and _valid_state_gap_deal
+                is_valid_development_plan = record.evaluation_type == 'development_plan' and _valid_state_gap_deal
+                is_valid_leader_eval = _is_leader_eval and _valid_states and _is_valid_leader_eval_1
+                is_valid_tracing_plan = record.evaluation_type == 'tracing_plan' and _valid_states
+                is_valid_evaluation_1 = is_valid_gap_deal or is_valid_leader_eval
+                is_valid_evaluation_2 = is_valid_development_plan or is_valid_tracing_plan
+                is_valid_evaluation = is_valid_evaluation_1 or is_valid_evaluation_2
 
                 is_gap_deal_evaluator = is_gap_deal and (
                             is_user_gh_inc_cond or is_user_gh_ue_cond or is_am_orig_evaluator)
