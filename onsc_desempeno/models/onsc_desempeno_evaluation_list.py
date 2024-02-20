@@ -96,31 +96,25 @@ class ONSCDesempenoEvaluationList(models.Model):
     fixed_manager_uo_id = fields.Many2one(
         "hr.department",
         string="UO del Líder al cierre de la lista")
-
-
     year = fields.Integer(
         u'Año a evaluar',
         related="evaluation_stage_id.year",
         store=True)
-
     is_imanager = fields.Boolean(
         string=' Responsable',
         search='_search_is_imanager',
         store=False,
         required=False)
-
     state = fields.Selection(
         string='Formulario',
         selection=[('in_progress', 'En proceso'),
                    ('closed', 'Finalizada')],
         required=True,
         default='in_progress')
-
     line_ids = fields.One2many(
         comodel_name='onsc.desempeno.evaluation.list.line',
         inverse_name='evaluation_list_id',
         string='Colaboradores')
-
     evaluation_generated_line_ids = fields.One2many(
         comodel_name='onsc.desempeno.evaluation.list.line',
         inverse_name='evaluation_list_id',
@@ -267,8 +261,6 @@ class ONSCDesempenoEvaluationList(models.Model):
 
         exluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
 
-
-
         self._cr.execute(
             """SELECT DISTINCT current_job_id FROM onsc_desempeno_evaluation WHERE current_job_id IS NOT NULL""")
         result = self._cr.fetchall()
@@ -325,7 +317,6 @@ class ONSCDesempenoEvaluationList(models.Model):
         :param evaluation_stage: Instances of onsc.desempeno.evaluation.stage
         """
         return self.search([('evaluation_stage_id', 'in', evaluation_stages.ids)]).mapped('department_id')
-
 
     def _link_jobs(self, jobs):
         for job in jobs:
