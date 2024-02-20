@@ -1,6 +1,6 @@
 # pylint: disable=E8102
 # -*- coding: utf-8 -*-
-from odoo import models, fields
+from odoo import models
 
 
 class ResUser(models.Model):
