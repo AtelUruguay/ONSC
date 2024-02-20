@@ -89,12 +89,6 @@ class ONSCCVDigitalCall(models.Model):
     is_victim = fields.Boolean(string=u"Personas víctimas de delitos violentos (Art. 105 Ley N° 19.889)")
     preselected = fields.Selection(string="Preseleccionado", selection=[('yes', 'Si'), ('no', 'No')])
 
-    is_validated_seccions_rolleables = fields.Boolean(
-        string='¿Son las validaciones documentales rolleables?',
-        compute='_compute_is_validated_seccions_rolleables',
-        store=True
-    )
-
     call_conditional_state = fields.Selection(
         string="Estado de valores condicionales",
         selection=CONDITIONAL_VALIDATION_STATES,
@@ -243,10 +237,6 @@ class ONSCCVDigitalCall(models.Model):
             _first_condition = record.is_cv_gender_public or record.is_trans
             first_condition = conditional_show and _first_condition and record.cv_gender_id.record
             record.show_gender_info = first_condition or not conditional_show
-
-    def _compute_is_validated_seccions_rolleables(self):
-        for record in self:
-            record.is_validated_seccions_rolleables = True
 
     def button_update_documentary_validation_sections_tovalidate(self):
         self._compute_gral_info_documentary_validation_state()
