@@ -376,7 +376,7 @@ class ONSCLegajoStagingWS7(models.Model):
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
                 second_movement.fecha_vig + datetime.timedelta(days=-1),
                 legajo_state='baja',
-                eff_date=record.fecha_vig
+                eff_date=second_movement.fecha_vig
             )
             if record.mov == 'ASCENSO':
                 causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
