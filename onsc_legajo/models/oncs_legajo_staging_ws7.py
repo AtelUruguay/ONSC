@@ -333,13 +333,21 @@ class ONSCLegajoStagingWS7(models.Model):
             return
 
         # CASO CONTRACTO ACTUAL COMISION ENTRANTE Y CONTRATO ORIGINAL COMISION SALIENTE
-        cs_contract_outgoing = contract.cs_contract_id and contract.cs_contract_id.legajo_state == 'outgoing_commission'
-        if contract.legajo_state == 'incoming_commission' and cs_contract_outgoing:
+        incoming_contract = self.env['hr.contract'].search([
+            ('cs_contract_id', '=', contract.id),
+            ('legajo_state', '=', 'incoming_commission')], limit=1)
+
+        if contract.legajo_state == 'outgoing_commission' and incoming_contract:
+            # A (saliente): contract
+            # B (entrante): incoming_contract
+            # CASO CONTRATO A SALIENTE Y ENCUENTRA UN CONTRATO B ENTRANTE
+
             # GENERA NUEVO CONTRATO (C)
-            new_contract = self._get_contract_copy(contract.cs_contract_id, second_movement, 'outgoing_commission')
-            self._copy_jobs(contract.cs_contract_id, new_contract)
+            new_contract = self._get_contract_copy(contract, second_movement, 'outgoing_commission')
+            self._copy_jobs(contract, new_contract)
+
             # DESACTIVA EL CONTRATO SALIENTE (A)
-            contract.cs_contract_id.with_context(no_check_write=True).deactivate_legajo_contract(
+            contract.with_context(no_check_write=True).deactivate_legajo_contract(
                 record.fecha_vig + datetime.timedelta(days=-1),
                 legajo_state='baja',
                 eff_date=record.fecha_vig
@@ -350,17 +358,17 @@ class ONSCLegajoStagingWS7(models.Model):
                 causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
             else:
                 causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
-            contract.cs_contract_id.write({
+            contract.write({
                 'causes_discharge_id': causes_discharge.id,
             })
+
             # CONTRACTO ORIGINAL B RELACIONADO AL CONTRATO C
-            contract.write({
+            incoming_contract.write({
                 'eff_date': record.fecha_vig,
                 'cs_contract_id': new_contract.id,
             })
         else:
             # TODO revisar si sigue siendo necesario
-            # CREA NUEVO CONTRATO CON EL SEGUNDO MOVIMIENTO CONTRATO C
             new_contract = self._get_contract_copy(contract, second_movement)
             self._copy_jobs(contract, new_contract)
 
