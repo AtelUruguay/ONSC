@@ -287,10 +287,9 @@ class ONSCCVDigital(models.Model):
                 ('cv_nro_doc', '=', record.cv_nro_doc),
             ], limit=1)
 
-    @api.depends('is_docket_active')
     def _compute_is_validated_seccions_rolleables(self):
         for record in self:
-            record.is_validated_seccions_rolleables = not record.is_docket_active
+            record.is_validated_seccions_rolleables = record.employee_id and record.employee_id.legajo_state == 'active'
 
     @api.depends('employee_id', 'employee_id.legajo_state', 'is_docket')
     def _compute_is_docket_active(self):
