@@ -65,6 +65,7 @@
                     <field name="active" invisible="1"/>
                     <field name="is_cv_uruguay" invisible="1"/>
                     <field name="is_partner_cv" invisible="1"/>
+                    <field name="is_validated_seccions_rolleables" invisible="1"/>
                     <div class="oe_title">
                         <h1>
                             <field name="cv_full_name" readonly="1"/>
@@ -99,7 +100,7 @@
                                                 context="{'documentary_validation':'nro_doc'}"
                                                 type="object"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': [('nro_doc_documentary_validation_state', '=', 'rejected')]}"
+                                                attrs="{'invisible': [('nro_doc_documentary_validation_state', 'in', ['rejected','validated'])]}"
                                                 string="Rechazar"
                                                 icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                     </span>
@@ -174,7 +175,7 @@
                                                     string="Rechazar"
                                                     icon="fa-thumbs-o-down"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': ['|',('is_civical_credential_populated', '=', False),('civical_credential_documentary_validation_state', '=', 'rejected')]}"
+                                                    attrs="{'invisible': ['|',('is_civical_credential_populated', '=', False),('civical_credential_documentary_validation_state', 'in', ['rejected','validated'])]}"
                                                     class="btn btn-sm btn-outline-danger"/>
                                         </span>
                                     </div>
@@ -286,7 +287,7 @@
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|',('is_occupational_health_card','=',False),('occupational_health_card_documentary_validation_state', '=', 'rejected')]}"
+                                                attrs="{'invisible': ['|',('is_occupational_health_card','=',False),('occupational_health_card_documentary_validation_state', 'in', ['rejected','validated'])]}"
                                                 context="{'documentary_validation':'occupational_health_card'}"
                                                 type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                     </div>
@@ -334,7 +335,7 @@
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|',('is_medical_aptitude_certificate_status','=',False),('medical_aptitude_certificate_documentary_validation_state', '=', 'rejected')]}"
+                                                attrs="{'invisible': ['|',('is_medical_aptitude_certificate_status','=',False),('medical_aptitude_certificate_documentary_validation_state', 'in', ['rejected','validated'])]}"
                                                 context="{'documentary_validation':'medical_aptitude_certificate'}"
                                                 type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                     </div>
@@ -396,7 +397,7 @@
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|',('is_cv_address_populated','=',False),('cv_address_documentary_validation_state', '=', 'rejected')]}"
+                                                attrs="{'invisible': ['|',('is_cv_address_populated','=',False),('cv_address_documentary_validation_state', 'in', ['rejected','validated'])]}"
                                                 context="{'documentary_validation':'cv_address'}"
                                                 type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                     </div>
@@ -513,7 +514,7 @@
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|',('disabilitie_documentary_validation_state', '=', 'rejected'),('people_disabilitie', '!=', 'si')]}"
+                                                attrs="{'invisible': ['|',('disabilitie_documentary_validation_state', 'in', ['rejected','validated']),('people_disabilitie', '!=', 'si')]}"
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                     </div>

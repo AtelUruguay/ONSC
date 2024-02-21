@@ -266,6 +266,12 @@ class ONSCCVDigital(models.Model):
         store=True
     )
 
+    is_validated_seccions_rolleables = fields.Boolean(
+        string='¿Son las validaciones documentales rolleables?',
+        compute='_compute_is_validated_seccions_rolleables',
+        store=False
+    )
+
     @api.depends('is_cv_gender_public')
     def _compute_gender_public_visualization_date(self):
         for record in self:
@@ -280,6 +286,10 @@ class ONSCCVDigital(models.Model):
                 ('cv_document_type_id', '=', record.cv_document_type_id.id),
                 ('cv_nro_doc', '=', record.cv_nro_doc),
             ], limit=1)
+
+    def _compute_is_validated_seccions_rolleables(self):
+        for record in self:
+            record.is_validated_seccions_rolleables = record.employee_id and record.employee_id.legajo_state == 'active'
 
     @api.depends('employee_id', 'employee_id.legajo_state', 'is_docket')
     def _compute_is_docket_active(self):
