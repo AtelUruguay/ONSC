@@ -348,9 +348,9 @@ class ONSCLegajoStagingWS7(models.Model):
 
             # DESACTIVA EL CONTRATO SALIENTE (A)
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
-                record.fecha_vig,
+                second_movement.fecha_vig + datetime.timedelta(days=-1),
                 legajo_state='baja',
-                eff_date=record.fecha_vig
+                eff_date=second_movement.fecha_vig
             )
             if record.mov == 'ASCENSO':
                 causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
@@ -364,7 +364,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
             # CONTRACTO ORIGINAL B RELACIONADO AL CONTRATO C
             incoming_contract.write({
-                'eff_date': record.fecha_vig,
+                'eff_date': str(second_movement.fecha_vig),
                 'cs_contract_id': new_contract.id,
             })
         else:
@@ -374,7 +374,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
             # DESACTIVA EL CONTRATO
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
-                record.fecha_vig,
+                second_movement.fecha_vig + datetime.timedelta(days=-1),
                 legajo_state='baja',
                 eff_date=record.fecha_vig
             )
