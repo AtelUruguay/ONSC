@@ -348,7 +348,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
             # DESACTIVA EL CONTRATO SALIENTE (A)
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
-                record.fecha_vig + datetime.timedelta(days=-1),
+                record.fecha_vig,
                 legajo_state='baja',
                 eff_date=record.fecha_vig
             )
@@ -374,7 +374,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
             # DESACTIVA EL CONTRATO
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
-                record.fecha_vig + datetime.timedelta(days=-1),
+                record.fecha_vig,
                 legajo_state='baja',
                 eff_date=record.fecha_vig
             )
