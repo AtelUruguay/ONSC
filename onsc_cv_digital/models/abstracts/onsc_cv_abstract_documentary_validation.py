@@ -38,7 +38,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
     def _compute_is_validated_seccions_rolleables(self):
         if hasattr(self, "cv_digital_id"):
             for record in self:
-                record.is_validated_seccions_rolleables = not record.cv_digital_id.is_validated_seccions_rolleables
+                record.is_validated_seccions_rolleables = record.cv_digital_id.is_validated_seccions_rolleables
         else:
             for record in self:
                 record.is_validated_seccions_rolleables = True
