@@ -27,7 +27,7 @@
                                     type="object"
                                     icon="fa-thumbs-o-down"
                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                    attrs="{'invisible': ['|',('image_1920','=',False),('photo_documentary_validation_state', '=', 'rejected')]}"
+                                    attrs="{'invisible': ['|',('image_1920','=',False),('photo_documentary_validation_state', 'in', ['rejected','validated'])]}"
                                     class="btn btn-sm btn-outline-danger"/>
                         </span>
                     </div>

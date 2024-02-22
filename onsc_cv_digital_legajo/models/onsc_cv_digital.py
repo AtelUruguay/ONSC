@@ -308,7 +308,6 @@ class ONSCCVDigital(models.Model):
             'civical_credential_documentary_validation_state': _('Credencial cívica'),
             'nro_doc_documentary_validation_state': _('Documento de identidad'),
             'disabilitie_documentary_validation_state': _('Discapacidad'),
-            'marital_status_documentary_validation_state': _('Estado civil'),
             'photo_documentary_validation_state': _('Foto'),
             'occupational_health_card_documentary_validation_state': _('Carné de salud laboral'),
             'medical_aptitude_certificate_documentary_validation_state': _('Certificado de aptitud médico-deportiva'),
@@ -769,8 +768,7 @@ class ONSCCVDigital(models.Model):
 
     def _get_legajo_documentary_validation_models(self, only_fields=False):
         if not bool(self._context):
-            return ['marital_status_documentary_validation_state',
-                    'photo_documentary_validation_state',
+            return ['photo_documentary_validation_state',
                     'occupational_health_card_documentary_validation_state',
                     'medical_aptitude_certificate_documentary_validation_state',
                     'cv_address_documentary_validation_state',
@@ -783,8 +781,7 @@ class ONSCCVDigital(models.Model):
             for config in configs.filtered(lambda x: x.field_id):
                 validation_models.append('%s' % config.field_id.name)
         else:
-            validation_models = ['marital_status_documentary_validation_state',
-                                 'photo_documentary_validation_state',
+            validation_models = ['photo_documentary_validation_state',
                                  'occupational_health_card_documentary_validation_state',
                                  'medical_aptitude_certificate_documentary_validation_state',
                                  'cv_address_documentary_validation_state',
