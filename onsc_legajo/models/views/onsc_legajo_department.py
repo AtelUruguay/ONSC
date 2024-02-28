@@ -20,20 +20,20 @@ class ONSCLegajoDepartment(models.Model):
                     is_legajo_id_in_base_args = True
             if not is_legajo_id_in_base_args:
                 args = self._get_domain(args)
-        return super(ONSCLegajoDepartment, self.with_context(avoid_recursion = True))._search(args, offset=offset, limit=limit, order=order,
-                                                         count=count,
-                                                         access_rights_uid=access_rights_uid)
+        return super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True))._search(args, offset=offset,
+                                                                                            limit=limit, order=order,
+                                                                                            count=count,
+                                                                                            access_rights_uid=access_rights_uid)
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
         if self._context.get('is_from_menu') and not self._context.get('avoid_recursion', False):
-            is_legajo_id_in_base_args = False
-            for arg in domain:
-                if (isinstance(arg, tuple) or isinstance(arg, list)) and len(arg) and arg[0] == 'legajo_id':
-                    is_legajo_id_in_base_args = True
-            if not is_legajo_id_in_base_args:
-                domain = self._get_domain(domain)
-        return super(ONSCLegajoDepartment, self.with_context(avoid_recursion = True)).read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
+            domain = self._get_domain(domain)
+        return super(ONSCLegajoDepartment, self.with_context(avoid_recursion=True)).read_group(domain, fields, groupby,
+                                                                                               offset=offset,
+                                                                                               limit=limit,
+                                                                                               orderby=orderby,
+                                                                                               lazy=lazy)
 
     def _is_group_responsable_uo_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
@@ -45,22 +45,22 @@ class ONSCLegajoDepartment(models.Model):
         is_ue_security = self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
 
         if is_config_security:
-            legajo_ids = self._get_legajo_ids()
+            contract_ids = self._get_contract_ids()
             args = expression.AND([[
-                ('legajo_id', 'in', legajo_ids),
+                ('contract_id', 'in', contract_ids),
             ], args])
         elif is_inciso_security:
-            legajo_ids = self._get_legajo_ids()
+            contract_ids = self._get_contract_ids()
             contract = self.env.user.employee_id.job_id.contract_id
             args = expression.AND([[
-                ('legajo_id', 'in', legajo_ids),
+                ('contract_id', 'in', contract_ids),
                 ('inciso_id', '=', contract.inciso_id.id)
             ], args])
         elif is_ue_security:
-            legajo_ids = self._get_legajo_ids()
+            contract_ids = self._get_contract_ids()
             contract = self.env.user.employee_id.job_id.contract_id
             args = expression.AND([[
-                ('legajo_id', 'in', legajo_ids),
+                ('contract_id', 'in', contract_ids),
                 ('operating_unit_id', '=', contract.operating_unit_id.id)
             ], args])
         elif self._is_group_responsable_uo_security():
@@ -77,6 +77,10 @@ class ONSCLegajoDepartment(models.Model):
         self.env.cr.execute(sql_query, [tuple(available_contracts.ids)])
         results = self.env.cr.fetchall()
         return [item[0] for item in results]
+
+    def _get_contract_ids(self):
+        available_contracts = self.env['onsc.legajo']._get_user_available_contract()
+        return available_contracts.ids
 
     @api.model
     def fields_get(self, allfields=None, attributes=None):
@@ -158,13 +162,13 @@ FROM
 LEFT JOIN hr_job job ON job.contract_id = contract.id
 LEFT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
 WHERE 
-    contract.legajo_state <> 'baja' AND ((job.start_date <= CURRENT_DATE AND (job.end_date IS NULL OR job.end_date >= CURRENT_DATE)) OR job.id IS NULL)
+    contract.legajo_state <> 'baja'
 UNION ALL
 SELECT
     legajo.id AS legajo_id,
-    NULL AS contract_id,
+    (SELECT id FROM hr_contract WHERE legajo_id = legajo.id ORDER BY date_end DESC limit 1) AS contract_id,
     legajo.legajo_state AS legajo_state,
-    NULL AS contract_legajo_state,
+    (SELECT legajo_state FROM hr_contract WHERE legajo_id = legajo.id ORDER BY date_end DESC limit 1) AS contract_legajo_state,
     (SELECT id FROM hr_job WHERE legajo_id = legajo.id ORDER BY start_date DESC limit 1) AS job_id,
     (SELECT name FROM hr_job WHERE legajo_id = legajo.id ORDER BY start_date DESC limit 1) AS job_name,
 	NULL AS security_job_id,
