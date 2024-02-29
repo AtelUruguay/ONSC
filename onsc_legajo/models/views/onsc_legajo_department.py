@@ -138,6 +138,7 @@ class ONSCLegajoDepartment(models.Model):
 SELECT
 row_number() OVER(ORDER BY legajo_id, contract_id, type, job_id) AS id, *
 FROM
+(SELECT * FROM
 (SELECT
     contract.legajo_id AS legajo_id,
     contract.id AS contract_id,
@@ -153,16 +154,16 @@ FROM
     job.start_date AS start_date,
     job.end_date AS end_date,
     'active' AS type,
-    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND legajo_id = legajo.id) AS active_job_qty
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
     --(SELECT id FROM hr_job WHERE legajo_id = legajo.id ORDER BY start_date DESC, id DESC limit 1) AS last_job_id,
     --(SELECT inciso_id FROM hr_contract WHERE legajo_id = legajo.id ORDER BY date_start DESC, id DESC limit 1) AS last_inciso_id,
     --(SELECT operating_unit_id FROM hr_contract WHERE legajo_id = legajo.id ORDER BY date_start DESC, id DESC limit 1) AS last_operating_unit_id    
 FROM
     hr_contract contract
 LEFT JOIN hr_job job ON job.contract_id = contract.id
-LEFT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
-WHERE 
-    contract.legajo_state <> 'baja'
+LEFT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id) AS base_active_query
+WHERE
+	(active_job_qty = 0 OR active_job_qty > 0 AND end_date IS NULL OR end_date > CURRENT_DATE)
 UNION ALL
 SELECT
     legajo.id AS legajo_id,
