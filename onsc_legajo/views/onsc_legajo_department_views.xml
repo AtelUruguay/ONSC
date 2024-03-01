@@ -5,7 +5,9 @@
         <field name="name">onsc.legajo.department.tree</field>
         <field name="model">onsc.legajo.department</field>
         <field name="arch" type="xml">
-            <tree string="Legajos" decoration-muted="type == 'egresed'" decoration-it="type == 'egresed'">
+            <tree string="Legajos"
+                  decoration-muted="type == 'egresed' or contract_legajo_state == 'baja'"
+                  decoration-it="type == 'egresed' or contract_legajo_state == 'baja'">
                 <field name="legajo_id" string="Funcionario"/>
                 <field name="contract_legajo_state" widget="badge"
                        decoration-success="contract_legajo_state == 'active'"
@@ -16,7 +18,6 @@
                 <field name="department_id" string="UO" optional="hide"/>
                 <field name="operating_unit_id" string="Unidad ejecutora" optional="hide"/>
                 <field name="contract_id" string="Contrato" optional="hide"/>
-                <field name="legajo_state" optional="hide"/>
                 <field name="start_date"/>
                 <field name="type" invisible="1"/>
                 <button name="button_open_legajo" type="object" string="Ver Legajo" icon="fa-edit"/>
@@ -38,17 +39,13 @@
                 <field name="contract_id" string="Contrato"/>
                 <field name="department_id" string="UO"/>
                 <field name="security_job_id"/>
-                <field name="legajo_state"/>
+                <field name="contract_legajo_state"/>
                 <field name="job_name"/>
-                <filter string="Funcionarios activos" name="filter_legajo_state_active"
-                            domain="[('legajo_state','=','active')]"/>
-                <filter string="Funcionarios egresados" name="filter_legajo_state_egresed"
-                            domain="[('legajo_state','=','egresed')]"/>
                 <group string="Agrupar por">
                     <filter name="group_department_id" string="Unidad organizativa" context="{'group_by': 'department_id'}"/>
                     <filter name="group_legajo_id" string="Legajo" context="{'group_by': 'legajo_id'}"/>
                     <filter name="group_contract_id" string="Contrato" context="{'group_by': 'contract_id'}"/>
-                    <filter name="group_legajo_state" string="Estado del funcionario" context="{'group_by': 'legajo_state'}"/>
+                    <filter name="group_legajo_state" string="Estado del contrato" context="{'group_by': 'contract_legajo_state'}"/>
                 </group>
             </search>
         </field>
