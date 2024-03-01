@@ -206,26 +206,7 @@ FROM
 	(SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
 FROM
     hr_contract contract) AS base_contract_view
-WHERE contract_legajo_state = 'outgoing_commission'
-UNION ALL
-SELECT
-    legajo.id AS legajo_id,
-    (SELECT id FROM hr_contract WHERE legajo_id = legajo.id ORDER BY date_end DESC limit 1) AS contract_id,
-    (SELECT legajo_state FROM hr_contract WHERE legajo_id = legajo.id ORDER BY date_end DESC limit 1) AS contract_legajo_state,
-	(SELECT inciso_id FROM hr_job WHERE legajo_id = legajo.id ORDER BY start_date DESC limit 1) AS inciso_id,
-	(SELECT operating_unit_id FROM hr_job WHERE legajo_id = legajo.id ORDER BY start_date DESC limit 1) AS operating_unit_id,
-	legajo.employee_id,
-	'egresed' AS type,
-	0 AS active_job_qty,
-    NULL AS job_id,
-    NULL AS  job_name,
-	NULL AS security_job_id,
-	NULL AS department_id,
-	NULL AS start_date,
-	NULL AS end_date
-FROM
-    onsc_legajo legajo
-WHERE legajo.legajo_state = 'egresed') AS main_query)''' % (self._table,))
+WHERE contract_legajo_state = 'outgoing_commission') AS main_query)''' % (self._table,))
 
     @profiler
     def _search_is_job_open(self, operator, value):
