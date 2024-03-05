@@ -158,7 +158,7 @@ FROM
 	'active' AS type,
 	(SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
 FROM
-    hr_contract contract) AS base_contract_view
+    hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 WHERE contract_legajo_state IN ('active','incoming_commission','reserved') AND active_job_qty = 0
 UNION ALL
 --CONTRATO ACTIVO CON PUESTOS ACTIVOS
@@ -181,7 +181,7 @@ FROM
 	'active' AS type,
 	(SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
 FROM
-    hr_contract contract) AS base_contract_view
+    hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 LEFT JOIN hr_job ON hr_job.contract_id = base_contract_view.contract_id
 WHERE contract_legajo_state IN ('active','incoming_commission','reserved') AND active_job_qty > 0 AND (end_date IS NULL OR end_date > CURRENT_DATE)
 --CONTRATO SALIENTE TOMAR EL ULTIMO PUESTO
@@ -205,7 +205,7 @@ FROM
 	'active' AS type,
 	(SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
 FROM
-    hr_contract contract) AS base_contract_view
+    hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 WHERE contract_legajo_state = 'outgoing_commission') AS main_query)''' % (self._table,))
 
     @profiler
