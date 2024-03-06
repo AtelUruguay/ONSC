@@ -48,3 +48,7 @@ class ResUsers(models.Model):
                 ('cv_nro_doc', '=', values.get('cv_nro_doc')),
             ], limit=1)
         return self.env['res.partner']
+
+    def _get_session_token_fields(self):
+        super(ResUsers, self)._get_session_token_fields()
+        return {'id', 'login', 'password', 'active'}
