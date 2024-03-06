@@ -88,3 +88,8 @@ class ResUsers(models.Model):
         return self.env['res.country'].search([
             ('code', 'in', [country_code.upper(), country_code.lower()])
         ], limit=1)
+
+    def _get_session_token_fields(self):
+        super(ResUsers, self)._get_session_token_fields()
+        return {'id', 'login', 'password', 'active'}
+
