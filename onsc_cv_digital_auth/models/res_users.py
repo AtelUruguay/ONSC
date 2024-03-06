@@ -50,5 +50,10 @@ class ResUsers(models.Model):
         return self.env['res.partner']
 
     def _get_session_token_fields(self):
+        """
+        METODO PARA EVITAR PROBLEMAS CON EL COMPUTE_SESSION PARA DETERMINADA POBLACIÓN DE USUARIOS.
+        LA CAPA OAUTH INCORPORABA CIERTOS CAMPOS QUE DEBEMOS EXCLUIR Y VOLVER AL RETURN CORE DEL BASE
+        :return:
+        """
         super(ResUsers, self)._get_session_token_fields()
         return {'id', 'login', 'password', 'active'}
