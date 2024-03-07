@@ -65,18 +65,16 @@ class ONSCLegajoDepartment(models.Model):
             ], args])
         elif self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
-            args = expression.AND([[
+            new_args = [
                 ('department_id', 'in', department_ids),
-                ('type', '=', 'active'),
-            ], args])
-        return args
 
-    def _get_legajo_ids(self):
-        available_contracts = self.env['onsc.legajo']._get_user_available_contract()
-        sql_query = """SELECT DISTINCT legajo_id FROM hr_contract WHERE id IN %s AND employee_id IS NOT NULL"""
-        self.env.cr.execute(sql_query, [tuple(available_contracts.ids)])
-        results = self.env.cr.fetchall()
-        return [item[0] for item in results]
+                ('type', '=', 'active'),
+            ]
+            user_employee = self.env.user.employee_id
+            if user_employee:
+                new_args.append((('employee_id', '!=', user_employee.id)))
+            args = expression.AND([new_args, args])
+        return args
 
     def _get_contract_ids(self):
         available_contracts = self.env['onsc.legajo']._get_user_available_contract()
@@ -85,7 +83,7 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoDepartment, self).fields_get(allfields, attributes)
-        hide = ['is_job_open', 'end_date', 'employee_id', 'job_id']
+        hide = ['end_date', 'employee_id', 'job_id']
         for field in hide:
             if field in res:
                 res[field]['selectable'] = False
@@ -95,10 +93,6 @@ class ONSCLegajoDepartment(models.Model):
 
     legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
     contract_id = fields.Many2one('hr.contract', string="Contrato")
-    # legajo_state = fields.Selection(
-    #     [('active', 'Activo'), ('egresed', 'Egresado')],
-    #     string='Estado del funcionario',
-    # )
     contract_legajo_state = fields.Selection([
         ('active', 'Activo'),
         ('baja', 'Baja'),
@@ -123,14 +117,6 @@ class ONSCLegajoDepartment(models.Model):
         required=False)
 
     active_job_qty = fields.Integer(string='Cantidad de puestos activos (por Legajo)')
-
-    # last_job_id = fields.Many2one('hr.job', string="Puesto")
-    # last_inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso')
-    # last_operating_unit_id = fields.Many2one("operating.unit", string="Unidad ejecutora")
-
-    # is_job_open = fields.Boolean(string='¿Puesto vigente?',
-    #                              compute='_compute_is_job_open',
-    #                              search='_search_is_job_open')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -207,69 +193,6 @@ FROM
 FROM
     hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 WHERE contract_legajo_state = 'outgoing_commission') AS main_query)''' % (self._table,))
-
-    @profiler
-    def _search_is_job_open(self, operator, value):
-        _today = fields.Date.today()
-        base_args = [
-            ('type', '=', 'active'),
-        ]
-        # job_expression = ['&', ('start_date', '<=', _today), '|', ('end_date', '>=', _today), ('end_date', '=', False)]
-        # nojob_expression = [('job_id', '=', False), ('contract_legajo_state', '!=', 'baja')]
-        # second_expression = expression.OR([job_expression, nojob_expression])
-        # base_args = expression.AND([base_args, second_expression])
-        open_active_records = self.search(base_args)
-        open_active_records_ids = open_active_records.ids
-        sql_legajo_ids_query = """SELECT legajo_id FROM onsc_legajo_department WHERE id IN %s"""
-        self.env.cr.execute(sql_legajo_ids_query, [tuple(open_active_records_ids)])
-        results = self.env.cr.fetchall()
-
-        # CANDIDATOS A INDEFINIDOS
-        unicity_egresed_legajo_ids = [item[0] for item in results]
-        egresed_args = [
-            ('type', '=', 'egresed'),
-            ('legajo_id', 'not in', unicity_egresed_legajo_ids),
-            '|',
-            ('legajo_state', '=', 'egresed'),  # los egresados
-            '&', '&', ('legajo_state', '!=', 'egresed'), ('contract_legajo_state', '!=', 'baja'),
-            ('active_job_qty', '=', 0),
-            # los egresados
-        ]
-        egresed_records = self.search(egresed_args)
-
-        # egresed_records = self.search([('type', '=', 'egresed')])
-        # egresed_valid_records = egresed_records.filtered(lambda x: x.legajo_state == 'egresed')
-        # egresed_valid_records |= egresed_records.filtered(
-        #     lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
-        #         x.legajo_id.job_ids) == 0)
-        #
-        #
-        # egresed_valid_records |= egresed_records.filtered(
-        #     lambda x: x.legajo_state != 'egresed' and x.contract_legajo_state != 'baja' and len(
-        #         x.contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date >= _today)) == 0)
-
-        # unicity_egresed_legajo_ids = open_active_records.mapped('legajo_id.id')
-
-        unicity_egresed = self
-        for egresed_record in egresed_records:
-            if egresed_record.legajo_id.id not in unicity_egresed_legajo_ids:
-                unicity_egresed |= egresed_record
-                unicity_egresed_legajo_ids.append(egresed_record.legajo_id.id)
-
-        if operator == '=' and value is False:
-            _operator = 'not in'
-        else:
-            _operator = 'in'
-
-        final_records = open_active_records
-        final_records |= unicity_egresed
-        return [('id', _operator, final_records.ids)]
-
-    @api.depends('start_date', 'end_date')
-    def _compute_is_job_open(self):
-        _today = fields.Date.today()
-        for record in self:
-            record.is_job_open = record.start_date <= _today and (record.end_date is False or record.end_date >= _today)
 
     def get_uo_tree(self, contract=False):
         Department = self.env['hr.department'].sudo()
