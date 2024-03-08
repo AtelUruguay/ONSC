@@ -21,12 +21,14 @@ ONSC - Base
         'auth_session_timeout_clean',
         'fields_many2one_restrict',
         'base_restrict_access',
-        'url_access_restriction'
+        'url_access_restriction',
+        'disable_userprofile_menuitems'
     ],
     'data': [
         'security/onsc_base_security.xml',
         'security/ir.model.access.csv',
         'data/res_user_role_data.xml',
+        'wizard/onsc_confirm_wizard_views.xml',
         'views/onsc_log_views.xml'
     ],
     'demo': [],

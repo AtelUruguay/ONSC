@@ -326,6 +326,9 @@ class HrJobRoleLine(models.Model):
 
     @api.onchange('end_date')
     def onchange_end_date(self):
+        if self.end_date and self.end_date < fields.Date.today():
+            self.end_date = False
+            return warning_response(_(u"La fecha hasta no puede ser menor a la fecha actual"))
         if self.end_date and self.start_date and self.end_date < self.start_date:
             self.end_date = False
             return warning_response(_(u"La fecha hasta no puede ser menor que la fecha desde"))

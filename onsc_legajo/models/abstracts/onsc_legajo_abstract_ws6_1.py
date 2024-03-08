@@ -36,6 +36,11 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                     else:
                         localidadCod = 9999999999
 
+                    if record.credential_number and record.credential_number.isdigit():
+                        numeroCredencial = int(record.credential_number)
+                    else:
+                        numeroCredencial = 99999
+
                     data = {
                         'cedula': int(record.cv_nro_doc[:-1]),
                         'digitoVerificador': int(record.cv_nro_doc[-1]),
@@ -43,8 +48,8 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                         'primerNombre': record.cv_first_name[:20],
                         'sexo': 'M' if record.cv_sex == 'male' else 'F',
                         'tipoCiudadania': 'N',
-                        'serieCredencial': record.crendencial_serie,
-                        'numeroCredencial': int(record.credential_number),
+                        'serieCredencial': record.crendencial_serie or 'ZZZ',
+                        'numeroCredencial': numeroCredencial,
                         'localidadCod': localidadCod,
                         'calleCod': calleCod,
                         'mutuCod': record.health_provider_id and int(record.health_provider_id.code) or 99,
