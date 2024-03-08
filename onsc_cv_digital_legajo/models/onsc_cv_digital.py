@@ -266,6 +266,12 @@ class ONSCCVDigital(models.Model):
         store=True
     )
 
+    is_validated_seccions_rolleables = fields.Boolean(
+        string='¿Son las validaciones documentales rolleables?',
+        compute='_compute_is_validated_seccions_rolleables',
+        store=False
+    )
+
     @api.depends('is_cv_gender_public')
     def _compute_gender_public_visualization_date(self):
         for record in self:
@@ -280,6 +286,11 @@ class ONSCCVDigital(models.Model):
                 ('cv_document_type_id', '=', record.cv_document_type_id.id),
                 ('cv_nro_doc', '=', record.cv_nro_doc),
             ], limit=1)
+
+    def _compute_is_validated_seccions_rolleables(self):
+        for record in self:
+            record.is_validated_seccions_rolleables = not (record.employee_id and
+                                                           record.employee_id.legajo_state == 'active')
 
     @api.depends('employee_id', 'employee_id.legajo_state', 'is_docket')
     def _compute_is_docket_active(self):
@@ -297,7 +308,6 @@ class ONSCCVDigital(models.Model):
             'civical_credential_documentary_validation_state': _('Credencial cívica'),
             'nro_doc_documentary_validation_state': _('Documento de identidad'),
             'disabilitie_documentary_validation_state': _('Discapacidad'),
-            'marital_status_documentary_validation_state': _('Estado civil'),
             'photo_documentary_validation_state': _('Foto'),
             'occupational_health_card_documentary_validation_state': _('Carné de salud laboral'),
             'medical_aptitude_certificate_documentary_validation_state': _('Certificado de aptitud médico-deportiva'),
@@ -758,8 +768,7 @@ class ONSCCVDigital(models.Model):
 
     def _get_legajo_documentary_validation_models(self, only_fields=False):
         if not bool(self._context):
-            return ['marital_status_documentary_validation_state',
-                    'photo_documentary_validation_state',
+            return ['photo_documentary_validation_state',
                     'occupational_health_card_documentary_validation_state',
                     'medical_aptitude_certificate_documentary_validation_state',
                     'cv_address_documentary_validation_state',
@@ -772,8 +781,7 @@ class ONSCCVDigital(models.Model):
             for config in configs.filtered(lambda x: x.field_id):
                 validation_models.append('%s' % config.field_id.name)
         else:
-            validation_models = ['marital_status_documentary_validation_state',
-                                 'photo_documentary_validation_state',
+            validation_models = ['photo_documentary_validation_state',
                                  'occupational_health_card_documentary_validation_state',
                                  'medical_aptitude_certificate_documentary_validation_state',
                                  'cv_address_documentary_validation_state',
