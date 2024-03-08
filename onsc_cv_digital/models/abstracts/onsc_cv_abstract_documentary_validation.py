@@ -29,6 +29,20 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                                         index=True,
                                         default=lambda *a: fields.Datetime.now())
 
+    is_validated_seccions_rolleables = fields.Boolean(
+        string='¿Son las validaciones documentales rolleables?',
+        compute='_compute_is_validated_seccions_rolleables',
+        store=False
+    )
+
+    def _compute_is_validated_seccions_rolleables(self):
+        if hasattr(self, "cv_digital_id"):
+            for record in self:
+                record.is_validated_seccions_rolleables = record.cv_digital_id.is_validated_seccions_rolleables
+        else:
+            for record in self:
+                record.is_validated_seccions_rolleables = True
+
     @property
     def field_documentary_validation_state(self):
         return etree.XML("""<field name="documentary_validation_state" invisible="0"/>""")
@@ -38,16 +52,17 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         return etree.XML("""
             <div>
                 <field name="documentary_validation_state" invisible="1"/>
+                <field name="is_validated_seccions_rolleables" invisible="1"/>
                 <button name="button_documentary_approve"
                     attrs="{'invisible': [('documentary_validation_state', '=', 'validated')]}"
                     groups="onsc_cv_digital.group_validador_documental_cv"
                     type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                 <button name="button_documentary_reject"
-                    attrs="{'invisible': [('documentary_validation_state', '=', 'rejected')]}"
+                    attrs="{'invisible': ['|',('documentary_validation_state', '=', 'rejected'),('is_validated_seccions_rolleables', '=', False)]}"
                     groups="onsc_cv_digital.group_validador_documental_cv"
                     type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                 <button name="button_documentary_tovalidate"
-                    attrs="{'invisible': [('documentary_validation_state', '=', 'to_validate')]}"
+                    attrs="{'invisible': ['|',('documentary_validation_state', '=', 'to_validate'),('is_validated_seccions_rolleables', '=', False)]}"
                     groups="onsc_cv_digital.group_validador_documental_cv"
                     type="object" string="Para validar" icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                 <div class="alert alert-danger" role="alert"

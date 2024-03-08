@@ -316,6 +316,8 @@ class ONSCLegajoStagingWS7(models.Model):
 
     def set_asc_transf_reest(self, Contract, record):
         records = record
+
+        # ENCUENTRA EL CONTRATO VIGENTE
         contract = self._get_contract(Contract, record, legajo_state_operator='!=', legajo_state='baja')
         if len(contract) == 0:
             record.write({
@@ -330,22 +332,62 @@ class ONSCLegajoStagingWS7(models.Model):
                 'log': _('Segundo movimiento no encontrado o en estado Error')})
             return
 
-        new_contract = self._get_contract_copy(contract, second_movement)
-        self._copy_jobs(contract, new_contract)
-        contract.with_context(no_check_write=True).deactivate_legajo_contract(
-            record.fecha_vig + datetime.timedelta(days=-1),
-            legajo_state='baja',
-            eff_date=record.fecha_vig
-        )
-        if record.mov == 'ASCENSO':
-            causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
-        elif record.mov == 'TRANSFORMA':
-            causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
+        # CASO CONTRACTO ACTUAL COMISION ENTRANTE Y CONTRATO ORIGINAL COMISION SALIENTE
+        incoming_contract = self.env['hr.contract'].search([
+            ('cs_contract_id', '=', contract.id),
+            ('legajo_state', '=', 'incoming_commission')], limit=1)
+
+        if contract.legajo_state == 'outgoing_commission' and incoming_contract:
+            # A (saliente): contract
+            # B (entrante): incoming_contract
+            # CASO CONTRATO A SALIENTE Y ENCUENTRA UN CONTRATO B ENTRANTE
+
+            # GENERA NUEVO CONTRATO (C)
+            new_contract = self._get_contract_copy(contract, second_movement, 'outgoing_commission')
+            self._copy_jobs(contract, new_contract)
+
+            # DESACTIVA EL CONTRATO SALIENTE (A)
+            contract.with_context(no_check_write=True).deactivate_legajo_contract(
+                second_movement.fecha_vig + datetime.timedelta(days=-1),
+                legajo_state='baja',
+                eff_date=second_movement.fecha_vig
+            )
+            if record.mov == 'ASCENSO':
+                causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
+            elif record.mov == 'TRANSFORMA':
+                causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
+            else:
+                causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
+            contract.write({
+                'causes_discharge_id': causes_discharge.id,
+            })
+
+            # CONTRACTO ORIGINAL B RELACIONADO AL CONTRATO C
+            incoming_contract.write({
+                'eff_date': str(second_movement.fecha_vig),
+                'cs_contract_id': new_contract.id,
+            })
         else:
-            causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
-        contract.write({
-            'causes_discharge_id': causes_discharge.id,
-        })
+            # TODO revisar si sigue siendo necesario
+            new_contract = self._get_contract_copy(contract, second_movement)
+            self._copy_jobs(contract, new_contract)
+
+            # DESACTIVA EL CONTRATO
+            contract.with_context(no_check_write=True).deactivate_legajo_contract(
+                second_movement.fecha_vig + datetime.timedelta(days=-1),
+                legajo_state='baja',
+                eff_date=second_movement.fecha_vig
+            )
+            if record.mov == 'ASCENSO':
+                causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
+            elif record.mov == 'TRANSFORMA':
+                causes_discharge = self.env.user.company_id.ws7_transforma_causes_discharge_id
+            else:
+                causes_discharge = self.env.user.company_id.ws7_reestructura_causes_discharge_id
+            contract.write({
+                'causes_discharge_id': causes_discharge.id,
+            })
+
         records |= second_movement
         records.write({'state': 'processed'})
 
@@ -590,7 +632,7 @@ class ONSCLegajoStagingWS7(models.Model):
             return Contract.search_count(args)
         return Contract.search(args, limit=1)
 
-    def _get_contract_copy(self, contract, record):
+    def _get_contract_copy(self, contract, record, legajo_state='active'):
         """
         Duplica el contrato aplicando los cambios de la operacion
         :param contract: Recordset de contrato
@@ -621,7 +663,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'date_start': record.fecha_vig,
             'eff_date': record.fecha_vig,
             'date_end': False,
-            'legajo_state': 'active',
+            'legajo_state': legajo_state,
             'descriptor1_id': descriptor1.id,
             'descriptor2_id': descriptor2.id,
             'descriptor3_id': descriptor3.id,
