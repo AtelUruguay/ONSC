@@ -11,6 +11,7 @@ ONSC - Base
     'category': 'ONSC',
     'depends': [
         'base',
+        'mail',
         'web_responsive',
         'website',
         'auth_iduy_primary_login',

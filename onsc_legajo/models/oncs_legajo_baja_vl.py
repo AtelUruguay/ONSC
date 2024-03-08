@@ -88,7 +88,7 @@ class ONSCLegajoBajaVL(models.Model):
     employee_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_employee_id_domain')
     contract_id = fields.Many2one('hr.contract', 'Contrato', copy=False)
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
-    end_date = fields.Date(string="Fecha de Baja", default=lambda *a: fields.Date.today(), required=True, copy=False)
+    end_date = fields.Date(string="Fecha de Baja", required=True, copy=False)
 
     causes_discharge_id = fields.Many2one('onsc.legajo.causes.discharge', string='Causal de Egreso', copy=False)
     causes_discharge_extended_id = fields.Many2one("onsc.legajo.causes.discharge.line",
