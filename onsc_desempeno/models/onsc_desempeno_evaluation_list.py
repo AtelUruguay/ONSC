@@ -249,8 +249,8 @@ class ONSCDesempenoEvaluationList(models.Model):
             ('start_date', '<=', fields.Date.today()),
             ('end_date', '>=', fields.Date.today()),
         ])
-        department_inlist = self._get_evaluation_list_departments(evaluation_stages)
         for evaluation_stage in evaluation_stages:
+            department_inlist = self._get_evaluation_list_departments(evaluation_stage)
             self._create_data(evaluation_stage, department_inlist)
         return True
 
