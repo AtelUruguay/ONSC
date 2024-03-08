@@ -6,7 +6,7 @@
             <field name="name">Plantilla de validación de catálogos</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_abstract_config"/>
             <field name="email_from">"{{ object.company_id.name }}" &lt;{{ (object.company_id.email or user.email) }}&gt;</field>
-            <field name="email_to">{{ object.create_uid.partner_id.email }}&gt;</field>
+            <field name="email_to">{{ object.create_uid.partner_id.institutional_email }}&gt;</field>
             <field name="subject">Notificación de validación del  valor condicional ingresado en su CV Digital</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
@@ -32,7 +32,7 @@
             <field name="name">Plantilla de rechazo de catálogos</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_abstract_config"/>
             <field name="email_from">"{{ object.company_id.name }}" &lt;{{ (object.company_id.email or user.email) }}&gt;</field>
-            <field name="email_to">{{ object.create_uid.partner_id.email }}&gt;</field>
+            <field name="email_to">{{ object.create_uid.partner_id.institutional_email }}&gt;</field>
             <field name="subject">Notificación de rechazo del valor condicional ingresado en su CV Digital</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
@@ -61,7 +61,7 @@
             <field name="name">Plantilla de notificación al usuario por período de inactividad en el CV</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital"/>
             <field name="email_from">"{{ object.partner_id.company_id.name }}" &lt;{{ (object.partner_id.company_id.email or user.email) }}&gt;</field>
-            <field name="email_to">{{ object.partner_id.email }}&gt;</field>
+            <field name="email_to">{{ object.partner_id.institutional_email }}&gt;</field>
             <field name="subject">Notificación por inactividad en el CV digital del Estado Uruguayo</field>
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
@@ -98,7 +98,7 @@
             <field name="name">Notificación a los validadores documentales del llamado</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>
             <field name="email_from">"{{ object.partner_id.company_id.name }}" &lt;{{ (object.partner_id.company_id.email or user.email) }}&gt;</field>
-            <field name="email_to">{{ object.partner_id.email }}&gt;</field>
+            <field name="email_to">{{ object.partner_id.institutional_email }}&gt;</field>
             <field name="subject">CVs del llamado {{ ctx.get('call') }} prontos para validar.</field>
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>
@@ -124,7 +124,7 @@
             <field name="name">Notificación valores condicionales pendientes para cierre</field>
             <field name="model_id" ref="onsc_cv_digital.model_onsc_cv_digital_call"/>
             <field name="email_from">"{{ object.partner_id.company_id.name }}" &lt;{{ (object.partner_id.company_id.email or user.email) }}&gt;</field>
-            <field name="email_to">{{ object.partner_id.email }}&gt;</field>
+            <field name="email_to">{{ object.partner_id.institutional_email }}&gt;</field>
             <field name="subject">Valores condicionales pendientes de validar para el cierre del llamado {{ ctx.get('call') }}.</field>
             <field name="lang">{{ object.partner_id.lang }}</field>
             <field name="auto_delete" eval="True"/>

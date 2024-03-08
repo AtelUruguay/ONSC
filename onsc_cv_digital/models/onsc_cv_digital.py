@@ -297,6 +297,11 @@ class ONSCCVDigital(models.Model):
         "Consentimiento al uso del CV-D aprobado")
     is_cv_user_acceptance_ok_date = fields.Datetime(
         "Fecha de consentimiento al uso del CV-D")
+    is_validated_seccions_rolleables = fields.Boolean(
+        string='¿Son las validaciones documentales rolleables?',
+        compute='_compute_is_validated_seccions_rolleables',
+        store=False
+    )
 
     # VALIDACION DOCUMENTAL
     # DISCAPACIDAD
@@ -424,6 +429,10 @@ class ONSCCVDigital(models.Model):
             cond1 = record.uy_citizenship != 'extranjero'
             cond2 = record.crendencial_serie or record.credential_number or record.civical_credential_file
             record.is_civical_credential_populated = cond1 and cond2
+
+    def _compute_is_validated_seccions_rolleables(self):
+        for record in self:
+            record.is_validated_seccions_rolleables = True
 
     @api.constrains('partner_id')
     def _check_partner_id_unique(self):

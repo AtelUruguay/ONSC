@@ -21,12 +21,13 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             return etree.XML("""
                             <div>
                                 <field name="documentary_validation_state" invisible="1"/>
+                                <field name="is_validated_seccions_rolleables" invisible="1"/>
                                 <button name="button_documentary_approve"
                                     attrs="{'invisible': [('documentary_validation_state', '=', 'validated')]}"
                                     groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                     type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                                 <button name="button_documentary_reject"
-                                    attrs="{'invisible': [('documentary_validation_state', '=', 'rejected')]}"
+                                    attrs="{'invisible': ['|',('documentary_validation_state', '=', 'rejected'),'&amp;',('documentary_validation_state', '=', 'validated'),('is_validated_seccions_rolleables', '=', False)]}"
                                     groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                                     type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                 <div class="alert alert-danger" role="alert"
@@ -53,16 +54,17 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         return etree.XML("""
                 <div>
                     <field name="documentary_validation_state" invisible="1"/>
+                    <field name="is_validated_seccions_rolleables" invisible="1"/>
                     <button name="button_documentary_approve"
                         attrs="{'invisible': [('documentary_validation_state', '=', 'validated')]}"
                         groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                         type="object" string="Validar" icon="fa-thumbs-o-up" class="btn btn-sm btn-outline-success"/>
                     <button name="button_documentary_reject"
-                        attrs="{'invisible': [('documentary_validation_state', '=', 'rejected')]}"
+                        attrs="{'invisible': ['|',('documentary_validation_state', '=', 'rejected'),'&amp;',('documentary_validation_state', '=', 'validated'),('is_validated_seccions_rolleables', '=', False)]}"
                         groups="onsc_cv_digital.group_validador_documental_cv,onsc_cv_digital_legajo.group_legajo_validador_doc_inciso,onsc_cv_digital_legajo.group_legajo_validador_doc_ue"
                         type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                     <button name="button_documentary_tovalidate"
-                        attrs="{'invisible': [('documentary_validation_state', '=', 'to_validate')]}"
+                        attrs="{'invisible': ['|',('documentary_validation_state', '=', 'to_validate'),'&amp;',('documentary_validation_state', '=', 'validated'),('is_validated_seccions_rolleables', '=', False)]}"
                         groups="onsc_cv_digital.group_validador_documental_cv"
                         type="object" string="Para validar" icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                     <div class="alert alert-danger" role="alert"

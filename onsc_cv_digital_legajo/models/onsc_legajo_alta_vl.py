@@ -402,7 +402,7 @@ class ONSCLegajoAltaVL(models.Model):
         return True
 
     def _empty_fieldsVL(self):
-        self.date_start = fields.Date.today()
+        self.date_start = False
         self.program_project_id = False
         self.nroPuesto = False
         self.nroPlaza = False
