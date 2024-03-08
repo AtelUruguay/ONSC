@@ -8,6 +8,10 @@
             <search string="Altas de Comisión">
                 <field name="partner_id" string="CI" context="{'show_cv_nro_doc':True}"/>
                 <field name="state"/>
+                <field name="inciso_origin_id"/>
+                <field name="operating_unit_origin_id"/>
+                <field name="inciso_destination_id"/>
+                <field name="operating_unit_destination_id"/>
                 <filter string="Para procesar" name="filter_altas_draft"
                         domain="[('filter_destination','=',True)]"/>
                 <group string="Agrupar por">
@@ -55,6 +59,7 @@
                     <group string="Origen">
                         <group>
                             <field name="inciso_origin_id"
+                                   string="Inciso"
                                    required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'readonly': [('is_edit_origin', '=', False)]}"
@@ -62,6 +67,7 @@
                             <field name="inciso_origin_id_domain" invisible="1"/>
                             <field name="is_edit_origin" invisible="1"/>
                             <field name="operating_unit_origin_id"
+                                   string="Unidad ejecutora"
                                    required="1"
                                    domain="operating_unit_origin_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
@@ -120,12 +126,14 @@
                     <group string="Destino">
                         <group>
                             <field name="inciso_destination_id"
+                                   string="Inciso"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    domain="inciso_destination_id_domain"
                                    attrs="{'readonly': [('state','!=','draft')]}"/>
                             <field name="inciso_destination_id_domain" invisible="1"/>
                             <field name="type_cs" invisible="1"/>
                             <field name="operating_unit_destination_id"
+                                   string="Unidad ejecutora"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'readonly': [('state','!=','draft')]}"
                                    domain="operating_unit_destination_id_domain"/>
@@ -146,14 +154,13 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"/>
                             <field name="security_job_id"
-                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
-                                   attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"/>
-                            <field name="occupation_id"
+                                   domain="security_job_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': ['|',('is_edit_destination', '=',False),('type_cs','=','ac2out')]}"/>
                             <field name="regime_commission_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
                                    attrs="{'invisible': [('is_edit_destination', '=',False)]}"/>
+                            <field name="security_job_id_domain" invisible="1"/>
                         </group>
                     </group>
                     <group string="Ingreso Motivo"
@@ -169,17 +176,6 @@
                             <field name="norm_number" colspan="2"/>
                             <field name="norm_year" colspan="1"/>
                             <field name="norm_article" colspan="2"/>
-                            <div class="alert alert-info" colspan="2"
-                                 role="alert"
-                                 style="margin-bottom:0px;">
-                                <p>
-                                    <i class="fa fa-info-circle" role="alert"/>
-                                    En caso de no encontrar la norma de referencia para el movimiento,
-                                    comunicarse con el
-                                    área de puesto de trabajos de CGN al siguiente correo
-                                    <a href="mailto:ptrabajo@cgn.gub.uy">ptrabajo@cgn.gub.uy</a>
-                                </p>
-                            </div>
                         </group>
                         <group>
                             <field name="resolution_description"/>
@@ -235,6 +231,9 @@
                 <field name="partner_id"/>
                 <field name="state"/>
                 <field name="inciso_origin_id"/>
+                <field name="operating_unit_origin_id" optional="hide"/>
+                <field name="inciso_destination_id" optional="hide"/>
+                <field name="operating_unit_destination_id" optional="hide"/>
             </tree>
         </field>
     </record>

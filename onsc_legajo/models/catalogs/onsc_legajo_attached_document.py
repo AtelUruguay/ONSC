@@ -12,12 +12,12 @@ class ONSCLegajoAttachedDocument(models.Model):
     document_file = fields.Binary('Archivo')
     document_file_name = fields.Char('Nombre del archivo')
     type = fields.Selection([('deregistration', 'Baja'), ('discharge', 'Alta')], 'Tipo')
-    contract_id = fields.Many2one('hr.contract', 'Contrato')
-    alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'Alta VL')
-    baja_vl_id = fields.Many2one("onsc.legajo.baja.vl", string="Baja de vínculo laboral")
-    alta_cs_id = fields.Many2one('onsc.legajo.alta.cs', 'Alta CS')
-    baja_cs_id = fields.Many2one("onsc.legajo.baja.cs", string="Baja de vínculo laboral")
-    cambio_uo_id = fields.Many2one("onsc.legajo.cambio.uo", string="Cambio UO")
+    contract_id = fields.Many2one('hr.contract', 'Contrato', ondelete='cascade')
+    alta_vl_id = fields.Many2one('onsc.legajo.alta.vl', 'Alta VL', ondelete='cascade')
+    baja_vl_id = fields.Many2one("onsc.legajo.baja.vl", string="Baja de vínculo laboral", ondelete='cascade')
+    alta_cs_id = fields.Many2one('onsc.legajo.alta.cs', 'Alta CS', ondelete='cascade')
+    baja_cs_id = fields.Many2one("onsc.legajo.baja.cs", string="Baja de vínculo laboral", ondelete='cascade')
+    cambio_uo_id = fields.Many2one("onsc.legajo.cambio.uo", string="Cambio UO", ondelete='cascade')
 
     @api.constrains('document_file_name')
     def _check_document_file_name(self):
@@ -25,7 +25,7 @@ class ONSCLegajoAttachedDocument(models.Model):
             if not record.document_file_name:
                 raise ValidationError(_("El archivo es incorrecto"))
             else:
-                tmp = self.document_file_name.split('.')
+                tmp = record.document_file_name.split('.')
                 ext = tmp[len(tmp) - 1]
                 if ext != 'pdf':
                     raise ValidationError(_("El archivo debe ser un pdf"))

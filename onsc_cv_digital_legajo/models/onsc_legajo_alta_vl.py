@@ -12,7 +12,7 @@ _logger = logging.getLogger(__name__)
 REQUIRED_FIELDS = [
     'inciso_id', 'operating_unit_id', 'program_project_id', 'date_start', 'partner_id',
     'reason_description', 'income_mechanism_id', 'norm_id', 'resolution_description', 'resolution_date',
-    'resolution_type', 'cv_birthdate', 'cv_sex', 'crendencial_serie', 'credential_number',
+    'resolution_type', 'cv_birthdate', 'cv_sex',
     'retributive_day_id', 'date_income_public_administration', 'department_id', 'security_job_id'
 ]
 name_doc_one = u'Documento digitalizado "Partida de matrimonio / Partida de unión concubinaria / '
@@ -102,7 +102,12 @@ class ONSCLegajoAltaVL(models.Model):
     country_code = fields.Char("Código", copy=False)
     origin_type = fields.Selection([('M', 'Manual'), ('P', 'Proceso')], string='Origen',
                                    compute='_compute_origin_type', store=True)
-    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='ID de ejecución', copy=False)
+    mass_upload_id = fields.Many2one(
+        'onsc.legajo.mass.upload.alta.vl',
+        string='ID de ejecución',
+        copy=False,
+        ondelete='set null')
+    is_cv_validation_ok = fields.Boolean(string='Al aceptar estará aprobando datos pendiente de validación del CV')
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -135,6 +140,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     def action_aprobado_cgn(self):
         legajo = super(ONSCLegajoAltaVL, self).action_aprobado_cgn()
+        legajo_vals = dict()
         vals = dict()
         if self.employee_id.cv_birthdate != self.cv_birthdate:
             vals.update({'cv_birthdate': self.cv_birthdate, })
@@ -143,6 +149,14 @@ class ONSCLegajoAltaVL(models.Model):
         if vals:
             self.cv_digital_id.with_context(can_update_contact_cv=True).suspend_security().write(vals)
             self.employee_id.suspend_security().write(vals)
+
+        # LEGAJO
+        if self.date_income_public_administration != legajo.public_admin_entry_date:
+            legajo_vals.update({'public_admin_entry_date': self.date_income_public_administration})
+        if self.inactivity_years != legajo.public_admin_inactivity_years_qty:
+            legajo_vals.update({'public_admin_inactivity_years_qty': self.inactivity_years})
+        if legajo_vals:
+            legajo.write(legajo_vals)
         return legajo
 
     @api.onchange('partner_id')
@@ -153,6 +167,7 @@ class ONSCLegajoAltaVL(models.Model):
     def _update_altavl_info(self):
         Employee = self.env['hr.employee'].sudo()
         CVDigital = self.env['onsc.cv.digital'].sudo()
+        Legajo = self.env['onsc.legajo'].sudo()
         for record in self.sudo():
             if record.partner_id:
                 employee = Employee.search([
@@ -173,6 +188,11 @@ class ONSCLegajoAltaVL(models.Model):
                 elif cv_digital_id and not self._context.get('no_update_extra'):
                     record.cv_birthdate = cv_digital_id.cv_birthdate
                     record.cv_sex = cv_digital_id.cv_sex
+
+                legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
+                if legajo:
+                    record.date_income_public_administration = legajo.public_admin_entry_date
+                    record.inactivity_years = legajo.public_admin_inactivity_years_qty
 
                 record.cv_digital_id = cv_digital_id
                 record.country_code = cv_digital_id.country_id.code
@@ -279,6 +299,8 @@ class ONSCLegajoAltaVL(models.Model):
     @api.model
     def syncronize_ws4(self, log_info=False):
         self.check_required_fields_ws4()
+        if self.state == 'borrador' and not self.is_cv_validation_ok:
+            raise ValidationError(_("Para continuar debe indicar que está aprobando los datos pendiente de validación del CV"))
         if not self.codigoJornadaFormal and self.retributive_day_id:
             self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
             self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
@@ -289,9 +311,10 @@ class ONSCLegajoAltaVL(models.Model):
         self.check_required_fields_ws4()
         if self.filtered(lambda x: x.state not in ['borrador', 'error_sgh']):
             raise ValidationError(_("Solo se pueden enviar altas en estado borrador o error SGH"))
-        if not self.codigoJornadaFormal and self.retributive_day_id:
-            self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
-            self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
+        for record in self:
+            if not record.codigoJornadaFormal and record.retributive_day_id:
+                record.codigoJornadaFormal = record.retributive_day_id.codigoJornada
+                record.descripcionJornadaFormal = record.retributive_day_id.descripcionJornada
         altas_presupuestales = self.filtered(lambda x: x.is_presupuestado)
         altas_presupuestales.syncronize_multi_ws4()
         altas_no_presupuestales = self.filtered(lambda x: not x.is_presupuestado)
@@ -379,7 +402,7 @@ class ONSCLegajoAltaVL(models.Model):
         return True
 
     def _empty_fieldsVL(self):
-        self.date_start = fields.Date.today()
+        self.date_start = False
         self.program_project_id = False
         self.nroPuesto = False
         self.nroPlaza = False

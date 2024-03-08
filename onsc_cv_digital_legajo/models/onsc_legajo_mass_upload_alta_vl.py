@@ -290,8 +290,17 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     self.get_position(column_names, 'descriptor4_id')])
                 budget_item_id = self.get_partida(descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id)
                 if not budget_item_id:
-                    message_error.append(
-                        line.message_error + " \nNo se puedo encontrar la partida con datos de los descriptores")
+                    message_error.append("No se puedo encontrar la partida con datos de los descriptores")
+
+                address_nro_door = line[self.get_position(column_names, 'address_nro_door')]
+                if len(str(address_nro_door)) > 5:
+                    message_error.append("El Número de puerta excede la longitud de 5")
+                address_apto = line[self.get_position(column_names, 'address_apto')]
+                if len(str(address_apto)) > 4:
+                    message_error.append("El Número de apartamento excede la longitud de 4")
+                address_zip = line[self.get_position(column_names, 'address_zip')]
+                if len(str(address_zip)) > 6:
+                    message_error.append("El Código Postal excede la longitud de 6")
 
                 document_number = line[self.get_position(column_names, 'document_number')]
                 sex = line[self.get_position(column_names, 'cv_sex')]
@@ -339,10 +348,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                                                                                     'marital_status_id')]),
                     'birth_country_id': country_uy_id.id if country_uy_id else False,
                     'citizenship': line[self.get_position(column_names, 'citizenship')],
-                    'crendencial_serie': str(crendencial_serie).upper() if crendencial_serie else message_error.append(
-                        " \nLa serie de credencial es obligatoria"),
-                    'credential_number': credential_number if credential_number else message_error.append(
-                        " \nEl número de credencial es obligatorio"),
+                    'crendencial_serie': str(crendencial_serie).upper(),
+                    'credential_number': credential_number,
                     'personal_phone': line[self.get_position(column_names, 'personal_phone')],
                     'mobile_phone': line[self.get_position(column_names, 'mobile_phone')],
                     'email': line[self.get_position(column_names, 'email')],
@@ -351,10 +358,10 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'address_street_id': address_street_id,
                     'address_street2_id': address_street2_id,
                     'address_street3_id': address_street3_id,
-                    'address_zip': line[self.get_position(column_names, 'address_zip')],
-                    'address_nro_door': line[self.get_position(column_names, 'address_nro_door')],
+                    'address_zip': address_zip,
+                    'address_nro_door': address_nro_door,
                     'address_is_bis': line[self.get_position(column_names, 'address_is_bis')],
-                    'address_apto': line[self.get_position(column_names, 'address_apto')],
+                    'address_apto': address_apto,
                     'address_place': line[self.get_position(column_names, 'address_place')],
                     'address_block': line[self.get_position(column_names, 'address_block')],
                     'address_sandlot': line[self.get_position(column_names, 'address_sandlot')],
@@ -518,8 +525,6 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'cv_birthdate': line.birth_date,
                 'cv_document_type_id': cv_document_type_id,
                 'is_reserva_sgh': line.is_reserva_sgh,
-                # 'crendencial_serie': line.crendencial_serie,
-                # 'credential_number': line.credential_number,
                 'regime_id': line.regime_id.id,
                 'descriptor1_id': line.descriptor1_id.id if line.descriptor1_id else False,
                 'descriptor2_id': line.descriptor2_id.id if line.descriptor2_id else False,
@@ -541,23 +546,37 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'resolution_date': line.resolution_date,
                 'resolution_type': line.resolution_type,
                 'retributive_day_id': line.retributive_day_id.id if line.retributive_day_id else False,
+                'codigoJornadaFormal': line.retributive_day_id.codigoJornada,
+                'descripcionJornadaFormal': line.retributive_day_id.descripcionJornada,
                 'additional_information': line.additional_information,
                 'norm_id': line.norm_id.id if line.norm_id else False,
                 'call_number': line.call_number,
-
-                # 'country_code': cv_digital.country_code,
-                # 'country_of_birth_id': cv_digital.country_of_birth_id.id if cv_digital.country_of_birth_id else False,
-                # 'marital_status_id': cv_digital.marital_status_id.id if cv_digital.marital_status_id else False,
-                # 'uy_citizenship': cv_digital.uy_citizenship,
-                # 'personal_phone': cv_digital.personal_phone,
-                # 'mobile_phone': cv_digital.mobile_phone,
-                # 'email': cv_digital.email,
-                # 'cv_address_street_id': cv_digital.cv_address_street_id.id if cv_digital.cv_address_street_id else False,
-                # 'cv_address_street2_id': cv_digital.cv_address_street2_id.id if cv_digital.cv_address_street2_id else False,
-                # 'cv_address_street3_id': cv_digital.cv_address_street3_id.id if cv_digital.cv_address_street3_id else False,
-                # 'health_provider_id': cv_digital.health_provider_id.id if cv_digital.health_provider_id else False,
+                'is_cv_validation_ok': True,
                 'mass_upload_id': self.id,
             }
+            is_presupuestado = line.regime_id.presupuesto
+            is_reserva_sgh = line.is_reserva_sgh
+            if is_presupuestado or is_reserva_sgh:
+                vacante_value = {
+                    'selected': True,
+                    'nroPuesto': line.nroPuesto,
+                    'nroPlaza': line.nroPlaza,
+                    'Dsc3Id': line.descriptor3_id.code,
+                    'Dsc4Id': line.descriptor4_id.code,
+                    'descriptor3_id': line.descriptor3_id.id,
+                    'descriptor4_id': line.descriptor4_id.id,
+                    'codRegimen': line.regime_id.codRegimen,
+                    'descripcionRegimen': line.regime_id.descripcionRegimen,
+                    'regime_id': line.regime_id.id,
+                }
+                if line.retributive_day_id.codigoJornada.isdigit():
+                    vacante_value.update({
+                        'codigoJornadaFormal': int(line.retributive_day_id.codigoJornada),
+                        'descripcionJornadaFormal': line.retributive_day_id.descripcionJornada,
+                    })
+                data_alta_vl.update({
+                    'vacante_ids': [(0, 0, vacante_value)],
+                })
             try:
                 alta_vl_id = AltaVL.create(data_alta_vl)
                 alta_vl_id.with_context(no_update_extra=True)._update_altavl_info()
@@ -632,7 +651,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                 item['norm_id'] = (item['norm_id'][0], LegajoNorm.browse(norm_id)._custom_display_name())
         return result
 
-    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='Carga masiva')
+    mass_upload_id = fields.Many2one('onsc.legajo.mass.upload.alta.vl', string='Carga masiva', ondelete='cascade')
     state = fields.Selection([('draft', 'Borrador'), ('error', 'Procesado con Error'), ('done', 'Procesado')],
                              string='Estado', default='draft')
     message_error = fields.Text(string='Mensaje de error')

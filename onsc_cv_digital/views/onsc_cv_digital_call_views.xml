@@ -136,7 +136,7 @@
                                                 context="{'documentary_validation':'nro_doc'}"
                                                 type="object"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|',('nro_doc_documentary_validation_state', '=', 'rejected'),('is_zip','=',True)]}"
+                                                attrs="{'invisible': ['|','|',('nro_doc_documentary_validation_state', '=', 'rejected'),('is_zip','=',True),'&amp;',('is_validated_seccions_rolleables','=',False),('nro_doc_documentary_validation_state','=','validated')]}"
                                                 string="Rechazar"
                                                 icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                         <button name="button_documentary_tovalidate"
@@ -144,7 +144,7 @@
                                                 context="{'documentary_validation':'nro_doc'}"
                                                 type="object"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|',('nro_doc_documentary_validation_state', '=', 'to_validate'),('is_zip','=',True)]}"
+                                                attrs="{'invisible': ['|','|',('nro_doc_documentary_validation_state', '=', 'to_validate'),('is_zip','=',True),'&amp;',('is_validated_seccions_rolleables','=',False),('nro_doc_documentary_validation_state','=','validated')]}"
                                                 string="Para validar"
                                                 icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                     </span>
@@ -180,6 +180,7 @@
                             <field name="partner_id" invisible="1"/>
                             <field name="active" invisible="1"/>
                             <field name="nro_doc_documentary_validation_state" invisible="1"/>
+                            <field name="is_validated_seccions_rolleables" invisible="1"/>
                         </group>
                         <group>
                             <field name="cv_birthdate"
@@ -198,7 +199,7 @@
                                     <field name="marital_status_id" required="True"/>
                                     <field name="uy_citizenship" required="True"/>
                                     <field name="crendencial_serie"
-                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])], 'required': [('uy_citizenship', 'in', ['legal','natural'])]}"/>
+                                           attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <label for="credential_number" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <div class="request-partner-author-field o_row" attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}">
                                         <field name="credential_number"
@@ -211,7 +212,7 @@
                                                     string="Validar"
                                                     icon="fa-thumbs-o-up"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'validated'),('is_zip','=',True),('uy_citizenship', '=', 'extranjero')]}"
+                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'validated'),('is_zip','=',True),('is_civical_credential_populated', '=', False)]}"
                                                     class="btn btn-sm btn-outline-success"/>
                                             <button name="button_documentary_reject"
                                                     groups="onsc_cv_digital.group_validador_documental_cv"
@@ -220,14 +221,14 @@
                                                     string="Rechazar"
                                                     icon="fa-thumbs-o-down"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'rejected'),('is_zip','=',True),('uy_citizenship', '=', 'extranjero')]}"
+                                                    attrs="{'invisible': ['|','|','|',('civical_credential_documentary_validation_state', '=', 'rejected'),('is_zip','=',True),('is_civical_credential_populated', '=', False),'&amp;',('is_validated_seccions_rolleables','=',False),('civical_credential_documentary_validation_state','=','validated')]}"
                                                     class="btn btn-sm btn-outline-danger"/>
                                             <button name="button_documentary_tovalidate"
                                                     groups="onsc_cv_digital.group_validador_documental_cv"
                                                     context="{'documentary_validation':'civical_credential'}"
                                                     type="object"
                                                     invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                    attrs="{'invisible': ['|','|',('civical_credential_documentary_validation_state', '=', 'to_validate'),('is_zip','=',True),('uy_citizenship', '=', 'extranjero')]}"
+                                                    attrs="{'invisible': ['|','|','|',('civical_credential_documentary_validation_state', '=', 'to_validate'),('is_zip','=',True),('is_civical_credential_populated', '=', False),'&amp;',('is_validated_seccions_rolleables','=',False),('civical_credential_documentary_validation_state','=','validated')]}"
                                                     string="Para validar"
                                                     icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                         </span>
@@ -237,7 +238,7 @@
                                            attrs="{'invisible': [('uy_citizenship', 'not in', ['legal','natural'])]}"/>
                                     <div class="row" nolabel="1" colspan="2">
                                         <div class="alert alert-danger" role="alert" style="width:70%"
-                                            attrs="{'invisible': ['|',('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
+                                            attrs="{'invisible': ['|','|',('is_civical_credential_populated','=',False),('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '!=', 'rejected')]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La sección credencial cívica ha sido rechazada. Motivo del rechazo: <field name="civical_credential_documentary_reject_reason" class="oe_inline"/>
@@ -248,7 +249,7 @@
                                         </div>
                                         <div class="alert alert-success" role="alert" style="width:70%"
                                              invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                             attrs="{'invisible': ['|',('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '!=', 'validated')]}">
+                                             attrs="{'invisible': ['|','|',('is_civical_credential_populated','=',False),('uy_citizenship', '=', 'extranjero'),('civical_credential_documentary_validation_state', '!=', 'validated')]}">
                                             <p class="mb-0">
                                                 <strong>
                                                     La sección credencial cívica ha sido validada
@@ -261,6 +262,7 @@
                                     <field name="document_identity_filename" invisible="1"/>
                                     <field name="civical_credential_filename" invisible="1"/>
                                     <field name="civical_credential_documentary_validation_state" invisible="1"/>
+                                    <field name="is_civical_credential_populated" invisible="1"/>
                                 </group>
                                 <group>
                                     <label for="personal_phone"/>
@@ -493,7 +495,7 @@
                                         <button name="button_documentary_reject"
                                                 groups="onsc_cv_digital.group_validador_documental_cv"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|','|','|',('disabilitie_documentary_validation_state', '=', 'rejected'),('situation_disability', '!=', 'si'),('show_disabilitie_info', '=', False),('is_zip','=',True)]}"
+                                                attrs="{'invisible': ['|','|','|','|',('disabilitie_documentary_validation_state', '=', 'rejected'),('situation_disability', '!=', 'si'),('show_disabilitie_info', '=', False),('is_zip','=',True),'&amp;',('is_validated_seccions_rolleables','=',False),('disabilitie_documentary_validation_state','=','validated')]}"
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object" string="Rechazar" icon="fa-thumbs-o-down" class="btn btn-sm btn-outline-danger"/>
                                         <button name="button_documentary_tovalidate"
@@ -501,7 +503,7 @@
                                                 context="{'documentary_validation':'disabilitie'}"
                                                 type="object"
                                                 invisible="context.get('is_call_documentary_validation', False) is False or context.get('is_mypostulations', False)"
-                                                attrs="{'invisible': ['|','|','|',('disabilitie_documentary_validation_state', '=', 'to_validate'),('situation_disability', '!=', 'si'),('show_disabilitie_info', '=', False),('is_zip','=',True)]}"
+                                                attrs="{'invisible': ['|','|','|','|',('disabilitie_documentary_validation_state', '=', 'to_validate'),('situation_disability', '!=', 'si'),('show_disabilitie_info', '=', False),('is_zip','=',True),'&amp;',('is_validated_seccions_rolleables','=',False),('disabilitie_documentary_validation_state','=','validated')]}"
                                                 string="Para validar"
                                                 icon="fa-thumb-tack" class="btn btn-sm btn-outline-info"/>
                                     </div>

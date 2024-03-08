@@ -59,6 +59,22 @@ class ResPartner(models.Model):
     address_receipt_file = fields.Binary('Documento digitalizado "Constancia de domicilio"')
     address_receipt_file_name = fields.Char('Nombre del fichero de constancia de domicilio')
 
+    institutional_email = fields.Char(string=u'Correo electrónico institucional',
+                                      compute='_compute_institutional_email')
+
+    def _compute_institutional_email(self):
+        """
+        SI TIENE CV SE TOMA EL MAIL INSTITUCIONAL DEL CV
+        """
+        CVDigital = self.env['onsc.cv.digital'].sudo()
+        for record in self:
+            cv_digital = CVDigital.search([('partner_id', '=', record.id), ('type', '=', 'cv')],
+                                          limit=1)
+            if cv_digital.institutional_email:
+                record.institutional_email = cv_digital.institutional_email
+            else:
+                record.institutional_email = record.email
+
     def _check_entities_values_before_write(self, values):
         self.suspend_security()._update_employee_status(values)
         return super(ResPartner, self)._check_entities_values_before_write(values)

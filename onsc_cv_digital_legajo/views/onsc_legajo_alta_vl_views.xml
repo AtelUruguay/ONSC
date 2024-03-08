@@ -8,7 +8,6 @@
                 <tree string="Alta VL">
                     <header>
                         <button name="action_call_multi_ws4"
-                                confirm="Al aceptar estará aprobando datos pendiente de validación del CVD"
                                 groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
                                 type="object" string="Enviar a SGH"/>
                     </header>
@@ -46,9 +45,18 @@
                 <header position="inside">
                     <button name="action_call_ws4" class="btn btn-primary"
                             type="object" string="Enviar a SGH"
-                            confirm="Al aceptar estará aprobando datos pendiente de validación del CVD"
                             groups="onsc_legajo.group_legajo_alta_vl_recursos_humanos_inciso,onsc_legajo.group_legajo_alta_vl_recursos_humanos_ue,onsc_legajo.group_legajo_alta_vl_administrar_altas_vl"
                             states="borrador,error_sgh"/>
+                </header>
+                <header position="after">
+                    <div class="alert alert-info" role="alert" attrs="{'invisible': [('state', '!=', 'borrador')]}">
+                        <p class="mb-0">
+                            <field name="is_cv_validation_ok"/>
+                            <strong>
+                                Seleccione para indicar que está aprobando los datos pendiente de validación del CV
+                            </strong>
+                        </p>
+                    </div>
                 </header>
                 <xpath expr="//div[hasclass('oe_title')]" position="before">
                     <field name="is_error_synchronization" invisible="1"/>

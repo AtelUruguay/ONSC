@@ -149,10 +149,10 @@ class ONSCCVDigital(models.Model):
     # cv_address_street_id = fields.Many2one('onsc.cv.street', string="Calle")
     # cv_address_street2_id = fields.Many2one('onsc.cv.street', string="Entre calle")
     # cv_address_street3_id = fields.Many2one('onsc.cv.street', string=u'Y calle')
-    cv_address_nro_door = fields.Char('Número')
-    cv_address_apto = fields.Char(string="Apto")
+    cv_address_nro_door = fields.Char('Número', size=5)
+    cv_address_apto = fields.Char(string="Apto", size=4)
     cv_address_street = fields.Char("Calle")
-    cv_address_zip = fields.Char('C.P')
+    cv_address_zip = fields.Char('C.P', size=6)
     cv_address_is_cv_bis = fields.Boolean("BIS")
     cv_address_amplification = fields.Text("Aclaraciones")
     cv_address_state = fields.Selection(related='cv_address_location_id.state', store=True)
@@ -160,21 +160,6 @@ class ONSCCVDigital(models.Model):
     cv_address_place = fields.Text(string="Paraje", size=200)
     cv_address_block = fields.Char(string="Manzana", size=5)
     cv_address_sandlot = fields.Char(string="Solar", size=5)
-    # country_of_birth_id = fields.Many2one("res.country", string="País de nacimiento", required=True)
-    # uy_citizenship = fields.Selection(string="Ciudadanía uruguaya",
-    #                                   selection=[('legal', 'Legal'), ('natural', 'Natural'),
-    #                                              ('extranjero', 'Extranjero')], required=True)
-    # marital_status_id = fields.Many2one("onsc.cv.status.civil", string="Estado civil", required=True)
-    # crendencial_serie = fields.Char(string="Serie de la credencial", size=3)
-    # credential_number = fields.Char(string="Numero de la credencial", size=6)
-    # cjppu_affiliate_number = fields.Integer(string="Numero de afiliado a la CJPPU")
-    # professional_resume = fields.Text(string="Resumen profesional")
-    # user_linkedIn = fields.Char(string="Usuario en LinkedIn")
-    # is_afro_descendants = fields.Boolean(string="Afrodescendientes (Art. 4 Ley N°19.122)")
-    # afro_descendants_file = fields.Binary(
-    #     string='Documento digitalizado "Declaración de afrodescendencia (Art. 4 Ley N°19.122)"')
-    # afro_descendants_filename = fields.Char('Nombre del documento digital')
-    # is_driver_license = fields.Boolean(string="¿Tiene licencia de conducir?")
     drivers_license_ids = fields.One2many("onsc.cv.driver.license",
                                           inverse_name="cv_digital_id", string="Licencias de conducir", copy=True)
 
@@ -183,29 +168,6 @@ class ONSCCVDigital(models.Model):
     prefix_mobile_phone_id = fields.Many2one(related='partner_id.prefix_mobile_phone_id', readonly=False)
     mobile_phone = fields.Char(string="Teléfono celular", related='partner_id.mobile', readonly=False)
     email = fields.Char(string="Email", related='partner_id.email')
-
-    # is_occupational_health_card = fields.Boolean(string="¿Tiene carné de salud laboral?")
-    # occupational_health_card_date = fields.Date(string="Fecha de vencimiento del carné de salud laboral")
-    # occupational_health_card_file = fields.Binary(
-    #     string="Documento digitalizado del carné de salud laboral")
-    # occupational_health_card_filename = fields.Char('Nombre del documento digital')
-
-    # civical_credential_file = fields.Binary(string="Documento digitalizado credencial cívica")
-    # civical_credential_filename = fields.Char('Nombre del documento digital')
-    # is_medical_aptitude_certificate_status = fields.Boolean(
-    #     string="¿Tiene certificado de aptitud médico-deportiva?")
-    # medical_aptitude_certificate_date = fields.Date(
-    #     string="Fecha de vencimiento del certificado de aptitud médico-deportiva")
-    # medical_aptitude_certificate_file = fields.Binary(
-    #     string="Documento digitalizado del certificado de aptitud médico-deportiva")
-    # medical_aptitude_certificate_filename = fields.Char('Nombre del documento digital')
-
-    # is_victim_violent = fields.Boolean(string="Persona víctima de delitos violentos (Art. 105 Ley Nº 19.889)", )
-    # relationship_victim_violent_file = fields.Binary(
-    #     string="Documento digitalizado: Comprobante de parentesco con persona víctima de delito violento")
-    # relationship_victim_violent_filename = fields.Char('Nombre del documento digital')
-    # is_public_information_victim_violent = fields.Boolean(
-    #     string="¿Desea que esta información se incluya en la versión impresa de su CV?", )
 
     # Formación----<Page>
     basic_formation_ids = fields.One2many('onsc.cv.basic.formation', 'cv_digital_id', string=u'Formación básica',
@@ -244,22 +206,6 @@ class ONSCCVDigital(models.Model):
                                                            inverse_name="cv_digital_id",
                                                            string="Tutorías, Orientaciones, Supervisiones", copy=True)
     # Discapacidad ----<Page>
-    # allow_content_public = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], default='no', required=True,
-    #                                         string=u'¿Permite que el contenido de esta sección se visualice en su CV?')
-    # situation_disability = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=SITUATION)
-    # people_disabilitie = fields.Selection(selection=[('si', u'Si'), ('no', u'No')], string=DISABILITE)
-    # document_certificate_file = fields.Binary(string=u'Documento digitalizado constancia de inscripción en el RNPcD')
-    # document_certificate_filename = fields.Char('Nombre del documento Digitalizado')
-    # certificate_date = fields.Date(string=u'Fecha de certificado')
-    # to_date = fields.Date(string=u'Fecha hasta')
-    # see = fields.Selection(selection=SELECTION_RADIO, string=u'Ver, aún si usa anteojos o lentes')
-    # hear = fields.Selection(selection=SELECTION_RADIO, string=u'Oír, aún si usa audífono')
-    # walk = fields.Selection(selection=SELECTION_RADIO, string=u'Caminar o subir escalones')
-    # speak = fields.Selection(selection=SELECTION_RADIO, string=u'Hablar o comunicarse aún usando lengua de señas')
-    # realize = fields.Selection(selection=SELECTION_RADIO,
-    #                            string=u'Realizar tareas de cuidado personal como comer, bañarse o vestirse solo')
-    # lear = fields.Selection(selection=SELECTION_RADIO, string=u'Entender y/o aprender')
-    # interaction = fields.Selection(selection=SELECTION_RADIO, string=u'Interactuar y/o relacionarse con otras personas')
     type_support_ids = fields.Many2many('onsc.cv.type.support', 'type_support_id', string=u'Tipos de apoyo', copy=True)
     type_support_ids_domain = fields.Many2many('onsc.cv.type.support', 'type_support_domain_id',
                                                compute='_compute_cv_type_support_domain', copy=True)
@@ -351,6 +297,11 @@ class ONSCCVDigital(models.Model):
         "Consentimiento al uso del CV-D aprobado")
     is_cv_user_acceptance_ok_date = fields.Datetime(
         "Fecha de consentimiento al uso del CV-D")
+    is_validated_seccions_rolleables = fields.Boolean(
+        string='¿Son las validaciones documentales rolleables?',
+        compute='_compute_is_validated_seccions_rolleables',
+        store=False
+    )
 
     # VALIDACION DOCUMENTAL
     # DISCAPACIDAD
@@ -380,6 +331,10 @@ class ONSCCVDigital(models.Model):
     nro_doc_documentary_user_id = fields.Many2one(comodel_name="res.users", string="Usuario validación documental",
                                                   tracking=True)
     # CREDENCIAL CIVICA
+    is_civical_credential_populated = fields.Boolean(
+        string='¿Hay datos de credencial cívica llenos?',
+        compute='_compute_is_civical_credential_populated'
+    )
     civical_credential_documentary_validation_state = fields.Selection(
         string="Estado de validación documental",
         selection=DOCUMENTARY_VALIDATION_STATES,
@@ -468,6 +423,17 @@ class ONSCCVDigital(models.Model):
         for record in self:
             record.is_cv_uruguay_ci = record.cv_emissor_country_id.code == 'UY' and record.cv_document_type_id.code == 'ci'
 
+    @api.depends('crendencial_serie', 'credential_number', 'civical_credential_file')
+    def _compute_is_civical_credential_populated(self):
+        for record in self:
+            cond1 = record.uy_citizenship != 'extranjero'
+            cond2 = record.crendencial_serie or record.credential_number or record.civical_credential_file
+            record.is_civical_credential_populated = cond1 and cond2
+
+    def _compute_is_validated_seccions_rolleables(self):
+        for record in self:
+            record.is_validated_seccions_rolleables = True
+
     @api.constrains('partner_id')
     def _check_partner_id_unique(self):
         for record in self.filtered(lambda x: x.type == 'cv'):
@@ -533,6 +499,14 @@ class ONSCCVDigital(models.Model):
         if self.to_date and self.certificate_date and self.to_date <= self.certificate_date:
             self.to_date = False
             return cv_warning(_("La fecha hasta no puede ser menor que la fecha de certificado"))
+
+    @api.onchange('uy_citizenship')
+    def onchange_uy_citizenship(self):
+        if self.uy_citizenship == 'extranjero':
+            self.crendencial_serie = False
+            self.credential_number = False
+            self.civical_credential_file = False
+            self.civical_credential_filename = False
 
     @api.onchange('crendencial_serie')
     def onchange_crendencial_serie(self):

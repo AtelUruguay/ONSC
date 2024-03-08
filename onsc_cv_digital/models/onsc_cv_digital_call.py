@@ -144,28 +144,6 @@ class ONSCCVDigitalCall(models.Model):
     def _compute_call_conditional_state(self):
         # FIXME codigo sql es mas optimo pero no cubre todas las casuisticas(creacion todavia no esta en base de datos), se pasa a python
         # pylint: disable=sql-injection
-        #         _sql = '''
-        # SELECT SUM(count) FROM
-        # (
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_course_certificate WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_participation_event WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_experience WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_basic_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_advanced_formation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_tutoring_orientation_supervision WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_publication_production_evaluation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_teaching WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # UNION ALL
-        # SELECT COUNT(conditional_validation_state) FROM onsc_cv_work_investigation WHERE cv_digital_id = %s AND conditional_validation_state = 'to_validate'
-        # ) AS conditional_state
-        #         '''
         for record in self.filtered(lambda x: x.is_json_sent is False and x.active):
             conditional_validation_state = record.course_certificate_ids.mapped('conditional_validation_state')
             conditional_validation_state.extend(record.participation_event_ids.mapped('conditional_validation_state'))
@@ -180,21 +158,6 @@ class ONSCCVDigitalCall(models.Model):
                 record.call_conditional_state = 'to_validate'
             else:
                 record.call_conditional_state = 'validated'
-
-            # self.env.cr.execute(_sql % (record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id,
-            #                             record.cv_digital_id.id))
-            # result = self.env.cr.dictfetchone()
-            # if not result or result['sum'] > 0 or record.cv_address_state == 'to_validate':
-            #     record.call_conditional_state = 'to_validate'
-            # else:
-            #     record.call_conditional_state = 'validated'
 
     def _get_documentary_validation_models(self, only_fields=False):
         try:
@@ -233,7 +196,7 @@ class ONSCCVDigitalCall(models.Model):
                     if len(documentary_validation_model_split) == 2:
                         sections_tovalidate.append(
                             eval("record.%s._description" % documentary_validation_model_split[0]))
-                    elif documentary_validation_model == 'civical_credential_documentary_validation_state':
+                    elif documentary_validation_model == 'civical_credential_documentary_validation_state' and record.is_civical_credential_populated:
                         sections_tovalidate.append(_('Credencial cívica'))
                     elif documentary_validation_model == 'nro_doc_documentary_validation_state':
                         sections_tovalidate.append(_('Documento de identidad'))
@@ -659,7 +622,61 @@ class ONSCCVDigitalCall(models.Model):
 
     def _postulate(self, cv_digital_id, call_number, postulation_date, postulation_number):
         new_cv_digital = cv_digital_id.copy({
-            'type': 'call'
+            'type': 'call',
+            'document_identity_file': cv_digital_id.document_identity_file,
+            'document_identity_filename': cv_digital_id.document_identity_filename,
+            'country_of_birth_id': cv_digital_id.country_of_birth_id.id,
+            'marital_status_id': cv_digital_id.marital_status_id.id,
+            'uy_citizenship': cv_digital_id.uy_citizenship,
+            'crendencial_serie': cv_digital_id.crendencial_serie,
+            'credential_number': cv_digital_id.credential_number,
+            'civical_credential_file': cv_digital_id.civical_credential_file,
+            'civical_credential_filename': cv_digital_id.civical_credential_filename,
+            'cjppu_affiliate_number': cv_digital_id.cjppu_affiliate_number,
+            'professional_resume': cv_digital_id.professional_resume,
+            'user_linkedIn': cv_digital_id.user_linkedIn,
+            'is_driver_license': cv_digital_id.is_driver_license,
+            'cv_gender_id': cv_digital_id.cv_gender_id.id,
+            'cv_gender2': cv_digital_id.cv_gender2,
+            'cv_gender_record_file': cv_digital_id.cv_gender_record_file,
+            'cv_gender_record_filename': cv_digital_id.cv_gender_record_filename,
+            'is_cv_gender_public': cv_digital_id.is_cv_gender_public,
+            'is_cv_gender_record': cv_digital_id.is_cv_gender_record,
+            'cv_race2': cv_digital_id.cv_race2,
+            'is_cv_race_public': cv_digital_id.is_cv_race_public,
+            'is_afro_descendants': cv_digital_id.is_afro_descendants,
+            'afro_descendants_file': cv_digital_id.afro_descendants_file,
+            'afro_descendants_filename': cv_digital_id.afro_descendants_filename,
+            'is_occupational_health_card': cv_digital_id.is_occupational_health_card,
+            'occupational_health_card_date': cv_digital_id.occupational_health_card_date,
+            'occupational_health_card_file': cv_digital_id.occupational_health_card_file,
+            'occupational_health_card_filename': cv_digital_id.occupational_health_card_filename,
+            'is_medical_aptitude_certificate_status': cv_digital_id.is_medical_aptitude_certificate_status,
+            'medical_aptitude_certificate_date': cv_digital_id.medical_aptitude_certificate_date,
+            'medical_aptitude_certificate_file': cv_digital_id.medical_aptitude_certificate_file,
+            'medical_aptitude_certificate_filename': cv_digital_id.medical_aptitude_certificate_filename,
+            'is_victim_violent': cv_digital_id.is_victim_violent,
+            'relationship_victim_violent_file': cv_digital_id.relationship_victim_violent_file,
+            'relationship_victim_violent_filename': cv_digital_id.relationship_victim_violent_filename,
+            'is_public_information_victim_violent': cv_digital_id.is_public_information_victim_violent,
+            'cv_address_street_id': cv_digital_id.cv_address_street_id.id,
+            'cv_address_street2_id': cv_digital_id.cv_address_street2_id.id,
+            'cv_address_street3_id': cv_digital_id.cv_address_street3_id.id,
+            'allow_content_public': cv_digital_id.allow_content_public,
+            'situation_disability': cv_digital_id.situation_disability,
+            'people_disabilitie': cv_digital_id.people_disabilitie,
+            'document_certificate_file': cv_digital_id.document_certificate_file,
+            'document_certificate_filename': cv_digital_id.document_certificate_filename,
+            'certificate_date': cv_digital_id.certificate_date,
+            'to_date': cv_digital_id.to_date,
+            'see': cv_digital_id.see,
+            'hear': cv_digital_id.hear,
+            'walk': cv_digital_id.walk,
+            'speak': cv_digital_id.speak,
+            'realize': cv_digital_id.realize,
+            'lear': cv_digital_id.lear,
+            'interaction': cv_digital_id.interaction,
+            'need_other_support': cv_digital_id.need_other_support,
         })
         cv_call = self.env['onsc.cv.digital.call'].create({
             'cv_digital_id': new_cv_digital.id,

@@ -71,7 +71,8 @@
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
                             <field name="hours_total"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"/>
-                            <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"/>
+                            <field name="knowledge_acquired_ids" options="{'limit':5}" widget="many2many_tags"
+                                required="context.get('is_call_documentary_validation', False) is False"/>
                             <field name="digital_doc_file" filename="digital_doc_filename" states='completed'
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="digital_doc_filename" invisible="1"/>
