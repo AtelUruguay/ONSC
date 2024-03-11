@@ -31,7 +31,8 @@
                     <group>
                         <group style="min-width: 100px !important;">
                             <field name="year"/>
-                            <field name="evaluation_type" invisible="context.get('show_evaluation_type', False) is False"/>
+                            <field name="evaluation_type"
+                                   invisible="context.get('show_evaluation_type', False) is False"/>
                             <field name="evaluation_start_date"/>
                             <field name="evaluation_end_date"/>
                             <field name="environment_definition_end_date"/>
@@ -135,6 +136,9 @@
                 <filter name="leader_evaluation_filter"
                         domain="[('collaborators', 'in', [True, False])]"
                         string="Mis colaboradores/ras"/>
+                <filter name="evaluations_filter"
+                        domain="[('evaluations', 'in', [True, False])]"
+                        string="Mis evaluaciones"/>
             </search>
         </field>
     </record>
