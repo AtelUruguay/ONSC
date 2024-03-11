@@ -566,12 +566,11 @@ class ONSCLegajoStagingWS7(models.Model):
             'public_admin_entry_date': record.fecha_ing_adm,
         })
         self._check_valid_eff_date(contract, record.fecha_aud.date())
-        _contract_values = {
-            'eff_date': str(record.fecha_aud.date()),
-        }
         if record.fechaGraduacion:
-            _contract_values.update({'graduation_date': str(record.fechaGraduacion)})
-        contract.suspend_security().write(_contract_values)
+            contract.suspend_security().write({
+                'eff_date': str(record.fecha_aud.date()),
+                'graduation_date': str(record.fechaGraduacion),
+            })
         self._set_modif_funcionario_extras(contract, record)
         record.write({'state': 'processed'})
 
