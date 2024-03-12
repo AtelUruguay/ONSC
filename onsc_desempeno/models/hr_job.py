@@ -35,7 +35,9 @@ class HrJob(models.Model):
         return results
 
     def _update_evaluation_list_in(self):
-        if self.contract_id.legajo_state not in ['baja', 'reserved']:
+        exluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
+        is_valid_contract = self.contract_id.legajo_state not in ['baja', 'reserved']
+        if is_valid_contract and self.contract_id.descriptor1_id not in exluded_descriptor1_ids:
             EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
 
             manager = self.department_id.get_first_department_withmanager_in_tree().manager_id

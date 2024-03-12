@@ -256,9 +256,7 @@
     <record id='onsc_desempeno_develop_plan_action' model='ir.actions.act_window'>
         <field name="name">Plan de Desarrollo</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
-        <field name="context">{'is_from_menu': True,'develop_plan':True,'search_default_evaluations_filter':
-            1}
-        </field>
+        <field name="context">{'is_from_menu': True,'develop_plan':True}</field>
         <field
                 name="view_ids"
                 eval="[(5, 0, 0),
@@ -276,10 +274,7 @@
     <record id='onsc_desempeno_tracing_plan_action' model='ir.actions.act_window'>
         <field name="name">Seguimiento Plan de Desarrollo</field>
         <field name="res_model">onsc.desempeno.evaluation</field>
-        <field name="context">{'is_from_menu':
-            True,'tracing_plan':True,'tracing_plan_type':True,'search_default_evaluations_filter':
-            1}
-        </field>
+        <field name="context">{'is_from_menu': True,'tracing_plan':True,'tracing_plan_type':True}</field>
         <field
                 name="view_ids"
                 eval="[(5, 0, 0),

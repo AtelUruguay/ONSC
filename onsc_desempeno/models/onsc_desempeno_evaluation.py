@@ -228,7 +228,6 @@ class ONSCDesempenoEvaluation(models.Model):
         if evaluations:
             args_extended = [
                 ('evaluation_type', '=', evaluation_type),
-                ('evaluator_id', '=', self.env.user.employee_id.id),
                 ('evaluated_id', '=', self.env.user.employee_id.id),
                 ('inciso_id', '=', inciso_id)
             ]

@@ -64,8 +64,8 @@ class ONSCDesempenoEvaluationReport(models.Model):
         domain = self._get_domain_evaluation(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
-    operating_unit_id = fields.Many2one('operating.unit', string='UE')
-    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar')
+    operating_unit_id = fields.Many2one('operating.unit', string='UE', ondelete='cascade')
+    general_cycle_id = fields.Many2one('onsc.desempeno.general.cycle', string='Año a Evaluar', ondelete='cascade')
     evaluation_type = fields.Selection(EVALUATION_TYPE, string='Tipo', )
     evaluation_type_display_name = fields.Char(
         string='String del Tipo',
@@ -77,12 +77,12 @@ class ONSCDesempenoEvaluationReport(models.Model):
         compute='_compute_state_display_name',
     )
     gap_deal_state = fields.Selection(selection=GAP_DEAL_STATES, string="Subestado")
-    evaluated_id = fields.Many2one('hr.employee', string='Evaluado')
-    evaluator_id = fields.Many2one('hr.employee', string='Evaluador')
-    user_id = fields.Many2one('res.users', string='Usuario', readonly=True)
-    evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluación')
-    consolidated_id = fields.Many2one('onsc.desempeno.consolidated', string='Consolidado')
-    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True)
+    evaluated_id = fields.Many2one('hr.employee', string='Evaluado', ondelete='cascade')
+    evaluator_id = fields.Many2one('hr.employee', string='Evaluador', ondelete='cascade')
+    user_id = fields.Many2one('res.users', string='Usuario', readonly=True, ondelete='cascade')
+    evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Evaluación', ondelete='cascade')
+    consolidated_id = fields.Many2one('onsc.desempeno.consolidated', string='Consolidado', ondelete='cascade')
+    inciso_id = fields.Many2one('onsc.catalog.inciso', string='Inciso', readonly=True, ondelete='cascade')
 
     @api.depends('evaluation_type')
     def _compute_evaluation_type_display_name(self):
