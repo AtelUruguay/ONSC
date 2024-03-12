@@ -197,7 +197,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.onchange('general_cycle_id')
     def onchange_general_cycle_id(self):
         if self.general_cycle_id:
-            self.start_date = self.general_cycle_id.start_date_max
             self.end_date = self.general_cycle_id.end_date_max
 
     def toggle_active(self):
