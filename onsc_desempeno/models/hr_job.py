@@ -6,10 +6,10 @@ from odoo import models, fields
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
-    evaluation_list_line_id = fields.Many2one(
+    evaluation_list_line_ids = fields.Many2many(
         comodel_name='onsc.desempeno.evaluation.list.line',
-        ondelete="set null",
-        string='Línea de evaluación de Lista de participantes')
+        ondelete="cascade",
+        string='Líneas de evaluación de Lista de participantes')
 
     def create_job(self, contract, department, start_date, security_job, extra_security_roles=False,
                    is_job_change=False):
@@ -21,17 +21,19 @@ class HrJob(models.Model):
             extra_security_roles=extra_security_roles,
             is_job_change=is_job_change
         )
-        if not is_job_change:
+        if not is_job_change and not self._context.get('ignore_evaluation_list_in', False):
             new_job._update_evaluation_list_in()
         return new_job
 
     def deactivate(self, date_end, is_job_change=False):
         results = super(HrJob, self).deactivate(date_end)
-        for record in self:
-            if not is_job_change:
-                record._update_evaluation_list_out()
-            else:
-                record._update_evaluation_list_out_changejob()
+        if not self._context.get('ignore_evaluation_list_out', False):
+            for record in self:
+                if is_job_change or self._context.get('is_copy_job'):
+                    record._update_evaluation_list_out_changejob()
+                else:
+                    record._update_evaluation_list_out()
+
         return results
 
     def _update_evaluation_list_in(self):
@@ -57,13 +59,20 @@ class HrJob(models.Model):
                 ('evaluation_list_id.department_id', '=', _department.id),
             ])
             evaluation_employees = evaluation_list_lines.mapped('employee_id')
-            if len(evaluation_list_lines) and self.employee_id not in evaluation_employees.ids:
-                new_evaluation_list_line = EvaluationListLine.create({
-                    'evaluation_list_id': evaluation_list_lines[0].evaluation_list_id.id,
-                    'job_id': self.id,
-                    'is_included': True
+            is_employee_inlist = self.employee_id.id not in evaluation_employees.ids
+            if len(evaluation_list_lines) and is_employee_inlist:
+                new_evaluation_list_lines = EvaluationListLine
+                for evaluation_list_line in evaluation_list_lines:
+                    new_evaluation_list_lines |= EvaluationListLine.create({
+                        'evaluation_list_id': evaluation_list_line.evaluation_list_id.id,
+                        'job_id': self.id,
+                        'is_included': True
+                    })
+                self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
+            elif self._context.get('ignore_evaluation_list_in') and self._context.get('ignore_evaluation_list_out'):
+                evaluation_list_lines.filtered(lambda x: x.employee_id == self.employee_id).write({
+                    'job_id': self.id
                 })
-                self.write({'evaluation_list_line_id': new_evaluation_list_line.id})
         return True
 
     def _update_evaluation_list_in_changejob(self, base_job):
@@ -81,12 +90,14 @@ class HrJob(models.Model):
             ])
             evaluation_employees = evaluation_list_lines.mapped('employee_id')
             if len(evaluation_list_lines) and self.employee_id not in evaluation_employees.ids:
-                new_evaluation_list_line = EvaluationListLine.create({
-                    'evaluation_list_id': evaluation_list_lines[0].evaluation_list_id.id,
-                    'job_id': self.id,
-                    'is_included': False
-                })
-                self.write({'evaluation_list_line_id': new_evaluation_list_line.id})
+                new_evaluation_list_lines = EvaluationListLine
+                for evaluation_list_line in evaluation_list_lines:
+                    new_evaluation_list_lines |= EvaluationListLine.create({
+                        'evaluation_list_id': evaluation_list_line.evaluation_list_id.id,
+                        'job_id': self.id,
+                        'is_included': False
+                    })
+                self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
         return True
 
     def _update_evaluation_list_out(self):
