@@ -702,14 +702,21 @@ class ONSCLegajoStagingWS7(models.Model):
         for job_id in source_contract.job_ids.filtered(lambda x:
                                                        (x.end_date is False or x.end_date >= fields.Date.today())
                                                        and x.start_date <= target_contract.date_start):
-            jobs |= self.env['hr.job'].suspend_security().create_job(
+            new_job = self.env['hr.job'].suspend_security().create_job(
                 target_contract,
                 job_id.department_id,
                 target_contract.date_start,
                 job_id.security_job_id,
                 job_id.role_extra_ids
             )
+            self._copy_jobs_update_new_job_data(job_id, new_job)
+            jobs |= new_job
+
         return jobs
+
+    def _copy_jobs_update_new_job_data(self, source_job, new_job):
+        # THINKING EXTENDABLE
+        return True
 
     def _check_valid_eff_date(self, contract, eff_date):
         if isinstance(eff_date, str):

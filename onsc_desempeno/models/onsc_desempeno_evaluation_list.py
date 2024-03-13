@@ -237,7 +237,9 @@ class ONSCDesempenoEvaluationList(models.Model):
     # INTELIGENCIA
     def manage_evaluations_lists(self):
         # cerrar las listas que ya pasaron la fecha de cierre y fijar responsable
-        lists_toclose = self.search([('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())])
+        lists_toclose = self.search([
+            ('state', '!=', 'closed'),
+            ('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())])
         lists_toclose.write({'state': 'closed'})
         for list_toclose in lists_toclose:
             list_toclose.write({
@@ -248,6 +250,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation_stages = self.env['onsc.desempeno.evaluation.stage'].search([
             ('start_date', '<=', fields.Date.today()),
             ('end_date', '>=', fields.Date.today()),
+            ('closed_stage', '=', False)
         ])
         for evaluation_stage in evaluation_stages:
             department_inlist = self._get_evaluation_list_departments(evaluation_stage)
