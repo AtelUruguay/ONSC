@@ -206,7 +206,7 @@ class HrJob(models.Model):
 
     # INTELIGENCIA DE ENTIDAD
     def create_job(self, contract, department, start_date, security_job, extra_security_roles=False,
-                   is_job_change=False):
+                   is_job_change=False, source_job=False):
         """
         CREA NUEVO PUESTO A PARTIR DE LA DATA DE ENTRADA
         :param contract: Recordset a hr.contract

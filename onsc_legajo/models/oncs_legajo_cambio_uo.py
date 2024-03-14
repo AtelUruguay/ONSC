@@ -374,7 +374,8 @@ class ONSCLegajoCambioUO(models.Model):
             self.department_id,
             self.date_start,
             self.security_job_id,
-            is_job_change=True
+            is_job_change=True,
+            source_job=self.job_id
         )
         self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
                     'error_message_synchronization': warning_message})
