@@ -23,7 +23,7 @@ class HrJob(models.Model):
         )
 
         if not self._context.get('ignore_evaluation_list_in', False):
-            new_job._update_evaluation_list_in(is_job_change=True, source_job=source_job)
+            new_job._update_evaluation_list_in(is_job_change=is_job_change, source_job=source_job)
         return new_job
 
     def deactivate(self, date_end, is_job_change=False):
