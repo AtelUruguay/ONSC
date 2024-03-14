@@ -12,16 +12,19 @@ class ONSCLegajoStagingWS7(models.Model):
             Contract = Contract.with_context(ignore_evaluation_list_in=True, ignore_evaluation_list_out=True)
             record = record.with_context(ignore_evaluation_list_in=True, ignore_evaluation_list_out=True)
         else:
-            _self = self.with_context(ignore_evaluation_list_in=True, is_copy_job=True)
-            Contract = Contract.with_context(ignore_evaluation_list_in=True, is_copy_job=True)
-            record = record.with_context(ignore_evaluation_list_in=True, is_copy_job=True)
+            _self = self.with_context(ignore_evaluation_list_in=True, ignore_evaluation_list_out=True, is_same_uo=True)
+            Contract = Contract.with_context(ignore_evaluation_list_in=True, ignore_evaluation_list_out=True,
+                                         is_same_uo=True)
+            record = record.with_context(ignore_evaluation_list_in=True, ignore_evaluation_list_out=True, is_same_uo=True)
 
-        return super(ONSCLegajoStagingWS7, _self).set_asc_transf_reest(
-            Contract.with_context(), record)
+        return super(ONSCLegajoStagingWS7, _self).set_asc_transf_reest(Contract, record)
 
 
     def _copy_jobs_update_new_job_data(self, source_job, new_job):
         super(ONSCLegajoStagingWS7, self)._copy_jobs_update_new_job_data(source_job, new_job)
+
+        if self._context.get('is_same_uo'):
+            self.env['hr.job']._update_evaluation_list_puente(source_job, new_job)
 
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security().with_context(ignore_security_rules=True)
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security().with_context(
