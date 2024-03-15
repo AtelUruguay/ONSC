@@ -66,7 +66,7 @@ class HrJob(models.Model):
                 # SI FUE UN CAMBIO DE UO PERO YA SOY COLABORADOR CON FORMULARIOS GENERADOS EN EL ORIGEN NO ME ADICIONO EN LA ACTUAL
                 if self._context.get('is_copy_job') and self._is_evaluation_list_available(evaluation_list, source_job):
                     continue
-                first = any(line_id.employee_id.id == self_employee_id for line_id in evaluation_list.line_ids)
+                first = any(line_id.employee_id.id == self_employee_id for line_id in evaluation_list.with_context(active_test=True).line_ids)
                 second = any(line_id.employee_id.id == self_employee_id for line_id in
                              evaluation_list.evaluation_generated_line_ids)
                 if not first and not second:
