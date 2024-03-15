@@ -389,6 +389,14 @@ class ONSCLegajoStagingWS7(models.Model):
             })
             self._check_contract_data(new_contract)
 
+            # FIXME
+            for job in new_contract.job_ids:
+                if job.security_job_id.is_uo_manager and job.start_date <= fields.Date.today() and not job.department_id.manager_id:
+                    job.department_id.suspend_security().write({
+                        'manager_id': job.employee_id.id,
+                        'is_manager_reserved': False
+                    })
+
         records |= second_movement
         records.write({'state': 'processed'})
 
