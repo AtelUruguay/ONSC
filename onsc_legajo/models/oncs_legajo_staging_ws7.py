@@ -387,9 +387,14 @@ class ONSCLegajoStagingWS7(models.Model):
             contract.write({
                 'causes_discharge_id': causes_discharge.id,
             })
+            self._check_contract_data(new_contract)
 
         records |= second_movement
         records.write({'state': 'processed'})
+
+    def _check_contract_data(self, contract):
+        # THINKING EXTENDABLE
+        return True
 
     def set_correccion_ascenso(self, Contract, record):
         records = record
@@ -706,7 +711,8 @@ class ONSCLegajoStagingWS7(models.Model):
                 job_id.department_id,
                 target_contract.date_start,
                 job_id.security_job_id,
-                job_id.role_extra_ids
+                job_id.role_extra_ids,
+                job_id
             )
             self._copy_jobs_update_new_job_data(job_id, new_job)
             jobs |= new_job

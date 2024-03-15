@@ -139,12 +139,12 @@ class ONSCDesempenoEvaluationList(models.Model):
          u'Ya existe una lista de evaluación para esta unidad organizativa y ciclo de evaluación.'),
     ]
 
-    @api.depends('evaluation_stage_id', 'manager_id')
+    @api.depends('evaluation_stage_id', 'department_id')
     def _compute_name(self):
         for rec in self:
-            rec.name = 'Evaluación: %s, Responsable: %s' % (
+            rec.name = 'Evaluación: %s, UO: %s' % (
                 rec.evaluation_stage_id.name,
-                rec.manager_id.name)
+                rec.department_id.name)
 
     @api.depends('line_ids')
     def _compute_is_line_availables(self):
