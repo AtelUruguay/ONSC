@@ -202,7 +202,6 @@ class ONSCLegajoBajaCS(models.Model):
                                      related='contract_origen_id.descriptor4_id')
     end_date = fields.Date(
         string="Fecha hasta de la Comisión",
-        default=lambda *a: fields.Date.today(),
         required=True,
         copy=False)
     extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
