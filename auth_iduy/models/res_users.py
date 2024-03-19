@@ -60,7 +60,8 @@ class ResUsers(models.Model):
         if not oauth_user:
             return self.sudo().with_context(is_new_user=True).create(userinfo_dict)
         else:
-            return oauth_user.sudo().write(userinfo_dict)
+            oauth_user.sudo().write(userinfo_dict)
+            return oauth_user
 
     @api.model
     def _auth_iduy_signin(self, provider, params):
