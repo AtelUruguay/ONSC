@@ -456,6 +456,7 @@ class ONSCDesempenoEvaluation(models.Model):
             if not self.env.context.get("gap_deal") and _len_environment_ids > 10:
                 raise ValidationError(_('La cantidad de evaluadores de entorno debe ser menor a 10!'))
             for environment_id in rec.environment_ids:
+                # SE CONSIDERA +1 PORQUE LA NUEVA YA EXCEDERIA EL TOPE MAXIMO PERMITIDO Y ESTE CONTROL ES PREVIO A LA GENERACION DE LA NUEVA DEF ENTORNO
                 if self.with_context(ignore_security_rules=True).search_count([
                     ('evaluation_type', 'in', ['environment_evaluation',
                                                'self_evaluation',
@@ -464,7 +465,7 @@ class ONSCDesempenoEvaluation(models.Model):
                                                ]),
                     ('evaluator_id', '=', environment_id.id),
                     ('general_cycle_id', '=', rec.general_cycle_id.id),
-                ]) > max_environment_evaluation_forms:
+                ]) + 1 > max_environment_evaluation_forms:
                     raise ValidationError(
                         _('El funcionario %s no puede ser seleccionado como entorno, favor seleccionar otra persona') % (
                             environment_id.full_name))
