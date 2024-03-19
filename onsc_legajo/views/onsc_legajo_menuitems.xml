@@ -35,18 +35,11 @@
               groups="onsc_legajo.group_legajo_configurador_legajo,onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_hr_ue,onsc_legajo.group_legajo_consulta_legajos"
               sequence="1"/>
     <menuitem id="onsc_hr_legajo_department_menu"
-              name="Consulta de información vínculo por UO ACTUAL"
+              name="Consulta de información vínculo por UO"
               action="onsc_legajo_department_action"
               parent="onsc_legajo.onsc_legajo_capital_humano_menu"
               groups="onsc_legajo.group_legajo_configurador_legajo,onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_hr_ue,onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_hr_responsable_uo"
               sequence="2"/>
-<!--    <menuitem id="onsc_hr_legajo_department_old1_menu"-->
-<!--              name="Consulta de información vínculo por UO OLD"-->
-<!--              action="onsc_legajo_department_old1_action"-->
-<!--              parent="onsc_legajo.onsc_legajo_capital_humano_menu"-->
-<!--              groups="onsc_legajo.group_legajo_configurador_legajo,onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_hr_ue,onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_hr_responsable_uo"-->
-<!--              sequence="3"/>-->
-
     <menuitem id="onsc_legajo_acciones_funcionario_menu"
               parent="onsc_legajo.onsc_legajo_capital_humano_menu"
               name="Acciones de funcionario"
