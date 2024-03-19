@@ -83,7 +83,7 @@ class ONSCLegajoDepartment(models.Model):
     @api.model
     def fields_get(self, allfields=None, attributes=None):
         res = super(ONSCLegajoDepartment, self).fields_get(allfields, attributes)
-        hide = ['end_date', 'employee_id', 'job_id']
+        hide = ['end_date', 'employee_id', 'job_id', 'type', 'active_job_qty', 'start_date']
         for field in hide:
             if field in res:
                 res[field]['selectable'] = False
