@@ -42,6 +42,8 @@
                 <field name="contract_legajo_state"/>
                 <field name="job_name"/>
                 <group string="Agrupar por">
+                    <filter name="group_inciso_id" string="Inciso" context="{'group_by': 'inciso_id'}"/>
+                    <filter name="group_operating_unit_id" string="Unidad ejecutora" context="{'group_by': 'operating_unit_id'}"/>
                     <filter name="group_department_id" string="Unidad organizativa" context="{'group_by': 'department_id'}"/>
                     <filter name="group_legajo_id" string="Legajo" context="{'group_by': 'legajo_id'}"/>
                     <filter name="group_legajo_state" string="Estado del contrato" context="{'group_by': 'contract_legajo_state'}"/>
@@ -55,7 +57,7 @@
         <field name="res_model">onsc.legajo.department</field>
         <field name="view_mode">tree</field>
         <field name="context">{'is_from_menu':True,'is_legajo':True, 'active_test': False, 'ignore_base_restrict': True}</field>
-        <field name="limit">2500</field>
+        <field name="limit">1500</field>
     </record>
     </data>
 </odoo>
