@@ -388,8 +388,24 @@ class ONSCLegajoStagingWS7(models.Model):
                 'causes_discharge_id': causes_discharge.id,
             })
 
+            # FIXME la desactivacion posterior lo saca de manager y por la secuencia de los pasos no sabe volver a ponerlo
+            excluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
+            for job in new_contract.job_ids:
+                cond1 = job.contract_id.descriptor1_id.id not in excluded_descriptor1_ids
+                cond2 = job.security_job_id.is_uo_manager and job.start_date <= fields.Date.today()
+                if cond1 and cond2 and not job.department_id.manager_id:
+                    job.department_id.suspend_security().write({
+                        'manager_id': job.employee_id.id,
+                        'is_manager_reserved': False
+                    })
+            self._check_contract_data(new_contract)
+
         records |= second_movement
         records.write({'state': 'processed'})
+
+    def _check_contract_data(self, contract):
+        # THINKING EXTENDABLE
+        return True
 
     def set_correccion_ascenso(self, Contract, record):
         records = record
@@ -701,14 +717,22 @@ class ONSCLegajoStagingWS7(models.Model):
         for job_id in source_contract.job_ids.filtered(lambda x:
                                                        (x.end_date is False or x.end_date >= fields.Date.today())
                                                        and x.start_date <= target_contract.date_start):
-            jobs |= self.env['hr.job'].suspend_security().create_job(
+            new_job = self.env['hr.job'].suspend_security().create_job(
                 target_contract,
                 job_id.department_id,
                 target_contract.date_start,
                 job_id.security_job_id,
-                job_id.role_extra_ids
+                job_id.role_extra_ids,
+                job_id
             )
+            self._copy_jobs_update_new_job_data(job_id, new_job)
+            jobs |= new_job
+
         return jobs
+
+    def _copy_jobs_update_new_job_data(self, source_job, new_job):
+        # THINKING EXTENDABLE
+        return True
 
     def _check_valid_eff_date(self, contract, eff_date):
         if isinstance(eff_date, str):

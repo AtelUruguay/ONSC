@@ -6,37 +6,42 @@ from odoo import models, fields
 class HrJob(models.Model):
     _inherit = 'hr.job'
 
-    evaluation_list_line_id = fields.Many2one(
+    evaluation_list_line_ids = fields.Many2many(
         comodel_name='onsc.desempeno.evaluation.list.line',
-        ondelete="set null",
-        string='Línea de evaluación de Lista de participantes')
+        ondelete="cascade",
+        string='Líneas de evaluación de Lista de participantes')
 
-    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False,
-                   is_job_change=False):
+    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False, source_job=False):
         new_job = super(HrJob, self).create_job(
             contract,
             department,
             start_date,
             security_job,
             extra_security_roles=extra_security_roles,
-            is_job_change=is_job_change
+            source_job=source_job
         )
-        if not is_job_change:
-            new_job._update_evaluation_list_in()
+        if not self._context.get('ignore_evaluation_list_in', False):
+            new_job._update_evaluation_list_in(source_job=source_job)
         return new_job
 
-    def deactivate(self, date_end, is_job_change=False):
+    def deactivate(self, date_end):
         results = super(HrJob, self).deactivate(date_end)
-        for record in self:
-            if not is_job_change:
-                record._update_evaluation_list_out()
-            else:
-                record._update_evaluation_list_out_changejob()
+        if not self._context.get('ignore_evaluation_list_out', False):
+            for record in self:
+                if self._context.get('is_copy_job'):
+                    record._update_evaluation_list_out_changejob()
+                else:
+                    record._update_evaluation_list_out()
         return results
 
-    def _update_evaluation_list_in(self):
-        if self.contract_id.legajo_state not in ['baja', 'reserved']:
+    def _update_evaluation_list_in(self, source_job=False):
+        excluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
+        is_valid_contract = self.contract_id.legajo_state not in ['baja', 'reserved']
+        if is_valid_contract and self.contract_id.descriptor1_id.id not in excluded_descriptor1_ids:
             EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
+            EvaluationList = self.env['onsc.desempeno.evaluation.list'].with_context(
+                active_test=False,
+                is_from_menu=False).suspend_security()
 
             manager = self.department_id.get_first_department_withmanager_in_tree().manager_id
             parent_manager = self.department_id.parent_id.get_first_department_withmanager_in_tree().manager_id
@@ -48,44 +53,57 @@ class HrJob(models.Model):
             elif eval1 and not eval2 and self.department_id.parent_id.id and \
                     parent_manager.id != self.employee_id.id:
                 _department = self.department_id.parent_id
-            evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
-                ('evaluation_list_id.state', '=', 'in_progress'),
-                ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
-                ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
-                ('evaluation_list_id.department_id', '=', _department.id),
-            ])
-            evaluation_employees = evaluation_list_lines.mapped('employee_id')
-            if len(evaluation_list_lines) and self.employee_id not in evaluation_employees.ids:
-                new_evaluation_list_line = EvaluationListLine.create({
-                    'evaluation_list_id': evaluation_list_lines[0].evaluation_list_id.id,
-                    'job_id': self.id,
-                    'is_included': True
-                })
-                self.write({'evaluation_list_line_id': new_evaluation_list_line.id})
-        return True
 
-    def _update_evaluation_list_in_changejob(self, base_job):
-        """
-        :param base_job: Recordset de hr.job: Puesto origen
-        :return:
-        """
-        if self.contract_id.legajo_state not in ['baja', 'reserved']:
-            EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
-            evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
-                ('evaluation_list_id.state', '=', 'in_progress'),
-                ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.start_date),
-                ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
-                ('evaluation_list_id.department_id', '=', self.department_id.id),
+            evaluation_lists = EvaluationList.search([
+                ('state', '=', 'in_progress'),
+                ('evaluation_stage_id.start_date', '<=', self.start_date),
+                ('evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
+                ('department_id', '=', _department.id),
             ])
-            evaluation_employees = evaluation_list_lines.mapped('employee_id')
-            if len(evaluation_list_lines) and self.employee_id not in evaluation_employees.ids:
-                new_evaluation_list_line = EvaluationListLine.create({
-                    'evaluation_list_id': evaluation_list_lines[0].evaluation_list_id.id,
-                    'job_id': self.id,
-                    'is_included': False
-                })
-                self.write({'evaluation_list_line_id': new_evaluation_list_line.id})
-        return True
+            self_employee_id = self.employee_id.id
+            new_evaluation_list_lines = EvaluationListLine
+            for evaluation_list in evaluation_lists:
+                # SI FUE UN CAMBIO DE UO PERO YA SOY COLABORADOR CON FORMULARIOS GENERADOS EN EL ORIGEN NO ME ADICIONO EN LA ACTUAL
+                if self._context.get('is_copy_job') and self._is_evaluation_list_available(evaluation_list, source_job):
+                    continue
+                first = any(line_id.employee_id.id == self_employee_id for line_id in evaluation_list.with_context(active_test=True).line_ids)
+                second = any(line_id.employee_id.id == self_employee_id for line_id in
+                             evaluation_list.evaluation_generated_line_ids)
+                if not first and not second:
+                    new_evaluation_list_lines |= EvaluationListLine.create({
+                        'evaluation_list_id': evaluation_list.id,
+                        'job_id': self.id,
+                        'is_included': True
+                    })
+                elif self._context.get('ignore_evaluation_list_in') and self._context.get(
+                        'ignore_evaluation_list_out'):
+                    evaluation_list.evaluation_generated_line_ids.filtered(
+                        lambda x: x.employee_id == self.employee_id).write({
+                        'job_id': self.id
+                    })
+            self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
+
+    def _is_evaluation_list_available(self, evaluation_list, source_job):
+        EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].with_context(
+            active_test=False,
+            is_from_menu=False).suspend_security()
+        if source_job:
+            _date = source_job.end_date
+            _department_id = source_job.department_id.id
+            _job_id = source_job.id
+        else:
+            _date = self.start_date
+            _department_id = self.department_id.id
+            _job_id = self.id
+
+        return EvaluationListLine.search_count([
+            ('evaluation_list_id.state', '=', 'in_progress'),
+            ('evaluation_list_id.evaluation_stage_id.start_date', '<=', _date),
+            ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', _date),
+            ('evaluation_list_id.evaluation_stage_id', '=', evaluation_list.evaluation_stage_id.id),
+            ('evaluation_list_id.department_id', '=', _department_id),
+            ('job_id', '=', _job_id),
+        ])
 
     def _update_evaluation_list_out(self):
         job_employee = self.employee_id
@@ -165,6 +183,11 @@ class HrJob(models.Model):
             ('state', '!=', 'generated'),
             ('job_id', '=', self.id),
         ]).unlink()
+
+    def _update_evaluation_list_puente(self, source_job, target_job):
+        # UTILITY: FORZAR CHECKOUT CHECK-IN DE DOS PUESTOS. TIENEN QUE ESTAR LOGICAMENTE RELACIONADOS
+        source_job._update_evaluation_list_out_changejob()
+        target_job._update_evaluation_list_in()
 
     def force_evaluation_out(self):
         self._update_evaluation_list_out()

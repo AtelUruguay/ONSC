@@ -37,6 +37,7 @@ class ONSCDesempenoConsolidated(models.Model):
             evaluation_type = 'environment'
 
         collaborators = [x for x in args if x[0] == 'collaborators']
+        evaluations = [x for x in args if x[0] == 'evaluations']
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
 
@@ -47,7 +48,7 @@ class ONSCDesempenoConsolidated(models.Model):
             ('operating_unit_id', '=', operating_unit_id)
         ]
 
-        if not collaborators:
+        if not collaborators and not evaluations:
             if self._is_group_admin_gh_inciso():
                 args_extended = expression.OR(
                     [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
@@ -116,6 +117,7 @@ class ONSCDesempenoConsolidated(models.Model):
                                                 string='Evaluación de Competencias')
     is_gap_deal_not_generated = fields.Boolean(string='Acuerdo de brecha no generado')
     collaborators = fields.Boolean(string="Colaboradores directos", default=False)
+    evaluations = fields.Boolean(string="Mis evaluaciones", default=False)
 
     @api.depends('evaluated_id', 'general_cycle_id')
     def _compute_name(self):

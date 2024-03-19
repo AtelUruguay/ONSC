@@ -143,9 +143,10 @@ class ONSCDesempenoEvaluation(models.Model):
 
     def _get_domain_leader_evaluation(self, args):
         collaborators = [x for x in args if x[0] == 'collaborators']
+        evaluations = [x for x in args if x[0] == 'evaluations']
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
-        if collaborators:
+        if collaborators or evaluations:
             args_extended = [
                 ('evaluation_type', '=', 'leader_evaluation'),
                 ('evaluator_id', '=', self.env.user.employee_id.id),
@@ -187,25 +188,30 @@ class ONSCDesempenoEvaluation(models.Model):
     def _get_domain_evaluation(self, args, evaluation_type, show_evaluator=False):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
+        evaluations = [x for x in args if x[0] == 'evaluations']
         args_extended = [
             ('evaluation_type', '=', evaluation_type),
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id)
         ]
-        if show_evaluator:
+        if evaluations:
             args_extended = expression.AND(
                 [[('evaluator_id', '=', self.env.user.employee_id.id)], args_extended])
         else:
-            args_extended = expression.AND(
-                [[('evaluated_id', '=', self.env.user.employee_id.id)], args_extended])
+            if show_evaluator:
+                args_extended = expression.AND(
+                    [[('evaluator_id', '=', self.env.user.employee_id.id)], args_extended])
+            else:
+                args_extended = expression.AND(
+                    [[('evaluated_id', '=', self.env.user.employee_id.id)], args_extended])
 
-        if self._is_group_admin_gh_inciso():
-            args_extended = expression.OR(
-                [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
-        elif self._is_group_admin_gh_ue():
-            args_extended = expression.OR(
-                [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
-                 args_extended])
+            if self._is_group_admin_gh_inciso():
+                args_extended = expression.OR(
+                    [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
+            elif self._is_group_admin_gh_ue():
+                args_extended = expression.OR(
+                    [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
+                     args_extended])
         return expression.AND([args_extended, args])
 
     def _get_domain_gap_deal(self, args):
@@ -216,63 +222,75 @@ class ONSCDesempenoEvaluation(models.Model):
         elif self._context.get('tracing_plan_type'):
             evaluation_type = 'tracing_plan'
         collaborators = [x for x in args if x[0] == 'collaborators']
+        evaluations = [x for x in args if x[0] == 'evaluations']
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
-        if collaborators:
+        if evaluations:
             args_extended = [
                 ('evaluation_type', '=', evaluation_type),
-                ('evaluator_id', '=', self.env.user.employee_id.id),
+                ('evaluated_id', '=', self.env.user.employee_id.id),
                 ('inciso_id', '=', inciso_id)
             ]
             if not self._is_group_admin_gh_inciso() and not self._is_group_usuario_gh_inciso():
                 args_extended = expression.AND(
                     [[('operating_unit_id', '=', operating_unit_id)], args_extended])
         else:
-            args_extended = [
-                ('evaluation_type', '=', evaluation_type),
-                ('inciso_id', '=', inciso_id),
-                ('operating_unit_id', '=', operating_unit_id),
-                '|', ('evaluator_id', '=', self.env.user.employee_id.id),
-                ('evaluated_id', '=', self.env.user.employee_id.id)
-            ]
-            if self._is_group_admin_gh_inciso() or self._is_group_usuario_gh_inciso():
-                args_extended = expression.OR(
-                    [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
-            elif self._is_group_admin_gh_ue() or self._is_group_usuario_gh_ue():
-                args_extended = expression.OR(
-                    [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
-                     args_extended])
-            # REPONSABLE UO
-            if self._is_group_responsable_uo():
-                my_department = self.env.user.employee_id.job_id.department_id
-                available_departments = my_department
-                available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
-                args_extended = expression.OR([[
-                    ('uo_id', 'in', available_departments.ids),
-                    ('evaluation_type', '=', evaluation_type)], args_extended])
-        args_extended = expression.OR([[('original_evaluator_id', '=', self.env.user.employee_id.id),
-                                        ('evaluation_type', '=', evaluation_type)], args_extended])
+            if collaborators:
+                args_extended = [
+                    ('evaluation_type', '=', evaluation_type),
+                    ('evaluator_id', '=', self.env.user.employee_id.id),
+                    ('inciso_id', '=', inciso_id)
+                ]
+                if not self._is_group_admin_gh_inciso() and not self._is_group_usuario_gh_inciso():
+                    args_extended = expression.AND(
+                        [[('operating_unit_id', '=', operating_unit_id)], args_extended])
+            else:
+                args_extended = [
+                    ('evaluation_type', '=', evaluation_type),
+                    ('inciso_id', '=', inciso_id),
+                    ('operating_unit_id', '=', operating_unit_id),
+                    '|', ('evaluator_id', '=', self.env.user.employee_id.id),
+                    ('evaluated_id', '=', self.env.user.employee_id.id)
+                ]
+                if self._is_group_admin_gh_inciso() or self._is_group_usuario_gh_inciso():
+                    args_extended = expression.OR(
+                        [[('inciso_id', '=', inciso_id), ('evaluation_type', '=', evaluation_type)], args_extended])
+                elif self._is_group_admin_gh_ue() or self._is_group_usuario_gh_ue():
+                    args_extended = expression.OR(
+                        [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
+                         args_extended])
+                # REPONSABLE UO
+                if self._is_group_responsable_uo():
+                    my_department = self.env.user.employee_id.job_id.department_id
+                    available_departments = my_department
+                    available_departments |= self.env['hr.department'].search([('id', 'child_of', my_department.id)])
+                    args_extended = expression.OR([[
+                        ('uo_id', 'in', available_departments.ids),
+                        ('evaluation_type', '=', evaluation_type)], args_extended])
+            args_extended = expression.OR([[('original_evaluator_id', '=', self.env.user.employee_id.id),
+                                            ('evaluation_type', '=', evaluation_type)], args_extended])
 
         return expression.AND([args_extended, args])
 
     def _get_domain_collaborator(self, args):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
-
+        evaluations = [x for x in args if x[0] == 'evaluations']
         args_extended = [
             ('evaluator_id', '=', self.env.user.employee_id.id),
             ('inciso_id', '=', inciso_id),
             ('operating_unit_id', '=', operating_unit_id),
             ('evaluation_type', '=', 'collaborator')
         ]
-        if self._is_group_admin_gh_inciso():
-            args_extended = expression.OR(
-                [[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
-                  ('evaluation_type', '=', 'collaborator')], args_extended])
-        elif self._is_group_admin_gh_ue():
-            args_extended = expression.OR([[('evaluated_id', '!=', self.env.user.employee_id.id),
-                                            ('operating_unit_id', '=', operating_unit_id),
-                                            ('evaluation_type', '=', 'collaborator')], args_extended])
+        if not evaluations:
+            if self._is_group_admin_gh_inciso():
+                args_extended = expression.OR(
+                    [[('evaluated_id', '!=', self.env.user.employee_id.id), ('inciso_id', '=', inciso_id),
+                      ('evaluation_type', '=', 'collaborator')], args_extended])
+            elif self._is_group_admin_gh_ue():
+                args_extended = expression.OR([[('evaluated_id', '!=', self.env.user.employee_id.id),
+                                                ('operating_unit_id', '=', operating_unit_id),
+                                                ('evaluation_type', '=', 'collaborator')], args_extended])
         return expression.AND([args_extended, args])
 
     @api.model
@@ -414,6 +432,7 @@ class ONSCDesempenoEvaluation(models.Model):
     reason_cancel = fields.Text(string='Motivo de cancelación')
     show_button_go_back = fields.Boolean('Ver botón volver atras', compute='_compute_show_button_go_back')
     show_button_cancel = fields.Boolean('Ver botón cancelar atras', compute='_compute_show_button_cancel')
+    evaluations = fields.Boolean(string="Mis evaluaciones", default=False)
 
     def _get_value_config(self, help_field='', is_default=False):
         _url = eval('self.env.user.company_id.%s' % help_field)

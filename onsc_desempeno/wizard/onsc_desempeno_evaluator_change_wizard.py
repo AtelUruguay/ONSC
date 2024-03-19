@@ -57,14 +57,15 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
             'onsc_desempeno.group_desempeno_usuario_gh_ue,onsc_desempeno.group_desempeno_usuario_gh_inciso')
         user_job = self.env.user.employee_id.job_id
         for rec in self:
+            is_leader_eval = self.evaluation_id.evaluation_type == 'leader_evaluation'
             # SI SOY RESPONSABLE EN LA LINEA JERARQUICA DE LA UO ORIGINAL DE LA EVALUACIÓN ME PUEDO ASIGNAR A MI MISMO
             uo = self.evaluation_id.original_evaluator_uo_id or self.evaluation_id.evaluator_uo_id
             managers_in_department_tree = uo.get_all_managers_in_department_tree()
-            if self.env.user.employee_id.id in managers_in_department_tree or is_usuario_gh:
+            if self.env.user.employee_id.id in managers_in_department_tree or is_usuario_gh and not is_leader_eval:
                 jobs = user_job
             else:
                 jobs = self.env['hr.job']
-            if is_usuario_gh and self.evaluation_id.evaluation_type == 'leader_evaluation':
+            if is_usuario_gh and is_leader_eval:
                 jobs |= Job.search([
                     ('department_id.parent_id', '=', self.evaluation_id.evaluator_uo_id.id),
                     ('department_id.function_nature', '=', 'adviser'),

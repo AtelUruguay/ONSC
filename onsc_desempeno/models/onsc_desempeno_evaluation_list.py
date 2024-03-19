@@ -139,12 +139,12 @@ class ONSCDesempenoEvaluationList(models.Model):
          u'Ya existe una lista de evaluación para esta unidad organizativa y ciclo de evaluación.'),
     ]
 
-    @api.depends('evaluation_stage_id', 'manager_id')
+    @api.depends('evaluation_stage_id', 'department_id')
     def _compute_name(self):
         for rec in self:
-            rec.name = 'Evaluación: %s, Responsable: %s' % (
+            rec.name = 'Evaluación: %s, UO: %s' % (
                 rec.evaluation_stage_id.name,
-                rec.manager_id.name)
+                rec.department_id.name)
 
     @api.depends('line_ids')
     def _compute_is_line_availables(self):
@@ -237,7 +237,9 @@ class ONSCDesempenoEvaluationList(models.Model):
     # INTELIGENCIA
     def manage_evaluations_lists(self):
         # cerrar las listas que ya pasaron la fecha de cierre y fijar responsable
-        lists_toclose = self.search([('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())])
+        lists_toclose = self.search([
+            ('state', '!=', 'closed'),
+            ('evaluation_stage_id.general_cycle_id.end_date_max', '<', fields.Date.today())])
         lists_toclose.write({'state': 'closed'})
         for list_toclose in lists_toclose:
             list_toclose.write({
@@ -248,6 +250,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation_stages = self.env['onsc.desempeno.evaluation.stage'].search([
             ('start_date', '<=', fields.Date.today()),
             ('end_date', '>=', fields.Date.today()),
+            ('closed_stage', '=', False)
         ])
         for evaluation_stage in evaluation_stages:
             department_inlist = self._get_evaluation_list_departments(evaluation_stage)

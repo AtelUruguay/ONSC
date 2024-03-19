@@ -197,7 +197,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
     @api.onchange('general_cycle_id')
     def onchange_general_cycle_id(self):
         if self.general_cycle_id:
-            self.start_date = self.general_cycle_id.start_date_max
             self.end_date = self.general_cycle_id.end_date_max
 
     def toggle_active(self):
@@ -293,15 +292,15 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
         if self.env.user.company_id.days_gap_deal_eval_creation < valid_days:
             partners_to_notify = self.env["res.partner"]
-            for record in Evaluation.search([('evaluation_stage_id', '=', self.id),
-                                             ('state', '!=', 'canceled'),
-                                             ('evaluation_type', 'in', ['leader_evaluation'])]):
-                if Evaluation.search_count([
+            for record in Evaluation.with_context(ignore_security_rules=True).search([
+                ('evaluation_stage_id', '=', self.id),
+                ('evaluation_type', 'in', ['leader_evaluation'])]):
+                evaluations_360 = Evaluation.search([
                     ('evaluation_stage_id', '=', self.id),
                     ('evaluated_id', '=', record.evaluated_id.id),
-                    ('state', '!=', 'canceled'),
-                    ('evaluation_type', 'in', _valid_360_types)
-                ]) > 0:
+                    ('evaluation_type', 'in', _valid_360_types)])
+                evaluations_360_states = evaluations_360.mapped('state')
+                if any(evaluations_360_state != 'canceled' for evaluations_360_state in evaluations_360_states):
                     evaluation = record.copy_data()
                     evaluation[0]["evaluation_type"] = "gap_deal"
                     evaluation[0]["is_gap_deal_not_generated"] = False
@@ -327,12 +326,16 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     partners_to_notify |= record.evaluated_id.partner_id
                     partners_to_notify |= record.evaluator_id.partner_id
                 else:
-                    record.write({'is_gap_deal_not_generated': True})
+                    evaluations_360.suspend_security().write({'is_gap_deal_not_generated': True})
+                    Consolidated.with_context(ignore_security_rules=True).search([
+                        ('evaluation_stage_id', '=', self.id),
+                        ('evaluated_id', '=', record.evaluated_id.id),
+                    ]).write({'is_gap_deal_not_generated': True})
             self.with_context(partners_to_notify=partners_to_notify)._send_start_stage_2_notification()
         else:
             Evaluation.with_context(ignore_security_rules=True).search([
                 ('evaluation_stage_id', '=', self.id),
-                ('evaluation_type', 'in', ['self_evaluation', 'leader_evaluation']),
+                ('evaluation_type', 'in', _valid_360_types),
             ]).write({'is_gap_deal_not_generated': True})
             Consolidated.with_context(ignore_security_rules=True).search([
                 ('evaluation_stage_id', '=', self.id)
