@@ -333,6 +333,19 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'address_street3_id', 'code', 'street', line[self.get_position(column_names, 'address_street3_id')],
                     [('cv_location_id', '=', address_location_id)]
                 )
+
+                regime_id = MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
+                                                    line[self.get_position(column_names,
+                                                                           'regime_id')])
+
+                line_occupation_value = line[self.get_position(column_names, 'occupation_id')]
+                occupation_id = MassLine.find_by_code_name_many2one('occupation_id', 'code', 'name',
+                                                                    line_occupation_value)
+                _is_occupation_required = self._is_occupation_required(descriptor1_id, regime_id)
+                if line_occupation_value and not _is_occupation_required:
+                    message_error.append("El campo ocupación no es obligatorio y ha sido definido")
+                if not occupation_id and _is_occupation_required:
+                    message_error.append("El campo ocupación es obligatorio y no está definido o no ha sido encontrado")
                 values = {
                     'nro_line': row_no,
                     'mass_upload_id': self.id,
@@ -374,9 +387,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'call_number': line[self.get_position(column_names, 'call_number')],
                     'program_project_id': office.id if office else False,
                     'is_reserva_sgh': line[self.get_position(column_names, 'is_reserva_sgh')],
-                    'regime_id': MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
-                                                                     line[self.get_position(column_names,
-                                                                                            'regime_id')]),
+                    'regime_id': regime_id,
                     'descriptor1_id': descriptor1_id,
                     'descriptor2_id': descriptor2_id,
                     'descriptor3_id': descriptor3_id,
@@ -387,8 +398,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         self.get_position(column_names, 'department_id')]),
                     'security_job_id': MassLine.find_by_code_name_many2one('security_job_id', 'name', 'name', line[
                         self.get_position(column_names, 'security_job_id')]),
-                    'occupation_id': MassLine.find_by_code_name_many2one('occupation_id', 'code', 'name', line[
-                        self.get_position(column_names, 'occupation_id')]),
+                    'occupation_id': occupation_id,
                     'date_income_public_administration': datetime.datetime.fromordinal(
                         datetime.datetime(1900, 1,
                                           1).toordinal() + date_income_public_administration - 2) if date_income_public_administration else False,
@@ -600,6 +610,21 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             self.syncronize_ws4()
         except Exception as e:
             _logger.error("Error al sincronizar con WS4: " + tools.ustr(e))
+
+    def _is_occupation_required(self, descriptor1_id, regime_id):
+        if not regime_id:
+            return True
+        if descriptor1_id:
+            descriptor1 = self.env['onsc.catalog.descriptor1'].browse(descriptor1_id)
+        else:
+            descriptor1 = self.env['onsc.catalog.descriptor1']
+        regime = self.env['onsc.legajo.regime'].browse(regime_id)
+        ue_code = ['13', '5', '7', '8']
+        is_inciso_5 = self.inciso_id.budget_code == '5'
+        is_valid_operating_unit = self.operating_unit_id.budget_code in ue_code
+        base_condition = not (is_inciso_5 and is_valid_operating_unit)
+        desc_condition = descriptor1.is_occupation_required or not descriptor1_id
+        return base_condition and regime.is_public_employee and desc_condition
 
     def get_partida(self, descriptor1_id, descriptor2_id, descriptor3_id, descriptor4_id):
         args = []

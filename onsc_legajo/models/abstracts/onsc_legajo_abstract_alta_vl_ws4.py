@@ -114,10 +114,18 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 altaDetalle.update({
                     'serieCredencial': record.crendencial_serie,
                 })
+            else:
+                altaDetalle.update({
+                    'serieCredencial': 'ZZZ',
+                })
 
             if record.credential_number:
                 altaDetalle.update({
                     'numeroCredencial': record.credential_number,
+                })
+            else:
+                altaDetalle.update({
+                    'numeroCredencial': '99999',
                 })
 
             if record.personal_phone:
