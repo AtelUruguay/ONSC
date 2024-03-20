@@ -16,11 +16,9 @@
                     <sheet>
                         <group>
                             <group colspan="4">
-
                                 <field name="name"/>
                                 <field name="act_date"/>
                                 <field name="holiday_date"/>
-                                <field name="active" />
                                 <field name="required"/>
                             </group>
                             <group>
