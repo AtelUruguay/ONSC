@@ -174,18 +174,32 @@
               groups="onsc_legajo.group_legajo_configurador"
               sequence="14"/>
 
+    <menuitem id="onsc_legajo_electoral_act_menu"
+              name="Acto Electoral"
+              action="onsc_legajo_electoral_act_action"
+              parent="onsc_legajo_catalog_menu"
+              groups="onsc_legajo.group_legajo_configurador"
+              sequence="15"/>
+
+    <menuitem id="onsc_legajo_role_electoral_act_menu"
+              name="Rol Acto Electoral"
+              action="onsc_legajo_role_electoral_act_action"
+              parent="onsc_legajo_catalog_menu"
+              groups="onsc_legajo.group_legajo_configurador"
+              sequence="16"/>
+
     <menuitem id="onsc_legajo_logs_menu"
               name="Logs"
               parent="onsc_legajo_root_menu"
               sequence="150"/>
 
-        <menuitem id="onsc_legajo_integration_menu"
+    <menuitem id="onsc_legajo_integration_menu"
               name="Mensajes de integraciones"
               groups="onsc_legajo.group_legajo_configurador_integracion"
               action="onsc_legajo_log_action"
               parent="onsc_legajo_logs_menu"
               sequence="1"/>
-        <menuitem id="onsc_legajo_staging_ws7_menu"
+    <menuitem id="onsc_legajo_staging_ws7_menu"
               name="WS7 Staging"
               groups="onsc_legajo.group_legajo_configurador_integracion"
               action="onsc_legajo_staging_ws7_action"
@@ -196,12 +210,12 @@
               name="Configuración"
               parent="onsc_legajo_root_menu"
               sequence="100"/>
-        <menuitem id="onsc_legajo_config_settings_menu"
-                  name="Integración novedades CGN"
-                  action="onsc_legajo_config_action"
-                  parent="onsc_legajo_settings_menu"
-                  groups="onsc_legajo.group_legajo_configurador"
-                  sequence="1"/>
+    <menuitem id="onsc_legajo_config_settings_menu"
+              name="Integración novedades CGN"
+              action="onsc_legajo_config_action"
+              parent="onsc_legajo_settings_menu"
+              groups="onsc_legajo.group_legajo_configurador"
+              sequence="1"/>
 
     <menuitem
             id="onsc_baja_vl_menu"

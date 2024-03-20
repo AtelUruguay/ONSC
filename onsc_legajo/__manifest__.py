@@ -48,6 +48,7 @@ ONSC - Legajo
         'views/catalogs/onsc_legajo_commission_regime_views.xml',
         'views/catalogs/onsc_legajo_security_job_views.xml',
         'views/catalogs/onsc_legajo_base_views.xml',
+        'views/catalogs/onsc_catalog_electoral_act.xml',
         'wizard/onsc_legajo_update_occupation_wizard_views.xml',
         'views/hr_employee_views.xml',
         'views/onsc_legajo_alta_vl_views.xml',
