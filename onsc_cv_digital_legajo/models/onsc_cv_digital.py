@@ -272,6 +272,14 @@ class ONSCCVDigital(models.Model):
         store=False
     )
 
+    is_driver_license_readonly = fields.Boolean(compute='_compute_is_driver_license_readonly')
+
+    @api.depends('drivers_license_ids', 'is_driver_license')
+    def _compute_is_driver_license_readonly(self):
+        for rec in self:
+            rec.is_driver_license_readonly = rec.is_driver_license and len(rec.drivers_license_ids) > 0
+
+
     @api.depends('is_cv_gender_public')
     def _compute_gender_public_visualization_date(self):
         for record in self:
