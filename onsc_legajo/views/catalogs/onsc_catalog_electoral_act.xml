@@ -16,6 +16,7 @@
                     <sheet>
                         <group>
                             <group colspan="4">
+                                <field name="active" invisible="1"/>
                                 <field name="name"/>
                                 <field name="act_date"/>
                                 <field name="holiday_date"/>
