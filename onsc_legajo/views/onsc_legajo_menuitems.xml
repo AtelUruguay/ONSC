@@ -169,7 +169,7 @@
               groups="onsc_legajo.group_legajo_configurador"
               sequence="13"/>
     <menuitem id="onsc_legajo_role_electoral_act_menu"
-              name="Rol Acto Electoral"
+              name="Rol acto electoral"
               action="onsc_legajo_role_electoral_act_action"
               parent="onsc_legajo_catalog_menu"
               groups="onsc_legajo.group_legajo_configurador"
