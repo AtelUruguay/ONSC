@@ -28,6 +28,7 @@ ONSC - Legajo
         'data/onsc_legajo_commission_regime_data.xml',
         'data/onsc_legajo_integration_error_data.xml',
         'data/mail_template_data.xml',
+        'data/onsc_legajo_role_electoral_act_data.xml',
 
         'wizard/mail_wizard_invite_views.xml',
 
@@ -48,6 +49,7 @@ ONSC - Legajo
         'views/catalogs/onsc_legajo_security_job_views.xml',
         'views/catalogs/onsc_legajo_base_views.xml',
         'views/catalogs/onsc_catalog_electoral_act.xml',
+        'views/catalogs/onsc_catalog_type_sanction.xml',
         'wizard/onsc_legajo_update_occupation_wizard_views.xml',
         'views/hr_employee_views.xml',
         'views/onsc_legajo_alta_vl_views.xml',

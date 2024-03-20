@@ -189,6 +189,20 @@
               groups="onsc_legajo.group_legajo_configurador"
               sequence="16"/>
 
+    <menuitem id="onsc_legajo_type_demerit_menu"
+              name="Tipo de demérito"
+              action="onsc_legajo_type_demerit_action"
+              parent="onsc_legajo_catalog_menu"
+              groups="onsc_legajo.group_legajo_configurador"
+              sequence="17"/>
+
+    <menuitem id="onsc_legajo_type_sanction_menu"
+              name="Tipo de sanción"
+              action="onsc_legajo_type_sanction_action"
+              parent="onsc_legajo_catalog_menu"
+              groups="onsc_legajo.group_legajo_configurador"
+              sequence="18"/>
+
     <menuitem id="onsc_legajo_logs_menu"
               name="Logs"
               parent="onsc_legajo_root_menu"
