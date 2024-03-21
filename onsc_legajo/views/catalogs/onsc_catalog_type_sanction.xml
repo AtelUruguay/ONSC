@@ -29,7 +29,7 @@
             <field name="name">Tipo de demérito</field>
             <field name="model">onsc.legajo.type.demerit</field>
             <field name="arch" type="xml">
-                <tree string="Tipo de demérito">
+                <tree string="Tipo de demérito" editable="top">
                      <field name="name"/>
                 </tree>
             </field>
@@ -63,7 +63,7 @@
             <field name="name">onsc_legajo_type_sanction_tree</field>
             <field name="model">onsc.legajo.type.sanction</field>
             <field name="arch" type="xml">
-                <tree string="Tipo de sanción">
+                <tree string="Tipo de sanción" editable="top">
                    <field name="name"/>
                     <field name="demerit_id"/>
                     <field name="summary"/>
