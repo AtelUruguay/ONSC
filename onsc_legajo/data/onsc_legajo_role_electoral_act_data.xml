@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+           <record id="role_electoral_act_titular" model="onsc.legajo.role.electoral.act">
+            <field name="code">titular</field>
+            <field name="name">Titular</field>
+            <field name="holiday_work">True</field>
+            <field name="allow_holidays_work">True</field>
+        </record>
+
+        <record id="role_electoral_act_substitute" model="onsc.legajo.role.electoral.act">
+            <field name="code">suplente</field>
+            <field name="name">Suplente</field>
+            <field name="holiday_work">False</field>
+            <field name="allow_holidays_work">False</field>
+        </record>
+    </data>
+</odoo>
