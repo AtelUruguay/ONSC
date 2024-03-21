@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- LEGENDA-->
+        <record id="onsc_legajo_legend_action" model="ir.actions.act_window">
+            <field name="name">Leyenda</field>
+            <field name="res_model">onsc.legajo.legend</field>
+            <field name="view_mode">tree,form</field>
+        </record>
+
+        <record id="onsc_legajo_legend_form_view" model="ir.ui.view">
+            <field name="name">Leyenda</field>
+            <field name="model">onsc.legajo.legend</field>
+            <field name="arch" type="xml">
+                <form string="Leyenda">
+                    <sheet>
+                        <group>
+                            <group colspan="4">
+                                <field name="active" invisible="1"/>
+                                <field name="legend"/>
+                                <field name="regime_id"/>
+                                <field name="descriptor1_id"/>
+                            </group>
+                        </group>
+                    </sheet>
+                </form>
+            </field>
+        </record>
+
+        <record id="onsc_legajo_legend_tree_view" model="ir.ui.view">
+            <field name="name">Leyenda</field>
+            <field name="model">onsc.legajo.legend</field>
+            <field name="arch" type="xml">
+                <tree string="Leyenda" editable="top">
+                    <field name="legend"/>
+                    <field name="regime_id"/>
+                    <field name="descriptor1_id"/>
+                </tree>
+            </field>
+        </record>
+
+    </data>
+</odoo>
