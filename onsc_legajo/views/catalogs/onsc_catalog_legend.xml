@@ -17,7 +17,7 @@
                         <group>
                             <group colspan="4">
                                 <field name="active" invisible="1"/>
-                                <field name="legend"/>
+                                <field name="name"/>
                                 <field name="regime_id"/>
                                 <field name="descriptor1_id"/>
                             </group>
@@ -32,7 +32,7 @@
             <field name="model">onsc.legajo.legend</field>
             <field name="arch" type="xml">
                 <tree string="Leyenda" editable="top">
-                    <field name="legend"/>
+                    <field name="name"/>
                     <field name="regime_id"/>
                     <field name="descriptor1_id"/>
                 </tree>

@@ -9,9 +9,9 @@ _logger = logging.getLogger(__name__)
 
 class ONSCLegajoLegend(models.Model):
     _name = 'onsc.legajo.legend'
-    _description = "Acto electoral"
+    _description = "Leyenda"
 
-    legend = fields.Char(string="Texto de leyenda", required=True)
+    name = fields.Char(string="Texto de leyenda", required=True)
     regime_id = fields.Many2one("onsc.legajo.regime", "Régimen")
     descriptor1_id = fields.Many2one("onsc.catalog.descriptor1", "Descriptor 1")
     active = fields.Boolean("Activo", default=True)
@@ -24,4 +24,4 @@ class ONSCLegajoLegend(models.Model):
             if not record.regime_id and not record.regime_id:
                 raise ValidationError(_("Se debe ingresar Régimen y/o Descriptor 1"))
             if Legend.search_count([('regime_id', '=', record.regime_id.id), ('descriptor1_id', '=', record.descriptor1_id.id), ('id', '!=', record.id)]) > 0:
-                raise ValidationError(_("Ya existe una legenda para el Régimen y Descriptor 1 ingresado"))
+                raise ValidationError(_("Ya existe una Leyenda para el Régimen y Descriptor 1 ingresado"))
