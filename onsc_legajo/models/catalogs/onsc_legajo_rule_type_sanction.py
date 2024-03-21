@@ -13,7 +13,7 @@ class ONSCLegajoTypeDemerit(models.Model):
     name = fields.Char("Tipo de demérito", required=True)
     active = fields.Boolean("Activo", default=True)
 
-    _sql_constraints = [('name_uniq', 'UNIQUE (name)', _('Ya existe un Tipo de demerito con el mismo nombre'))]
+    _sql_constraints = [('name_uniq', 'UNIQUE (name)', _('Ya existe un Tipo de demérito con el mismo nombre'))]
 
 
 class ONSCLegajoTypeSanction(models.Model):
