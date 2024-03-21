@@ -286,6 +286,12 @@
                     </div>
                 </div>
             </field>
+            <field name="is_driver_license" position="after">
+                <field name="is_driver_license_readonly" invisible="1"/>
+            </field>
+            <field name="is_driver_license" position="attributes">
+                <attribute name="attrs">{'readonly': [('is_driver_license_readonly','=',True)]}</attribute>
+            </field>
             <page name="address" position="inside">
                 <div class="row" nolabel="1" colspan="2">
                     <div class="alert alert-danger" role="alert" style="width:70%"
