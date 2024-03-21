@@ -800,7 +800,8 @@ class ONSCCVDigital(models.Model):
         self._check_licenses()
         if not self._context.get('no_update_header_documentary_validation'):
             self.with_context(
-                consolidate_history_version=str(fields.Datetime.now())).update_header_documentary_validation(values)
+                consolidate_history_version=str(fields.Datetime.now()),
+                no_update_header_documentary_validation=True).update_header_documentary_validation(values)
         return records
 
     def validate_header_documentary_validation(self):
