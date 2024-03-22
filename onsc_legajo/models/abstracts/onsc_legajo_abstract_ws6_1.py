@@ -24,13 +24,6 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
             Employee.search([('notify_sgh', '=', True), ('legajo_state', '!=', 'active')]).write({'notify_sgh': False})
             for record in Employee.search([('notify_sgh', '=', True), ('legajo_state', '=', 'active')]):
                 try:
-                    if record.cv_address_street_id:
-                        calleCod = int(record.cv_address_street_id.code)
-                    elif record.cv_address_street:
-                        calleCod = int(record.cv_address_street)
-                    else:
-                        calleCod = 9999999999
-
                     if record.cv_address_location_id:
                         localidadCod = int(record.cv_address_location_id.other_code)
                     else:
@@ -51,10 +44,13 @@ class ONSCLegajoAbstractSyncWS6_1(models.AbstractModel):
                         'serieCredencial': record.crendencial_serie or 'ZZZ',
                         'numeroCredencial': numeroCredencial,
                         'localidadCod': localidadCod,
-                        'calleCod': calleCod,
                         'mutuCod': record.health_provider_id and int(record.health_provider_id.code) or 99,
                         'bis': 1 if record.cv_address_is_cv_bis else 0
                     }
+                    if record.cv_address_street_id:
+                        data.update({'calleCod': int(record.cv_address_street_id.code)})
+                    elif record.cv_address_street:
+                        data.update({'calleCod': int(record.cv_address_street)})
                     if record.cv_last_name_2:
                         data.update({'segundoApellido': record.cv_last_name_2[:20]})
                     if record.cv_second_name:
