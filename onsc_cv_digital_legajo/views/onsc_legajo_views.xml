@@ -10,7 +10,7 @@
                 <field name="employee_id" position="after">
                     <field name="cv_digital_id"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                           groups="onsc_legajo.group_legajo_configurador_legajo"/>
+                           groups="onsc_legajo.group_legajo_configurador"/>
                 </field>
                 <xpath expr="//notebook" position="inside">
                     <page name="formation" string="Formación personal">
