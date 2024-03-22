@@ -182,6 +182,11 @@ class ONSCLegajoAltaVL(models.Model):
     descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal", copy=False)
     ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN", copy=False)
 
+    state_id = fields.Many2one(
+        'res.country.state',
+        string='Departamento donde desempeña funciones',
+        domain="[('country_id.code','=','UY')]", copy=False)
+
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
 
@@ -495,6 +500,7 @@ class ONSCLegajoAltaVL(models.Model):
             'description_day': self.descripcionJornadaFormal,
             'retributive_day_id': self.retributive_day_id.id,
             'id_alta': self.id_alta,
+            'state_id': self.state_id.id,
             'eff_date': self.date_start or fields.Date.today(),
             #
             'wage': 1

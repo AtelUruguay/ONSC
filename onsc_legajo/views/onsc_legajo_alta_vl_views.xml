@@ -117,6 +117,8 @@
                                         <field name="security_job_id"
                                                domain="security_job_id_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                        <field name="state_id"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="is_responsable_uo"/>
                                         <field name="security_job_id_domain" invisible="1"/>
                                     </group>
