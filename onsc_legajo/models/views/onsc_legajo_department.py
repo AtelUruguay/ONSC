@@ -40,7 +40,7 @@ class ONSCLegajoDepartment(models.Model):
 
     def _get_domain(self, args):
         is_config_security = self.user_has_groups(
-            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo')
+            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador')
         is_inciso_security = self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
         is_ue_security = self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
 
