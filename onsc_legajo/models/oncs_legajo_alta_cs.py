@@ -821,7 +821,6 @@ class ONSCLegajoAltaCS(models.Model):
             'income_mechanism_id': origin_contract_id.income_mechanism_id.id,
             'program': self.program_project_destination_id.programa,
             'project': self.program_project_destination_id.proyecto,
-            'regime_id': origin_contract_id.regime_id.id,
             'descriptor1_id': origin_contract_id.descriptor1_id.id,
             'descriptor2_id': origin_contract_id.descriptor2_id.id,
             'descriptor3_id': origin_contract_id.descriptor3_id.id,
@@ -848,6 +847,11 @@ class ONSCLegajoAltaCS(models.Model):
             'state_id': self.state_id.id,
             'eff_date': self.date_start_commission,
         }
+        if self.type_cs == 'out2ac':
+            _regime_id = self.env['onsc.legajo.regime'].sudo().search([('is_fac2ac', '=', True)], limit=1).id
+        else:
+            _regime_id = origin_contract_id.regime_id.id
+        vals.update({'regime_id': _regime_id})
         contract = Contract.suspend_security().create(vals)
 
         for document_record in self.attached_document_ids:
