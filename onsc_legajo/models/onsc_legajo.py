@@ -55,6 +55,8 @@ class ONSCLegajo(models.Model):
     contract_ids = fields.One2many('hr.contract', compute='_compute_contract_info')
     contracts_count = fields.Integer(string='Cantidad de contratos', compute='_compute_contract_info')
 
+    is_any_regime_legajo = fields.Boolean(string=u'¿Algún Régimen de los Contratos tiene la marca Legajo?', compute='_compute_is_any_regime_legajo')
+
     legajo_state = fields.Selection(
         [('active', 'Activo'), ('egresed', 'Egresado')],
         string='Estado del funcionario',
@@ -98,6 +100,10 @@ class ONSCLegajo(models.Model):
                 'domain': [('id', 'in', self.contract_ids.ids)]
             })
         return action
+
+    def _compute_is_any_regime_legajo(self):
+        for rec in self:
+            rec.is_any_regime_legajo = len(rec.contract_ids.filtered(lambda x: x.regime_id.is_legajo)) > 0
 
     def button_open_employee(self):
         self.ensure_one()

@@ -108,6 +108,10 @@ class ONSCLegajoCambioUO(models.Model):
 
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
+    state_id = fields.Many2one(
+        'res.country.state',
+        string='Departamento donde desempeña funciones',
+        domain="[('country_id.code','=','UY')]", copy=False)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
 
     attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'cambio_uo_id',
@@ -244,13 +248,18 @@ class ONSCLegajoCambioUO(models.Model):
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
         if len(job_ids) == 1:
             self.job_id = job_ids[0].id
+            self.security_job_id = job_ids[0].security_job_id.id
+            self.department_id = job_ids[0].department_id.id
         else:
             self.job_id = False
+            self.security_job_id = False
+            self.department_id = False
 
     @api.onchange('contract_id')
     def onchange_contract_id(self):
         self.occupation_id = False
         self.security_job_id = False
+        self.state_id = self.contract_id.state_id.id
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
@@ -347,7 +356,7 @@ class ONSCLegajoCambioUO(models.Model):
         if self.env.user.employee_id.id == self.employee_id.id:
             raise ValidationError(_("No se puede confirmar un traslado a si mismo"))
 
-        for required_field in ['department_id', 'security_job_id']:
+        for required_field in ['department_id', 'security_job_id', 'state_id']:
             if not eval('self.%s' % required_field):
                 message.append(self._fields[required_field].string)
 
@@ -376,6 +385,11 @@ class ONSCLegajoCambioUO(models.Model):
             self.security_job_id,
             source_job=self.job_id
         )
+        if self.contract_id.state_id.id != self.state_id:
+            self.contract_id.write({
+                'state_id': self.state_id.id,
+                'eff_date': self.date_start
+            })
         self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
                     'error_message_synchronization': warning_message})
         return new_job
