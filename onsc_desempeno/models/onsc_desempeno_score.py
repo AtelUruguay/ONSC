@@ -39,7 +39,8 @@ class ONSCDesempenoScore(models.Model):
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 
-    year = fields.Integer(u'Año', index=True)
+    year = fields.Integer(u'Año', index=True, group_operator=False)
+    # year_char = fields.Char(u'Año (mostrar en la vista lista)', index=True, compute='_compute_year')
     evaluation_stage_id = fields.Many2one(
         'onsc.desempeno.evaluation.stage',
         string='Evaluación 360')
@@ -77,6 +78,8 @@ class ONSCDesempenoScore(models.Model):
     evaluations_tracing_plan_activity_score = fields.Float('Puntaje de Actividad de Seguimiento del Plan de desarrollo')
     score = fields.Float('Puntaje final')
     is_employee_notified = fields.Boolean(string='¿Fue notificado?')
+
+
 
     def button_open_gap_deal(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
