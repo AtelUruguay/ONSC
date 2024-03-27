@@ -230,12 +230,17 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
         results = Evaluation.search(search_domain)
         for res in results:
+            search_domain_consolidated = [
+                ('evaluated_id', '=', res.evaluated_id.id),
+                ('evaluation_stage_id', '=', self.id)
+            ]
             if res.evaluation_type == 'environment_evaluation':
                 evaluation_type = 'environment'
+                search_domain_consolidated = expression.AND([[('evaluation_type', '=', 'environment')], search_domain_consolidated])
             elif res.evaluation_type == 'collaborator':
                 evaluation_type = 'collaborator'
-            search_domain_consolidated = [('evaluated_id', '=', res.evaluated_id.id),
-                                          ('evaluation_stage_id', '=', self.id)]
+                search_domain_consolidated = expression.AND([[('evaluation_type', '=', 'collaborator')], search_domain_consolidated])
+
             if len(results.filtered(
                     lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id)) > 1:
                 if Consolidated.search_count(search_domain_consolidated) == 0:
