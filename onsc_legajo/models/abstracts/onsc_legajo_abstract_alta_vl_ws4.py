@@ -114,10 +114,18 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 altaDetalle.update({
                     'serieCredencial': record.crendencial_serie,
                 })
+            else:
+                altaDetalle.update({
+                    'serieCredencial': 'ZZZ',
+                })
 
             if record.credential_number:
                 altaDetalle.update({
                     'numeroCredencial': record.credential_number,
+                })
+            else:
+                altaDetalle.update({
+                    'numeroCredencial': '99999',
                 })
 
             if record.personal_phone:
@@ -129,10 +137,6 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                     'telefonoMovil': record.mobile_phone,
                 })
 
-            if record.cv_address_street_id:
-                calleCod = record.cv_address_street_id.code
-            else:
-                calleCod = '9999999999'
             if record.cv_address_location_id:
                 localidadCod = record.cv_address_location_id.other_code
             else:
@@ -142,9 +146,11 @@ class ONSCLegajoAbstractSyncW4(models.AbstractModel):
                 'deptoCod': record.cv_address_state_id.code or '99',
                 # TODO default 99 : record.cv_address_state_id.code or '99', Codigo de departamento  en nuestro catalogo son string
                 'localidadCod': localidadCod,
-                'calleCod': calleCod,
             })
-
+            if record.cv_address_street_id:
+                altaDetalle.update({
+                    'calleCod': record.cv_address_street_id.code,
+                })
             if record.cv_address_nro_door:
                 altaDetalle.update({
                     'numeroDePuerta': record.cv_address_nro_door,

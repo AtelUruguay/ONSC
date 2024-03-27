@@ -292,9 +292,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
         if self.env.user.company_id.days_gap_deal_eval_creation < valid_days:
             partners_to_notify = self.env["res.partner"]
-            for record in Evaluation.with_context(ignore_security_rules=True).search([
-                ('evaluation_stage_id', '=', self.id),
-                ('evaluation_type', 'in', ['leader_evaluation'])]):
+            for record in Evaluation.with_context(ignore_security_rules=True).search(
+                    [('evaluation_stage_id', '=', self.id), ('evaluation_type', 'in', ['leader_evaluation'])]):
                 evaluations_360 = Evaluation.search([
                     ('evaluation_stage_id', '=', self.id),
                     ('evaluated_id', '=', record.evaluated_id.id),

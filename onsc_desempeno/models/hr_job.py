@@ -78,9 +78,7 @@ class HrJob(models.Model):
                 elif self._context.get('ignore_evaluation_list_in') and self._context.get(
                         'ignore_evaluation_list_out'):
                     evaluation_list.evaluation_generated_line_ids.filtered(
-                        lambda x: x.employee_id == self.employee_id).write({
-                        'job_id': self.id
-                    })
+                        lambda x: x.employee_id == self.employee_id).write({'job_id': self.id})
             self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
 
     def _is_evaluation_list_available(self, evaluation_list, source_job):

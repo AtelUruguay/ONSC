@@ -209,6 +209,7 @@ class HrEmployee(models.Model):
         for drivers_license in self.cv_digital_id.drivers_license_ids.filtered(
                 lambda x: x.documentary_validation_state == 'validated'):
             driver_licences_orm.append((0, 0, {
+                'cv_driver_license_id': drivers_license.id,
                 'validation_date': drivers_license.validation_date,
                 'category_id': drivers_license.category_id.id,
                 'license_file': drivers_license.license_file,

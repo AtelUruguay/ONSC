@@ -17,7 +17,7 @@ class ONSCLegajo(models.Model):
                                                       submenu=submenu)
         doc = etree.XML(res['arch'])
         if view_type in ['form', 'tree', 'kanban'] and not self.env.user.has_group(
-                'onsc_legajo.group_legajo_configurador_legajo'):
+                'onsc_legajo.group_legajo_configurador'):
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('create', '0')
                 node_form.set('edit', '0')
@@ -180,7 +180,7 @@ class ONSCLegajo(models.Model):
 
     def _get_abstract_config_security(self):
         return self.user_has_groups(
-            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador_legajo')
+            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador')
 
     def _get_abstract_inciso_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')

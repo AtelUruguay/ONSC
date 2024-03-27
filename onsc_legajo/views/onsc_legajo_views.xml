@@ -128,7 +128,7 @@
                     <group>
                         <group>
                             <field name="employee_id"
-                                   groups="onsc_legajo.group_legajo_configurador_legajo"
+                                   groups="onsc_legajo.group_legajo_configurador"
                                    required="1"
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="emissor_country_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>

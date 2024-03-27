@@ -42,7 +42,7 @@ class HrContract(models.Model):
         doc = etree.fromstring(res['arch'])
         is_group_security = self.env.user.has_group(
             'onsc_legajo.group_legajo_editar_ocupacion_contrato') and not self.env.user.has_group(
-            'onsc_legajo.group_legajo_configurador_legajo')
+            'onsc_legajo.group_legajo_configurador')
         if is_group_security:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('create', '0')
