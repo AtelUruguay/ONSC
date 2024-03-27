@@ -458,6 +458,9 @@ class ONSCDesempenoEvaluationList(models.Model):
         generated_evaluations = self.evaluation_generated_line_ids.mapped('evaluation_ids')
         generated_evaluations_collaborator_qty = len(
             generated_evaluations.filtered(lambda x: x.evaluation_type == 'collaborator'))
+
+        if not self.is_manager_available_tocreate_evaluations_toitself():
+            return True
         if len(valid_lines) == 1 and generated_evaluations_collaborator_qty == 0:
             if self.end_date_environment >= fields.Date.today():
                 self._create_environment_evaluation(valid_lines)
@@ -500,6 +503,25 @@ class ONSCDesempenoEvaluationList(models.Model):
                                        })
                 data.write({'evaluation_ids': [(4, evaluation.id)]})
         return True
+
+    def is_manager_available_tocreate_evaluations_toitself(self):
+        Job = self.env['hr.job'].suspend_security()
+        excluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
+        # OBTENIENDO PUESTO ACTIVO PARA EL MANAGER EN LA ESTRUCTURA JERARQUICA DE LA LISTA
+        job = Job.search([
+            ('department_id', '=', self.manager_uo_id.id),
+            ('employee_id', '=', self.manager_id.id),
+            '|',('end_date','=',False), ('end_date','>=',fields.Date.today())
+        ], limit=1)
+        # SI CONTRATO EN DESCRIPTORES EXCLUIDOS ENTONCES NO DISPONIBLE
+        if job.contract_id.descriptor1_id.id in excluded_descriptor1_ids:
+            return False
+        # SI UO NIVEL 1 ENTONCES NO DISPONIBLE
+        if job.department_id.hierarchical_level_id.order == 1:
+            return False
+        return True
+
+
 
     def _create_environment_evaluation(self, data):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
