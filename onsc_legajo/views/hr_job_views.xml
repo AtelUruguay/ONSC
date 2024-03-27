@@ -143,6 +143,25 @@
                             <field name="description" options="{'collaborative': true}"
                                    attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         </page>
+                        <page string="Asignación de funciones" attrs="{'invisible': [('is_uo_manager', '=', False)]}">
+                            <group>
+                                <group>
+                                    <field name="role_assignment_date_start"/>
+                                    <field name="role_assignment_date_end"
+                                        attrs="{'readonly': [('is_role_assignment_admin', '=', False)]}"/>
+                                    <field name="role_assignment_mecanism"/>
+                                </group>
+                                <group>
+                                    <field name="role_assignment_file"
+                                           widget="binary"
+                                           filename="role_assignment_filename"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="role_assignment_filename" invisible="1"/>
+                                    <field name="is_uo_manager" invisible="1"/>
+                                    <field name="is_role_assignment_admin" invisible="1"/>
+                                </group>
+                            </group>
+                        </page>
                     </notebook>
                 </sheet>
                 <div class="oe_chatter">

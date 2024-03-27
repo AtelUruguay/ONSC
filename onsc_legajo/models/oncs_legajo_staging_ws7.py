@@ -368,7 +368,6 @@ class ONSCLegajoStagingWS7(models.Model):
                 'cs_contract_id': new_contract.id,
             })
         else:
-            # TODO revisar si sigue siendo necesario
             new_contract = self._get_contract_copy(contract, second_movement)
             self._copy_jobs(contract, new_contract)
 
@@ -727,6 +726,8 @@ class ONSCLegajoStagingWS7(models.Model):
             )
             self._copy_jobs_update_new_job_data(job_id, new_job)
             jobs |= new_job
+
+
 
         return jobs
 

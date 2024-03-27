@@ -3,12 +3,16 @@
 
 from odoo import api, fields, models
 
-
+MODELS_TOCHECK = [
+    'onsc.legajo.alta.vl',
+    'onsc.legajo.baja.vl',
+    'onsc.legajo.role.assignment'
+]
 class Invite(models.TransientModel):
     _inherit = 'mail.wizard.invite'
 
     def _default_send_mail(self):
-        if self._context.get('default_res_model', '') in ['onsc.legajo.alta.vl', 'onsc.legajo.baja.vl']:
+        if self._context.get('default_res_model', '') in MODELS_TOCHECK:
             return False
         return True
 
@@ -20,7 +24,7 @@ class Invite(models.TransientModel):
         context = self.env.context.copy()
         model = context.get('default_res_model', '')
         res_id = context.get('default_res_id', False)
-        if model not in ['onsc.legajo.alta.vl', 'onsc.legajo.baja.vl']:
+        if model not in MODELS_TOCHECK:
             return [('type', '!=', 'private')]
 
         if model == 'onsc.legajo.alta.vl' and res_id:
@@ -31,6 +35,10 @@ class Invite(models.TransientModel):
             record_id = self.env[model].browse(res_id)
             recursos_humanos_inciso = self.env.ref('onsc_legajo.group_legajo_baja_vl_recursos_humanos_inciso')
             recursos_humanos_ue = self.env.ref('onsc_legajo.group_legajo_baja_vl_recursos_humanos_ue')
+        elif model == 'onsc.legajo.role.assignment' and res_id:
+            record_id = self.env[model].browse(res_id)
+            recursos_humanos_inciso = self.env.ref('onsc_legajo.group_legajo_role_assignment_recursos_humanos_inciso')
+            recursos_humanos_ue = self.env.ref('onsc_legajo.group_legajo_role_assignment_recursos_humanos_ue')
         roles_inciso_ids = recursos_humanos_inciso.role_ids.ids
         roles_ue_ids = recursos_humanos_ue.role_ids.ids
         today = fields.Date.today()

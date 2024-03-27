@@ -251,5 +251,12 @@
             action="onsc_legajo.onsc_legajo_cambio_uo_action"
             groups="onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue,onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso,onsc_legajo.group_legajo_cambio_uo_responsable_uo,onsc_legajo.group_legajo_cambio_uo_consulta,onsc_legajo.group_legajo_cambio_uo_administrar"
             sequence="20"/>
+    <menuitem
+            id="onsc_role_assignment_menu"
+            name="Asignación de funciones"
+            parent="onsc_legajo.onsc_legajo_acciones_funcionario_menu"
+            action="onsc_legajo.onsc_legajo_role_assignment_action"
+            groups="onsc_legajo.group_legajo_role_assignment_recursos_humanos_ue,onsc_legajo.group_legajo_role_assignment_recursos_humanos_inciso,onsc_legajo.group_legajo_role_assignment_responsable_uo,onsc_legajo.group_legajo_role_assignment_consulta,onsc_legajo.group_legajo_role_assignment_administrar"
+            sequence="21"/>
 
 </odoo>
