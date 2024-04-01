@@ -244,8 +244,6 @@ class ONSCLegajoRoleAssignment(models.Model):
                 raise ValidationError(_("La fecha desde debe ser mayor o igual a la fecha del puesto actual"))
             if record.date_end and record.date_start > record.date_end:
                 raise ValidationError(_("La fecha de inicio debe ser menor o igual a la fecha de fin"))
-
-            # TODO chequear si son necesarios
             if record.date_start > fields.Date.today():
                 raise ValidationError(_("La fecha desde debe ser menor o igual a la fecha de registro"))
 
