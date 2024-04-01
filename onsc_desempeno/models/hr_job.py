@@ -53,6 +53,9 @@ class HrJob(models.Model):
             elif eval1 and not eval2 and self.department_id.parent_id.id and \
                     parent_manager.id != self.employee_id.id:
                 _department = self.department_id.parent_id
+            else:
+                # SINO TIENE LA UO PADRE PERO ES LIDER NO DEBE INCLUIRLO EN NINGUNA LISTA
+                return
 
             evaluation_lists = EvaluationList.search([
                 ('state', '=', 'in_progress'),
