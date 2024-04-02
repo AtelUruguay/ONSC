@@ -78,7 +78,7 @@
                                        domain="contract_id_domain"
                                        attrs="{'readonly': ['|',('state', '!=', 'draft'),('show_contract', '=', False)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                <field name="department_id_domain" invisible="1"/>
+<!--                                <field name="department_id_domain" invisible="1"/>-->
                                 <field name="job_id"
                                        context="{'custom_display_name':True}"
                                        force_save="1"
