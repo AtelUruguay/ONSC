@@ -82,16 +82,22 @@ class HrJob(models.Model):
         store=True
     )
     # ASIGNACION DE FUNCIONES
-    role_assignment_date_start = fields.Date(string='Fecha de inicio')
-    role_assignment_date_end = fields.Date(string='Fecha de fin', tracking=True)
-    role_assignment_mecanism = fields.Selection(
-        string='Mecanismo de asignación de funciones',
-        selection=[('concurso', 'Concurso'), ('direct', 'Asignación directa'),('other', 'Otros')])
-    role_assignment_file = fields.Binary(string="Documento digitalizado")
-    role_assignment_filename = fields.Char('Nombre del documento digitalizado')
-
-    is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', compute='_compute_is_uo_manager')
-    is_role_assignment_admin = fields.Boolean(string='¿Es responsable de UO?', compute='_compute_is_role_assignment_admin')
+    role_assignment_ids = fields.One2many(
+        'onsc.legajo.role.assignment',
+        'job_id',
+        string='Asignaciones de funciones',
+        domain=[('state', '!=', 'draft')]
+    )
+    # role_assignment_date_start = fields.Date(string='Fecha de inicio')
+    # role_assignment_date_end = fields.Date(string='Fecha de fin', tracking=True)
+    # role_assignment_mecanism = fields.Selection(
+    #     string='Mecanismo de asignación de funciones',
+    #     selection=[('concurso', 'Concurso'), ('direct', 'Asignación directa'),('other', 'Otros')])
+    # role_assignment_file = fields.Binary(string="Documento digitalizado")
+    # role_assignment_filename = fields.Char('Nombre del documento digitalizado')
+    #
+    is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', related='security_job_id.is_uo_manager', store=True)
+    # is_role_assignment_admin = fields.Boolean(string='¿Es responsable de UO?', compute='_compute_is_role_assignment_admin')
 
         
 
@@ -113,14 +119,10 @@ class HrJob(models.Model):
             record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto')
             record.role_extra_is_readonly = not self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto') and record.end_date and record.end_date <= fields.Date.today()
-
-    def _compute_is_uo_manager(self):
-        for record in self:
-            record.is_uo_manager = True
-
-    def _compute_is_role_assignment_admin(self):
-        for record in self:
-            record.is_role_assignment_admin = self.user_has_groups('onsc_legajo.group_legajo_role_assignment_administrar')
+    #
+    # def _compute_is_role_assignment_admin(self):
+    #     for record in self:
+    #         record.is_role_assignment_admin = self.user_has_groups('onsc_legajo.group_legajo_role_assignment_administrar')
 
     @api.constrains("contract_id", "start_date", "end_date")
     def _check_date_range_into_contract(self):
