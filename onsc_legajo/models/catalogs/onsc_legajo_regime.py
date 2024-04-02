@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 import logging
 
-from odoo import fields, models, api, tools
+from odoo import fields, models, api, tools, _
+from odoo.exceptions import ValidationError
 
 _logger = logging.getLogger(__name__)
 
@@ -22,11 +23,18 @@ class ONSCLegajoRegime(models.Model):
     is_public_employee = fields.Boolean(string='Funcionario público')
     is_manager = fields.Boolean(string='Responsable UO')
     is_legajo = fields.Boolean(string='Legajo')
+    is_fac2ac = fields.Boolean(string='Utilizar en comisiones FAC-AC')
 
     _sql_constraints = [
         ('codRegimen_uniq', 'unique("codRegimen")', u'El código de régimen debe ser único'),
         ('descripcion_uniq', 'unique("descripcionRegimen")', u'La descripción de régimen debe ser única')
     ]
+
+    @api.constrains("is_fac2ac")
+    def _check_is_fac2ac(self):
+        for record in self:
+            if record.is_fac2ac and self.search_count([('id', '!=', record.id), ('is_fac2ac', '=', True)]):
+                raise ValidationError(_("Ya existe otro Régimen con el check 'Utilizar en comisiones FAC-AC' marcado"))
 
     @api.depends('codRegimen', 'descripcionRegimen')
     def _compute_name(self):

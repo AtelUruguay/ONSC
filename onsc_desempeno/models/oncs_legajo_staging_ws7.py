@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields
+from odoo import models
 
 
 class ONSCLegajoStagingWS7(models.Model):
@@ -17,7 +17,6 @@ class ONSCLegajoStagingWS7(models.Model):
             record = record.with_context(is_copy_job=True)
 
         super(ONSCLegajoStagingWS7, _self).set_asc_transf_reest(Contract, record)
-
 
     def _copy_jobs_update_new_job_data(self, source_job, new_job):
         super(ONSCLegajoStagingWS7, self)._copy_jobs_update_new_job_data(source_job, new_job)

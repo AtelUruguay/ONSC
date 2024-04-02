@@ -24,6 +24,7 @@
                 <field name="vigente" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="is_public_employee" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="is_manager" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
+                <field name="is_fac2ac" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="is_legajo" groups="onsc_legajo.group_legajo_configurador_integracion,onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>

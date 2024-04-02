@@ -53,6 +53,9 @@ class HrJob(models.Model):
             elif eval1 and not eval2 and self.department_id.parent_id.id and \
                     parent_manager.id != self.employee_id.id:
                 _department = self.department_id.parent_id
+            else:
+                # SINO TIENE LA UO PADRE PERO ES LIDER NO DEBE INCLUIRLO EN NINGUNA LISTA
+                return
 
             evaluation_lists = EvaluationList.search([
                 ('state', '=', 'in_progress'),
@@ -78,9 +81,7 @@ class HrJob(models.Model):
                 elif self._context.get('ignore_evaluation_list_in') and self._context.get(
                         'ignore_evaluation_list_out'):
                     evaluation_list.evaluation_generated_line_ids.filtered(
-                        lambda x: x.employee_id == self.employee_id).write({
-                        'job_id': self.id
-                    })
+                        lambda x: x.employee_id == self.employee_id).write({'job_id': self.id})
             self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
 
     def _is_evaluation_list_available(self, evaluation_list, source_job):
