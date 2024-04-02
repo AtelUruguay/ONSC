@@ -1,13 +1,13 @@
 # -*- coding:utf-8 -*-
 import json
 
+from dateutil.relativedelta import relativedelta
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
-from dateutil.relativedelta import relativedelta
 
 
 class ONSCLegajoRoleAssignment(models.Model):
@@ -55,12 +55,12 @@ class ONSCLegajoRoleAssignment(models.Model):
     def _is_group_responsable_uo_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_role_assignment_responsable_uo')
 
-    def _is_group_legajo_cambio_uo_administrar(self):
+    def _is_group_legajo_role_assignment_administrar(self):
         return self.user_has_groups('onsc_legajo.group_legajo_role_assignment_administrar')
 
     def _get_domain(self, args, filter_by_departments=False):
         args = super(ONSCLegajoRoleAssignment, self)._get_domain(args, use_employee=True)
-        not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() and not self._is_group_legajo_cambio_uo_administrar()
+        not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() and not self._is_group_legajo_role_assignment_administrar()
         if not_abstract_security and self._is_group_responsable_uo_security():
             Job = self.env['hr.job'].sudo()
             department_ids = self.get_uo_tree()
@@ -119,7 +119,9 @@ class ONSCLegajoRoleAssignment(models.Model):
     date_end = fields.Date(string="Fecha de fin", copy=False, tracking=True)
     role_assignment_mecanism = fields.Selection(
         string='Mecanismo de asignación de funciones',
-        selection=[('concurso', 'Concurso'), ('direct', 'Asignación directa'), ('other', 'Otros')])
+        selection=[('concurso', 'Concurso'), ('direct', 'Asignación directa'), ('other', 'Otros')],
+        tracking=True
+    )
 
     job_security_job_id = fields.Many2one(
         "onsc.legajo.security.job",
@@ -127,13 +129,13 @@ class ONSCLegajoRoleAssignment(models.Model):
         related='job_id.security_job_id',
         store=True
     )
-    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
+    security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", tracking=True)
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
 
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', related='job_security_job_id.is_uo_manager',
                                    store=True)
 
-    role_assignment_file = fields.Binary(string="Documento digitalizado")
+    role_assignment_file = fields.Binary(string="Documento digitalizado", tracking=True)
     role_assignment_filename = fields.Char('Nombre del documento digitalizado')
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
@@ -154,15 +156,15 @@ class ONSCLegajoRoleAssignment(models.Model):
     full_name = fields.Char('Nombre', compute='_compute_full_name')
 
     # ES NECESARIO?
-    department_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_department_id_domain')
-    state_id = fields.Many2one(
-        'res.country.state',
-        string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False)
-    occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
-
-    attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'cambio_uo_id',
-                                                      string='Documentos adjuntos')
+    # department_id_domain = fields.Char(string="Dominio Funcionario", compute='_compute_department_id_domain')
+    # state_id = fields.Many2one(
+    #     'res.country.state',
+    #     string='Departamento donde desempeña funciones',
+    #     domain="[('country_id.code','=','UY')]", copy=False)
+    # occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
+    # 
+    # attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'cambio_uo_id',
+    #                                                   string='Documentos adjuntos')
 
     @api.depends('employee_id')
     def _compute_full_name(self):
@@ -231,10 +233,10 @@ class ONSCLegajoRoleAssignment(models.Model):
                 ], args])
             rec.is_other_role_assignment_active = self.search_count(args)
 
-    @api.depends('contract_id')
-    def _compute_department_id_domain(self):
-        for rec in self:
-            rec.department_id_domain = json.dumps([('id', 'in', self.get_uo_tree(rec.contract_id))])
+    # @api.depends('contract_id')
+    # def _compute_department_id_domain(self):
+    #     for rec in self:
+    #         rec.department_id_domain = json.dumps([('id', 'in', self.get_uo_tree(rec.contract_id))])
 
     @api.depends('contract_id')
     def _compute_security_job_id_domain(self):
@@ -259,6 +261,7 @@ class ONSCLegajoRoleAssignment(models.Model):
             yesterdary = fields.Date.today() - relativedelta(days=1)
             if record.date_end and record.date_end < yesterdary:
                 raise ValidationError(_("La fecha de fin debe ser mayor o igual a ayer!"))
+
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
     def _check_security_job_id(self):
         Job = self.env['hr.job'].sudo()
@@ -269,9 +272,9 @@ class ONSCLegajoRoleAssignment(models.Model):
                 raise ValidationError(_("La Seguridad de puesto debe ser de Responsable de UO"))
             if record.security_job_id and \
                     record.job_security_job_id != record.security_job_id and not Job.is_job_available_for_manager(
-                    record.department_id,
-                    record.security_job_id,
-                    record.date_start):
+                record.department_id,
+                record.security_job_id,
+                record.date_start):
                 raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
 
     def _check_is_other_role_assignment_active(self):
@@ -292,11 +295,6 @@ class ONSCLegajoRoleAssignment(models.Model):
                 record.cv_birthdate = False
                 record.cv_sex = False
                 record.contract_id = False
-
-    # @api.onchange('department_id')
-    # def onchange_department_id(self):
-    #     self.operating_unit_id = self.department_id.operating_unit_id.id
-    #     self.inciso_id = self.department_id.inciso_id.id
 
     @api.onchange('contract_id')
     def onchange_department_id_contract_id(self):
@@ -383,9 +381,9 @@ class ONSCLegajoRoleAssignment(models.Model):
     def get_uo_tree(self, contract=False):
         Department = self.env['hr.department'].sudo()
         department_ids = []
-        if self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_inciso') or \
-                self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_recursos_humanos_ue') or \
-                self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_administrar'):
+        if self.user_has_groups('onsc_legajo.group_legajo_role_assignment_recursos_humanos_inciso') or \
+                self.user_has_groups('onsc_legajo.group_legajo_role_assignment_recursos_humanos_ue') or \
+                self.user_has_groups('onsc_legajo.group_legajo_role_assignment_administrar'):
             contract_id = contract or self.env.user.employee_id.job_id.contract_id
             inciso_id = contract_id.inciso_id
             operating_unit_id = contract_id.operating_unit_id
@@ -399,7 +397,7 @@ class ONSCLegajoRoleAssignment(models.Model):
                     ('operating_unit_id', '=', operating_unit_id.id)
                 ], args])
             department_ids = Department.search(args).ids
-        elif self.user_has_groups('onsc_legajo.group_legajo_cambio_uo_responsable_uo'):
+        elif self.user_has_groups('onsc_legajo.group_legajo_role_assignment_responsable_uo'):
             department_id = self.env.user.employee_id.job_id.department_id.id
             department_ids = Department.search(['|', ('id', 'child_of', department_id),
                                                 ('id', '=', department_id)]).ids
@@ -407,7 +405,7 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def _get_domain_employee_ids(self):
         if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security() \
-                or self._is_group_legajo_cambio_uo_administrar():
+                or self._is_group_legajo_role_assignment_administrar():
             args = self._get_domain([
                 ("legajo_state", "in", ('active', 'incoming_commission')), ('regime_id.is_public_employee', '=', True)],
                 filter_by_departments=True)
@@ -428,7 +426,7 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def _get_contracts(self):
         if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security() \
-                or self._is_group_legajo_cambio_uo_administrar():
+                or self._is_group_legajo_role_assignment_administrar():
             args = [
                 ("legajo_state", "in", ("incoming_commission", "active")),
                 ('regime_id.is_public_employee', '=', True),
