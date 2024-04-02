@@ -111,11 +111,13 @@ class HrJob(models.Model):
         EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].suspend_security()
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        # SE DEPRECA EL FILTRO PARA EVITAR PROBLEMAS CON RESPONSABLE QUE APARECE COMO COLABORADOR EN LA LISTA PADRE
+        # como ya Legajo le dio de baja en este momento deja de ser responsable y se pierde la forma de hace trace
         evaluation_list_lines = EvaluationListLine.with_context(active_test=False, is_from_menu=False).search([
             ('evaluation_list_id.state', '=', 'in_progress'),
             ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.end_date),
             ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.end_date),
-            ('evaluation_list_id.department_id', '=', self.department_id.id),
+            # ('evaluation_list_id.department_id', '=', self.department_id.id),
             ('job_id', '=', self.id),
         ])
         for evaluation in evaluation_list_lines.mapped('evaluation_ids'):
