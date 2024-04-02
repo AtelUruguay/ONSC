@@ -49,8 +49,8 @@
                 <form string="Reglas tipo de sanción demérito">
                     <sheet>
                         <group>
-                            <field name="name"/>
                             <field name="demerit_id"/>
+                            <field name="name"/>
                             <field name="summary"/>
                             <field name="active" invisible="1"/>
                         </group>
@@ -64,8 +64,8 @@
             <field name="model">onsc.legajo.type.sanction</field>
             <field name="arch" type="xml">
                 <tree string="Reglas tipo de sanción demérito" editable="top">
-                   <field name="name"/>
                     <field name="demerit_id"/>
+                    <field name="name"/>
                     <field name="summary"/>
                 </tree>
             </field>
