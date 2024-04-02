@@ -9,7 +9,7 @@ _logger = logging.getLogger(__name__)
 
 class ONSCLegajoLegend(models.Model):
     _name = 'onsc.legajo.legend'
-    _description = "Leyenda"
+    _description = "Leyenda Ley 19574-380-2018"
 
     name = fields.Char(string="Texto de leyenda", required=True)
     regime_id = fields.Many2one("onsc.legajo.regime", "Régimen")
