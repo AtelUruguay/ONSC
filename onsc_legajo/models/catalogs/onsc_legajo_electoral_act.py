@@ -14,7 +14,7 @@ class ONSCLegajoElectoralAct(models.Model):
     name = fields.Char(string="Nombre")
     act_date = fields.Date(string="Fecha del Acto")
     holiday_date = fields.Date(string="Fecha del asueto")
-    active = fields.Boolean(string='Activo')
+    active = fields.Boolean(string='Activo', default=True)
     required = fields.Boolean('Obligatorio')
     date_since_entry_control = fields.Date('Fecha desde ingreso control')
     date_until_entry_control = fields.Date('Fecha hasta ingreso control')
@@ -32,10 +32,10 @@ class ONSCLegajoElectoralAct(models.Model):
         for record in self:
             if record.date_since_entry_control and record.date_until_entry_control and \
                     record.date_since_entry_control > record.date_until_entry_control:
-                raise ValidationError(_("La fecha desde de ingreso debe ser menor a la fecha hasta de ingreso"))
+                raise ValidationError(_("La fecha desde de ingreso debe ser menor o igual a la fecha hasta de ingreso"))
             if record.date_since_consultation_control and record.date_until_consultation_control and \
                     record.date_since_consultation_control > record.date_until_consultation_control:
-                raise ValidationError(_("La fecha desde de consulta debe ser menor a la fecha hasta de ingreso"))
+                raise ValidationError(_("La fecha desde de consulta debe ser menor o igual  a la fecha hasta consulta control"))
             if record.date_since_entry_control and record.date_since_consultation_control and \
                     record.date_since_entry_control < record.date_since_consultation_control:
                 raise ValidationError(_("La fecha desde de ingreso está fuera del rango de fechas de consulta"))

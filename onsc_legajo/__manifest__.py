@@ -33,8 +33,6 @@ ONSC - Legajo
         'wizard/mail_wizard_invite_views.xml',
 
         'views/onsc_legajo_department_views.xml',
-        'views/onsc_legajo_department_old_views.xml',
-
         'views/onsc_legajo_settings_view.xml',
         'views/catalogs/onsc_catalog_descriptors.xml',
         'views/catalogs/onsc_legajo_emergency_views.xml',
@@ -64,6 +62,7 @@ ONSC - Legajo
         'views/ir_attachment_view.xml',
         'views/onsc_legajo_alta_cs_view.xml',
         'views/onsc_legajo_cambio_uo_views.xml',
+        'views/onsc_legajo_role_asignment_views.xml',
         'views/onsc_legajo_staging_ws7_views.xml',
         'views/onsc_legajo_menuitems.xml',
     ],

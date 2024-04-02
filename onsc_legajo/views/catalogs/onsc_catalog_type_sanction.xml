@@ -37,7 +37,7 @@
 
         <!--Tipo de sanción-->
         <record id="onsc_legajo_type_sanction_action" model="ir.actions.act_window">
-            <field name="name">Tipo de sanción</field>
+            <field name="name">Reglas tipo de sanción demérito</field>
             <field name="res_model">onsc.legajo.type.sanction</field>
             <field name="view_mode">tree,form</field>
         </record>
@@ -46,7 +46,7 @@
             <field name="name">onsc_legajo_type_sanction_form</field>
             <field name="model">onsc.legajo.type.sanction</field>
             <field name="arch" type="xml">
-                <form string="Tipo de sanción">
+                <form string="Reglas tipo de sanción demérito">
                     <sheet>
                         <group>
                             <field name="name"/>
@@ -63,7 +63,7 @@
             <field name="name">onsc_legajo_type_sanction_tree</field>
             <field name="model">onsc.legajo.type.sanction</field>
             <field name="arch" type="xml">
-                <tree string="Tipo de sanción" editable="top">
+                <tree string="Reglas tipo de sanción demérito" editable="top">
                    <field name="name"/>
                     <field name="demerit_id"/>
                     <field name="summary"/>

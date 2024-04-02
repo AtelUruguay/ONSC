@@ -59,18 +59,18 @@
             <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
             <field name="auto_delete" eval="False"/>
         </record>
-        <record id="email_template_bajavl_rechazada" model="mail.template">
-            <field name="name">Plantilla de rechazo de BajaVL</field>
-            <field name="model_id" ref="onsc_legajo.model_onsc_legajo_baja_vl"/>
+        <record id="email_template_af_end_records" model="mail.template">
+            <field name="name">Plantilla de notificación de Asignación de funciones finalizadas</field>
+            <field name="model_id" ref="onsc_legajo.model_onsc_legajo_role_assignment"/>
             <field name="email_from"></field>
             <field name="email_to">{{ object.get_followers_mails() }}</field>
-            <field name="subject">Rechazo de Baja de vínculo laboral</field>
+            <field name="subject">Asignación de funciones finalizada</field>
             <field name="body_html" type="html">
                 <div style="margin: 0px; padding: 0px;">
                     <p style="margin: 0px; padding: 0px; font-size: 13px;">
                         Estimado Usuario,
                         <br/>
-                        La Baja de vínculo laboral <strong t-out="object.get_bajavl_name()"/> ha sido rechazada.
+                        La Asignación de funciones <strong t-out="object.full_name"/> ha finalizado con fecha <strong t-out="object.date_end"/>.
                         <br/>
                     </p>
                 </div>
@@ -78,5 +78,6 @@
             <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
             <field name="auto_delete" eval="False"/>
         </record>
+
     </data>
 </odoo>

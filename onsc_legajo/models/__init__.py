@@ -17,5 +17,6 @@ from . import oncs_legajo_baja_vl
 from . import oncs_legajo_baja_cs
 from . import oncs_legajo_alta_cs
 from . import oncs_legajo_cambio_uo
+from . import oncs_legajo_role_assignment
 from . import oncs_legajo_staging_ws7
 from . import views
