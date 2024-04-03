@@ -7,7 +7,8 @@ from odoo.exceptions import ValidationError
 
 class ONSCLegajo(models.Model):
     _name = "onsc.legajo"
-    _inherit = "onsc.legajo.abstract.legajo.security"
+    _inherit = ['onsc.legajo.abstract.legajo.security', 'model.history']
+    _history_model = 'onsc.legajo.history'
     _rec_name = "employee_id"
     _order = "employee_id"
 
@@ -56,6 +57,13 @@ class ONSCLegajo(models.Model):
     contracts_count = fields.Integer(string='Cantidad de contratos', compute='_compute_contract_info')
 
     is_any_regime_legajo = fields.Boolean(string=u'¿Algún Régimen de los Contratos tiene la marca Legajo?', compute='_compute_is_any_regime_legajo')
+    
+    juramento_bandera_date = fields.Date(
+        string='Fecha de Juramento de fidelidad a la Bandera nacional', history=True)
+    juramento_bandera_presentacion_date = fields.Date(
+        string='Fecha de presentación de documento digitalizado', history=True)
+    juramento_bandera_file = fields.Binary("Documento digitalizado", history=True)
+    juramento_bandera_filename = fields.Char('Nombre del Documento digitalizado')
 
     legajo_state = fields.Selection(
         [('active', 'Activo'), ('egresed', 'Egresado')],
@@ -74,6 +82,24 @@ class ONSCLegajo(models.Model):
             available_contracts = record._get_user_available_contract(record.employee_id)
             record.contract_ids = available_contracts
             record.contracts_count = len(available_contracts)
+
+    def _compute_is_any_regime_legajo(self):
+        for rec in self:
+            rec.is_any_regime_legajo = len(rec.contract_ids.filtered(lambda x: x.regime_id.is_legajo)) > 0
+
+    @api.constrains('juramento_bandera_date', 'juramento_bandera_presentacion_date')
+    def _check_juramento_bandera_date(self):
+        for rec in self:
+            if rec.juramento_bandera_date and rec.juramento_bandera_date > fields.Date.today():
+                raise ValidationError(
+                    _("La Fecha de Juramento de fidelidad a la Bandera nacional debe ser menor o igual a hoy"))
+            if rec.juramento_bandera_presentacion_date and rec.juramento_bandera_presentacion_date > fields.Date.today():
+                raise ValidationError(
+                    _("La Fecha de presentación de documento digitalizado debe ser menor o igual a hoy"))
+            _is_both_fields = rec.juramento_bandera_presentacion_date and rec.juramento_bandera_date
+            if _is_both_fields and rec.juramento_bandera_presentacion_date < rec.juramento_bandera_date:
+                raise ValidationError(
+                    _("La Fecha de presentación de documento digitalizado debe ser mayor a la Fecha de juramento"))
 
     def button_open_contract(self):
         self.ensure_one()
@@ -100,10 +126,6 @@ class ONSCLegajo(models.Model):
                 'domain': [('id', 'in', self.contract_ids.ids)]
             })
         return action
-
-    def _compute_is_any_regime_legajo(self):
-        for rec in self:
-            rec.is_any_regime_legajo = len(rec.contract_ids.filtered(lambda x: x.regime_id.is_legajo)) > 0
 
     def button_open_employee(self):
         self.ensure_one()
@@ -212,3 +234,8 @@ class ONSCLegajo(models.Model):
                 'public_admin_inactivity_years_qty': inactivity_years
             })
         return legajo
+
+class ONSCLegajoHistory(models.Model):
+    _inherit = ['model.history.data']
+    _name = 'onsc.legajo.history'
+    _parent_model = 'onsc.legajo'

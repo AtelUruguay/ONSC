@@ -342,5 +342,3 @@ class HrContractHistory(models.Model):
     _name = 'hr.contract.model.history'
     _parent_model = 'hr.contract'
 
-    def create(self, vals_list):
-        return super(HrContractHistory, self).create(vals_list)
