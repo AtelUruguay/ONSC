@@ -733,20 +733,23 @@ class ONSCLegajoStagingWS7(models.Model):
                 job_id.role_extra_ids,
                 job_id)
 
-            job_id.role_assignment_ids.copy({
+            self._copy_role_assignments(target_contract, job_id, new_job)
+            self._copy_jobs_update_new_job_data(job_id, new_job)
+            jobs |= new_job
+        return jobs
+
+    def _copy_role_assignments(self, target_contract, job, new_job):
+        for role_assignment_id in job.role_assignment_ids:
+            role_assignment_id.copy({
                 'contract_id': target_contract.id,
                 'job_id': new_job.id,
                 'date_start': target_contract.date_start,
                 'date_end': False
             })
-            job_id.role_assignment_ids.write({
+            job.role_assignment_ids.write({
                 'date_end': target_contract.date_start,
-                'is_end_notified': True  #se marca para que no notifique como una finalizacion
+                'is_end_notified': True  # se marca para que no notifique como una finalizacion
             })
-
-            self._copy_jobs_update_new_job_data(job_id, new_job)
-            jobs |= new_job
-        return jobs
 
     def _copy_jobs_update_new_job_data(self, source_job, new_job):
         # THINKING EXTENDABLE
