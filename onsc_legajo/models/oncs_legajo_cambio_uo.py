@@ -229,10 +229,10 @@ class ONSCLegajoCambioUO(models.Model):
                 record.cv_sex = False
                 record.contract_id = False
 
-    @api.onchange('department_id')
-    def onchange_department_id(self):
-        self.operating_unit_id = self.department_id.operating_unit_id.id
-        self.inciso_id = self.department_id.inciso_id.id
+    # @api.onchange('department_id')
+    # def onchange_department_id(self):
+    #     self.operating_unit_id = self.department_id.operating_unit_id.id
+    #     self.inciso_id = self.department_id.inciso_id.id
 
     @api.onchange('contract_id')
     def onchange_department_id_contract_id(self):
@@ -245,6 +245,8 @@ class ONSCLegajoCambioUO(models.Model):
         else:
             job_ids = self.contract_id.job_ids.filtered(
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
+        self.operating_unit_id = self.contract_id.operating_unit_id.id
+        self.inciso_id = self.contract_id.inciso_id.id
         if len(job_ids) == 1:
             self.job_id = job_ids[0].id
             self.security_job_id = job_ids[0].security_job_id.id
