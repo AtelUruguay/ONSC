@@ -205,8 +205,7 @@ class ONSCLegajoCambioUO(models.Model):
         for record in self:
             is_same_department = record.job_id and record.job_id.department_id == record.department_id
             if record.job_id and is_same_department and record.job_id.security_job_id == record.security_job_id:
-                raise ValidationError(_("Si el cambio es dentro de la misma UO no debería ser con "
-                                        "la misma Seguridad de puesto"))
+                raise ValidationError(_("Debe modificar la UO, la Seguridad o el Departamento donde desempeña funciones"))
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state")
     def _check_security_job_id(self):
