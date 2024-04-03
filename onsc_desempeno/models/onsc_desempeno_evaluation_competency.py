@@ -25,8 +25,8 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
 
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True,
                                     ondelete='cascade')
-    consolidate_id = fields.Many2one('onsc.desempeno.consolidated', string='Competencia', readonly=True, ondelete='cascade')
-    gap_deal_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True, ondelete='cascade')
+    consolidate_id = fields.Many2one('onsc.desempeno.consolidated', string='Competencia', readonly=True, ondelete='set null')
+    gap_deal_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True, ondelete='set null')
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
     state_deal = fields.Selection(STATE, string='Estado', related='gap_deal_id.state', readonly=True)
     skill_id = fields.Many2one('onsc.desempeno.skill', string='Competencia', readonly=True, ondelete='restrict')
