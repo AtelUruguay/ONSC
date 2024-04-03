@@ -252,6 +252,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     [[('evaluation_type', '=', 'collaborator')], search_domain_consolidated])
             elif evaluation_type == 'collaborator' and _qty == 1:
                 create_consolidated = True
+                evaluation_type = 'environment'
                 search_domain_consolidated = expression.AND(
                     [[('evaluation_type', '=', 'environment')], search_domain_consolidated])
             else:
