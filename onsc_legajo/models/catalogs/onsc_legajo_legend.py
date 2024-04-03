@@ -16,12 +16,14 @@ class ONSCLegajoLegend(models.Model):
     descriptor1_id = fields.Many2one("onsc.catalog.descriptor1", "Descriptor 1")
     active = fields.Boolean("Activo", default=True)
 
-    @api.constrains("regime_id", "regime_id")
+    @api.constrains("regime_id", "descriptor1_id")
     def _check_regime_descriptor(self):
         Legend = self.env['onsc.legajo.legend'].suspend_security()
-
         for record in self:
-            if not record.regime_id and not record.regime_id:
+            if not record.descriptor1_id and not record.regime_id:
                 raise ValidationError(_("Se debe ingresar Régimen y/o Descriptor 1"))
-            if Legend.search_count([('regime_id', '=', record.regime_id.id), ('descriptor1_id', '=', record.descriptor1_id.id), ('id', '!=', record.id)]) > 0:
+            if Legend.search_count([
+                ('regime_id', '=', record.regime_id.id),
+                ('descriptor1_id', '=', record.descriptor1_id.id),
+                ('id', '!=', record.id)]) > 0:
                 raise ValidationError(_("Ya existe una Leyenda para el Régimen y Descriptor 1 ingresado"))
