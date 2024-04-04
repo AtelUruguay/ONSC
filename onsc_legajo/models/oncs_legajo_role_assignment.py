@@ -30,16 +30,12 @@ class ONSCLegajoRoleAssignment(models.Model):
         doc = etree.XML(res['arch'])
         is_user_consulta = self.env.user.has_group('onsc_legajo.group_legajo_role_assignment_consulta')
         is_user_administrar = self.env.user.has_group('onsc_legajo.group_legajo_role_assignment_administrar')
-        is_responsable = self.env.user.has_group('onsc_legajo.group_legajo_role_assignment_responsable_uo')
         if view_type in ['form', 'tree', 'kanban'] and is_user_consulta and not is_user_administrar:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('create', '0')
                 node_form.set('edit', '0')
                 node_form.set('copy', '0')
                 node_form.set('delete', '0')
-        if view_type in ['search'] and not is_responsable:
-            for node_form in doc.xpath("//filter[@name='mi_uo']"):
-                node_form.getparent().remove(node_form)
         res['arch'] = etree.tostring(doc)
         return res
 
@@ -53,27 +49,27 @@ class ONSCLegajoRoleAssignment(models.Model):
         return self.user_has_groups('onsc_legajo.group_legajo_role_assignment_consulta')
 
     def _is_group_responsable_uo_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_role_assignment_responsable_uo')
+        return False
 
     def _is_group_legajo_role_assignment_administrar(self):
         return self.user_has_groups('onsc_legajo.group_legajo_role_assignment_administrar')
 
-    def _get_domain(self, args, filter_by_departments=False):
-        args = super(ONSCLegajoRoleAssignment, self)._get_domain(args, use_employee=True)
-        not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() and not self._is_group_legajo_role_assignment_administrar()
-        if not_abstract_security and self._is_group_responsable_uo_security():
-            Job = self.env['hr.job'].sudo()
-            department_ids = self.get_uo_tree()
-            if filter_by_departments:
-                args = expression.AND([[
-                    ('department_id', 'in', department_ids)
-                ], args])
-            else:
-                job_ids = Job.with_context(active_test=False).search([('department_id', 'in', department_ids)]).ids
-                args = expression.AND([[
-                    ('job_id', 'in', job_ids)
-                ], args])
-        return args
+    # def _get_domain(self, args, filter_by_departments=False):
+    #     args = super(ONSCLegajoRoleAssignment, self)._get_domain(args, use_employee=True)
+    #     not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() and not self._is_group_legajo_role_assignment_administrar()
+    #     if not_abstract_security and self._is_group_responsable_uo_security():
+    #         Job = self.env['hr.job'].sudo()
+    #         department_ids = self.get_uo_tree()
+    #         if filter_by_departments:
+    #             args = expression.AND([[
+    #                 ('department_id', 'in', department_ids)
+    #             ], args])
+    #         else:
+    #             job_ids = Job.with_context(active_test=False).search([('department_id', 'in', department_ids)]).ids
+    #             args = expression.AND([[
+    #                 ('job_id', 'in', job_ids)
+    #             ], args])
+    #     return args
 
     @api.model
     def default_get(self, fields):
@@ -181,7 +177,7 @@ class ONSCLegajoRoleAssignment(models.Model):
     def _compute_should_disable_form_edit(self):
         is_consulta = self.user_has_groups('onsc_legajo.group_legajo_role_assignment_consulta')
         is_superior = self.user_has_groups(
-            'onsc_legajo.group_legajo_role_assignment_recursos_humanos_inciso,onsc_legajo.group_legajo_role_assignment_recursos_humanos_ue,onsc_legajo.group_legajo_role_assignment_responsable_uo,onsc_legajo.group_legajo_role_assignment_administrar')
+            'onsc_legajo.group_legajo_role_assignment_recursos_humanos_inciso,onsc_legajo.group_legajo_role_assignment_recursos_humanos_ue,onsc_legajo.group_legajo_role_assignment_administrar')
         for record in self:
             is_only_consulta = is_consulta and not is_superior
             record.should_disable_form_edit = record.state in ['end'] or is_only_consulta
@@ -397,10 +393,6 @@ class ONSCLegajoRoleAssignment(models.Model):
                     ('operating_unit_id', '=', operating_unit_id.id)
                 ], args])
             department_ids = Department.search(args).ids
-        elif self.user_has_groups('onsc_legajo.group_legajo_role_assignment_responsable_uo'):
-            department_id = self.env.user.employee_id.job_id.department_id.id
-            department_ids = Department.search(['|', ('id', 'child_of', department_id),
-                                                ('id', '=', department_id)]).ids
         return department_ids
 
     def _get_domain_employee_ids(self):
