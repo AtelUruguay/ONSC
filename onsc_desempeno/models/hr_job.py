@@ -82,13 +82,13 @@ class HrJob(models.Model):
                         ('evaluation_stage_id', '=', evaluation_list.evaluation_stage_id.id),
                     ])
                 else:
-                    source_job_evaluations = Evaluation
+                    source_job_evaluations = 0
                     # target_job_evaluations = Evaluation.search([
                     #     ('current_job_id', '=', self.id),
                     #     ('create_date', '>=', self.start_date),
                     # ])
                 # case_1 = not source_job
-                case_2 = source_job and len(source_job_evaluations) > 0
+                case_2 = source_job and source_job_evaluations > 0
                 # case_3 = source_job and len(source_job_evaluations) == 0
                 if case_2:
                     continue
