@@ -88,16 +88,7 @@ class HrJob(models.Model):
         string='Asignaciones de funciones',
         domain=[('state', '!=', 'draft')]
     )
-    # role_assignment_date_start = fields.Date(string='Fecha de inicio')
-    # role_assignment_date_end = fields.Date(string='Fecha de fin', tracking=True)
-    # role_assignment_mecanism = fields.Selection(
-    #     string='Mecanismo de asignación de funciones',
-    #     selection=[('concurso', 'Concurso'), ('direct', 'Asignación directa'),('other', 'Otros')])
-    # role_assignment_file = fields.Binary(string="Documento digitalizado")
-    # role_assignment_filename = fields.Char('Nombre del documento digitalizado')
-    #
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', related='security_job_id.is_uo_manager', store=True)
-    # is_role_assignment_admin = fields.Boolean(string='¿Es responsable de UO?', compute='_compute_is_role_assignment_admin')
 
         
 

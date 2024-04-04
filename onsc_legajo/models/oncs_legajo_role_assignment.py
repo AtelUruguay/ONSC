@@ -54,8 +54,8 @@ class ONSCLegajoRoleAssignment(models.Model):
     def _is_group_legajo_role_assignment_administrar(self):
         return self.user_has_groups('onsc_legajo.group_legajo_role_assignment_administrar')
 
-    # def _get_domain(self, args, filter_by_departments=False):
-    #     args = super(ONSCLegajoRoleAssignment, self)._get_domain(args, use_employee=True)
+    def _get_domain(self, args):
+        args = super(ONSCLegajoRoleAssignment, self)._get_domain(args, use_employee=True)
     #     not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() and not self._is_group_legajo_role_assignment_administrar()
     #     if not_abstract_security and self._is_group_responsable_uo_security():
     #         Job = self.env['hr.job'].sudo()
@@ -69,7 +69,7 @@ class ONSCLegajoRoleAssignment(models.Model):
     #             args = expression.AND([[
     #                 ('job_id', 'in', job_ids)
     #             ], args])
-    #     return args
+        return args
 
     @api.model
     def default_get(self, fields):
@@ -313,9 +313,7 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     @api.onchange('contract_id')
     def onchange_contract_id(self):
-        self.occupation_id = False
         self.security_job_id = False
-        self.state_id = self.contract_id.state_id.id
 
     @api.model
     def create(self, values):
@@ -371,7 +369,7 @@ class ONSCLegajoRoleAssignment(models.Model):
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
             raise ValidationError(_(message))
-        if self.job_id.end_date < fields.Date.today():
+        if self.job_id.end_date and self.job_id.end_date < fields.Date.today():
             raise ValidationError(_("El Puesto asociado al Vínculo no se encuentra activo"))
 
     def get_uo_tree(self, contract=False):
@@ -399,8 +397,7 @@ class ONSCLegajoRoleAssignment(models.Model):
         if self._is_group_inciso_security() or self._is_group_ue_security() or self._is_group_consulta_security() \
                 or self._is_group_legajo_role_assignment_administrar():
             args = self._get_domain([
-                ("legajo_state", "in", ('active', 'incoming_commission')), ('regime_id.is_public_employee', '=', True)],
-                filter_by_departments=True)
+                ("legajo_state", "in", ('active', 'incoming_commission')), ('regime_id.is_public_employee', '=', True)])
             employee_ids = self.env['hr.contract'].sudo().search(args).mapped('employee_id').ids
         elif self._is_group_responsable_uo_security():
             department_ids = self.get_uo_tree()
