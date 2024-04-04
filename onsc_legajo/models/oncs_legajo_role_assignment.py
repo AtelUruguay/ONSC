@@ -273,6 +273,7 @@ class ONSCLegajoRoleAssignment(models.Model):
                 record.date_start):
                 raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
 
+    @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
     def _check_is_other_role_assignment_active(self):
         for record in self:
             if record.is_other_role_assignment_active:
