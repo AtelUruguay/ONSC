@@ -49,8 +49,8 @@ class ONSCLegajoStagingWS7(models.Model):
 
         return True
 
-    def _check_contract_data(self, contract):
-        super(ONSCLegajoStagingWS7, self)._check_contract_data(contract)
-        for job_id in contract.job_ids:
-            job_id.with_context(is_copy_job=False)._update_evaluation_list_in()
-        return True
+    # def _check_contract_data(self, contract):
+    #     super(ONSCLegajoStagingWS7, self)._check_contract_data(contract)
+    #     for job_id in contract.job_ids:
+    #         job_id.with_context(is_copy_job=False)._update_evaluation_list_in()
+    #     return True

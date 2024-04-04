@@ -40,6 +40,7 @@ class HrJob(models.Model):
         1. Si soy nuevo me tiene que meter en una lista de participantes
         2. Si tengo puesto origen y ya hay evaluaciones generadas para ese puesto origen no hago IN
         3. Si tengo puesto origen y no tengo evaluaciones debo meterme en una lista de participantes
+        4. Si 3 y estoy en la lista de colaboradores sin evaluaciones eliminarme y volverme a subir para que quede apuntando al puesto vigente
 
         IN EN LISTA DE PARTICIPANTES
         Como saber en que UO debo adicionarme:
@@ -73,7 +74,7 @@ class HrJob(models.Model):
                 ('evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
                 ('department_id', '=', _department.id),
             ])
-            new_evaluation_list_lines = EvaluationListLine
+            # new_evaluation_list_lines = EvaluationListLine
             for evaluation_list in evaluation_lists:
                 if source_job:
                     source_job_evaluations = Evaluation.search_count([
@@ -83,30 +84,27 @@ class HrJob(models.Model):
                     ])
                 else:
                     source_job_evaluations = 0
-                    # target_job_evaluations = Evaluation.search([
-                    #     ('current_job_id', '=', self.id),
-                    #     ('create_date', '>=', self.start_date),
-                    # ])
+                my_collaborator_line = evaluation_list.with_context(active_test=True).line_ids.filtered(
+                    lambda x: x.employee_id.id == self.employee_id.id)
+
+                # ------------------- CASES MANAGER -----------------------------------
                 # case_1 = not source_job
                 case_2 = source_job and source_job_evaluations > 0
-                # case_3 = source_job and len(source_job_evaluations) == 0
+                case_3 = source_job and source_job_evaluations == 0
+                case_4 = case_3 and len(my_collaborator_line) > 0
+                # ------------------- CASES MANAGER -----------------------------------
+
                 if case_2:
                     continue
-                # first = any(line_id.employee_id.id == self_employee_id for line_id in
-                #             evaluation_list.with_context(active_test=True).line_ids)
-                # second = any(line_id.employee_id.id == self_employee_id for line_id in
-                #              evaluation_list.evaluation_generated_line_ids)
-                # if not first and not second:
-                new_evaluation_list_lines |= EvaluationListLine.create({
+                if case_4:
+                    my_collaborator_line.unlink()
+
+                EvaluationListLine.create({
                     'evaluation_list_id': evaluation_list.id,
                     'job_id': self.id,
                     'is_included': True
                 })
-                # if self._context.get('ignore_evaluation_list_in') and self._context.get(
-                #         'ignore_evaluation_list_out'):
-                #     evaluation_list.evaluation_generated_line_ids.filtered(
-                #         lambda x: x.employee_id == self.employee_id).write({'job_id': self.id})
-            self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
+            # self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
             return
 
 
