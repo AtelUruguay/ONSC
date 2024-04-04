@@ -9,6 +9,25 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
+class ONSCLegajoRoleAssignment(models.Model):
+    _name = 'onsc.legajo.job.role.assignment'
+    _inherit = [
+        'mail.thread',
+        'mail.activity.mixin',
+        'onsc.partner.common.data'
+    ]
+
+    job_id = fields.Many2one("hr.job", string="Puesto", tracking=True)
+    date_start = fields.Date(string="Fecha de inicio", required=True, copy=False, tracking=True)
+    date_end = fields.Date(string="Fecha de fin", copy=False, tracking=True)
+    role_assignment_mecanism = fields.Selection(
+        string='Mecanismo de asignación de funciones',
+        selection=[('concurso', 'Concurso'), ('direct', 'Asignación directa'), ('other', 'Otros')],
+        copy=False,
+        tracking=True
+    )
+    role_assignment_file = fields.Binary(string="Documento digitalizado", tracking=True, copy=False)
+    role_assignment_filename = fields.Char('Nombre del documento digitalizado', copy=False)
 
 class ONSCLegajoRoleAssignment(models.Model):
     _name = 'onsc.legajo.role.assignment'
@@ -104,7 +123,7 @@ class ONSCLegajoRoleAssignment(models.Model):
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
     show_contract = fields.Boolean('Mostrar contrato', compute='_compute_contract_id_domain')
 
-    job_id = fields.Many2one("hr.job", string="Puesto", tracking=True)
+    # job_id = fields.Many2one("hr.job", string="Puesto", tracking=True)
     job_id_domain = fields.Char(string="Dominio Puesto", compute='_compute_job_id_domain')
     show_job = fields.Boolean('Mostrar Puestos', compute='_compute_job_id_domain')
 
