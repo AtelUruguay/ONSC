@@ -406,14 +406,14 @@ class ONSCLegajoStagingWS7(models.Model):
                         'manager_id': job.employee_id.id,
                         'is_manager_reserved': False
                     })
-            self._check_contract_data(new_contract)
+            # self._check_contract_data(new_contract)
 
         records |= second_movement
         records.write({'state': 'processed'})
 
-    def _check_contract_data(self, contract):
-        # THINKING EXTENDABLE
-        return True
+    # def _check_contract_data(self, contract):
+    #     # THINKING EXTENDABLE
+    #     return True
 
     def set_correccion_ascenso(self, Contract, record):
         records = record
