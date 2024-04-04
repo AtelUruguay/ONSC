@@ -229,6 +229,7 @@ class ONSCLegajoCambioUO(models.Model):
                 record.cv_sex = False
                 record.contract_id = False
 
+    # EL INCISO Y LA UE LO DAN EL CONTRATO, NO HAY QUE ESPERAR A TENER UO SELECCIONADA
     # @api.onchange('department_id')
     # def onchange_department_id(self):
     #     self.operating_unit_id = self.department_id.operating_unit_id.id
@@ -371,7 +372,7 @@ class ONSCLegajoCambioUO(models.Model):
             ('state', '=', 'confirm'),
             '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())
         ]):
-            raise ValidationError(_("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio. "
+            raise ValidationError(_("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio."
                                     "Debe actualizar la situación de la asignación de función previo a esta acción."))
 
     def _action_confirm(self):
