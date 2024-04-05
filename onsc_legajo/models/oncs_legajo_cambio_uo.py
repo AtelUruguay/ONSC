@@ -382,25 +382,33 @@ class ONSCLegajoCambioUO(models.Model):
         Job = self.env['hr.job']
         warning_message = False
         show_warning = False
-        if self.job_id.start_date == self.date_start:
-            self.suspend_security().job_id.with_context(is_copy_job=True).deactivate(self.date_start)
-            self.suspend_security().job_id.write({'active': False})
-            show_warning = True
-            warning_message = u"No pueden existir dos puestos activos para el mismo contrato, " \
-                              u"se inactivará el puesto anterior"
+        is_change_department_id = self.job_id.department_id != self.department_id
+        is_change_security_job_id = self.job_id.security_job_id != self.security_job_id
+        is_change_state_id = self.contract_id.state_id != self.state_id
+
+        if is_change_department_id or is_change_security_job_id:
+            if self.job_id.start_date == self.date_start:
+                self.suspend_security().job_id.with_context(is_copy_job=True).deactivate(self.date_start)
+                self.suspend_security().job_id.write({'active': False})
+                show_warning = True
+                warning_message = u"No pueden existir dos puestos activos para el mismo contrato, " \
+                                  u"se inactivará el puesto anterior"
+            else:
+                self.suspend_security().job_id.with_context(is_copy_job=True).deactivate(
+                    self.date_start - relativedelta(days=1))
+            new_job = Job.suspend_security().with_context(is_copy_job=True).create_job(
+                self.contract_id,
+                self.department_id,
+                self.date_start,
+                self.security_job_id,
+                source_job=self.job_id
+            )
         else:
-            self.suspend_security().job_id.with_context(is_copy_job=True).deactivate(self.date_start - relativedelta(days=1))
-        new_job = Job.suspend_security().with_context(is_copy_job=True).create_job(
-            self.contract_id,
-            self.department_id,
-            self.date_start,
-            self.security_job_id,
-            source_job=self.job_id
-        )
-        if self.contract_id.state_id.id != self.state_id:
+            new_job = Job
+        if is_change_state_id:
             self.contract_id.write({
                 'state_id': self.state_id.id,
-                'eff_date': self.date_start
+                'eff_date': fields.Date.today()
             })
         self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
                     'error_message_synchronization': warning_message})
