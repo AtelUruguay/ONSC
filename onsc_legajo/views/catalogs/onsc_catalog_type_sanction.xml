@@ -49,7 +49,7 @@
                 <form string="Reglas tipo de sanción demérito">
                     <sheet>
                         <group>
-                            <field name="demerit_id"/>
+                            <field name="demerit_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="name"/>
                             <field name="summary"/>
                             <field name="active" invisible="1"/>
@@ -64,7 +64,7 @@
             <field name="model">onsc.legajo.type.sanction</field>
             <field name="arch" type="xml">
                 <tree string="Reglas tipo de sanción demérito" editable="top">
-                    <field name="demerit_id"/>
+                    <field name="demerit_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                     <field name="name"/>
                     <field name="summary"/>
                 </tree>
