@@ -408,7 +408,7 @@ class ONSCLegajoCambioUO(models.Model):
         if is_change_state_id:
             self.contract_id.write({
                 'state_id': self.state_id.id,
-                'eff_date': self.date_start
+                'eff_date': fields.Date.today()
             })
         self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
                     'error_message_synchronization': warning_message})
