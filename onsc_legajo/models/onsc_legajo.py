@@ -103,7 +103,7 @@ class ONSCLegajo(models.Model):
 
     def _compute_is_any_regime_legajo(self):
         for rec in self:
-            rec.is_any_regime_legajo = len(rec.contract_ids.filtered(lambda x: x.regime_id.is_legajo)) > 0
+            rec.is_any_regime_legajo = len(rec.sudo().contract_ids.filtered(lambda x: x.regime_id.is_legajo)) > 0
 
     def button_open_employee(self):
         self.ensure_one()

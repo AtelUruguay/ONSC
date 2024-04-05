@@ -83,10 +83,9 @@ class HrJob(models.Model):
     )
     # ASIGNACION DE FUNCIONES
     role_assignment_ids = fields.One2many(
-        'onsc.legajo.role.assignment',
+        'onsc.legajo.job.role.assignment',
         'job_id',
-        string='Asignaciones de funciones',
-        domain=[('state', '!=', 'draft')]
+        string='Asignaciones de funciones'
     )
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', related='security_job_id.is_uo_manager', store=True)
 
@@ -259,6 +258,9 @@ class HrJob(models.Model):
     def deactivate(self, date_end):
         for job in self.suspend_security().filtered(
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
+            job.role_assignment_ids.write({
+                'date_end': date_end
+            })
             job.end_date = date_end
             job.suspend_security().onchange_end_date()
             if date_end < fields.Date.today() and job.security_job_id.is_uo_manager:

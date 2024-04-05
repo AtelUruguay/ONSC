@@ -9,15 +9,20 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
-class ONSCLegajoRoleAssignment(models.Model):
+class ONSCLegajoJobRoleAssignment(models.Model):
     _name = 'onsc.legajo.job.role.assignment'
     _inherit = [
         'mail.thread',
         'mail.activity.mixin',
-        'onsc.partner.common.data'
     ]
 
     job_id = fields.Many2one("hr.job", string="Puesto", tracking=True)
+    role_assignment_id = fields.Many2one(
+        "onsc.legajo.role.assignment",
+        string="Asignación de funciones",
+        copy=False,
+        tracking=True
+    )
     date_start = fields.Date(string="Fecha de inicio", required=True, copy=False, tracking=True)
     date_end = fields.Date(string="Fecha de fin", copy=False, tracking=True)
     role_assignment_mecanism = fields.Selection(
@@ -28,15 +33,28 @@ class ONSCLegajoRoleAssignment(models.Model):
     )
     role_assignment_file = fields.Binary(string="Documento digitalizado", tracking=True, copy=False)
     role_assignment_filename = fields.Char('Nombre del documento digitalizado', copy=False)
+    # state = fields.Selection(
+    #     string='Estado',
+    #     selection=[('active', 'Activa'),
+    #                ('end', 'Finalizada')],
+    #     compute='_compute_state',
+    #     store=True
+    # )
+    #
+    # @api.depends('date_start', 'date_end', 'job_id')
+    # def _compute_state(self):
+    #     for rec in self:
+    #         if rec.date_end and rec.date_end >
+
+
 
 class ONSCLegajoRoleAssignment(models.Model):
     _name = 'onsc.legajo.role.assignment'
 
     _inherit = [
-        'mail.thread',
-        'mail.activity.mixin',
         'onsc.legajo.abstract.opbase.security',
-        'onsc.partner.common.data'
+        'onsc.partner.common.data',
+        'onsc.legajo.job.role.assignment'
     ]
     _description = 'Asignación de funciones'
     _rec_name = 'full_name'
@@ -75,19 +93,6 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def _get_domain(self, args):
         args = super(ONSCLegajoRoleAssignment, self)._get_domain(args, use_employee=True)
-    #     not_abstract_security = not self._is_group_inciso_security() and not self._is_group_ue_security() and not self._is_group_legajo_role_assignment_administrar()
-    #     if not_abstract_security and self._is_group_responsable_uo_security():
-    #         Job = self.env['hr.job'].sudo()
-    #         department_ids = self.get_uo_tree()
-    #         if filter_by_departments:
-    #             args = expression.AND([[
-    #                 ('department_id', 'in', department_ids)
-    #             ], args])
-    #         else:
-    #             job_ids = Job.with_context(active_test=False).search([('department_id', 'in', department_ids)]).ids
-    #             args = expression.AND([[
-    #                 ('job_id', 'in', job_ids)
-    #             ], args])
         return args
 
     @api.model
@@ -130,13 +135,6 @@ class ONSCLegajoRoleAssignment(models.Model):
     inciso_id = fields.Many2one('onsc.catalog.inciso', related='job_id.inciso_id', store=True)
     operating_unit_id = fields.Many2one("operating.unit", related='job_id.operating_unit_id', store=True)
     department_id = fields.Many2one("hr.department", string="UO", related='job_id.department_id', store=True)
-    date_start = fields.Date(string="Fecha de inicio", required=True, copy=False, tracking=True)
-    date_end = fields.Date(string="Fecha de fin", copy=False, tracking=True)
-    role_assignment_mecanism = fields.Selection(
-        string='Mecanismo de asignación de funciones',
-        selection=[('concurso', 'Concurso'), ('direct', 'Asignación directa'), ('other', 'Otros')],
-        tracking=True
-    )
 
     job_security_job_id = fields.Many2one(
         "onsc.legajo.security.job",
@@ -150,9 +148,6 @@ class ONSCLegajoRoleAssignment(models.Model):
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', related='job_security_job_id.is_uo_manager',
                                    store=True)
 
-    role_assignment_file = fields.Binary(string="Documento digitalizado", tracking=True)
-    role_assignment_filename = fields.Char('Nombre del documento digitalizado')
-
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
 
@@ -162,6 +157,13 @@ class ONSCLegajoRoleAssignment(models.Model):
         default='draft',
         tracking=True
     )
+
+    job_role_assignment_ids = fields.One2many(
+        'onsc.legajo.job.role.assignment',
+        'role_assignment_id',
+        string='Asignaciones de funciones en el Puesto'
+    )
+
     is_end_notified = fields.Boolean(string='Ya fué notificado el estado finalizado')
     is_other_role_assignment_active = fields.Boolean(
         string='¿Hay otra asignación de roles activa?',
@@ -294,10 +296,22 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
     def _check_is_other_role_assignment_active(self):
+        JobRoleAssignment = self.env['onsc.legajo.job.role.assignment'].sudo()
         for record in self:
-            if record.is_other_role_assignment_active:
+            if JobRoleAssignment.search_count([
+                ('job_id', '=', record.job_id.id),
+                ('date_start', '<=', record.date_start),
+                ('date_end', '=', False)
+            ]):
+                raise ValidationError(_("MEJORAR!! Ya tiene una AF vigente..... "))
+            if JobRoleAssignment.search_count([
+                ('job_id', '=', record.job_id.id),
+                ('date_start', '<=', record.date_start),
+                ('date_end', '>=', record.date_start)
+            ]):
                 raise ValidationError(
-                    _("El funcionario tiene una Asignación de Función activa para dicho vínculo laboral"))
+                    _("MEJORAR!! Fecha de inicio no permitida. "
+                      "Ya existe una Asignación de Función con un período que la comprende..... "))
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -339,7 +353,7 @@ class ONSCLegajoRoleAssignment(models.Model):
     def create(self, values):
         new_record = super().create(values)
         if new_record.date_end and new_record.date_end < fields.Date.today():
-            new_record.action_end()
+            new_record.action_end(send_notification=False)
         return new_record
 
     def write(self, values):
@@ -356,13 +370,47 @@ class ONSCLegajoRoleAssignment(models.Model):
     def action_confirm(self):
         self.ensure_one()
         self._validate_confirm()
+        if self.job_security_job_id == self.security_job_id:
+            self._create_job_role_assignment(self.job_id)
+        else:
+            self._copy_job_and_create_job_role_assignment()
         self.write({'state': 'confirm'})
+
+    def _copy_job_and_create_job_role_assignment(self):
+        Job = self.env['hr.job']
+        self.suspend_security().job_id.suspend_security().deactivate(self.date_start - relativedelta(days=1))
+        new_job = Job.suspend_security().create_job(
+            self.contract_id,
+            self.department_id,
+            self.date_start,
+            self.security_job_id,
+            source_job=self.job_id
+        )
+        self._create_job_role_assignment(new_job)
+
+    def _create_job_role_assignment(self, job_id):
+        self.ensure_one()
+        JobRoleAssignment = self.env['onsc.legajo.job.role.assignment'].suspend_security()
+        JobRoleAssignment.create({
+            'job_id': job_id.id,
+            'role_assignment_id': self.id,
+            'date_start': self.date_start,
+            'date_end': self.date_end,
+            'role_assignment_mecanism': self.role_assignment_mecanism,
+            'role_assignment_file': self.role_assignment_file,
+            'role_assignment_filename': self.role_assignment_filename,
+        })
 
     def action_end(self, send_notification=True):
         if send_notification:
             email_template_id = self.env.ref('onsc_legajo.email_template_af_end_records')
             for record in self:
                 email_template_id.send_mail(record.id, force_send=True)
+        for job_role_assignment_id in self.job_role_assignment_ids:
+            if not job_role_assignment_id.date_end or job_role_assignment_id.date_end > self.date_end:
+                job_role_assignment_id.write({
+                    'date_end': self.date_end
+                })
         self.write({'state': 'end', 'is_end_notified': True})
 
     def process_end_records(self):
