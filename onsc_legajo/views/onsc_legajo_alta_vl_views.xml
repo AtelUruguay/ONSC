@@ -164,6 +164,22 @@
                                         <field name="resolution_type" colspan="4"/>
                                     </group>
                                 </group>
+                                <group name="motivo" string="Juramento de fidelidad a la bandera">
+                                    <group>
+
+                                    </group>
+                                    <group>
+                                        <field name="juramento_bandera_date"
+                                               attrs="{'invisible': [('is_legajo', '=', False)]}"/>
+                                        <field name="juramento_bandera_presentacion_date"
+                                               attrs="{'invisible': [('is_legajo', '=', False)]}"/>
+                                        <field name="juramento_bandera_file"
+                                               filename="juramento_bandera_filename"
+                                               attrs="{'invisible': [('is_legajo', '=', False)]}"/>
+                                        <field name="juramento_bandera_filename" invisible="1"/>
+                                        <field name="is_legajo" invisible="1"/>
+                                    </group>
+                                </group>
                                 <group name="documentacion" string="Documentación">
                                     <field name="attached_document_ids" nolabel="1">
                                         <tree>

@@ -111,6 +111,7 @@ class ONSCLegajoAltaVL(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False,
                                 readonly=True,
                                 states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    is_legajo = fields.Boolean(related="regime_id.is_legajo", store=True)
     is_presupuestado = fields.Boolean(related="regime_id.presupuesto", store=True)
     is_indVencimiento = fields.Boolean(related="regime_id.indVencimiento", store=True)
 
@@ -186,6 +187,13 @@ class ONSCLegajoAltaVL(models.Model):
         'res.country.state',
         string='Departamento donde desempeña funciones',
         domain="[('country_id.code','=','UY')]", copy=False)
+
+    juramento_bandera_date = fields.Date(
+        string='Fecha de Juramento de fidelidad a la Bandera nacional', history=True)
+    juramento_bandera_presentacion_date = fields.Date(
+        string='Fecha de presentación de documento digitalizado', history=True)
+    juramento_bandera_file = fields.Binary("Documento digitalizado", history=True)
+    juramento_bandera_filename = fields.Char('Nombre del Documento digitalizado')
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
@@ -396,6 +404,10 @@ class ONSCLegajoAltaVL(models.Model):
     @api.onchange('regime_id')
     def onchange_regime_id(self):
         self.security_job_id = False
+        self.juramento_bandera_date = False
+        self.juramento_bandera_presentacion_date = False
+        self.juramento_bandera_file = False
+        self.juramento_bandera_filename = False
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
