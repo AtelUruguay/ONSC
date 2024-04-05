@@ -146,6 +146,7 @@
                         <page string="Asignación de funciones" attrs="{'invisible': [('is_uo_manager', '=', False)]}">
                             <field name="role_assignment_ids" readonly="1">
                                 <tree editable="top">
+                                    <field name="role_assignment_id"/>
                                     <field name="date_start"/>
                                     <field name="date_end"/>
                                     <field name="role_assignment_mecanism"/>

@@ -203,8 +203,10 @@ class ONSCLegajoCambioUO(models.Model):
     @api.constrains("department_id", "job_id", "security_job_id")
     def _check_department_id(self):
         for record in self:
+            is_same_state_id = record.contract_id and record.contract_id.state_id == record.state_id
             is_same_department = record.job_id and record.job_id.department_id == record.department_id
-            if record.job_id and is_same_department and record.job_id.security_job_id == record.security_job_id:
+            is_same_security = record.job_id.security_job_id == record.security_job_id
+            if record.job_id and is_same_state_id and is_same_department and is_same_security:
                 raise ValidationError(_("Debe modificar la UO, la Seguridad o el Departamento donde desempeña funciones"))
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state")
