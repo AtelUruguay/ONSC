@@ -203,8 +203,10 @@ class ONSCLegajoCambioUO(models.Model):
     @api.constrains("department_id", "job_id", "security_job_id")
     def _check_department_id(self):
         for record in self:
+            is_same_state_id = record.contract_id and record.contract_id.state_id == record.state_id
             is_same_department = record.job_id and record.job_id.department_id == record.department_id
-            if record.job_id and is_same_department and record.job_id.security_job_id == record.security_job_id:
+            is_same_security = record.job_id.security_job_id == record.security_job_id
+            if record.job_id and is_same_state_id and is_same_department and is_same_security:
                 raise ValidationError(_("Debe modificar la UO, la Seguridad o el Departamento donde desempeña funciones"))
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state")
@@ -229,10 +231,11 @@ class ONSCLegajoCambioUO(models.Model):
                 record.cv_sex = False
                 record.contract_id = False
 
-    @api.onchange('department_id')
-    def onchange_department_id(self):
-        self.operating_unit_id = self.department_id.operating_unit_id.id
-        self.inciso_id = self.department_id.inciso_id.id
+    # EL INCISO Y LA UE LO DAN EL CONTRATO, NO HAY QUE ESPERAR A TENER UO SELECCIONADA
+    # @api.onchange('department_id')
+    # def onchange_department_id(self):
+    #     self.operating_unit_id = self.department_id.operating_unit_id.id
+    #     self.inciso_id = self.department_id.inciso_id.id
 
     @api.onchange('contract_id')
     def onchange_department_id_contract_id(self):
@@ -245,6 +248,8 @@ class ONSCLegajoCambioUO(models.Model):
         else:
             job_ids = self.contract_id.job_ids.filtered(
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
+        self.operating_unit_id = self.contract_id.operating_unit_id.id
+        self.inciso_id = self.contract_id.inciso_id.id
         if len(job_ids) == 1:
             self.job_id = job_ids[0].id
             self.security_job_id = job_ids[0].security_job_id.id
@@ -369,7 +374,7 @@ class ONSCLegajoCambioUO(models.Model):
             ('state', '=', 'confirm'),
             '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())
         ]):
-            raise ValidationError(_("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio. "
+            raise ValidationError(_("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio."
                                     "Debe actualizar la situación de la asignación de función previo a esta acción."))
 
     def _action_confirm(self):

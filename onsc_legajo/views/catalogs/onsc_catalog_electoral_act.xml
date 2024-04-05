@@ -37,11 +37,10 @@
                             <group colspan="4">
                                 <field name="type_responsability_ids">
                                     <tree editable="bottom">
-                                        <field name="role_id"/>
+                                        <field name="role_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                         <field name="days"/>
                                     </tree>
                                 </field>
-
                             </group>
                         </group>
                     </sheet>

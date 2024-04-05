@@ -7,7 +7,6 @@
             <field name="arch" type="xml">
                 <search string="Asignación de funciones">
                     <field name="employee_id" string="Funcionario"/>
-                    <field name="department_id" string="UO"/>
                     <filter string="Funcionarios" name="groupby_employee_id" domain="[]"
                             context="{'group_by': 'employee_id'}"/>
                 </search>
@@ -20,6 +19,9 @@
             <field name="arch" type="xml">
                 <tree string="Asignaciones de funciones">
                     <field name="employee_id" string="Funcionario"/>
+                    <field name="date_start"/>
+                    <field name="date_end"/>
+                    <field name="role_assignment_mecanism"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -33,8 +35,7 @@
                     <header>
                         <button name="action_confirm" class="btn btn-primary"
                                 type="object" string="Confirmar"
-                                groups="onsc_legajo.group_legajo_role_assignment_recursos_humanos_inciso,onsc_legajo.group_legajo_role_assignment_recursos_humanos_ue,
-                                onsc_legajo.group_legajo_role_assignment_responsable_uo,onsc_legajo.group_legajo_role_assignment_administrar"
+                                groups="onsc_legajo.group_legajo_role_assignment_recursos_humanos_inciso,onsc_legajo.group_legajo_role_assignment_recursos_humanos_ue,onsc_legajo.group_legajo_role_assignment_administrar"
                                 states="draft"/>
                         <field name="state" widget="statusbar" clickable="1"/>
                     </header>

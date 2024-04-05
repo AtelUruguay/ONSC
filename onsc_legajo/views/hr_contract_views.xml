@@ -166,7 +166,7 @@
                                             icon="fa-edit"/>
                                 </tree>
                             </field>
-                            <field name="is_mi_legajo" invisible="0"/>
+                            <field name="is_mi_legajo" invisible="1"/>
                         </page>
                     </notebook>
                 </sheet>
