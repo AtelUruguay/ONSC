@@ -198,21 +198,23 @@ class HrJob(models.Model):
             ('evaluation_list_id.state', '=', 'in_progress'),
             ('evaluation_list_id.evaluation_stage_id.start_date', '<=', self.end_date),
             ('evaluation_list_id.evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.end_date),
-            # ('evaluation_list_id.department_id', '=', self.department_id.id),
             ('job_id', '=', self.id),
         ])
-        for evaluation in evaluation_list_lines.mapped('evaluation_ids'):
-            if evaluation.evaluation_type in ['self_evaluation', 'environment_definition', 'collaborator']:
-                evaluation.action_cancel(is_canceled_by_employee_out=True)
-            elif evaluation.evaluation_type in ['environment_evaluation']:
-                if evaluation.evaluated_id == job_employee:
-                    evaluation.action_cancel(is_canceled_by_employee_out=True)
-                elif evaluation.evaluator_id == job_employee and evaluation.state in ['draft', 'in_process']:
-                    evaluation.action_cancel(is_canceled_by_employee_out=True)
-            elif evaluation.evaluation_type in ['leader_evaluation']:
-                if evaluation.evaluated_id == job_employee and evaluation.state in ['draft', 'in_process', 'completed',
-                                                                                    'finished']:
-                    evaluation.action_cancel(is_canceled_by_employee_out=True)
+        Evaluation.with_context(ignore_security_rules=True).search([
+            ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'tracing_plan','self_evaluation', 'environment_definition', 'collaborator']),
+            ('evaluated_id', '=', job_employee.id),
+            ('current_job_id', '=', self.id),
+            ('evaluation_stage_id.start_date', '<=', self.end_date),
+            ('general_cycle_id.end_date_max', '>=', self.end_date),
+        ]).action_cancel(is_canceled_by_employee_out=True)
+        Evaluation.with_context(ignore_security_rules=True).search([
+            ('evaluation_type', 'in', ['leader_evaluation']),
+            ('evaluated_id', '=', job_employee.id),
+            ('current_job_id', '=', self.id),
+            ('state', 'in', ['draft', 'in_process', 'completed','finished']),
+            ('evaluation_stage_id.start_date', '<=', self.end_date),
+            ('general_cycle_id.end_date_max', '>=', self.end_date),
+        ]).action_cancel(is_canceled_by_employee_out=True)
 
         Consolidated.with_context(ignore_security_rules=True).search([
             ('evaluated_id', '=', job_employee.id),
@@ -239,14 +241,6 @@ class HrJob(models.Model):
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
         # FIN EVALUACION DE ENTORNO
-        Evaluation.with_context(ignore_security_rules=True).search([
-            ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'tracing_plan']),
-            ('evaluated_id', '=', job_employee.id),
-            ('current_job_id', '=', self.id),
-            ('evaluation_stage_id.start_date', '<=', self.end_date),
-            ('general_cycle_id.end_date_max', '>=', self.end_date),
-        ]).action_cancel(is_canceled_by_employee_out=True)
-
         Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', '=', 'collaborator'),
             ('evaluated_id', '=', job_employee.id),
