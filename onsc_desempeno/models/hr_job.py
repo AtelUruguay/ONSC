@@ -62,7 +62,7 @@ class HrJob(models.Model):
         case_0 = is_iam_manager and self.department_id.hierarchical_level_id.order == 1
 
         if is_valid_contract and self.contract_id.descriptor1_id.id not in excluded_descriptor1_ids and not case_0:
-            #averiguando en que uo debo adicionarme como colaborador
+            # averiguando en que uo debo adicionarme como colaborador
             if is_iam_manager:
                 _department = self.department_id.parent_id
             else:
@@ -107,10 +107,8 @@ class HrJob(models.Model):
             # self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
             return
 
-
-
             # FIXME eliminar old code
-            #SE DEBE TOMAR COMO PUNTO DE PARTIDA PARA SABER SI TENGO YA EVALUACIONES EL PUESTO DE ORIGEN (source_job)
+            # SE DEBE TOMAR COMO PUNTO DE PARTIDA PARA SABER SI TENGO YA EVALUACIONES EL PUESTO DE ORIGEN (source_job)
             # if source_job:
             #     is_iam_manager = source_job.department_id.manager_id.id == self.employee_id.id or self._context.get(
             #         'is_iam_manager')  # soy o fui el responsable de la UO
@@ -201,17 +199,19 @@ class HrJob(models.Model):
             ('job_id', '=', self.id),
         ])
         Evaluation.with_context(ignore_security_rules=True).search([
-            ('evaluation_type', 'in', ['gap_deal', 'development_plan', 'tracing_plan','self_evaluation', 'environment_definition', 'collaborator']),
+            ('evaluation_type', 'in',
+             ['gap_deal', 'development_plan', 'tracing_plan', 'self_evaluation', 'environment_definition']),
             ('evaluated_id', '=', job_employee.id),
             ('current_job_id', '=', self.id),
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
+
         Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', 'in', ['leader_evaluation']),
             ('evaluated_id', '=', job_employee.id),
             ('current_job_id', '=', self.id),
-            ('state', 'in', ['draft', 'in_process', 'completed','finished']),
+            ('state', 'in', ['draft', 'in_process', 'completed', 'finished']),
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
         ]).action_cancel(is_canceled_by_employee_out=True)
@@ -243,10 +243,10 @@ class HrJob(models.Model):
         # FIN EVALUACION DE ENTORNO
         Evaluation.with_context(ignore_security_rules=True).search([
             ('evaluation_type', '=', 'collaborator'),
-            ('evaluated_id', '=', job_employee.id),
             ('current_job_id', '=', self.id),
             ('evaluation_stage_id.start_date', '<=', self.end_date),
             ('general_cycle_id.end_date_max', '>=', self.end_date),
+            '|', ('evaluated_id', '=', job_employee.id), ('evaluator_id', '=', job_employee.id),
         ]).action_cancel(is_canceled_by_employee_out=True)
 
         evaluation_list_lines.filtered(lambda x: x.state != 'generated').unlink()
