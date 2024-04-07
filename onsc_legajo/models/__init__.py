@@ -20,3 +20,4 @@ from . import oncs_legajo_cambio_uo
 from . import oncs_legajo_role_assignment
 from . import oncs_legajo_staging_ws7
 from . import views
+from . import onsc_legajo_declaration_law
