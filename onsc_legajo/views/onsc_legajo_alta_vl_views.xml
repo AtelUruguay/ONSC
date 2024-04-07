@@ -212,6 +212,19 @@
                                            placeholder="Información Adicional"/>
                                 </group>
                             </page>
+                            <page name="antecedentes_judiciales" string="Antecedentes judiciales" attrs="{'invisible': [('is_legajo', '=', False)]}">
+                                <h4>Antecedentes judiciales</h4>
+                            <field name="judicial_antecedents_ids">
+                                <tree editable="top">
+                                    <field name="document_date"/>
+                                    <field name="digital_file"
+                                           widget="binary"
+                                           filename="digital_filename"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="digital_filename" invisible="1"/>
+                                </tree>
+                            </field>
+                            </page>
                         </notebook>
                     </sheet>
                     <div class="oe_chatter">
