@@ -345,7 +345,10 @@ class ONSCLegajoRoleAssignment(models.Model):
     def write(self, values):
         result = super().write(values)
         if values.get('date_end', False):
-            self.filtered(lambda x: x.date_end < fields.Date.today() and not x.is_end_notified).action_end()
+            if fields.Date.from_string(values.get('date_end')) < fields.Date.today():
+                self.action_end()
+            else:
+                self._update_job_role_assignments_date_end()
         return result
 
     def unlink(self):
@@ -357,20 +360,29 @@ class ONSCLegajoRoleAssignment(models.Model):
         self.ensure_one()
         self._validate_confirm()
         if self.job_security_job_id == self.security_job_id:
-            self._create_job_role_assignment(self.job_id)
+            self.suspend_security()._create_job_role_assignment(self.job_id)
         else:
-            self._copy_job_and_create_job_role_assignment()
+            self.suspend_security()._copy_job_and_create_job_role_assignment()
         self.write({'state': 'confirm'})
+
+    def _update_job_role_assignments_date_end(self):
+        for job_role_assignment_id in self.job_role_assignment_ids:
+            if not job_role_assignment_id.date_end or job_role_assignment_id.date_end > self.date_end:
+                job_role_assignment_id.with_context(no_check_write=True).write({
+                    'date_end': self.date_end
+                })
 
     def _copy_job_and_create_job_role_assignment(self):
         Job = self.env['hr.job']
-        self.suspend_security().job_id.suspend_security().deactivate(self.date_start - relativedelta(days=1))
-        new_job = Job.suspend_security().create_job(
+        self.job_id.suspend_security().with_context(no_check_write=True).deactivate(
+            self.date_start - relativedelta(days=1))
+        new_job = Job.suspend_security().with_context(no_check_write=True).create_job(
             self.contract_id,
             self.department_id,
             self.date_start,
             self.security_job_id,
-            source_job=self.job_id
+            source_job=self.job_id,
+            end_date=self.date_end
         )
         self._create_job_role_assignment(new_job)
 
@@ -392,11 +404,7 @@ class ONSCLegajoRoleAssignment(models.Model):
             email_template_id = self.env.ref('onsc_legajo.email_template_af_end_records')
             for record in self:
                 email_template_id.send_mail(record.id, force_send=True)
-        for job_role_assignment_id in self.job_role_assignment_ids:
-            if not job_role_assignment_id.date_end or job_role_assignment_id.date_end > self.date_end:
-                job_role_assignment_id.write({
-                    'date_end': self.date_end
-                })
+        self._update_job_role_assignments_date_end()
         self.write({'state': 'end', 'is_end_notified': True})
 
     def process_end_records(self):
