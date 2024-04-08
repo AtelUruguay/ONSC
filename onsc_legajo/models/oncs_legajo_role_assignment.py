@@ -33,20 +33,6 @@ class ONSCLegajoJobRoleAssignment(models.Model):
     )
     role_assignment_file = fields.Binary(string="Documento digitalizado", tracking=True, copy=False)
     role_assignment_filename = fields.Char('Nombre del documento digitalizado', copy=False)
-    # state = fields.Selection(
-    #     string='Estado',
-    #     selection=[('active', 'Activa'),
-    #                ('end', 'Finalizada')],
-    #     compute='_compute_state',
-    #     store=True
-    # )
-    #
-    # @api.depends('date_start', 'date_end', 'job_id')
-    # def _compute_state(self):
-    #     for rec in self:
-    #         if rec.date_end and rec.date_end >
-
-
 
 class ONSCLegajoRoleAssignment(models.Model):
     _name = 'onsc.legajo.role.assignment'
