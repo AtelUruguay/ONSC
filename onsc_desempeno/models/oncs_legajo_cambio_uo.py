@@ -7,24 +7,26 @@ class ONSCLegajoCambioUO(models.Model):
     _inherit = 'onsc.legajo.cambio.uo'
 
     def _action_confirm(self):
+        Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security()
         new_job = super(ONSCLegajoCambioUO, self)._action_confirm()
         # FIXME en LED no es obligatorio que se haga un nuevo puesto
         if new_job:
             # OBTENIENDO COLABORADORES
-            evaluations = self.env['onsc.desempeno.evaluation'].with_context(ignore_security_rules=True).search([
+            evaluations = Evaluation.with_context(ignore_security_rules=True).search([
                 ('current_job_id', '=', self.job_id.id),
                 ('create_date', '>=', self.job_id.start_date),
             ])
-            self.env['onsc.desempeno.consolidated'].suspend_security().with_context(ignore_security_rules=True).search([
+            Consolidated.with_context(ignore_security_rules=True).search([
                 ('current_job_id', '=', self.job_id.id),
                 ('create_date', '>=', self.job_id.start_date),
             ]).write({'current_job_id': new_job.id})
 
-            evaluations.write(
+            evaluations.suspend_security().write(
                 {'current_job_id': new_job.id}
             )
             if len(evaluations) == 0:
-                new_job._update_evaluation_list_in()
+                new_job.suspend_security()._update_evaluation_list_in()
         return new_job
 
     def fix_evaluations(self):
