@@ -573,7 +573,11 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation[0]["evaluation_type"] = "gap_deal"
         evaluation[0]["current_job_id"] = record.current_job_id.id
         if record.current_job_id:
-            manager_department = record.current_job_id.department_id.get_first_department_withmanager_in_tree()
+            _department_id = record.current_job_id.department_id
+            if _department_id.manager_id == record.current_job_id.employee_id:
+                manager_department = _department_id.get_first_department_withmanager_in_tree(ignore_first_step=True)
+            else:
+                manager_department = _department_id.get_first_department_withmanager_in_tree()
             evaluation[0]["evaluator_id"] = manager_department.manager_id.id
             evaluation[0]["uo_id"] = record.current_job_id.department_id.id
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
