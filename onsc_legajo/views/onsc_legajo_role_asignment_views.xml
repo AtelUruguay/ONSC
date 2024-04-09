@@ -31,7 +31,7 @@
             <field name="name">onsc.legajo.role.assignment.form</field>
             <field name="model">onsc.legajo.role.assignment</field>
             <field name="arch" type="xml">
-                <form string="Asignación de funciones">
+                <form string="Asignación de funciones" duplicate="0">
                     <header>
                         <button name="action_confirm" class="btn btn-primary"
                                 type="object" string="Confirmar"
