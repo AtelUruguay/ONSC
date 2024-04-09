@@ -213,9 +213,12 @@ class ONSCLegajoCambioUO(models.Model):
     def _check_security_job_id(self):
         Job = self.env['hr.job'].sudo()
         for record in self:
-            if not Job.is_job_available_for_manager(record.department_id,
-                                                    record.security_job_id,
-                                                    record.date_start):
+            is_same_department = record.job_id.department_id == record.department_id
+            is_same_security = record.job_id.security_job_id == record.security_job_id
+            if (not is_same_department or not is_same_security) and not Job.is_job_available_for_manager(
+                    record.department_id,
+                    record.security_job_id,
+                    record.date_start):
                 raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
 
     @api.onchange('employee_id')
@@ -355,7 +358,6 @@ class ONSCLegajoCambioUO(models.Model):
 
     def _validate_confirm(self):
         self._check_date()
-        self._check_security_job_id()
         if self.env.user.employee_id.id == self.employee_id.id:
             raise ValidationError(_("No se puede confirmar un traslado a si mismo"))
 
@@ -365,6 +367,7 @@ class ONSCLegajoCambioUO(models.Model):
         if not self.department_id and not self.security_job_id and not self.state_id:
             raise ValidationError(_("Si los valores de UO y Seguridad de puesto no están definidos "
                                     "al menos el Departamento donde desempeña funciones debe estar establecido."))
+        self._check_security_job_id()
         if self.env['onsc.legajo.role.assignment'].with_context(is_from_menu=False).search_count([
             ('job_id', '=', self.job_id.id),
             ('state', '=', 'confirm'),

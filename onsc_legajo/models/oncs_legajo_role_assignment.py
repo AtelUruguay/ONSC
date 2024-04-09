@@ -291,17 +291,16 @@ class ONSCLegajoRoleAssignment(models.Model):
         for record in self:
             if JobRoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
-                ('date_start', '<=', record.date_start),
-                ('date_end', '=', False)
+                '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())
             ]):
-                raise ValidationError(_("MEJORAR!! Ya tiene una AF vigente..... "))
+                raise ValidationError(_("El funcionario tiene una Asignación de Función activa para dicho vínculo laboral"))
             if JobRoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
                 ('date_start', '<=', record.date_start),
                 ('date_end', '>=', record.date_start)
             ]):
                 raise ValidationError(
-                    _("MEJORAR!! Fecha de inicio no permitida. "
+                    _("Fecha de inicio no permitida. "
                       "Ya existe una Asignación de Función con un período que la comprende..... "))
 
     @api.onchange('employee_id')
@@ -349,8 +348,8 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def write(self, values):
         result = super().write(values)
-        if values.get('date_end', False):
-            if fields.Date.from_string(values.get('date_end')) < fields.Date.today():
+        if 'date_end' in values:
+            if values.get('date_end') and fields.Date.from_string(values.get('date_end')) < fields.Date.today():
                 self.action_end()
             else:
                 self._update_job_role_assignments_date_end()
@@ -372,7 +371,9 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def _update_job_role_assignments_date_end(self):
         for job_role_assignment_id in self.job_role_assignment_ids:
-            if not job_role_assignment_id.date_end or job_role_assignment_id.date_end > self.date_end:
+            cond1 = not job_role_assignment_id.date_end or job_role_assignment_id.date_end != self.date_end
+            cond2 = job_role_assignment_id.date_end and not self.date_end
+            if cond1 or cond2:
                 job_role_assignment_id.with_context(no_check_write=True).write({
                     'date_end': self.date_end
                 })
