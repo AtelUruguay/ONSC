@@ -153,7 +153,6 @@
                     <notebook>
                         <page name="daclaration_law" string="Declaración Ley 19574, Decreto 380-2018"
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
-                            <h4>Declaración Ley</h4>
                             <field name="declaration_law_ids">
                                 <tree editable="top">
                                     <field name="declaration_date"/>
@@ -168,7 +167,6 @@
                         </page>
                         <page name="judicial_antecedents" string="Antecedentes judiciales"
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
-                            <h4>Antecedentes judiciales</h4>
                             <field name="judicial_antecedents_ids">
                                 <tree editable="top">
                                     <field name="document_date"/>
