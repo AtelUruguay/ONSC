@@ -524,6 +524,10 @@ class ONSCLegajoStagingWS7(models.Model):
             legajo_state='reserved',
             eff_date=record.fecha_vig
         )
+        contract.job_ids.mapped('role_assignment_ids').filtered(
+            lambda x: not x.date_end or x.date_end >= fields.Date.today()).write({
+            'date_end': record.fecha_vig + datetime.timedelta(days=-1)
+        })
         records.write({'state': 'processed'})
 
     def set_desreserva(self, Contract, record):
@@ -734,17 +738,21 @@ class ONSCLegajoStagingWS7(models.Model):
         return jobs
 
     def _copy_role_assignments(self, target_contract, job, new_job):
+        RoleAssignment = self.env['onsc.legajo.job.role.assignment'].suspend_security()
         for role_assignment_id in job.role_assignment_ids:
-            role_assignment_id.copy({
-                'contract_id': target_contract.id,
-                'job_id': new_job.id,
-                'date_start': target_contract.date_start,
-                'date_end': False
-            })
-            job.role_assignment_ids.write({
-                'date_end': target_contract.date_start,
-                'is_end_notified': True  # se marca para que no notifique como una finalizacion
-            })
+            if role_assignment_id.date_end is False or role_assignment_id.date_end > target_contract.date_start:
+                RoleAssignment.create({
+                    'job_id': new_job.id,
+                    'role_assignment_id': role_assignment_id.role_assignment_id,
+                    'date_start': target_contract.date_start,
+                    'date_end': role_assignment_id.date_end,
+                    'role_assignment_file': role_assignment_id.role_assignment_file,
+                    'role_assignment_filename': role_assignment_id.role_assignment_filename
+                })
+                role_assignment_id.suspend_security().write({
+                    'date_end': target_contract.date_start,
+                    'is_end_notified': True  # se marca para que no notifique como una finalizacion
+                })
 
     def _copy_jobs_update_new_job_data(self, source_job, new_job):
         # THINKING EXTENDABLE
