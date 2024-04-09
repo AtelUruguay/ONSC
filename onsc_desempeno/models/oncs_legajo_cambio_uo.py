@@ -8,21 +8,23 @@ class ONSCLegajoCambioUO(models.Model):
 
     def _action_confirm(self):
         new_job = super(ONSCLegajoCambioUO, self)._action_confirm()
-        # OBTENIENDO COLABORADORES
-        evaluations = self.env['onsc.desempeno.evaluation'].with_context(ignore_security_rules=True).search([
-            ('current_job_id', '=', self.job_id.id),
-            ('create_date', '>=', self.job_id.start_date),
-        ])
-        self.env['onsc.desempeno.consolidated'].suspend_security().with_context(ignore_security_rules=True).search([
-            ('current_job_id', '=', self.job_id.id),
-            ('create_date', '>=', self.job_id.start_date),
-        ]).write({'current_job_id': new_job.id})
+        # FIXME en LED no es obligatorio que se haga un nuevo puesto
+        if new_job:
+            # OBTENIENDO COLABORADORES
+            evaluations = self.env['onsc.desempeno.evaluation'].with_context(ignore_security_rules=True).search([
+                ('current_job_id', '=', self.job_id.id),
+                ('create_date', '>=', self.job_id.start_date),
+            ])
+            self.env['onsc.desempeno.consolidated'].suspend_security().with_context(ignore_security_rules=True).search([
+                ('current_job_id', '=', self.job_id.id),
+                ('create_date', '>=', self.job_id.start_date),
+            ]).write({'current_job_id': new_job.id})
 
-        evaluations.write(
-            {'current_job_id': new_job.id}
-        )
-        if len(evaluations) == 0:
-            new_job._update_evaluation_list_in()
+            evaluations.write(
+                {'current_job_id': new_job.id}
+            )
+            if len(evaluations) == 0:
+                new_job._update_evaluation_list_in()
         return new_job
 
     def fix_evaluations(self):
