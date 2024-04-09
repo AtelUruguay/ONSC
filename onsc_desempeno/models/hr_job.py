@@ -21,7 +21,7 @@ class HrJob(models.Model):
             source_job=source_job
         )
         if not self._context.get('ignore_evaluation_list_in', False):
-            new_job._update_evaluation_list_in(source_job=source_job)
+            new_job.suspend_security()._update_evaluation_list_in(source_job=source_job)
         return new_job
 
     def deactivate(self, date_end):
@@ -29,9 +29,9 @@ class HrJob(models.Model):
         if not self._context.get('ignore_evaluation_list_out', False):
             for record in self:
                 if self._context.get('is_copy_job'):
-                    record._update_evaluation_list_out_changejob()
+                    record.suspend_security()._update_evaluation_list_out_changejob()
                 else:
-                    record._update_evaluation_list_out()
+                    record.suspend_security()._update_evaluation_list_out()
         return results
 
     def _update_evaluation_list_in(self, source_job=False):
