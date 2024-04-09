@@ -77,6 +77,9 @@ class ONSCLegajo(models.Model):
         inverse_name='legajo_id',
         string='Puestos')
 
+    declaration_law_ids = fields.One2many(comodel_name='onsc.legajo.declaration.law', inverse_name='legajo_id', string="Declaraciones de Ley" )
+    judicial_antecedents_ids = fields.One2many(comodel_name='onsc.legajo.judicial.antecedents', inverse_name='legajo_id', string="Antecedentes judiciales")
+
     def _compute_contract_info(self):
         for record in self:
             available_contracts = record._get_user_available_contract(record.employee_id)

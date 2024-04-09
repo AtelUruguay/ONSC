@@ -198,6 +198,9 @@ class ONSCLegajoAltaVL(models.Model):
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
 
+    judicial_antecedents_ids = fields.One2many(comodel_name='onsc.legajo.judicial.antecedents',
+                                               inverse_name='alta_vl_id', string="Antecedentes judiciales")
+
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
         for record in self:
