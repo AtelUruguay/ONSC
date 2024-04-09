@@ -13,20 +13,20 @@ class ONSCLegajoCambioUO(models.Model):
         # FIXME en LED no es obligatorio que se haga un nuevo puesto
         if new_job:
             # OBTENIENDO COLABORADORES
-            evaluations = Evaluation.with_context(ignore_security_rules=True).search([
+            Evaluation.with_context(ignore_security_rules=True).search([
                 ('current_job_id', '=', self.job_id.id),
                 ('create_date', '>=', self.job_id.start_date),
-            ])
+            ]).write({'current_job_id': new_job.id})
             Consolidated.with_context(ignore_security_rules=True).search([
                 ('current_job_id', '=', self.job_id.id),
                 ('create_date', '>=', self.job_id.start_date),
             ]).write({'current_job_id': new_job.id})
 
-            evaluations.suspend_security().write(
-                {'current_job_id': new_job.id}
-            )
-            if len(evaluations) == 0:
-                new_job.suspend_security()._update_evaluation_list_in()
+        # evaluations.write(
+        #     {'current_job_id': new_job.id}
+        # )
+        # if len(evaluations) == 0:
+        #     new_job._update_evaluation_list_in()
         return new_job
 
     def fix_evaluations(self):

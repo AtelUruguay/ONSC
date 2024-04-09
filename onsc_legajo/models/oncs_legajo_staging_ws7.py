@@ -371,12 +371,20 @@ class ONSCLegajoStagingWS7(models.Model):
             new_contract = self._get_contract_copy(contract, second_movement)
             self._copy_jobs(contract, new_contract)
 
-            # DESACTIVA EL CONTRATO
-            contract.with_context(no_check_write=True).deactivate_legajo_contract(
-                second_movement.fecha_vig + datetime.timedelta(days=-1),
-                legajo_state='baja',
-                eff_date=second_movement.fecha_vig
-            )
+            if new_contract.operating_unit_id != contract.operating_unit_id:
+                # DESACTIVA EL CONTRATO
+                contract.with_context(no_check_write=True, is_copy_job=False).deactivate_legajo_contract(
+                    second_movement.fecha_vig + datetime.timedelta(days=-1),
+                    legajo_state='baja',
+                    eff_date=second_movement.fecha_vig
+                )
+            else:
+                # DESACTIVA EL CONTRATO
+                contract.with_context(no_check_write=True).deactivate_legajo_contract(
+                    second_movement.fecha_vig + datetime.timedelta(days=-1),
+                    legajo_state='baja',
+                    eff_date=second_movement.fecha_vig
+                )
             if record.mov == 'ASCENSO':
                 causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
             elif record.mov == 'TRANSFORMA':
@@ -390,21 +398,16 @@ class ONSCLegajoStagingWS7(models.Model):
             # FIXME la desactivacion posterior lo saca de manager y por la secuencia de los pasos no sabe volver a ponerlo
             excluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
             for job in new_contract.job_ids:
-                cond1 = job.contract_id.descriptor1_id.id not in excluded_descriptor1_ids
                 cond2 = job.security_job_id.is_uo_manager and job.start_date <= fields.Date.today()
-                if cond1 and cond2 and not job.department_id.manager_id:
+                if cond2 and not job.department_id.manager_id:
                     job.department_id.suspend_security().write({
                         'manager_id': job.employee_id.id,
                         'is_manager_reserved': False
                     })
-            self._check_contract_data(new_contract)
+            # self._check_contract_data(new_contract)
 
         records |= second_movement
         records.write({'state': 'processed'})
-
-    def _check_contract_data(self, contract):
-        # THINKING EXTENDABLE
-        return True
 
     def set_correccion_ascenso(self, Contract, record):
         records = record

@@ -30,25 +30,27 @@ class ONSCLegajoStagingWS7(models.Model):
         Consolidated = self.env['onsc.desempeno.consolidated'].suspend_security().with_context(
             ignore_security_rules=True)
 
-        evaluations = Evaluation.search([
+        Evaluation.search([
             ('current_job_id', '=', source_job.id),
             ('create_date', '>=', source_job.start_date),
-        ])
+        ]).write(
+            {'current_job_id': new_job.id}
+        )
         Consolidated.search([
             ('current_job_id', '=', source_job.id),
             ('create_date', '>=', source_job.start_date),
         ]).write({'current_job_id': new_job.id})
 
-        evaluations.write(
-            {'current_job_id': new_job.id}
-        )
-        if len(evaluations) == 0 and not self._context.get('ignore_evaluation_list_in'):
-            new_job._update_evaluation_list_in()
+        # evaluations.write(
+        #     {'current_job_id': new_job.id}
+        # )
+        # if len(evaluations) == 0 and not self._context.get('ignore_evaluation_list_in'):
+        #     new_job._update_evaluation_list_in()
 
         return True
 
-    def _check_contract_data(self, contract):
-        super(ONSCLegajoStagingWS7, self)._check_contract_data(contract)
-        for job_id in contract.job_ids:
-            job_id.with_context(is_copy_job=False)._update_evaluation_list_in()
-        return True
+    # def _check_contract_data(self, contract):
+    #     super(ONSCLegajoStagingWS7, self)._check_contract_data(contract)
+    #     for job_id in contract.job_ids:
+    #         job_id.with_context(is_copy_job=False)._update_evaluation_list_in()
+    #     return True

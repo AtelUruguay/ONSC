@@ -236,13 +236,28 @@ class ONSCDesempenoEvaluationStage(models.Model):
             ]
             if res.evaluation_type == 'environment_evaluation':
                 evaluation_type = 'environment'
-                search_domain_consolidated = expression.AND([[('evaluation_type', '=', 'environment')], search_domain_consolidated])
             elif res.evaluation_type == 'collaborator':
                 evaluation_type = 'collaborator'
-                search_domain_consolidated = expression.AND([[('evaluation_type', '=', 'collaborator')], search_domain_consolidated])
-
-            if len(results.filtered(
-                    lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id)) > 1:
+            #TODO ps07 12763 si es de colaborador y == 1 el filtro de abajo entonces juntarla con la de entorno, o sea,
+            # manipular el search_domain_consolidated para que si ya está pero de ENTORNO tirarla para ahí.
+            _qty = len(results.filtered(
+                lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id))
+            if evaluation_type == 'environment' and _qty > 1:
+                create_consolidated = True
+                search_domain_consolidated = expression.AND(
+                    [[('evaluation_type', '=', 'environment')], search_domain_consolidated])
+            elif evaluation_type == 'collaborator' and _qty > 1:
+                create_consolidated = True
+                search_domain_consolidated = expression.AND(
+                    [[('evaluation_type', '=', 'collaborator')], search_domain_consolidated])
+            elif evaluation_type == 'collaborator' and _qty == 1:
+                create_consolidated = True
+                evaluation_type = 'environment'
+                search_domain_consolidated = expression.AND(
+                    [[('evaluation_type', '=', 'environment')], search_domain_consolidated])
+            else:
+                create_consolidated = False
+            if create_consolidated:
                 if Consolidated.search_count(search_domain_consolidated) == 0:
                     data = {
                         'general_cycle_id': res.general_cycle_id.id,
@@ -314,7 +329,13 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     evaluation[0]["reason_cancel"] = False
 
                     if record.current_job_id:
-                        manager_department = record.current_job_id.department_id.get_first_department_withmanager_in_tree()
+                        _department_id = record.current_job_id.department_id
+                        if _department_id.manager_id == record.current_job_id.employee_id:
+                            manager_department = _department_id.get_first_department_withmanager_in_tree(
+                                ignore_first_step=True
+                            )
+                        else:
+                            manager_department = _department_id.get_first_department_withmanager_in_tree()
                         evaluation[0]["evaluator_id"] = manager_department.manager_id.id
                         evaluation[0]["uo_id"] = record.current_job_id.department_id.id
 
