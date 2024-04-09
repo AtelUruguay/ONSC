@@ -116,6 +116,7 @@
                             </div>
                         </button>
                     </div>
+                    <field name="is_mi_legajo" invisible="1"/>
                     <field name="contract_ids" invisible="1"/>
                     <field name="avatar_128" invisible="1"/>
                     <field name="is_any_regime_legajo" invisible="1"/>
@@ -136,8 +137,8 @@
                             <field name="document_type_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="nro_doc"/>
                             <field name="eff_date" readonly="1" force_save="1" string="Fecha efectiva"/>
-                            <field name="public_admin_entry_date"/>
-                            <field name="public_admin_inactivity_years_qty"/>
+                            <field name="public_admin_entry_date" readonly="1"/>
+                            <field name="public_admin_inactivity_years_qty" readonly="1"/>
                         </group>
                         <group>
                             <field name="juramento_bandera_date"
@@ -153,7 +154,8 @@
                     <notebook>
                         <page name="daclaration_law" string="Declaración Ley 19574, Decreto 380-2018"
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
-                            <field name="declaration_law_ids">
+                            <field name="declaration_law_ids"
+                                   attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
                                 <tree editable="top">
                                     <field name="declaration_date"/>
                                     <field name="digital_file"

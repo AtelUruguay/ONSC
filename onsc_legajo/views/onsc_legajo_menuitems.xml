@@ -32,7 +32,7 @@
               name="Consulta de información vínculo"
               action="onsc_legajo_action"
               parent="onsc_legajo.onsc_legajo_capital_humano_menu"
-              groups="onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_hr_ue,onsc_legajo.group_legajo_consulta_legajos"
+              groups="onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_hr_ue,onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_hr_admin"
               sequence="1"/>
     <menuitem id="onsc_hr_legajo_department_menu"
               name="Consulta de información vínculo por UO"

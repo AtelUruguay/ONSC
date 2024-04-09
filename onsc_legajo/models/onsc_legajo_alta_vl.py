@@ -111,7 +111,7 @@ class ONSCLegajoAltaVL(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False,
                                 readonly=True,
                                 states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
-    is_legajo = fields.Boolean(related="regime_id.is_legajo", store=True)
+    regime_is_legajo = fields.Boolean(related="regime_id.is_legajo", store=True)
     is_presupuestado = fields.Boolean(related="regime_id.presupuesto", store=True)
     is_indVencimiento = fields.Boolean(related="regime_id.indVencimiento", store=True)
 
@@ -360,6 +360,20 @@ class ONSCLegajoAltaVL(models.Model):
                 raise ValidationError(
                     _("La Fecha de ingreso a la administración pública no puede ser mayor a la Fecha de alta"))
 
+    @api.constrains('juramento_bandera_date', 'juramento_bandera_presentacion_date')
+    def _check_juramento_bandera_date(self):
+        for rec in self:
+            if rec.juramento_bandera_date and rec.juramento_bandera_date > fields.Date.today():
+                raise ValidationError(
+                    _("La Fecha de Juramento de fidelidad a la Bandera nacional debe ser menor o igual a hoy"))
+            if rec.juramento_bandera_presentacion_date and rec.juramento_bandera_presentacion_date > fields.Date.today():
+                raise ValidationError(
+                    _("La Fecha de presentación de documento digitalizado debe ser menor o igual a hoy"))
+            _is_both_fields = rec.juramento_bandera_presentacion_date and rec.juramento_bandera_date
+            if _is_both_fields and rec.juramento_bandera_presentacion_date < rec.juramento_bandera_date:
+                raise ValidationError(
+                    _("La Fecha de presentación de documento digitalizado debe ser mayor a la Fecha de juramento"))
+
     @api.onchange('inciso_id')
     def onchange_inciso(self):
         # TODO: terminar los demas campos a setear
@@ -461,10 +475,22 @@ class ONSCLegajoAltaVL(models.Model):
         return legajo
 
     def _get_legajo(self, employee):
-        return self.env['onsc.legajo']._get_legajo(
-            employee,
-            self.date_income_public_administration,
-            self.inactivity_years)
+        if self.regime_is_legajo:
+            return self.env['onsc.legajo']._get_legajo(
+                employee,
+                self.date_income_public_administration,
+                self.inactivity_years,
+                self.juramento_bandera_date,
+                self.juramento_bandera_presentacion_date,
+                self.juramento_bandera_file,
+                self.juramento_bandera_filename,
+            )
+        else:
+            return self.env['onsc.legajo']._get_legajo(
+                employee,
+                self.date_income_public_administration,
+                self.inactivity_years
+            )
 
     def _get_legajo_employee(self):
         notify_sgh = self._is_employee_notify_sgh_nedeed()

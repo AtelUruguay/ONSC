@@ -17,8 +17,9 @@ class ONSCLegajo(models.Model):
         res = super(ONSCLegajo, self).fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar,
                                                       submenu=submenu)
         doc = etree.XML(res['arch'])
-        if view_type in ['form', 'tree', 'kanban'] and not self.env.user.has_group(
-                'onsc_legajo.group_legajo_configurador'):
+        valid_groups = self.user_has_groups(
+            'onsc_legajo.group_legajo_configurador,onsc_legajo.group_legajo_hr_admin,onsc_legajo.group_legajo_hr_inciso,onsc_legajo.group_legajo_hr_ue')
+        if view_type in ['form', 'tree', 'kanban'] and not valid_groups:
             for node_form in doc.xpath("//%s" % (view_type)):
                 node_form.set('create', '0')
                 node_form.set('edit', '0')
@@ -56,6 +57,7 @@ class ONSCLegajo(models.Model):
     contract_ids = fields.One2many('hr.contract', compute='_compute_contract_info')
     contracts_count = fields.Integer(string='Cantidad de contratos', compute='_compute_contract_info')
 
+    is_mi_legajo = fields.Boolean(string="¿Es mi legajo?", compute='_compute_is_mi_legajo')
     is_any_regime_legajo = fields.Boolean(string=u'¿Algún Régimen de los Contratos tiene la marca Legajo?', compute='_compute_is_any_regime_legajo')
 
     juramento_bandera_date = fields.Date(
@@ -125,6 +127,10 @@ class ONSCLegajo(models.Model):
                 'domain': [('id', 'in', self.contract_ids.ids)]
             })
         return action
+
+    def _compute_is_mi_legajo(self):
+        for rec in self:
+            rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
 
     def _compute_is_any_regime_legajo(self):
         for rec in self:
@@ -211,7 +217,7 @@ class ONSCLegajo(models.Model):
 
     def _get_abstract_config_security(self):
         return self.user_has_groups(
-            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador')
+            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_configurador,onsc_legajo.group_legajo_hr_admin')
 
     def _get_abstract_inciso_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_inciso')
@@ -220,12 +226,22 @@ class ONSCLegajo(models.Model):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
 
     # INTELIGENCIA DE ENTIDAD
-    def _get_legajo(self, employee, entry_date=False, inactivity_years=False):
+    def _get_legajo(
+            self,
+            employee,
+            entry_date=False,
+            inactivity_years=False,
+            juramento_bandera_date=False,
+            juramento_bandera_presentacion_date=False,
+            juramento_bandera_file=False,
+            juramento_bandera_filename=False,
+    ):
         """
         Si existe un legajo para ese Empleado lo devuelve sino lo crea
         :param employee: Recordset a hr.employee
         :param entry_date: Fecha de ingreso a la administracion publica
         :param inactivity_years: Cantidad de anios de inactividad
+        :param juramento_bandera_.... : Info del juramento a la bandera
         :return: nuevo recordet de onsc.legajo
         """
         Legajo = self.suspend_security()
@@ -234,8 +250,23 @@ class ONSCLegajo(models.Model):
             legajo = Legajo.create({
                 'employee_id': employee.id,
                 'public_admin_entry_date': entry_date,
-                'public_admin_inactivity_years_qty': inactivity_years
+                'public_admin_inactivity_years_qty': inactivity_years,
+                'juramento_bandera_date': juramento_bandera_date,
+                'juramento_bandera_presentacion_date': juramento_bandera_presentacion_date,
+                'juramento_bandera_file': juramento_bandera_file,
+                'juramento_bandera_filename': juramento_bandera_filename,
             })
+        else:
+            vals2update = {}
+            if juramento_bandera_date and legajo.juramento_bandera_date != juramento_bandera_date:
+                vals2update['juramento_bandera_date'] = juramento_bandera_date
+            if juramento_bandera_presentacion_date and \
+                    legajo.juramento_bandera_presentacion_date != juramento_bandera_presentacion_date:
+                vals2update['juramento_bandera_presentacion_date'] = juramento_bandera_presentacion_date
+            if juramento_bandera_file and legajo.juramento_bandera_file != juramento_bandera_file:
+                vals2update['juramento_bandera_file'] = juramento_bandera_file
+                vals2update['juramento_bandera_filename'] = juramento_bandera_filename
+            legajo.write(vals2update)
         return legajo
 
 class ONSCLegajoHistory(models.Model):
