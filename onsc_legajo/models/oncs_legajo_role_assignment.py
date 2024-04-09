@@ -293,7 +293,8 @@ class ONSCLegajoRoleAssignment(models.Model):
                 ('job_id', '=', record.job_id.id),
                 '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())
             ]):
-                raise ValidationError(_("El funcionario tiene una Asignación de Función activa para dicho vínculo laboral"))
+                raise ValidationError(
+                    _("El funcionario tiene una Asignación de función activa para dicho Vínculo laboral"))
             if JobRoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
                 ('date_start', '<=', record.date_start),
