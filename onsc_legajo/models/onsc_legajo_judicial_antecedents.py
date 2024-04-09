@@ -11,8 +11,8 @@ class ONSCLegajoJudicialAntecedents(models.Model):
     document_date = fields.Date(string="Fecha del documento")
     digital_file = fields.Binary(string="Documento digitalizado")
     digital_filename = fields.Char("Nombre del documento digitalizado")
-    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", required=True)
-    alta_vl_id = fields.Many2one(comodel_name="onsc.legajo.alta.vl", string="Alta vínculo laboral", required=True)
+    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo")
+    alta_vl_id = fields.Many2one(comodel_name="onsc.legajo.alta.vl", string="Alta vínculo laboral")
 
     @api.constrains("document_date")
     def _check_date(self):
