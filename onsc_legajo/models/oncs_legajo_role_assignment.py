@@ -34,6 +34,11 @@ class ONSCLegajoJobRoleAssignment(models.Model):
     role_assignment_file = fields.Binary(string="Documento digitalizado", tracking=True, copy=False)
     role_assignment_filename = fields.Char('Nombre del documento digitalizado', copy=False)
 
+    def button_show_role_assignment_action(self):
+        action = self.env.ref('onsc_legajo.onsc_legajo_show_role_assignment_action').suspend_security()
+        action.res_id = self.role_assignment_id.id
+        return action.read()[0]
+
 class ONSCLegajoRoleAssignment(models.Model):
     _name = 'onsc.legajo.role.assignment'
 
@@ -381,8 +386,7 @@ class ONSCLegajoRoleAssignment(models.Model):
             self.department_id,
             self.date_start,
             self.security_job_id,
-            source_job=self.job_id,
-            end_date=self.date_end
+            source_job=self.job_id
         )
         self._create_job_role_assignment(new_job)
 
