@@ -302,7 +302,7 @@ class ONSCLegajoRoleAssignment(models.Model):
             ]):
                 raise ValidationError(
                     _("Fecha de inicio no permitida. "
-                      "Ya existe una Asignación de Función con un período que la comprende..... "))
+                      "Ya existe una Asignación de función con un período que la comprende..... "))
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
