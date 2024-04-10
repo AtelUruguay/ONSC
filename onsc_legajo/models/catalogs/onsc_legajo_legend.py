@@ -16,6 +16,26 @@ class ONSCLegajoLegend(models.Model):
     descriptor1_id = fields.Many2one("onsc.catalog.descriptor1", "Descriptor 1")
     active = fields.Boolean("Activo", default=True)
 
+    def _get_legajo_legend(self, regime_id, descriptor1_id):
+        """
+
+        :param regime_id: Id of Regimen record
+        :param descriptor1_id: Id of Descriptor1 record
+        """
+        result_record = False
+        for rec in self.sudo().search([]):
+            match_regime = rec.regime_id.id == regime_id
+            match_descriptor1 = rec.descriptor1_id.id == descriptor1_id
+            if regime_id and match_regime and descriptor1_id and match_descriptor1:
+                result_record = rec
+            elif regime_id and match_regime and not descriptor1_id and not result_record:
+                result_record = rec
+            elif descriptor1_id and match_descriptor1 and not result_record:
+                result_record = rec
+        return result_record
+
+
+
     @api.constrains("regime_id", "descriptor1_id")
     def _check_regime_descriptor(self):
         Legend = self.env['onsc.legajo.legend'].suspend_security()
