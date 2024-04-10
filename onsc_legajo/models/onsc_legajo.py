@@ -102,6 +102,12 @@ class ONSCLegajo(models.Model):
                 raise ValidationError(
                     _("La Fecha de presentación de documento digitalizado debe ser mayor a la Fecha de juramento"))
 
+    def write(self, vals):
+        any_juramento_in_vals = ('juramento_bandera_date' in vals or 'juramento_bandera_presentacion_date' in vals or 'juramento_bandera_file' in vals)
+        if any_juramento_in_vals and 'eff_date' not in vals:
+            vals['eff_date'] = fields.Date.today()
+        return super(ONSCLegajo, self).write(vals)
+
     def button_open_contract(self):
         self.ensure_one()
         if self.contracts_count == 0:
