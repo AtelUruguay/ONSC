@@ -19,6 +19,9 @@ class ONSCLegajoScore(models.Model):
     def _is_group_legajo_consulta_legajos(self):
         return self.user_has_groups('onsc_legajo.group_legajo_consulta_legajos')
 
+    def _is_group_legajo_admin_legajos(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_hr_admin')
+
     score_ids = fields.One2many('onsc.desempeno.score', compute='_compute_onsc_desempeno_score', string="Puntaje")
     show_alert = fields.Boolean("Tiene notificaciones pendientes?", compute='_compute_show_alert')
     notification_pending_text = fields.Text(
@@ -36,7 +39,8 @@ class ONSCLegajoScore(models.Model):
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         for rec in self:
             try:
-                if self._context.get('mi_legajo') or self._is_group_legajo_consulta_legajos():
+                is_full_groups =  self._is_group_legajo_consulta_legajos() or self._is_group_legajo_admin_legajos()
+                if self._context.get('mi_legajo') or is_full_groups:
                     args = [('employee_id', '=', rec.employee_id.id),
                             ('is_employee_notified', '=', True)]
 
