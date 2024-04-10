@@ -381,9 +381,9 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def _copy_job_and_create_job_role_assignment(self):
         Job = self.env['hr.job']
-        self.job_id.suspend_security().with_context(no_check_write=True).deactivate(
+        self.job_id.suspend_security().with_context(no_check_write=True, is_copy_job=True).deactivate(
             self.date_start - relativedelta(days=1))
-        new_job = Job.suspend_security().with_context(no_check_write=True).create_job(
+        new_job = Job.suspend_security().with_context(no_check_write=True, is_copy_job=True).create_job(
             self.contract_id,
             self.department_id,
             self.date_start,
