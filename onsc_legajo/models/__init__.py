@@ -21,4 +21,5 @@ from . import oncs_legajo_role_assignment
 from . import oncs_legajo_staging_ws7
 from . import views
 from . import onsc_legajo_declaration_law
-from  . import onsc_legajo_judicial_antecedents
+from . import onsc_legajo_judicial_antecedents
+from . import onsc_legajo_other_information
