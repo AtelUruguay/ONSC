@@ -368,13 +368,20 @@ class ONSCLegajoCambioUO(models.Model):
             raise ValidationError(_("Si los valores de UO y Seguridad de puesto no están definidos "
                                     "al menos el Departamento donde desempeña funciones debe estar establecido."))
         self._check_security_job_id()
-        if self.env['onsc.legajo.role.assignment'].with_context(is_from_menu=False).search_count([
-            ('job_id', '=', self.job_id.id),
-            ('state', '=', 'confirm'),
-            '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())
-        ]):
-            raise ValidationError(_("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio."
-                                    "Debe actualizar la situación de la asignación de función previo a esta acción."))
+        self._check_role_assignment()
+
+    def _check_role_assignment(self):
+        RoleAssignment = self.env['onsc.legajo.role.assignment'].with_context(is_from_menu=False)
+        for record in self:
+            is_same_department = record.job_id.department_id == record.department_id
+            is_same_security = record.job_id.security_job_id == record.security_job_id
+            if (not is_same_department or not is_same_security) and RoleAssignment.search_count([
+                ('job_id', '=', record.job_id.id),
+                ('state', '=', 'confirm'),
+                '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())]):
+                raise ValidationError(
+                    _("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio."
+                      "Debe actualizar la situación de la asignación de función previo a esta acción."))
 
     def _action_confirm(self):
         self.ensure_one()
