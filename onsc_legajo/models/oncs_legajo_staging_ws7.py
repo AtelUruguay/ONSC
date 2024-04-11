@@ -521,10 +521,9 @@ class ONSCLegajoStagingWS7(models.Model):
             legajo_state='reserved',
             eff_date=record.fecha_vig
         )
-        contract.job_ids.mapped('role_assignment_ids').filtered(
-            lambda x: not x.date_end or x.date_end >= fields.Date.today()).write({
-            'date_end': record.fecha_vig + datetime.timedelta(days=-1)
-        })
+        self.with_context(is_reserva=True)._contract_end_role_assignments(
+            contract,
+            record.fecha_vig + datetime.timedelta(days=-1))
         records.write({'state': 'processed'})
 
     def set_desreserva(self, Contract, record):
@@ -717,6 +716,7 @@ class ONSCLegajoStagingWS7(models.Model):
         """
         jobs = self.env['hr.job']
         if target_contract.operating_unit_id != source_contract.operating_unit_id:
+            self._contract_end_role_assignments(source_contract, target_contract.date_start)
             return jobs
         for job_id in source_contract.job_ids.filtered(lambda x:
                                                        (x.end_date is False or x.end_date >= fields.Date.today())
@@ -738,7 +738,7 @@ class ONSCLegajoStagingWS7(models.Model):
         RoleAssignment = self.env['onsc.legajo.job.role.assignment'].suspend_security()
         for role_assignment_id in job.role_assignment_ids:
             if role_assignment_id.date_end is False or role_assignment_id.date_end > target_contract.date_start:
-                RoleAssignment.create({
+                RoleAssignment.with_context(no_check_write=True).create({
                     'job_id': new_job.id,
                     'role_assignment_id': role_assignment_id.role_assignment_id,
                     'date_start': target_contract.date_start,
@@ -746,10 +746,17 @@ class ONSCLegajoStagingWS7(models.Model):
                     'role_assignment_file': role_assignment_id.role_assignment_file,
                     'role_assignment_filename': role_assignment_id.role_assignment_filename
                 })
-                role_assignment_id.suspend_security().write({
+                role_assignment_id.suspend_security().with_context(no_check_write=True).write({
                     'date_end': target_contract.date_start,
                     'is_end_notified': True  # se marca para que no notifique como una finalizacion
                 })
+
+    def _contract_end_role_assignments(self, contract, date_end=False):
+        TransRoleAssignment = self.env['onsc.legajo.role.assignment'].suspend_security()
+        _date_end = date_end or contract.date_end
+        TransRoleAssignment.with_context(no_check_write=True).search([('contract_id', '=', contract.id)]).write({
+            'date_end': _date_end,
+        })
 
     def _copy_jobs_update_new_job_data(self, source_job, new_job):
         # THINKING EXTENDABLE
