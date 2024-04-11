@@ -357,7 +357,8 @@ class ONSCLegajoRoleAssignment(models.Model):
         result = super().write(values)
         if 'date_end' in values:
             if values.get('date_end') and fields.Date.from_string(values.get('date_end')) < fields.Date.today():
-                self._message_log(body=_('Se finaliza la Asignación de funciones por notificación de Reserva'))
+                if self._context.get('is_reserva'):
+                    self._message_log(body=_('Se finaliza la Asignación de funciones por notificación de Reserva'))
                 self.action_end()
             elif self._context.get('is_reserva'):
                 self.write({'state': 'end'})
