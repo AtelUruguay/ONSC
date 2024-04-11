@@ -757,7 +757,9 @@ class ONSCLegajoStagingWS7(models.Model):
     def _contract_end_role_assignments(self, contract, date_end=False):
         TransRoleAssignment = self.env['onsc.legajo.role.assignment'].suspend_security()
         _date_end = date_end or contract.date_end
-        TransRoleAssignment.with_context(no_check_write=True).search([('contract_id', '=', contract.id)]).write({
+        TransRoleAssignment.with_context(no_check_write=True).search([
+            ('contract_id', '=', contract.id), ('state','=','confirm')
+        ]).write({
             'date_end': _date_end,
         })
 
