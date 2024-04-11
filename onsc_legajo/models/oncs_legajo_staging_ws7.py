@@ -763,11 +763,12 @@ class ONSCLegajoStagingWS7(models.Model):
     def _contract_end_role_assignments(self, contract, date_end=False, operation='ws7'):
         TransRoleAssignment = self.env['onsc.legajo.role.assignment'].suspend_security()
         _date_end = date_end or contract.date_end
-        TransRoleAssignment.with_context(no_check_write=True, ws7_operation=operation).search([
-            ('contract_id', '=', contract.id), ('state', '=', 'confirm')
-        ]).write({
-            'date_end': _date_end,
-        })
+        for job_id in contract.suspend_security().job_ids:
+            role_assignment = job_id.role_assignment_ids.role_assignment_id
+            if role_assignment.state == 'confirm':
+                role_assignment.with_context(no_check_write=True, ws7_operation=operation).write({
+                    'date_end': _date_end,
+                })
 
     def _copy_jobs_update_new_job_data(self, source_job, new_job):
         # THINKING EXTENDABLE
