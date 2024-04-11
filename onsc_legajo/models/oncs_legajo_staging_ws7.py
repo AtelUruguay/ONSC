@@ -319,7 +319,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
         operation_dict = {
             'ASCENSO': 'Ascenso',
-            'TRANSFORMA': 'Transforma',
+            'TRANSFORMA': 'Transformación',
             'REESTRUCTURA': 'Reestructuración'
         }
 
