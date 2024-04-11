@@ -83,8 +83,8 @@ class ONSCDesempenoScore(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         ids = Evaluation.search([('evaluation_type', '=', 'gap_deal'),
                                  ('evaluated_id', '=', self.employee_id.id),
-                                 ('inciso_id', '=', self.inciso_id.id),
-                                 ('operating_unit_id', '=', self.operating_unit_id.id),
+                                 # ('inciso_id', '=', self.inciso_id.id),
+                                 # ('operating_unit_id', '=', self.operating_unit_id.id),
                                  ('evaluation_stage_id', '=', self.evaluation_stage_id.id)]).ids
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_gap_deal_evaluation_action').read()[0]
         action.update({'domain': [('id', 'in', ids)], 'target': 'current'})
@@ -94,8 +94,8 @@ class ONSCDesempenoScore(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         ids = Evaluation.search([('evaluation_type', '=', 'development_plan'),
                                  ('evaluated_id', '=', self.employee_id.id),
-                                 ('inciso_id', '=', self.inciso_id.id),
-                                 ('operating_unit_id', '=', self.operating_unit_id.id),
+                                 # ('inciso_id', '=', self.inciso_id.id),
+                                 # ('operating_unit_id', '=', self.operating_unit_id.id),
                                  ('evaluation_stage_id', '=', self.evaluation_stage_id.id)]).ids
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_plan_action').read()[0]
         action.update({'domain': [('id', 'in', ids)], 'target': 'current'})
@@ -105,8 +105,8 @@ class ONSCDesempenoScore(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         ids = Evaluation.search([('evaluation_type', '=', 'tracing_plan'),
                                  ('evaluated_id', '=', self.employee_id.id),
-                                 ('inciso_id', '=', self.inciso_id.id),
-                                 ('operating_unit_id', '=', self.operating_unit_id.id),
+                                 # ('inciso_id', '=', self.inciso_id.id),
+                                 # ('operating_unit_id', '=', self.operating_unit_id.id),
                                  ('evaluation_stage_id', '=', self.evaluation_stage_id.id)]).ids
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_tracing_plan_action').read()[0]
         action.update({'domain': [('id', 'in', ids)], 'target': 'current'})
