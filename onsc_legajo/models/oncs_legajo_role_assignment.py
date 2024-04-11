@@ -355,7 +355,7 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def write(self, values):
         result = super().write(values)
-        if 'date_end' in values:
+        if len(self) and 'date_end' in values:
             ws7_operation = self._context.get('ws7_operation', False)
             if values.get('date_end') and fields.Date.from_string(values.get('date_end')) < fields.Date.today():
                 if ws7_operation:
