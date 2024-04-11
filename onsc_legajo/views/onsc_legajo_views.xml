@@ -187,8 +187,9 @@
                             <field name="judicial_antecedents_ids"
                                 attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
                                 <tree editable="top">
-                                    <field name="document_date"/>
+                                    <field name="document_date" required="1"/>
                                     <field name="digital_file"
+                                           required="1"
                                            widget="binary"
                                            filename="digital_filename"
                                            options="{'accepted_file_extensions': '.pdf'}"/>
