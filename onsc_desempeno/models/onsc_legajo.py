@@ -35,7 +35,9 @@ class ONSCLegajoScore(models.Model):
         inciso_id = self.env.user.employee_id.job_id.contract_id.inciso_id.id
         operating_unit_id = self.env.user.employee_id.job_id.contract_id.operating_unit_id.id
         for rec in self:
+
             try:
+                args = []
                 if self._context.get('mi_legajo') or self._is_group_legajo_consulta_legajos():
                     args = [('employee_id', '=', rec.employee_id.id),
                             ('is_employee_notified', '=', True)]
@@ -47,7 +49,12 @@ class ONSCLegajoScore(models.Model):
                     elif self._is_group_legajo_hr_ue():
                         args = [('operating_unit_id', '=', operating_unit_id), ('employee_id', '=', rec.employee_id.id),
                                 ('is_employee_notified', '=', True)]
-                rec.score_ids = Score.with_context(ignore_security_rules=True).search(args)
+
+                if args:
+                    rec.score_ids = Score.with_context(ignore_security_rules=True).search(args)
+                else:
+                    rec.score_ids = False
+
 
             except Exception as e:
                 _logger.error(f"Error en el método de cálculo de score_ids: {e}")

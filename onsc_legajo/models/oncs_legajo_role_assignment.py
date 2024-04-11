@@ -9,6 +9,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
+
 class ONSCLegajoJobRoleAssignment(models.Model):
     _name = 'onsc.legajo.job.role.assignment'
     _inherit = [
@@ -38,6 +39,7 @@ class ONSCLegajoJobRoleAssignment(models.Model):
         action = self.env.ref('onsc_legajo.onsc_legajo_show_role_assignment_action').suspend_security()
         action.res_id = self.role_assignment_id.id
         return action.read()[0]
+
 
 class ONSCLegajoRoleAssignment(models.Model):
     _name = 'onsc.legajo.role.assignment'
@@ -259,6 +261,8 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     @api.constrains("date_start", "contract_id", "job_id", "date_end")
     def _check_date(self):
+        if self._context.get('no_check_write'):
+            return True
         for record in self:
             if record.job_id and record.date_start < record.job_id.start_date:
                 raise ValidationError(_("La fecha desde debe ser mayor o igual a la fecha del puesto actual"))
@@ -272,6 +276,8 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
     def _check_security_job_id(self):
+        if self._context.get('no_check_write'):
+            return True
         Job = self.env['hr.job'].sudo()
         for record in self:
             if not record.job_id:
@@ -352,6 +358,10 @@ class ONSCLegajoRoleAssignment(models.Model):
         if 'date_end' in values:
             if values.get('date_end') and fields.Date.from_string(values.get('date_end')) < fields.Date.today():
                 self.action_end()
+            elif self._context.get('is_reserva'):
+                self.write({'state': 'end'})
+                self._message_log(body=_('Se finaliza la Asignación de funciones por notificación de Reserva'))
+                self._update_job_role_assignments_date_end()
             else:
                 self._update_job_role_assignments_date_end()
         return result
@@ -371,13 +381,20 @@ class ONSCLegajoRoleAssignment(models.Model):
         self.write({'state': 'confirm'})
 
     def _update_job_role_assignments_date_end(self):
-        for job_role_assignment_id in self.job_role_assignment_ids:
-            cond1 = not job_role_assignment_id.date_end or job_role_assignment_id.date_end != self.date_end
-            cond2 = job_role_assignment_id.date_end and not self.date_end
-            if cond1 or cond2:
-                job_role_assignment_id.with_context(no_check_write=True).write({
-                    'date_end': self.date_end
-                })
+        if len(self.job_role_assignment_ids) > 1:
+            last_job_role_assignment = self.job_role_assignment_ids.sorted(key=lambda x: x.date_start, reverse=True)[0]
+        else:
+            last_job_role_assignment = self.job_role_assignment_ids
+        if self._context.get('is_reserva'):
+            last_job_role_assignment.job_id._message_log(
+                body=_('Se finaliza la Asignación de funciones por notificación de Reserva'))
+        # for job_role_assignment_id in self.job_role_assignment_ids.sorted(key=lambda x: x.date_end, reverse=True):
+        cond1 = not last_job_role_assignment.date_end or last_job_role_assignment.date_end != self.date_end
+        cond2 = last_job_role_assignment.date_end and not self.date_end
+        if cond1 or cond2:
+            last_job_role_assignment.with_context(no_check_write=True).write({
+                'date_end': self.date_end
+            })
 
     def _copy_job_and_create_job_role_assignment(self):
         Job = self.env['hr.job']
@@ -409,13 +426,14 @@ class ONSCLegajoRoleAssignment(models.Model):
         if send_notification:
             email_template_id = self.env.ref('onsc_legajo.email_template_af_end_records')
             for record in self:
-                email_template_id.send_mail(record.id, force_send=True)
+                email_template_id.send_mail(record.id)
         self._update_job_role_assignments_date_end()
         self.write({'state': 'end', 'is_end_notified': True})
+        # if self._context.get('is_reserva'):
 
     def process_end_records(self):
         records = self.search([
-            ('state', '=', 'confirm'),
+            ('state', 'in', ['confirm', 'end']),
             ('is_end_notified', '=', False),
             ('date_end', '<', fields.Date.today()),
         ])
