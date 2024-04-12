@@ -180,6 +180,14 @@ class HrContract(models.Model):
         domain="[('country_id.code','=','UY')]", copy=False, history=True)
 
     legajo_id = fields.Many2one('onsc.legajo', string='Legajo', compute='_compute_legajo_id', store=True)
+    show_law_legajo_legend = fields.Boolean(
+        string='¿Mostrar leyenda de legajo?',
+        compute='_compute_show_law_legajo_legend'
+    )
+    law_legajo_legend = fields.Char(
+        string='Leyenda de legajo',
+        compute='_compute_show_law_legajo_legend'
+    )
 
     def name_get(self):
         res = []
@@ -253,6 +261,19 @@ class HrContract(models.Model):
                 'onsc_legajo.group_legajo_editar_ocupacion_contrato')
             is_valid_state = rec.legajo_state != 'baja'
             rec.show_button_update_occupation = is_valid_group and is_valid_state and rec.is_occupation_visible
+
+    @api.depends('regime_id', 'descriptor1_id')
+    def _compute_show_law_legajo_legend(self):
+        Legend = self.env['onsc.legajo.legend']
+        for rec in self:
+            legend = Legend._get_legajo_legend(rec.regime_id.id, rec.descriptor1_id.id)
+            if legend:
+                rec.show_law_legajo_legend = True
+                rec.law_legajo_legend = legend.name
+            else:
+                rec.show_law_legajo_legend = False
+                rec.law_legajo_legend = False
+
 
     def _compute_is_mi_legajo(self):
         for rec in self:

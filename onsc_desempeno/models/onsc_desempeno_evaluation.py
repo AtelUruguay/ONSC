@@ -212,6 +212,11 @@ class ONSCDesempenoEvaluation(models.Model):
                 args_extended = expression.OR(
                     [[('operating_unit_id', '=', operating_unit_id), ('evaluation_type', '=', evaluation_type)],
                      args_extended])
+        if evaluation_type == 'environment_evaluation':
+            args_extended = expression.OR([[
+                ('evaluator_id', '=', self.env.user.employee_id.id),
+                ('evaluation_type', '=', evaluation_type)
+            ], args_extended])
         return expression.AND([args_extended, args])
 
     def _get_domain_gap_deal(self, args):
@@ -994,7 +999,11 @@ class ONSCDesempenoEvaluation(models.Model):
             evaluation[0]["state_gap_deal"] = 'draft'
             evaluation[0]["current_job_id"] = self.current_job_id.id
             if self.current_job_id:
-                manager_department = self.current_job_id.department_id.get_first_department_withmanager_in_tree()
+                _department_id = self.current_job_id.department_id
+                if _department_id.manager_id == self.current_job_id.employee_id:
+                    manager_department = _department_id.get_first_department_withmanager_in_tree(ignore_first_step=True)
+                else:
+                    manager_department = _department_id.get_first_department_withmanager_in_tree()
                 evaluation[0]["evaluator_id"] = manager_department.manager_id.id
                 evaluation[0]["original_evaluator_id"] = False
                 evaluation[0]["reason_change_id"] = False
@@ -1026,7 +1035,11 @@ class ONSCDesempenoEvaluation(models.Model):
         evaluation[0]["general_comments"] = False
         evaluation[0]["current_job_id"] = self.current_job_id.id
         if self.current_job_id:
-            manager_department = self.current_job_id.department_id.get_first_department_withmanager_in_tree()
+            _department_id = self.current_job_id.department_id
+            if _department_id.manager_id == self.current_job_id.employee_id:
+                manager_department = _department_id.get_first_department_withmanager_in_tree(ignore_first_step=True)
+            else:
+                manager_department = _department_id.get_first_department_withmanager_in_tree()
             evaluation[0]["evaluator_id"] = manager_department.manager_id.id
             evaluation[0]["original_evaluator_id"] = False
             evaluation[0]["reason_change_id"] = False

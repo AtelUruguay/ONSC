@@ -9,6 +9,7 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
+
 class ONSCLegajoJobRoleAssignment(models.Model):
     _name = 'onsc.legajo.job.role.assignment'
     _inherit = [
@@ -33,19 +34,11 @@ class ONSCLegajoJobRoleAssignment(models.Model):
     )
     role_assignment_file = fields.Binary(string="Documento digitalizado", tracking=True, copy=False)
     role_assignment_filename = fields.Char('Nombre del documento digitalizado', copy=False)
-    # state = fields.Selection(
-    #     string='Estado',
-    #     selection=[('active', 'Activa'),
-    #                ('end', 'Finalizada')],
-    #     compute='_compute_state',
-    #     store=True
-    # )
-    #
-    # @api.depends('date_start', 'date_end', 'job_id')
-    # def _compute_state(self):
-    #     for rec in self:
-    #         if rec.date_end and rec.date_end >
 
+    def button_show_role_assignment_action(self):
+        action = self.env.ref('onsc_legajo.onsc_legajo_show_role_assignment_action').suspend_security()
+        action.res_id = self.role_assignment_id.id
+        return action.read()[0]
 
 
 class ONSCLegajoRoleAssignment(models.Model):
@@ -268,6 +261,8 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     @api.constrains("date_start", "contract_id", "job_id", "date_end")
     def _check_date(self):
+        if self._context.get('no_check_write'):
+            return True
         for record in self:
             if record.job_id and record.date_start < record.job_id.start_date:
                 raise ValidationError(_("La fecha desde debe ser mayor o igual a la fecha del puesto actual"))
@@ -281,6 +276,8 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
     def _check_security_job_id(self):
+        if self._context.get('no_check_write'):
+            return True
         Job = self.env['hr.job'].sudo()
         for record in self:
             if not record.job_id:
@@ -300,18 +297,18 @@ class ONSCLegajoRoleAssignment(models.Model):
         for record in self:
             if JobRoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
-                ('date_start', '<=', record.date_start),
-                ('date_end', '=', False)
+                '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())
             ]):
-                raise ValidationError(_("MEJORAR!! Ya tiene una AF vigente..... "))
+                raise ValidationError(
+                    _("El funcionario tiene una Asignación de función activa para dicho Vínculo laboral"))
             if JobRoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
                 ('date_start', '<=', record.date_start),
                 ('date_end', '>=', record.date_start)
             ]):
                 raise ValidationError(
-                    _("MEJORAR!! Fecha de inicio no permitida. "
-                      "Ya existe una Asignación de Función con un período que la comprende..... "))
+                    _("Fecha de inicio no permitida. "
+                      "Ya existe una Asignación de función con un período que la comprende"))
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -358,8 +355,18 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def write(self, values):
         result = super().write(values)
-        if values.get('date_end', False):
-            self.filtered(lambda x: x.date_end < fields.Date.today() and not x.is_end_notified).action_end()
+        if len(self) and 'date_end' in values:
+            ws7_operation = self._context.get('ws7_operation', False)
+            if values.get('date_end') and fields.Date.from_string(values.get('date_end')) < fields.Date.today():
+                if ws7_operation:
+                    self._message_log(body=_('Se finaliza la Asignación de funciones por notificación de %s' % (ws7_operation)))
+                self.action_end()
+            elif ws7_operation:
+                self.write({'state': 'end'})
+                self._message_log(body=_('Se finaliza la Asignación de funciones por notificación de %s' % (ws7_operation)))
+                self._update_job_role_assignments_date_end()
+            else:
+                self._update_job_role_assignments_date_end()
         return result
 
     def unlink(self):
@@ -371,15 +378,33 @@ class ONSCLegajoRoleAssignment(models.Model):
         self.ensure_one()
         self._validate_confirm()
         if self.job_security_job_id == self.security_job_id:
-            self._create_job_role_assignment(self.job_id)
+            self.suspend_security()._create_job_role_assignment(self.job_id)
         else:
-            self._copy_job_and_create_job_role_assignment()
+            self.suspend_security()._copy_job_and_create_job_role_assignment()
         self.write({'state': 'confirm'})
+
+    def _update_job_role_assignments_date_end(self):
+        if len(self.job_role_assignment_ids) > 1:
+            last_job_role_assignment = self.job_role_assignment_ids.sorted(key=lambda x: x.date_start, reverse=True)[0]
+        else:
+            last_job_role_assignment = self.job_role_assignment_ids
+        ws7_operation = self._context.get('ws7_operation', False)
+        if ws7_operation:
+            last_job_role_assignment.job_id._message_log(
+                body=_('Se finaliza la Asignación de funciones por notificación de %s' % (ws7_operation)))
+        # for job_role_assignment_id in self.job_role_assignment_ids.sorted(key=lambda x: x.date_end, reverse=True):
+        cond1 = not last_job_role_assignment.date_end or last_job_role_assignment.date_end != self.date_end
+        cond2 = last_job_role_assignment.date_end and not self.date_end
+        if cond1 or cond2:
+            last_job_role_assignment.with_context(no_check_write=True).write({
+                'date_end': self.date_end
+            })
 
     def _copy_job_and_create_job_role_assignment(self):
         Job = self.env['hr.job']
-        self.suspend_security().job_id.suspend_security().deactivate(self.date_start - relativedelta(days=1))
-        new_job = Job.suspend_security().create_job(
+        self.job_id.suspend_security().with_context(no_check_write=True, is_copy_job=True).deactivate(
+            self.date_start - relativedelta(days=1))
+        new_job = Job.suspend_security().with_context(no_check_write=True, is_copy_job=True).create_job(
             self.contract_id,
             self.department_id,
             self.date_start,
@@ -405,17 +430,13 @@ class ONSCLegajoRoleAssignment(models.Model):
         if send_notification:
             email_template_id = self.env.ref('onsc_legajo.email_template_af_end_records')
             for record in self:
-                email_template_id.send_mail(record.id, force_send=True)
-        for job_role_assignment_id in self.job_role_assignment_ids:
-            if not job_role_assignment_id.date_end or job_role_assignment_id.date_end > self.date_end:
-                job_role_assignment_id.write({
-                    'date_end': self.date_end
-                })
+                email_template_id.send_mail(record.id)
+        self._update_job_role_assignments_date_end()
         self.write({'state': 'end', 'is_end_notified': True})
 
     def process_end_records(self):
         records = self.search([
-            ('state', '=', 'confirm'),
+            ('state', 'in', ['confirm', 'end']),
             ('is_end_notified', '=', False),
             ('date_end', '<', fields.Date.today()),
         ])
