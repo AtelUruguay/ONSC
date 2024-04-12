@@ -81,6 +81,7 @@ class ONSCLegajo(models.Model):
     judicial_antecedents_ids = fields.One2many(comodel_name='onsc.legajo.judicial.antecedents', inverse_name='legajo_id', string="Antecedentes judiciales")
     other_information_ids = fields.One2many(comodel_name='onsc.legajo.other.information', inverse_name='legajo_id', string="Otra información")
     merito_ids = fields.One2many(comodel_name="onsc.legajo.merito", inverse_name="legajo_id", string="Méritos")
+    demerito_ids = fields.One2many(comodel_name="onsc.legajo.demerito", inverse_name="legajo_id", string="Deméritos")
 
     def _compute_contract_info(self):
         for record in self:
