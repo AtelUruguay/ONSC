@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 
 class ONSCLegajoJudicialAntecedents(models.Model):
@@ -19,3 +20,9 @@ class ONSCLegajoJudicialAntecedents(models.Model):
         for record in self:
             if record.document_date > fields.Date.today():
                 raise ValidationError("La Fecha del documento debe ser menor o igual al día de hoy")
+
+    @api.onchange('declaration_date')
+    def onchange_date(self):
+        if self.document_date and self.document_date > fields.Date.today():
+            self.document_date = False
+            return warning_response(_(u"La Fecha de documento debe ser menor o igual al día de hoy"))
