@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import ast
 
 from odoo import fields, models, api
 from odoo.osv import expression
@@ -87,7 +88,10 @@ class ONSCDesempenoScore(models.Model):
                                  ('operating_unit_id', '=', self.operating_unit_id.id),
                                  ('evaluation_stage_id', '=', self.evaluation_stage_id.id)]).ids
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_gap_deal_evaluation_action').read()[0]
-        action.update({'domain': [('id', 'in', ids)], 'target': 'current'})
+        _context = ast.literal_eval(action.get('context', {}))
+        _context['ignore_security_rules'] = True
+        _context['ignore_base_restrict'] = True
+        action.update({'domain': [('id', 'in', ids)], 'target': 'current', 'context': _context})
         return action
 
     def button_open_development_plan(self):
@@ -98,7 +102,10 @@ class ONSCDesempenoScore(models.Model):
                                  ('operating_unit_id', '=', self.operating_unit_id.id),
                                  ('evaluation_stage_id', '=', self.evaluation_stage_id.id)]).ids
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_plan_action').read()[0]
-        action.update({'domain': [('id', 'in', ids)], 'target': 'current'})
+        _context = ast.literal_eval(action.get('context', {}))
+        _context['ignore_security_rules'] = True
+        _context['ignore_base_restrict'] = True
+        action.update({'domain': [('id', 'in', ids)], 'target': 'current', 'context': _context})
         return action
 
     def button_open_tracing_plan(self):
@@ -109,5 +116,8 @@ class ONSCDesempenoScore(models.Model):
                                  ('operating_unit_id', '=', self.operating_unit_id.id),
                                  ('evaluation_stage_id', '=', self.evaluation_stage_id.id)]).ids
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_tracing_plan_action').read()[0]
-        action.update({'domain': [('id', 'in', ids)], 'target': 'current'})
+        _context = ast.literal_eval(action.get('context', {}))
+        _context['ignore_security_rules'] = True
+        _context['ignore_base_restrict'] = True
+        action.update({'domain': [('id', 'in', ids)], 'target': 'current', 'context': _context})
         return action

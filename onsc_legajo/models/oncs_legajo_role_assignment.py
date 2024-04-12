@@ -355,12 +355,15 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def write(self, values):
         result = super().write(values)
-        if 'date_end' in values:
+        if len(self) and 'date_end' in values:
+            ws7_operation = self._context.get('ws7_operation', False)
             if values.get('date_end') and fields.Date.from_string(values.get('date_end')) < fields.Date.today():
+                if ws7_operation:
+                    self._message_log(body=_('Se finaliza la Asignación de funciones por notificación de %s' % (ws7_operation)))
                 self.action_end()
-            elif self._context.get('is_reserva'):
+            elif ws7_operation:
                 self.write({'state': 'end'})
-                self._message_log(body=_('Se finaliza la Asignación de funciones por notificación de Reserva'))
+                self._message_log(body=_('Se finaliza la Asignación de funciones por notificación de %s' % (ws7_operation)))
                 self._update_job_role_assignments_date_end()
             else:
                 self._update_job_role_assignments_date_end()
@@ -385,9 +388,10 @@ class ONSCLegajoRoleAssignment(models.Model):
             last_job_role_assignment = self.job_role_assignment_ids.sorted(key=lambda x: x.date_start, reverse=True)[0]
         else:
             last_job_role_assignment = self.job_role_assignment_ids
-        if self._context.get('is_reserva'):
+        ws7_operation = self._context.get('ws7_operation', False)
+        if ws7_operation:
             last_job_role_assignment.job_id._message_log(
-                body=_('Se finaliza la Asignación de funciones por notificación de Reserva'))
+                body=_('Se finaliza la Asignación de funciones por notificación de %s' % (ws7_operation)))
         # for job_role_assignment_id in self.job_role_assignment_ids.sorted(key=lambda x: x.date_end, reverse=True):
         cond1 = not last_job_role_assignment.date_end or last_job_role_assignment.date_end != self.date_end
         cond2 = last_job_role_assignment.date_end and not self.date_end
@@ -429,7 +433,6 @@ class ONSCLegajoRoleAssignment(models.Model):
                 email_template_id.send_mail(record.id)
         self._update_job_role_assignments_date_end()
         self.write({'state': 'end', 'is_end_notified': True})
-        # if self._context.get('is_reserva'):
 
     def process_end_records(self):
         records = self.search([
