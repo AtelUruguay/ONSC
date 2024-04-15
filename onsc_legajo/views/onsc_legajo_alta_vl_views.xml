@@ -211,7 +211,7 @@
                             </page>
                             <page name="antecedentes_judiciales" string="Antecedentes judiciales" attrs="{'invisible': [('regime_is_legajo', '=', False)]}">
                                 <field name="judicial_antecedents_ids">
-                                    <tree editable="top">
+                                    <tree>
                                         <field name="document_date"/>
                                         <field name="digital_file"
                                                widget="binary"
@@ -219,6 +219,17 @@
                                                options="{'accepted_file_extensions': '.pdf'}"/>
                                         <field name="digital_filename" invisible="1"/>
                                     </tree>
+                                    <form>
+                                        <group>
+                                            <field name="document_date" required="1"/>
+                                            <field name="digital_file"
+                                                   required="1"
+                                                   widget="binary"
+                                                   filename="digital_filename"
+                                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                                            <field name="digital_filename" invisible="1"/>
+                                        </group>
+                                    </form>
                                 </field>
                             </page>
                         </notebook>

@@ -21,7 +21,7 @@ class ONSCLegajoJudicialAntecedents(models.Model):
             if record.document_date > fields.Date.today():
                 raise ValidationError("La Fecha del documento debe ser menor o igual al día de hoy")
 
-    @api.onchange('declaration_date')
+    @api.onchange('document_date')
     def onchange_date(self):
         if self.document_date and self.document_date > fields.Date.today():
             self.document_date = False
