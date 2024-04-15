@@ -98,8 +98,8 @@ class ResUsers(models.Model):
             oauth_user = self._get_user(provider, params)
             assert len(oauth_user) == 1
             return oauth_user
-        except AccessDenied:
-            raise AccessDenied()
+        except AccessDenied as e:
+            raise e
 
     def _get_country_code(self, params):
         """
