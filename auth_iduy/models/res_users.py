@@ -84,9 +84,7 @@ class ResUsers(models.Model):
             ]
             if self.sudo().search_count(args):
                 _logger.info('IDUY:IS USER WITH OTHER LOGIN IN SYSTEM**************')
-                raise Exception(_("Ya existe una persona registrada en el sistema con su mismo email. "
-                                     "Por favor ingrese nuevamente a Id. Uruguay, cambie su email, y vuelva a entrar "
-                                     "al sistema."))
+                raise Exception(_("IDUY: BAD USER LOGIN"))
 
     @api.model
     def _auth_iduy_signin(self, provider, params):
