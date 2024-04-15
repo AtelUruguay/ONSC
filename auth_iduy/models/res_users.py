@@ -84,7 +84,7 @@ class ResUsers(models.Model):
             ]
             if self.sudo().search_count(args):
                 _logger.info('IDUY:IS USER WITH OTHER LOGIN IN SYSTEM**************')
-                raise AccessDenied(_("Ya existe una persona registrada en el sistema con su mismo email. "
+                raise Exception(_("Ya existe una persona registrada en el sistema con su mismo email. "
                                      "Por favor ingrese nuevamente a Id. Uruguay, cambie su email, y vuelva a entrar "
                                      "al sistema."))
 
@@ -98,8 +98,8 @@ class ResUsers(models.Model):
             oauth_user = self._get_user(provider, params)
             assert len(oauth_user) == 1
             return oauth_user
-        except AccessDenied as e:
-            raise e
+        except AccessDenied:
+            raise AccessDenied()
 
     def _get_country_code(self, params):
         """

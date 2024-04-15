@@ -8,7 +8,7 @@ import requests
 import werkzeug.urls
 import werkzeug.utils
 from odoo.addons.auth_oauth.controllers.main import OAuthLogin
-from odoo.addons.web.controllers.main import set_cookie_and_redirect, login_and_redirect
+from odoo.addons.web.controllers.main import set_cookie_and_redirect, login_and_redirect, ensure_db
 from werkzeug.exceptions import BadRequest
 
 from odoo import api, http, SUPERUSER_ID, _
@@ -68,6 +68,19 @@ class OpenIDLogin(OAuthLogin):
                 provider['auth_link'] = "%s?%s" % (
                     provider['auth_endpoint'], werkzeug.urls.url_encode(params))
         return providers
+
+    @http.route()
+    def web_login(self, *args, **kw):
+        ensure_db()
+        response = super(OpenIDLogin, self).web_login(*args, **kw)
+        if response.is_qweb:
+            error = request.params.get('oauth_error')
+            if error == '9':
+                error = _("Ya existe una persona registrada en el sistema con su mismo email. "
+                                     "Por favor ingrese nuevamente a Id. Uruguay, cambie su email, y vuelva a entrar "
+                                     "al sistema.")
+                response.qcontext['error'] = error
+        return response
 
 
 class OAuthController(http.Controller):
@@ -178,6 +191,6 @@ class OAuthController(http.Controller):
             except Exception as e:
                 # signup error
                 _logger.exception("IdUY: %s" % str(e))
-                url = "/web/login?oauth_error=2"
+                url = "/web/login?oauth_error=9"
 
         return set_cookie_and_redirect(url)
