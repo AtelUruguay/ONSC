@@ -76,7 +76,7 @@ class OpenIDLogin(OAuthLogin):
         if response.is_qweb:
             error = request.params.get('oauth_error')
             if error == '9':
-                error = _("Ya existe una persona registrada en el sistema con su mismo email. "
+                error = _("Su Acceso fué denegado o ya existe una persona registrada en el sistema con su mismo email. "
                                      "Por favor ingrese nuevamente a Id. Uruguay, cambie su email, y vuelva a entrar "
                                      "al sistema.")
                 response.qcontext['error'] = error

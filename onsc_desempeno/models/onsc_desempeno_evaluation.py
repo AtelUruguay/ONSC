@@ -948,7 +948,8 @@ class ONSCDesempenoEvaluation(models.Model):
             else:
                 record.write({'state': 'uncompleted'})
 
-        self.search([('evaluation_end_date', '=', fields.Date.today()), ('state', '!=', 'canceled'),
+        self.search([('evaluation_end_date', '<=', fields.Date.today()), ('state', '!=', 'canceled'),
+                     ('locked', '!=', True),
                      ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]).write(
             {'locked': True})
 
