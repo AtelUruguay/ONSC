@@ -3,6 +3,10 @@
 from odoo import api, models, _
 from odoo.addons import base
 from odoo.exceptions import AccessDenied
+import logging
+
+_logger = logging.getLogger(__name__)
+
 
 base.models.res_users.USER_PRIVATE_FIELDS.append('oauth_access_token')
 
@@ -71,6 +75,7 @@ class ResUsers(models.Model):
         :param provider:
         :param params:
         """
+        _logger.info('IDUY: Check user login**************')
         if params.get('uid', False) and params.get('email'):
             args = [
                 ("login", "=", params.get('email')),
@@ -78,6 +83,7 @@ class ResUsers(models.Model):
                 ('oauth_uid', '!=', params.get('uid', False))
             ]
             if self.sudo().search_count(args):
+                _logger.info('IDUY:IS USER WITH OTHER LOGIN IN SYSTEM**************')
                 raise AccessDenied(_("Ya existe una persona registrada en el sistema con su mismo email. "
                                      "Por favor ingrese nuevamente a Id. Uruguay, cambie su email, y vuelva a entrar "
                                      "al sistema."))
