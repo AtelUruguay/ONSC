@@ -40,6 +40,9 @@ class ONSCCVSettings(models.TransientModel):
         related="company_id.ws7_latency_inseconds",
         readonly=False,
         related_sudo=True)
+    record_limit = fields.Integer("Limite Cantidad de Registros", related="company_id.record_limit",
+                                  readonly=False,
+                                  related_sudo=True)
 
     def execute(self):
         return {

@@ -235,6 +235,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             ('code', 'in', [country_code.upper(), country_code.lower()])
         ], limit=1)
         column_names = sheet.row_values(0)
+        limit = self.env.user.company_id.record_limit
+        if limit < (sheet.nrows - 1):
+            raise ValidationError(
+                _('El archivo supera la cantidad de altas permitidas  %s') % limit)
+
         try:
             for row_no in range(1, sheet.nrows):
                 line = list(map(self.process_value, sheet.row(row_no)))
@@ -335,8 +340,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 )
 
                 regime_id = MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
-                                                    line[self.get_position(column_names,
-                                                                           'regime_id')])
+                                                                line[self.get_position(column_names,
+                                                                                       'regime_id')])
 
                 line_occupation_value = line[self.get_position(column_names, 'occupation_id')]
                 occupation_id = MassLine.find_by_code_name_many2one('occupation_id', 'code', 'name',
@@ -864,7 +869,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
         record = self.env[self._fields[field].comodel_name].sudo().search(args, limit=1)
         if record:
             return record.id
-        elif isinstance(value,str) and len(value) == 0:
+        elif isinstance(value, str) and len(value) == 0:
             return False
         else:
             if field in ['address_location_id']:
