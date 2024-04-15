@@ -425,6 +425,8 @@ class ONSCLegajoAltaVL(models.Model):
         self.juramento_bandera_presentacion_date = False
         self.juramento_bandera_file = False
         self.juramento_bandera_filename = False
+        if self.regime_id is False or self.regime_is_legajo is False:
+            self.judicial_antecedents_ids = [(5,)]
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
@@ -476,7 +478,7 @@ class ONSCLegajoAltaVL(models.Model):
 
     def _get_legajo(self, employee):
         if self.regime_is_legajo:
-            return self.env['onsc.legajo']._get_legajo(
+            legajo = self.env['onsc.legajo']._get_legajo(
                 employee,
                 self.date_income_public_administration,
                 self.inactivity_years,
@@ -485,6 +487,12 @@ class ONSCLegajoAltaVL(models.Model):
                 self.juramento_bandera_file,
                 self.juramento_bandera_filename,
             )
+            for judicial_antecedents_ids in self.judicial_antecedents_ids:
+                judicial_antecedents_ids.suspend_security().copy({
+                    'legajo_id': legajo.id,
+                    'alta_vl_id': False,
+                })
+            return legajo
         else:
             return self.env['onsc.legajo']._get_legajo(
                 employee,
