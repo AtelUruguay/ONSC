@@ -1,6 +1,6 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
-from odoo import api, models
+from odoo import api, models, _
 from odoo.addons import base
 from odoo.exceptions import AccessDenied
 
@@ -50,6 +50,7 @@ class ResUsers(models.Model):
 
     @api.model
     def _get_user(self, provider, params):
+        self._check_valid_login(provider, params)
         if params.get('uid', False):
             args = [("oauth_uid", "=", params.get('uid'))]
         else:
@@ -62,6 +63,24 @@ class ResUsers(models.Model):
         else:
             oauth_user.sudo().write(userinfo_dict)
             return oauth_user
+
+    @api.model
+    def _check_valid_login(self, provider, params):
+        """
+        No se permite que mas de un usuario tenga el mismo login, usando como llave complementario el oauth_uid
+        :param provider:
+        :param params:
+        """
+        if params.get('uid', False) and params.get('email'):
+            args = [
+                ("login", "=", params.get('email')),
+                ('oauth_provider_id', '=', provider),
+                ('oauth_uid', '!=', params.get('uid', False))
+            ]
+            if self.sudo().search_count(args):
+                raise AccessDenied(_("Ya existe una persona registrada en el sistema con su mismo email. "
+                                     "Por favor ingrese nuevamente a Id. Uruguay, cambie su email, y vuelva a entrar "
+                                     "al sistema."))
 
     @api.model
     def _auth_iduy_signin(self, provider, params):
