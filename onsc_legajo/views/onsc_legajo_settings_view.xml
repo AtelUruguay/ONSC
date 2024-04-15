@@ -83,8 +83,8 @@
                                     <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Altas Masivas</h6>
                                     <div class="content-group">
                                         <div class="row">
-                                            <label for="record_limit" string="Limite Cantidad de Registros" class="col-md-5 o_light_label"/>
-                                            <field name="record_limit"/>
+                                            <label for="mass_upload_record_limit" string="Limite Cantidad de Registros" class="col-md-5 o_light_label"/>
+                                            <field name="mass_upload_record_limit"/>
                                         </div>
 
                                     </div>

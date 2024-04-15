@@ -235,7 +235,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             ('code', 'in', [country_code.upper(), country_code.lower()])
         ], limit=1)
         column_names = sheet.row_values(0)
-        limit = self.env.user.company_id.record_limit
+        limit = self.env.user.company_id.mass_upload_record_limit
         if limit < (sheet.nrows - 1):
             raise ValidationError(
                 _('El archivo supera la cantidad de altas permitidas  %s') % limit)
