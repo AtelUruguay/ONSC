@@ -24,6 +24,16 @@
                             <field name="show_button_update_occupation" invisible="1"/>
                         </h2>
                     </div>
+                    <div class="alert alert-info"
+                         role="alert"
+                         attrs="{'invisible': [('show_law_legajo_legend', '=', False)]}"
+                         style="margin-bottom:0px;">
+                        <p>
+                            <i class="fa fa-info-circle" role="alert" aria-label="Info" title="Info"/>
+                            <field name="law_legajo_legend"/>
+                            <field name="show_law_legajo_legend" invisible="1"/>
+                        </p>
+                    </div>
                     <group name="top_info">
                         <group name="top_info_left">
                             <field name="name" invisible="1"/>

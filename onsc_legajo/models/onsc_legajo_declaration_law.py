@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, api
+from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 
 class ONSCLegajoDeclarationLaw(models.Model):
@@ -18,3 +19,9 @@ class ONSCLegajoDeclarationLaw(models.Model):
         for record in self:
             if record.declaration_date > fields.Date.today():
                 raise ValidationError("La Fecha de declaración debe ser menor o igual al día de hoy")
+
+    @api.onchange('declaration_date')
+    def onchange_declaration_date(self):
+        if self.declaration_date and self.declaration_date > fields.Date.today():
+            self.declaration_date = False
+            return warning_response(_(u"La Fecha de declaración debe ser menor o igual al día de hoy"))

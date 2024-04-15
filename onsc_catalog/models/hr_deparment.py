@@ -213,8 +213,10 @@ class Department(models.Model):
         return super(Department, self.with_context(model_view_form_id=self.env.ref(
             'onsc_catalog.onsc_catalog_department_form').id)).get_history_record_action(history_id, res_id)
 
-    def get_first_department_withmanager_in_tree(self):
+    def get_first_department_withmanager_in_tree(self, ignore_first_step=False):
         """
+        ignore_first: Boolean. Ignorar el mismo departamento para forzar la busqueda al menos un escalon hacia arriba.
+                                Util para casos donde no puede ser El mismo
         :return: UO con responsable o primer UO con responsable en el arbol hacia arriba
         """
         def recursive_search(department):
@@ -224,7 +226,7 @@ class Department(models.Model):
                 return recursive_search(department.parent_id)
             return self.env['hr.department']
 
-        if self.manager_id:
+        if self.manager_id and not ignore_first_step:
             return self
         else:
             return recursive_search(self.parent_id)

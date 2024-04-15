@@ -31,28 +31,19 @@
             <field name="name">onsc.legajo.role.assignment.form</field>
             <field name="model">onsc.legajo.role.assignment</field>
             <field name="arch" type="xml">
-                <form string="Asignación de funciones">
+                <form string="Asignación de funciones" duplicate="0">
                     <header>
                         <button name="action_confirm" class="btn btn-primary"
                                 type="object" string="Confirmar"
                                 groups="onsc_legajo.group_legajo_role_assignment_recursos_humanos_inciso,onsc_legajo.group_legajo_role_assignment_recursos_humanos_ue,onsc_legajo.group_legajo_role_assignment_administrar"
                                 states="draft"/>
-                        <field name="state" widget="statusbar" clickable="1"/>
+                        <field name="state" widget="statusbar"/>
                     </header>
                     <sheet>
-<!--                        <div class="alert alert-info" role="alert"-->
-<!--                             attrs="{'invisible': [('is_other_role_assignment_active', '=', False)]}">-->
-<!--                            <p class="mb-0">-->
-<!--                                <strong>-->
-<!--                                    El funcionario tiene una Asignación de funciones activa para dicho Vínculo laboral.-->
-<!--                                </strong>-->
-<!--                            </p>-->
-<!--                        </div>-->
                         <div name="oe_tittle" class="oe_title"/>
                         <field name="operating_unit_id" invisible="1" force_save="1"/>
                         <field name="inciso_id" invisible="1" force_save="1"/>
                         <field name="should_disable_form_edit" invisible="1"/>
-<!--                        <field name="is_other_role_assignment_active" invisible="0"/>-->
                         <group name="main_group">
                             <group name="main_group_left">
                                 <field name="employee_id_domain" invisible="1"/>
@@ -79,7 +70,6 @@
                                        domain="contract_id_domain"
                                        attrs="{'readonly': ['|',('state', '!=', 'draft'),('show_contract', '=', False)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-<!--                                <field name="department_id_domain" invisible="1"/>-->
                                 <field name="job_id"
                                        context="{'custom_display_name':True}"
                                        force_save="1"

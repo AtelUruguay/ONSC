@@ -18,6 +18,8 @@ class ResCompany(models.Model):
     days_notification_end_ev = fields.Integer(u"Días para notificar antes de la fecha de fin de evaluación")
     days_gap_deal_eval_creation = fields.Integer(u"Días para la creación de Acuerdos de brecha")
     days_gap_develop_plan_creation = fields.Integer(u"Días para la creación de Plan de desarrollo")
+    is_improvement_areas_help_form_active = fields.Boolean('Activar ayuda para formulario de competencias')
+    improvement_areas_help_text = fields.Text('Ayuda para formulario de competencias')
 
     # PUNTAJE
     eval_360_score = fields.Integer(string='Puntaje de Evaluación 360')
@@ -48,7 +50,9 @@ class ResCompany(models.Model):
             "tracing_plan_score",
             "tracing_plan_activity_score",
             "notification_pending_text",
-            "is_notification_pending_form_active"
+            "is_notification_pending_form_active",
+            "is_improvement_areas_help_form_active",
+            "improvement_areas_help_text"
         ]
         if any(x in vals.keys() for x in _fields):
             return super(ResCompany, self.suspend_security()).write(vals)

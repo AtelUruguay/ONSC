@@ -190,9 +190,20 @@ class ONSCLegajoAltaVL(models.Model):
                     record.cv_sex = cv_digital_id.cv_sex
 
                 legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
-                if legajo:
+                if legajo and record.regime_is_legajo:
                     record.date_income_public_administration = legajo.public_admin_entry_date
                     record.inactivity_years = legajo.public_admin_inactivity_years_qty
+                    record.juramento_bandera_date = legajo.juramento_bandera_date
+                    record.juramento_bandera_presentacion_date = legajo.juramento_bandera_presentacion_date
+                    record.juramento_bandera_file = legajo.juramento_bandera_file
+                    record.juramento_bandera_filename = legajo.juramento_bandera_filename
+                else:
+                    record.date_income_public_administration = False
+                    record.inactivity_years = False
+                    record.juramento_bandera_date = False
+                    record.juramento_bandera_presentacion_date = False
+                    record.juramento_bandera_file = False
+                    record.juramento_bandera_filename = False
 
                 record.cv_digital_id = cv_digital_id
                 record.country_code = cv_digital_id.country_id.code
@@ -235,8 +246,9 @@ class ONSCLegajoAltaVL(models.Model):
                 record.cv_last_name_2 = record.partner_id.cv_last_name_2
                 record.full_name = record.partner_id.cv_full_name
 
-    @api.onchange('regime_id')
+    @api.onchange('regime_id', 'employee_id')
     def onchange_regimen(self):
+        Legajo = self.env['onsc.legajo'].sudo()
         for rec in self:
             rec.descriptor1_id = False
             rec.descriptor2_id = False
@@ -244,6 +256,17 @@ class ONSCLegajoAltaVL(models.Model):
             rec.descriptor4_id = False
             rec.contract_expiration_date = False
             rec.vacante_ids = False
+            legajo = Legajo.search([('employee_id', '=', rec.employee_id.id)], limit=1)
+            if rec.employee_id and legajo and rec.regime_is_legajo:
+                rec.juramento_bandera_date = legajo.juramento_bandera_date
+                rec.juramento_bandera_presentacion_date = legajo.juramento_bandera_presentacion_date
+                rec.juramento_bandera_file = legajo.juramento_bandera_file
+                rec.juramento_bandera_filename = legajo.juramento_bandera_filename
+            else:
+                rec.juramento_bandera_date = False
+                rec.juramento_bandera_presentacion_date = False
+                rec.juramento_bandera_file = False
+                rec.juramento_bandera_filename = False
 
     @api.onchange('descriptor1_id',
                   'descriptor2_id',

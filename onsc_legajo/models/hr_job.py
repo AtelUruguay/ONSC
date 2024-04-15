@@ -218,7 +218,7 @@ class HrJob(models.Model):
         }
 
     # INTELIGENCIA DE ENTIDAD
-    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False, source_job=False):
+    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False, end_date=False, source_job=False):
         """
         CREA NUEVO PUESTO A PARTIR DE LA DATA DE ENTRADA
         :param contract: Recordset a hr.contract
@@ -226,6 +226,7 @@ class HrJob(models.Model):
         :param start_date: Date
         :param security_job: Recordset a onsc.legajo.security.job
         :param extra_security_roles: Extra security to apply
+        :param end_date: Pasar en caso que el puesto tenga definida una fecha de fin. Debe ser a futuro
         :return: nuevo recordet de hr.job
         """
         role_extra_ids = [(5,)]
@@ -244,6 +245,7 @@ class HrJob(models.Model):
             'contract_id': contract.id,
             'department_id': department.id,
             'start_date': start_date,
+            'end_date': end_date,
             'security_job_id': security_job.id,
             'role_extra_ids': role_extra_ids
         })
@@ -316,8 +318,8 @@ class HrJobRoleLine(models.Model):
                 lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
             if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (
                     record.end_date is False or record.end_date >= x.start_date)) or (
-                                                    x.end_date and x.end_date >= record.start_date and (  # noqa
-                                                    record.end_date is False or record.end_date >= x.start_date))):  # noqa
+                                                    x.end_date and x.end_date >= record.start_date and (
+                                                    record.end_date is False or record.end_date >= x.start_date))):
                 raise ValidationError(_("El rol configurado no puede repetirse para el mismo puesto en el mismo "
                                         "periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
 

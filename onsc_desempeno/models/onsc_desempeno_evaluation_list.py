@@ -511,7 +511,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         job = Job.search([
             ('department_id', '=', self.manager_uo_id.id),
             ('employee_id', '=', self.manager_id.id),
-            '|',('end_date','=',False), ('end_date','>=',fields.Date.today())
+            '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
         ], limit=1)
         # SI CONTRATO EN DESCRIPTORES EXCLUIDOS ENTONCES NO DISPONIBLE
         if job.contract_id.descriptor1_id.id in excluded_descriptor1_ids:
@@ -520,8 +520,6 @@ class ONSCDesempenoEvaluationList(models.Model):
         if job.department_id.hierarchical_level_id.order == 1:
             return False
         return True
-
-
 
     def _create_environment_evaluation(self, data):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
@@ -573,7 +571,11 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation[0]["evaluation_type"] = "gap_deal"
         evaluation[0]["current_job_id"] = record.current_job_id.id
         if record.current_job_id:
-            manager_department = record.current_job_id.department_id.get_first_department_withmanager_in_tree()
+            _department_id = record.current_job_id.department_id
+            if _department_id.manager_id == record.current_job_id.employee_id:
+                manager_department = _department_id.get_first_department_withmanager_in_tree(ignore_first_step=True)
+            else:
+                manager_department = _department_id.get_first_department_withmanager_in_tree()
             evaluation[0]["evaluator_id"] = manager_department.manager_id.id
             evaluation[0]["uo_id"] = record.current_job_id.department_id.id
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)

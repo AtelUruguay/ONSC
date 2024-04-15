@@ -10,7 +10,7 @@
                         <group>
                             <field name="cv_digital_id" invisible="1"/>
                             <field name="name_event"/>
-                            <field name="type_event_id"/>
+                            <field name="type_event_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="mode"/>
                             <field name="country_id"/>
                             <field name="city_id"
