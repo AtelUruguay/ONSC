@@ -12,6 +12,7 @@
                             <field name="state" invisible="1"/>
                             <field name="state_deal" invisible="1"/>
                             <field name="competency_form_edit" invisible="1"/>
+                             <field name="is_improvement_areas_help_form_active" invisible="1"/>
                             <label for="skill_id"/>
                             <div>
                                 <field name="skill_id" readonly="1"
@@ -29,9 +30,21 @@
                                    name="improvement_areas"
                                    attrs="{'readonly':[('competency_form_edit', '=',True)]}"
                                    required="1"/>
-
-                        </group>
+                         </group>
                     </group>
+                    <div class="alert alert-info" role="alert"
+                         name="div_alert_env_form"
+                         style="overflow:hidden;"
+                         attrs="{'invisible': [('is_improvement_areas_help_form_active', '=', False)]}">
+                        <div class="oe_left">
+                            <p class="mb-0">
+                                <strong>
+                                    <field name="improvement_areas_help_text"/>
+                                </strong>
+                                <newline/>
+                            </p>
+                        </div>
+                    </div>
                     <notebook>
                         <page string="Dimensiones">
                             <field name="skill_line_ids" options="{'no_open': True}" readonly="1" create="0" delete="0" edit="0">

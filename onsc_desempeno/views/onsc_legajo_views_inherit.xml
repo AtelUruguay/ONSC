@@ -7,7 +7,7 @@
         <field name="priority">20</field>
         <field name="arch" type="xml">
             <xpath expr="//notebook[last()]"  position="inside">
-                <page name="desempenio" string="Evaluación de desempeño"
+               <page name="desempenio" string="Evaluación de desempeño"
                       attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                      <field name="show_alert" invisible ="1"/>
                      <div class="alert alert-info" role="alert"
