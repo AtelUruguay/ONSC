@@ -25,7 +25,8 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
 
     evaluation_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True,
                                     ondelete='cascade')
-    consolidate_id = fields.Many2one('onsc.desempeno.consolidated', string='Competencia', readonly=True, ondelete='set null')
+    consolidate_id = fields.Many2one('onsc.desempeno.consolidated', string='Competencia', readonly=True,
+                                     ondelete='set null')
     gap_deal_id = fields.Many2one('onsc.desempeno.evaluation', string='Competencia', readonly=True, ondelete='set null')
     state = fields.Selection(STATE, string='Estado', related='evaluation_id.state', readonly=True)
     state_deal = fields.Selection(STATE, string='Estado', related='gap_deal_id.state', readonly=True)
@@ -36,11 +37,7 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         string="Lineas de competencia")
     degree_id = fields.Many2one('onsc.desempeno.degree', string='Grado de Necesidad de Desarrollo',
                                 required=False, ondelete='restrict')
-    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=False,
-                                    help='Para identificar la necesidad de desarrollo que requiere la persona, '
-                                         'compare, para cada competencia, el desempeño observado con los '
-                                         'comportamientos esperados, contenidos en las dimensiones de '
-                                         'cada competencia.')
+    improvement_areas = fields.Text(string='Brecha/Fortalezas/Aspectos a mejorar', required=False)
     evaluation_form_edit = fields.Boolean('Puede editar el form?', related='evaluation_id.evaluation_form_edit', )
     order = fields.Integer('Orden')
     locked = fields.Boolean('Bloqueado', related='evaluation_id.locked')
@@ -51,6 +48,21 @@ class ONSCDesempenoEvaluationCompetency(models.Model):
         compute=lambda s: s._get_help('skill_tooltip'),
         default=lambda s: s._get_help('skill_tooltip', True))
     competency_form_edit = fields.Boolean('Puede editar el form?', compute='_compute_competency_form_edit')
+    is_improvement_areas_help_form_active = fields.Boolean(
+        compute=lambda s: s._get_value_config('is_improvement_areas_help_form_active'),
+        default=lambda s: s._get_value_config('is_improvement_areas_help_form_active', True)
+    )
+    improvement_areas_help_text = fields.Text(
+        compute=lambda s: s._get_value_config('improvement_areas_help_text'),
+        default=lambda s: s._get_value_config('improvement_areas_help_text', True)
+    )
+
+    def _get_value_config(self, help_field='', is_default=False):
+        _url = eval('self.env.user.company_id.%s' % help_field)
+        if is_default:
+            return _url
+        for rec in self:
+            setattr(rec, help_field, _url)
 
     @api.depends('state', 'state_deal')
     def _compute_competency_form_edit(self):
