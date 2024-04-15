@@ -343,7 +343,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                                                     line_occupation_value)
                 _is_occupation_required = self._is_occupation_required(descriptor1_id, regime_id)
                 if line_occupation_value and not _is_occupation_required:
-                    message_error.append("El campo ocupación no es obligatorio y ha sido definido")
+                    message_error.append("No corresponde ocupación para ese vínculo")
                 if not occupation_id and _is_occupation_required:
                     message_error.append("El campo ocupación es obligatorio y no está definido o no ha sido encontrado")
                 values = {
