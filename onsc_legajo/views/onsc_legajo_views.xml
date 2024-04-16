@@ -164,11 +164,7 @@
                                    attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
                                 <tree>
                                     <field name="declaration_date"/>
-                                    <field name="digital_file"
-                                           widget="binary"
-                                           filename="digital_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="digital_filename" invisible="1"/>
+                                    <field name="digital_filename"/>
                                     <field name="create_date" string="Fecha del registro" readonly="1"/>
                                 </tree>
                                 <form>
@@ -189,12 +185,7 @@
                                 attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
                                 <tree delete="0">
                                     <field name="document_date" required="1"/>
-                                    <field name="digital_file"
-                                           required="1"
-                                           widget="binary"
-                                           filename="digital_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="digital_filename" invisible="1"/>
+                                    <field name="digital_filename"/>
                                 </tree>
                                 <form>
                                     <group>
@@ -214,11 +205,7 @@
                             <field name="other_information_ids">
                                 <tree>
                                     <field name="document_date"/>
-                                    <field name="digital_file"
-                                           widget="binary"
-                                           filename="digital_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
-                                    <field name="digital_filename" invisible="1"/>
+                                    <field name="digital_filename"/>
                                 </tree>
                                 <form>
                                     <group>
@@ -245,11 +232,7 @@
                                         <field name="operating_unit_id"
                                                domain="[('inciso_id', '=', inciso_id)]"/>
                                         <field name="document_date"/>
-                                        <field name="digital_file"
-                                               widget="binary"
-                                               filename="digital_filename"
-                                               options="{'accepted_file_extensions': '.pdf'}"/>
-                                        <field name="digital_filename" invisible="1"/>
+                                        <field name="digital_filename"/>
                                         <field name="notification_date"/>
                                         <field name="start_date"/>
                                         <field name="end_date"/>
