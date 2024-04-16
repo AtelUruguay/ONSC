@@ -20,3 +20,9 @@ class ONSCLegajoOtherInformation(models.Model):
         for record in self:
             if record.document_date > fields.Date.today():
                 raise ValidationError("La Fecha del documento debe ser menor o igual al día de hoy")
+
+    @api.onchange('document_date')
+    def onchange_date(self):
+        if self.document_date and self.document_date > fields.Date.today():
+            self.document_date = False
+            return warning_response(_(u"La Fecha de documento debe ser menor o igual al día de hoy"))
