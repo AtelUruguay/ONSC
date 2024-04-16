@@ -90,6 +90,11 @@
                                        attrs="{'readonly': [('state', '!=', 'borrador')]}"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                 <field name="end_date"/>
+                                <field name="causes_discharge_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                <field name="causes_discharge_extended_id"
+                                       attrs="{'invisible': [('is_require_extended', '=', False)]}"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                             </group>
                             <group name="contract_right">
                                 <button name="button_open_contract" class="fa fa-external-link "
@@ -143,15 +148,6 @@
                                     </group>
                                 </form>
                             </field>
-                        </group>
-                        <group name="group6">
-                            <group>
-                                <field name="causes_discharge_id"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
-                                <field name="causes_discharge_extended_id"
-                                       attrs="{'invisible': [('is_require_extended', '=', False)]}"
-                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
-                            </group>
                         </group>
                         <group name="adicional" string="Información Adicional">
                             <field name="additional_information" nolabel="1"
