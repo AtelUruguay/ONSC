@@ -59,6 +59,8 @@ class ONSCLegajo(models.Model):
 
     is_mi_legajo = fields.Boolean(string="¿Es mi legajo?", compute='_compute_is_mi_legajo')
     is_any_regime_legajo = fields.Boolean(string=u'¿Algún Régimen de los Contratos tiene la marca Legajo?', compute='_compute_is_any_regime_legajo')
+    should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_is_mi_legajo')
 
     juramento_bandera_date = fields.Date(
         string='Fecha de Juramento de fidelidad a la Bandera nacional', history=True)
@@ -106,7 +108,9 @@ class ONSCLegajo(models.Model):
         any_juramento_in_vals = ('juramento_bandera_date' in vals or 'juramento_bandera_presentacion_date' in vals or 'juramento_bandera_file' in vals)
         if any_juramento_in_vals and 'eff_date' not in vals:
             vals['eff_date'] = fields.Date.today()
-        return super(ONSCLegajo, self).write(vals)
+            return super(ONSCLegajo, self.suspend_security()).write(vals)
+        else:
+            return super(ONSCLegajo, self).write(vals)
 
     def button_open_contract(self):
         self.ensure_one()
@@ -136,7 +140,9 @@ class ONSCLegajo(models.Model):
 
     def _compute_is_mi_legajo(self):
         for rec in self:
-            rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
+            is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
+            rec.is_mi_legajo = is_mi_legajo
+            rec.should_disable_form_edit = is_mi_legajo
 
     def _compute_is_any_regime_legajo(self):
         for rec in self:
