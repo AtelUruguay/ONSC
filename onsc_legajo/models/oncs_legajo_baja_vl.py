@@ -1,9 +1,8 @@
 # -*- coding:utf-8 -*-
 import json
 import logging
+
 from email_validator import EmailNotValidError, validate_email
-
-
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
@@ -105,6 +104,7 @@ class ONSCLegajoBajaVL(models.Model):
                                               compute='_compute_should_disable_form_edit')
     is_ready_send_sgh = fields.Boolean(string="Listo para enviar", compute='_compute_is_ready_to_send')
     full_name = fields.Char('Nombre', compute='_compute_full_name')
+    is_read_only_description = fields.Boolean("Solo lectura los campos descripcion y norma")
 
     @api.depends('state')
     def _compute_should_disable_form_edit(self):
@@ -163,6 +163,33 @@ class ONSCLegajoBajaVL(models.Model):
     def onchange_contract_id(self):
         self.operating_unit_id = self.contract_id.operating_unit_id.id
         self.inciso_id = self.contract_id.inciso_id.id
+
+    @api.onchange('causes_discharge_id')
+    def onchange_causes_discharge(self):
+        if not self.causes_discharge_id.is_require_extended and (
+                self.causes_discharge_id.reason_description or self.causes_discharge_id.resolution_description or self.causes_discharge_id.norm_id):
+            self.reason_description = self.causes_discharge_id.reason_description
+            self.resolution_description = self.causes_discharge_id.resolution_description
+            self.norm_id = self.causes_discharge_id.norm_id
+            self.is_read_only_description = True
+        else:
+            self.is_read_only_description = False
+            self.reason_description = False
+            self.resolution_description = False
+            self.norm_id = False
+
+    @api.onchange('causes_discharge_extended_id')
+    def onchange_causes_discharge_extended_id(self):
+        if self.causes_discharge_extended_id.reason_description or self.causes_discharge_extended_id.resolution_description or self.causes_discharge_extended_id.norm_id:
+            self.reason_description = self.causes_discharge_extended_id.reason_description
+            self.resolution_description = self.causes_discharge_extended_id.resolution_description
+            self.norm_id = self.causes_discharge_extended_id.norm_id
+            self.is_read_only_description = True
+        else:
+            self.reason_description = False
+            self.resolution_description = False
+            self.norm_id = False
+            self.is_read_only_description = False
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):

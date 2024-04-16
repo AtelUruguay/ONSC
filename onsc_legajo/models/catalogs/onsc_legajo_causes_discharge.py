@@ -20,6 +20,9 @@ class ONSCLegajoCausesDischarge(models.Model):
     is_require_extended = fields.Boolean(u"¿Requiere extendido?")
     causes_discharge_line_ids = fields.One2many("onsc.legajo.causes.discharge.line", "causes_discharge_id",
                                                 string="Motivos de causal de egreso extendido")
+    reason_description = fields.Char(string='Descripción del motivo')
+    resolution_description = fields.Char(string='Descripción de la resolución')
+    norm_id = fields.Many2one('onsc.legajo.norm', string='Norma')
     active = fields.Boolean('Activo', default=True)
 
     _sql_constraints = [
@@ -31,6 +34,10 @@ class ONSCLegajoCausesDischarge(models.Model):
     def onchange_require_extended(self):
         if not self.is_require_extended:
             self.causes_discharge_line_ids = [(5, 0, 0)]
+        else:
+            self.reason_description = False
+            self.resolution_description = False
+            self.norm_id = False
 
     @api.onchange('is_by_inciso')
     def onchange_is_by_inciso(self):
@@ -48,3 +55,6 @@ class ONSCLegajoCausesDischargeLine(models.Model):
     causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge",
                                           string="Causal de egreso",
                                           ondelete='cascade')
+    reason_description = fields.Char(string='Descripción del motivo')
+    resolution_description = fields.Char(string='Descripción de la resolución')
+    norm_id = fields.Many2one('onsc.legajo.norm', string='Norma')
