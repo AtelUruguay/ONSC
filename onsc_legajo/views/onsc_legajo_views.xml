@@ -187,7 +187,7 @@
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                             <field name="judicial_antecedents_ids"
                                 attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
-                                <tree>
+                                <tree delete="0">
                                     <field name="document_date" required="1"/>
                                     <field name="digital_file"
                                            required="1"
@@ -208,6 +208,84 @@
                                     </group>
                                 </form>
                             </field>
+                        </page>
+                        <page name="other_information" string="Otra información de funcionario"
+                              attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
+                            <field name="other_information_ids">
+                                <tree>
+                                    <field name="document_date"/>
+                                    <field name="digital_file"
+                                           widget="binary"
+                                           filename="digital_filename"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="digital_filename" invisible="1"/>
+                                </tree>
+                                <form>
+                                    <group>
+                                        <field name="document_date"/>
+                                    <field name="digital_file"
+                                           widget="binary"
+                                           filename="digital_filename"
+                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                    <field name="digital_filename" invisible="1"/>
+                                    </group>
+                                </form>
+                            </field>
+                        </page>
+                        <page name="meritos" string="Méritos"
+                              attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
+                            <field name="merito_ids"/>
+                        </page>
+                        <page name="demeritos" string="Deméritos" attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
+                                <field name="demerito_ids">
+                                    <tree>
+                                        <field name="demerit_id"/>
+                                        <field name="title"/>
+                                        <field name="inciso_id"/>
+                                        <field name="operating_unit_id"
+                                               domain="[('inciso_id', '=', inciso_id)]"/>
+                                        <field name="document_date"/>
+                                        <field name="digital_file"
+                                               widget="binary"
+                                               filename="digital_filename"
+                                               options="{'accepted_file_extensions': '.pdf'}"/>
+                                        <field name="digital_filename" invisible="1"/>
+                                        <field name="notification_date"/>
+                                        <field name="start_date"/>
+                                        <field name="end_date"/>
+                                        <field name="type_sanction_id"/>
+                                        <field name="description"/>
+                                    </tree>
+                                    <form>
+                                        <group>
+                                            <group>
+                                                <field name="demerit_id"
+                                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                <field name="title"/>
+                                                <field name="inciso_id"
+                                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                                <field name="operating_unit_id"
+                                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                                       domain="[('inciso_id', '=', inciso_id)]"/>
+                                                <field name="type_sanction_id"
+                                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                                                       domain="[('demerit_id', '=', demerit_id)]"/>
+                                                <field name="description"/>
+                                            </group>
+                                            <group>
+                                                <field name="start_date"/>
+                                                <field name="end_date"/>
+                                                <field name="document_date"/>
+                                                <field name="digital_file"
+                                                       widget="binary"
+                                                       filename="digital_filename"
+                                                       options="{'accepted_file_extensions': '.pdf'}"/>
+                                                <field name="digital_filename" invisible="1"/>
+                                                <field name="notification_date"/>
+                                            </group>
+                                        </group>
+                                    </form>
+                                </field>
                         </page>
                     </notebook>
                 </sheet>
