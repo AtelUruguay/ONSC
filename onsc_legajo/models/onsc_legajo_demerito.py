@@ -2,6 +2,7 @@
 
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 
 class ONSCLegajoDemerito(models.Model):
@@ -9,7 +10,7 @@ class ONSCLegajoDemerito(models.Model):
     _description = 'Demérito'
 
     demerit_id = fields.Many2one(comodel_name="onsc.legajo.type.demerit", string="Tipo de demérito", required=True, )
-    title = fields.Text(string="Título", required=True)
+    title = fields.Char(string="Título", required=True)
     inciso_id = fields.Many2one(comodel_name="onsc.catalog.inciso", string="Inciso", required=True)
     operating_unit_id = fields.Many2one(comodel_name="operating.unit", string="Unidad ejecutora", required=True)
     document_date = fields.Date(string="Fecha del documento", required=True)
@@ -18,7 +19,7 @@ class ONSCLegajoDemerito(models.Model):
     notification_date = fields.Date(string="Fecha de notificación", required=True)
     start_date = fields.Date(string="Fecha inicio", required=True)
     end_date = fields.Date(string="Fecha hasta", required=True)
-    description = fields.Text(string="Descripción del demérito", required=True)
+    description = fields.Char(string="Descripción del demérito", required=True)
     type_sanction_id = fields.Many2one(comodel_name="onsc.legajo.type.sanction", string="Tipo de sanción",
                                        required=True, )
     legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", required=True)

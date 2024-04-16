@@ -2,15 +2,19 @@
 
 from odoo import fields, models, api
 from odoo.exceptions import ValidationError
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 
 class ONSCLegajoOtherInformation(models.Model):
     _name = "onsc.legajo.other.information"
     _description = 'Otra información de funcionario'
 
-    document_date = fields.Date(string="Fecha de ingreso de información", required=True, default=fields.Date.today)
-    title = fields.Text(string="Título", required=True)
-    description = fields.Text(string="Descripción", required=True)
+    document_date = fields.Date(
+        string="Fecha de ingreso de información",
+        required=True,
+        default=lambda s: fields.Date.today())
+    title = fields.Char(string="Título", required=True)
+    description = fields.Char(string="Descripción", required=True)
     digital_file = fields.Binary(string="Documento digitalizado", required=True)
     digital_filename = fields.Char("Nombre del documento digitalizado")
     legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", required=True)
