@@ -941,7 +941,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 record.write({'state': 'uncompleted'})
 
         for record in self.search([
-            ('general_cycle_id', 'in', general_ids),
+            ('evaluation_stage_id.active', '=', True),
             ('environment_definition_end_date', '<=', fields.Date.today()),
             ('state', 'not in', ['canceled', 'finished', 'uncompleted']),
             ('evaluation_type', 'in', ['environment_definition'])]):
@@ -951,7 +951,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 record.write({'state': 'uncompleted'})
 
         self.search([
-            ('general_cycle_id', 'in', general_ids),
+            ('evaluation_stage_id.active', '=', True),
             ('evaluation_end_date', '<=', fields.Date.today()),
             ('state', '!=', 'canceled'),
             ('locked', '!=', True),
