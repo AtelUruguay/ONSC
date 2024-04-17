@@ -80,10 +80,10 @@
                             <div class="col-12 col-lg-6 o_setting_box" id="legajo_help_settings">
                                 <div class="o_setting_left_pane"/>
                                 <div class="o_setting_right_pane">
-                                    <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de Altas Masivas</h6>
+                                    <h6 style="background-color:#e9ecef;padding:0.4rem 16px">Configuración de altas masivas</h6>
                                     <div class="content-group">
                                         <div class="row">
-                                            <label for="mass_upload_record_limit" string="Limite Cantidad de Registros" class="col-md-5 o_light_label"/>
+                                            <label for="mass_upload_record_limit" string="Límite cantidad de registros" class="col-md-5 o_light_label"/>
                                             <field name="mass_upload_record_limit"/>
                                         </div>
 

@@ -22,9 +22,9 @@ class ResCompany(models.Model):
         string='Fecha/hora desde')
     ws7_latency_inseconds = fields.Integer(
         string='Latencia(segundos)')
-    mass_upload_record_limit = fields.Integer("Limite Cantidad de Registros")
+    mass_upload_record_limit = fields.Integer(u"Límite Cantidad de Registros")
 
     def write(self, vals):
-        if all('ws7' in key for key in vals.keys()):
+        if all('ws7' or 'mass_upload_record_limit' in key for key in vals.keys()):
             return super(ResCompany, self.suspend_security()).write(vals)
         return super(ResCompany, self).write(vals)
