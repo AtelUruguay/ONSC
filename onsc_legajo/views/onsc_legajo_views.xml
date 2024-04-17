@@ -158,7 +158,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page name="daclaration_law" string="Declaración Ley 19574, Decreto 380-2018"
+                        <page name="page_declaration_law" string="Declaración Ley 19574, Decreto 380-2018"
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                             <field name="declaration_law_ids"
                                    attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
@@ -179,7 +179,7 @@
                                 </form>
                             </field>
                         </page>
-                        <page name="judicial_antecedents" string="Antecedentes judiciales"
+                        <page name="page_judicial_antecedents" string="Antecedentes judiciales"
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                             <field name="judicial_antecedents_ids"
                                 attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
@@ -200,7 +200,7 @@
                                 </form>
                             </field>
                         </page>
-                        <page name="other_information" string="Otra información de funcionario"
+                        <page name="page_other_information" string="Otra información de funcionario"
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                             <field name="other_information_ids">
                                 <tree>
@@ -219,11 +219,11 @@
                                 </form>
                             </field>
                         </page>
-                        <page name="meritos" string="Méritos"
+                        <page name="page_meritos" string="Méritos"
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                             <field name="merito_ids"/>
                         </page>
-                        <page name="demeritos" string="Deméritos" attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
+                        <page name="page_demeritos" string="Deméritos" attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                                 <field name="demerito_ids">
                                     <tree>
                                         <field name="demerit_id"/>
