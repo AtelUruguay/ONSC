@@ -25,3 +25,4 @@ from . import onsc_legajo_judicial_antecedents
 from . import onsc_legajo_other_information
 from . import onsc_legajo_merito
 from . import onsc_legajo_demerito
+from . import onsc_legajo_vote_control

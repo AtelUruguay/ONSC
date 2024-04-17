@@ -60,6 +60,7 @@ ONSC - Legajo
         'views/hr_contract_views.xml',
         'views/onsc_legajo_views.xml',
         'views/onsc_legajo_other_views.xml',
+        'views/onsc_legajo_vote_control_views.xml',
         'views/ir_attachment_view.xml',
         'views/onsc_legajo_alta_cs_view.xml',
         'views/onsc_legajo_cambio_uo_views.xml',
