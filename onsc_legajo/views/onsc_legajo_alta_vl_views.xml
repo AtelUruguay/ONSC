@@ -214,11 +214,7 @@
                                 <field name="judicial_antecedents_ids">
                                     <tree>
                                         <field name="document_date"/>
-                                        <field name="digital_file"
-                                               widget="binary"
-                                               filename="digital_filename"
-                                               options="{'accepted_file_extensions': '.pdf'}"/>
-                                        <field name="digital_filename" invisible="1"/>
+                                        <field name="digital_filename"/>
                                     </tree>
                                     <form>
                                         <group>
