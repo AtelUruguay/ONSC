@@ -315,5 +315,43 @@
             <field name="implied_ids"
                    eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
         </record>
+
+        <!--CONTROL DE VOTOS-->
+        <record id="group_legajo_vote_control_recursos_humanos_inciso" model="res.groups">
+            <field name="name">Control de votos - Recursos Humanos Inciso</field>
+            <field name="comment">Control de votos - Recursos Humanos Inciso</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+
+        <record id="group_legajo_vote_control_recursos_humanos_ue" model="res.groups">
+            <field name="name">Control de votos - Recursos Humanos UE</field>
+            <field name="comment">Control de votos - Recursos Humanos UE</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_vote_control_administrar" model="res.groups">
+            <field name="name">Control de votos - Administrar Control de votos</field>
+            <field name="comment">Control de votos - Administrar Control de votos</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_vote_control_gestor" model="res.groups">
+            <field name="name">Control de votos - Gestión de Control de votos</field>
+            <field name="comment">Control de votos - Gestión de Control de votos</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
+        <record id="group_legajo_vote_control_consulta" model="res.groups">
+            <field name="name">Control de votos - Consulta Control de votos</field>
+            <field name="comment">Control de votos - Consulta Control de votos</field>
+            <field name="category_id" ref="module_category_onsc_legajo"/>
+            <field name="implied_ids"
+                   eval="[(4, ref('operating_unit.group_multi_operating_unit')),(4, ref('base.group_multi_company')),(4, ref('model_history.group_history_view'))]"/>
+        </record>
     </data>
 </odoo>
