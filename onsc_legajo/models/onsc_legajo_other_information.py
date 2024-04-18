@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 
 class ONSCLegajoOtherInformation(models.Model):
@@ -23,10 +24,10 @@ class ONSCLegajoOtherInformation(models.Model):
     def _check_date(self):
         for record in self:
             if record.entry_date > fields.Date.today():
-                raise ValidationError("La Fecha del documento debe ser menor o igual al día de hoy")
+                raise ValidationError("La Fecha de ingreso de información debe ser menor o igual al día de hoy")
 
     @api.onchange('entry_date')
     def onchange_date(self):
         if self.entry_date and self.entry_date > fields.Date.today():
             self.entry_date = False
-            return warning_response(_(u"La Fecha de documento debe ser menor o igual al día de hoy"))
+            return warning_response(_(u"La Fecha de ingreso de información ser menor o igual al día de hoy"))
