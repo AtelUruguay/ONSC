@@ -81,17 +81,45 @@ class ONSCLegajo(models.Model):
         inverse_name='legajo_id',
         string='Puestos')
 
-    declaration_law_ids = fields.One2many(comodel_name='onsc.legajo.declaration.law', inverse_name='legajo_id', string="Declaraciones de Ley" )
-    judicial_antecedents_ids = fields.One2many(comodel_name='onsc.legajo.judicial.antecedents', inverse_name='legajo_id', string="Antecedentes judiciales")
-    other_information_ids = fields.One2many(comodel_name='onsc.legajo.other.information', inverse_name='legajo_id', string="Otra información")
-    merito_ids = fields.One2many(comodel_name="onsc.legajo.merito", inverse_name="legajo_id", string="Méritos")
-    demerito_ids = fields.One2many(comodel_name="onsc.legajo.demerito", inverse_name="legajo_id", string="Deméritos")
+    declaration_law_ids = fields.One2many(
+        comodel_name='onsc.legajo.declaration.law',
+        inverse_name='legajo_id',
+        string="Declaraciones de Ley" )
+    judicial_antecedents_ids = fields.One2many(
+        comodel_name='onsc.legajo.judicial.antecedents',
+        inverse_name='legajo_id',
+        string="Antecedentes judiciales")
+    other_information_ids = fields.One2many(
+        comodel_name='onsc.legajo.other.information',
+        inverse_name='legajo_id',
+        string="Otra información")
+    merito_ids = fields.One2many(
+        comodel_name="onsc.legajo.merito",
+        inverse_name="legajo_id",
+        string="Méritos")
+    demerito_ids = fields.One2many(
+        comodel_name="onsc.legajo.demerito",
+        inverse_name="legajo_id",
+        string="Deméritos")
+    vote_registry_ids = fields.One2many(
+        comodel_name="onsc.legajo.vote.registry",
+        inverse_name="legajo_id",
+        string="Registro de votos")
+    is_vote_registry_editable = fields.Boolean(
+        string='¿Control de votos editable desde Legajo?',
+        compute='_compute_is_vote_registry_editable'
+    )
 
     def _compute_contract_info(self):
         for record in self:
             available_contracts = record._get_user_available_contract(record.employee_id)
             record.contract_ids = available_contracts
             record.contracts_count = len(available_contracts)
+
+    def _compute_is_vote_registry_editable(self):
+        is_vote_registry_editable = self.user_has_groups('onsc_legajo.group_legajo_vote_control_gestor')
+        for rec in self:
+            rec.is_vote_registry_editable = is_vote_registry_editable
 
     @api.constrains('juramento_bandera_date', 'juramento_bandera_presentacion_date')
     def _check_juramento_bandera_date(self):
