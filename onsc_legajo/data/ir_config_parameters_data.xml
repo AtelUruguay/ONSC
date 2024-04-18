@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <data noupdate="1">
+        <record id="parameter_onsc_legajo_WS_INVOQUE_TIMEOUT" model="ir.config_parameter">
+            <field name="key">onsc_legajo_WS_INVOQUE_TIMEOUT</field>
+            <field name="value">60</field>
+        </record>
         <record id="parameter_onsc_legajo_WS14" model="ir.config_parameter">
             <field name="key">onsc_legajo_WS14_regimen</field>
             <field name="value"></field>
