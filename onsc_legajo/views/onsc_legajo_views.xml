@@ -271,7 +271,8 @@
                             </field>
                         </page>
                         <page name="page_vote_control" string="Control de votos">
-                            <field name="vote_registry_ids">
+                            <field name="vote_registry_ids"
+                                   attrs="{'readonly': [('is_vote_registry_editable', '=', False)]}">
                                 <tree string="Control de Votos">
                                     <field name="date"/>
                                     <field name="electoral_act_ids" widget="many2many_tags"
@@ -279,14 +280,15 @@
                                 </tree>
                                 <form string="Control de Votos">
                                     <group>
-                                        <field name="legajo_id"
-                                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="date"/>
+                                        <field name="electoral_act_ids_domain"/>
                                         <field name="electoral_act_ids" widget="many2many_tags"
-                                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                               domain="electoral_act_ids_domain"
+                                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                     </group>
                                 </form>
                             </field>
+                            <field name="is_vote_registry_editable" invisible="1"/>
                         </page>
                     </notebook>
                 </sheet>
