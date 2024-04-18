@@ -12,7 +12,7 @@
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                            groups="onsc_legajo.group_legajo_configurador"/>
                 </field>
-                <xpath expr="//page[@name='page_declaration_law']" position="before">
+                <xpath expr="//page[@name='page_vote_control']" position="before">
                     <page name="formation" string="Formación personal">
                         <div>
                             <h4>Formación básica</h4>
