@@ -224,16 +224,20 @@
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                             <field name="other_information_ids">
                                 <tree>
-                                    <field name="document_date"/>
+                                    <field name="entry_date"/>
+                                    <field name="title"/>
+                                    <field name="description"/>
                                     <field name="digital_filename"/>
                                 </tree>
                                 <form>
                                     <group>
-                                        <field name="document_date"/>
+                                        <field name="entry_date"/>
+                                        <field name="title"/>
+                                        <field name="description"/>
                                         <field name="digital_file"
-                                           widget="binary"
-                                           filename="digital_filename"
-                                           options="{'accepted_file_extensions': '.pdf'}"/>
+                                               widget="binary"
+                                               filename="digital_filename"
+                                               options="{'accepted_file_extensions': '.pdf'}"/>
                                         <field name="digital_filename" invisible="1"/>
                                     </group>
                                 </form>
