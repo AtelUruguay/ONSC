@@ -223,52 +223,9 @@
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                             <field name="merito_ids"/>
                         </page>
-                        <page name="demeritos" string="Deméritos" attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
-                                <field name="demerito_ids">
-                                    <tree>
-                                        <field name="demerit_id"/>
-                                        <field name="title"/>
-                                        <field name="inciso_id"/>
-                                        <field name="operating_unit_id"
-                                               domain="[('inciso_id', '=', inciso_id)]"/>
-                                        <field name="document_date"/>
-                                        <field name="digital_filename"/>
-                                        <field name="notification_date"/>
-                                        <field name="start_date"/>
-                                        <field name="end_date"/>
-                                        <field name="type_sanction_id"/>
-                                        <field name="description"/>
-                                    </tree>
-                                    <form>
-                                        <group>
-                                            <group>
-                                                <field name="demerit_id"
-                                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                <field name="title"/>
-                                                <field name="inciso_id"
-                                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                                <field name="operating_unit_id"
-                                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                                                       domain="[('inciso_id', '=', inciso_id)]"/>
-                                                <field name="type_sanction_id"
-                                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                                                       domain="[('demerit_id', '=', demerit_id)]"/>
-                                                <field name="description"/>
-                                            </group>
-                                            <group>
-                                                <field name="start_date"/>
-                                                <field name="end_date"/>
-                                                <field name="document_date"/>
-                                                <field name="digital_file"
-                                                       widget="binary"
-                                                       filename="digital_filename"
-                                                       options="{'accepted_file_extensions': '.pdf'}"/>
-                                                <field name="digital_filename" invisible="1"/>
-                                                <field name="notification_date"/>
-                                            </group>
-                                        </group>
-                                    </form>
-                                </field>
+                        <page name="demeritos" string="Deméritos"
+                              attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
+                            <field name="demerito_ids"/>
                         </page>
                     </notebook>
                 </sheet>

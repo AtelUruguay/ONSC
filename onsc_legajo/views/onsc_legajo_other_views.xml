@@ -43,11 +43,82 @@
                     <group attrs="{'readonly': [('is_user_consulta', '=', True)]}">
                         <field name="document_date"/>
                         <field name="digital_file"
-                                   widget="binary"
-                                   filename="digital_filename"
-                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                               widget="binary"
+                               filename="digital_filename"
+                               options="{'accepted_file_extensions': '.pdf'}"/>
                         <field name="digital_filename" invisible="1"/>
                         <field name="description"/>
+                        <field name="is_user_admin" invisible="1"/>
+                        <field name="is_user_inciso" invisible="1"/>
+                        <field name="is_user_operating_unit" invisible="1"/>
+                        <field name="is_user_consulta" invisible="1"/>
+                    </group>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!--DEMERITO-->
+    <record id="onsc_legajo_demerito_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.demerito.tree</field>
+        <field name="model">onsc.legajo.demerito</field>
+        <field name="type">tree</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="demerit_id"/>
+                <field name="title"/>
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"
+                       domain="[('inciso_id', '=', inciso_id)]"/>
+                <field name="document_date"/>
+                <field name="digital_filename"/>
+                <field name="notification_date"/>
+                <field name="start_date"/>
+                <field name="end_date"/>
+                <field name="type_sanction_id"/>
+                <field name="description"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_demerito_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.demerito.form</field>
+        <field name="model">onsc.legajo.demerito</field>
+        <field name="type">form</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <group attrs="{'readonly': [('is_user_consulta', '=', True)]}">
+                        <field name="demerit_id"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                        <field name="title"/>
+                        <field name="inciso_id"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               attrs="{'readonly': [('is_user_admin', '=', False)]}"
+                               force_save="1"
+                               required="1"/>
+                        <field name="operating_unit_id"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               domain="[('inciso_id', '=', inciso_id)]"
+                               attrs="{'readonly': ['&amp;',('is_user_admin', '=', False),('is_user_inciso', '=', False)]}"
+                               force_save="1"
+                               required="1"/>
+                        <field name="type_sanction_id"
+                               options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
+                               domain="[('demerit_id', '=', demerit_id)]"/>
+                        <field name="description"/>
+                    </group>
+                    <group attrs="{'readonly': [('is_user_consulta', '=', True)]}">
+                        <field name="start_date"/>
+                        <field name="end_date"/>
+                        <field name="document_date"/>
+                        <field name="digital_file"
+                               widget="binary"
+                               filename="digital_filename"
+                               options="{'accepted_file_extensions': '.pdf'}"/>
+                        <field name="digital_filename" invisible="1"/>
+                        <field name="notification_date"/>
                         <field name="is_user_admin" invisible="1"/>
                         <field name="is_user_inciso" invisible="1"/>
                         <field name="is_user_operating_unit" invisible="1"/>
