@@ -60,7 +60,7 @@
             </form>
         </field>
     </record>
-    
+
     <!--DEMERITO-->
     <record id="onsc_legajo_demerito_tree" model="ir.ui.view">
         <field name="name">onsc.legajo.demerito.tree</field>
@@ -80,6 +80,7 @@
                 <field name="end_date"/>
                 <field name="type_sanction_id"/>
                 <field name="description"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
             </tree>
         </field>
     </record>
@@ -115,11 +116,15 @@
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                domain="[('demerit_id', '=', demerit_id)]"/>
                         <field name="description"/>
+                        <field name="is_user_admin" invisible="1"/>
+                        <field name="is_user_inciso" invisible="1"/>
+                        <field name="is_user_operating_unit" invisible="1"/>
+                        <field name="is_user_consulta" invisible="1"/>
                     </group>
                 </group>
             </form>
         </field>
     </record>
-    
-    
+
+
 </odoo>

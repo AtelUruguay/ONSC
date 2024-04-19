@@ -247,7 +247,8 @@
                               attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                             <field name="merito_ids"/>
                         </page>
-                        <page name="page_demeritos" string="Deméritos" attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
+                        <page name="demeritos" string="Deméritos"
+                              attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
                             <field name="demerito_ids"/>
                         </page>
                     </notebook>
