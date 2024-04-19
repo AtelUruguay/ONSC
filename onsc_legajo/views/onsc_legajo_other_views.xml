@@ -34,7 +34,7 @@
                                required="1"/>
                         <field name="operating_unit_id"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
-                               attrs="{'readonly': ['|',('is_user_inciso', '=', False),('is_user_consulta', '=', True)]}"
+                               attrs="{'readonly': ['|','&amp;',('is_user_admin', '=', False),('is_user_inciso', '=', False),('is_user_consulta', '=', True)]}"
                                force_save="1"
                                required="1"/>
                         <field name="title" attrs="{'readonly': [('is_user_consulta', '=', True)]}"/>
@@ -103,7 +103,7 @@
                                required="1"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                         <field name="operating_unit_id"
-                               attrs="{'readonly': ['|',('is_user_inciso', '=', False),('is_user_consulta', '=', True)]}"
+                               attrs="{'readonly': ['|','&amp;',('is_user_admin', '=', False),('is_user_inciso', '=', False),('is_user_consulta', '=', True)]}"
                                force_save="1"
                                required="1"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
