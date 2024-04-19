@@ -39,10 +39,22 @@ class ONSCLegajoDemerito(models.Model):
     def _is_group_consulta_security(self):
         return self.user_has_groups('onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_consulta_milegajos')
 
-    demerit_id = fields.Many2one(comodel_name="onsc.legajo.type.demerit", string="Tipo de demérito", required=True, history=True )
+    demerit_id = fields.Many2one(
+        comodel_name="onsc.legajo.type.demerit",
+        string="Tipo de demérito",
+        required=True,
+        history=True)
     title = fields.Char(string="Título", required=True, history=True)
-    inciso_id = fields.Many2one(comodel_name="onsc.catalog.inciso", string="Inciso", required=True, history=True)
-    operating_unit_id = fields.Many2one(comodel_name="operating.unit", string="Unidad ejecutora", required=True, history=True)
+    inciso_id = fields.Many2one(
+        comodel_name="onsc.catalog.inciso",
+        string="Inciso",
+        required=True,
+        history=True)
+    operating_unit_id = fields.Many2one(
+        comodel_name="operating.unit",
+        string="Unidad ejecutora",
+        required=True,
+        history=True)
     document_date = fields.Date(string="Fecha del documento", required=True, history=True)
     digital_file = fields.Binary(string="Documento digitalizado", required=True, history=True)
     digital_filename = fields.Char("Nombre del documento digitalizado", required=True, history=True)
@@ -50,9 +62,15 @@ class ONSCLegajoDemerito(models.Model):
     start_date = fields.Date(string="Fecha inicio", required=True, history=True)
     end_date = fields.Date(string="Fecha hasta", required=True, history=True)
     description = fields.Char(string="Descripción del demérito", required=True, history=True)
-    type_sanction_id = fields.Many2one(comodel_name="onsc.legajo.type.sanction", string="Tipo de sanción",
-                                       required=True, history=True )
-    legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", required=True)
+    type_sanction_id = fields.Many2one(
+        comodel_name="onsc.legajo.type.sanction",
+        string="Tipo de sanción",
+        required=True,
+        history=True)
+    legajo_id = fields.Many2one(
+        comodel_name="onsc.legajo",
+        string="Legajo",
+        required=True)
 
     @api.constrains("document_date")
     def _check_document_date(self):
@@ -78,21 +96,14 @@ class ONSCLegajoDemerito(models.Model):
             self.notification_date = False
             return warning_response(_(u"La fecha de notificación debe ser menor o igual al día de hoy"))
 
-    @api.onchange("inciso_id")
-    def onchange_inciso_id(self):
-        self.operating_unit_id = False
-
     @api.onchange("demerit_id")
     def onchange_demerit_id(self):
-        if self.type_sanction_id:
-            self.type_sanction_id = False
-        if self.description:
-            self.description = False
+        self.type_sanction_id = False
+        self.description = False
 
     @api.onchange('type_sanction_id')
     def onchange_type_sanction_id(self):
-        if self.type_sanction_id:
-            self.description = self.type_sanction_id.summary
+        self.description = self.type_sanction_id.summary
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_legajo.onsc_legajo_merito_form').id

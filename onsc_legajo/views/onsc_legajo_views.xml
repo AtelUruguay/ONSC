@@ -184,7 +184,7 @@
                                    attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
                                 <tree>
                                     <field name="declaration_date"/>
-                                    <field name="digital_filename"/>
+                                    <field name="digital_filename" string="Documento digitalizado"/>
                                     <field name="create_date" string="Fecha del registro" readonly="1"/>
                                 </tree>
                                 <form>
@@ -205,7 +205,7 @@
                                 attrs="{'readonly': [('is_mi_legajo', '=', True)]}">
                                 <tree delete="0">
                                     <field name="document_date" required="1"/>
-                                    <field name="digital_filename"/>
+                                    <field name="digital_filename" string="Documento digitalizado"/>
                                 </tree>
                                 <form>
                                     <group>
@@ -227,7 +227,7 @@
                                     <field name="entry_date"/>
                                     <field name="title"/>
                                     <field name="description"/>
-                                    <field name="digital_filename"/>
+                                    <field name="digital_filename" string="Documento digitalizado"/>
                                 </tree>
                                 <form>
                                     <group>

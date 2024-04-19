@@ -30,4 +30,4 @@ class ONSCLegajoOtherInformation(models.Model):
     def onchange_date(self):
         if self.entry_date and self.entry_date > fields.Date.today():
             self.entry_date = False
-            return warning_response(_(u"La Fecha de ingreso de información ser menor o igual al día de hoy"))
+            return warning_response(_(u"La Fecha de ingreso de información debe ser menor o igual al día de hoy"))
