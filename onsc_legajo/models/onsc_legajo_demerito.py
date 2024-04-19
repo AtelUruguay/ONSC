@@ -45,16 +45,6 @@ class ONSCLegajoDemerito(models.Model):
         required=True,
         history=True)
     title = fields.Char(string="Título", required=True, history=True)
-    inciso_id = fields.Many2one(
-        comodel_name="onsc.catalog.inciso",
-        string="Inciso",
-        required=True,
-        history=True)
-    operating_unit_id = fields.Many2one(
-        comodel_name="operating.unit",
-        string="Unidad ejecutora",
-        required=True,
-        history=True)
     document_date = fields.Date(string="Fecha del documento", required=True, history=True)
     digital_file = fields.Binary(string="Documento digitalizado", required=True, history=True)
     digital_filename = fields.Char("Nombre del documento digitalizado", required=True, history=True)
