@@ -22,6 +22,7 @@ class ResCompany(models.Model):
         string='Fecha/hora desde')
     ws7_latency_inseconds = fields.Integer(
         string='Latencia(segundos)')
+    ws7_email_list = fields.Char(string='Correos electronicos', widget='email',)
 
     def write(self, vals):
         if all('ws7' in key for key in vals.keys()):

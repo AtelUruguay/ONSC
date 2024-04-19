@@ -78,5 +78,48 @@
             <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
             <field name="auto_delete" eval="False"/>
         </record>
+        <record id="email_template_ws7_processing_notification" model="mail.template">
+            <field name="name">Plantilla de notificación Procesamiento WS7</field>
+            <field name="model_id" ref="onsc_legajo.model_onsc_legajo_staging_ws7"/>
+            <field name="email_from"></field>
+            <field name="email_to">{{ object.get_followers_mails()}}</field>
+            <field name="subject">Procesamiento WS7</field>
+            <field name="body_html" type="html">
+                 <html>
+                    <body>
+                        <div style="margin: 0px; padding: 0px;">
+                            <p style="margin: 0px; padding: 0px; font-size: 13px;">
+                                Procesamiento WS7
+                                <br/>
+                                <br/>
+                                Fecha:  <t t-out="ctx.get('process_end_date')" contenteditable="false" data-oe-t-inline="true"></t>
+                                 <br/>
+                                Hora:  <t t-out="ctx.get('process_end_time')" contenteditable="false" data-oe-t-inline="true"></t>
+                                <br/>
+                                <br/>
+                                Fecha/hora desde: <t t-out="ctx.get('date_from')" contenteditable="false" data-oe-t-inline="true"></t>
+                                <br/>
+                                Fecha/hora hasta: <t t-out="ctx.get('date_to')" contenteditable="false" data-oe-t-inline="true"></t>
+                                <br/>
+                                <br/>
+                                Líneas Procesadas: <t t-out="ctx.get('process_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                                 <br/>
+                                Líneas En proceso: <t t-out="ctx.get('in_process_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                                <br/>
+                                Líneas con Error:  <t t-out="ctx.get('error_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                                 <br/>
+                                Líneas No aplica:  <t t-out="ctx.get('na_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                                <br/>
+                                No aplica/Contrato no encontrado: <t t-out="ctx.get('na_no_contract_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                                <br/>
+                                Total de líneas recibidas: <t t-out="ctx.get('total_qty')" contenteditable="false" data-oe-t-inline="true"></t>
+                            </p>
+                        </div>
+                    </body>
+                </html>
+            </field>
+            <field name="lang">{{ object.create_uid.partner_id.lang }}</field>
+            <field name="auto_delete" eval="False"/>
+        </record>
     </data>
 </odoo>

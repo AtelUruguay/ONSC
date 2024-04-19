@@ -40,6 +40,11 @@ class ONSCCVSettings(models.TransientModel):
         related="company_id.ws7_latency_inseconds",
         readonly=False,
         related_sudo=True)
+    ws7_email_list = fields.Char(string='Correos electronicos WS7', widget='email',
+                             related="company_id.ws7_email_list",
+                             readonly=False,
+                             related_sudo=True,
+                             help='Ingresar la lista de correos electronicos separados por coma')
 
     def execute(self):
         return {
