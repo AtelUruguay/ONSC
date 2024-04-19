@@ -79,14 +79,16 @@ class ONSCLegajoAbstractOpAddModifySecurity(models.AbstractModel):
         'onsc.catalog.inciso',
         string='Inciso',
         copy=False,
-        default=_default_inciso_id
+        default=_default_inciso_id,
+        history=True
     )
     operating_unit_id = fields.Many2one(
         "operating.unit",
         string="Unidad ejecutora",
         copy=False,
         domain="[('inciso_id', '=', inciso_id)]",
-        default=_default_operating_unit_id
+        default=_default_operating_unit_id,
+        history=True
     )
     is_user_admin = fields.Boolean(
         string="¿Es usuario admin?",
@@ -101,17 +103,20 @@ class ONSCLegajoAbstractOpAddModifySecurity(models.AbstractModel):
         string="¿Es usuario Consulta?",
         compute='_compute_user_security_level', store=False)
 
-    @api.depends('inciso_id')
+    @api.depends('inciso_id', 'operating_unit_id')
     def _compute_user_security_level(self):
         _is_admin = self._is_group_admin_security()
         _is_inciso = self._is_group_inciso_security()
         _is_ue = self._is_group_ue_security()
         _is_consulta = self._is_group_consulta_security()
+        user_contract = self.env.user.employee_id.job_id.contract_id
         for rec in self:
+            is_iam_inciso = rec.inciso_id and rec.inciso_id == user_contract.inciso_id
+            is_iam_operating_unit = rec.operating_unit_id and rec.operating_unit_id == user_contract.operating_unit_id
             rec.is_user_admin = _is_admin
-            rec.is_user_inciso = not _is_admin and _is_inciso
-            rec.is_user_operating_unit = not _is_inciso and _is_ue
-            rec.is_user_consulta = not _is_inciso and not _is_ue and _is_consulta
+            rec.is_user_inciso = not rec.is_user_admin and _is_inciso and is_iam_inciso
+            rec.is_user_operating_unit = not rec.is_user_admin and not rec.is_user_inciso and _is_ue and is_iam_operating_unit
+            rec.is_user_consulta = not (rec.is_user_admin or rec.is_user_inciso or rec.is_user_operating_unit)
 
     @api.onchange('inciso_id')
     def onchange_inciso_id(self):

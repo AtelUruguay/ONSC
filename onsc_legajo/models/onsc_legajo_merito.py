@@ -37,7 +37,7 @@ class ONSCLegajoMerito(models.Model):
     document_date = fields.Date(string="Fecha del documento", required=True, history=True)
     digital_file = fields.Binary(string="Documento digitalizado", required=True, history=True)
     digital_filename = fields.Char(string="Nombre del documento digitalizado", required=True, history=True)
-    description = fields.Char(string="Descripción del documento", required=True, history=True)
+    description = fields.Text(string="Descripción del mérito", required=True, history=True)
     notification_date = fields.Date(string="Fecha de notificación", required=True, history=True)
     legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", required=True)
 
@@ -67,7 +67,7 @@ class ONSCLegajoMerito(models.Model):
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_legajo.onsc_legajo_merito_form').id
-        return self.with_context(model_view_form_id=model_view_form_id).get_history_record_action(
+        return self.with_context(model_view_form_id=model_view_form_id, as_of_date=fields.Date.today()).get_history_record_action(
             history_id=False,
             res_id=self.id,
         )
@@ -76,3 +76,5 @@ class ONSCLegajoHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'onsc.legajo.merito.history'
     _parent_model = 'onsc.legajo.merito'
+
+    history_digital_file = fields.Binary(string="Documento digitalizado")
