@@ -106,7 +106,7 @@ class ONSCLegajoDemerito(models.Model):
         self.description = self.type_sanction_id.summary
 
     def button_show_history(self):
-        model_view_form_id = self.env.ref('onsc_legajo.onsc_legajo_merito_form').id
+        model_view_form_id = self.env.ref('onsc_legajo.onsc_legajo_demerito_form').id
         return self.with_context(model_view_form_id=model_view_form_id).get_history_record_action(
             history_id=False,
             res_id=self.id,
