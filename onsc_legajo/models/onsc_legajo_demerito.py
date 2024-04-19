@@ -61,7 +61,7 @@ class ONSCLegajoDemerito(models.Model):
     notification_date = fields.Date(string="Fecha de notificación", required=True, history=True)
     start_date = fields.Date(string="Fecha inicio", required=True, history=True)
     end_date = fields.Date(string="Fecha hasta", required=True, history=True)
-    description = fields.Char(string="Descripción del demérito", required=True, history=True)
+    description = fields.Text(string="Descripción del demérito", required=True, history=True)
     type_sanction_id = fields.Many2one(
         comodel_name="onsc.legajo.type.sanction",
         string="Tipo de sanción",
@@ -99,11 +99,6 @@ class ONSCLegajoDemerito(models.Model):
     @api.onchange("demerit_id")
     def onchange_demerit_id(self):
         self.type_sanction_id = False
-        self.description = False
-
-    @api.onchange('type_sanction_id')
-    def onchange_type_sanction_id(self):
-        self.description = self.type_sanction_id.summary
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_legajo.onsc_legajo_demerito_form').id
