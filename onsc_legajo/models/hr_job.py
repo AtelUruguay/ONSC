@@ -81,6 +81,15 @@ class HrJob(models.Model):
         related='contract_id.legajo_id.legajo_state',
         store=True
     )
+    # ASIGNACION DE FUNCIONES
+    role_assignment_ids = fields.One2many(
+        'onsc.legajo.job.role.assignment',
+        'job_id',
+        string='Asignaciones de funciones'
+    )
+    is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', related='security_job_id.is_uo_manager', store=True)
+
+        
 
     _sql_constraints = [
         ('name_company_uniq', 'unique(1=1)',
@@ -100,6 +109,10 @@ class HrJob(models.Model):
             record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto')
             record.role_extra_is_readonly = not self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto') and record.end_date and record.end_date <= fields.Date.today()
+    #
+    # def _compute_is_role_assignment_admin(self):
+    #     for record in self:
+    #         record.is_role_assignment_admin = self.user_has_groups('onsc_legajo.group_legajo_role_assignment_administrar')
 
     @api.constrains("contract_id", "start_date", "end_date")
     def _check_date_range_into_contract(self):
@@ -205,7 +218,7 @@ class HrJob(models.Model):
         }
 
     # INTELIGENCIA DE ENTIDAD
-    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False, source_job=False):
+    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False, end_date=False, source_job=False):
         """
         CREA NUEVO PUESTO A PARTIR DE LA DATA DE ENTRADA
         :param contract: Recordset a hr.contract
@@ -213,6 +226,7 @@ class HrJob(models.Model):
         :param start_date: Date
         :param security_job: Recordset a onsc.legajo.security.job
         :param extra_security_roles: Extra security to apply
+        :param end_date: Pasar en caso que el puesto tenga definida una fecha de fin. Debe ser a futuro
         :return: nuevo recordet de hr.job
         """
         role_extra_ids = [(5,)]
@@ -231,6 +245,7 @@ class HrJob(models.Model):
             'contract_id': contract.id,
             'department_id': department.id,
             'start_date': start_date,
+            'end_date': end_date,
             'security_job_id': security_job.id,
             'role_extra_ids': role_extra_ids
         })
@@ -245,6 +260,9 @@ class HrJob(models.Model):
     def deactivate(self, date_end):
         for job in self.suspend_security().filtered(
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
+            job.role_assignment_ids.write({
+                'date_end': date_end
+            })
             job.end_date = date_end
             job.suspend_security().onchange_end_date()
             if date_end < fields.Date.today() and job.security_job_id.is_uo_manager:
@@ -300,8 +318,8 @@ class HrJobRoleLine(models.Model):
                 lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
             if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (
                     record.end_date is False or record.end_date >= x.start_date)) or (
-                                                    x.end_date and x.end_date >= record.start_date and (  # noqa
-                                                    record.end_date is False or record.end_date >= x.start_date))):  # noqa
+                                                    x.end_date and x.end_date >= record.start_date and (
+                                                    record.end_date is False or record.end_date >= x.start_date))):
                 raise ValidationError(_("El rol configurado no puede repetirse para el mismo puesto en el mismo "
                                         "periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
 

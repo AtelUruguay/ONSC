@@ -35,6 +35,11 @@ class ONSCDesempenoSettings(models.Model):
     days_gap_develop_plan_creation = fields.Integer(related="company_id.days_gap_develop_plan_creation",
                                                     readonly=False,
                                                     related_sudo=True)
+    is_improvement_areas_help_form_active = fields.Boolean(related="company_id.is_improvement_areas_help_form_active",
+                                                           readonly=False,
+                                                           related_sudo=True)
+    improvement_areas_help_text = fields.Text(related="company_id.improvement_areas_help_text", readonly=False,
+                                              related_sudo=True)
 
     # PUNTAJE
     eval_360_score = fields.Integer(

@@ -41,6 +41,8 @@
                             <field name="operating_unit_id" domain="operating_unit_id_domain"
                                    required="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="state_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="operating_unit_id_domain" invisible="1"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="wage" invisible="1"/>
@@ -164,7 +166,7 @@
                                             icon="fa-edit"/>
                                 </tree>
                             </field>
-                            <field name="is_mi_legajo" invisible="0"/>
+                            <field name="is_mi_legajo" invisible="1"/>
                         </page>
                     </notebook>
                 </sheet>

@@ -511,7 +511,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         job = Job.search([
             ('department_id', '=', self.manager_uo_id.id),
             ('employee_id', '=', self.manager_id.id),
-            '|',('end_date','=',False), ('end_date','>=',fields.Date.today())
+            '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
         ], limit=1)
         # SI CONTRATO EN DESCRIPTORES EXCLUIDOS ENTONCES NO DISPONIBLE
         if job.contract_id.descriptor1_id.id in excluded_descriptor1_ids:
@@ -520,8 +520,6 @@ class ONSCDesempenoEvaluationList(models.Model):
         if job.department_id.hierarchical_level_id.order == 1:
             return False
         return True
-
-
 
     def _create_environment_evaluation(self, data):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()

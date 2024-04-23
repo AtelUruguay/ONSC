@@ -29,7 +29,7 @@
             <field name="name">onsc.legajo.cambio.uo.form</field>
             <field name="model">onsc.legajo.cambio.uo</field>
             <field name="arch" type="xml">
-                <form string="Cambio UO o Seguridad">
+                <form string="Cambio UO o Seguridad" duplicate="0">
                     <header>
                         <button name="action_confirm" class="btn btn-primary"
                                 type="object" string="Confirmar"
@@ -112,6 +112,9 @@
                                 </div>
                                 <field name="security_job_id"
                                        domain="security_job_id_domain"
+                                       attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
+                                       options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                                <field name="state_id"
                                        attrs="{'readonly': [('should_disable_form_edit', '=', True)]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                                 <field name="security_job_id_domain" invisible="1"/>

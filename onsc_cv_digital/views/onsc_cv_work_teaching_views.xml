@@ -31,7 +31,7 @@
                             <field name="institution_id_domain" invisible="1"/>
                         </group>
                         <group>
-                            <field name="professional_link_id"/>
+                            <field name="professional_link_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="responsible_type"/>
                             <field name="hours_worked_monthly" required="1" string="Cantidad de horas mensuales en el instituto"/>
                         </group>

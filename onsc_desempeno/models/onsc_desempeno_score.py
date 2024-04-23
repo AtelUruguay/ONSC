@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import logging
+import ast
 
 from odoo import fields, models, api
 from odoo.osv import expression
@@ -79,34 +80,44 @@ class ONSCDesempenoScore(models.Model):
     score = fields.Float('Puntaje final')
     is_employee_notified = fields.Boolean(string='¿Fue notificado?')
 
-
-
     def button_open_gap_deal(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        employee = self.env.user.employee_id
         ids = Evaluation.search([('evaluation_type', '=', 'gap_deal'),
-                                 ('evaluated_id', '=', employee.id),
+                                 ('evaluated_id', '=', self.employee_id.id),
+                                 ('inciso_id', '=', self.inciso_id.id),
+                                 ('operating_unit_id', '=', self.operating_unit_id.id),
                                  ('evaluation_stage_id', '=', self.evaluation_stage_id.id)]).ids
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_gap_deal_evaluation_action').read()[0]
-        action.update({'domain': [('id', 'in', ids)], 'target': 'current'})
+        _context = ast.literal_eval(action.get('context', {}))
+        _context['ignore_security_rules'] = True
+        _context['ignore_base_restrict'] = True
+        action.update({'domain': [('id', 'in', ids)], 'target': 'current', 'context': _context})
         return action
 
     def button_open_development_plan(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        employee = self.env.user.employee_id
         ids = Evaluation.search([('evaluation_type', '=', 'development_plan'),
-                                 ('evaluated_id', '=', employee.id),
+                                 ('evaluated_id', '=', self.employee_id.id),
+                                 ('inciso_id', '=', self.inciso_id.id),
+                                 ('operating_unit_id', '=', self.operating_unit_id.id),
                                  ('evaluation_stage_id', '=', self.evaluation_stage_id.id)]).ids
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_develop_plan_action').read()[0]
-        action.update({'domain': [('id', 'in', ids)], 'target': 'current'})
+        _context = ast.literal_eval(action.get('context', {}))
+        _context['ignore_security_rules'] = True
+        _context['ignore_base_restrict'] = True
+        action.update({'domain': [('id', 'in', ids)], 'target': 'current', 'context': _context})
         return action
 
     def button_open_tracing_plan(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
-        employee = self.env.user.employee_id
         ids = Evaluation.search([('evaluation_type', '=', 'tracing_plan'),
-                                 ('evaluated_id', '=', employee.id),
+                                 ('evaluated_id', '=', self.employee_id.id),
+                                 ('inciso_id', '=', self.inciso_id.id),
+                                 ('operating_unit_id', '=', self.operating_unit_id.id),
                                  ('evaluation_stage_id', '=', self.evaluation_stage_id.id)]).ids
         action = self.sudo().env.ref('onsc_desempeno.onsc_desempeno_tracing_plan_action').read()[0]
-        action.update({'domain': [('id', 'in', ids)], 'target': 'current'})
+        _context = ast.literal_eval(action.get('context', {}))
+        _context['ignore_security_rules'] = True
+        _context['ignore_base_restrict'] = True
+        action.update({'domain': [('id', 'in', ids)], 'target': 'current', 'context': _context})
         return action

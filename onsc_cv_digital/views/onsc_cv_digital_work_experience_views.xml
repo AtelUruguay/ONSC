@@ -28,7 +28,7 @@
                             <field name="unit_name"/>
                         </group>
                         <group>
-                            <field name="entry_institution_id"/>
+                            <field name="entry_institution_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
                             <field name="hierarchical_level_id"/>
                             <field name="take_decisions"/>
                             <field name="is_paid_activity" required="1"/>

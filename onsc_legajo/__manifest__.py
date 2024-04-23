@@ -11,6 +11,7 @@ ONSC - Legajo
     'category': 'ONSC',
     'depends': ['onsc_base',
                 'onsc_catalog',
+                'ws_int_base',
                 'base_user_role',
                 'base_user_role_hide_admin',
                 'hr_contract',
@@ -28,11 +29,11 @@ ONSC - Legajo
         'data/onsc_legajo_commission_regime_data.xml',
         'data/onsc_legajo_integration_error_data.xml',
         'data/mail_template_data.xml',
+        'data/onsc_legajo_role_electoral_act_data.xml',
 
         'wizard/mail_wizard_invite_views.xml',
 
         'views/onsc_legajo_department_views.xml',
-
         'views/onsc_legajo_settings_view.xml',
         'views/catalogs/onsc_catalog_descriptors.xml',
         'views/catalogs/onsc_legajo_emergency_views.xml',
@@ -47,6 +48,9 @@ ONSC - Legajo
         'views/catalogs/onsc_legajo_commission_regime_views.xml',
         'views/catalogs/onsc_legajo_security_job_views.xml',
         'views/catalogs/onsc_legajo_base_views.xml',
+        'views/catalogs/onsc_catalog_electoral_act.xml',
+        'views/catalogs/onsc_catalog_type_sanction.xml',
+        'views/catalogs/onsc_catalog_legend.xml',
         'wizard/onsc_legajo_update_occupation_wizard_views.xml',
         'views/hr_employee_views.xml',
         'views/onsc_legajo_alta_vl_views.xml',
@@ -59,6 +63,7 @@ ONSC - Legajo
         'views/ir_attachment_view.xml',
         'views/onsc_legajo_alta_cs_view.xml',
         'views/onsc_legajo_cambio_uo_views.xml',
+        'views/onsc_legajo_role_asignment_views.xml',
         'views/onsc_legajo_staging_ws7_views.xml',
         'views/onsc_legajo_menuitems.xml',
     ],
