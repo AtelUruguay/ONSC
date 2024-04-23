@@ -12,7 +12,7 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
     _name = 'onsc.legajo.abstract.sync'
     _description = 'Modelo abstracto para la sincronización de legajo con WS externos'
 
-    def _get_client(self, parameter, origin_name, integration_error, pass_location=False, timeout=60):
+    def _get_client(self, parameter, origin_name, integration_error, pass_location=False, timeout=120):
         ONSCLegajoClient = soap_client.ONSCLegajoClient()
         ONSCLegajoClient.timeout = timeout
         try:
