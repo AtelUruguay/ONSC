@@ -774,7 +774,7 @@ class ONSCLegajoAltaCS(models.Model):
         self.contract_id.with_context(no_check_write=True).deactivate_legajo_contract(
             date_end=date_start - relativedelta(days=1),
             legajo_state='outgoing_commission',
-            eff_date=self.date_start_commission
+            eff_date=fields.Date.today()
         )
         if self.type_cs != 'ac2out':
             self._get_legajo_job(new_contract)
@@ -832,7 +832,7 @@ class ONSCLegajoAltaCS(models.Model):
             'commission_regime_id': self.regime_commission_id.id,
             'inciso_origin_id': self.inciso_origin_id.id,
             'operating_unit_origin_id': self.operating_unit_origin_id.id,
-            'eff_date': self.date_start_commission
+            'eff_date': fields.Date.today()
         }
         if self.type_cs == 'out2ac':
             _regime_id = self.env['onsc.legajo.regime'].sudo().search([('is_fac2ac', '=', True)], limit=1).id

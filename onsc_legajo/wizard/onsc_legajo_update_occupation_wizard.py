@@ -13,6 +13,7 @@ class ONSCLegajoUpdateOccupationWizard(models.TransientModel):
 
     def action_update_occupation(self):
         self.contract_id.suspend_security().write({
-            'eff_date': self.date,
-            'occupation_id': self.occupation_id.id
+            'eff_date': fields.Date.today(),
+            'occupation_id': self.occupation_id.id,
+            'occupation_date': self.date
         })

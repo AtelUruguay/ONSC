@@ -102,6 +102,7 @@ class HrContract(models.Model):
     project = fields.Char(string='Proyecto', history=True)
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', history=True)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', history=True)
+    occupation_date = fields.Date(string='Fecha desde Ocupación', history=True)
     is_occupation_visible = fields.Boolean(compute='_compute_is_occupation_visible')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1', history=True)
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2', history=True)
