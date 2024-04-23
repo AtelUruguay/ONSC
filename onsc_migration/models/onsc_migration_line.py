@@ -1294,7 +1294,7 @@ class ONSCMigrationLine(models.Model):
                 'code_day': self.retributive_day_formal,
                 'description_day': self.retributive_day_formal_desc,
                 'retributive_day_id': self.retributive_day_id.id,
-                'eff_date': self.date_start or fields.Date.today(),
+                'eff_date': fields.Date.today(),
                 'resolution_description': self.resolution_description,
                 'resolution_date': self.resolution_date,
                 'resolution_type': self.resolution_type,
@@ -1329,7 +1329,7 @@ class ONSCMigrationLine(models.Model):
                 'workplace': self.nro_place_des,
                 'sec_position': self.sec_place_des,
                 'state_square_id': self.state_place_des_id.id,
-                'eff_date': self.date_start_commission,
+                'eff_date': fields.Date.today(),
                 'resolution_description': self.resolution_comm_description,
                 'resolution_date': self.resolution_comm_date,
                 'resolution_type': self.resolution_comm_type,
@@ -1368,7 +1368,7 @@ class ONSCMigrationLine(models.Model):
                     'description_day': self.retributive_day_formal_desc,
                     'retributive_day_id': self.retributive_day_id.id,
                     'date_start': self.date_start or fields.Date.today(),
-                    'eff_date': self.date_start_commission or fields.Date.today(),
+                    'eff_date': fields.Date.today(),
                 })
                 if not self.inciso_des_id.is_central_administration:
                     vals_contract1.update({
