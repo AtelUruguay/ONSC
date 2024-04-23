@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from lxml import etree
+import json
 
 from odoo import api, models, fields, tools, _
 from odoo.exceptions import ValidationError
@@ -109,6 +110,16 @@ class ONSCLegajo(models.Model):
         string='¿Control de votos editable desde Legajo?',
         compute='_compute_is_vote_registry_editable'
     )
+    # helper para pasar un domain dinamico al o2m de control de votos
+    electoral_act_ids_domain = fields.Char(
+        string='Elecciones disponibles',
+        compute="_compute_electoral_act_ids_domain")
+
+    @api.depends('vote_registry_ids', 'vote_registry_ids.electoral_act_ids')
+    def _compute_electoral_act_ids_domain(self):
+        for rec in self:
+            rec.electoral_act_ids_domain = json.dumps(
+                [("id", "not in", rec.vote_registry_ids.mapped('electoral_act_ids').ids)])
 
     def _compute_contract_info(self):
         for record in self:

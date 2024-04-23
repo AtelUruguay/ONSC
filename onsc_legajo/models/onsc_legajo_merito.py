@@ -16,7 +16,7 @@ class ONSCLegajoMerito(models.Model):
     _tree_history_columns = [
         'title',
         'document_date',
-        'digital_file',
+        'digital_filename',
         'description',
         'notification_date',
     ]

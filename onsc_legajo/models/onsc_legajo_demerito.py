@@ -102,3 +102,5 @@ class ONSCLegajoHistory(models.Model):
     _name = 'onsc.legajo.demerito.history'
     _parent_model = 'onsc.legajo.demerito'
 
+    history_digital_file = fields.Binary(string="Documento digitalizado")
+
