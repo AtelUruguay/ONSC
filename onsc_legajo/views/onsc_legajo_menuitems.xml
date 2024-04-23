@@ -221,6 +221,12 @@
               action="onsc_legajo_staging_ws7_action"
               parent="onsc_legajo_logs_menu"
               sequence="1"/>
+    <menuitem id="onsc_legajo_sycronize_ws7_menu"
+              name="Ejecutar WS7 por período"
+              groups="onsc_legajo.group_legajo_configurador_integracion"
+              action="onsc_legajo_syncronize_ws7_action"
+              parent="onsc_legajo_logs_menu"
+              sequence="10"/>
 
     <menuitem id="onsc_legajo_settings_menu"
               name="Configuración"
