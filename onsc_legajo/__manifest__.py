@@ -11,6 +11,7 @@ ONSC - Legajo
     'category': 'ONSC',
     'depends': ['onsc_base',
                 'onsc_catalog',
+                'ws_int_base',
                 'base_user_role',
                 'base_user_role_hide_admin',
                 'hr_contract',

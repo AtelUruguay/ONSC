@@ -1,8 +1,13 @@
 # -*- coding: utf-8 -*-
 import datetime
+import logging
+
+from email_validator import EmailNotValidError, validate_email
 
 from odoo import models, fields, tools, api, _
 from odoo.exceptions import ValidationError
+
+_logger = logging.getLogger(__name__)
 
 
 class ONSCLegajoStagingWS7(models.Model):
@@ -261,12 +266,14 @@ class ONSCLegajoStagingWS7(models.Model):
     # flake8: noqa: C901
     def process_staging(self, ids=False, limit=0):
         Contract = self.env['hr.contract'].sudo()
+
         args = [('state', 'in', ['in_process', 'na']), ('checked_bysystem', '=', False)]
         if ids:
             args.append(('id', 'in', ids))
 
         current_pointer = 0
-        for record in self.search(args):
+        records = self.search(args)
+        for record in records:
             try:
                 with self._cr.savepoint():
                     if limit:
@@ -293,10 +300,14 @@ class ONSCLegajoStagingWS7(models.Model):
                         self.set_cambio_jornada(Contract, record)
                     elif record.mov in ['MODFU']:
                         self.set_modif_funcionario(Contract, record)
+
             except Exception as e:
+
                 record.write({
                     'state': 'error',
                     'log': 'Error: %s' % tools.ustr(e)})
+
+        self._send_ws7_processing_notification(records)
 
     def _check_movement(self, Contract, record):
         """
@@ -543,7 +554,8 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        contract.with_context(no_check_write=True).activate_legajo_contract(legajo_state='active', eff_date=record.fecha_vig)
+        contract.with_context(no_check_write=True).activate_legajo_contract(legajo_state='active',
+                                                                            eff_date=record.fecha_vig)
         records.write({'state': 'processed'})
 
     def set_renovacion(self, Contract, record):
@@ -782,3 +794,49 @@ class ONSCLegajoStagingWS7(models.Model):
             _eff_date = eff_date
         if contract.eff_date and contract.eff_date > _eff_date:
             raise ValidationError(_("No se puede modificar la historia del contrato para la fecha enviada."))
+
+    def get_followers_mails(self):
+        followers_emails = []
+        emails = self.env.user.company_id.ws7_email_list
+        for email in emails.split(','):
+            try:
+                validate_email(email.strip())
+                followers_emails.append(email)
+            except EmailNotValidError:
+                # Si el email no es válido, se captura la excepción
+                _logger.info(_("Mail de Contacto no válido: %s") % email)
+        return ','.join(followers_emails)
+
+    def _send_ws7_processing_notification(self, records):
+        tz_delta = self.env['ir.config_parameter'].sudo().get_param('server_timezone_delta')
+        process_qty = len(records.filtered(lambda x: x.state in ['processed']))
+        error_qty = len(records.filtered(lambda x: x.state in ['error']))
+        na_no_contract_qty = len(records.filtered(lambda x: x.state in ['na'] and x.log == 'Contrato no encontrado'))
+        na_qty = len(records.filtered(lambda x: x.state in ['na']))
+        in_process_qty = len(records.filtered(lambda x: x.state in ['in_process']))
+        total_qty = len(records)
+        sorted_records = sorted(records, key=lambda r: (r.fecha_aud))
+        date_from = sorted_records[0].fecha_aud if sorted_records else None
+        date_from += datetime.timedelta(hours=int(tz_delta))
+        date_to = sorted_records[-1].fecha_aud if sorted_records else None
+        date_to += datetime.timedelta(hours=int(tz_delta))
+        today = fields.Datetime.from_string(fields.Datetime.now())
+        today += datetime.timedelta(hours=int(tz_delta))
+        process_end_date = today.strftime('%d-%m-%Y')
+        process_end_time = today.strftime('%H:%M:%S')
+        email_template_id = self.env.ref('onsc_legajo.email_template_ws7_processing_notification')
+        view_context = dict(self._context)
+        view_context.update({
+            'process_end_date': process_end_date,
+            'process_end_time': process_end_time,
+            'process_qty': process_qty,
+            'in_process_qty': in_process_qty,
+            'error_qty': error_qty,
+            'na_qty': na_qty,
+            'na_no_contract_qty': na_no_contract_qty,
+            'total_qty': total_qty,
+            'date_from': date_from.strftime('%d-%m-%Y %H:%M:%S'),
+            'date_to': date_to.strftime('%d-%m-%Y %H:%M:%S')
+        })
+        email_template_id.with_context(view_context).send_mail(self.id, force_send=True,
+                                                               notif_layout='mail.mail_notification_light')
