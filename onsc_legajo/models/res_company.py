@@ -23,6 +23,7 @@ class ResCompany(models.Model):
     ws7_latency_inseconds = fields.Integer(
         string='Latencia(segundos)')
     mass_upload_record_limit = fields.Integer(u"Límite Cantidad de Registros")
+    ws7_email_list = fields.Char(string='Correos electronicos', widget='email',)
 
     def write(self, vals):
         if all('ws7' or 'mass_upload_record_limit' in key for key in vals.keys()):

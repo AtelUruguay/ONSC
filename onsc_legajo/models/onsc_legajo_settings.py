@@ -43,6 +43,11 @@ class ONSCCVSettings(models.TransientModel):
     mass_upload_record_limit = fields.Integer(u"Límite cantidad de registros", related="company_id.mass_upload_record_limit",
                                   readonly=False,
                                   related_sudo=True)
+    ws7_email_list = fields.Char(string='Correos electronicos WS7', widget='email',
+                             related="company_id.ws7_email_list",
+                             readonly=False,
+                             related_sudo=True,
+                             help='Ingresar la lista de correos electronicos separados por coma')
 
     def execute(self):
         return {
