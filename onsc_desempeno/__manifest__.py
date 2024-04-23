@@ -16,7 +16,7 @@ ONSC - Gestión de Desempeño
         'onsc_base',
         'onsc_catalog',
         'onsc_legajo',
-
+        'excel_import_export'
     ],
     'data': [
         'security/onsc_desempeno_security.xml',
