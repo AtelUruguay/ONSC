@@ -14,7 +14,15 @@ class ONSCLegajoAbstractSync(models.AbstractModel):
 
     def _get_client(self, parameter, origin_name, integration_error, pass_location=False, timeout=60):
         ONSCLegajoClient = soap_client.ONSCLegajoClient()
-        ONSCLegajoClient.timeout = timeout
+        _timeout = self.env['ir.config_parameter'].sudo().get_param(
+            'onsc_legajo_WS_INVOQUE_TIMEOUT',
+            default=str(timeout)
+        )
+        if _timeout.isdigit():
+            _timeout = int(_timeout)
+        else:
+            _timeout = 60
+        ONSCLegajoClient.timeout = _timeout
         try:
             return ONSCLegajoClient.get_client(origin_name, parameter, pass_location=pass_location)
         except Exception as e:
