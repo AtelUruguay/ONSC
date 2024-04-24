@@ -84,7 +84,19 @@ class ONSCLegajoDemerito(models.Model):
     def onchange_notification_date(self):
         if self.notification_date and self.notification_date > fields.Date.today():
             self.notification_date = False
-            return warning_response(_(u"La fecha de notificación debe ser menor o igual al día de hoy"))
+            return warning_response(_(u"La Fecha de notificación debe ser menor o igual al día de hoy"))
+
+    @api.onchange("end_date")
+    def onchange_end_date(self):
+        if self.end_date and self.start_date and self.end_date < self.start_date :
+            self.end_date = False
+            return warning_response(_(u"La Fecha hasta debe ser mayor o igual a la Fecha inicio"))
+
+    @api.onchange("start_date")
+    def onchange_start_date(self):
+        if self.start_date and self.end_date and self.end_date < self.start_date:
+            self.start_date = False
+            return warning_response(_(u"La Fecha inicio debe ser menor o igual a la Fecha hasta"))
 
     @api.onchange("demerit_id")
     def onchange_demerit_id(self):
