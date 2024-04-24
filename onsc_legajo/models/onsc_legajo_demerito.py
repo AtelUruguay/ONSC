@@ -19,7 +19,7 @@ class ONSCLegajoDemerito(models.Model):
         'inciso_id',
         'operating_unit_id',
         'document_date',
-        'digital_file',
+        'digital_filename',
         'notification_date',
         'start_date',
         'end_date',
