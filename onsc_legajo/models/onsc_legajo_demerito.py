@@ -19,7 +19,7 @@ class ONSCLegajoDemerito(models.Model):
         'inciso_id',
         'operating_unit_id',
         'document_date',
-        'digital_file',
+        'digital_filename',
         'notification_date',
         'start_date',
         'end_date',
@@ -101,4 +101,6 @@ class ONSCLegajoHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'onsc.legajo.demerito.history'
     _parent_model = 'onsc.legajo.demerito'
+
+    history_digital_file = fields.Binary(string="Documento digitalizado")
 

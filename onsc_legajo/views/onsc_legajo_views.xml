@@ -159,6 +159,7 @@
                     </group>
                     <notebook>
                         <page name="page_vote_control" string="Control de votos">
+                            <field name="electoral_act_ids_domain"/>
                             <field name="vote_registry_ids"
                                    attrs="{'readonly': [('is_vote_registry_editable', '=', False)]}">
                                 <tree string="Control de Votos">
@@ -168,8 +169,9 @@
                                 </tree>
                                 <form string="Control de Votos">
                                     <group>
+                                        <field name="legajo_id" invisible="1"/>
                                         <field name="date"/>
-                                        <field name="electoral_act_ids_domain" invisible="1"/>
+                                        <field name="electoral_act_ids_domain" invisible="0"/>
                                         <field name="electoral_act_ids" widget="many2many_tags"
                                                domain="electoral_act_ids_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
