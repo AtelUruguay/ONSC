@@ -1,5 +1,19 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <odoo>
+    <record id="onsc_legajo_hr_job_base_search_view" model="ir.ui.view">
+        <field name="name">onsc.legajo.hr.job.base.search</field>
+        <field name="model">hr.job</field>
+        <field name="arch" type="xml">
+            <search string="Puestos en UO">
+                <field name="employee_id" operator="child_of" string="Funcionario"/>
+                <field name="department_id" operator="child_of" string="Unidad organizativa"/>
+                <group expand="0" string="Group By">
+                    <filter string="Unidad organizativa" name="groupby_department" domain="[]" context="{'group_by': 'department_id'}"/>
+                    <filter string="Funcionario" name="groupby_employee" domain="[]" context="{'group_by': 'employee_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
     <record id="onsc_legajo_hr_job_search_view" model="ir.ui.view">
         <field name="name">onsc.legajo.hr.job.search</field>
         <field name="model">hr.job</field>
@@ -214,6 +228,19 @@
                        groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
                 <field name="end_date"
                        groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_hr_job_hs_basic_tree_view" model="ir.ui.view">
+        <field name="name">hr.job.hs.basic.tree</field>
+        <field name="model">hr.job</field>
+        <field name="arch" type="xml">
+            <tree string="Puestos en UO">
+                <field name="employee_id" string="Funcionario"/>
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="department_id"/>
             </tree>
         </field>
     </record>
