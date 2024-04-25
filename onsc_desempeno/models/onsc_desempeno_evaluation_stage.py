@@ -229,6 +229,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                          ('evaluation_type', 'in', ['environment_evaluation', 'collaborator'])]
 
         results = Evaluation.search(search_domain)
+        future_environment_from_collaborator_dict = {}
         for res in results:
             search_domain_consolidated = [
                 ('evaluated_id', '=', res.evaluated_id.id),
@@ -251,10 +252,11 @@ class ONSCDesempenoEvaluationStage(models.Model):
                 search_domain_consolidated = expression.AND(
                     [[('evaluation_type', '=', 'collaborator')], search_domain_consolidated])
             elif evaluation_type == 'collaborator' and _qty == 1:
-                create_consolidated = True
+                create_consolidated = False
                 evaluation_type = 'environment'
-                search_domain_consolidated = expression.AND(
-                    [[('evaluation_type', '=', 'environment')], search_domain_consolidated])
+                future_environment_from_collaborator_dict[res.evaluated_id.id] = res
+                # search_domain_consolidated = expression.AND(
+                #     [[('evaluation_type', '=', 'environment')], search_domain_consolidated])
             else:
                 create_consolidated = False
             if create_consolidated:
@@ -288,6 +290,21 @@ class ONSCDesempenoEvaluationStage(models.Model):
                         number = random.randint(1, 1000)
                         competency.write({'consolidate_id': consolidate.id,
                                           'order': number})
+        # en caso de 1 colaborar crearlo si hay de environment
+        for evaluated_id, res in future_environment_from_collaborator_dict.items():
+            search_domain_consolidated = [
+                ('evaluation_type', '=', 'environment'),
+                ('evaluated_id', '=', res.evaluated_id.id),
+                ('evaluation_stage_id', '=', res.evaluation_stage_id.id)
+            ]
+            environment_consolidated = Consolidated.search(search_domain_consolidated, limit=1)
+            if environment_consolidated:
+                environment_consolidated.write({'evaluator_ids': [(4, res.evaluator_id.id)]})
+                for competency in res.evaluation_competency_ids:
+                    number = random.randint(1, 1000)
+                    competency.write({'consolidate_id': consolidate.id,
+                                      'order': number})
+
 
     def _process_end_stage(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
