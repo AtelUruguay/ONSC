@@ -1023,6 +1023,7 @@ class ONSCDesempenoEvaluation(models.Model):
             evaluation[0]["general_comments"] = False
             evaluation[0]["state_gap_deal"] = 'draft'
             evaluation[0]["current_job_id"] = self.current_job_id.id
+            evaluation[0]["evaluator_current_job_id"] = self.evaluator_current_job_id.id
             if self.current_job_id:
                 _department_id = self.current_job_id.department_id
                 if _department_id.manager_id == self.current_job_id.employee_id:
@@ -1059,6 +1060,7 @@ class ONSCDesempenoEvaluation(models.Model):
         evaluation[0]["state_gap_deal"] = 'draft'
         evaluation[0]["general_comments"] = False
         evaluation[0]["current_job_id"] = self.current_job_id.id
+        evaluation[0]["evaluator_current_job_id"] = self.evaluator_current_job_id.id
         if self.current_job_id:
             _department_id = self.current_job_id.department_id
             if _department_id.manager_id == self.current_job_id.employee_id:
