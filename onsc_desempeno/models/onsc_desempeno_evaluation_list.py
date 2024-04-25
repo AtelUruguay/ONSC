@@ -376,6 +376,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        Job = self.env['hr.job'].sudo()
         hierachy_manager_id = data.job_id.department_id.get_first_department_withmanager_in_tree().manager_id.id
         is_manager = hierachy_manager_id == data.employee_id.id
         level_id = Level.suspend_security().search(
@@ -389,7 +390,6 @@ class ONSCDesempenoEvaluationList(models.Model):
         if not skills:
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
-        Job = self.env['hr.job'].sudo()
         evaluator_current_job_id = Job.search([
             ('employee_id', '=', self.manager_id.id),
             ('department_id', '=', data.evaluation_list_id.manager_uo_id.id),
@@ -464,6 +464,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        Job = self.env['hr.job'].sudo()
         valid_lines = self.line_ids.filtered(lambda x: x.state != 'generated' and x.is_included)
         generated_evaluations = self.evaluation_generated_line_ids.mapped('evaluation_ids')
         generated_evaluations_collaborator_qty = len(
@@ -488,9 +489,15 @@ class ONSCDesempenoEvaluationList(models.Model):
                 if not skills:
                     raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
+                current_job_id = Job.search([
+                    ('employee_id', '=', self.manager_id.id),
+                    ('department_id', '=', data.evaluation_list_id.manager_uo_id.id),
+                    '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
+                ], limit=1).id
+
                 evaluation = Evaluation.create({
                     'evaluator_current_job_id': data.job_id.id,
-                    'current_job_id': data.job_id.id,
+                    'current_job_id': current_job_id,
                     'evaluation_list_id': data.evaluation_list_id.id,
                     'evaluated_id': self.manager_id.id,
                     'evaluator_id': data.employee_id.id,
@@ -536,6 +543,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
         Level = self.env['onsc.desempeno.level.line'].suspend_security()
+        Job = self.env['hr.job'].sudo()
 
         level_id = Level.suspend_security().search(
             [('hierarchical_level_id', '=', self.manager_uo_id.hierarchical_level_id.id),
@@ -548,9 +556,15 @@ class ONSCDesempenoEvaluationList(models.Model):
         if not skills:
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
+        current_job_id = Job.search([
+            ('employee_id', '=', self.manager_id.id),
+            ('department_id', '=', data.evaluation_list_id.manager_uo_id.id),
+            '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
+        ], limit=1).id
+
         evaluation = Evaluation.create({
             'evaluator_current_job_id': data.job_id.id,
-            'current_job_id': data.job_id.id,
+            'current_job_id': current_job_id,
             'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': self.manager_id.id,
             'evaluator_id': data.employee_id.id,
