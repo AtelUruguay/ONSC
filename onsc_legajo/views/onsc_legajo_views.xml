@@ -85,7 +85,7 @@
         <field name="arch" type="xml">
             <form string="Legajos">
                 <header>
-                    <field name="legajo_state" widget="statusbar"/>
+                    <field name="legajo_state" widget="statusbar" attrs="{'invisible': [('is_mi_legajo', '=', True)]}"/>
                 </header>
                 <sheet>
                     <div name="button_box" class="oe_button_box">
