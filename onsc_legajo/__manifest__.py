@@ -67,6 +67,7 @@ ONSC - Legajo
         'views/onsc_legajo_cambio_uo_views.xml',
         'views/onsc_legajo_role_asignment_views.xml',
         'views/onsc_legajo_staging_ws7_views.xml',
+        'wizard/onsc_legajo_sycronize_ws7_wizard_views.xml',
         'views/onsc_legajo_menuitems.xml',
     ],
     'assets': {

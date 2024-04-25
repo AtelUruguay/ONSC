@@ -214,7 +214,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
         for evaluation in evaluations:
             key = '%s;;%s;;%s' % (
                 evaluation.evaluator_id.id,
-                evaluation.uo_id.id,
+                evaluation.evaluator_current_job_id.id,
                 evaluation.evaluation_stage_id.id,
             )
             if key not in scores_dict.keys():
@@ -251,11 +251,12 @@ class ONSCDesempenoGeneralCycle(models.Model):
         return True
 
     def _get_evaluation_key_default_dict(self, evaluation):
+        evaluator_current_job_id = evaluation.evaluator_current_job_id
         return {
             'employee_id': evaluation.evaluator_id.id,
-            'department_id': evaluation.uo_id.id,
-            'operating_unit_id': evaluation.operating_unit_id.id,
-            'inciso_id': evaluation.inciso_id.id,
+            'department_id': evaluator_current_job_id.department_id.id,
+            'operating_unit_id': evaluator_current_job_id.operating_unit_id.id,
+            'inciso_id': evaluator_current_job_id.inciso_id.id,
             'evaluation_stage_id': evaluation.evaluation_stage_id.id,
             'year': evaluation.evaluation_stage_id.year,
             'evaluation_list_id': evaluation.evaluation_list_id.id,
