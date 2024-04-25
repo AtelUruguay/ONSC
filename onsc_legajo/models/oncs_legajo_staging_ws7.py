@@ -839,5 +839,4 @@ class ONSCLegajoStagingWS7(models.Model):
             'date_from': date_from.strftime('%d-%m-%Y %H:%M:%S'),
             'date_to': date_to.strftime('%d-%m-%Y %H:%M:%S')
         })
-        email_template_id.with_context(view_context).send_mail(self.id, force_send=True,
-                                                               notif_layout='mail.mail_notification_light')
+        email_template_id.with_context(view_context).send_mail(self.id)
