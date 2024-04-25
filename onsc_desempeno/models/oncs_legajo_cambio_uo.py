@@ -17,16 +17,14 @@ class ONSCLegajoCambioUO(models.Model):
                 ('current_job_id', '=', self.job_id.id),
                 ('create_date', '>=', self.job_id.start_date),
             ]).write({'current_job_id': new_job.id})
+            Evaluation.with_context(ignore_security_rules=True).search([
+                ('evaluator_current_job_id', '=', self.job_id.id),
+                ('create_date', '>=', self.job_id.start_date),
+            ]).write({'evaluator_current_job_id': new_job.id})
             Consolidated.with_context(ignore_security_rules=True).search([
                 ('current_job_id', '=', self.job_id.id),
                 ('create_date', '>=', self.job_id.start_date),
             ]).write({'current_job_id': new_job.id})
-
-            # evaluations.write(
-        #     {'current_job_id': new_job.id}
-        # )
-        # if len(evaluations) == 0:
-        #     new_job._update_evaluation_list_in()
         return new_job
 
     def fix_evaluations(self):

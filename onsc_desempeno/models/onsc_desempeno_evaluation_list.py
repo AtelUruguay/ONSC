@@ -347,6 +347,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
         evaluation = Evaluation.create({
             'current_job_id': data.job_id.id,
+            'evaluator_current_job_id': data.job_id.id,
             'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
@@ -388,8 +389,16 @@ class ONSCDesempenoEvaluationList(models.Model):
         if not skills:
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
+        Job = self.env['hr.job'].sudo()
+        evaluator_current_job_id = Job.search([
+            ('employee_id', '=', self.manager_id.id),
+            ('department_id', '=', data.evaluation_list_id.manager_uo_id.id),
+            '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
+        ], limit=1).id
+
         evaluation = Evaluation.create({
             'current_job_id': data.job_id.id,
+            'evaluator_current_job_id': evaluator_current_job_id,
             'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': self.manager_id.id,
@@ -432,6 +441,7 @@ class ONSCDesempenoEvaluationList(models.Model):
 
         evaluation = Evaluation.create({
             'current_job_id': data.job_id.id,
+            'evaluator_current_job_id': data.job_id.id,
             'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': data.employee_id.id,
             'evaluator_id': data.employee_id.id,
@@ -479,6 +489,7 @@ class ONSCDesempenoEvaluationList(models.Model):
                     raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
                 evaluation = Evaluation.create({
+                    'evaluator_current_job_id': data.job_id.id,
                     'current_job_id': data.job_id.id,
                     'evaluation_list_id': data.evaluation_list_id.id,
                     'evaluated_id': self.manager_id.id,
@@ -538,6 +549,7 @@ class ONSCDesempenoEvaluationList(models.Model):
             raise ValidationError(_(u"No se ha encontrado ninguna competencia activa"))
 
         evaluation = Evaluation.create({
+            'evaluator_current_job_id': data.job_id.id,
             'current_job_id': data.job_id.id,
             'evaluation_list_id': data.evaluation_list_id.id,
             'evaluated_id': self.manager_id.id,
@@ -570,6 +582,7 @@ class ONSCDesempenoEvaluationList(models.Model):
         evaluation = record.copy_data()
         evaluation[0]["evaluation_type"] = "gap_deal"
         evaluation[0]["current_job_id"] = record.current_job_id.id
+        evaluation[0]["evaluator_current_job_id"] = record.evaluator_current_job_id.id
         if record.current_job_id:
             _department_id = record.current_job_id.department_id
             if _department_id.manager_id == record.current_job_id.employee_id:

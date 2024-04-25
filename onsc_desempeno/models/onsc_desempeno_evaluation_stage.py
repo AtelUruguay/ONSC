@@ -325,6 +325,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     evaluation[0]["is_gap_deal_not_generated"] = False
                     evaluation[0]["evaluator_uo_id"] = record.evaluator_uo_id.id
                     evaluation[0]["current_job_id"] = record.current_job_id.id
+                    evaluation[0]["evaluator_current_job_id"] = record.evaluator_current_job_id.id
                     evaluation[0]["general_comments"] = False
                     evaluation[0]["reason_cancel"] = False
 
