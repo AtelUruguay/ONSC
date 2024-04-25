@@ -14,33 +14,43 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
     _description = 'Modelo abstracto para la sincronización de legajo con WS7'
 
     @api.model
-    def syncronize(self, log_info=False, days=False, fecha_hasta=False):
+    def syncronize(self, log_info=False, days=False, fecha_hasta=False, fecha_desde=False):
         parameter = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS7_F_PU_RVE_MOVIMIENTOS')
         timeout = self.env['ir.config_parameter'].sudo().get_param('onsc_legajo_WS7_F_PU_RVE_MOVIMIENTOS_TIMEOUT')
         tz_delta = self.env['ir.config_parameter'].sudo().get_param('server_timezone_delta')
         integration_error = self.env.ref("onsc_legajo.onsc_legajo_integration_error_WS7_9005")
 
         wsclient = self._get_client(parameter, 'WS7', integration_error, timeout=int(timeout))
+        if not self._context.get('wizard'):
+            paFechaDesde = self.env.user.company_id.ws7_date_from
+            pfFechaDesdewithTz = self.env.user.company_id.ws7_date_from
 
-        paFechaDesde = self.env.user.company_id.ws7_date_from
-        pfFechaDesdewithTz = self.env.user.company_id.ws7_date_from
+            paFechaDesde += datetime.timedelta(hours=int(tz_delta))
+        else:
+            paFechaDesde = fecha_desde
+            pfFechaDesdewithTz = fecha_desde
 
-        paFechaDesde += datetime.timedelta(hours=int(tz_delta))
+            paFechaDesde += datetime.timedelta(hours=int(tz_delta))
 
         if days and days > 0:
             paFechaHasta = paFechaDesde + datetime.timedelta(days=days)
             paFechaHastawithTz = pfFechaDesdewithTz + datetime.timedelta(days=days)
         elif fecha_hasta:
-            paFechaHasta = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
-            paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
-            paFechaHastawithTz = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
-            paFechaHastawithTz -= datetime.timedelta(hours=int(tz_delta))
+            if not self._context.get('wizard'):
+                paFechaHasta = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
+                paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
+                paFechaHastawithTz = datetime.datetime.strptime(fecha_hasta, '%Y-%m-%d %H:%M:%S.%f')
+                paFechaHastawithTz -= datetime.timedelta(hours=int(tz_delta))
+            else:
+                paFechaHasta = fecha_hasta
+                paFechaHastawithTz = fecha_hasta
+                paFechaHastawithTz -= datetime.timedelta(hours=int(tz_delta))
         else:
             paFechaHasta = fields.Datetime.now()
             paFechaHastawithTz = fields.Datetime.now()
             paFechaHasta -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
-
-        paFechaDesde -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
+        if not self._context.get('wizard'):
+            paFechaDesde -= datetime.timedelta(seconds=self.env.user.company_id.ws7_latency_inseconds)
         data = {
             'paFechaDesde': paFechaDesde.strftime('%d/%m/%Y %H:%M:%S'),
             'paFechaHasta': paFechaHasta.strftime('%d/%m/%Y %H:%M:%S'),
@@ -85,14 +95,28 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                     if operation.primer_nombre == 'SIN DATO':
                         continue
                     vals = self._get_base_dict(operation, tz_delta)
-                    _is_op_unicity_valid = self._is_op_unicity_valid(vals, integration_error_WS7_9004)
-                    if not _is_op_unicity_valid:
-                        continue
+                    if not self._context.get('wizard'):
+                        _is_op_unicity_valid = self._is_op_unicity_valid(vals, integration_error_WS7_9004)
+                        if not _is_op_unicity_valid:
+                            continue
+                        is_simplify_record = vals.get('mov') in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']
+                        if is_simplify_record:
+                            vals.update({'state': 'na'})
+                        stagings |= Staging.create(vals)
 
-                    is_simplify_record = vals.get('mov') in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']
-                    if is_simplify_record:
-                        vals.update({'state': 'na'})
-                    stagings |= Staging.create(vals)
+                    else:
+                        staging = self._get_staging(operation)
+                        if not staging:
+                            is_simplify_record = vals.get('mov') in ['ALTA', 'BAJA', 'COMISION', 'CAMBIO_DEPTO']
+                            if is_simplify_record:
+                                vals.update({'state': 'na'})
+                            stagings |= Staging.create(vals)
+                        elif staging.state in ('error', 'in_process'):
+                            vals.update({'state': 'in_process'})
+                            staging.write(vals)
+                            stagings |= staging
+                        else:
+                            continue
                 stagings.button_in_process()
             except Exception as e:
                 raise e
@@ -185,3 +209,7 @@ class ONSCLegajoAbstractSyncWS7(models.AbstractModel):
                                                                                origin_name,
                                                                                integration_error,
                                                                                long_description)
+
+    def _get_staging(self, vals):
+        Staging = self.env['onsc.legajo.staging.ws7'].suspend_security()
+        return Staging.search([('key', '=', vals.get('key'))])
