@@ -324,6 +324,8 @@ class HrContract(models.Model):
         vals = {'legajo_state': legajo_state}
         if eff_date:
             vals.update({'eff_date': str(eff_date)})
+        else:
+            vals.update({'eff_date': fields.Date.today()})
         self.write(vals)
 
     def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False):
@@ -334,7 +336,8 @@ class HrContract(models.Model):
             vals.update({'date_end': date_end})
         if eff_date:
             vals.update({'eff_date': str(eff_date)})
-
+        else:
+            vals.update({'eff_date': fields.Date.today()})
         self.suspend_security().write(vals)
         self.job_ids.deactivate(date_end)
 
