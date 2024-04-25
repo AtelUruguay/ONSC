@@ -412,6 +412,7 @@ class ONSCLegajoRoleAssignment(models.Model):
             source_job=self.job_id
         )
         self._create_job_role_assignment(new_job)
+        return new_job
 
     def _create_job_role_assignment(self, job_id):
         self.ensure_one()
