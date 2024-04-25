@@ -88,12 +88,14 @@ class ONSCDesempenoEvalaluatiorChangeWizard(models.TransientModel):
             vals = {
                 'reason_change_id': reason_id,
                 'evaluator_id': self.evaluation_id.original_evaluator_id.id,
+                'evaluator_current_job_id': self.env.user.employee_id.job_id,
                 'evaluator_uo_id': self.evaluation_id.original_evaluator_uo_id.id
             }
         else:
             vals = {
                 'reason_change_id': reason_id,
                 'evaluator_id': self.job_id.employee_id.id,
+                'evaluator_current_job_id': self.job_id.id,
                 'evaluator_uo_id': self.job_id.department_id.id
             }
         if not self.evaluation_id.original_evaluator_id:
