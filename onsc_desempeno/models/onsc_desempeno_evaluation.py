@@ -1010,6 +1010,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 record.write({'state': 'uncompleted'})
 
     def _create_development_plan(self):
+        Job = self.env['hr.job'].sudo()
         Skill = self.env['onsc.desempeno.skill'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.development.competency'].suspend_security()
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
@@ -1029,6 +1030,12 @@ class ONSCDesempenoEvaluation(models.Model):
                     manager_department = _department_id.get_first_department_withmanager_in_tree(ignore_first_step=True)
                 else:
                     manager_department = _department_id.get_first_department_withmanager_in_tree()
+                evaluator_current_job_id = Job.search([
+                    ('employee_id', '=', manager_department.manager_id.id),
+                    ('department_id', '=', manager_department.id),
+                    '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
+                ], limit=1).id
+                evaluation[0]["evaluator_current_job_id"] = evaluator_current_job_id
                 evaluation[0]["evaluator_id"] = manager_department.manager_id.id
                 evaluation[0]["original_evaluator_id"] = False
                 evaluation[0]["reason_change_id"] = False
@@ -1051,6 +1058,7 @@ class ONSCDesempenoEvaluation(models.Model):
     def _create_tracing_plan(self):
         Competency = self.env['onsc.desempeno.evaluation.development.competency'].suspend_security()
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
+        Job = self.env['hr.job'].sudo()
 
         evaluation = self.copy_data()
         evaluation[0]["evaluation_type"] = "tracing_plan"
@@ -1066,6 +1074,12 @@ class ONSCDesempenoEvaluation(models.Model):
                 manager_department = _department_id.get_first_department_withmanager_in_tree(ignore_first_step=True)
             else:
                 manager_department = _department_id.get_first_department_withmanager_in_tree()
+            evaluator_current_job_id = Job.search([
+                ('employee_id', '=', manager_department.manager_id.id),
+                ('department_id', '=', manager_department.id),
+                '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
+            ], limit=1).id
+            evaluation[0]["evaluator_current_job_id"] = evaluator_current_job_id
             evaluation[0]["evaluator_id"] = manager_department.manager_id.id
             evaluation[0]["original_evaluator_id"] = False
             evaluation[0]["reason_change_id"] = False
