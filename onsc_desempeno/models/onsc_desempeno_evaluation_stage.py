@@ -325,6 +325,7 @@ class ONSCDesempenoEvaluationStage(models.Model):
             ignore_security_rules=True)
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security().with_context(
             ignore_security_rules=True)
+        Job = self.env['hr.job'].sudo()
 
         valid_days = (self.general_cycle_id.end_date - fields.Date.from_string(fields.Date.today())).days
         _valid_360_types = ['self_evaluation', 'leader_evaluation', 'environment_evaluation', 'collaborator']
@@ -356,6 +357,12 @@ class ONSCDesempenoEvaluationStage(models.Model):
                             )
                         else:
                             manager_department = _department_id.get_first_department_withmanager_in_tree()
+                        evaluator_current_job_id = Job.search([
+                            ('employee_id', '=', manager_department.manager_id.id),
+                            ('department_id', '=', manager_department.id),
+                            '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
+                        ], limit=1).id
+                        evaluation[0]["evaluator_current_job_id"] = evaluator_current_job_id
                         evaluation[0]["evaluator_id"] = manager_department.manager_id.id
                         evaluation[0]["uo_id"] = record.current_job_id.department_id.id
 

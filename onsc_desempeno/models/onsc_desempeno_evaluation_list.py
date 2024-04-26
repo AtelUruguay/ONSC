@@ -592,6 +592,7 @@ class ONSCDesempenoEvaluationList(models.Model):
     def _create_gap_deal(self, record):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
         Competency = self.env['onsc.desempeno.evaluation.competency'].suspend_security()
+        Job = self.env['hr.job'].sudo()
         partners_to_notify = self.env["res.partner"]
         evaluation = record.copy_data()
         evaluation[0]["evaluation_type"] = "gap_deal"
@@ -603,6 +604,12 @@ class ONSCDesempenoEvaluationList(models.Model):
                 manager_department = _department_id.get_first_department_withmanager_in_tree(ignore_first_step=True)
             else:
                 manager_department = _department_id.get_first_department_withmanager_in_tree()
+            evaluator_current_job_id = Job.search([
+                ('employee_id', '=', manager_department.manager_id.id),
+                ('department_id', '=', manager_department.id),
+                '|', ('end_date', '=', False), ('end_date', '>=', fields.Date.today())
+            ], limit=1).id
+            evaluation[0]["evaluator_current_job_id"] = evaluator_current_job_id
             evaluation[0]["evaluator_id"] = manager_department.manager_id.id
             evaluation[0]["uo_id"] = record.current_job_id.department_id.id
         gap_deal = Evaluation.with_context(gap_deal=True).create(evaluation)
