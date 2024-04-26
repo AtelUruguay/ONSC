@@ -641,7 +641,7 @@ class ONSCDesempenoEvaluation(models.Model):
                 employees_2exclude |= user_employee
                 employees_2exclude |= rec.list_manager_id
 
-                today = fields.Date.today()
+                today = str(fields.Date.today())
                 domain = [
                     ('employee_id', 'not in', employees_2exclude.ids),
                     '&', ('start_date', '<=', today),
