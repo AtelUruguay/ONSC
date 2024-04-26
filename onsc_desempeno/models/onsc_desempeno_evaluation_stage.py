@@ -243,7 +243,9 @@ class ONSCDesempenoEvaluationStage(models.Model):
             # manipular el search_domain_consolidated para que si ya está pero de ENTORNO tirarla para ahí.
             _qty = len(results.filtered(
                 lambda r: r.evaluation_type == res.evaluation_type and r.evaluated_id.id == res.evaluated_id.id))
-            if evaluation_type == 'environment' and _qty > 1:
+            _full_qty = len(results.filtered(
+                lambda r: r.evaluated_id.id == res.evaluated_id.id))
+            if evaluation_type == 'environment' and _full_qty > 1:
                 create_consolidated = True
                 search_domain_consolidated = expression.AND(
                     [[('evaluation_type', '=', 'environment')], search_domain_consolidated])
