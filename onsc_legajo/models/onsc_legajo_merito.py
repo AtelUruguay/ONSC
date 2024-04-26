@@ -14,11 +14,13 @@ class ONSCLegajoMerito(models.Model):
     ]
     _history_model = 'onsc.legajo.merito.history'
     _tree_history_columns = [
+        'inciso_id',
+        'operating_unit_id',
         'title',
+        'notification_date',
         'document_date',
         'digital_filename',
         'description',
-        'notification_date',
     ]
 
     def _is_group_admin_security(self):
@@ -36,7 +38,7 @@ class ONSCLegajoMerito(models.Model):
     title = fields.Char(string="Título", required=True, history=True)
     document_date = fields.Date(string="Fecha del documento", required=True, history=True)
     digital_file = fields.Binary(string="Documento digitalizado", required=True, history=True)
-    digital_filename = fields.Char(string="Nombre del documento digitalizado", required=True, history=True)
+    digital_filename = fields.Char(string="Documento digitalizado", required=True, history=True)
     description = fields.Text(string="Descripción del mérito", required=True, history=True)
     notification_date = fields.Date(string="Fecha de notificación", required=True, history=True)
     legajo_id = fields.Many2one(comodel_name="onsc.legajo", string="Legajo", required=True)

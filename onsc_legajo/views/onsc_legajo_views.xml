@@ -159,7 +159,7 @@
                     </group>
                     <notebook>
                         <page name="page_vote_control" string="Control de votos">
-                            <field name="electoral_act_ids_domain"/>
+                            <field name="electoral_act_ids_domain" invisible="1"/>
                             <field name="vote_registry_ids"
                                    attrs="{'readonly': [('is_vote_registry_editable', '=', False)]}">
                                 <tree string="Control de Votos">
