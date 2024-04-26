@@ -16,6 +16,6 @@ class ONSCLegajoSynconizeWS7Wizard(models.TransientModel):
         WS7.with_context(wizard=True).syncronize(fecha_hasta=self.end_datetime, fecha_desde=self.start_datetime)
 
     @api.constrains('start_datetime', 'end_datetime')
-    def _constrains_start_date_end_date(self):
+    def _check_start_date_end_date(self):
         if self.start_datetime and self.end_datetime and self.end_datetime < self.start_datetime:
             raise ValidationError(u"La fecha desde no puede ser mayor que la fecha hasta")
