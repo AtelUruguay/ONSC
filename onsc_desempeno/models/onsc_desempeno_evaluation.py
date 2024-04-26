@@ -641,13 +641,12 @@ class ONSCDesempenoEvaluation(models.Model):
                 employees_2exclude |= user_employee
                 employees_2exclude |= rec.list_manager_id
 
-                # domain = [
-                #     ('id', 'not in', employees_2exclude.ids)
-                # ]
+                today = fields.Date.today()
                 domain = [
-                    ('employee_id', 'not in', employees_2exclude.ids)
+                    ('employee_id', 'not in', employees_2exclude.ids),
+                    '&', ('start_date', '<=', today),
+                    '|', ('end_date', '>=', today), ('end_date', '=', False)
                 ]
-
                 if rec.environment_in_hierarchy:
                     jobs = Job.get_active_jobs_in_hierarchy()
                     # domain = expression.AND([domain, [('id', 'in', jobs.mapped('employee_id').ids)]])
