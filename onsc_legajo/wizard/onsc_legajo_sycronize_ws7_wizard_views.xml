@@ -8,9 +8,17 @@
                 <group>
                     <field name="start_datetime"/>
                     <field name="end_datetime"/>
+                    <div class="alert alert-info" colspan="2"
+                         role="alert"
+                         style="margin-bottom:0px;">
+                        <p>
+                            <i class="fa fa-info-circle" role="alert"/>
+                            En caso de error verificar el log de ejecución en "Vínculos/Logs/Mensajes de ejecución".
+                        </p>
+                    </div>
                 </group>
                 <footer>
-                    <button string="Sincronizar" name="action_sycronize" type="object" class="oe_highlight" data-hotkey="a"/>
+                    <button string="Ejecutar" name="action_sycronize" type="object" class="oe_highlight" data-hotkey="a"/>
                     <button string="Cancelar" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
                 </footer>
             </form>
