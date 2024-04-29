@@ -208,7 +208,8 @@ class ONSCDesempenoGeneralCycle(models.Model):
             ('evaluation_stage_id', 'in', stages_360.ids),
             ('evaluation_type', 'in', EVALUATION_TYPES),
             ('state', '!=', 'canceled'),
-            ('state_gap_deal', '!=', 'canceled')
+            ('state_gap_deal', '!=', 'canceled'),
+            ('evaluator_current_job_id', '!=', False)
         ])
         scores_dict = {}
         for evaluation in evaluations:
