@@ -23,8 +23,8 @@ class ONSCLegajoDemerito(models.Model):
         'notification_date',
         'start_date',
         'end_date',
-        'description',
         'type_sanction_id',
+        'description',
     ]
 
     def _is_group_admin_security(self):
@@ -47,7 +47,7 @@ class ONSCLegajoDemerito(models.Model):
     title = fields.Char(string="Título", required=True, history=True)
     document_date = fields.Date(string="Fecha del documento", required=True, history=True)
     digital_file = fields.Binary(string="Documento digitalizado", required=True, history=True)
-    digital_filename = fields.Char("Nombre del documento digitalizado", required=True, history=True)
+    digital_filename = fields.Char("Documento digitalizado", required=True, history=True)
     notification_date = fields.Date(string="Fecha de notificación", required=True, history=True)
     start_date = fields.Date(string="Fecha inicio", required=True, history=True)
     end_date = fields.Date(string="Fecha hasta", required=True, history=True)
