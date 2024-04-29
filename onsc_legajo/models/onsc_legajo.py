@@ -105,7 +105,9 @@ class ONSCLegajo(models.Model):
     vote_registry_ids = fields.One2many(
         comodel_name="onsc.legajo.vote.registry",
         inverse_name="legajo_id",
-        string="Registro de votos")
+        string="Registro de votos",
+        context={'ignore_restrict': True, 'ignore_base_restrict': True}
+    )
     is_vote_registry_editable = fields.Boolean(
         string='¿Control de votos editable desde Legajo?',
         compute='_compute_is_vote_registry_editable'

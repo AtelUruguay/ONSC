@@ -17,7 +17,7 @@ class ONSCLegajoAbstractOpBaseSecurity(models.AbstractModel):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and not self._context.get('ignore_base_restrict'):
             args = self._get_domain(args)
         return super(ONSCLegajoAbstractOpBaseSecurity, self)._search(args, offset=offset, limit=limit, order=order,
                                                                      count=count,
@@ -25,7 +25,7 @@ class ONSCLegajoAbstractOpBaseSecurity(models.AbstractModel):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_from_menu'):
+        if self._context.get('is_from_menu') and not self._context.get('ignore_base_restrict'):
             domain = self._get_domain(domain)
         return super().read_group(domain, fields, groupby, offset=offset, limit=limit, orderby=orderby, lazy=lazy)
 

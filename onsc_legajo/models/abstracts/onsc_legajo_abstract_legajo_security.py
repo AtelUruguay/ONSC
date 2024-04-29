@@ -11,7 +11,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
 
     @api.model
     def _get_expression_domain(self, args):
-        if self._context.get('is_legajo'):
+        if self._context.get('is_legajo') and not self._context.get('ignore_restrict'):
             available_contracts = self._get_user_available_contract()
             if not available_contracts:
                 employee_ids = []
@@ -26,7 +26,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, count=False, access_rights_uid=None):
-        if self._context.get('is_legajo'):
+        if self._context.get('is_legajo') and not self._context.get('ignore_restrict'):
             args = self._get_expression_domain(args)
         return super(ONSCLegajoAbstractLegajoSecurity, self)._search(args, offset=offset, limit=limit, order=order,
                                                                      count=count,
@@ -34,7 +34,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
 
     @api.model
     def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
-        if self._context.get('is_legajo'):
+        if self._context.get('is_legajo') and not self._context.get('ignore_restrict'):
             domain = self._get_expression_domain(domain)
         return super(ONSCLegajoAbstractLegajoSecurity, self).read_group(domain, fields, groupby, offset=offset,
                                                                         limit=limit, orderby=orderby,
@@ -48,6 +48,9 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
 
     def _get_abstract_ue_security(self):
         return False
+
+    def _get_abstract_responsable_uo(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
 
     def _get_user_available_contract(self, employee_id=False):
         available_contracts = self.env['hr.contract']
@@ -83,7 +86,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
                     operating_unit_id,
                     'operating_unit_id'
                 )
-        elif self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo'):
+        elif self._get_abstract_responsable_uo():
             employees = employee_id or self.env['hr.employee'].search([('id', '!=', self.env.user.employee_id.id)])
             department_ids = self.env['onsc.legajo.department'].get_uo_tree()
             available_contracts = employees.mapped('contract_ids').mapped('job_ids').filtered(

@@ -7,10 +7,10 @@
         <field name="arch" type="xml">
             <search string="Control de Votos">
                 <field name="legajo_id"/>
-<!--                <filter string="Para procesar" name="filter_altas_draft"-->
-<!--                        domain="[('filter_destination','=',True)]"/>-->
+                <field name="electoral_act_ids"/>
+                <filter string="Elecciones activas" name="filter_any_electoral_act_active"
+                        domain="[('any_electoral_act_active','=',True)]"/>
                 <group string="Agrupar por">
-<!--                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>-->
                 </group>
             </search>
         </field>
@@ -27,27 +27,31 @@
                     <header>
                     </header>
                     <group>
-                        <field name="legajo_id"
-                            options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
-                        <field name="date"/>
-                        <field name="electoral_act_ids_domain" invisible="1"/>
+                        <field name="employee_id" domain="employee_id_domain"
+                               options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
+                               context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"/>
+                        <field name="legajo_id" invisible="1"/>
+                        <field name="date" readonly="1" force_save="1"/>
                         <field name="electoral_act_ids"
                                domain="electoral_act_ids_domain"
                                widget="many2many_tags"
                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                        <field name="electoral_act_ids_domain" invisible="1"/>
+                        <field name="employee_id_domain" invisible="1"/>
+                        <field name="should_disable_form_edit" invisible="0"/>
                     </group>
                 </sheet>
             </form>
         </field>
     </record>
-v
+
     <record id="view_onsc_legajo_vote_registry_tree" model="ir.ui.view">
         <field name="name">onsc.legajo.vote.registry.tree</field>
         <field name="model">onsc.legajo.vote.registry</field>
         <field name="type">tree</field>
         <field name="arch" type="xml">
             <tree string="Control de Votos">
-                <field name="legajo_id"
+                <field name="employee_id"
                             options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                 <field name="date"/>
                 <field name="electoral_act_ids" widget="many2many_tags"
@@ -56,16 +60,10 @@ v
         </field>
     </record>
 
-    <record id="onsc_legajo_vote_registry_action" model="ir.actions.act_window">
-        <field name="name">Control de Votos</field>
+    <record id="onsc_legajo_vote_registry_consulta_action" model="ir.actions.act_window">
+        <field name="name">Consulta de ingresos realizados</field>
         <field name="res_model">onsc.legajo.vote.registry</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{'search_default_filter_altas_draft':1,'is_from_menu': True,'show_descriptors':True}
-        </field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Control de Votos
-            </p>
-        </field>
+        <field name="context">{'search_default_filter_any_electoral_act_active':1,'is_from_menu': True,'is_legajo': True, 'restrict_period':True}</field>
     </record>
 </odoo>
