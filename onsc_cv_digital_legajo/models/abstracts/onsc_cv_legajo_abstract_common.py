@@ -54,4 +54,3 @@ class ONSCCVLegajoAbstractCommon(models.AbstractModel):
     def onchange_emergency_service_id(self):
         for rec in self:
             rec.emergency_service_telephone = rec.emergency_service_id.phone
-
