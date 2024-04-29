@@ -32,15 +32,15 @@ class ONSCLegajoStagingWS7(models.Model):
 
         Evaluation.search([
             ('current_job_id', '=', source_job.id),
-            ('create_date', '>=', source_job.start_date),
+            ('general_cycle_id.active', '=', True),
         ]).write({'current_job_id': new_job.id})
         Evaluation.search([
             ('evaluator_current_job_id', '=', source_job.id),
-            ('create_date', '>=', source_job.start_date),
+            ('general_cycle_id.active', '=', True),
         ]).write({'evaluator_current_job_id': new_job.id})
         Consolidated.search([
             ('current_job_id', '=', source_job.id),
-            ('create_date', '>=', source_job.start_date),
+            ('general_cycle_id.active', '=', True),
         ]).write({'current_job_id': new_job.id})
 
         # evaluations.write(

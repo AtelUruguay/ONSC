@@ -15,15 +15,15 @@ class ONSCLegajoCambioUO(models.Model):
             # OBTENIENDO COLABORADORES
             Evaluation.with_context(ignore_security_rules=True).search([
                 ('current_job_id', '=', self.job_id.id),
-                ('create_date', '>=', self.job_id.start_date),
+                ('general_cycle_id.active', '=', True),
             ]).write({'current_job_id': new_job.id})
             Evaluation.with_context(ignore_security_rules=True).search([
                 ('evaluator_current_job_id', '=', self.job_id.id),
-                ('create_date', '>=', self.job_id.start_date),
+                ('general_cycle_id.active', '=', True),
             ]).write({'evaluator_current_job_id': new_job.id})
             Consolidated.with_context(ignore_security_rules=True).search([
                 ('current_job_id', '=', self.job_id.id),
-                ('create_date', '>=', self.job_id.start_date),
+                ('general_cycle_id.active', '=', True),
             ]).write({'current_job_id': new_job.id})
         return new_job
 
