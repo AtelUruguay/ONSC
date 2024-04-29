@@ -7,8 +7,8 @@
         <field name="arch" type="xml">
             <search string="Control de Votos">
                 <field name="legajo_id"/>
-<!--                <filter string="Para procesar" name="filter_altas_draft"-->
-<!--                        domain="[('filter_destination','=',True)]"/>-->
+                <filter string="Elecciones activas" name="filter_any_electoral_act_active"
+                        domain="[('any_electoral_act_active','=',True)]"/>
                 <group string="Agrupar por">
 <!--                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>-->
                 </group>
@@ -40,7 +40,7 @@
             </form>
         </field>
     </record>
-v
+
     <record id="view_onsc_legajo_vote_registry_tree" model="ir.ui.view">
         <field name="name">onsc.legajo.vote.registry.tree</field>
         <field name="model">onsc.legajo.vote.registry</field>
@@ -56,16 +56,10 @@ v
         </field>
     </record>
 
-    <record id="onsc_legajo_vote_registry_action" model="ir.actions.act_window">
-        <field name="name">Control de Votos</field>
+    <record id="onsc_legajo_vote_registry_consulta_action" model="ir.actions.act_window">
+        <field name="name">Consulta de ingresos realizados</field>
         <field name="res_model">onsc.legajo.vote.registry</field>
         <field name="view_mode">tree,form</field>
-        <field name="context">{'search_default_filter_altas_draft':1,'is_from_menu': True,'show_descriptors':True}
-        </field>
-        <field name="help" type="html">
-            <p class="o_view_nocontent_smiling_face">
-                Control de Votos
-            </p>
-        </field>
+        <field name="context">{'search_default_filter_any_electoral_act_active':1,'is_from_menu': True}</field>
     </record>
 </odoo>

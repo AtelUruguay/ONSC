@@ -161,6 +161,7 @@
                         <page name="page_vote_control" string="Control de votos">
                             <field name="electoral_act_ids_domain"/>
                             <field name="vote_registry_ids"
+                                   context="{'is_from_menu': False, 'default_employee_id': employee_id, 'ignore_base_restrict':True,}"
                                    attrs="{'readonly': [('is_vote_registry_editable', '=', False)]}">
                                 <tree string="Control de Votos">
                                     <field name="date"/>
@@ -169,7 +170,8 @@
                                 </tree>
                                 <form string="Control de Votos">
                                     <group>
-                                        <field name="legajo_id" invisible="1"/>
+                                        <field name="employee_id" invisible="0"/>
+                                        <field name="legajo_id" invisible="0"/>
                                         <field name="date"/>
                                         <field name="electoral_act_ids_domain" invisible="0"/>
                                         <field name="electoral_act_ids" widget="many2many_tags"

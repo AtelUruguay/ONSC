@@ -9,16 +9,29 @@ from odoo.exceptions import ValidationError
 class ONSCLegajoVoteRegistry(models.Model):
     _name = "onsc.legajo.vote.registry"
     _description = 'Registro de control de votos'
+    _inherit = [
+        'onsc.legajo.abstract.opbase.security'
+    ]
 
-    legajo_id = fields.Many2one(
-        comodel_name="onsc.legajo",
-        string="Legajo",
-        required=True)
+    def _get_domain(self, args):
+        return super(ONSCLegajoVoteRegistry, self)._get_domain(args, use_employee=True)
+
+    def _is_group_inciso_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_vote_control_recursos_humanos_inciso')
+
+    def _is_group_ue_security(self):
+        return self.user_has_groups('onsc_legajo.group_legajo_vote_control_recursos_humanos_ue')
+
     employee_id = fields.Many2one(
         comodel_name="hr.employee",
         string="Funcionario",
-        related='legajo_id.employee_id',
-        store=True)
+        index=True)
+    legajo_id = fields.Many2one(
+        comodel_name="onsc.legajo",
+        string="Legajo",
+        compute='_compute_legajo_id',
+        store=True
+    )
     date = fields.Date(
         string='Fecha de presentación',
         default = lambda s: fields.Date.today(),
@@ -32,6 +45,11 @@ class ONSCLegajoVoteRegistry(models.Model):
         string='Elecciones disponibles',
         related='legajo_id.electoral_act_ids_domain')
 
+    any_electoral_act_active = fields.Boolean(
+        '¿Alguna Elección activa?',
+        search='_search_any_electoral_act_active',
+        store=False)
+
     @api.constrains("date")
     def _check_date(self):
         for record in self:
@@ -43,3 +61,15 @@ class ONSCLegajoVoteRegistry(models.Model):
         if self.date and self.date > fields.Date.today():
             self.date = False
             return warning_response(_(u"La Fecha de presentación debe ser menor o igual al día de hoy"))
+
+    def _search_any_electoral_act_active(self, operator, operand):
+        ElectoralAct = self.env['onsc.legajo.electoral.act'].suspend_security().with_context(active_test=False)
+        electoral_act_ids = ElectoralAct.search([
+                ('date_since_entry_control', '<=', fields.Date.today()),
+                ('date_until_entry_control', '>=', fields.Date.today())])
+        return [('electoral_act_ids', 'in', electoral_act_ids.ids)]
+
+    @api.depends('employee_id')
+    def _compute_legajo_id(self):
+        for rec in self:
+            rec.legajo_id = self.env['onsc.legajo'].sudo().search([('employee_id', '=', rec.employee_id.id)], limit=1)
