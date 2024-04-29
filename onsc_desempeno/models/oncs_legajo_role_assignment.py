@@ -21,14 +21,14 @@ class ONSCLegajoRoleAssignment(models.Model):
         new_job = super(ONSCLegajoRoleAssignment, self)._copy_job_and_create_job_role_assignment()
         Evaluation.search([
             ('current_job_id', '=', self.job_id.id),
-            ('create_date', '>=', self.job_id.start_date),
+            ('general_cycle_id.active', '=', True),
         ]).write({'current_job_id': new_job.id})
         Evaluation.search([
             ('evaluator_current_job_id', '=', self.job_id.id),
-            ('create_date', '>=', self.job_id.start_date),
+            ('general_cycle_id.active', '=', True),
         ]).write({'evaluator_current_job_id': new_job.id})
         Consolidated.search([
             ('current_job_id', '=', self.job_id.id),
-            ('create_date', '>=', self.job_id.start_date),
+            ('general_cycle_id.active', '=', True),
         ]).write({'current_job_id': new_job.id})
         return new_job
