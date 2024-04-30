@@ -38,18 +38,29 @@ class ONSCLegajoSecurityJob(models.Model):
     def update_jobs_security(self):
         Job = self.env['hr.job']
         for record in self:
-            for job in Job.search([('security_job_id', '=', record.id)]):
-                try:
-                    new_lines = [(5,)]
-                    for user_role_id in record.user_role_ids:
-                        new_lines.append((0, 0, {
-                            'user_role_id': user_role_id.id,
-                            'type': 'system',
-                            'start_date': job.start_date if job.start_date else fields.Date.today(),
-                            'end_date': job.end_date
-                        }))
-                    job.write({
-                        'role_ids': new_lines
-                    })
-                except Exception:
-                    pass
+            new_lines = [(5,)]
+            for user_role_id in record.user_role_ids:
+                new_lines.append((0, 0, {
+                    'user_role_id': user_role_id.id,
+                    'type': 'system',
+                    # 'start_date': job.start_date if job.start_date else fields.Date.today(),
+                    # 'end_date': job.end_date
+                }))
+
+        try:
+            today = fields.Date.today()
+            jobs = Job.search([
+                ('security_job_id', '=', record.id),
+                '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False),
+            ])
+            jobs.write({'role_ids': new_lines})
+            sql_query = """UPDATE hr_job_role_line 
+SET 
+    start_date = (SELECT start_date FROM hr_job WHERE id = hr_job_role_line.job_id),
+    end_date = (SELECT end_date FROM hr_job WHERE id = hr_job_role_line.job_id)
+WHERE
+    hr_job_role_line.type='system' AND
+    job_id IN %s"""
+            self.env.cr.execute(sql_query, [tuple(jobs.ids)])
+        except Exception:
+            pass
