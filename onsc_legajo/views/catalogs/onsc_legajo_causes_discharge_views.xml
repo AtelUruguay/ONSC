@@ -61,6 +61,9 @@
                                    attrs="{'invisible': [('is_by_inciso', '=', False)],'required': [('is_by_inciso', '=', True)]}"
                                    groups="onsc_legajo.group_legajo_configurador" options="{'no_create': True}"/>
                             <field name="is_require_extended"/>
+                            <field name="reason_description"/>
+                            <field name="resolution_description"/>
+                            <field name="norm_id"/>
                             <field name="active" invisible="1"/>
                         </group>
 
@@ -73,6 +76,9 @@
                                 <tree string="Motivo de causal de egreso extendido" editable="top">
                                     <field name="name"/>
                                     <field name="description"/>
+                                    <field name="reason_description"/>
+                                    <field name="resolution_description"/>
+                                    <field name="norm_id"/>
                                 </tree>
                             </field>
                         </page>

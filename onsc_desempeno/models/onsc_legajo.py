@@ -55,8 +55,6 @@ class ONSCLegajoScore(models.Model):
                     rec.score_ids = Score.with_context(ignore_security_rules=True).search(args)
                 else:
                     rec.score_ids = False
-
-
             except Exception as e:
                 _logger.error(f"Error en el método de cálculo de score_ids: {e}")
 
