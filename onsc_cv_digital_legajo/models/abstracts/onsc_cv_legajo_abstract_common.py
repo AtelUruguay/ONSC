@@ -49,3 +49,8 @@ class ONSCCVLegajoAbstractCommon(models.AbstractModel):
 
     # Datos de afrodescendencia
     afro_descendant_date = fields.Date(string="Fecha de información afrodescendencia")
+
+    @api.onchange('emergency_service_id')
+    def onchange_emergency_service_id(self):
+        for rec in self:
+            rec.emergency_service_telephone = rec.emergency_service_id.phone
