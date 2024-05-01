@@ -41,24 +41,15 @@ class ONSCLegajoSecurityJob(models.Model):
     def update_jobs_security(self):
         Job = self.env['hr.job']
         JobLine = self.env['hr.job.role.line'].sudo()
-            # new_lines = []
-            # for user_role_id in record.user_role_ids:
-            #     new_lines.append({
-            #         'user_role_id': user_role_id.id,
-            #         'type': 'system',
-            #         # 'start_date': job.start_date if job.start_date else fields.Date.today(),
-            #         # 'end_date': job.end_date
-            #     }))
-
         try:
             for record in self:
-                _logger.warning('******************1')
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO')
                 today = fields.Date.today()
                 jobs = Job.search([
                     ('security_job_id', '=', record.id),
                     '|', ('end_date', '>=', today), ('end_date', '=', False),
                 ])
-                _logger.warning('******************1.1 INICIANDO BURBUJA')
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO INICIANDO BURBLE')
                 new_lines = []
                 for user_role_id in record.user_role_ids:
                     for job in jobs:
@@ -69,21 +60,12 @@ class ONSCLegajoSecurityJob(models.Model):
                             'start_date': job.start_date if job.start_date else fields.Date.today(),
                             'end_date': job.end_date
                         })
-                _logger.warning('******************2 LIMPIANDO LINEAS')
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO LIMPIANDO LINEAS')
                 sql_query = """DELETE FROM hr_job_role_line WHERE hr_job_role_line.type='system' AND job_id IN %s"""
                 self.env.cr.execute(sql_query, [tuple(jobs.ids)])
-                _logger.warning('******************2.1 BULKED CREATION')
-                JobLine.create(new_lines)
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO BULKED CREATION')
+                JobLine.with_context(no_notify=True).create(new_lines)
                 # jobs.write({'role_ids': new_lines})
-                _logger.warning('******************3 FINALIZANDO ACTUALIZACION DE JOBS')
-    #             sql_query = """UPDATE hr_job_role_line
-    # SET
-    #     start_date = (SELECT start_date FROM hr_job WHERE id = hr_job_role_line.job_id),
-    #     end_date = (SELECT end_date FROM hr_job WHERE id = hr_job_role_line.job_id)
-    # WHERE
-    #     hr_job_role_line.type='system' AND
-    #     job_id IN %s"""
-    #             self.env.cr.execute(sql_query, [tuple(jobs.ids)])
-                _logger.warning('******************4 FIN SQL')
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO FINALIZANDO')
         except Exception as e:
             pass
