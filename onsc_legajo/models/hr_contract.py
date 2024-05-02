@@ -102,6 +102,7 @@ class HrContract(models.Model):
     project = fields.Char(string='Proyecto', history=True)
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', history=True)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', history=True)
+    occupation_date = fields.Date(string='Fecha desde Ocupación', history=True)
     is_occupation_visible = fields.Boolean(compute='_compute_is_occupation_visible')
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1', history=True)
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2', history=True)
@@ -302,6 +303,8 @@ class HrContract(models.Model):
         vals = {'legajo_state': legajo_state}
         if eff_date:
             vals.update({'eff_date': str(eff_date)})
+        else:
+            vals.update({'eff_date': fields.Date.today()})
         self.write(vals)
 
     def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False):
@@ -312,7 +315,8 @@ class HrContract(models.Model):
             vals.update({'date_end': date_end})
         if eff_date:
             vals.update({'eff_date': str(eff_date)})
-
+        else:
+            vals.update({'eff_date': fields.Date.today()})
         self.suspend_security().write(vals)
         self.job_ids.deactivate(date_end)
 

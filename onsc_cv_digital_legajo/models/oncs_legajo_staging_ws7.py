@@ -20,7 +20,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'marital_status_documentary_user_id': self.create_uid.id,
         })
         employee_id.suspend_security().write({
-            'eff_date': str(record.fecha_aud.date()),
+            'eff_date': fields.Date.today(),
             'marital_status_id': record.marital_status_id.id
         })
         return True
