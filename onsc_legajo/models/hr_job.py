@@ -385,8 +385,9 @@ class HrJobRoleLine(models.Model):
     @api.model
     def create(self, values):
         record = super(HrJobRoleLine, self).create(values)
-        line_name = record.user_role_id.name or ''
-        record.job_id._message_log(body=_('Línea del rol adicional %s creada') % (line_name))
+        if not self._context.get('no_notify'):
+            line_name = record.user_role_id.name or ''
+            record.job_id._message_log(body=_('Línea del rol adicional %s creada') % (line_name))
         return record
 
     def write(self, vals):
