@@ -130,5 +130,12 @@
                 (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_role_assignment_form')})]"/>
         </record>
 
+        <record id='onsc_legajo_show_role_assignment_action' model='ir.actions.act_window'>
+            <field name="name">Asignación de funciones</field>
+            <field name="res_model">onsc.legajo.role.assignment</field>
+            <field name="view_mode">form</field>
+            <field name="context">{'is_from_menu': True ,'show_descriptors':True, 'create': False, 'edit': False, 'delete': False}</field>
+            <field name="view_ids" eval="[(5, 0, 0), (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo.onsc_legajo_role_assignment_form')})]"/>
+        </record>
     </data>
 </odoo>
