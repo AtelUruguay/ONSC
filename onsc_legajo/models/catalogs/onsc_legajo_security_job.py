@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+import logging
 import json
+
+_logger = logging.getLogger(__name__)
 
 from odoo import fields, models
 
@@ -37,30 +40,32 @@ class ONSCLegajoSecurityJob(models.Model):
 
     def update_jobs_security(self):
         Job = self.env['hr.job']
-        for record in self:
-            new_lines = [(5,)]
-            for user_role_id in record.user_role_ids:
-                new_lines.append((0, 0, {
-                    'user_role_id': user_role_id.id,
-                    'type': 'system',
-                    # 'start_date': job.start_date if job.start_date else fields.Date.today(),
-                    # 'end_date': job.end_date
-                }))
-
+        JobLine = self.env['hr.job.role.line'].sudo()
         try:
-            today = fields.Date.today()
-            jobs = Job.search([
-                ('security_job_id', '=', record.id),
-                '&', ('start_date', '<=', today), '|', ('end_date', '>=', today), ('end_date', '=', False),
-            ])
-            jobs.write({'role_ids': new_lines})
-            sql_query = """UPDATE hr_job_role_line 
-SET 
-    start_date = (SELECT start_date FROM hr_job WHERE id = hr_job_role_line.job_id),
-    end_date = (SELECT end_date FROM hr_job WHERE id = hr_job_role_line.job_id)
-WHERE
-    hr_job_role_line.type='system' AND
-    job_id IN %s"""
-            self.env.cr.execute(sql_query, [tuple(jobs.ids)])
-        except Exception:
+            for record in self:
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO')
+                today = fields.Date.today()
+                jobs = Job.search([
+                    ('security_job_id', '=', record.id),
+                    '|', ('end_date', '>=', today), ('end_date', '=', False),
+                ])
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO INICIANDO BURBLE')
+                new_lines = []
+                for user_role_id in record.user_role_ids:
+                    for job in jobs:
+                        new_lines.append({
+                            'job_id': job.id,
+                            'user_role_id': user_role_id.id,
+                            'type': 'system',
+                            'start_date': job.start_date if job.start_date else fields.Date.today(),
+                            'end_date': job.end_date
+                        })
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO LIMPIANDO LINEAS')
+                sql_query = """DELETE FROM hr_job_role_line WHERE hr_job_role_line.type='system' AND job_id IN %s"""
+                self.env.cr.execute(sql_query, [tuple(jobs.ids)])
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO BULKED CREATION')
+                JobLine.with_context(no_notify=True).create(new_lines)
+                # jobs.write({'role_ids': new_lines})
+                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO FINALIZANDO')
+        except Exception as e:
             pass
