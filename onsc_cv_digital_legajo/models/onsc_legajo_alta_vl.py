@@ -302,18 +302,18 @@ class ONSCLegajoAltaVL(models.Model):
                 ('partner_id', '=', rec.partner_id.id),
             ]
             for vl in self.sudo().search(domain):
-                if vl.state == 'pendiente_auditoria_cgn' or Contract.search_count([
+                if vl.state == 'pendiente_auditoria_cgn' or (vl.state == 'aprobado_cgn' and Contract.search_count([
                         ('descriptor1_id', '=', vl.descriptor1_id.id),
                         ('descriptor2_id', '=', vl.descriptor2_id.id),
-                        ('descriptor3_id', '=', rec.descriptor3_id.id),
-                        ('descriptor4_id', '=', rec.descriptor4_id.id),
+                        ('descriptor3_id', '=', vl.descriptor3_id.id),
+                        ('descriptor4_id', '=', vl.descriptor4_id.id),
                         ('regime_id', '=', vl.regime_id.id),
-                        ('inciso_id', '=', rec.inciso_id.id),
+                        ('inciso_id', '=', vl.inciso_id.id),
                         ('program', '=', vl.program_project_id.programa),
                         ('project','=', vl.program_project_id.proyecto),
-                        ('operating_unit_id', '=', rec.operating_unit_id.id),
-                        ('employee_id', '=', rec.employee_id.id),
-                        ('legajo_state', '=', 'active')]) > 0:
+                        ('operating_unit_id', '=', vl.operating_unit_id.id),
+                        ('employee_id', '=', vl.employee_id.id),
+                        ('legajo_state', '=', 'active')]) > 0):
                     exist_altaVL = True
 
             rec.exist_altaVL = exist_altaVL
