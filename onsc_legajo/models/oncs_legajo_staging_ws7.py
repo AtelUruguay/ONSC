@@ -356,7 +356,7 @@ class ONSCLegajoStagingWS7(models.Model):
             contract.with_context(no_check_write=True).deactivate_legajo_contract(
                 second_movement.fecha_vig + datetime.timedelta(days=-1),
                 legajo_state='baja',
-                eff_date=second_movement.fecha_vig
+                eff_date=fields.Date.today()
             )
             if record.mov == 'ASCENSO':
                 causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
@@ -370,7 +370,7 @@ class ONSCLegajoStagingWS7(models.Model):
 
             # CONTRACTO ORIGINAL B RELACIONADO AL CONTRATO C
             incoming_contract.write({
-                'eff_date': str(second_movement.fecha_vig),
+                'eff_date': fields.Date.today(),
                 'cs_contract_id': new_contract.id,
             })
         else:
@@ -382,14 +382,14 @@ class ONSCLegajoStagingWS7(models.Model):
                 contract.with_context(no_check_write=True, is_copy_job=False).deactivate_legajo_contract(
                     second_movement.fecha_vig + datetime.timedelta(days=-1),
                     legajo_state='baja',
-                    eff_date=second_movement.fecha_vig
+                    eff_date=fields.Date.today()
                 )
             else:
                 # DESACTIVA EL CONTRATO
                 contract.with_context(no_check_write=True).deactivate_legajo_contract(
                     second_movement.fecha_vig + datetime.timedelta(days=-1),
                     legajo_state='baja',
-                    eff_date=second_movement.fecha_vig
+                    eff_date=fields.Date.today()
                 )
             if record.mov == 'ASCENSO':
                 causes_discharge = self.env.user.company_id.ws7_ascenso_causes_discharge_id
@@ -449,11 +449,11 @@ class ONSCLegajoStagingWS7(models.Model):
         active_start_date = active_contract.date_start
         baja_contract.write({
             'date_end': second_movement.fecha_vig + datetime.timedelta(days=-1),
-            'eff_date': second_movement.fecha_aud.date(),
+            'eff_date': fields.Date.today(),
         })
         active_contract.write({
             'date_start': second_movement.fecha_vig,
-            'eff_date': second_movement.fecha_aud.date(),
+            'eff_date': fields.Date.today(),
         })
         baja_contract.job_ids.filtered(lambda x: x.end_date and x.end_date == baja_end_date).write({
             'end_date': second_movement.fecha_vig + datetime.timedelta(days=-1),
@@ -484,7 +484,7 @@ class ONSCLegajoStagingWS7(models.Model):
         active_start_date = active_contract.date_start
         active_contract.write({
             'date_start': second_movement.fecha_vig,
-            'eff_date': second_movement.fecha_aud.date(),
+            'eff_date': fields.Date.today(),
         })
         active_contract.job_ids.filtered(
             lambda x: x.start_date and x.start_date == active_start_date).with_context(
@@ -510,7 +510,7 @@ class ONSCLegajoStagingWS7(models.Model):
         self._check_valid_eff_date(contract, second_movement.fecha_aud.date())
         contract.write({
             'date_end': second_movement.fecha_vig,
-            'eff_date': second_movement.fecha_aud.date(),
+            'eff_date': fields.Date.today(),
         })
         contract.job_ids.filtered(lambda x: x.end_date and x.end_date == second_movement.fecha_vig).write({
             'end_date': second_movement.fecha_vig,
@@ -528,7 +528,7 @@ class ONSCLegajoStagingWS7(models.Model):
         contract.with_context(no_check_write=True).deactivate_legajo_contract(
             record.fecha_vig + datetime.timedelta(days=-1),
             legajo_state='reserved',
-            eff_date=record.fecha_vig
+            eff_date=fields.Date.today()
         )
         self._contract_end_role_assignments(
             contract,
@@ -543,7 +543,9 @@ class ONSCLegajoStagingWS7(models.Model):
                 'state': 'error',
                 'log': _('Contrato no encontrado')})
             return
-        contract.with_context(no_check_write=True).activate_legajo_contract(legajo_state='active', eff_date=record.fecha_vig)
+        contract.with_context(no_check_write=True).activate_legajo_contract(
+            legajo_state='active',
+            eff_date=fields.Date.today())
         records.write({'state': 'processed'})
 
     def set_renovacion(self, Contract, record):
@@ -557,7 +559,7 @@ class ONSCLegajoStagingWS7(models.Model):
         self._check_valid_eff_date(contract, record.fecha_aud.date())
         contract.write({
             'date_end': record.fecha_vig,
-            'eff_date': record.fecha_aud.date(),
+            'eff_date': fields.Date.today(),
         })
         records.write({'state': 'processed'})
 
@@ -572,7 +574,7 @@ class ONSCLegajoStagingWS7(models.Model):
         self._check_valid_eff_date(contract, record.fecha_vig)
         contract.write({
             'retributive_day_id': record.retributive_day_id.id,
-            'eff_date': record.fecha_vig,
+            'eff_date': fields.Date.today(),
         })
         records.write({'state': 'processed'})
 
@@ -595,7 +597,7 @@ class ONSCLegajoStagingWS7(models.Model):
         self._check_valid_eff_date(contract, record.fecha_aud.date())
         if record.fechaGraduacion:
             contract.suspend_security().write({
-                'eff_date': str(record.fecha_aud.date()),
+                'eff_date': fields.Date.today(),
                 'graduation_date': str(record.fechaGraduacion),
             })
         self._set_modif_funcionario_extras(contract, record)
@@ -689,7 +691,7 @@ class ONSCLegajoStagingWS7(models.Model):
             'inciso_id': inciso.id,
             'operating_unit_id': operating_unit.id,
             'date_start': record.fecha_vig,
-            'eff_date': record.fecha_vig,
+            'eff_date': fields.Date.today(),
             'date_end': False,
             'legajo_state': legajo_state,
             'descriptor1_id': descriptor1.id,
