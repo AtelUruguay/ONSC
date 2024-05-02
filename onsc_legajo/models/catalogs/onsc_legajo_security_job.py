@@ -63,6 +63,8 @@ class ONSCLegajoSecurityJob(models.Model):
                 _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO LIMPIANDO LINEAS')
                 sql_query = """DELETE FROM hr_job_role_line WHERE hr_job_role_line.type='system' AND job_id IN %s"""
                 self.env.cr.execute(sql_query, [tuple(jobs.ids)])
+                sql_query = """DELETE FROM hr_job_role_line WHERE hr_job_role_line.type='manual' AND job_id IN %s AND user_role_id IN %s"""
+                self.env.cr.execute(sql_query, [tuple(jobs.ids), tuple(record.user_role_ids.ids)])
                 _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO BULKED CREATION')
                 JobLine.with_context(no_notify=True).create(new_lines)
                 # jobs.write({'role_ids': new_lines})
