@@ -426,7 +426,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'additional_information': line[self.get_position(column_names, 'additional_information')],
                     'message_error': '',
                 }
-                if self._validate_exist_altaVL(line,country_uy_id):
+                if self._validate_exist_altaVL(values, country_uy_id, office):
                     message_error.append(
                         "Esta persona ya cuenta con un movimiento pendiente de auditaría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores")
                 values, validate_error = MassLine.validate_fields(values)
@@ -660,7 +660,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 _("El registro no puede ser eliminado porque tiene altas de vínculo laboral asociadas"))
         return super(ONSCMassUploadLegajoAltaVL, self).unlink()
 
-    def _validate_exist_altaVL(self, line,country_uy_id):
+    def _validate_exist_altaVL(self, values,country_uy_id,office):
         exist_altaVL = False
         Partner = self.env['res.partner']
         Contract = self.env['hr.contract'].suspend_security()
@@ -673,32 +673,32 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         employee = Employee.search([
             ('cv_emissor_country_id', '=', country_uy_id.id),
             ('cv_document_type_id', '=', cv_document_type_id),
-            ('cv_nro_doc', '=', line.document_number),
+            ('cv_nro_doc', '=', values['document_number']),
         ], limit=1)
 
-        partner = Partner.sudo().search([('cv_nro_doc', '=', line.document_number)], limit=1)
+        partner = Partner.sudo().search([('cv_nro_doc', '=',values['document_number'])], limit=1)
         domain = [
             ('state', 'in', ['aprobado_cgn', 'pendiente_auditoria_cgn']),
-            ('descriptor1_id', '=', line.descriptor1_id.id),
-            ('descriptor2_id', '=', line.descriptor2_id.id),
-            ('descriptor3_id', '=', line.descriptor3_id.id),
-            ('descriptor4_id', '=', line.descriptor4_id.id),
-            ('regime_id', '=', line.regime_id.id),
-            ('inciso_id', '=', line.inciso_id.id),
-            ('program_project_id', '=', line.program_project_id.id),
-            ('operating_unit_id', '=', line.operating_unit_id.id),
+            ('descriptor1_id', '=', values['descriptor1_id']),
+            ('descriptor2_id', '=', values['descriptor2_id']),
+            ('descriptor3_id', '=', values['descriptor3_id']),
+            ('descriptor4_id', '=', values['descriptor4_id']),
+            ('regime_id', '=', values['regime_id']),
+            ('inciso_id', '=', self.inciso_id.id),
+            ('program_project_id', '=', office.id),
+            ('operating_unit_id', '=', self.operating_unit_id.id),
             ('partner_id', '=', partner.id),
         ]
         for vl in AltaVL.search(domain):
             if vl.state == 'pendiente_auditoria_cgn' or (vl.state == 'aprobado_cgn' and Contract.search_count([
-                ('descriptor1_id', '=', vl.descriptor1_id.id),
-                ('descriptor2_id', '=', vl.descriptor2_id.id),
-                ('descriptor3_id', '=', vl.descriptor3_id.id),
-                ('descriptor4_id', '=', vl.descriptor4_id.id),
-                ('regime_id', '=', vl.regime_id.id),
+                ('descriptor1_id', '=', values['descriptor1_id']),
+                ('descriptor2_id', '=', values['descriptor2_id']),
+                ('descriptor3_id', '=', values['descriptor3_id']),
+                ('descriptor4_id', '=', values['descriptor4_id']),
+                ('regime_id', '=', values['regime_id']),
                 ('inciso_id', '=', self.inciso_id.id),
-                ('program', '=', vl.program_project_id.programa),
-                ('project', '=', vl.program_project_id.proyecto),
+                ('program', '=', office.programa),
+                ('project', '=', office.proyecto),
                 ('operating_unit_id', '=', self.operating_unit_id.id),
                 ('employee_id', '=', employee.id),
                 ('legajo_state', '=', 'active')]) > 0):
