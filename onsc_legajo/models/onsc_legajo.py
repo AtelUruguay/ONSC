@@ -119,9 +119,21 @@ class ONSCLegajo(models.Model):
 
     @api.depends('vote_registry_ids', 'vote_registry_ids.electoral_act_ids')
     def _compute_electoral_act_ids_domain(self):
+        ElectoralAct = self.env['onsc.legajo.electoral.act'].suspend_security().with_context(active_test=False)
+        if self._context.get('restrict_period'):
+            electoral_act_ids = ElectoralAct.search([
+                ('date_since_entry_control', '<=', fields.Date.today()),
+                ('date_until_entry_control', '>=', fields.Date.today())])
         for rec in self:
-            rec.electoral_act_ids_domain = json.dumps(
-                [("id", "not in", rec.vote_registry_ids.mapped('electoral_act_ids').ids)])
+            if self._context.get('restrict_period'):
+                rec.electoral_act_ids_domain = json.dumps([
+                    ("id", "in", electoral_act_ids.ids),
+                    ("id", "not in", rec.vote_registry_ids.mapped('electoral_act_ids').ids)
+                ])
+            else:
+                rec.electoral_act_ids_domain = json.dumps([
+                    ("id", "not in", rec.vote_registry_ids.mapped('electoral_act_ids').ids)
+                ])
 
     def _compute_contract_info(self):
         for record in self:

@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <data>
+    <record id="onsc_legajo_vote_registry_pending_consult_tree" model="ir.ui.view">
+        <field name="name">onsc.legajo.vote.registry.pending.consult.tree</field>
+        <field name="model">onsc.legajo.vote.registry.pending.consult</field>
+        <field name="arch" type="xml">
+            <tree string="Ingresos pendientes">
+                <field name="nro_doc" string="CI"/>
+                <field name="employee_id" string="Funcionario"/>
+                <field name="conc_valid_electoral_act_name"/>
+                <button name="button_create_registry" type="object" string="Ingresar" icon="fa-plus-square"/>
+            </tree>
+        </field>
+    </record>
+        
+        
+    <record id="onsc_legajo_vote_registry_pending_consult_form" model="ir.ui.view">
+        <field name="name">onsc.legajo.vote.registry.pending.consult.form</field>
+        <field name="model">onsc.legajo.vote.registry.pending.consult</field>
+        <field name="arch" type="xml">
+            <form string="Ingresos pendientes" create="0" edit="0">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="nro_doc" string="CI"/>
+                            <field name="employee_id" string="Funcionario"
+                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Elecciones pendientes">
+                            <field name="electoral_act_ids" nolabel="1" readonly="1" style="pointer-events:none;">
+                                <tree editable="top">
+                                    <field name="name"/>
+                                </tree>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>    
+
+    <record id="onsc_legajo_vote_registry_pending_consult_search" model="ir.ui.view">
+        <field name="name">onsc.legajo.vote.registry.pending.consult.search</field>
+        <field name="model">onsc.legajo.vote.registry.pending.consult</field>
+        <field name="arch" type="xml">
+            <search string="Ingresos pendientes">
+                <field name="nro_doc" string="CI"/>
+                <field name="legajo_id" string="Funcionario"/>
+                <group string="Agrupar por">
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_vote_registry_pending_consult_action" model='ir.actions.act_window'>
+        <field name="name">Ingresos pendientes</field>
+        <field name="res_model">onsc.legajo.vote.registry.pending.consult</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{'ignore_base_restrict': True, 'is_legajo': True}</field>
+        <field name="limit">1000</field>
+    </record>
+    </data>
+</odoo>

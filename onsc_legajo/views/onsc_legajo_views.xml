@@ -172,6 +172,7 @@
                                     <group>
                                         <field name="date"/>
                                         <field name="electoral_act_ids" widget="many2many_tags"
+                                               attrs="{'readonly': [('employee_id', '=', False)]}"
                                                domain="electoral_act_ids_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                                         <field name="employee_id" invisible="1"/>
