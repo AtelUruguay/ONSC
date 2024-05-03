@@ -108,8 +108,11 @@ class ONSCLegajoAltaVL(models.Model):
         copy=False,
         ondelete='set null')
     is_cv_validation_ok = fields.Boolean(string='Al aceptar estará aprobando datos pendiente de validación del CV')
-    exist_altaVL = fields.Boolean(
-        string='Existe un registro para Inciso, UE, Programa, Proyecto, Régimen y Descriptores')
+    show_exist_altaVL_warning = fields.Boolean(
+        string='Existe un registro para Inciso, UE, Programa, Proyecto, Régimen y Descriptores',
+        compute='_compute_show_exist_altaVL_warning',
+        store=False
+    )
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -276,19 +279,22 @@ class ONSCLegajoAltaVL(models.Model):
                     if vacante_id.selected:
                         record.vacante_ids = vacante_id
 
-    @api.onchange('descriptor1_id',
-                  'descriptor2_id',
-                  'descriptor3_id',
-                  'descriptor4_id',
-                  'regime_id',
-                  'inciso_id',
-                  'program_project_id',
-                  'operating_unit_id',
-                  'partner_id')
-    def onchange_exist_altaVL(self):
-        exist_altaVL = False
+    @api.depends('descriptor1_id',
+                 'descriptor2_id',
+                 'descriptor3_id',
+                 'descriptor4_id',
+                 'regime_id',
+                 'inciso_id',
+                 'program_project_id',
+                 'operating_unit_id',
+                 'partner_id',
+                 'state')
+    def _compute_show_exist_altaVL_warning(self):
         Contract = self.env['hr.contract'].suspend_security()
         for rec in self:
+            if rec.state not in ['borrador','error_sgh']:
+                rec.show_exist_altaVL_warning = False
+            show_exist_altaVL_warning = False
             domain = [
                 ('state', 'in', ['aprobado_cgn', 'pendiente_auditoria_cgn']),
                 ('descriptor1_id', '=', rec.descriptor1_id.id),
@@ -300,23 +306,23 @@ class ONSCLegajoAltaVL(models.Model):
                 ('program_project_id', '=', rec.program_project_id.id),
                 ('operating_unit_id', '=', rec.operating_unit_id.id),
                 ('partner_id', '=', rec.partner_id.id),
+                ('id', '!=', rec.id)
             ]
-            for vl in self.sudo().search(domain):
-                if vl.state == 'pendiente_auditoria_cgn' or (vl.state == 'aprobado_cgn' and Contract.search_count([
-                        ('descriptor1_id', '=', vl.descriptor1_id.id),
-                        ('descriptor2_id', '=', vl.descriptor2_id.id),
-                        ('descriptor3_id', '=', vl.descriptor3_id.id),
-                        ('descriptor4_id', '=', vl.descriptor4_id.id),
-                        ('regime_id', '=', vl.regime_id.id),
-                        ('inciso_id', '=', vl.inciso_id.id),
-                        ('program', '=', vl.program_project_id.programa),
-                        ('project','=', vl.program_project_id.proyecto),
-                        ('operating_unit_id', '=', vl.operating_unit_id.id),
-                        ('employee_id', '=', vl.employee_id.id),
-                        ('legajo_state', '=', 'active')]) > 0):
-                    exist_altaVL = True
-
-            rec.exist_altaVL = exist_altaVL
+            for alta_vl in self.sudo().search(domain):
+                if alta_vl.state == 'pendiente_auditoria_cgn' or (alta_vl.state == 'aprobado_cgn' and Contract.search_count([
+                        ('descriptor1_id', '=', alta_vl.descriptor1_id.id),
+                        ('descriptor2_id', '=', alta_vl.descriptor2_id.id),
+                        ('descriptor3_id', '=', alta_vl.descriptor3_id.id),
+                        ('descriptor4_id', '=', alta_vl.descriptor4_id.id),
+                        ('regime_id', '=', alta_vl.regime_id.id),
+                        ('inciso_id', '=', alta_vl.inciso_id.id),
+                        ('program', '=', alta_vl.program_project_id.programa),
+                        ('project','=', alta_vl.program_project_id.proyecto),
+                        ('operating_unit_id', '=', alta_vl.operating_unit_id.id),
+                        ('employee_id', '=', alta_vl.employee_id.id),
+                        ('legajo_state', '=', 'active')])):
+                     show_exist_altaVL_warning = True
+            rec.show_exist_altaVL_warning = show_exist_altaVL_warning
 
     @api.model
     def syncronize_ws1(self, log_info=False):
