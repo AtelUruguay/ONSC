@@ -428,7 +428,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 }
                 if self._validate_exist_altaVL(values, country_uy_id, office):
                     message_error.append(
-                        "Esta persona ya cuenta con un movimiento pendiente de auditaría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores")
+                        "Esta persona ya cuenta con un movimiento pendiente de auditoría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores")
                 values, validate_error = MassLine.validate_fields(values)
                 message_error.extend(self.validate_cv_fields(values))
                 if validate_error:
@@ -664,7 +664,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
         exist_altaVL = False
         Partner = self.env['res.partner']
         Contract = self.env['hr.contract'].suspend_security()
-        AltaVL = self.env['onsc.legajo.alta.vl'].suspend_security()
+        AltaVL = self.env['onsc.legajo.alta.vl'].suspend_security().with_context(is_from_menu = False)
         Employee = self.env['hr.employee'].suspend_security()
 
         cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
@@ -689,8 +689,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
             ('operating_unit_id', '=', self.operating_unit_id.id),
             ('partner_id', '=', partner.id),
         ]
-        for vl in AltaVL.search(domain):
-            if vl.state == 'pendiente_auditoria_cgn' or (vl.state == 'aprobado_cgn' and Contract.search_count([
+        for alta_vl in AltaVL.search(domain):
+            if alta_vl.state == 'pendiente_auditoria_cgn' or (alta_vl.state == 'aprobado_cgn' and Contract.search_count([
                 ('descriptor1_id', '=', values['descriptor1_id']),
                 ('descriptor2_id', '=', values['descriptor2_id']),
                 ('descriptor3_id', '=', values['descriptor3_id']),
@@ -701,10 +701,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 ('project', '=', office.proyecto),
                 ('operating_unit_id', '=', self.operating_unit_id.id),
                 ('employee_id', '=', employee.id),
-                ('legajo_state', '=', 'active')]) > 0):
-
+                ('legajo_state', '=', 'active')])):
                 exist_altaVL = True
-
         return exist_altaVL
 
 
