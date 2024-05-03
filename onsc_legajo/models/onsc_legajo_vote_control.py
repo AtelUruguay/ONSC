@@ -46,13 +46,25 @@ class ONSCLegajoVoteRegistry(models.Model):
                 ('date_since_consultation_control', '<=', fields.Date.today()),
                 ('date_until_consultation_control', '>=', fields.Date.today())])
             args = expression.AND([[('electoral_act_ids', 'in', electoral_act_ids.ids)], args])
-        return super(ONSCLegajoVoteRegistry, self)._search(
+        return super(ONSCLegajoVoteRegistry, self.with_context(only_active_contracts = True))._search(
             args,
             offset=offset,
             limit=limit,
             order=order,
             count=count,
             access_rights_uid=access_rights_uid)
+
+    @api.model
+    def read_group(self, domain, fields, groupby, offset=0, limit=None, orderby=False, lazy=True):
+        if self._context.get('restrict_period'):
+            ElectoralAct = self.env['onsc.legajo.electoral.act'].suspend_security().with_context(active_test=False)
+            electoral_act_ids = ElectoralAct.search([
+                ('date_since_consultation_control', '<=', fields.Date.today()),
+                ('date_until_consultation_control', '>=', fields.Date.today())])
+            domain = expression.AND([[('electoral_act_ids', 'in', electoral_act_ids.ids)], domain])
+        return super(ONSCLegajoVoteRegistry, self.with_context(only_active_contracts = True)).read_group(domain, fields, groupby, offset=offset,
+                                                                        limit=limit, orderby=orderby,
+                                                                        lazy=lazy)
 
     employee_id = fields.Many2one(
         comodel_name="hr.employee",
@@ -80,10 +92,17 @@ class ONSCLegajoVoteRegistry(models.Model):
         string='Elecciones disponibles',
         related='legajo_id.electoral_act_ids_domain')
 
+    # debe recibir un json.dumps([('id', 'in', employee_ids)])
+    default_electoral_act_ids_domain = fields.Char(
+        string='Elecciones disponibles',
+    )
     any_electoral_act_active = fields.Boolean(
         '¿Alguna Elección activa?',
         search='_search_any_electoral_act_active',
         store=False)
+
+    create_uid = fields.Many2one('res.users', 'Creado por', index=True, readonly=True)
+
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
 
@@ -98,6 +117,10 @@ class ONSCLegajoVoteRegistry(models.Model):
         if self.date and self.date > fields.Date.today():
             self.date = False
             return warning_response(_(u"La Fecha de presentación debe ser menor o igual al día de hoy"))
+
+    @api.onchange('employee_id')
+    def onchange_date(self):
+        self.electoral_act_ids = [(5,)]
 
     def _search_any_electoral_act_active(self, operator, operand):
         ElectoralAct = self.env['onsc.legajo.electoral.act'].suspend_security().with_context(active_test=False)
@@ -116,13 +139,18 @@ class ONSCLegajoVoteRegistry(models.Model):
             rec.employee_id_domain = self._get_domain_employee_ids()
 
     def _compute_should_disable_form_edit(self):
+        is_iam_admin = self.user_has_groups('onsc_legajo.group_legajo_vote_control_administrar')
         is_valid_user = self.user_has_groups(
             'onsc_legajo.group_legajo_vote_control_administrar,onsc_legajo.group_legajo_vote_control_recursos_humanos_inciso,onsc_legajo.group_legajo_vote_control_recursos_humanos_ue')
         for record in self:
-            record.should_disable_form_edit = self._context.get('is_from_menu') and not is_valid_user
+            is_iam_owner = self.env.user.id == record.create_uid.id
+            should_disable_form_edit = not is_valid_user or not is_iam_owner
+            condition = self._context.get('is_from_menu') and not is_iam_admin and should_disable_form_edit
+            record.should_disable_form_edit = condition
 
     def _get_domain_employee_ids(self):
-        available_contracts = self._get_user_available_contract()
+        available_contracts = self.with_context(only_active_contracts=True)._get_user_available_contract(
+            config_use_only_active=True)
         if not available_contracts:
             return json.dumps([('id', '=', False)])
         else:
@@ -131,3 +159,9 @@ class ONSCLegajoVoteRegistry(models.Model):
             results = self.env.cr.fetchall()
             employee_ids = [item[0] for item in results]
             return json.dumps([('id', 'in', employee_ids)])
+
+    def unlink(self):
+        is_iam_superuser = self.user_has_groups('onsc_legajo.group_legajo_vote_control_gestor,onsc_legajo.group_legajo_vote_control_administrar')
+        if not is_iam_superuser and self.filtered(lambda x: x.create_uid.id != self.env.user.id):
+            raise ValidationError(_("No puede eliminar registros creados por otros Funcionarios"))
+        return super(ONSCLegajoVoteRegistry, self).unlink()

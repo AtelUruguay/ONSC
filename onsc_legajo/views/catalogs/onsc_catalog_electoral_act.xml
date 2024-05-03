@@ -59,6 +59,8 @@
                     <field name="required"/>
                     <field name="date_since_entry_control"/>
                     <field name="date_until_entry_control"/>
+                    <field name="date_since_consultation_control" optional="hide"/>
+                    <field name="date_until_consultation_control" optional="hide"/>
                 </tree>
             </field>
         </record>

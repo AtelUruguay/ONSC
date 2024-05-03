@@ -10,9 +10,9 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     _description = 'Modelo abstracto para la seguridad'
 
     @api.model
-    def _get_expression_domain(self, args):
+    def _get_expression_domain(self, args, config_use_only_active=False):
         if self._context.get('is_legajo') and not self._context.get('ignore_restrict'):
-            available_contracts = self._get_user_available_contract()
+            available_contracts = self._get_user_available_contract(config_use_only_active=config_use_only_active)
             if not available_contracts:
                 employee_ids = []
             else:
@@ -52,7 +52,7 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
     def _get_abstract_responsable_uo(self):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_responsable_uo')
 
-    def _get_user_available_contract(self, employee_id=False):
+    def _get_user_available_contract(self, employee_id=False, config_use_only_active=False):
         available_contracts = self.env['hr.contract']
         if self._context.get('mi_legajo'):
             base_employee_domain = [('id', '=', self.env.user.employee_id.id)]
@@ -66,6 +66,8 @@ class ONSCLegajoAbstractLegajoSecurity(models.AbstractModel):
         if self._context.get('mi_legajo'):
             available_contracts = self.env['hr.contract'].sudo().search(employee_domain)
         elif self._get_abstract_config_security():
+            if config_use_only_active:
+                employee_domain = expression.AND([[('legajo_state', '=', 'active')], employee_domain])
             available_contracts = self.env['hr.contract'].sudo().search(employee_domain)
         elif self._get_abstract_inciso_security():
             contract = self.env.user.employee_id.job_id.contract_id
