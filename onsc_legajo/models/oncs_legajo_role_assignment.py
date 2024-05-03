@@ -249,13 +249,13 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     @api.depends('contract_id')
     def _compute_security_job_id_domain(self):
-        # user_level = self.env.user.employee_id.job_id.security_job_id.sequence
+        user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
             domain = [('id', '!=', 0)]
-            # if not rec.contract_id.regime_id.is_manager:
-            #     domain = [('is_uo_manager', '=', True), ('sequence', '>=', user_level)]
-            # else:
-            #     domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
+            if not rec.contract_id.regime_id.is_manager:
+                domain = [('sequence', '>=', user_level)]
+            else:
+                domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
 
     @api.constrains("date_start", "contract_id", "job_id", "date_end")

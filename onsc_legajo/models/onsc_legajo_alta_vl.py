@@ -110,6 +110,7 @@ class ONSCLegajoAltaVL(models.Model):
     regime_id = fields.Many2one('onsc.legajo.regime', string='Régimen', copy=False,
                                 readonly=True,
                                 states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
+    is_regime_manager = fields.Boolean(related="regime_id.is_manager", store=True)
     is_presupuestado = fields.Boolean(related="regime_id.presupuesto", store=True)
     is_indVencimiento = fields.Boolean(related="regime_id.indVencimiento", store=True)
 
@@ -303,10 +304,10 @@ class ONSCLegajoAltaVL(models.Model):
     def _compute_security_job_id_domain(self):
         user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
-            if not rec.regime_id.is_manager:
-                domain = [('is_uo_manager', '=', False), ('sequence', '>=', user_level)]
-            else:
-                domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
+            # if not rec.regime_id.is_manager:
+            domain = [('sequence', '>=', user_level)]
+            # else:
+            #     domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
 
     @api.constrains("inactivity_years")
@@ -394,6 +395,8 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.onchange('regime_id')
     def onchange_regime_id(self):
+        if self.regime_id.is_manager is False:
+            self.is_responsable_uo = False
         self.security_job_id = False
 
     def unlink(self):
