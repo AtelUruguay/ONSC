@@ -672,7 +672,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
 
         employee = Employee.search([
             ('cv_emissor_country_id', '=', country_uy_id.id),
-            ('cv_document_type_id', '=', cv_document_type_id.id),
+            ('cv_document_type_id', '=', cv_document_type_id),
             ('cv_nro_doc', '=', line.document_number),
         ], limit=1)
 
