@@ -87,8 +87,7 @@ class HrJob(models.Model):
         'job_id',
         string='Asignaciones de funciones'
     )
-    is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', related='security_job_id.is_uo_manager', store=True)
-
+    is_uo_manager = fields.Boolean(string='¿Es responsable de UO?')
         
 
     _sql_constraints = [
@@ -218,13 +217,22 @@ class HrJob(models.Model):
         }
 
     # INTELIGENCIA DE ENTIDAD
-    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False, end_date=False, source_job=False):
+    def create_job(self,
+                   contract,
+                   department,
+                   start_date,
+                   security_job,
+                   is_uo_manager=False,
+                   extra_security_roles=False,
+                   end_date=False,
+                   source_job=False):
         """
         CREA NUEVO PUESTO A PARTIR DE LA DATA DE ENTRADA
         :param contract: Recordset a hr.contract
         :param department: Recordset a hr.department
         :param start_date: Date
         :param security_job: Recordset a onsc.legajo.security.job
+        :param is_responsable_uo: Si el Puesto es de Responsable de UO
         :param extra_security_roles: Extra security to apply
         :param end_date: Pasar en caso que el puesto tenga definida una fecha de fin. Debe ser a futuro
         :return: nuevo recordet de hr.job
@@ -247,10 +255,11 @@ class HrJob(models.Model):
             'start_date': start_date,
             'end_date': end_date,
             'security_job_id': security_job.id,
+            'is_uo_manager': is_uo_manager,
             'role_extra_ids': role_extra_ids
         })
         job.onchange_security_job_id()
-        if job.security_job_id.is_uo_manager and job.start_date <= fields.Date.today():
+        if job.is_uo_manager and job.start_date <= fields.Date.today():
             job.department_id.suspend_security().write({
                 'manager_id': job.employee_id.id,
                 'is_manager_reserved': False
@@ -265,7 +274,7 @@ class HrJob(models.Model):
             })
             job.end_date = date_end
             job.suspend_security().onchange_end_date()
-            if date_end < fields.Date.today() and job.security_job_id.is_uo_manager:
+            if date_end < fields.Date.today() and job.is_uo_manager:
                 job.suspend_security().mapped('department_id').filtered(
                     lambda x: x.manager_id.id or x.is_manager_reserved).write(
                     {'manager_id': False, 'is_manager_reserved': False
@@ -276,13 +285,13 @@ class HrJob(models.Model):
         self.suspend_security().onchange_start_date()
 
     def is_job_available_for_manager(self, department, security_job, date, date_end=False):
-        if not security_job.is_uo_manager:
-            return True
+        # if not security_job.is_uo_manager:
+        #     return True
         # TODO definir para periodos cerrados, no se precisa por ahora
         if not date_end:
             args = [
                 ('department_id', '=', department.id),
-                ('security_job_id.is_uo_manager', '=', True),
+                ('is_uo_manager', '=', True),
                 '|',
                 '|',
                 ('start_date', '>=', date),
@@ -294,9 +303,12 @@ class HrJob(models.Model):
     def update_managers(self):
         self.env['hr.department'].search([('manager_id', '!=', False)]).write({'manager_id': False})
         date = fields.Date.today()
-        for record in self.search(
-                [('security_job_id.is_uo_manager', '=', True), ('contract_id.legajo_state', '!=', 'baja'),
-                 ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date)]):
+        for record in self.search([
+            ('is_uo_manager', '=', True),
+            ('contract_id.legajo_state', '!=', 'baja'),
+            ('start_date', '<=', date),
+            '|', ('end_date', '=', False), ('end_date', '>=', date)
+        ]):
             if record.department_id.manager_id.id != record.employee_id.id:
                 record.department_id.suspend_security().write({'manager_id': record.employee_id.id})
 

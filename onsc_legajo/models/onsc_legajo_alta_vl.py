@@ -95,8 +95,7 @@ class ONSCLegajoAltaVL(models.Model):
     department_id = fields.Many2one("hr.department", string="Unidad organizativa", copy=False, readonly=True,
                                     states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     department_id_domain = fields.Char(compute='_compute_department_id_domain')
-    is_responsable_uo = fields.Boolean(string="¿Responsable de UO?", related="security_job_id.is_uo_manager",
-                                       store=True)
+    is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
     program_project_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto', copy=False,
                                          domain="[('inciso', '=', inciso_id),('unidadEjecutora', '=', operating_unit_id)]",
                                          readonly=True,
@@ -517,7 +516,13 @@ class ONSCLegajoAltaVL(models.Model):
         return contract
 
     def _get_legajo_job(self, contract):
-        return self.env['hr.job'].create_job(contract, self.department_id, self.date_start, self.security_job_id)
+        return self.env['hr.job'].create_job(
+            contract,
+            self.department_id,
+            self.date_start,
+            self.security_job_id,
+            is_uo_manager=self.is_responsable_uo
+        )
 
     # MAIL TEMPLATE UTILS
     def get_followers_mails(self):
