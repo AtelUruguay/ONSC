@@ -50,6 +50,9 @@ class ONSCCVFileValidationConfig(models.Model):
         for rec in self:
             rec.model_id_domain = model_id_domain
 
+    def write(self, vals):
+        return super(ONSCCVFileValidationConfig, self.suspend_security()).write(vals)
+
     def get_config(self, name=False):
         if name is False:
             return self.search([])
