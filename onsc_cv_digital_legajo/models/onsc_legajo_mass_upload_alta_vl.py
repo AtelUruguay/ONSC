@@ -426,7 +426,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'additional_information': line[self.get_position(column_names, 'additional_information')],
                     'message_error': '',
                 }
-                if self._validate_exist_altaVL(line):
+                if self._validate_exist_altaVL(line,country_uy_id):
                     message_error.append(
                         "Esta persona ya cuenta con un movimiento pendiente de auditaría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores")
                 values, validate_error = MassLine.validate_fields(values)
@@ -660,7 +660,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 _("El registro no puede ser eliminado porque tiene altas de vínculo laboral asociadas"))
         return super(ONSCMassUploadLegajoAltaVL, self).unlink()
 
-    def _validate_exist_altaVL(self, line):
+    def _validate_exist_altaVL(self, line,country_uy_id):
         exist_altaVL = False
         Partner = self.env['res.partner']
         Contract = self.env['hr.contract'].suspend_security()
@@ -671,7 +671,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                                                                               limit=1).id or False
 
         employee = Employee.search([
-            ('cv_emissor_country_id', '=', line.document_country_id.id),
+            ('cv_emissor_country_id', '=', country_uy_id.id),
             ('cv_document_type_id', '=', cv_document_type_id.id),
             ('cv_nro_doc', '=', line.document_number),
         ], limit=1)
