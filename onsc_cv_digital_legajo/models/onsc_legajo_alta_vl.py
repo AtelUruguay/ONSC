@@ -329,7 +329,6 @@ class ONSCLegajoAltaVL(models.Model):
                 ('program_project_id', '=', rec.program_project_id.id),
                 ('operating_unit_id', '=', rec.operating_unit_id.id),
                 ('partner_id', '=', rec.partner_id.id),
-                ('id', '!=', rec.id)
             ]
             for alta_vl in self.sudo().search(domain):
                 if alta_vl.state == 'pendiente_auditoria_cgn' or (alta_vl.state == 'aprobado_cgn' and Contract.search_count([
