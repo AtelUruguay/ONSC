@@ -400,9 +400,9 @@ class ONSCLegajoAltaVL(models.Model):
                     message.append("La UO ya tiene un responsable")
 
             if len(record.reason_description) > 50:
-                raise ValidationError("El campo Descripción del motivo no puede tener más de 100 caracteres.")
+                raise ValidationError("El campo Descripción del motivo no puede tener más de 50 caracteres.")
             if len(record.resolution_description) > 100:
-                raise ValidationError("El campo Descripción de la resolución no puede tener más de 50 caracteres.")
+                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
         if message:
             fields_str = '\n'.join(message)
             message = 'Información faltante o no cumple validación:\n \n%s' % fields_str
