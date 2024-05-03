@@ -426,6 +426,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'additional_information': line[self.get_position(column_names, 'additional_information')],
                     'message_error': '',
                 }
+                if self._validate_exist_altaVL(line):
+                    message_error.append(
+                        "Esta persona ya cuenta con un movimiento pendiente de auditaría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores")
                 values, validate_error = MassLine.validate_fields(values)
                 message_error.extend(self.validate_cv_fields(values))
                 if validate_error:
@@ -939,3 +942,50 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                 values[key] = False
         error = '\n'.join(error)
         return values, error
+
+    def _validate_exist_altaVL(self, line):
+        exist_altaVL = False
+        Partner = self.env['res.partner']
+        Contract = self.env['hr.contract'].suspend_security()
+        AltaVL = self.env['onsc.legajo.alta.vl'].suspend_security()
+        Employee = self.env['hr.employee'].suspend_security()
+
+        cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
+                                                                              limit=1).id or False
+
+        employee = Employee.search([
+            ('cv_emissor_country_id', '=', line.document_country_id.id),
+            ('cv_document_type_id', '=', cv_document_type_id.id),
+            ('cv_nro_doc', '=', line.document_number),
+        ], limit=1)
+
+        partner = Partner.sudo().search([('cv_nro_doc', '=', line.document_number)], limit=1)
+        domain = [
+            ('state', 'in', ['aprobado_cgn', 'pendiente_auditoria_cgn']),
+            ('descriptor1_id', '=', line.descriptor1_id.id),
+            ('descriptor2_id', '=', line.descriptor2_id.id),
+            ('descriptor3_id', '=', line.descriptor3_id.id),
+            ('descriptor4_id', '=', line.descriptor4_id.id),
+            ('regime_id', '=', line.regime_id.id),
+            ('inciso_id', '=', line.inciso_id.id),
+            ('program_project_id', '=', line.program_project_id.id),
+            ('operating_unit_id', '=', line.operating_unit_id.id),
+            ('partner_id', '=', partner.id),
+        ]
+        for vl in AltaVL.search(domain):
+            if vl.state == 'pendiente_auditoria_cgn' or (vl.state == 'aprobado_cgn' and Contract.search_count([
+                ('descriptor1_id', '=', vl.descriptor1_id.id),
+                ('descriptor2_id', '=', vl.descriptor2_id.id),
+                ('descriptor3_id', '=', vl.descriptor3_id.id),
+                ('descriptor4_id', '=', vl.descriptor4_id.id),
+                ('regime_id', '=', vl.regime_id.id),
+                ('inciso_id', '=', self.inciso_id.id),
+                ('program', '=', vl.program_project_id.programa),
+                ('project', '=', vl.program_project_id.proyecto),
+                ('operating_unit_id', '=', self.operating_unit_id.id),
+                ('employee_id', '=', employee.id),
+                ('legajo_state', '=', 'active')]) > 0):
+
+                exist_altaVL = True
+
+        return exist_altaVL

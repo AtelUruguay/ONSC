@@ -49,11 +49,19 @@
                             states="borrador,error_sgh"/>
                 </header>
                 <header position="after">
+                    <field name="exist_altaVL" invisible="1"/>
                     <div class="alert alert-info" role="alert" attrs="{'invisible': [('state', '!=', 'borrador')]}">
                         <p class="mb-0">
                             <field name="is_cv_validation_ok"/>
                             <strong>
                                 Seleccione para indicar que está aprobando los datos pendiente de validación del CV
+                            </strong>
+                        </p>
+                    </div>
+                    <div class="alert alert-info" role="alert" attrs="{'invisible': [('exist_altaVL', '=', False)]}">
+                        <p class="mb-0">
+                            <strong>
+                                Esta persona ya cuenta con un movimiento pendiente de auditaría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores
                             </strong>
                         </p>
                     </div>

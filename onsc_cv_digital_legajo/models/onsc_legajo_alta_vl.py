@@ -108,6 +108,8 @@ class ONSCLegajoAltaVL(models.Model):
         copy=False,
         ondelete='set null')
     is_cv_validation_ok = fields.Boolean(string='Al aceptar estará aprobando datos pendiente de validación del CV')
+    exist_altaVL = fields.Boolean(
+        string='Existe un registro para Inciso, UE, Programa, Proyecto, Régimen y Descriptores')
 
     @api.depends('mass_upload_id')
     def _compute_origin_type(self):
@@ -297,6 +299,48 @@ class ONSCLegajoAltaVL(models.Model):
                     if vacante_id.selected:
                         record.vacante_ids = vacante_id
 
+    @api.onchange('descriptor1_id',
+                  'descriptor2_id',
+                  'descriptor3_id',
+                  'descriptor4_id',
+                  'regime_id',
+                  'inciso_id',
+                  'program_project_id',
+                  'operating_unit_id',
+                  'partner_id')
+    def onchange_exist_altaVL(self):
+        exist_altaVL = False
+        Contract = self.env['hr.contract'].suspend_security()
+        for rec in self:
+            domain = [
+                ('state', 'in', ['aprobado_cgn', 'pendiente_auditoria_cgn']),
+                ('descriptor1_id', '=', rec.descriptor1_id.id),
+                ('descriptor2_id', '=', rec.descriptor2_id.id),
+                ('descriptor3_id', '=', rec.descriptor3_id.id),
+                ('descriptor4_id', '=', rec.descriptor4_id.id),
+                ('regime_id', '=', rec.regime_id.id),
+                ('inciso_id', '=', rec.inciso_id.id),
+                ('program_project_id', '=', rec.program_project_id.id),
+                ('operating_unit_id', '=', rec.operating_unit_id.id),
+                ('partner_id', '=', rec.partner_id.id),
+            ]
+            for vl in self.sudo().search(domain):
+                if vl.state == 'pendiente_auditoria_cgn' or (vl.state == 'aprobado_cgn' and Contract.search_count([
+                        ('descriptor1_id', '=', vl.descriptor1_id.id),
+                        ('descriptor2_id', '=', vl.descriptor2_id.id),
+                        ('descriptor3_id', '=', vl.descriptor3_id.id),
+                        ('descriptor4_id', '=', vl.descriptor4_id.id),
+                        ('regime_id', '=', vl.regime_id.id),
+                        ('inciso_id', '=', vl.inciso_id.id),
+                        ('program', '=', vl.program_project_id.programa),
+                        ('project','=', vl.program_project_id.proyecto),
+                        ('operating_unit_id', '=', vl.operating_unit_id.id),
+                        ('employee_id', '=', vl.employee_id.id),
+                        ('legajo_state', '=', 'active')]) > 0):
+                    exist_altaVL = True
+
+            rec.exist_altaVL = exist_altaVL
+
     @api.model
     def syncronize_ws1(self, log_info=False):
         if self.is_reserva_sgh and not (
@@ -323,7 +367,8 @@ class ONSCLegajoAltaVL(models.Model):
     def syncronize_ws4(self, log_info=False):
         self.check_required_fields_ws4()
         if self.state == 'borrador' and not self.is_cv_validation_ok:
-            raise ValidationError(_("Para continuar debe indicar que está aprobando los datos pendiente de validación del CV"))
+            raise ValidationError(
+                _("Para continuar debe indicar que está aprobando los datos pendiente de validación del CV"))
         if not self.codigoJornadaFormal and self.retributive_day_id:
             self.codigoJornadaFormal = self.retributive_day_id.codigoJornada
             self.descripcionJornadaFormal = self.retributive_day_id.descripcionJornada
