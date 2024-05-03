@@ -36,7 +36,7 @@
         <field name="name">Administrador de CV</field>
         <field name="comment">Administrador de CV Digital</field>
         <field name="category_id" ref="module_category_onsc_cv_digital"/>
-        <field name="implied_ids" eval="[(4, ref('model_history.group_history_view')),(4, ref('model_history.group_edit_eff_date')),(4, ref('model_history.group_edit_rec_date')),(4, ref('model_history.group_history_retrieve_from')),(4, ref('model_history.group_history_delete')),(4, ref('model_history.group_history_modify'))]"/>
+        <field name="implied_ids" eval="[(4, ref('model_history.group_history_view'))]"/>
     </record>
     </data>
 </odoo>
