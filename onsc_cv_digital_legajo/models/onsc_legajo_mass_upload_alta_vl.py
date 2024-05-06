@@ -246,6 +246,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 global message_error
                 norm_id = False
                 message_error = []
+                warning_error = []
                 office = False
                 try:
                     office = LegajoOffice.sudo().search([
@@ -342,6 +343,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 regime_id = MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
                                                                 line[self.get_position(column_names,
                                                                                        'regime_id')])
+                state_id = MassLine.find_by_code_name_many2one('state_id', 'code', 'name', line[
+                    self.get_position(column_names, 'state_id')])
+                if not state_id:
+                    message_error.append(
+                        "El campo Departamento donde desempeña funciones no está definido o no ha sido encontrado")
 
                 line_occupation_value = line[self.get_position(column_names, 'occupation_id')]
                 occupation_id = MassLine.find_by_code_name_many2one('occupation_id', 'code', 'name',
@@ -403,6 +409,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         self.get_position(column_names, 'department_id')]),
                     'security_job_id': MassLine.find_by_code_name_many2one('security_job_id', 'name', 'name', line[
                         self.get_position(column_names, 'security_job_id')]),
+                    'state_id': state_id,
                     'occupation_id': occupation_id,
                     'date_income_public_administration': datetime.datetime.fromordinal(
                         datetime.datetime(1900, 1,
@@ -427,8 +434,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'message_error': '',
                 }
                 if self._validate_exist_altaVL(values, country_uy_id, office):
-                    message_error.append(
-                        "Esta persona ya cuenta con un movimiento pendiente de auditoría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores")
+                    warning_error.append(
+                        "NOTIFICACIÓN: Esta persona ya cuenta con un movimiento pendiente de auditoría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores")
                 values, validate_error = MassLine.validate_fields(values)
                 message_error.extend(self.validate_cv_fields(values))
                 if validate_error:
@@ -442,7 +449,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     values['message_error'] = 'Información faltante o no cumple validación' + values['message_error']
                 else:
                     values['message_error'] = ''
-
+                if warning_error:
+                    values['warning_error'] = '\n'.join(warning_error)
                 existing_record = MassLine.search([('nro_line', '=', row_no), ('mass_upload_id', '=', self.id)],
                                                   limit=1)
                 if existing_record and existing_record.state != 'done':
@@ -552,6 +560,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'nroPlaza': line.nroPlaza,
                 'department_id': line.department_id.id if line.department_id else False,
                 'security_job_id': line.security_job_id.id if line.security_job_id else False,
+                'state_id': line.state_id.id if line.state_id else False,
                 'occupation_id': line.occupation_id.id if line.occupation_id else False,
                 'date_income_public_administration': line.date_income_public_administration,
                 'income_mechanism_id': line.income_mechanism_id.id if line.income_mechanism_id else False,
@@ -733,6 +742,8 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     state = fields.Selection([('draft', 'Borrador'), ('error', 'Procesado con Error'), ('done', 'Procesado')],
                              string='Estado', default='draft')
     message_error = fields.Text(string='Mensaje de error')
+    warning_error = fields.Text(string='Mensaje de notificación')
+    message = fields.Text(string='Mensajes', compute='_compute_message', store=True)
     nro_line = fields.Integer(string='Nro de línea')
     first_name = fields.Char(string='Primer nombre')
     second_name = fields.Char(string='Segundo nombre')
@@ -788,6 +799,10 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     department_id = fields.Many2one("hr.department", string="Unidad organizativa")
     department_id_domain = fields.Char(compute='_compute_department_id_domain')
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
+    state_id = fields.Many2one(
+        'res.country.state',
+        string='Departamento donde desempeña funciones',
+        domain="[('country_id.code','=','UY')]")
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
     date_income_public_administration = fields.Date(string="Fecha de ingreso a la administración pública")
     inactivity_years = fields.Integer(string="Años de inactividad")
@@ -890,6 +905,17 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
             if dsc4Id:
                 domain = [('id', 'in', dsc4Id.ids)]
             rec.descriptor4_domain_id = json.dumps(domain)
+
+    @api.depends('message_error', 'warning_error')
+    def _compute_message(self):
+        for rec in self:
+            items = []
+            if rec.message_error:
+                items.append(rec.message_error)
+            if rec.warning_error:
+                items.append(rec.warning_error)
+            rec.message = '\n'.join(items)
+
 
     @api.onchange('descriptor1_id')
     def onchange_descriptor1(self):
