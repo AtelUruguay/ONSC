@@ -217,7 +217,6 @@ class ONSCLegajoCambioUO(models.Model):
             is_same_security = record.job_id.security_job_id == record.security_job_id
             if (not is_same_department or not is_same_security) and not Job.is_job_available_for_manager(
                     record.department_id,
-                    record.security_job_id,
                     record.date_start):
                 raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
 

@@ -736,7 +736,7 @@ class ONSCLegajoAltaCS(models.Model):
             if record.is_inciso_origin_ac and record.contract_id and not record.contract_id.legajo_state == 'active':
                 message.append(_("El contrato debe estar activo"))
             if record.security_job_id.is_uo_manager and not self.env['hr.job'].is_job_available_for_manager(
-                    record.department_id, record.security_job_id, record.date_start_commission):
+                    record.department_id, record.date_start_commission):
                 message.append("No se puede asignar la seguridad de puesto elegida, "
                                "porque ya existe un responsable en la UO seleccionada.")
         if message:

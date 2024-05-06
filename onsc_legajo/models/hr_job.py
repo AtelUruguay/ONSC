@@ -284,7 +284,7 @@ class HrJob(models.Model):
         self.suspend_security().write({'start_date': start_date})
         self.suspend_security().onchange_start_date()
 
-    def is_job_available_for_manager(self, department, security_job, date, date_end=False):
+    def is_job_available_for_manager(self, department, date, date_end=False):
         # if not security_job.is_uo_manager:
         #     return True
         # TODO definir para periodos cerrados, no se precisa por ahora

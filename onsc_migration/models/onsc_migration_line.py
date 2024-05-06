@@ -1304,7 +1304,6 @@ class ONSCMigrationLine(models.Model):
             })
             contracts = Contract.suspend_security().create(vals_contract1)
             if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
-                                                                                           self.security_job_id,
                                                                                            self.create_date):
                 raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.department_id and self.security_job_id:
@@ -1387,7 +1386,6 @@ class ONSCMigrationLine(models.Model):
                 contracts |= contract1
 
             if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
-                                                                                           self.security_job_id,
                                                                                            self.date_start_commission):
                 raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:

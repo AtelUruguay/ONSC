@@ -286,7 +286,6 @@ class ONSCLegajoRoleAssignment(models.Model):
             if record.security_job_id and \
                     record.job_security_job_id != record.security_job_id and not Job.is_job_available_for_manager(
                 record.department_id,
-                record.security_job_id,
                 record.date_start):
                 raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
 
