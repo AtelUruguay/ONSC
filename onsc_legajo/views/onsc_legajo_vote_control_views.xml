@@ -29,7 +29,7 @@
                     <group>
                         <field name="employee_id" domain="employee_id_domain"
                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
-                               context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"/>
+                               context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree','show_cv_nro_doc':True}"/>
                         <field name="legajo_id" invisible="1"/>
                         <field name="date" readonly="1" force_save="1"/>
                         <field name="electoral_act_ids"
@@ -68,7 +68,7 @@
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'tree', 'view_id': ref('view_onsc_legajo_vote_registry_tree')}),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_onsc_legajo_vote_registry_form')})]"/>
-        <field name="context">{'search_default_filter_any_electoral_act_active':1,'is_from_menu': True,'is_legajo': True, 'restrict_period':True}</field>
+        <field name="context">{'search_default_filter_any_electoral_act_active':1,'is_from_menu': True,'is_legajo': True, 'restrict_period':True, 'restrict_user': True}</field>
         <field name="search_view_id" ref="onsc_legajo_vote_registry_search"/>
     </record>
 
@@ -83,7 +83,7 @@
                         <field name="employee_id"
                                readonly="1" force_save="1"
                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"
-                               context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"/>
+                               context="{'search_view_ref': 'onsc_legajo_hr_employee_basic_search','tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_tree','show_cv_nro_doc':True}"/>
                         <field name="date" readonly="1" force_save="1"/>
                         <field name="electoral_act_ids"
                                attrs="{'readonly': [('employee_id', '=', False)]}"
@@ -108,6 +108,6 @@
         <field name="target">new</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'form', 'view_id': ref('view_onsc_legajo_vote_registry_wizard')})]"/>
-        <field name="context">{'is_from_menu': True,'is_legajo': True}</field>
+        <field name="context">{'is_from_menu': True,'is_legajo': True, 'restrict_user': True}</field>
     </record>
 </odoo>
