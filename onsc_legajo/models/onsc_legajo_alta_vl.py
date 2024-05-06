@@ -304,10 +304,7 @@ class ONSCLegajoAltaVL(models.Model):
     def _compute_security_job_id_domain(self):
         user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
-            # if not rec.regime_id.is_manager:
             domain = [('sequence', '>=', user_level)]
-            # else:
-            #     domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
 
     @api.constrains("inactivity_years")

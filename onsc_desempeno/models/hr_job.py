@@ -11,12 +11,22 @@ class HrJob(models.Model):
         ondelete="cascade",
         string='Líneas de evaluación de Lista de participantes')
 
-    def create_job(self, contract, department, start_date, security_job, extra_security_roles=False, source_job=False):
+    def create_job(
+            self,
+            contract,
+            department,
+            start_date,
+            security_job,
+            is_uo_manager=False,
+            extra_security_roles=False,
+            source_job=False
+    ):
         new_job = super(HrJob, self).create_job(
             contract,
             department,
             start_date,
             security_job,
+            is_uo_manager=is_uo_manager,
             extra_security_roles=extra_security_roles,
             source_job=source_job
         )

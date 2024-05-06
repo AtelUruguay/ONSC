@@ -144,6 +144,7 @@ class ONSCLegajoAltaCS(models.Model):
     program_origin = fields.Char(string='Programa', related='program_project_origin_id.programaDescripcion')
     project_origin = fields.Char(string='Proyecto', related='program_project_origin_id.proyectoDescripcion')
     regime_origin_id = fields.Many2one('onsc.legajo.regime', string='Régimen', related='contract_id.regime_id')
+    is_regime_manager = fields.Boolean(related="regime_origin_id.is_manager", store=True)
     descriptor1_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1',
                                      related='contract_id.descriptor1_id')
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2',
@@ -186,6 +187,7 @@ class ONSCLegajoAltaCS(models.Model):
                                       readonly=False, states={'confirmed': [('readonly', True)],
                                                               'cancelled': [('readonly', True)]})
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
+    is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
     state_id = fields.Many2one(
         'res.country.state',
         string='Departamento donde desempeña funciones',
@@ -619,10 +621,7 @@ class ONSCLegajoAltaCS(models.Model):
     def _compute_security_job_id_domain(self):
         user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
-            if not rec.regime_origin_id.is_manager:
-                domain = [('is_uo_manager', '=', False), ('sequence', '>=', user_level)]
-            else:
-                domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
+            domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
 
     @api.constrains("date_start_commission", "date_end_commission")
@@ -695,6 +694,8 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.onchange('regime_origin_id')
     def onchange_regime_origin_id(self):
+        if self.regime_id.is_manager is False:
+            self.is_responsable_uo = False
         self.security_job_id = False
 
     # flake8: noqa: C901
@@ -863,5 +864,10 @@ class ONSCLegajoAltaCS(models.Model):
         return contract
 
     def _get_legajo_job(self, contract):
-        return self.env['hr.job'].create_job(contract, self.department_id, self.date_start_commission,
-                                             self.security_job_id)
+        return self.env['hr.job'].create_job(
+            contract,
+            self.department_id,
+            self.date_start_commission,
+            self.security_job_id,
+            is_uo_manager=self.is_responsable_uo
+        )
