@@ -56,7 +56,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
                              default=_default_state)
     reject_reason = fields.Text(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
-    # reject_id = fields.Many2one('onsc.cv.reject.wizard', string='Rechazo de catalogo')
+
 
     @api.constrains(lambda self: ['%s' % x for x in self._fields_2check_unicity])
     def _check_conditional_unicity(self):
