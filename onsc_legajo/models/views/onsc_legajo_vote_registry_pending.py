@@ -109,3 +109,8 @@ GROUP BY nro_doc, employee_id, legajo_id ORDER BY conc_valid_electoral_act_id) A
         action.context = _context
         return action.read()[0]
 
+    def button_view_registry(self):
+        action = self.env.ref('onsc_legajo.onsc_legajo_vote_registry_pending_consult_wizard_action').suspend_security()
+        action.res_id = self.id
+        return action.read()[0]
+

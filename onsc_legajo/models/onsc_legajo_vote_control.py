@@ -143,25 +143,20 @@ class ONSCLegajoVoteRegistry(models.Model):
         is_valid_user = self.user_has_groups(
             'onsc_legajo.group_legajo_vote_control_administrar,onsc_legajo.group_legajo_vote_control_recursos_humanos_inciso,onsc_legajo.group_legajo_vote_control_recursos_humanos_ue')
         for record in self:
-            is_iam_owner = self.env.user.id == record.create_uid.id
-            should_disable_form_edit = not is_valid_user or not is_iam_owner
-            condition = self._context.get('is_from_menu') and not is_iam_admin and should_disable_form_edit
-            record.should_disable_form_edit = condition
+            if not self._context.get('restrict_user'):
+                record.should_disable_form_edit = False
+            else:
+                is_iam_owner = self.env.user.id == record.create_uid.id
+                should_disable_form_edit = not is_valid_user or not is_iam_owner
+                record.should_disable_form_edit = not is_iam_admin and should_disable_form_edit
 
     def _get_domain_employee_ids(self):
-        available_contracts = self.with_context(only_active_contracts=True)._get_user_available_contract(
-            config_use_only_active=True)
-        if not available_contracts:
-            return json.dumps([('id', '=', False)])
-        else:
-            sql_query = """SELECT DISTINCT employee_id FROM hr_contract WHERE id IN %s AND employee_id IS NOT NULL"""
-            self.env.cr.execute(sql_query, [tuple(available_contracts.ids)])
-            results = self.env.cr.fetchall()
-            employee_ids = [item[0] for item in results]
-            return json.dumps([('id', 'in', employee_ids)])
+        exp = self._get_expression_domain([('legajo_state', '=', 'active')], is_employee_model=True)
+        return json.dumps(exp)
 
     def unlink(self):
-        is_iam_superuser = self.user_has_groups('onsc_legajo.group_legajo_vote_control_gestor,onsc_legajo.group_legajo_vote_control_administrar')
-        if not is_iam_superuser and self.filtered(lambda x: x.create_uid.id != self.env.user.id):
+        is_iam_superuser = self.user_has_groups('onsc_legajo.group_legajo_vote_control_administrar')
+        if self._context.get('restrict_user') and not is_iam_superuser and self.filtered(
+                lambda x: x.create_uid.id != self.env.user.id):
             raise ValidationError(_("No puede eliminar registros creados por otros Funcionarios"))
         return super(ONSCLegajoVoteRegistry, self).unlink()
