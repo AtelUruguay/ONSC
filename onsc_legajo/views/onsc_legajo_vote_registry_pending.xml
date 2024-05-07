@@ -10,6 +10,7 @@
                 <field name="employee_id" string="Funcionario"/>
                 <field name="conc_valid_electoral_act_name"/>
                 <button name="button_create_registry" type="object" string="Ingresar" icon="fa-plus-square"/>
+                <button name="button_view_registry" type="object" string="Detalles" icon="fa-folder-open"/>
             </tree>
         </field>
     </record>
@@ -23,8 +24,9 @@
                 <sheet>
                     <group>
                         <group>
-                            <field name="nro_doc" string="CI"/>
+                            <field name="nro_doc" string="CI" readonly="1"/>
                             <field name="employee_id" string="Funcionario"
+                                readonly="1"
                                 options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
                         </group>
                     </group>
@@ -37,6 +39,7 @@
                             </field>
                         </page>
                     </notebook>
+                    <footer/>
                 </sheet>
             </form>
         </field>
@@ -58,9 +61,18 @@
     <record id="onsc_legajo_vote_registry_pending_consult_action" model='ir.actions.act_window'>
         <field name="name">Ingresos pendientes</field>
         <field name="res_model">onsc.legajo.vote.registry.pending.consult</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">tree</field>
         <field name="context">{'ignore_base_restrict': True, 'is_legajo': True}</field>
         <field name="limit">1000</field>
+    </record>
+
+    <record id="onsc_legajo_vote_registry_pending_consult_wizard_action" model="ir.actions.act_window">
+        <field name="name">Ver detalles</field>
+        <field name="res_model">onsc.legajo.vote.registry.pending.consult</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('onsc_legajo_vote_registry_pending_consult_form')})]"/>
     </record>
     </data>
 </odoo>
