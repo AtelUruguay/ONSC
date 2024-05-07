@@ -415,7 +415,7 @@ class ONSCLegajoStagingWS7(models.Model):
             # FIXME la desactivacion posterior lo saca de manager y por la secuencia de los pasos no sabe volver a ponerlo
             excluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
             for job in new_contract.job_ids:
-                cond2 = job.security_job_id.is_uo_manager and job.start_date <= fields.Date.today()
+                cond2 = job.is_uo_manager and job.start_date <= fields.Date.today()
                 if cond2 and not job.department_id.manager_id:
                     job.department_id.suspend_security().write({
                         'manager_id': job.employee_id.id,
@@ -749,8 +749,9 @@ class ONSCLegajoStagingWS7(models.Model):
                 job_id.department_id,
                 target_contract.date_start,
                 job_id.security_job_id,
-                job_id.role_extra_ids,
-                job_id)
+                is_uo_manager=job_id.is_uo_manager,
+                extra_security_roles=job_id.role_extra_ids,
+                source_job=job_id)
 
             self._copy_role_assignments(target_contract, job_id, new_job, operation=operation)
             self._copy_jobs_update_new_job_data(job_id, new_job)

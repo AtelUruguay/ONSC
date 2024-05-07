@@ -95,8 +95,7 @@ class ONSCLegajoAltaVL(models.Model):
     department_id = fields.Many2one("hr.department", string="Unidad organizativa", copy=False, readonly=True,
                                     states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     department_id_domain = fields.Char(compute='_compute_department_id_domain')
-    is_responsable_uo = fields.Boolean(string="¿Responsable de UO?", related="security_job_id.is_uo_manager",
-                                       store=True)
+    is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
     program_project_id = fields.Many2one('onsc.legajo.office', string='Programa - Proyecto', copy=False,
                                          domain="[('inciso', '=', inciso_id),('unidadEjecutora', '=', operating_unit_id)]",
                                          readonly=True,
@@ -112,6 +111,7 @@ class ONSCLegajoAltaVL(models.Model):
                                 readonly=True,
                                 states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]})
     regime_is_legajo = fields.Boolean(related="regime_id.is_legajo", store=True)
+    is_regime_manager = fields.Boolean(related="regime_id.is_manager", store=True)
     is_presupuestado = fields.Boolean(related="regime_id.presupuesto", store=True)
     is_indVencimiento = fields.Boolean(related="regime_id.indVencimiento", store=True)
 
@@ -318,10 +318,7 @@ class ONSCLegajoAltaVL(models.Model):
     def _compute_security_job_id_domain(self):
         user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
-            if not rec.regime_id.is_manager:
-                domain = [('is_uo_manager', '=', False), ('sequence', '>=', user_level)]
-            else:
-                domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
+            domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
 
     @api.constrains("inactivity_years")
@@ -423,6 +420,8 @@ class ONSCLegajoAltaVL(models.Model):
 
     @api.onchange('regime_id')
     def onchange_regime_id(self):
+        if self.regime_id.is_manager is False:
+            self.is_responsable_uo = False
         self.security_job_id = False
         self.juramento_bandera_date = False
         self.juramento_bandera_presentacion_date = False
@@ -569,7 +568,13 @@ class ONSCLegajoAltaVL(models.Model):
         return contract
 
     def _get_legajo_job(self, contract):
-        return self.env['hr.job'].create_job(contract, self.department_id, self.date_start, self.security_job_id)
+        return self.env['hr.job'].create_job(
+            contract,
+            self.department_id,
+            self.date_start,
+            self.security_job_id,
+            is_uo_manager=self.is_responsable_uo
+        )
 
     # MAIL TEMPLATE UTILS
     def get_followers_mails(self):

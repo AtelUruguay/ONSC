@@ -7,6 +7,7 @@
         <field name="arch" type="xml">
             <field name="group_id" position="after">
                 <field name="is_byinciso"/>
+                <field name="is_uo_manager"/>
             </field>
         </field>
     </record>
@@ -21,6 +22,11 @@
                     name="config"
                     domain="[('is_byinciso','=',True)]"
                     string="Habilitado por inciso"
+                />
+                 <filter
+                    name="filter_is_uo_manager"
+                    domain="[('is_uo_manager','=',True)]"
+                    string="¿Es Reponsable UO?"
                 />
              </field>
         </field>

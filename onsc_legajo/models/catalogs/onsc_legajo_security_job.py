@@ -12,7 +12,7 @@ class ONSCLegajoSecurityJob(models.Model):
     _description = 'Seguridad de puesto'
 
     name = fields.Char(string='Nombre de la seguridad de puesto', required=True)
-    is_uo_manager = fields.Boolean(string='Es responsable UO')
+    # is_uo_manager = fields.Boolean(string='Es responsable UO')
     user_role_ids = fields.Many2many('res.users.role', string='Roles', required=True)
     active = fields.Boolean('Activo', default=True)
     user_role_ids_domain = fields.Char(default=lambda self: self._user_role_ids_domain(),
