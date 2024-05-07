@@ -138,7 +138,7 @@ class ONSCLegajoRoleAssignment(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto", tracking=True)
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
 
-    is_uo_manager = fields.Boolean(string='¿Es responsable de UO?')
+    is_uo_manager = fields.Boolean(string='¿Es responsable de UO?', default=True)
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
@@ -251,11 +251,7 @@ class ONSCLegajoRoleAssignment(models.Model):
     def _compute_security_job_id_domain(self):
         user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
-            domain = [('id', '!=', 0)]
-            if not rec.contract_id.regime_id.is_manager:
-                domain = [('sequence', '>=', user_level)]
-            else:
-                domain = [('sequence', '>=', user_level)]
+            domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
 
     @api.constrains("date_start", "contract_id", "job_id", "date_end")
@@ -283,11 +279,10 @@ class ONSCLegajoRoleAssignment(models.Model):
                 raise ValidationError(_("No se ha identificado un Puesto para ese Funcionario en ese Contrato"))
             if record.security_job_id and not record.is_uo_manager:
                 raise ValidationError(_("La Seguridad de puesto debe ser de Responsable de UO"))
-            if record.security_job_id and \
-                    record.job_security_job_id != record.security_job_id and not Job.is_job_available_for_manager(
+            if record.security_job_id and not Job.is_job_available_for_manager(
                 record.department_id,
                 record.date_start):
-                raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
+                raise ValidationError(_("No se puede tener más de un responsable para la misma UO"))
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
     def _check_is_other_role_assignment_active(self):
@@ -336,11 +331,9 @@ class ONSCLegajoRoleAssignment(models.Model):
             self.job_id = job_ids[0].id
             if job_ids[0].is_uo_manager:
                 self.security_job_id = job_ids[0].security_job_id.id
-                self.is_uo_manager = True
         else:
             self.job_id = False
             self.security_job_id = False
-            self.is_uo_manager = False
 
     @api.onchange('contract_id')
     def onchange_contract_id(self):
@@ -409,6 +402,7 @@ class ONSCLegajoRoleAssignment(models.Model):
             self.department_id,
             self.date_start,
             self.security_job_id,
+            is_uo_manager=True,
             source_job=self.job_id
         )
         self._create_job_role_assignment(new_job)

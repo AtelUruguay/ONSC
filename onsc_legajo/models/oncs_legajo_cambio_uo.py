@@ -108,6 +108,7 @@ class ONSCLegajoCambioUO(models.Model):
 
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
+    is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
     state_id = fields.Many2one(
         'res.country.state',
         string='Departamento donde desempeña funciones',
@@ -121,6 +122,7 @@ class ONSCLegajoCambioUO(models.Model):
     full_name = fields.Char('Nombre', compute='_compute_full_name')
     contract_id = fields.Many2one('hr.contract', 'Contrato', required=True, copy=False)
     contract_id_domain = fields.Char(string="Dominio Contrato", compute='_compute_contract_id_domain')
+    is_regime_manager = fields.Boolean(compute='_compute_is_regime_manager', store=True)
     show_contract = fields.Boolean('Mostrar contrato', compute='_compute_contract_id_domain')
 
     @api.depends('employee_id')
@@ -184,11 +186,13 @@ class ONSCLegajoCambioUO(models.Model):
     def _compute_security_job_id_domain(self):
         user_level = self.env.user.employee_id.job_id.security_job_id.sequence
         for rec in self:
-            if not rec.contract_id.regime_id.is_manager:
-                domain = [('is_uo_manager', '=', False), ('sequence', '>=', user_level)]
-            else:
-                domain = [('is_uo_manager', 'in', [True, False]), ('sequence', '>=', user_level)]
+            domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
+
+    @api.depends('contract_id')
+    def _compute_is_regime_manager(self):
+        for rec in self:
+            rec.is_regime_manager = rec.contract_id.regime_id.is_manager
 
     @api.constrains("date_start", "contract_id", "job_id")
     def _check_date(self):
@@ -200,25 +204,28 @@ class ONSCLegajoCambioUO(models.Model):
             if record.job_id and record.date_start < record.job_id.start_date:
                 raise ValidationError(_("La fecha desde debe ser mayor o igual a la fecha del puesto actual"))
 
-    @api.constrains("department_id", "job_id", "security_job_id", "state_id")
+    @api.constrains("department_id", "job_id", "security_job_id", "state_id", "is_responsable_uo")
     def _check_department_id(self):
         for record in self:
             is_same_state_id = record.contract_id.state_id == record.state_id
             is_same_department = record.job_id.department_id == record.department_id
-            is_same_security = record.job_id.security_job_id == record.security_job_id
+            is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
+            is_same_security = record.job_id.security_job_id == record.security_job_id and is_same_manager
             if is_same_state_id and is_same_department and is_same_security:
                 raise ValidationError(_("Debe modificar la UO, la Seguridad o el Departamento donde desempeña funciones"))
 
-    @api.constrains("security_job_id", "department_id", "date_start", "legajo_state")
+    @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "is_responsable_uo")
     def _check_security_job_id(self):
         Job = self.env['hr.job'].sudo()
         for record in self:
             is_same_department = record.job_id.department_id == record.department_id
-            is_same_security = record.job_id.security_job_id == record.security_job_id
-            if (not is_same_department or not is_same_security) and not Job.is_job_available_for_manager(
+            is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
+            is_same_security = record.job_id.security_job_id == record.security_job_id and is_same_manager
+            cond1 = not is_same_department or not is_same_security
+            if cond1 and record.is_responsable_uo and not Job.is_job_available_for_manager(
                     record.department_id,
                     record.date_start):
-                raise ValidationError(_("No se puede tener mas de un responsable para la misma UO "))
+                raise ValidationError(_("No se puede tener más un responsable para la misma UO"))
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
@@ -266,6 +273,8 @@ class ONSCLegajoCambioUO(models.Model):
         self.occupation_id = False
         self.security_job_id = False
         self.state_id = self.contract_id.state_id.id
+        if not self.contract_id.regime_id.is_manager:
+            self.is_responsable_uo = False
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
@@ -373,7 +382,8 @@ class ONSCLegajoCambioUO(models.Model):
         RoleAssignment = self.env['onsc.legajo.role.assignment'].with_context(is_from_menu=False)
         for record in self:
             is_same_department = record.job_id.department_id == record.department_id
-            is_same_security = record.job_id.security_job_id == record.security_job_id
+            is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
+            is_same_security = record.job_id.security_job_id == record.security_job_id and is_same_manager
             if (not is_same_department or not is_same_security) and RoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
                 ('state', '=', 'confirm'),
@@ -388,7 +398,8 @@ class ONSCLegajoCambioUO(models.Model):
         warning_message = False
         show_warning = False
         is_change_department_id = self.job_id.department_id != self.department_id
-        is_change_security_job_id = self.job_id.security_job_id != self.security_job_id
+        is_same_manager = self.job_id.is_uo_manager == self.is_responsable_uo
+        is_change_security_job_id = self.job_id.security_job_id != self.security_job_id or not is_same_manager
         is_change_state_id = self.contract_id.state_id != self.state_id
 
         if is_change_department_id or is_change_security_job_id:
@@ -406,6 +417,7 @@ class ONSCLegajoCambioUO(models.Model):
                 self.department_id,
                 self.date_start,
                 self.security_job_id,
+                is_uo_manager=self.is_responsable_uo,
                 source_job=self.job_id
             )
         else:

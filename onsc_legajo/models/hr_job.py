@@ -142,8 +142,11 @@ class HrJob(models.Model):
 
     @api.onchange('security_job_id')
     def onchange_security_job_id(self):
-        if self.security_job_id:
-            _role_ids = [(5, 0)]
+        _role_ids = [(5, 0)]
+        manager_roles_ids = []
+        if self.is_uo_manager:
+            manager_roles = self.env['res.users.role'].sudo().search([('is_uo_manager', '=', True)])
+            manager_roles_ids = manager_roles.ids
             _role_ids.extend([
                 (0, 0, {
                     'user_role_id': role.id,
@@ -152,10 +155,17 @@ class HrJob(models.Model):
                     'end_date': self.end_date
                 })
                 for role in
-                self.security_job_id.user_role_ids])
-            self.role_ids = _role_ids
-        else:
-            self.role_ids = [(5, 0)]
+                manager_roles])
+        if self.security_job_id:
+            for role in self.security_job_id.user_role_ids:
+                if role.id not in manager_roles_ids:
+                    _role_ids.append((0, 0, {
+                        'user_role_id': role.id,
+                        'type': 'system',
+                        'start_date': self.start_date if self.start_date else fields.Date.today(),
+                        'end_date': self.end_date
+                    }))
+        self.role_ids = _role_ids
 
     @api.onchange('employee_id')
     def onchange_employee_id(self):
