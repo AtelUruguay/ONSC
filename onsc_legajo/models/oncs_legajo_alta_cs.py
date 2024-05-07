@@ -189,7 +189,8 @@ class ONSCLegajoAltaCS(models.Model):
     state_id = fields.Many2one(
         'res.country.state',
         string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False)
+        domain="[('country_id.code','=','UY')]", copy=False,
+        readonly=False, states={'confirmed': [('readonly', True)], 'cancelled': [('readonly', True)]})
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False,
                                     readonly=False, states={'confirmed': [('readonly', True)],
                                                             'cancelled': [('readonly', True)]})

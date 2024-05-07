@@ -186,7 +186,10 @@ class ONSCLegajoAltaVL(models.Model):
     state_id = fields.Many2one(
         'res.country.state',
         string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False)
+        domain="[('country_id.code','=','UY')]", copy=False,
+        readonly=True,
+        states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]}
+    )
 
     juramento_bandera_date = fields.Date(
         string='Fecha de Juramento de fidelidad a la Bandera nacional', history=True)
