@@ -135,6 +135,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     def action_reject(self):
         ctx = self._context.copy()
         ctx.update({'default_model_name': self._name,
+                    'default_res_id': self.id,
                     'default_is_multi': False})
         return {
             'name': _('Rechazo de %s' % self._description),

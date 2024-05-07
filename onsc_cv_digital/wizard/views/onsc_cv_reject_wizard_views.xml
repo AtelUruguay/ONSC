@@ -5,30 +5,17 @@
         <field name="model">onsc.cv.reject.wizard</field>
         <field name="arch" type="xml">
             <form>
-                <field name="is_multi" invisible="1"/>
-                <group attrs="{'invisible': [('is_multi', '=', True)]}">
-
-                    <div class="alert alert-info" role="alert">
-                        <p class="mb-0">
-                            <strong>Al confirmar este Asistente el registro pasará al estado Rechazado.</strong>
-                        </p>
-                    </div>
-                </group>
-                 <group attrs="{'invisible': [('is_multi', '!=', True)]}">
-                 <div class="alert alert-info" role="alert" >
+                <div class="alert alert-info" role="alert">
                     <p class="mb-0">
-                        <strong>Al confirmar este Asistente los registros pasarán al estado Rechazado.</strong>
+                        <strong>Al confirmar este Asistente el registro pasará al estado Rechazado.</strong>
                     </p>
                 </div>
-                </group>
-
                 <group>
                     <field name="reject_reason"/>
                 </group>
                 <footer>
-                   <button string="Rechazar" name="action_reject"  attrs="{'invisible': [('is_multi', '=', True)]}" type="object" class="oe_highlight" data-hotkey="q"/>
-                   <button string="Rechazar" name="action_reject_multi" attrs="{'invisible': [('is_multi', '!=', True)]}" type="object" class="oe_highlight" />
-                    <button string="Cancelar" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
+                   <button string="Rechazar" name="action_reject" type="object" class="oe_highlight" data-hotkey="q"/>
+                   <button string="Cancelar" class="btn btn-secondary" special="cancel" data-hotkey="z"/>
                 </footer>
             </form>
         </field>
