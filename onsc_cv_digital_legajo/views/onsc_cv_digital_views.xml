@@ -94,12 +94,17 @@
                             <field name="emergency_service_id"
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                    attrs="{'required': [('is_docket_active', '=', True)]}"/>
-                            <label for="emergency_service_telephone" readonly="1"  force_save="1"/>
+                            <label for="emergency_service_telephone"/>
                             <div class="content-group row" style="padding: 15px">
-                                <field name="prefix_emergency_phone_id" options="{'no_open': True, 'no_create': True}"
+                                <field name="prefix_emergency_phone_id"
+                                       readonly="1"  force_save="1"
+                                       options="{'no_open': True, 'no_create': True}"
                                        style='max-width: 70px !important; padding:1px !important;'
                                        class="oe_inline"/>
-                                <field name="emergency_service_telephone" class="oe_inline"/>
+                                <field name="emergency_service_telephone"
+                                       readonly="1"  force_save="1"
+                                       class="oe_inline"
+                                />
                             </div>
                             <field name="health_department_id" attrs="{'required': [('is_docket_active', '=', True)]}"
                                    options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
