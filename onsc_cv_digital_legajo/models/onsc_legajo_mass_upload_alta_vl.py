@@ -417,6 +417,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'security_job_id': MassLine.find_by_code_name_many2one('security_job_id', 'name', 'name', line[
                         self.get_position(column_names, 'security_job_id')]),
                     'state_id': state_id,
+                    'is_responsable_uo': line[self.get_position(column_names, 'is_responsable_uo')],
                     'occupation_id': occupation_id,
                     'date_income_public_administration': datetime.datetime.fromordinal(
                         datetime.datetime(1900, 1,
@@ -568,6 +569,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'department_id': line.department_id.id if line.department_id else False,
                 'security_job_id': line.security_job_id.id if line.security_job_id else False,
                 'state_id': line.state_id.id if line.state_id else False,
+                'is_responsable_uo': line.is_responsable_uo,
                 'occupation_id': line.occupation_id.id if line.occupation_id else False,
                 'date_income_public_administration': line.date_income_public_administration,
                 'income_mechanism_id': line.income_mechanism_id.id if line.income_mechanism_id else False,
@@ -810,6 +812,7 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
         'res.country.state',
         string='Departamento donde desempeña funciones',
         domain="[('country_id.code','=','UY')]")
+    is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
     date_income_public_administration = fields.Date(string="Fecha de ingreso a la administración pública")
     inactivity_years = fields.Integer(string="Años de inactividad")
@@ -1020,5 +1023,3 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
                 values[key] = False
         error = '\n'.join(error)
         return values, error
-
-

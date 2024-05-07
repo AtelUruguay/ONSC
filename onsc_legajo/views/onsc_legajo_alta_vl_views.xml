@@ -34,6 +34,7 @@
                                 <field name="is_inciso_readonly" invisible="1"/>
                                 <field name="operating_unit_id_domain" invisible="1"/>
                                 <field name="is_call_number_required" invisible="1"/>
+                                <field name="is_regime_manager" invisible="1"/>
                                 <field name="is_presupuestado" invisible="1"/>
                                 <field name="is_indVencimiento" invisible="1"/>
                                 <field name="is_operating_unit_readonly" invisible="1"/>
@@ -117,9 +118,9 @@
                                         <field name="security_job_id"
                                                domain="security_job_id_domain"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
+                                        <field name="is_responsable_uo" attrs="{'readonly': [('is_regime_manager', '=', False)]}"/>
                                         <field name="state_id"
                                                options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_create':true}"/>
-                                        <field name="is_responsable_uo"/>
                                         <field name="security_job_id_domain" invisible="1"/>
                                     </group>
                                 </group>

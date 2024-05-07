@@ -82,9 +82,9 @@
                                 <field name="security_job_id"
                                        domain="security_job_id_domain"
                                        force_save="1"
-                                       attrs="{'readonly': ['|',('state', '!=', 'draft'),('is_uo_manager', '=', True)]}"
+                                       attrs="{'readonly': [('state', '!=', 'draft')]}"
                                        options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
-                                <field name="is_uo_manager" invisible="1"/>
+                                <field name="is_uo_manager" force_save="1" readonly="1"/>
                                 <field name="job_security_job_id" invisible="1"/>
                                 <field name="security_job_id_domain" invisible="1"/>
                             </group>
