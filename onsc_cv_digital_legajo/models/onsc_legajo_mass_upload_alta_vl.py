@@ -357,6 +357,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     message_error.append("No corresponde ocupación para ese vínculo")
                 if not occupation_id and _is_occupation_required:
                     message_error.append("El campo ocupación es obligatorio y no está definido o no ha sido encontrado")
+                reason_description = line[self.get_position(column_names, 'reason_description')],
+                resolution_description = line[self.get_position(column_names, 'resolution_description')],
+                if len(reason_description) > 50:
+                    message_error.append("El campo Descripción del motivo no puede tener más de 50 caracteres.")
+                if len(resolution_description) > 100:
+                    message_error.append("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+
                 values = {
                     'nro_line': row_no,
                     'mass_upload_id': self.id,
@@ -420,9 +427,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'contract_expiration_date': datetime.datetime.fromordinal(
                         datetime.datetime(1900, 1,
                                           1).toordinal() + contract_expiration_date - 2) if contract_expiration_date else False,
-                    'reason_description': line[self.get_position(column_names, 'reason_description')],
+                    'reason_description': reason_description,
                     'norm_id': norm_id.id if norm_id else False,
-                    'resolution_description': line[self.get_position(column_names, 'resolution_description')],
+                    'resolution_description': resolution_description,
                     'resolution_date': datetime.datetime.fromordinal(
                         datetime.datetime(1900, 1, 1).toordinal() + resolution_date - 2) if resolution_date else False,
                     'resolution_type': line[self.get_position(column_names, 'resolution_type')],
