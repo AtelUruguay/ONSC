@@ -246,6 +246,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 global message_error
                 norm_id = False
                 message_error = []
+                warning_error = []
                 office = False
                 try:
                     office = LegajoOffice.sudo().search([
@@ -342,6 +343,11 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 regime_id = MassLine.find_by_code_name_many2one('regime_id', 'codRegimen', 'descripcionRegimen',
                                                                 line[self.get_position(column_names,
                                                                                        'regime_id')])
+                state_id = MassLine.find_by_code_name_many2one('state_id', 'code', 'name', line[
+                    self.get_position(column_names, 'state_id')])
+                if not state_id:
+                    message_error.append(
+                        "El campo Departamento donde desempeña funciones no está definido o no ha sido encontrado")
 
                 line_occupation_value = line[self.get_position(column_names, 'occupation_id')]
                 occupation_id = MassLine.find_by_code_name_many2one('occupation_id', 'code', 'name',
@@ -351,6 +357,13 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     message_error.append("No corresponde ocupación para ese vínculo")
                 if not occupation_id and _is_occupation_required:
                     message_error.append("El campo ocupación es obligatorio y no está definido o no ha sido encontrado")
+                reason_description = line[self.get_position(column_names, 'reason_description')],
+                resolution_description = line[self.get_position(column_names, 'resolution_description')],
+                if len(reason_description) > 50:
+                    message_error.append("El campo Descripción del motivo no puede tener más de 50 caracteres.")
+                if len(resolution_description) > 100:
+                    message_error.append("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+
                 values = {
                     'nro_line': row_no,
                     'mass_upload_id': self.id,
@@ -403,6 +416,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                         self.get_position(column_names, 'department_id')]),
                     'security_job_id': MassLine.find_by_code_name_many2one('security_job_id', 'name', 'name', line[
                         self.get_position(column_names, 'security_job_id')]),
+                    'state_id': state_id,
                     'is_responsable_uo': line[self.get_position(column_names, 'is_responsable_uo')],
                     'occupation_id': occupation_id,
                     'date_income_public_administration': datetime.datetime.fromordinal(
@@ -414,9 +428,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'contract_expiration_date': datetime.datetime.fromordinal(
                         datetime.datetime(1900, 1,
                                           1).toordinal() + contract_expiration_date - 2) if contract_expiration_date else False,
-                    'reason_description': line[self.get_position(column_names, 'reason_description')],
+                    'reason_description': reason_description,
                     'norm_id': norm_id.id if norm_id else False,
-                    'resolution_description': line[self.get_position(column_names, 'resolution_description')],
+                    'resolution_description': resolution_description,
                     'resolution_date': datetime.datetime.fromordinal(
                         datetime.datetime(1900, 1, 1).toordinal() + resolution_date - 2) if resolution_date else False,
                     'resolution_type': line[self.get_position(column_names, 'resolution_type')],
@@ -427,6 +441,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     'additional_information': line[self.get_position(column_names, 'additional_information')],
                     'message_error': '',
                 }
+                if self._validate_exist_altaVL(values, country_uy_id, office):
+                    warning_error.append(
+                        "NOTIFICACIÓN: Esta persona ya cuenta con un movimiento pendiente de auditoría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores")
                 values, validate_error = MassLine.validate_fields(values)
                 message_error.extend(self.validate_cv_fields(values))
                 if validate_error:
@@ -440,7 +457,8 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     values['message_error'] = 'Información faltante o no cumple validación' + values['message_error']
                 else:
                     values['message_error'] = ''
-
+                if warning_error:
+                    values['warning_error'] = '\n'.join(warning_error)
                 existing_record = MassLine.search([('nro_line', '=', row_no), ('mass_upload_id', '=', self.id)],
                                                   limit=1)
                 if existing_record and existing_record.state != 'done':
@@ -550,6 +568,7 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 'nroPlaza': line.nroPlaza,
                 'department_id': line.department_id.id if line.department_id else False,
                 'security_job_id': line.security_job_id.id if line.security_job_id else False,
+                'state_id': line.state_id.id if line.state_id else False,
                 'is_responsable_uo': line.is_responsable_uo,
                 'occupation_id': line.occupation_id.id if line.occupation_id else False,
                 'date_income_public_administration': line.date_income_public_administration,
@@ -659,6 +678,51 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 _("El registro no puede ser eliminado porque tiene altas de vínculo laboral asociadas"))
         return super(ONSCMassUploadLegajoAltaVL, self).unlink()
 
+    def _validate_exist_altaVL(self, values,country_uy_id,office):
+        exist_altaVL = False
+        Partner = self.env['res.partner']
+        Contract = self.env['hr.contract'].suspend_security()
+        AltaVL = self.env['onsc.legajo.alta.vl'].suspend_security().with_context(is_from_menu = False)
+        Employee = self.env['hr.employee'].suspend_security()
+
+        cv_document_type_id = self.env['onsc.cv.document.type'].sudo().search([('code', '=', 'ci')],
+                                                                              limit=1).id or False
+
+        employee = Employee.search([
+            ('cv_emissor_country_id', '=', country_uy_id.id),
+            ('cv_document_type_id', '=', cv_document_type_id),
+            ('cv_nro_doc', '=', values['document_number']),
+        ], limit=1)
+
+        partner = Partner.sudo().search([('cv_nro_doc', '=',values['document_number'])], limit=1)
+        domain = [
+            ('state', 'in', ['aprobado_cgn', 'pendiente_auditoria_cgn']),
+            ('descriptor1_id', '=', values['descriptor1_id']),
+            ('descriptor2_id', '=', values['descriptor2_id']),
+            ('descriptor3_id', '=', values['descriptor3_id']),
+            ('descriptor4_id', '=', values['descriptor4_id']),
+            ('regime_id', '=', values['regime_id']),
+            ('inciso_id', '=', self.inciso_id.id),
+            ('program_project_id', '=', office.id),
+            ('operating_unit_id', '=', self.operating_unit_id.id),
+            ('partner_id', '=', partner.id),
+        ]
+        for alta_vl in AltaVL.search(domain):
+            if alta_vl.state == 'pendiente_auditoria_cgn' or (alta_vl.state == 'aprobado_cgn' and Contract.search_count([
+                ('descriptor1_id', '=', values['descriptor1_id']),
+                ('descriptor2_id', '=', values['descriptor2_id']),
+                ('descriptor3_id', '=', values['descriptor3_id']),
+                ('descriptor4_id', '=', values['descriptor4_id']),
+                ('regime_id', '=', values['regime_id']),
+                ('inciso_id', '=', self.inciso_id.id),
+                ('program', '=', office.programa),
+                ('project', '=', office.proyecto),
+                ('operating_unit_id', '=', self.operating_unit_id.id),
+                ('employee_id', '=', employee.id),
+                ('legajo_state', '=', 'active')])):
+                exist_altaVL = True
+        return exist_altaVL
+
 
 class ONSCMassUploadLineLegajoAltaVL(models.Model):
     _name = 'onsc.legajo.mass.upload.line.alta.vl'
@@ -687,6 +751,8 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     state = fields.Selection([('draft', 'Borrador'), ('error', 'Procesado con Error'), ('done', 'Procesado')],
                              string='Estado', default='draft')
     message_error = fields.Text(string='Mensaje de error')
+    warning_error = fields.Text(string='Mensaje de notificación')
+    message = fields.Text(string='Mensajes', compute='_compute_message', store=True)
     nro_line = fields.Integer(string='Nro de línea')
     first_name = fields.Char(string='Primer nombre')
     second_name = fields.Char(string='Segundo nombre')
@@ -742,6 +808,10 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
     department_id = fields.Many2one("hr.department", string="Unidad organizativa")
     department_id_domain = fields.Char(compute='_compute_department_id_domain')
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
+    state_id = fields.Many2one(
+        'res.country.state',
+        string='Departamento donde desempeña funciones',
+        domain="[('country_id.code','=','UY')]")
     is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
     date_income_public_administration = fields.Date(string="Fecha de ingreso a la administración pública")
@@ -845,6 +915,17 @@ class ONSCMassUploadLineLegajoAltaVL(models.Model):
             if dsc4Id:
                 domain = [('id', 'in', dsc4Id.ids)]
             rec.descriptor4_domain_id = json.dumps(domain)
+
+    @api.depends('message_error', 'warning_error')
+    def _compute_message(self):
+        for rec in self:
+            items = []
+            if rec.message_error:
+                items.append(rec.message_error)
+            if rec.warning_error:
+                items.append(rec.warning_error)
+            rec.message = '\n'.join(items)
+
 
     @api.onchange('descriptor1_id')
     def onchange_descriptor1(self):

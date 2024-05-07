@@ -77,7 +77,7 @@
                                 <field name="line_ids" readonly="1">
                                     <tree create="false" delete="false">
                                         <field name="document_number"/>
-                                        <field name="message_error" readonly="1"/>
+                                        <field name="message" readonly="1"/>
                                     </tree>
                                 </field>
                             </page>
@@ -193,6 +193,8 @@
                                 <field name="security_job_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="is_responsable_uo"/>
+                                <field name="state_id"
+                                       options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="occupation_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="date_income_public_administration"/>
