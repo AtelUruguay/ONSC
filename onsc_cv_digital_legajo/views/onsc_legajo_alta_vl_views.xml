@@ -59,7 +59,15 @@
                     </div>
                 </header>
                 <xpath expr="//div[hasclass('oe_title')]" position="before">
+                    <field name="show_exist_altaVL_warning" invisible="1"/>
                     <field name="is_error_synchronization" invisible="1"/>
+                    <div class="alert alert-warning" role="alert" attrs="{'invisible': [('show_exist_altaVL_warning', '=', False)]}">
+                        <p class="mb-0">
+                            <strong>
+                                Esta persona ya cuenta con un movimiento pendiente de auditoría o auditado por CGN con la misma información de Inciso, UE, Programa, Proyecto, Régimen y Descriptores
+                            </strong>
+                        </p>
+                    </div>
                     <div class="alert alert-danger"
                          role="alert"
                          attrs="{'invisible': [('is_error_synchronization', '=', False)]}"
