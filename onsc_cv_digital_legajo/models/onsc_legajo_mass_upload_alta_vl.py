@@ -353,9 +353,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                     message_error.append("El campo ocupación es obligatorio y no está definido o no ha sido encontrado")
                 reason_description = line[self.get_position(column_names, 'reason_description')]
                 resolution_description = line[self.get_position(column_names, 'resolution_description')]
-                if len(reason_description) > 50:
+                if len(str(reason_description)) > 50:
                     message_error.append("El campo Descripción del motivo no puede tener más de 50 caracteres.")
-                if len(resolution_description) > 100:
+                if len((resolution_description)) > 100:
                     message_error.append("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
 
                 values = {
