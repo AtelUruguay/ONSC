@@ -27,6 +27,14 @@
         <field name="model">onsc.cv.academic.program</field>
         <field name="arch" type="xml">
             <tree string="Programas académicos">
+                 <header>
+                    <button
+                    name = "action_reject_multi"
+                    type = "object"
+                    string = "Rechazar"
+                    groups = "onsc_cv_digital.group_reject_catalogos_cv"
+                    />
+                </header>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="country_id"/>

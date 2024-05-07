@@ -56,6 +56,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
                              default=_default_state)
     reject_reason = fields.Text(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
+    # reject_id = fields.Many2one('onsc.cv.reject.wizard', string='Rechazo de catalogo')
 
     @api.constrains(lambda self: ['%s' % x for x in self._fields_2check_unicity])
     def _check_conditional_unicity(self):
@@ -135,7 +136,8 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     def action_reject(self):
         ctx = self._context.copy()
         ctx.update({'default_model_name': self._name,
-                    'default_res_id': self.id})
+                    'default_res_id': self.id,
+                    'default_is_multi': False})
         return {
             'name': _('Rechazo de %s' % self._description),
             'view_mode': 'form',
@@ -146,6 +148,24 @@ class ONSCCVAbstractConfig(models.AbstractModel):
             'context': ctx,
         }
 
+    def action_reject_multi(self):
+
+        ctx = self._context.copy()
+        ctx.update({'default_model_name': self._name,
+                     'default_res_ids': self.ids,
+                    'default_is_multi': True})
+
+        if self.filtered(lambda x: x.state not in ['to_validate']):
+            raise ValidationError(_("Solo se pueden rechazar registros en estado Para validar"))
+        return {
+            'name': _('Rechazo de %s' % self._description),
+            'view_mode': 'form',
+            'res_model': 'onsc.cv.reject.wizard',
+            'target': 'new',
+            'view_id': False,
+            'type': 'ir.actions.act_window',
+            'context': ctx,
+        }
     def action_validate(self):
         self._check_validation_status()
         self.write({'state': 'validated'})

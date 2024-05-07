@@ -21,6 +21,14 @@
         <field name="model">onsc.cv.certifying.subinstitution</field>
         <field name="arch" type="xml">
             <tree string="Sub instituciones certificadoras">
+                 <header>
+                    <button
+                    name = "action_reject_multi"
+                    type = "object"
+                    string = "Rechazar"
+                    groups = "onsc_cv_digital.group_reject_catalogos_cv"
+                    />
+                </header>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="institution_cert_id"/>

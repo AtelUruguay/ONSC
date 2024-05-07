@@ -19,6 +19,14 @@
         <field name="model">onsc.cv.certificate</field>
         <field name="arch" type="xml">
             <tree string="Certificados">
+                <header>
+                    <button
+                    name = "action_reject_multi"
+                    type = "object"
+                    string = "Rechazar"
+                    groups = "onsc_cv_digital.group_reject_catalogos_cv"
+                    />
+                </header>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="company_id" groups="base.group_multi_company" invisible="1"/>

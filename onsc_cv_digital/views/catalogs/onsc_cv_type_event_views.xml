@@ -19,6 +19,14 @@
         <field name="model">onsc.cv.type.event</field>
         <field name="arch" type="xml">
             <tree string="Tipos de evento">
+                <header>
+                    <button
+                    name = "action_reject_multi"
+                    type = "object"
+                    string = "Rechzar"
+                    groups = "onsc_cv_digital.group_reject_catalogos_cv"
+                    />
+                </header>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="state"/>
