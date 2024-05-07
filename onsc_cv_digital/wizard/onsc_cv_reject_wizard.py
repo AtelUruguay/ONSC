@@ -12,6 +12,7 @@ class ONSCCVRejectWizard(models.TransientModel):
     res_id = fields.Integer("Id del registro relacionado")
     res_ids = fields.Many2many("onsc.cv.abstract.config", string="Ids del registro relacionado")
     is_multi = fields.Boolean("Rechazo de multi registros")
+
     def action_reject(self):
         if self._context.get('is_documentary_reject'):
             return self.action_documentary_reject()
@@ -19,9 +20,11 @@ class ONSCCVRejectWizard(models.TransientModel):
             return self.action_conditional_reject()
 
     def action_reject_multi(self):
-        record = self.env[self.model_name].browse(self.res_ids.ids)
-        record.write({'state': 'rejected', 'reject_reason': self.reject_reason})
-        record.sudo()._send_reject_email()
+        ids = self._context.get('active_ids', False)
+        records = self.env[self.model_name].browse(ids)
+        records.write({'state': 'rejected', 'reject_reason': self.reject_reason})
+        for rec in records:
+            rec.sudo()._send_reject_email()
         return True
 
     def action_conditional_reject(self):

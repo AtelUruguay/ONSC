@@ -57,7 +57,6 @@ class ONSCCVAbstractConfig(models.AbstractModel):
     reject_reason = fields.Text(string=u'Motivo de rechazo', tracking=True)
     create_uid = fields.Many2one('res.users', index=True, tracking=True)
 
-
     @api.constrains(lambda self: ['%s' % x for x in self._fields_2check_unicity])
     def _check_conditional_unicity(self):
         """
@@ -152,7 +151,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
 
         ctx = self._context.copy()
         ctx.update({'default_model_name': self._name,
-                     'default_res_ids': self.ids,
+                    'active_ids': self.ids,
                     'default_is_multi': True})
 
         if self.filtered(lambda x: x.state not in ['to_validate']):
@@ -166,6 +165,7 @@ class ONSCCVAbstractConfig(models.AbstractModel):
             'type': 'ir.actions.act_window',
             'context': ctx,
         }
+
     def action_validate(self):
         self._check_validation_status()
         self.write({'state': 'validated'})
