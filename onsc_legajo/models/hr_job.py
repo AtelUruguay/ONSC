@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 import json
+import logging
 
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+
+_logger = logging.getLogger(__name__)
 
 
 class HrJob(models.Model):
@@ -333,6 +336,8 @@ class HrJobRoleLine(models.Model):
 
     @api.constrains("start_date", "end_date", "job_id", "active", "user_role_id")
     def _check_roles_duplicated(self):
+        if self._context.get('bulked_creation'):
+            return True
         for record in self:
             job_roles = record.job_id.role_ids
             job_roles |= record.job_id.role_extra_ids
@@ -347,6 +352,8 @@ class HrJobRoleLine(models.Model):
 
     @api.constrains("end_date")
     def _check_end_date(self):
+        if self._context.get('bulked_creation'):
+            return True
         for record in self:
             if record.job_id.end_date and (record.end_date is False or record.end_date > record.job_id.end_date):
                 raise ValidationError(
@@ -384,6 +391,8 @@ class HrJobRoleLine(models.Model):
             rec.user_role_id_domain = self._user_role_id_domain()
 
     def _user_role_id_domain(self):
+        if self._context.get('bulked_creation'):
+            return json.dumps([('id', '!=', False)])
         if self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc'):
             args = []
@@ -407,8 +416,10 @@ class HrJobRoleLine(models.Model):
     @api.model
     def create(self, values):
         record = super(HrJobRoleLine, self).create(values)
-        line_name = record.user_role_id.name or ''
-        record.job_id._message_log(body=_('Línea del rol adicional %s creada') % (line_name))
+        _logger.info('ACTUALIZANDO SEGURIDAD PUESTO: LINEA CREADA')
+        if not self._context.get('bulked_creation'):
+            line_name = record.user_role_id.name or ''
+            record.job_id._message_log(body=_('Línea del rol adicional %s creada') % (line_name))
         return record
 
     def write(self, vals):

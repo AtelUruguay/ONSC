@@ -185,7 +185,10 @@ class ONSCLegajoAltaVL(models.Model):
     state_id = fields.Many2one(
         'res.country.state',
         string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False)
+        domain="[('country_id.code','=','UY')]", copy=False,
+        readonly=True,
+        states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]}
+    )
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
