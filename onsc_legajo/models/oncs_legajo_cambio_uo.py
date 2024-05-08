@@ -279,6 +279,10 @@ class ONSCLegajoCambioUO(models.Model):
         if not self.contract_id.regime_id.is_manager:
             self.is_responsable_uo = False
 
+    @api.onchange('job_id')
+    def onchange_job_id(self):
+        self.is_responsable_uo = self.job_id.is_uo_manager
+
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
             raise ValidationError(_("Solo se pueden eliminar registros en estado borrador"))
