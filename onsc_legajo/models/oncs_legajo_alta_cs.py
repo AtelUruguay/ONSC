@@ -695,7 +695,7 @@ class ONSCLegajoAltaCS(models.Model):
 
     @api.onchange('regime_origin_id')
     def onchange_regime_origin_id(self):
-        if self.regime_id.is_manager is False:
+        if self.regime_origin_id.is_manager is False:
             self.is_responsable_uo = False
         self.security_job_id = False
 

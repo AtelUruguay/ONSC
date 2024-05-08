@@ -261,7 +261,10 @@ class ONSCLegajoCambioUO(models.Model):
         self.inciso_id = self.contract_id.inciso_id.id
         if len(job_ids) == 1:
             self.job_id = job_ids[0].id
-            self.security_job_id = job_ids[0].security_job_id.id
+            if job_ids[0].security_job_id.active:
+                self.security_job_id = job_ids[0].security_job_id.id
+            else:
+                self.security_job_id = False
             self.department_id = job_ids[0].department_id.id
         else:
             self.job_id = False
