@@ -23,6 +23,9 @@
                 <field name="department_id" operator="child_of" string="Unidad organizativa"/>
                 <field name="employee_id" operator="child_of" string="Funcionario"/>
                 <field name="security_job_id" string="Seguridad de puesto"/>
+                <field name="is_uo_manager"/>
+                <filter string="Puestos de Responsable de UO" name="filter_is_uo_manager"
+                            domain="[('is_uo_manager','=',True)]"/>
                 <group expand="0" string="Group By">
                     <filter string="Unidad organizativa" name="groupby_department" domain="[]" context="{'group_by': 'department_id'}"/>
                     <filter string="Funcionario" name="groupby_employee" domain="[]" context="{'group_by': 'employee_id'}"/>
@@ -220,6 +223,8 @@
                 <field name="start_date"
                        groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
                 <field name="end_date"
+                       groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
+                <field name="is_uo_manager"
                        groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"/>
             </tree>
         </field>

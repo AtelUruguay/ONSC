@@ -261,7 +261,10 @@ class ONSCLegajoCambioUO(models.Model):
         self.inciso_id = self.contract_id.inciso_id.id
         if len(job_ids) == 1:
             self.job_id = job_ids[0].id
-            self.security_job_id = job_ids[0].security_job_id.id
+            if job_ids[0].security_job_id.active:
+                self.security_job_id = job_ids[0].security_job_id.id
+            else:
+                self.security_job_id = False
             self.department_id = job_ids[0].department_id.id
         else:
             self.job_id = False
@@ -275,6 +278,10 @@ class ONSCLegajoCambioUO(models.Model):
         self.state_id = self.contract_id.state_id.id
         if not self.contract_id.regime_id.is_manager:
             self.is_responsable_uo = False
+
+    @api.onchange('job_id')
+    def onchange_job_id(self):
+        self.is_responsable_uo = self.job_id.is_uo_manager
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
