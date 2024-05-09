@@ -297,11 +297,27 @@ class HrJob(models.Model):
         self.suspend_security().write({'start_date': start_date})
         self.suspend_security().onchange_start_date()
 
-    def is_job_available_for_manager(self, department, date, date_end=False):
-        # if not security_job.is_uo_manager:
-        #     return True
-        # TODO definir para periodos cerrados, no se precisa por ahora
-        if not date_end:
+    def is_job_available_for_manager(self, department, date, nro_doc=False):
+        """
+
+        :param department: Record of hr.department
+        :param date: Fecha a chequear
+        :param nro_doc: Si se pasa es para chequear si no es el mismo funcionario
+        :return:
+        """
+        # TODO no se precisa por ahora definir para periodos cerrados
+        if nro_doc:
+            args = [
+                ('contract_id.nro_doc', '!=', nro_doc),
+                ('department_id', '=', department.id),
+                ('is_uo_manager', '=', True),
+                '|',
+                '|',
+                ('start_date', '>=', date),
+                '&', ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date),
+                ('department_id.is_manager_reserved', '=', True)
+            ]
+        else:
             args = [
                 ('department_id', '=', department.id),
                 ('is_uo_manager', '=', True),

@@ -224,7 +224,9 @@ class ONSCLegajoCambioUO(models.Model):
             cond1 = not is_same_department or not is_same_security
             if cond1 and record.is_responsable_uo and not Job.is_job_available_for_manager(
                     record.department_id,
-                    record.date_start):
+                    record.date_start,
+                    record.contract_id.nro_doc
+            ):
                 raise ValidationError(_("No se puede tener más un responsable para la misma UO"))
 
     @api.onchange('employee_id')
