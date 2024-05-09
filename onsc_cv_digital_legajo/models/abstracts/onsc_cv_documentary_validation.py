@@ -121,6 +121,8 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'documentary_user_id': _user_id,
         }
         self.update_call_instances(args)
+        if self.cv_digital_id.type:
+            self.set_legajo_validated_records()
         return super(ONSCCVAbstractFileValidation, self).button_documentary_approve()
 
     def documentary_reject(self, reject_reason):

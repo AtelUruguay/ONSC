@@ -24,7 +24,7 @@
                         </div>
                         <field name="advanced_formation_ids"/>
                     </page>
-                    <page name="formation" string="Cursos y certificados">
+                    <page name="course_certificate" string="Cursos y certificados">
                         <div>
                             <h4>Cursos, talleres y otras capacitaciones</h4>
                         </div>
@@ -36,6 +36,9 @@
                         </div>
                         <field name="certificate_ids"
                                context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
+                    </page>
+                    <page name="work_experience" string="Experiencia laboral">
+                        <field name="work_experience_ids"/>
                     </page>
                 </xpath>
             </field>

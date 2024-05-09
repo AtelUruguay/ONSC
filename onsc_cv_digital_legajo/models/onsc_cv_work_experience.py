@@ -14,3 +14,16 @@ class ONSCCVDigitalWorkExperience(models.Model):
             ("causes_discharge"),
         ])
         return json_dict
+
+    def set_legajo_validated_records(self):
+        LegajoModel = self.env['onsc.legajo.work.experience'].suspend_security()
+        employee = self.cv_digital_id.employee_id
+        legajo = self.env['onsc.legajo'].sudo().search([('employee_id', '=', employee.id)], limit=1)
+
+        legajo_rec = self.copy_data(default={
+            'employee_id': employee.id,
+            'legajo_id': legajo.id,
+            'origin_work_experience_id': self.id
+        })
+        new_legajo_record = LegajoModel.create(legajo_rec)
+        return new_legajo_record
