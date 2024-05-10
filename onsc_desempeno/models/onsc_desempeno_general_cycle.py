@@ -264,7 +264,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
             'year': evaluation.evaluation_stage_id.year,
             'evaluation_list_id': evaluation.evaluation_list_id.id,
             'is_pilot': evaluation.general_cycle_id.is_pilot,
-            'is_employee_notified': evaluation.general_cycle_id.is_pilot and True or False,
+            'is_employee_notified': evaluation.general_cycle_id.is_pilot,
             # 360
             'evaluations_360_total_qty': 0,
             'evaluations_360_finished_qty': 0,
