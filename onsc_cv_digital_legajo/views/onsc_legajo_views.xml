@@ -38,7 +38,7 @@
                                context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate'}"/>
                     </page>
                     <page name="work_experience" string="Experiencia laboral">
-                        <field name="work_experience_ids"/>
+                        <field name="work_experience_ids" readonly="1"/>
                     </page>
                 </xpath>
             </field>

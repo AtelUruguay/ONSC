@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models
+from odoo import Command
 
 
 class ONSCCVDigitalWorkExperience(models.Model):
     _inherit = 'onsc.cv.work.experience'
+    _legajo_model = 'onsc.legajo.work.experience'
 
     causes_discharge = fields.Char(string=u"Causal de egreso")
     causes_discharge_id = fields.Many2one("onsc.legajo.causes.discharge", string=u"Causal de egreso")
@@ -14,16 +16,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
             ("causes_discharge"),
         ])
         return json_dict
-
-    def set_legajo_validated_records(self):
-        LegajoModel = self.env['onsc.legajo.work.experience'].suspend_security()
-        employee = self.cv_digital_id.employee_id
-        legajo = self.env['onsc.legajo'].sudo().search([('employee_id', '=', employee.id)], limit=1)
-
-        legajo_rec = self.copy_data(default={
-            'employee_id': employee.id,
-            'legajo_id': legajo.id,
-            'origin_work_experience_id': self.id
-        })
-        new_legajo_record = LegajoModel.create(legajo_rec)
-        return new_legajo_record
+    def _update_legajo_record_vals(self, vals):
+        if 'task_ids' in vals:
+            vals['task_ids'] = [Command.clear()] + vals['task_ids']
+        return vals

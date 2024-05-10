@@ -125,6 +125,44 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             self.set_legajo_validated_records()
         return super(ONSCCVAbstractFileValidation, self).button_documentary_approve()
 
+    def set_legajo_validated_records(self):
+        """
+        METODO PARA LLENAR ELEMENTOS DEL LEGAJO DESDE LA VALIDACION DOCUMENTAL DEL CV
+        :return:
+        """
+        if hasattr(self, '_legajo_model'):
+            LegajoModel = self.env[self._legajo_model].suspend_security()
+            employee = self.cv_digital_id.employee_id
+            legajo = self.env['onsc.legajo'].sudo().search([('employee_id', '=', employee.id)], limit=1)
+            # SI EXISTE YA UN RECORD ASOCIADO ACTUALIZO
+            legajo_record = LegajoModel.search([
+                ('employee_id', '=', employee.id),
+                ('origin_record_id', '=', self.id),
+            ], limit=1)
+            # si ya esta el record de legajo actualizo
+            if legajo_record:
+                legajo_record_vals = self.copy_data()
+                legajo_record_vals = self._update_legajo_record_vals(legajo_record_vals[0])
+                legajo_record.write(legajo_record_vals)
+            # sino creo uno nuevo
+            else:
+                legajo_record_vals = self.copy_data(default={
+                    'employee_id': employee.id,
+                    'legajo_id': legajo.id,
+                    'origin_record_id': self.id
+                })
+                legajo_record = LegajoModel.create(legajo_record_vals)
+        return True
+
+    def _update_legajo_record_vals(self, vals):
+        """
+        METODO PARA EXTENDER EN OTRAS ENTIDADES SI SE PRECISA AJUSTAR INFORMACION A GUARDAR EN EL RECORD DE LEGAJO
+        :param vals:
+        :return:
+        """
+        return vals
+
+
     def documentary_reject(self, reject_reason):
         args = {
             'documentary_validation_state': 'rejected',
