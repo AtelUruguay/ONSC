@@ -91,7 +91,7 @@ class HrJob(models.Model):
         string='Asignaciones de funciones'
     )
     is_uo_manager = fields.Boolean(string='¿Es responsable de UO?')
-        
+    sequence = fields.Integer(string="Nivel", compute='_compute_sequence', store=True)
 
     _sql_constraints = [
         ('name_company_uniq', 'unique(1=1)',
@@ -111,10 +111,19 @@ class HrJob(models.Model):
             record.is_readonly = not self.user_has_groups('onsc_legajo.group_legajo_configurador_puesto')
             record.role_extra_is_readonly = not self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto') and record.end_date and record.end_date <= fields.Date.today()
+
     #
     # def _compute_is_role_assignment_admin(self):
     #     for record in self:
     #         record.is_role_assignment_admin = self.user_has_groups('onsc_legajo.group_legajo_role_assignment_administrar')
+    @api.depends('role_ids', 'role_ids.user_role_id.sequence', 'role_extra_ids', 'role_extra_ids.user_role_id.sequence')
+    def _compute_sequence(self):
+        today = fields.Date.today()
+        for rec in self:
+            role_list = rec.role_ids.filtered(
+                lambda r: r.active and r.start_date <= today and (r.end_date is False or r.end_date >= today)) | rec.role_extra_ids.filtered(
+                lambda r: r.active and r.start_date <= today and (r.end_date is False or r.end_date >= today))
+            rec.sequence = role_list and role_list.sorted(key=lambda line: line.user_role_id.sequence)[0].user_role_id.sequence or False
 
     @api.constrains("contract_id", "start_date", "end_date")
     def _check_date_range_into_contract(self):
@@ -343,10 +352,7 @@ class HrJobRoleLine(models.Model):
             job_roles |= record.job_id.role_extra_ids
             job_roles = job_roles.filtered(
                 lambda x: x.id != record.id and x.active and x.user_role_id == record.user_role_id)
-            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (
-                    record.end_date is False or record.end_date >= x.start_date)) or (
-                                                    x.end_date and x.end_date >= record.start_date and (
-                                                    record.end_date is False or record.end_date >= x.start_date))):
+            if job_roles.filtered(lambda x: (x.start_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date)) or (x.end_date and x.end_date >= record.start_date and (record.end_date is False or record.end_date >= x.start_date))):
                 raise ValidationError(_("El rol configurado no puede repetirse para el mismo puesto en el mismo "
                                         "periodo de vigencia. Revisar la pestaña de Roles y Roles adicionales"))
 

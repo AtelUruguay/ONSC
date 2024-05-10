@@ -184,7 +184,7 @@ class ONSCLegajoCambioUO(models.Model):
 
     @api.depends('contract_id')
     def _compute_security_job_id_domain(self):
-        user_level = self.env.user.employee_id.job_id.security_job_id.sequence
+        user_level = self.env.user.employee_id.job_id.sequence
         for rec in self:
             domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
@@ -391,10 +391,7 @@ class ONSCLegajoCambioUO(models.Model):
             is_same_department = record.job_id.department_id == record.department_id
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
             is_same_security = record.job_id.security_job_id == record.security_job_id and is_same_manager
-            if (not is_same_department or not is_same_security) and RoleAssignment.search_count([
-                ('job_id', '=', record.job_id.id),
-                ('state', '=', 'confirm'),
-                '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())]):
+            if (not is_same_department or not is_same_security) and RoleAssignment.search_count([('job_id', '=', record.job_id.id), ('state', '=', 'confirm'), '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())]):
                 raise ValidationError(
                     _("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio."
                       "Debe actualizar la situación de la asignación de función previo a esta acción."))

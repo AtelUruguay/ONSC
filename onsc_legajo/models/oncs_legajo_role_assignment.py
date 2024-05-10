@@ -171,7 +171,6 @@ class ONSCLegajoRoleAssignment(models.Model):
     #     string='Departamento donde desempeña funciones',
     #     domain="[('country_id.code','=','UY')]", copy=False)
     # occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
-    # 
     # attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'cambio_uo_id',
     #                                                   string='Documentos adjuntos')
 
@@ -249,7 +248,7 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     @api.depends('contract_id')
     def _compute_security_job_id_domain(self):
-        user_level = self.env.user.employee_id.job_id.security_job_id.sequence
+        user_level = self.env.user.employee_id.job_id.sequence
         for rec in self:
             domain = [('sequence', '>=', user_level)]
             rec.security_job_id_domain = json.dumps(domain)
@@ -279,9 +278,7 @@ class ONSCLegajoRoleAssignment(models.Model):
                 raise ValidationError(_("No se ha identificado un Puesto para ese Funcionario en ese Contrato"))
             if record.security_job_id and not record.is_uo_manager:
                 raise ValidationError(_("La Seguridad de puesto debe ser de Responsable de UO"))
-            if record.security_job_id and not Job.is_job_available_for_manager(
-                record.department_id,
-                record.date_start):
+            if record.security_job_id and not Job.is_job_available_for_manager(record.department_id, record.date_start):
                 raise ValidationError(_("No se puede tener más de un responsable para la misma UO"))
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
