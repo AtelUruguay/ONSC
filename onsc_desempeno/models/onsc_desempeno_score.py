@@ -79,6 +79,7 @@ class ONSCDesempenoScore(models.Model):
     evaluations_tracing_plan_activity_score = fields.Float('Puntaje de Actividad de Seguimiento del Plan de desarrollo')
     score = fields.Float('Puntaje final')
     is_employee_notified = fields.Boolean(string='¿Fue notificado?')
+    is_pilot = fields.Boolean(string="¿Es piloto?")
 
     def button_open_gap_deal(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
