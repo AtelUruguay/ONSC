@@ -9,6 +9,7 @@ class ResUsersRole(models.Model):
 
     is_byinciso = fields.Boolean(string='Habilitado por inciso')
     is_uo_manager = fields.Boolean(string='¿Es Reponsable UO?')
+    sequence = fields.Integer(string="Nivel", default="1")
 
     @api.constrains("is_uo_manager")
     def _check_unique_is_uo_manager(self):
