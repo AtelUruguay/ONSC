@@ -39,14 +39,17 @@ class ONSCLegajoScore(models.Model):
                 args = []
                 if self._context.get('mi_legajo') or self._is_group_legajo_consulta_legajos():
                     args = [('employee_id', '=', rec.employee_id.id),
-                            ('is_employee_notified', '=', True)]
+                            ('is_employee_notified', '=', True),
+                            ('is_pilot', '=', False)]
                 else:
                     if self._is_group_legajo_hr_inciso():
                         args = [('inciso_id', '=', inciso_id), ('employee_id', '=', rec.employee_id.id),
-                                ('is_employee_notified', '=', True)]
+                                ('is_employee_notified', '=', True),
+                                ('is_pilot', '=', False)]
                     elif self._is_group_legajo_hr_ue():
                         args = [('operating_unit_id', '=', operating_unit_id), ('employee_id', '=', rec.employee_id.id),
-                                ('is_employee_notified', '=', True)]
+                                ('is_employee_notified', '=', True),
+                                ('is_pilot', '=', False)]
                 if args:
                     rec.score_ids = Score.with_context(ignore_security_rules=True).search(args)
                 else:
