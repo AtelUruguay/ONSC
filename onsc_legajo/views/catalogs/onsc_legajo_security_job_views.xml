@@ -6,8 +6,7 @@
         <field name="arch" type="xml">
             <tree string="Seguridad de puestos">
                 <field name="name"/>
-                <field name="sequence" groups="onsc_legajo.group_legajo_configurador"/>
-<!--                <field name="is_uo_manager" groups="onsc_legajo.group_legajo_configurador"/>-->
+          <!--                <field name="is_uo_manager" groups="onsc_legajo.group_legajo_configurador"/>-->
                 <field name="user_role_ids" groups="onsc_legajo.group_legajo_configurador"/>
                 <field name="active" invisible="1"/>
             </tree>
@@ -22,7 +21,7 @@
                     <group>
                         <group>
                             <field name="name" groups="onsc_legajo.group_legajo_configurador"/>
-                            <field name="sequence"
+                            <field name="sequence" invisible="1"
                                    groups="onsc_legajo.group_legajo_configurador"/>
 <!--                            <field name="is_uo_manager"-->
 <!--                                   groups="onsc_legajo.group_legajo_configurador"/>-->
