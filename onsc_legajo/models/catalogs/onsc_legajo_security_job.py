@@ -31,7 +31,7 @@ class ONSCLegajoSecurityJob(models.Model):
     def _compute_sequence(self):
         for rec in self:
             rec.sequence = rec.user_role_ids and rec.user_role_ids.sorted(
-                key=lambda role: role.sequence)[0].sequence or False
+                key=lambda role: role.sequence)[0].sequence
 
     def write(self, vals):
         res = super(ONSCLegajoSecurityJob, self).write(vals)
