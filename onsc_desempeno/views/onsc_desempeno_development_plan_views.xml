@@ -118,7 +118,19 @@
                     <field name="should_disable_form_edit" invisible="1"/>
                     <field name="is_evaluation_form_active" invisible="1"/>
                     <field name="is_environment_evaluation_form_active" invisible="1"/>
+                    <group>
+                        <group>
+                            <field name="is_pilot" invisible="1"/>
+                            <div class="ribbon ribbon-top-right">
+                                <span name='pilot_ribbon'
+                                      attrs="{'invisible': [('is_pilot', '=', False)]}"
+                                      class="bg-info">Piloto 2024
+                                </span>
+                            </div>
+                        </group>
+                    </group>
                     <div class="oe_avatar" style="padding-right:20px">
+
                         <label for="gap_deal_state" string="Estado de acordar plan"
                                invisible="context.get('develop_plan', False) is False"/>
                         <h4>

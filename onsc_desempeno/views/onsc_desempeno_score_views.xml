@@ -33,6 +33,7 @@
                 <field name="evaluations_tracing_plan_activity_score" optional="hide"/>
                 <field name="score"/>
                 <field name="is_employee_notified"/>
+                <field name="is_pilot" optional="hide"/>
             </tree>
         </field>
     </record>

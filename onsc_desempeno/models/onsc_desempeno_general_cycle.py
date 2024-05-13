@@ -61,6 +61,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
     is_edit_end_date = fields.Boolean(
         string="Editar datos de origen",
         compute='_compute_is_edit_end_date')
+    is_pilot = fields.Boolean(string="Piloto 2024")
 
     @api.depends('start_date')
     def _compute_is_edit_start_date(self):
@@ -239,7 +240,8 @@ class ONSCDesempenoGeneralCycle(models.Model):
                     scores_dict[key]['evaluations_tracing_plan_finished_qty'] += 1
                     # COMPETENCIAS
                     development_means_ids = evaluation.tracing_plan_ids.mapped('development_means_ids')
-                    development_means_ids = development_means_ids.filtered(lambda x: not x.is_canceled and x.last_tracing_plan_id.id is not False)
+                    development_means_ids = development_means_ids.filtered(
+                        lambda x: not x.is_canceled and x.last_tracing_plan_id.id is not False)
                     scores_dict[key]['evaluations_tracing_plan_activity_qty'] = len(development_means_ids)
                     for development_mean_id in development_means_ids:
                         porcent = development_mean_id.last_tracing_plan_id.degree_progress_id.porcent
@@ -261,6 +263,8 @@ class ONSCDesempenoGeneralCycle(models.Model):
             'evaluation_stage_id': evaluation.evaluation_stage_id.id,
             'year': evaluation.evaluation_stage_id.year,
             'evaluation_list_id': evaluation.evaluation_list_id.id,
+            'is_pilot': evaluation.general_cycle_id.is_pilot,
+            'is_employee_notified': evaluation.general_cycle_id.is_pilot,
             # 360
             'evaluations_360_total_qty': 0,
             'evaluations_360_finished_qty': 0,
@@ -342,5 +346,7 @@ class ONSCDesempenoGeneralCycle(models.Model):
                 'evaluations_tracing_plan_activity_score': tracing_plan_activity_score,
                 # total
                 'score': eval_360_finished_score + eval_gap_deal_finished_score + eval_tracing_plan_finished_score + tracing_plan_activity_score + eval_develop_plan_finished_score,
+                'is_pilot': value['is_pilot'],
+                'is_employee_notified': value['is_employee_notified'],
             })
         return bulked_vals

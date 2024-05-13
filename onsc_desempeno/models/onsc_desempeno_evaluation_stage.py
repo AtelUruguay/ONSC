@@ -307,7 +307,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     competency.write({'consolidate_id': consolidate.id,
                                       'order': number})
 
-
     def _process_end_stage(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
 
