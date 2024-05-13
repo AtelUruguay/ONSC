@@ -174,6 +174,14 @@ class HrEmployee(models.Model):
                                               string=u'Información de Contacto', history=True,
                                               history_fields="name_contact,contact_person_telephone,remark_contact_person")
 
+    # LED SPRINT3
+    # EXPERIENCIA LABORAL
+    work_experience_ids = fields.One2many(
+        "onsc.legajo.work.experience",
+        inverse_name="employee_id",
+        string="Experiencia laboral"
+    )
+
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):
         CVDigital = self.env['onsc.cv.digital']

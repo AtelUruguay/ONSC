@@ -32,6 +32,13 @@ class ONSCLegajo(models.Model):
         compute='_compute_formations',
         compute_sudo=True)
 
+    # EXPERIENCIA LABORAL
+    work_experience_ids = fields.One2many(
+        "onsc.legajo.work.experience",
+        inverse_name="legajo_id",
+        string="Experiencia laboral"
+    )
+
     def _compute_formations(self):
         for record in self:
             record.advanced_formation_ids = record.cv_digital_id.advanced_formation_ids.filtered(
