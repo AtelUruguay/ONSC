@@ -391,7 +391,7 @@ class ONSCLegajoCambioUO(models.Model):
             is_same_department = record.job_id.department_id == record.department_id
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
             is_same_security = record.job_id.security_job_id == record.security_job_id and is_same_manager
-            if (not is_same_department or not is_same_security) and RoleAssignment.search_count([
+            if not is_same_security and RoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
                 ('state', '=', 'confirm'),
                 '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())]):
