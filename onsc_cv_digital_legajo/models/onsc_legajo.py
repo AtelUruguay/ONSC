@@ -38,6 +38,11 @@ class ONSCLegajo(models.Model):
         inverse_name="legajo_id",
         string="Experiencia laboral"
     )
+    volunteering_ids = fields.One2many(
+        "onsc.legajo.volunteering",
+        inverse_name="legajo_id",
+        string="Voluntariado"
+    )
 
     def _compute_formations(self):
         for record in self:
