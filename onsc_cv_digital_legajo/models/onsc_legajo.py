@@ -44,6 +44,7 @@ class ONSCLegajo(models.Model):
         inverse_name="legajo_id",
         string="Tutorías, Orientaciones, Supervisiones"
     )
+    # VOLUNTARIADO
     volunteering_ids = fields.One2many(
         "onsc.legajo.volunteering",
         inverse_name="legajo_id",

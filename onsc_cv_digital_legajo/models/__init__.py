@@ -15,6 +15,3 @@ from . import onsc_legajo_alta_cs
 from . import oncs_legajo_staging_ws7
 
 from . import legajo_info
-from . import onsc_legajo_work_experience
-from . import onsc_legajo_volunteering
-from . import onsc_cv_volunteering

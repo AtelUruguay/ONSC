@@ -23,24 +23,19 @@
                             <field name="company_type" required="1"/>
                             <field name="start_date"/>
                             <field name="currently_volunteering"/>
-                            <field name="inciso_id_domain" invisible="1"/>
                             <field name="country_code" invisible="1"/>
-                            <field name="operating_unit_id_domain" invisible="1"/>
                             <field name="end_date"
-                                   attrs="{'invisible': [('currently_volunteering', '!=', 'no')],'required': [('currently_volunteering', '=', 'no')]}"/>
+                                   attrs="{'invisible': [('currently_volunteering', '!=', 'no')]}"/>
                             <field name="inciso_id"
                                    context="{'as_of_date': start_date}"
-                                   domain="inciso_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
+                                   attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])]}"/>
                             <field name="operating_unit_id"
                                    context="{'as_of_date': start_date}"
-                                   domain="operating_unit_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"
-                                   attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])], 'required': [('country_code', '=', 'UY'),('company_type', 'in', ['public','both'])]}"/>
-
+                                   attrs="{'invisible': ['|',('country_code', '!=', 'UY'),('company_type', 'not in', ['public','both'])]}"/>
                             <field name="company_name"
-                                   attrs="{'invisible': [('country_code', 'in', ['UY',False]),('company_type','in',['public','both',False])],'required': ['|',('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
+                                   attrs="{'invisible': [('country_code', 'in', ['UY',False]),('company_type','in',['public','both',False])]}"/>
                             <field name="unit_name"/>
                         </group>
                         <group>
