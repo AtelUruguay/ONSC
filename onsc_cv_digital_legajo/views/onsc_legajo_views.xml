@@ -40,6 +40,9 @@
                     <page name="work_experience" string="Experiencia laboral">
                         <field name="work_experience_ids" readonly="1"/>
                     </page>
+                    <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
+                        <field name="tutoring_orientation_supervision_ids"/>
+                    </page>
                 </xpath>
             </field>
     </record>

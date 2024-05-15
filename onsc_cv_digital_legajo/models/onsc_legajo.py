@@ -38,6 +38,12 @@ class ONSCLegajo(models.Model):
         inverse_name="legajo_id",
         string="Experiencia laboral"
     )
+    # Tutorías, Orientaciones, Supervisiones
+    tutoring_orientation_supervision_ids = fields.One2many(
+        'onsc.legajo.tutoring.orientation.supervision',
+        inverse_name="legajo_id",
+        string="Tutorías, Orientaciones, Supervisiones"
+    )
 
     def _compute_formations(self):
         for record in self:
@@ -49,12 +55,6 @@ class ONSCLegajo(models.Model):
                 lambda x: x.documentary_validation_state == 'validated')
             record.certificate_ids = record.cv_digital_id.certificate_ids.filtered(
                 lambda x: x.documentary_validation_state == 'validated')
-
-    # @api.model
-    # def create(self, values):
-    #     res = super(ONSCLegajo, self).create(values)
-    #     res.cv_digital_id.write({'is_docket': True, 'is_docket_active': True})
-    #     return res
 
     def unlink(self):
         self.mapped('cv_digital_id').write({'is_docket': False, 'is_docket_active': False})
