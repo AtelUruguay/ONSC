@@ -43,6 +43,9 @@
                     <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
                         <field name="tutoring_orientation_supervision_ids"/>
                     </page>
+                    <page name="volunteering" string="Voluntariado">
+                        <field name="volunteering_ids" readonly="1"/>
+                    </page>
                 </xpath>
             </field>
     </record>
