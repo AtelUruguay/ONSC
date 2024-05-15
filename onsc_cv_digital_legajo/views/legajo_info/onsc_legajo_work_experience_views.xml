@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="onsc_legajo_work_experience_form_view" model="ir.ui.view">
+        <field name="name">onsc.legajo.work.experience.form</field>
+        <field name="model">onsc.legajo.work.experience</field>
+        <field name="arch" type="xml">
+            <form string="Experiencias laborales">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="position" required="1" string="Cargo desempeñado"/>
+                            <field name="country_id" string="Pais donde desempeñó"
+                                   options="{'no_open': True, 'no_quick_create': True}"/>
+                            <field name="city_id"
+                                   options="{'no_open': True, 'no_quick_create': True}"
+                                   domain="[('country_id', '=?', country_id)]"
+                                   attrs="{'readonly': [('country_id', '=', False)]}"
+                                   context="{'default_country_id': country_id, 'is_readonly': True}"/>
+                            <field name="start_date"/>
+                            <field name="currently_working" required="1"/>
+                            <field name="causes_discharge"
+                                attrs="{'invisible': [('currently_working','!=','no')],'required': [('currently_working','=','no')]}"/>
+                            <field name="end_date"
+                                   attrs="{'invisible': [('currently_working','!=','no')],'required': [('currently_working','=','no')]}"/>
+                            <field name="company_type" required="1"/>
+                            <field name="country_code" invisible="1"/>
+                            <field name="company_name"
+                                   attrs="{'invisible': [('country_code', 'in', ['UY',False]),('company_type','in',['public','both',False])],'required': ['|',('country_code', '!=', 'UY'),('company_type','=','private')]}"/>
+                            <field name="unit_name"/>
+                        </group>
+                        <group>
+                            <field name="entry_institution_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="hierarchical_level_id" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"/>
+                            <field name="take_decisions"/>
+                            <field name="is_paid_activity" required="1"/>
+                            <field name="people_charge_qty"/>
+                            <field name="organizational_units_charge"/>
+                            <field name="hours_worked_monthly" required="1"/>
+                            <field name="receipt_file"
+                                   filename="receipt_filename"
+                                   options="{'accepted_file_extensions': '.pdf'}"/>
+                            <field name="receipt_filename" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Descripción de tareas">
+                        <field name="description_tasks" required="1" nolabel="1" style="white-space: normal;word-break: break-word;"/>
+                    </group>
+                    <group string="Tareas">
+                        <field name="task_ids" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_work_experience_tree_view" model="ir.ui.view">
+        <field name="name">onsc.legajo.work.experience.tree</field>
+        <field name="model">onsc.legajo.work.experience</field>
+        <field name="arch" type="xml">
+            <tree string="Experiencias laborales" decoration-danger="conditional_validation_state == 'rejected'">
+                <field name="start_date" optional="show" string="Inicio"/>
+                <field name="end_date" optional="show" string="Fin"/>
+                <field name="position" optional="show" string="Cargo desempeñado"/>
+                <field name="company_type" optional="hide"/>
+                <field name="company_name" optional="show"/>
+                <field name="unit_name" optional="show"/>
+                <field name="country_id" optional="hide" string="País"/>
+                <field name="city_id" optional="hide" string="Ciudad"/>
+                <field name="hierarchical_level_id" optional="hide"/>
+                <field name="take_decisions" optional="hide"/>
+                <field name="people_charge_qty" optional="hide" string="Personas a cargo"/>
+                <field name="organizational_units_charge" optional="hide" string="Unidades organizativas a cargo"/>
+                <field name="entry_institution_id" optional="hide" string="Rubro"/>
+                <field name="hours_worked_monthly" optional="hide" string="Horas trabajadas al mes"/>
+                <field name="is_paid_activity" optional="hide"/>
+                <field name="conditional_validation_state" invisible="1"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
+            </tree>
+        </field>
+    </record>
+
+    <!--    Grilla de tareas-->
+    <record id="onsc_legajo_work_experience_task_view_tree" model="ir.ui.view">
+        <field name="name">onsc_legajo_work_experience_task_view_tree</field>
+        <field name="model">onsc.legajo.work.experience.task</field>
+        <field name="arch" type="xml">
+            <tree string="Tareas" editable="top">
+                <field name="key_task_id"/>
+                <field name="area_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="onsc_legajo_work_experience_task_view_form" model="ir.ui.view">
+        <field name="name">onsc_legajo_work_experience_task_view_form</field>
+        <field name="model">onsc.legajo.work.experience.task</field>
+        <field name="arch" type="xml">
+            <form string="Tarea">
+                <group>
+                    <field name="key_task_id"/>
+                    <field name="area_id"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+</odoo>
