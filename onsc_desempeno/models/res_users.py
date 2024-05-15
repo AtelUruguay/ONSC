@@ -23,7 +23,7 @@ Para el Año: %s, Inciso: %s, UE: %s, UO: %s el Puntaje es: %s </p>""" % (
                     score.inciso_id.display_name,
                     score.operating_unit_id.display_name,
                     score.department_id.display_name,
-                    str(score.score)
+                    str(round(score.score, 2))
                 )
             notification = self.env['onsc.user.notification.atlogin'].sudo().create({
                 'message': message
