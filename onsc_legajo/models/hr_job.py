@@ -123,7 +123,7 @@ class HrJob(models.Model):
             role_list = rec.role_ids.filtered(
                 lambda r: r.active and r.start_date <= today and (r.end_date is False or r.end_date >= today)) | rec.role_extra_ids.filtered(
                 lambda r: r.active and r.start_date <= today and (r.end_date is False or r.end_date >= today))
-            rec.sequence = role_list and role_list.sorted(key=lambda line: line.user_role_id.sequence)[0].user_role_id.sequence or False
+            rec.sequence = role_list and role_list.sorted(key=lambda line: line.user_role_id.sequence)[0].user_role_id.sequence
 
     @api.constrains("contract_id", "start_date", "end_date")
     def _check_date_range_into_contract(self):

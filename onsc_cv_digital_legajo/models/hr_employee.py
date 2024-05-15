@@ -181,6 +181,12 @@ class HrEmployee(models.Model):
         inverse_name="employee_id",
         string="Experiencia laboral"
     )
+    # Tutorías, Orientaciones, Supervisiones
+    tutoring_orientation_supervision_ids = fields.One2many(
+        'onsc.legajo.tutoring.orientation.supervision',
+        inverse_name="employee_id",
+        string="Tutorías, Orientaciones, Supervisiones"
+    )
     volunteering_ids = fields.One2many(
         "onsc.legajo.volunteering",
         inverse_name="employee_id",
