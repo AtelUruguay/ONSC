@@ -307,7 +307,6 @@ class ONSCDesempenoEvaluationStage(models.Model):
                     competency.write({'consolidate_id': consolidate.id,
                                       'order': number})
 
-
     def _process_end_stage(self):
         Evaluation = self.env['onsc.desempeno.evaluation'].suspend_security()
 
@@ -332,11 +331,15 @@ class ONSCDesempenoEvaluationStage(models.Model):
 
         if self.env.user.company_id.days_gap_deal_eval_creation < valid_days:
             partners_to_notify = self.env["res.partner"]
-            for record in Evaluation.with_context(ignore_security_rules=True).search(
-                    [('evaluation_stage_id', '=', self.id), ('evaluation_type', 'in', ['leader_evaluation'])]):
+            for record in Evaluation.with_context(ignore_security_rules=True).search([
+                ('evaluation_stage_id', '=', self.id),
+                ('evaluation_type', 'in', ['leader_evaluation']),
+                ('is_canceled_by_employee_out', '=', False)
+            ]):
                 evaluations_360 = Evaluation.search([
                     ('evaluation_stage_id', '=', self.id),
                     ('evaluated_id', '=', record.evaluated_id.id),
+                    ('current_job_id', '=', record.current_job_id.id),
                     ('evaluation_type', 'in', _valid_360_types)])
                 evaluations_360_states = evaluations_360.mapped('state')
                 if any(evaluations_360_state != 'canceled' for evaluations_360_state in evaluations_360_states):

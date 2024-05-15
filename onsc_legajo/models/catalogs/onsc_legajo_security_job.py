@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-import logging
 import json
+import logging
 
 _logger = logging.getLogger(__name__)
 
-from odoo import fields, models
+from odoo import fields, models, api
 
 
 class ONSCLegajoSecurityJob(models.Model):
@@ -17,7 +17,7 @@ class ONSCLegajoSecurityJob(models.Model):
     active = fields.Boolean('Activo', default=True)
     user_role_ids_domain = fields.Char(default=lambda self: self._user_role_ids_domain(),
                                        compute='_compute_user_role_ids_domain')
-    sequence = fields.Integer(string="Nivel", default=1)
+    sequence = fields.Integer(string="Nivel", compute='_compute_sequence', store=True)
 
     _sql_constraints = [
         ('name_uniq', 'unique(name)', u'El nombre de la seguridad de puesto debe ser única'),
@@ -26,6 +26,12 @@ class ONSCLegajoSecurityJob(models.Model):
     def _compute_user_role_ids_domain(self):
         for rec in self:
             rec.user_role_ids_domain = self._user_role_ids_domain()
+
+    @api.depends('user_role_ids', 'user_role_ids.sequence')
+    def _compute_sequence(self):
+        for rec in self:
+            rec.sequence = rec.user_role_ids and rec.user_role_ids.sorted(
+                key=lambda role: role.sequence)[0].sequence
 
     def write(self, vals):
         res = super(ONSCLegajoSecurityJob, self).write(vals)

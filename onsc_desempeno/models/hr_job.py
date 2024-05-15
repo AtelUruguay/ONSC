@@ -114,64 +114,7 @@ class HrJob(models.Model):
                     'job_id': self.id,
                     'is_included': True
                 })
-            # self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
             return
-
-            # FIXME eliminar old code
-            # SE DEBE TOMAR COMO PUNTO DE PARTIDA PARA SABER SI TENGO YA EVALUACIONES EL PUESTO DE ORIGEN (source_job)
-            # if source_job:
-            #     is_iam_manager = source_job.department_id.manager_id.id == self.employee_id.id or self._context.get(
-            #         'is_iam_manager')  # soy o fui el responsable de la UO
-            #
-            #
-            #     manager = source_job.department_id.get_first_department_withmanager_in_tree().manager_id #reponsable de la UO
-            #     parent_manager = source_job.department_id.parent_id.get_first_department_withmanager_in_tree().manager_id #reponsable de la UO padre
-            #
-            #     eval1 = not (source_job.department_id.hierarchical_level_id.order == 1 and is_iam_manager)  # NO PUEDO SER NIVEL JER 1 Y NO PUEDO SER MANAGER
-            #     eval2 = self.employee_id.id != manager.id and not self._context.get('is_iam_manager') #NO SOY EL RESPONSABLE ACTUAL DE LA UO Y NO LO ERA
-            #
-            #     if eval1 and eval2:
-            #         _department = source_job.department_id
-            #
-            # manager = self.department_id.get_first_department_withmanager_in_tree().manager_id
-            # parent_manager = self.department_id.parent_id.get_first_department_withmanager_in_tree().manager_id
-            # is_iam_manager = self.department_id.manager_id.id == self.employee_id.id or self._context.get('is_iam_manager')
-            # eval1 = not (self.department_id.hierarchical_level_id.order == 1 and is_iam_manager)
-            # eval2 = self.employee_id.id != manager.id and not self._context.get('is_iam_manager')
-            # if eval1 and eval2:
-            #     _department = self.department_id
-            # elif eval1 and not eval2 and self.department_id.parent_id.id and parent_manager.id != self.employee_id.id:
-            #     _department = self.department_id.parent_id
-            # else:
-            #     # SINO TIENE LA UO PADRE PERO ES LIDER NO DEBE INCLUIRLO EN NINGUNA LISTA
-            #     return
-            #
-            # evaluation_lists = EvaluationList.search([
-            #     ('state', '=', 'in_progress'),
-            #     ('evaluation_stage_id.start_date', '<=', self.start_date),
-            #     ('evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
-            #     ('department_id', '=', _department.id),
-            # ])
-            # self_employee_id = self.employee_id.id
-            # new_evaluation_list_lines = EvaluationListLine
-            # for evaluation_list in evaluation_lists:
-            #     # TODO para mi ya queda deprecado SI FUE UN CAMBIO DE UO PERO YA SOY COLABORADOR CON FORMULARIOS GENERADOS EN EL ORIGEN NO ME ADICIONO EN LA ACTUAL
-            #     # if self._context.get('is_copy_job') and self._is_evaluation_list_available(evaluation_list, source_job):
-            #     #     continue
-            #     first = any(line_id.employee_id.id == self_employee_id for line_id in evaluation_list.with_context(active_test=True).line_ids)
-            #     second = any(line_id.employee_id.id == self_employee_id for line_id in
-            #                  evaluation_list.evaluation_generated_line_ids)
-            #     if not first and not second:
-            #         new_evaluation_list_lines |= EvaluationListLine.create({
-            #             'evaluation_list_id': evaluation_list.id,
-            #             'job_id': self.id,
-            #             'is_included': True
-            #         })
-            #     elif self._context.get('ignore_evaluation_list_in') and self._context.get(
-            #             'ignore_evaluation_list_out'):
-            #         evaluation_list.evaluation_generated_line_ids.filtered(
-            #             lambda x: x.employee_id == self.employee_id).write({'job_id': self.id})
-            # self.write({'evaluation_list_line_ids': [(6, 0, new_evaluation_list_lines.ids)]})
 
     def _is_evaluation_list_available(self, evaluation_list, source_job):
         EvaluationListLine = self.env['onsc.desempeno.evaluation.list.line'].with_context(

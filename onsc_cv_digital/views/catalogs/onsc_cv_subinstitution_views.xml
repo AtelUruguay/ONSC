@@ -25,6 +25,14 @@
         <field name="model">onsc.cv.subinstitution</field>
         <field name="arch" type="xml">
             <tree string="Sub instituciones">
+                 <header>
+                    <button
+                    name = "action_reject_multi"
+                    type = "object"
+                    string = "Rechzar"
+                    groups = "onsc_cv_digital.group_reject_catalogs_cv"
+                    />
+                </header>
                 <field name="name"/>
                 <field name="code"/>
                 <field name="country_id"/>

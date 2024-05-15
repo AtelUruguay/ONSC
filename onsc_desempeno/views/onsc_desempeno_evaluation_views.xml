@@ -139,6 +139,17 @@
                            invisible="context.get('gap_deal', False) is False"/>
                 </header>
                 <sheet>
+                    <group>
+                        <group>
+                            <field name="is_pilot" invisible="1"/>
+                            <div class="ribbon ribbon-top-right">
+                                <span name='pilot_ribbon'
+                                      attrs="{'invisible': [('is_pilot', '=', False)]}"
+                                      class="bg-info">Piloto 2024
+                                </span>
+                            </div>
+                        </group>
+                    </group>
                     <field name="is_evaluation_change_available" invisible="1"/>
                     <field name="should_disable_form_edit" invisible="1"/>
                     <field name="is_evaluation_form_active" invisible="1"/>
@@ -317,7 +328,7 @@
                                         <field name="employee_id" string="Funcionario"/>
                                         <field name="inciso_id"/>
                                         <field name="operating_unit_id"/>
-                                        <field name="department_id"/>
+                                        <field name="department_id" string="UO"/>
                                     </tree>
                                     <form edit="0">
                                         <field name="employee_id" string="Funcionario"
