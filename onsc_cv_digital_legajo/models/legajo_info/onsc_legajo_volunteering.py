@@ -28,7 +28,7 @@ TREE_HISTORY_COLUMNS = [
 ]
 
 
-class ONSCLegajoVolunteering(models.Model):
+class ONSCCVDigitalLegajoVolunteering(models.Model):
     _inherit = 'onsc.cv.volunteering'
     _legajo_model = 'onsc.legajo.volunteering'
 
@@ -38,7 +38,7 @@ class ONSCLegajoVolunteering(models.Model):
         return vals
 
 
-class ONSCCVDigitalVolunteering(models.Model):
+class ONSCLegajoVolunteering(models.Model):
     _name = 'onsc.legajo.volunteering'
     _inherit = ['onsc.cv.volunteering', 'model.history']
     _description = 'Legajo - Voluntariado'

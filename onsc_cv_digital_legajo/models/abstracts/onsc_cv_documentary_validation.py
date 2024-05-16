@@ -162,7 +162,6 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         """
         return vals
 
-
     def documentary_reject(self, reject_reason):
         args = {
             'documentary_validation_state': 'rejected',

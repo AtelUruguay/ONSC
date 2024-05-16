@@ -16,6 +16,7 @@ class ONSCCVDigitalWorkExperience(models.Model):
             ("causes_discharge"),
         ])
         return json_dict
+
     def _update_legajo_record_vals(self, vals):
         if 'task_ids' in vals:
             vals['task_ids'] = [Command.clear()] + vals['task_ids']
