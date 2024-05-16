@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
 from odoo import Command
+from odoo import fields, models
 
 WE_HISTORY_COLUMNS = [
     'country_id',
@@ -39,6 +39,8 @@ class ONSCCVDigitalWorkExperience(models.Model):
         if 'receipt_ids' in vals:
             vals['receipt_ids'] = [Command.clear()] + vals['receipt_ids']
         return vals
+
+
 class ONSCLegajoWorkTeaching(models.Model):
     _name = 'onsc.legajo.work.teaching'
     _inherit = ['onsc.cv.work.teaching', 'model.history']
@@ -52,14 +54,14 @@ class ONSCLegajoWorkTeaching(models.Model):
     origin_record_id = fields.Many2one("onsc.cv.work.teaching", string=u"Docencia origen")
 
     # Grilla Materias
-    subject_ids = fields.One2many('onsc.legajo.academic.program.subject',  inverse_name='legajo_work_teaching_id', string='Materias')
+    subject_ids = fields.One2many('onsc.legajo.academic.program.subject', inverse_name='legajo_work_teaching_id',
+                                  string='Materias')
     # Grilla Áreas relacionadas con esta educación
     education_area_ids = fields.One2many('onsc.legajo.education.area.teaching', inverse_name='legajo_work_teaching_id',
                                          string="Áreas relacionadas con esta educación")
-      # Grila Comprobantes
+    # Grila Comprobantes
     receipt_ids = fields.One2many('onsc.legajo.work.teaching.receipt.file', inverse_name='legajo_work_teaching_id',
                                   string='Comprobantes')
-
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_work_teaching_view_tree').id
@@ -68,6 +70,7 @@ class ONSCLegajoWorkTeaching(models.Model):
             history_id=False,
             res_id=self.id,
         )
+
 
 class ONSCLegajoAcademicProgramSubject(models.Model):
     _name = 'onsc.legajo.academic.program.subject'
@@ -111,9 +114,9 @@ class ONSCLegajoWorkTeachingReceiptFile(models.Model):
         ondelete='cascade'
     )
 
+
 # HISTORICOS
 class ONSCLegajoWorkTeachingHistory(models.Model):
     _name = 'onsc.legajo.work.teaching.history'
     _inherit = ['model.history.data']
     _parent_model = 'onsc.legajo.work.teaching'
-
