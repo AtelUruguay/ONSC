@@ -1,34 +1,45 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models
+from odoo import Command
 
 WE_HISTORY_COLUMNS = [
-    'company_type',
     'country_id',
+    'institution_id',
+    'subinstitution_id',
+    'currently_working',
     'start_date',
-    'currently_volunteering',
-    'unit_name',
-    'hours_monthly',
-    'receipt_description',
-    'receipt_file',
-    'receipt_filename',
-    'description_tasks',
-    'inciso_id',
-    'operating_unit_id'
+    'end_date',
+    'position',
+    'position_type',
+    'is_full_time',
+    'is_paid_activity',
+    'professional_link_id',
+    'responsible_type',
+    'hours_worked_monthly'
 ]
-
 WE_TREE_HISTORY_COLUMNS = [
     'start_date',
     'end_date',
-    'company_type',
-    'company_name_calc',
-    'unit_name',
-    'country_id',
-    'hours_monthly',
+    'professional_link_id',
+    'institution_id',
+    'subinstitution_id',
+    'hours_worked_monthly',
 ]
 
 
+class ONSCCVDigitalWorkExperience(models.Model):
+    _inherit = 'onsc.cv.work.teaching'
+    _legajo_model = 'onsc.legajo.work.teaching'
 
-class ONSCCVDigitalVolunteering(models.Model):
+    def _update_legajo_record_vals(self, vals):
+        if 'subject_ids' in vals:
+            vals['subject_ids'] = [Command.clear()] + vals['subject_ids']
+        if 'education_area_ids' in vals:
+            vals['education_area_ids'] = [Command.clear()] + vals['education_area_ids']
+        if 'receipt_ids' in vals:
+            vals['receipt_ids'] = [Command.clear()] + vals['receipt_ids']
+        return vals
+class ONSCLegajoWorkTeaching(models.Model):
     _name = 'onsc.legajo.work.teaching'
     _inherit = ['onsc.cv.work.teaching', 'model.history']
     _description = 'Legajo - Docencia'
@@ -38,27 +49,27 @@ class ONSCCVDigitalVolunteering(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
-    origin_record_id = fields.Many2one("onsc.cv.volunteering", string=u"Voluntariado origen")
+    origin_record_id = fields.Many2one("onsc.cv.work.teaching", string=u"Docencia origen")
 
     # Grilla Materias
-    subject_ids = fields.One2many('onsc.legajo.academic.program.subject', 'legajo_work_teaching_id', string='Materias')
+    subject_ids = fields.One2many('onsc.legajo.academic.program.subject',  inverse_name='legajo_work_teaching_id', string='Materias')
     # Grilla Áreas relacionadas con esta educación
     education_area_ids = fields.One2many('onsc.legajo.education.area.teaching', inverse_name='legajo_work_teaching_id',
                                          string="Áreas relacionadas con esta educación")
       # Grila Comprobantes
-    receipt_ids = fields.One2many('onsc.cv.work.teaching.receipt.file', inverse_name='legajo_work_teaching_id',
+    receipt_ids = fields.One2many('onsc.legajo.work.teaching.receipt.file', inverse_name='legajo_work_teaching_id',
                                   string='Comprobantes')
 
 
     def button_show_history(self):
-        model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_volunteering_form_view').id
+        model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_work_teaching_view_tree').id
         return self.with_context(model_view_form_id=model_view_form_id,
                                  as_of_date=fields.Date.today()).get_history_record_action(
             history_id=False,
             res_id=self.id,
         )
 
-class ONSCLegajoVolunteeringTask(models.Model):
+class ONSCLegajoAcademicProgramSubject(models.Model):
     _name = 'onsc.legajo.academic.program.subject'
     _inherit = 'onsc.cv.academic.program.subject'
     _description = 'Legajo - Materias'
@@ -69,7 +80,15 @@ class ONSCLegajoVolunteeringTask(models.Model):
         ondelete='cascade'
     )
 
-class ONSCLegajoVolunteeringTask(models.Model):
+    knowledge_acquired_ids = fields.Many2many(
+        'onsc.cv.knowledge',
+        relation='legajo_knowledge_teaching_program_rel',
+        string='Conocimientos aplicados',
+        required=True,
+        ondelete='restrict', )
+
+
+class ONSCLegajoEducationAreaTeaching(models.Model):
     _name = 'onsc.legajo.education.area.teaching'
     _inherit = 'onsc.cv.education.area.teaching'
     _description = 'Legajo - Materias'
@@ -80,7 +99,8 @@ class ONSCLegajoVolunteeringTask(models.Model):
         ondelete='cascade'
     )
 
-class ONSCLegajoVolunteeringTask(models.Model):
+
+class ONSCLegajoWorkTeachingReceiptFile(models.Model):
     _name = 'onsc.legajo.work.teaching.receipt.file'
     _inherit = 'onsc.cv.work.teaching.receipt.file'
     _description = 'Legajo - Comprobantes'
@@ -91,4 +111,9 @@ class ONSCLegajoVolunteeringTask(models.Model):
         ondelete='cascade'
     )
 
+# HISTORICOS
+class ONSCLegajoWorkTeachingHistory(models.Model):
+    _name = 'onsc.legajo.work.teaching.history'
+    _inherit = ['model.history.data']
+    _parent_model = 'onsc.legajo.work.teaching'
 

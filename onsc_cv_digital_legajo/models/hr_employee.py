@@ -187,10 +187,17 @@ class HrEmployee(models.Model):
         inverse_name="employee_id",
         string="Tutorías, Orientaciones, Supervisiones"
     )
+    # Voluntariado
     volunteering_ids = fields.One2many(
         "onsc.legajo.volunteering",
         inverse_name="employee_id",
         string="Voluntariado"
+    )
+    # Docencia
+    work_teaching_ids = fields.One2many(
+        "onsc.legajo.work.teaching",
+        inverse_name="employee_id",
+        string="Docencia"
     )
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')

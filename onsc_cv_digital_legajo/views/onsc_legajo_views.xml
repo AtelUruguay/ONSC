@@ -40,6 +40,9 @@
                     <page name="work_experience" string="Experiencia laboral">
                         <field name="work_experience_ids" readonly="1"/>
                     </page>
+                     <page name="work_teaching" string="Docencia">
+                            <field name="work_teaching_ids" readonly="1"/>
+                        </page>
                     <page name="volunteering" string="Voluntariado">
                         <field name="volunteering_ids" readonly="1"/>
                     </page>

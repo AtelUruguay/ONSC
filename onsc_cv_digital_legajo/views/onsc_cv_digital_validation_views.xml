@@ -495,6 +495,9 @@
                         <page name="work_experience" string="Experiencia laboral">
                             <field name="work_experience_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False), 'is_legajo':True}"/>
                         </page>
+                        <page name="work_teaching" string="Docencia">
+                            <field name="work_teaching_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False), 'is_legajo':True}"/>
+                        </page>
                         <page name="volunteering" string="Voluntariado">
                             <field name="volunteering_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False), 'is_legajo':True}"/>
                         </page>

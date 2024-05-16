@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
-from odoo import models
 from odoo import Command
+from odoo import models
 
 
-class ONSCCVDigitalWorkExperience(models.Model):
+class ONSCCVDigitalVolunteering(models.Model):
     _inherit = 'onsc.cv.volunteering'
     _legajo_model = 'onsc.legajo.volunteering'
 
