@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from odoo import fields, models
 
-WE_HISTORY_COLUMNS = [
+HISTORY_COLUMNS = [
     'company_type',
     'country_id',
     'start_date',
@@ -16,7 +16,7 @@ WE_HISTORY_COLUMNS = [
     'operating_unit_id'
 ]
 
-WE_TREE_HISTORY_COLUMNS = [
+TREE_HISTORY_COLUMNS = [
     'start_date',
     'end_date',
     'company_type',
@@ -27,13 +27,13 @@ WE_TREE_HISTORY_COLUMNS = [
 ]
 
 
-class ONSCCVDigitalVolunteering(models.Model):
+class ONSCLegajoVolunteering(models.Model):
     _name = 'onsc.legajo.volunteering'
     _inherit = ['onsc.cv.volunteering', 'model.history']
     _description = 'Legajo - Voluntariado'
     _history_model = 'onsc.legajo.volunteering.history'
-    _history_columns = WE_HISTORY_COLUMNS
-    _tree_history_columns = WE_TREE_HISTORY_COLUMNS
+    _history_columns = HISTORY_COLUMNS
+    _tree_history_columns = TREE_HISTORY_COLUMNS
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
@@ -43,7 +43,6 @@ class ONSCCVDigitalVolunteering(models.Model):
         "onsc.legajo.volunteering.task",
         inverse_name="legajo_volunteering_id",
         string="Tareas",
-
     )
 
     def button_show_history(self):

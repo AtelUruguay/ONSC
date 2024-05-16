@@ -49,6 +49,9 @@
                     <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
                         <field name="tutoring_orientation_supervision_ids"/>
                     </page>
+                    <page name="participation_event" string="Participación en eventos">
+                        <field name="participation_event_ids"/>
+                    </page>
                 </xpath>
             </field>
     </record>

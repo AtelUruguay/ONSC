@@ -42,6 +42,7 @@
                             <field name="hours_monthly" string="Cantidad de horas mensuales"/>
                             <field name="receipt_description"/>
                             <field name="receipt_file"
+                                   widget="binary"
                                    filename="receipt_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="receipt_filename" invisible="1"/>

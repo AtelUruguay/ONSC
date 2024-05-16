@@ -195,13 +195,15 @@ class ONSCLegajoAltaVL(models.Model):
                     record.cv_sex = cv_digital_id.cv_sex
 
                 legajo = Legajo.search([('employee_id', '=', employee.id)], limit=1)
+                record.juramento_bandera_file = legajo.with_context(bin_size=True).juramento_bandera_file
+                record.juramento_bandera_filename = legajo.juramento_bandera_filename
                 if legajo and record.regime_is_legajo:
                     record.date_income_public_administration = legajo.public_admin_entry_date
                     record.inactivity_years = legajo.public_admin_inactivity_years_qty
                     record.juramento_bandera_date = legajo.juramento_bandera_date
                     record.juramento_bandera_presentacion_date = legajo.juramento_bandera_presentacion_date
-                    record.juramento_bandera_file = legajo.juramento_bandera_file
-                    record.juramento_bandera_filename = legajo.juramento_bandera_filename
+                    # record.juramento_bandera_file = legajo.with_context(bin_size=False).juramento_bandera_file
+                    # record.juramento_bandera_filename = legajo.juramento_bandera_filename
                 else:
                     record.date_income_public_administration = False
                     record.inactivity_years = False
