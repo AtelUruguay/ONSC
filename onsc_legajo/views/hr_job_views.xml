@@ -80,7 +80,7 @@
                                groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_readonly', '=', True)]}"/>
-                        <field name="sequence" />
+                        <field name="sequence" string="Nivel"/>
                         <field name="is_uo_manager"/>
                         <field name="company_id" invisible="1"/>
                         <field name="is_readonly" invisible="1"/>
