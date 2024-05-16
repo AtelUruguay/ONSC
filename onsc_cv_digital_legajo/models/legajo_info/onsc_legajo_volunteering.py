@@ -30,7 +30,7 @@ WE_TREE_HISTORY_COLUMNS = [
 class ONSCCVDigitalVolunteering(models.Model):
     _name = 'onsc.legajo.volunteering'
     _inherit = ['onsc.cv.volunteering', 'model.history']
-    _description = 'Legajo - Experiencia laboral'
+    _description = 'Legajo - Voluntariado'
     _history_model = 'onsc.legajo.volunteering.history'
     _history_columns = WE_HISTORY_COLUMNS
     _tree_history_columns = WE_TREE_HISTORY_COLUMNS

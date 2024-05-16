@@ -70,6 +70,7 @@
                 <field name="unit_name" optional="show"/>
                 <field name="country_id" optional="hide"/>
                 <field name="hours_monthly" optional="hide" string="Horas trabajadas al mes" width="0.5"/>
+                <button name="button_show_history" type="object" icon="fa-database" title="Ver historial"/>
             </tree>
         </field>
     </record>

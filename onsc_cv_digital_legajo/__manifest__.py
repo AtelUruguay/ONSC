@@ -24,6 +24,7 @@ ONSC CV Digital - Legajo
         'views/legajo_info/onsc_legajo_work_experience_views.xml',
         'views/legajo_info/onsc_legajo_tutoring_orientation_supervision_views.xml',
         'views/legajo_info/onsc_legajo_volunteering_views.xml',
+        'views/legajo_info/onsc_legajo_work_teaching_views.xml',
         'views/onsc_legajo_views.xml',
         'views/onsc_legajo_alta_vl_views.xml',
         'views/onsc_legajo_mass_upload_alta_vl.xml',
