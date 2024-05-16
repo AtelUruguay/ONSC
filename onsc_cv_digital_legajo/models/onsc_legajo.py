@@ -50,12 +50,19 @@ class ONSCLegajo(models.Model):
         inverse_name="legajo_id",
         string="Voluntariado"
     )
-    # Docencia
+    # DOCENCIA
     work_teaching_ids = fields.One2many(
         "onsc.legajo.work.teaching",
         inverse_name="legajo_id",
         string="Docencia"
     )
+    # PARTICIPACION EN EVENTOS
+    participation_event_ids = fields.One2many(
+        "onsc.legajo.participation.event",
+        inverse_name="legajo_id",
+        string="Participación en eventos"
+    )
+
     def _compute_formations(self):
         for record in self:
             record.advanced_formation_ids = record.cv_digital_id.advanced_formation_ids.filtered(

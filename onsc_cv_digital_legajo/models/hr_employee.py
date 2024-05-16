@@ -181,23 +181,29 @@ class HrEmployee(models.Model):
         inverse_name="employee_id",
         string="Experiencia laboral"
     )
-    # Tutorías, Orientaciones, Supervisiones
+    # TUTORIAS, ORIENTACIONES, SUPERVISIONES
     tutoring_orientation_supervision_ids = fields.One2many(
         'onsc.legajo.tutoring.orientation.supervision',
         inverse_name="employee_id",
         string="Tutorías, Orientaciones, Supervisiones"
     )
-    # Voluntariado
+    # VOLUNTARIADO
     volunteering_ids = fields.One2many(
         "onsc.legajo.volunteering",
         inverse_name="employee_id",
         string="Voluntariado"
     )
-    # Docencia
+    # DOCENCIA
     work_teaching_ids = fields.One2many(
         "onsc.legajo.work.teaching",
         inverse_name="employee_id",
         string="Docencia"
+    )
+    # PARTICIPACION EN EVENTOS
+    participation_event_ids = fields.One2many(
+        "onsc.legajo.participation.event",
+        inverse_name="employee_id",
+        string="Participación en eventos"
     )
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')

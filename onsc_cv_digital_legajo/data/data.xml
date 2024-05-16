@@ -6,5 +6,11 @@
             <field name="code">onsc.legajo.mass.upload.alta.vl.sequence</field>
             <field name="padding">8</field>
         </record>
+
+        <record id="sequence_onsc_legajo_mass_upload_alta_vl" model="ir.sequence">
+            <field name="name">Secuencia alta VL masiva</field>
+            <field name="code">onsc.legajo.mass.upload.alta.vl.sequence</field>
+            <field name="padding">8</field>
+        </record>
     </data>
 </odoo>

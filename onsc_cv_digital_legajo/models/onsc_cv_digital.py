@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 
+import logging
 from odoo.addons.onsc_cv_digital.models.abstracts.onsc_cv_abstract_documentary_validation import \
     DOCUMENTARY_VALIDATION_STATES
 
 from odoo import fields, models, api, _
+
+_logger = logging.getLogger(__name__)
 
 EMPLOYEE_MODIFIED_FIELDS_TO_NOTIFY_SGH = [
     'cv_nro_doc',
@@ -814,6 +817,22 @@ class ONSCCVDigital(models.Model):
     def _get_abstract_ue_security(self):
         return self.user_has_groups('onsc_cv_digital_legajo.group_legajo_validador_doc_ue')
 
+    def cron_legajo_update_documentary_validation_sections_tovalidate(self):
+        """
+        RECUPERACIÓN DE SECCIONES A VALIDAR SI CAMBIA LA CONFIGURACION
+        """
+        _logger.info("PROCESO DE SECCIONES A VALIDAR SI CAMBIA LA CONFIGURACION: INICIO")
+        CVDigital = self.sudo().with_context(ignore_restrict=True)
+        offset = self.env['ir.config_parameter'].sudo().get_param('parameter_cv_digital_sections2validate_offset')
+        last_id = self.env['ir.config_parameter'].sudo().get_param('parameter_cv_digital_sections2validate_last_id')
+        cv_digitals = CVDigital.search([('type', '=', 'cv'), ('id', '>', int(last_id))], limit=int(offset))
+        last_cv_digital = cv_digitals[-1]
+        cv_digitals._compute_legajo_documentary_validation_state()
+        self.env['ir.config_parameter'].sudo().set_param(
+            'parameter_cv_digital_sections2validate_last_id',
+            str(last_cv_digital.id))
+        _logger.info("PROCESO DE SECCIONES A VALIDAR SI CAMBIA LA CONFIGURACION: FIN, ULTIMO ID: %s") % (str(last_cv_digital.id))
+
 
 class ONSCCVInformationContact(models.Model):
     _name = 'onsc.cv.information.contact'
@@ -881,3 +900,4 @@ class ONSCCVInformationContact(models.Model):
                 'remark_contact_person': self.remark_contact_person
             })
             self.write({'legajo_information_contact_id': legajo_information_contact_id.id})
+

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models
+
 # CAMPOS A GUARDAR EN HISTORICO. UTIL PARA EN HERENCIAS NO REPETIR CAMPOS PARA SOLO PONER history=True
 WE_HISTORY_COLUMNS = [
     'position',
@@ -21,20 +22,20 @@ WE_HISTORY_COLUMNS = [
     'receipt_file',
     'receipt_filename',
     'description_tasks',
-    'causes_discharge'
+    'causes_discharge',
+    'inciso_id',
+    'operating_unit_id',
+    'company_name_calc',
 ]
 # ELEMENTOS A MOSTRAR EN LA VISTA LISTA (RESPETA EL ORDEN)
 WE_TREE_HISTORY_COLUMNS = [
     'start_date',
     'end_date',
     'position',
-    'company_type',
-    'company_name',
+    'company_name_calc',
     'unit_name',
-    'country_id',
-    'city_id',
-    'hierarchical_level_id',
 ]
+
 
 class ONSCLegajoWorkExperience(models.Model):
     _name = 'onsc.legajo.work.experience'
@@ -57,10 +58,12 @@ class ONSCLegajoWorkExperience(models.Model):
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_work_experience_form_view').id
-        return self.with_context(model_view_form_id=model_view_form_id, as_of_date=fields.Date.today()).get_history_record_action(
+        return self.with_context(model_view_form_id=model_view_form_id,
+                                 as_of_date=fields.Date.today()).get_history_record_action(
             history_id=False,
             res_id=self.id,
         )
+
 
 class ONSCLegajoOriginInstitutionTask(models.Model):
     _name = 'onsc.legajo.work.experience.task'
@@ -73,6 +76,7 @@ class ONSCLegajoOriginInstitutionTask(models.Model):
         ondelete='cascade'
     )
 
+
 # HISTORICOS
 class ONSCLegajoWorkExperienceHistory(models.Model):
     _name = 'onsc.legajo.work.experience.history'
@@ -80,4 +84,3 @@ class ONSCLegajoWorkExperienceHistory(models.Model):
     _parent_model = 'onsc.legajo.work.experience'
 
     history_receipt_file = fields.Binary(string="Comprobante")
-

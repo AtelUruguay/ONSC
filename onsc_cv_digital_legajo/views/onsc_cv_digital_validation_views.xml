@@ -504,6 +504,10 @@
                         <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
                             <field name="tutoring_orientation_supervision_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False), 'is_legajo':True}"/>
                         </page>
+                        <page name="participation_event" string="Participación en eventos">
+                            <field name="participation_event_ids"
+                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False), 'is_legajo':True}"/>
+                        </page>
                         <page string="Discapacidad">
                             <group>
                                 <group>
