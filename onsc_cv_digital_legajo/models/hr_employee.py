@@ -205,6 +205,12 @@ class HrEmployee(models.Model):
         inverse_name="employee_id",
         string="Participación en eventos"
     )
+    # Investigacion
+    work_investigation_ids = fields.One2many(
+        "onsc.legajo.work.investigation",
+        inverse_name="legajo_id",
+        string="Investigación"
+    )
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):
