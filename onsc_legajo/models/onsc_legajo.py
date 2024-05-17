@@ -62,6 +62,8 @@ class ONSCLegajo(models.Model):
     is_any_regime_legajo = fields.Boolean(string=u'¿Algún Régimen de los Contratos tiene la marca Legajo?', compute='_compute_is_any_regime_legajo')
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_is_mi_legajo')
+    should_hidde_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
+                                              compute='_compute_is_mi_legajo')
 
     juramento_bandera_date = fields.Date(
         string='Fecha de Juramento de fidelidad a la Bandera nacional', history=True)
@@ -199,6 +201,7 @@ class ONSCLegajo(models.Model):
             is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
             rec.is_mi_legajo = is_mi_legajo
             rec.should_disable_form_edit = is_mi_legajo
+            rec.should_hidde_form_edit = is_mi_legajo
 
     def _compute_is_any_regime_legajo(self):
         for rec in self:

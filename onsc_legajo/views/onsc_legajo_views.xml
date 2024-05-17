@@ -118,6 +118,7 @@
                     </div>
                     <field name="is_mi_legajo" invisible="1"/>
                     <field name="should_disable_form_edit" invisible="1"/>
+                    <field name="should_hidde_form_edit" invisible="1"/>
                     <field name="contract_ids" invisible="1"/>
                     <field name="avatar_128" invisible="1"/>
                     <field name="is_any_regime_legajo" invisible="1"/>
