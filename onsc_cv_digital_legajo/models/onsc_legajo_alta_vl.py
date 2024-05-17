@@ -292,35 +292,34 @@ class ONSCLegajoAltaVL(models.Model):
     def _compute_show_exist_altaVL_warning(self):
         Contract = self.env['hr.contract'].suspend_security()
         for rec in self:
-            if rec.state not in ['borrador','error_sgh']:
-                rec.show_exist_altaVL_warning = False
             show_exist_altaVL_warning = False
-            domain = [
-                ('state', 'in', ['aprobado_cgn', 'pendiente_auditoria_cgn']),
-                ('descriptor1_id', '=', rec.descriptor1_id.id),
-                ('descriptor2_id', '=', rec.descriptor2_id.id),
-                ('descriptor3_id', '=', rec.descriptor3_id.id),
-                ('descriptor4_id', '=', rec.descriptor4_id.id),
-                ('regime_id', '=', rec.regime_id.id),
-                ('inciso_id', '=', rec.inciso_id.id),
-                ('program_project_id', '=', rec.program_project_id.id),
-                ('operating_unit_id', '=', rec.operating_unit_id.id),
-                ('partner_id', '=', rec.partner_id.id),
-            ]
-            for alta_vl in self.sudo().search(domain):
-                if alta_vl.state == 'pendiente_auditoria_cgn' or (alta_vl.state == 'aprobado_cgn' and Contract.search_count([
-                        ('descriptor1_id', '=', alta_vl.descriptor1_id.id),
-                        ('descriptor2_id', '=', alta_vl.descriptor2_id.id),
-                        ('descriptor3_id', '=', alta_vl.descriptor3_id.id),
-                        ('descriptor4_id', '=', alta_vl.descriptor4_id.id),
-                        ('regime_id', '=', alta_vl.regime_id.id),
-                        ('inciso_id', '=', alta_vl.inciso_id.id),
-                        ('program', '=', alta_vl.program_project_id.programa),
-                        ('project','=', alta_vl.program_project_id.proyecto),
-                        ('operating_unit_id', '=', alta_vl.operating_unit_id.id),
-                        ('employee_id', '=', alta_vl.employee_id.id),
-                        ('legajo_state', '=', 'active')])):
-                     show_exist_altaVL_warning = True
+            if rec.state in ['borrador', 'error_sgh']:
+                domain = [
+                    ('state', 'in', ['aprobado_cgn', 'pendiente_auditoria_cgn']),
+                    ('descriptor1_id', '=', rec.descriptor1_id.id),
+                    ('descriptor2_id', '=', rec.descriptor2_id.id),
+                    ('descriptor3_id', '=', rec.descriptor3_id.id),
+                    ('descriptor4_id', '=', rec.descriptor4_id.id),
+                    ('regime_id', '=', rec.regime_id.id),
+                    ('inciso_id', '=', rec.inciso_id.id),
+                    ('program_project_id', '=', rec.program_project_id.id),
+                    ('operating_unit_id', '=', rec.operating_unit_id.id),
+                    ('partner_id', '=', rec.partner_id.id),
+                ]
+                for alta_vl in self.sudo().search(domain):
+                    if alta_vl.state == 'pendiente_auditoria_cgn' or (alta_vl.state == 'aprobado_cgn' and Contract.search_count([
+                            ('descriptor1_id', '=', alta_vl.descriptor1_id.id),
+                            ('descriptor2_id', '=', alta_vl.descriptor2_id.id),
+                            ('descriptor3_id', '=', alta_vl.descriptor3_id.id),
+                            ('descriptor4_id', '=', alta_vl.descriptor4_id.id),
+                            ('regime_id', '=', alta_vl.regime_id.id),
+                            ('inciso_id', '=', alta_vl.inciso_id.id),
+                            ('program', '=', alta_vl.program_project_id.programa),
+                            ('project','=', alta_vl.program_project_id.proyecto),
+                            ('operating_unit_id', '=', alta_vl.operating_unit_id.id),
+                            ('employee_id', '=', alta_vl.employee_id.id),
+                            ('legajo_state', '=', 'active')])):
+                         show_exist_altaVL_warning = True
             rec.show_exist_altaVL_warning = show_exist_altaVL_warning
 
     @api.model
