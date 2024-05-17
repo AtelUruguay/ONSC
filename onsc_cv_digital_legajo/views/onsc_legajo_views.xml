@@ -9,6 +9,8 @@
                 </div>
                 <field name="employee_id" position="after">
                     <field name="cv_digital_id"
+                           invisible="1"
+                           readonly="1"
                            options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                            groups="onsc_legajo.group_legajo_configurador"/>
                 </field>

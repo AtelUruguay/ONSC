@@ -66,30 +66,26 @@
                         <field name="department_id"
                                domain="department_id_domain"
                                string="Unidad organizativa"
-                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc, onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                required="True"
                                attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="start_date"
-                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                required="True" attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="end_date"
-                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                attrs="{'readonly': [('is_readonly', '=', True)]}"/>
                         <field name="security_job_id"
-                               groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                options="{'no_open': True, 'no_quick_create': True, 'no_create': True}"
                                attrs="{'readonly': [('is_readonly', '=', True)]}"/>
-                        <field name="sequence" />
+                        <field name="sequence" string="Nivel"/>
                         <field name="is_uo_manager"/>
                         <field name="company_id" invisible="1"/>
                         <field name="is_readonly" invisible="1"/>
                         <field name="role_extra_is_readonly" invisible="1"/>
                     </group>
                     <notebook>
-                        <page string="Roles">
+                        <page string="Roles"
+                            groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso">
                             <field name="role_ids"
-                                   groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                    nolabel="1"
                                    readonly="1"
                                    options="{'no_open': True}" create="0" delete="0" edit="0"
@@ -103,10 +99,10 @@
                                 </tree>
                             </field>
                         </page>
-                        <page string="Roles adicionales">
+                        <page string="Roles adicionales"
+                            groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso">
                             <field name="role_extra_ids"
                                    attrs="{'readonly': [('role_extra_is_readonly', '=', True)]}"
-                                   groups="onsc_legajo.group_legajo_configurador_puesto,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc,onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_inciso"
                                    nolabel="1"
                                    context="{'default_type': 'manual','default_end_date': end_date}">
                                 <tree delete="0">
