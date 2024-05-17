@@ -306,18 +306,6 @@
                                        class="oe_edit_only"
                                        attrs="{'readonly': [('state', '!=', 'in_process')]}"
                                        widget="boolean_toggle"/>
-<!--                                <field name="environment_ids" string="Entorno"-->
-<!--                                       options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"-->
-<!--                                       context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_tree','search_view_ref': 'onsc_legajo.onsc_legajo_hr_employee_basic_search'}"-->
-<!--                                       domain="environment_ids_domain"-->
-<!--                                       attrs="{'readonly': [('state', '!=', 'in_process')]}">-->
-<!--                                    <tree>-->
-<!--                                        <field name="name" string="Entorno"/>-->
-<!--                                    </tree>-->
-<!--                                    <form edit="0">-->
-<!--                                        <field name="name" string="Entorno"/>-->
-<!--                                    </form>-->
-<!--                                </field>-->
                                 <field name="full_environment_ids" nolabel="1"
                                        colspan="2"
                                        context="{'tree_view_ref': 'onsc_legajo.onsc_legajo_hr_job_hs_basic_tree_view','search_view_ref': 'onsc_legajo.onsc_legajo_hr_job_base_search_view'}"
@@ -332,11 +320,15 @@
                                     </tree>
                                     <form edit="0">
                                         <field name="employee_id" string="Funcionario"
+                                               readonly="1"
                                                options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                         <field name="inciso_id"
+                                               readonly="1"
                                                options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
                                         <field name="operating_unit_id"
+                                               readonly="1"
                                                options="{'no_create':true,'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'no_edit':true}"/>
+                                        <footer/>
                                     </form>
                                 </field>
                                 <label for="environment_evaluation_ids" string="Evaluación de entorno" colspan="2"/>
