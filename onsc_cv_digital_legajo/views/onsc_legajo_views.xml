@@ -51,12 +51,24 @@
                     <page name="volunteering" string="Voluntariado">
                         <field name="volunteering_ids" readonly="1"/>
                     </page>
+                    <page name="publication_production_evaluations" string="Publicación, Producción y Evaluación">
+                        <field name="publication_production_evaluation_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False), 'is_legajo':True}"/>
+                    </page>
                     <page name="tutoring_orientation_supervision" string="Tutorías, orientaciones, supervisiones">
                         <field name="tutoring_orientation_supervision_ids"/>
                     </page>
                     <page name="participation_event" string="Participación en eventos">
                         <field name="participation_event_ids"/>
                     </page>
+                    <page name="onsc_legajo_relevant_information" string="Otra información relevante">
+                        <field name="onsc_legajo_relevant_information_ids">
+                             <tree editable="top">
+                                <field name="theme"/>
+                                <field name="description"/>
+                             </tree>
+                        </field>
+                    </page>
+
                 </xpath>
             </field>
     </record>

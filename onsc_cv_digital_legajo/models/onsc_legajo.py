@@ -70,6 +70,19 @@ class ONSCLegajo(models.Model):
         string="Investigación"
     )
 
+    # Tutorías, Orientaciones, Supervisiones
+    publication_production_evaluation_ids = fields.One2many(
+        "onsc.legajo.publication.production.evaluation",
+        inverse_name="legajo_id",
+        string="Tutorías, Orientaciones, Supervisiones"
+    )
+    # Otra Informacion
+    publication_production_evaluation_ids = fields.One2many(
+        "onsc.legajo.relevant.information",
+        inverse_name="legajo_id",
+        string="Otra información relevante"
+    )
+
     def _compute_formations(self):
         for record in self:
             record.advanced_formation_ids = record.cv_digital_id.advanced_formation_ids.filtered(
