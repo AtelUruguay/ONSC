@@ -24,6 +24,7 @@ ONSC - Base
         'base_restrict_access',
         'url_access_restriction',
         'disable_userprofile_menuitems'
+        'field_binary_show_filename'
     ],
     'data': [
         'security/onsc_base_security.xml',
