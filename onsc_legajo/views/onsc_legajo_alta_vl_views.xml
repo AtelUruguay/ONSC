@@ -171,6 +171,7 @@
                                         <field name="juramento_bandera_date"/>
                                         <field name="juramento_bandera_presentacion_date"/>
                                         <field name="juramento_bandera_file"
+                                               widget="binary"
                                                options="{'accepted_file_extensions': '.pdf'}"
                                                filename="juramento_bandera_filename"/>
                                         <field name="juramento_bandera_filename" invisible="1"/>
