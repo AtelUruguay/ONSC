@@ -2,7 +2,7 @@
 from odoo import fields, models
 
 # CAMPOS A GUARDAR EN HISTORICO. UTIL PARA EN HERENCIAS NO REPETIR CAMPOS PARA SOLO PONER history=True
-WE_HISTORY_COLUMNS = [
+HISTORY_COLUMNS = [
     'position',
     'country_id',
     'city_id',
@@ -28,13 +28,13 @@ WE_HISTORY_COLUMNS = [
     'company_name_calc',
 ]
 # ELEMENTOS A MOSTRAR EN LA VISTA LISTA (RESPETA EL ORDEN)
-WE_TREE_HISTORY_COLUMNS = [
-    'start_date',
-    'end_date',
-    'position',
-    'company_name_calc',
-    'unit_name',
-]
+TREE_HISTORY_COLUMNS = {
+    'start_date': 'Inicio',
+    'end_date': 'Fin',
+    'position': 'Cargo desempeñado',
+    'company_name_calc': 'Empresa',
+    'unit_name': 'Área/Unidad',
+}
 
 
 class ONSCLegajoWorkExperience(models.Model):
@@ -42,12 +42,17 @@ class ONSCLegajoWorkExperience(models.Model):
     _inherit = ['onsc.cv.work.experience', 'model.history']
     _description = 'Legajo - Experiencia laboral'
     _history_model = 'onsc.legajo.work.experience.history'
-    _history_columns = WE_HISTORY_COLUMNS
-    _tree_history_columns = WE_TREE_HISTORY_COLUMNS
+    _history_columns = HISTORY_COLUMNS
+    _tree_history_columns = TREE_HISTORY_COLUMNS
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
-    origin_record_id = fields.Many2one("onsc.cv.work.experience", string=u"Experiencia laboral origen")
+    origin_record_id = fields.Many2one(
+        "onsc.cv.work.experience",
+        string=u"Experiencia laboral origen",
+        ondelete="set null")
+
+    company_name_calc = fields.Char('Empresa', history=True)
 
     task_ids = fields.One2many(
         "onsc.legajo.work.experience.task",
