@@ -14,7 +14,8 @@ HISTORY_COLUMNS = [
     'receipt_filename',
     'description_tasks',
     'inciso_id',
-    'operating_unit_id'
+    'operating_unit_id',
+    'company_name_calc'
 ]
 
 TREE_HISTORY_COLUMNS = [
@@ -48,7 +49,13 @@ class ONSCLegajoVolunteering(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
-    origin_record_id = fields.Many2one("onsc.cv.volunteering", string=u"Voluntariado origen")
+    origin_record_id = fields.Many2one(
+        "onsc.cv.volunteering",
+        string=u"Voluntariado origen",
+        ondelete="set null"
+    )
+
+    company_name_calc = fields.Char('Empresa', history=True)
 
     volunteering_task_ids = fields.One2many(
         "onsc.legajo.volunteering.task",
