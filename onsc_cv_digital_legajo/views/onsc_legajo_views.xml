@@ -61,12 +61,7 @@
                         <field name="participation_event_ids"/>
                     </page>
                     <page name="onsc_legajo_relevant_information" string="Otra información relevante">
-                        <field name="onsc_legajo_relevant_information_ids">
-                             <tree editable="top">
-                                <field name="theme"/>
-                                <field name="description"/>
-                             </tree>
-                        </field>
+                        <field name="other_relevant_information_ids"/>
                     </page>
 
                 </xpath>

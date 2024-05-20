@@ -13,7 +13,7 @@ TREE_HISTORY_COLUMNS = [
 
 class ONSCCVOtherRelevantInformation(models.Model):
     _inherit = 'onsc.cv.other.relevant.information'
-    _legajo_model = 'onsc.legajo.other.relevant.information'
+    _legajo_model = 'onsc.legajo.relevant.information'
 
 class ONSCLegajoRelevantInformation(models.Model):
     _name = 'onsc.legajo.relevant.information'
@@ -25,10 +25,18 @@ class ONSCLegajoRelevantInformation(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
-    origin_record_id = fields.Many2one("onsc.cv.work.investigation", string=u"Investigación origen")
+    origin_record_id = fields.Many2one("onsc.cv.other.relevant.information", string=u"Otra información relevante origen")
+
+    def button_show_history(self):
+        model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_relevant_information_form').id
+        return self.with_context(model_view_form_id=model_view_form_id,
+                                 as_of_date=fields.Date.today()).get_history_record_action(
+            history_id=False,
+            res_id=self.id,
+        )
 
 # HISTORICOS
 class ONSCLegajoRelevantInformationHistory(models.Model):
-    _name = 'onsc.legajo.work.investigation.history'
+    _name = 'onsc.legajo.relevant.information.history'
     _inherit = ['model.history.data']
     _parent_model = 'onsc.legajo.relevant.information'

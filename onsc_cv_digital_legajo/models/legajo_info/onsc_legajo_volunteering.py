@@ -18,15 +18,15 @@ HISTORY_COLUMNS = [
     'company_name_calc'
 ]
 
-TREE_HISTORY_COLUMNS = [
-    'start_date',
-    'end_date',
-    'company_type',
-    'company_name_calc',
-    'unit_name',
-    'country_id',
-    'hours_monthly',
-]
+TREE_HISTORY_COLUMNS = {
+    'start_date': 'Inicio',
+    'end_date': 'Fin',
+    'company_type': 'Tipo de empresa',
+    'company_name_calc': 'Empresa',
+    'unit_name': 'Área/Unidad',
+    'country_id': 'País ',
+    'hours_monthly': 'Horas trabajadas al mes',
+}
 
 
 class ONSCCVDigitalLegajoVolunteering(models.Model):

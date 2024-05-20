@@ -219,7 +219,7 @@ class HrEmployee(models.Model):
         string="Publicación, Producción y Evaluación"
     )
     # Otra Informacion
-    onsc_legajo_relevant_information_ids = fields.One2many(
+    other_relevant_information_ids = fields.One2many(
         "onsc.legajo.relevant.information",
         inverse_name="legajo_id",
         string="Otra información relevante"

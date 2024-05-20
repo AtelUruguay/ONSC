@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<odoo>
+    <record id="onsc_cv_other_relevant_information_form" model="ir.ui.view">
+        <field name="name">onsc.cv.other.relevant.information.form</field>
+        <field name="model">onsc.cv.other.relevant.information</field>
+        <field name="arch" type="xml">
+            <form string="Otra información relevante">
+                <sheet>
+                     <group>
+                        <field name="theme"/>
+                        <field name="description"/>
+
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_cv_other_relevant_information_view_tree" model="ir.ui.view">
+        <field name="name">onsc.cv.other.relevant.information.tree</field>
+        <field name="model">onsc.cv.other.relevant.information</field>
+        <field name="arch" type="xml">
+            <tree string="Otra información relevante" >
+               <field name="theme"/>
+                <field name="description"/>
+            </tree>
+        </field>
+    </record>
+
+</odoo>

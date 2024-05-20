@@ -74,10 +74,10 @@ class ONSCLegajo(models.Model):
     publication_production_evaluation_ids = fields.One2many(
         "onsc.legajo.publication.production.evaluation",
         inverse_name="legajo_id",
-        string="Tutorías, Orientaciones, Supervisiones"
+        string="Publicación, Producción y Evaluación"
     )
     # Otra Informacion
-    publication_production_evaluation_ids = fields.One2many(
+    other_relevant_information_ids = fields.One2many(
         "onsc.legajo.relevant.information",
         inverse_name="legajo_id",
         string="Otra información relevante"

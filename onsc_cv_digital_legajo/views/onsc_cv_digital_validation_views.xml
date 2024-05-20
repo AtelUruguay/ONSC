@@ -515,12 +515,8 @@
                                    context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False), 'is_legajo':True}"/>
                         </page>
                         <page name="onsc_legajo_relevant_information" string="Otra información relevante">
-                            <field name="onsc_legajo_relevant_information_ids">
-                                 <tree editable="top">
-                                    <field name="theme"/>
-                                    <field name="description"/>
-                                 </tree>
-                            </field>
+                            <field name="other_relevant_information_ids"
+                                   context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False), 'is_legajo':True}"/>
                         </page>
                         <page string="Discapacidad">
                             <group>

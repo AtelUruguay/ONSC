@@ -21,12 +21,12 @@ HISTORY_COLUMNS = [
     'paid_activity',
    ]
 
-TREE_HISTORY_COLUMNS = [
-    'date',
-    'type',
-    'subtype',
-    'tittle',
-    ]
+TREE_HISTORY_COLUMNS = {
+    'date': 'Fecha',
+    'type': 'Tipo',
+    'subtype': 'Sub tipo',
+    'tittle': 'Título',
+    }
 
 class ONSCCVPublicationProductionEvaluation(models.Model):
     _inherit = 'onsc.cv.publication.production.evaluation'
@@ -44,16 +44,16 @@ class ONSCCVPublicationProductionEvaluation(models.Model):
 
 class ONSCLegajoPublicationProductionEvaluation(models.Model):
     _name = 'onsc.legajo.publication.production.evaluation'
-    _description = 'Legajo - Tutorías, Orientaciones, Supervisiones'
+    _description = 'Legajo - Publicación, Producción y Evaluación'
     _inherit = ['onsc.cv.publication.production.evaluation', 'model.history']
-    _history_model = 'onsc.legajo.tutoring.orientation.supervision.history'
+    _history_model = 'onsc.legajo.publication.production.evaluation.history'
     _history_columns = HISTORY_COLUMNS
     _tree_history_columns = TREE_HISTORY_COLUMNS
     _order = 'date desc'
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
-    origin_record_id = fields.Many2one("onsc.cv.tutoring.orientation.supervision", string=u"Tutorías, Orientaciones, Supervisiones origen")
+    origin_record_id = fields.Many2one("onsc.cv.publication.production.evaluation", string=u"Publicación, Producción y Evaluación")
 
     authors_ids = fields.One2many('onsc.legajo.authors', 'legajo_publications_productions_evaluations_id', string=u'Autores',
                                   copy=True)
@@ -67,7 +67,7 @@ class ONSCLegajoPublicationProductionEvaluation(models.Model):
         copy=True)
 
     def button_show_history(self):
-        model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_tutoring_orientation_supervision_form').id
+        model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_publication_production_evaluation_form').id
         return self.with_context(model_view_form_id=model_view_form_id,
                                  as_of_date=fields.Date.today()).get_history_record_action(
             history_id=False,
