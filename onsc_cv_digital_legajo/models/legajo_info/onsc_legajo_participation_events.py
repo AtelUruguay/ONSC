@@ -54,7 +54,11 @@ class ONSCLegajoParticipationEvent(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
-    origin_record_id = fields.Many2one("onsc.cv.participation.event", string=u"Participación en evento origen")
+    origin_record_id = fields.Many2one(
+        "onsc.cv.participation.event",
+        string=u"Participación en evento origen",
+        ondelete="set null"
+    )
 
     activity_area_ids = fields.One2many('onsc.legajo.activity.area',
                                         'legajo_participation_events_id',

@@ -57,7 +57,11 @@ class ONSCLegajoWorkInvestigation(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
-    origin_record_id = fields.Many2one("onsc.cv.work.investigation", string=u"Investigación origen")
+    origin_record_id = fields.Many2one(
+        "onsc.cv.work.investigation",
+        string=u"Investigación origen",
+        ondelete="set null"
+    )
 
     # Grilla Integrantes
     member_ids = fields.One2many('onsc.legajo.work.investigation.member', inverse_name='legajo_investigation_id',

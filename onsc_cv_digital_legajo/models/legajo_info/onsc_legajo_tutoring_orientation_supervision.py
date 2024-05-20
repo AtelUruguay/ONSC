@@ -73,7 +73,11 @@ class ONSCLegajoTutorialOrientationSupervision(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
-    origin_record_id = fields.Many2one("onsc.cv.tutoring.orientation.supervision", string=u"Experiencia laboral origen")
+    origin_record_id = fields.Many2one(
+        "onsc.cv.tutoring.orientation.supervision",
+        string=u"Experiencia laboral origen",
+        ondelete="set null"
+    )
 
     area_ids = fields.One2many('onsc.cv.education.area.tutoring', 'tutoring_id', 'Área de actividad', copy=True)
     knowledge_acquired_ids = fields.Many2many(
