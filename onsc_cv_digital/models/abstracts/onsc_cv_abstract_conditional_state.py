@@ -84,7 +84,7 @@ class ONSCCVAbstractConditionalState(models.AbstractModel):
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         """Add in form view divs with info status off validation """
         res = super(ONSCCVAbstractConditionalState, self).fields_view_get(view_id, view_type, toolbar, submenu)
-        if view_type == 'form':
+        if view_type == 'form' and not self._context.get('hide_conditional_info', False):
             doc = etree.XML(res['arch'])
             for node in doc.xpath('//sheet'):
                 node.insert(0, self.div_info)
