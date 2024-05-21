@@ -53,7 +53,7 @@ class ONSCCVDigitalVolunteeringTask(models.Model):
     _description = 'Tareas de voluntariado'
     _no_create_ifautosave = True
 
-    volunteering_id = fields.Many2one("onsc.cv.volunteering", string="Voluntariado")
+    volunteering_id = fields.Many2one("onsc.cv.volunteering", string="Voluntariado", ondelete='cascade')
     key_task_id = fields.Many2one("onsc.cv.key.task", string="Tareas clave", required=True)
     area_id = fields.Many2one("onsc.cv.work.area", string="Área de trabajo donde se aplicó la tarea clave",
                               required=True)

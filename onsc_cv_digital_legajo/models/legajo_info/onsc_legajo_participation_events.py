@@ -86,7 +86,7 @@ class ONSCLegajoActivityArea(models.Model):
         'onsc.legajo.publication.production.evaluation',
         'Tutorías, Orientaciones, Supervisiones',
         ondelete='cascade',
-        required=True)
+        required=False)
 
 
 class ONSCLegajoParticipationEventHistory(models.Model):
