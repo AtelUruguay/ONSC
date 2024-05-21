@@ -67,7 +67,7 @@ class ONSCLegajoWorkTeaching(models.Model):
                                   string='Comprobantes')
 
     def button_show_history(self):
-        model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_work_teaching_view_tree').id
+        model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_work_teaching_form').id
         return self.with_context(model_view_form_id=model_view_form_id,
                                  as_of_date=fields.Date.today()).get_history_record_action(
             history_id=False,
