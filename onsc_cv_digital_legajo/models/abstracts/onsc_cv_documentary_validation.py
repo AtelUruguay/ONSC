@@ -120,8 +120,8 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'documentary_validation_date': fields.Date.today(),
             'documentary_user_id': _user_id,
         }
-        self.update_call_instances(args)
-        if self.cv_digital_id.type:
+        self.with_context(updating_call_instances = True).update_call_instances(args)
+        if not self._context.get('updating_call_instances') and len(self) == 1 and self.cv_digital_id.type:
             self.set_legajo_validated_records()
         return super(ONSCCVAbstractFileValidation, self).button_documentary_approve()
 
