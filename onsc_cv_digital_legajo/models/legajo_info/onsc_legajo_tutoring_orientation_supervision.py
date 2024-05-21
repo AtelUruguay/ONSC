@@ -105,7 +105,7 @@ class ONSCLegajoEducationAreaTutorial(models.Model):
         'onsc.legajo.tutoring.orientation.supervision',
         'Tutoría, Orientación, Supervisión',
         ondelete='cascade',
-        required=True)
+        required=False)
     tutoring_id = fields.Many2one(
         'onsc.cv.tutoring.orientation.supervision',
         'Tutoría, Orientación, Supervisión',

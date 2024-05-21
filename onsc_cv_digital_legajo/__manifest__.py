@@ -31,6 +31,7 @@ ONSC CV Digital - Legajo
         'views/legajo_info/onsc_legajo_work_investigation_views.xml',
         'views/legajo_info/onsc_legajo_publications_productions_evaluations_views.xml',
         'views/legajo_info/onsc_legajo_other_relevant_information_views.xml',
+        'views/legajo_info/onsc_legajo_formation_views.xml',
         'views/onsc_cv_other_relevant_information_views.xml',
         'views/onsc_legajo_views.xml',
         'views/onsc_legajo_alta_vl_views.xml',
