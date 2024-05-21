@@ -82,6 +82,11 @@ class ONSCLegajoActivityArea(models.Model):
         'onsc.legajo.participation.event',
         string=u'Participación en eventos',
         ondelete='cascade')
+    legajo_publications_productions_evaluations_id = fields.Many2one(
+        'onsc.legajo.publication.production.evaluation',
+        'Tutorías, Orientaciones, Supervisiones',
+        ondelete='cascade',
+        required=True)
 
 
 class ONSCLegajoParticipationEventHistory(models.Model):

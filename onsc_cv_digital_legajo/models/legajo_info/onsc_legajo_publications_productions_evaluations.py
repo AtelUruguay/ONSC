@@ -86,16 +86,10 @@ class ONSCLegajoAuthors(models.Model):
         ondelete='cascade',
         required=True)
 
-class ONSCLegajoAuthors(models.Model):
-    _name = 'onsc.legajo.activity.area'
-    _inherit = ['onsc.cv.activity.area']
-    _description = 'Legajo -  Área de Actividad'
-
-    legajo_publications_productions_evaluations_id= fields.Many2one(
-        'onsc.legajo.publication.production.evaluation',
-        'Tutorías, Orientaciones, Supervisiones',
-        ondelete='cascade',
-        required=True)
+# class ONSCLegajoAuthors(models.Model):
+#     _name = 'onsc.legajo.activity.area'
+#     _inherit = ['onsc.cv.activity.area']
+#     _description = 'Legajo -  Área de Actividad'
 
 
 # HISTORICO
