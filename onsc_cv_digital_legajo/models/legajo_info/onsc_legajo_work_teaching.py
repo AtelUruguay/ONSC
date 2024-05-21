@@ -17,14 +17,14 @@ WE_HISTORY_COLUMNS = [
     'responsible_type',
     'hours_worked_monthly'
 ]
-WE_TREE_HISTORY_COLUMNS = [
-    'start_date',
-    'end_date',
-    'professional_link_id',
-    'institution_id',
-    'subinstitution_id',
-    'hours_worked_monthly',
-]
+WE_TREE_HISTORY_COLUMNS = {
+    'start_date': 'Inicio',
+    'end_date': 'Fin',
+    'professional_link_id': 'Vínculo profesional',
+    'institution_id': 'Institución',
+    'subinstitution_id': 'Sub institución',
+    'hours_worked_monthly': 'Horas trabajadas al mes',
+}
 
 
 class ONSCCVDigitalWorkExperience(models.Model):

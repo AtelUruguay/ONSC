@@ -23,14 +23,14 @@ HISTORY_COLUMNS = [
     'hours_worked_monthly',
 ]
 
-TREE_HISTORY_COLUMNS = [
-    'start_date',
-    'end_date',
-    'investigation_type',
-    'name',
-    'institution_id',
-    'subinstitution_id',
-]
+TREE_HISTORY_COLUMNS = {
+    'start_date': 'Inicio',
+    'end_date': 'Fin',
+    'investigation_type': 'Tipo',
+    'name': 'Nombre',
+    'institution_id': 'Institución',
+    'subinstitution_id': 'Sub institución',
+}
 
 
 class ONSCCVDigitalWorkInvestigation(models.Model):

@@ -212,6 +212,19 @@ class HrEmployee(models.Model):
         string="Investigación"
     )
 
+    # Tutorías, Orientaciones, Supervisiones
+    publication_production_evaluation_ids = fields.One2many(
+        "onsc.legajo.publication.production.evaluation",
+        inverse_name="legajo_id",
+        string="Publicación, Producción y Evaluación"
+    )
+    # Otra Informacion
+    other_relevant_information_ids = fields.One2many(
+        "onsc.legajo.relevant.information",
+        inverse_name="legajo_id",
+        string="Otra información relevante"
+    )
+
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):
         CVDigital = self.env['onsc.cv.digital']
