@@ -338,6 +338,27 @@ class HrJob(models.Model):
             ]
         return self.search_count(args) == 0
 
+    def is_this_job_available_for_manager(self, job, department, date):
+        """
+
+        :param job: Record of hr.job
+        :param date: Fecha a chequear
+        :param nro_doc: Si se pasa es para chequear si no es el mismo funcionario
+        :return:
+        """
+        # TODO no se precisa por ahora definir para periodos cerrados
+        args = [
+            ('id', '!=', job.id),
+            ('department_id', '=', department.id),
+            ('is_uo_manager', '=', True),
+            '|',
+            '|',
+            ('start_date', '>=', date),
+            '&', ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date),
+            ('department_id.is_manager_reserved', '=', True)
+        ]
+        return self.search_count(args) == 0
+
     def update_managers(self):
         self.env['hr.department'].search([('manager_id', '!=', False)]).write({'manager_id': False})
         date = fields.Date.today()
