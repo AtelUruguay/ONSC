@@ -183,7 +183,7 @@
                             <field name="end_date" string="Período hasta dando esta materia"
                                    attrs="{'invisible': [('currently_working_state', '!=', 'no')]}"/>
                             <field name="level_teaching_type"/>
-                            <field name="knowledge_acquired_ids" widget="many2many_tags"/>
+                            <field name="knowledge_acquired_ids" string='Conocimientos enseñados' widget="many2many_tags"/>
                         </group>
                     </group>
                 </sheet>
@@ -202,7 +202,7 @@
                 <field name="course_type" optional="show"/>
                 <field name="currently_working_state" optional="show" width="0.5"/>
                 <field name="level_teaching_type" optional="show"/>
-                <field name="knowledge_acquired_ids" widget="many2many_tags" optional="hide"/>
+                <field name="knowledge_acquired_ids" string='Conocimientos enseñados' widget="many2many_tags" optional="hide"/>
             </tree>
         </field>
     </record>

@@ -89,7 +89,7 @@ class ONSCLegajoAcademicProgramSubject(models.Model):
     knowledge_acquired_ids = fields.Many2many(
         'onsc.cv.knowledge',
         relation='legajo_knowledge_teaching_program_rel',
-        string='Conocimientos aplicados',
+        string='Conocimientos enseñados',
         required=True,
         ondelete='restrict', )
 
