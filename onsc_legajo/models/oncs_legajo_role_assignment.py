@@ -278,7 +278,9 @@ class ONSCLegajoRoleAssignment(models.Model):
                 raise ValidationError(_("No se ha identificado un Puesto para ese Funcionario en ese Contrato"))
             if record.security_job_id and not record.is_uo_manager:
                 raise ValidationError(_("La Seguridad de puesto debe ser de Responsable de UO"))
-            if record.security_job_id and not Job.is_job_available_for_manager(record.department_id, record.date_start):
+            isnt_same_security = (record.security_job_id != record.job_id.security_job_id or not record.job_id.is_uo_manager)
+            if record.security_job_id and isnt_same_security and not Job.is_job_available_for_manager(
+                    record.department_id, record.date_start, nro_doc=True):
                 raise ValidationError(_("No se puede tener más de un responsable para la misma UO"))
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
@@ -367,7 +369,8 @@ class ONSCLegajoRoleAssignment(models.Model):
     def action_confirm(self):
         self.ensure_one()
         self._validate_confirm()
-        if self.job_security_job_id == self.security_job_id:
+        # TODO MISMO PUESTO ES MISMA SEGURIDAD Y QUE EL PUESTO TENGA LA MARCA DE RESPONSABLE DE UO
+        if self.job_security_job_id == self.security_job_id and self.job_id.is_uo_manager:
             self.suspend_security()._create_job_role_assignment(self.job_id)
         else:
             self.suspend_security()._copy_job_and_create_job_role_assignment()
