@@ -230,6 +230,10 @@ class HrEmployee(models.Model):
         'onsc.legajo.basic.formation', string=u'Formación básica', inverse_name="legajo_id", )
     advanced_formation_ids = fields.One2many(
         'onsc.legajo.advanced.formation', string=u'Formación avanzada', inverse_name="legajo_id")
+    # CURSOS
+    course_ids = fields.One2many(
+        'onsc.legajo.course.certificate',
+        string="Cursos", inverse_name="legajo_id")
 
     @api.depends('cv_emissor_country_id', 'cv_document_type_id', 'cv_nro_doc')
     def _compute_cv_digital_id(self):

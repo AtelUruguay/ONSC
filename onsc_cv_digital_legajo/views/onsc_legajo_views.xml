@@ -30,8 +30,7 @@
                         <div>
                             <h4>Cursos, talleres y otras capacitaciones</h4>
                         </div>
-                        <field name="course_ids"
-                               context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_course_view_tree', 'default_record_type': 'course'}"/>
+                        <field name="course_ids"/>
                         <br/>
                         <div>
                             <h4>Certificados</h4>
