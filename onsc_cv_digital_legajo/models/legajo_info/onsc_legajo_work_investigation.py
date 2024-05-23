@@ -9,7 +9,6 @@ HISTORY_COLUMNS = [
     'currently_working',
     'is_paid_activity',
     'position',
-    'knowledge_acquired_ids',
     'start_date',
     'end_date',
     'investigation_type',
@@ -21,6 +20,9 @@ HISTORY_COLUMNS = [
     'research_type_id',
     'other_research_type',
     'hours_worked_monthly',
+    'additional_information',
+    'other_relevant_information',
+
 ]
 
 TREE_HISTORY_COLUMNS = {
@@ -44,6 +46,8 @@ class ONSCCVDigitalWorkInvestigation(models.Model):
             vals['education_area_ids'] = [Command.clear()] + vals['education_area_ids']
         if 'receipt_ids' in vals:
             vals['receipt_ids'] = [Command.clear()] + vals['receipt_ids']
+        if 'knowledge_acquired_ids' in vals:
+            vals['knowledge_acquired_ids'] = [Command.clear()] + vals['knowledge_acquired_ids']
         return vals
 
 

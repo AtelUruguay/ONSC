@@ -38,6 +38,14 @@ class ONSCCVDigitalParticipationEvent(models.Model):
     _inherit = 'onsc.cv.participation.event'
     _legajo_model = 'onsc.legajo.participation.event'
 
+    knowledge_acquired_ids = fields.Many2many(
+        'onsc.cv.knowledge',
+        relation='knowledge_acquired_rel',
+        string="Conocimientos adquiridos",
+        ondelete='restrict',
+        store=True
+    )
+
     def _update_legajo_record_vals(self, vals):
         if 'activity_area_ids' in vals:
             vals['activity_area_ids'] = [Command.clear()] + vals['activity_area_ids']
@@ -58,6 +66,13 @@ class ONSCLegajoParticipationEvent(models.Model):
         "onsc.cv.participation.event",
         string=u"Participación en evento origen",
         ondelete="set null"
+    )
+    knowledge_acquired_ids = fields.Many2many(
+        'onsc.cv.knowledge',
+        relation='legajo_knowledge_acquired_rel',
+        string="Conocimientos adquiridos",
+        ondelete='restrict',
+        store=True
     )
 
     activity_area_ids = fields.One2many('onsc.legajo.activity.area',
