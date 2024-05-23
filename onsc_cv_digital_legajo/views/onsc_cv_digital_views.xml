@@ -17,7 +17,7 @@
             </field>
             <field name="cv_gender_id" position="after">
                 <field name="gender_date"
-                       attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
+                       attrs="{'invisible': [('is_docket', '=', False)]}"/>
             </field>
             <field name="is_cv_gender_public" position="after">
                 <field name="gender_public_visualization_date"
@@ -40,11 +40,11 @@
             </field>
             <field name="afro_descendants_file" position="after">
                 <field name="afro_descendant_date"
-                       attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
+                       attrs="{'invisible': [('is_docket', '=', False)]}"/>
             </field>
             <field name="country_id" position="before">
                 <field name="address_receipt_file" filename="address_receipt_file_name"
-                       attrs="{'invisible': [('is_docket_active', '=', False)], 'required': [('is_docket_active', '=', True)]}"
+                       attrs="{'invisible': [('is_docket_active', '=', False)]}"
                        options="{'accepted_file_extensions': '.pdf'}"/>
                 <field name="address_receipt_file_name" invisible="1"/>
                 <field name="address_info_date"
@@ -75,7 +75,7 @@
             </field>
             <field name="to_date" position="after">
                 <field name="disability_date"
-                       attrs="{'invisible': [('is_docket', '=', False)], 'required': [('is_docket', '=', True)]}"/>
+                       attrs="{'invisible': [('is_docket', '=', False)]}"/>
             </field>
             <xpath expr="//page[@name='reference']" position="after">
                 <page name="datos_legajo" string="Datos del legajo"
