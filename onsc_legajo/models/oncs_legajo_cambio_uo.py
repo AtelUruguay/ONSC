@@ -218,13 +218,12 @@ class ONSCLegajoCambioUO(models.Model):
     def _check_security_job_id(self):
         Job = self.env['hr.job'].sudo()
         for record in self:
-            return True
             # SI ESTOY QUERIENDO MARCAR COMO RESPONSABLE Y YA EXISTE OTRO PUESTO CUMPLIENDO ESA FUNCION EN ESE DEPARTAMENTO TRANCAR
             # CHEQUEAR SOLAMENTE SI ESTOY HACIENDO MOVIMIENTO DE UO O SEGURIDAD()
             is_same_department = record.job_id.department_id == record.department_id
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
             is_same_managersecurity = record.job_id.security_job_id == record.security_job_id and is_same_manager
-            if (not is_same_department or not is_same_managersecurity) and record.is_responsable_uo and Job.is_this_job_available_for_manager(
+            if (not is_same_department or not is_same_managersecurity) and record.is_responsable_uo and not Job.is_this_job_available_for_manager(
                     record.job_id,
                     record.department_id,
                     record.date_start):
@@ -400,8 +399,7 @@ class ONSCLegajoCambioUO(models.Model):
         for record in self:
             is_same_department = record.job_id.department_id == record.department_id
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
-            is_same_managersecurity = record.job_id.security_job_id == record.security_job_id and is_same_manager
-            if not is_same_managersecurity or not is_same_department and RoleAssignment.search_count([
+            if (not is_same_manager or not is_same_department) and RoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
                 ('state', '=', 'confirm'),
                 '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())]):
