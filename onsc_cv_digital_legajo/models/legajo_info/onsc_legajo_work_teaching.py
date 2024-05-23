@@ -15,7 +15,8 @@ WE_HISTORY_COLUMNS = [
     'is_paid_activity',
     'professional_link_id',
     'responsible_type',
-    'hours_worked_monthly'
+    'hours_worked_monthly',
+    'other_relevant_information'
 ]
 WE_TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',
