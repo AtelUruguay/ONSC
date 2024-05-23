@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
 from odoo import Command
+from odoo import fields, models
 
 HISTORY_COLUMNS = [
     'basic_education_level',
@@ -24,7 +24,7 @@ TREE_HISTORY_COLUMNS = {
     'subinstitution_id': 'Sub institución',
 }
 ADVANCED_HISTORY_COLUMNS = [
-     'country_id',
+    'country_id',
     'institution_id',
     'subinstitution_id',
     'advanced_study_level_id',
@@ -43,7 +43,7 @@ ADVANCED_HISTORY_COLUMNS = [
     'description_thesis',
     'final_note_thesis',
     'max_note_thesis',
-     'tutor',
+    'tutor',
     'country_code',
     'scholarship',
     'max_scholarship'
@@ -57,7 +57,7 @@ ADVANCED_HISTORY_COLUMNS = [
     'homologated_certificate_filename',
     'apostille_file',
     'apostille_filename',
-  ]
+]
 
 ADVANCED_TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',
@@ -69,10 +69,12 @@ ADVANCED_TREE_HISTORY_COLUMNS = {
     'state': 'Estado',
 }
 
+
 class ONSCCVDigitalLegajoFormationBasic(models.Model):
     _inherit = 'onsc.cv.basic.formation'
     _legajo_model = 'onsc.legajo.basic.formation'
     _order = 'start_date desc'
+
 
 class ONSCLegajoBasicFormation(models.Model):
     _name = 'onsc.legajo.basic.formation'
@@ -98,12 +100,14 @@ class ONSCLegajoBasicFormation(models.Model):
             res_id=self.id,
         )
 
+
 class ONSCLegajoBasicFormationHistory(models.Model):
     _name = 'onsc.legajo.basic.formation.history'
     _inherit = ['model.history.data']
     _parent_model = 'onsc.legajo.basic.formation'
 
     history_study_certificate_file = fields.Binary(string="Certificado de estudio")
+
 
 class ONSCCVDigitalLegajoAdvancedFormation(models.Model):
     _inherit = 'onsc.cv.advanced.formation'
@@ -114,6 +118,7 @@ class ONSCCVDigitalLegajoAdvancedFormation(models.Model):
         if 'area_related_education_ids' in vals:
             vals['area_related_education_ids'] = [Command.clear()] + vals['area_related_education_ids']
         return vals
+
 
 class ONSCLegajoAdvancedFormation(models.Model):
     _name = 'onsc.legajo.advanced.formation'
@@ -144,6 +149,7 @@ class ONSCLegajoAdvancedFormation(models.Model):
                                               required=True,
                                               ondelete='restrict',
                                               store=True)
+
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_advanced_formation_form').id
         return self.with_context(model_view_form_id=model_view_form_id,
@@ -151,6 +157,8 @@ class ONSCLegajoAdvancedFormation(models.Model):
             history_id=False,
             res_id=self.id,
         )
+
+
 class ONSCLegajoAreaRelatedEducation(models.Model):
     _name = 'onsc.legajo.area.related.education'
     _inherit = 'onsc.cv.area.related.education'
@@ -161,6 +169,8 @@ class ONSCLegajoAreaRelatedEducation(models.Model):
         string="Docencia",
         ondelete='cascade'
     )
+
+
 class ONSCLegajoAdvancedFormationHistory(models.Model):
     _name = 'onsc.legajo.advanced.formation.history'
     _inherit = ['model.history.data']

@@ -19,14 +19,15 @@ HISTORY_COLUMNS = [
     'location',
     'arbitrated',
     'paid_activity',
-   ]
+]
 
 TREE_HISTORY_COLUMNS = {
     'date': 'Fecha',
     'type': 'Tipo',
     'subtype': 'Sub tipo',
     'tittle': 'Título',
-    }
+}
+
 
 class ONSCCVPublicationProductionEvaluation(models.Model):
     _inherit = 'onsc.cv.publication.production.evaluation'
@@ -53,9 +54,11 @@ class ONSCLegajoPublicationProductionEvaluation(models.Model):
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
-    origin_record_id = fields.Many2one("onsc.cv.publication.production.evaluation", string=u"Publicación, Producción y Evaluación")
+    origin_record_id = fields.Many2one("onsc.cv.publication.production.evaluation",
+                                       string=u"Publicación, Producción y Evaluación")
 
-    authors_ids = fields.One2many('onsc.legajo.authors', 'legajo_publications_productions_evaluations_id', string=u'Autores',
+    authors_ids = fields.One2many('onsc.legajo.authors', 'legajo_publications_productions_evaluations_id',
+                                  string=u'Autores',
                                   copy=True)
     activity_area_ids = fields.One2many('onsc.legajo.activity.area', 'legajo_publications_productions_evaluations_id',
                                         string=u'Área de Actividad', copy=True)
@@ -67,7 +70,8 @@ class ONSCLegajoPublicationProductionEvaluation(models.Model):
         copy=True)
 
     def button_show_history(self):
-        model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_publication_production_evaluation_form').id
+        model_view_form_id = self.env.ref(
+            'onsc_cv_digital_legajo.onsc_legajo_publication_production_evaluation_form').id
         return self.with_context(model_view_form_id=model_view_form_id,
                                  as_of_date=fields.Date.today()).get_history_record_action(
             history_id=False,
@@ -80,11 +84,12 @@ class ONSCLegajoAuthors(models.Model):
     _inherit = ['onsc.cv.authors']
     _description = 'Legajo -  Autores'
 
-    legajo_publications_productions_evaluations_id= fields.Many2one(
+    legajo_publications_productions_evaluations_id = fields.Many2one(
         'onsc.legajo.publication.production.evaluation',
         'Tutorías, Orientaciones, Supervisiones',
         ondelete='cascade',
         required=True)
+
 
 # class ONSCLegajoAuthors(models.Model):
 #     _name = 'onsc.legajo.activity.area'
@@ -97,5 +102,3 @@ class ONSCLegajoPublicationProductionEvaluationHistory(models.Model):
     _name = 'onsc.legajo.publication.production.evaluation.history'
     _inherit = ['model.history.data']
     _parent_model = 'onsc.legajo.publication.production.evaluation'
-
-

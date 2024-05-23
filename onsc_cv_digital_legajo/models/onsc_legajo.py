@@ -19,10 +19,8 @@ class ONSCLegajo(models.Model):
 
     # CURSOS Y CERTIFICADOS
     course_ids = fields.One2many(
-        'onsc.cv.course.certificate',
-        string="Cursos",
-        compute='_compute_formations',
-        compute_sudo=True)
+        'onsc.legajo.course.certificate',
+        string="Cursos", inverse_name="legajo_id")
     certificate_ids = fields.One2many(
         'onsc.cv.course.certificate',
         string="Certificados",
@@ -82,8 +80,6 @@ class ONSCLegajo(models.Model):
 
     def _compute_formations(self):
         for record in self:
-            record.course_ids = record.cv_digital_id.course_ids.filtered(
-                lambda x: x.documentary_validation_state == 'validated')
             record.certificate_ids = record.cv_digital_id.certificate_ids.filtered(
                 lambda x: x.documentary_validation_state == 'validated')
 
