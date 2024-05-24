@@ -20,6 +20,7 @@ HISTORY_COLUMNS = [
     'hours_total',
     'digital_doc_file',
     'digital_doc_filename',
+    'other_relevant_information'
 ]
 
 TREE_HISTORY_COLUMNS = {
