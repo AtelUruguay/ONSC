@@ -394,14 +394,13 @@ class ONSCLegajoCambioUO(models.Model):
         self._check_role_assignment()
 
     def _check_role_assignment(self):
-        RoleAssignment = self.env['onsc.legajo.role.assignment'].with_context(is_from_menu=False)
+        JobRoleAssignment = self.env['onsc.legajo.job.role.assignment'].with_context(is_from_menu=False)
         # TODO solo debo chequear si estoy cambiando de UO o estoy cambiando el flag de Responsable
         for record in self:
             is_same_department = record.job_id.department_id == record.department_id
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
-            if (not is_same_manager or not is_same_department) and RoleAssignment.search_count([
+            if (not is_same_manager or not is_same_department) and JobRoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
-                ('state', '=', 'confirm'),
                 '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())]):
                 raise ValidationError(
                     _("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio."
