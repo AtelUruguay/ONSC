@@ -291,7 +291,7 @@ class HrJob(models.Model):
     def deactivate(self, date_end):
         for job in self.suspend_security().filtered(
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
-            job.role_assignment_ids.write({
+            job.role_assignment_ids.filtered(lambda x: x.date_end is False or x.date_end > date_end).write({
                 'date_end': date_end
             })
             job.end_date = date_end
