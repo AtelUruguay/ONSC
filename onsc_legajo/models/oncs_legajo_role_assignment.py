@@ -279,8 +279,8 @@ class ONSCLegajoRoleAssignment(models.Model):
             if record.security_job_id and not record.is_uo_manager:
                 raise ValidationError(_("La Seguridad de puesto debe ser de Responsable de UO"))
             isnt_same_security = (record.security_job_id != record.job_id.security_job_id or not record.job_id.is_uo_manager)
-            if record.security_job_id and isnt_same_security and not Job.is_job_available_for_manager(
-                    record.department_id, record.date_start, nro_doc=True):
+            if record.security_job_id and isnt_same_security and not Job.is_this_job_available_for_manager(
+                    record.job_id, record.date_start, nro_doc=True):
                 raise ValidationError(_("No se puede tener más de un responsable para la misma UO"))
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
