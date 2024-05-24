@@ -5,7 +5,7 @@ from dateutil.relativedelta import relativedelta
 from lxml import etree
 from odoo.addons.onsc_base.onsc_useful_tools import calc_full_name as calc_full_name
 
-from odoo import fields, models, api, _
+from odoo import fields, models, api, _, Command
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
@@ -394,14 +394,13 @@ class ONSCLegajoCambioUO(models.Model):
         self._check_role_assignment()
 
     def _check_role_assignment(self):
-        RoleAssignment = self.env['onsc.legajo.role.assignment'].with_context(is_from_menu=False)
+        JobRoleAssignment = self.env['onsc.legajo.job.role.assignment'].with_context(is_from_menu=False)
         # TODO solo debo chequear si estoy cambiando de UO o estoy cambiando el flag de Responsable
         for record in self:
             is_same_department = record.job_id.department_id == record.department_id
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
-            if (not is_same_manager or not is_same_department) and RoleAssignment.search_count([
+            if (not is_same_manager or not is_same_department) and JobRoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
-                ('state', '=', 'confirm'),
                 '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())]):
                 raise ValidationError(
                     _("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio."
@@ -418,6 +417,10 @@ class ONSCLegajoCambioUO(models.Model):
         is_change_state_id = self.contract_id.state_id != self.state_id
 
         if is_change_department_id or is_change_security_job_id:
+            job_role_assignment_values = self._get_job_role_assignment_values(
+                self.contract_id,
+                self.job_id,
+                self.date_start)
             if self.job_id.start_date == self.date_start:
                 self.suspend_security().job_id.with_context(is_copy_job=True).deactivate(self.date_start)
                 self.suspend_security().job_id.write({'active': False})
@@ -427,14 +430,17 @@ class ONSCLegajoCambioUO(models.Model):
             else:
                 self.suspend_security().job_id.with_context(is_copy_job=True).deactivate(
                     self.date_start - relativedelta(days=1))
+
             new_job = Job.suspend_security().with_context(is_copy_job=True).create_job(
                 self.contract_id,
                 self.department_id,
                 self.date_start,
                 self.security_job_id,
                 is_uo_manager=self.is_responsable_uo,
-                source_job=self.job_id
+                source_job=self.job_id,
             )
+            if len(job_role_assignment_values):
+                new_job.write({'role_assignment_ids': job_role_assignment_values})
         else:
             new_job = Job
         if is_change_state_id:
@@ -445,3 +451,18 @@ class ONSCLegajoCambioUO(models.Model):
         self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,
                     'error_message_synchronization': warning_message})
         return new_job
+
+    def _get_job_role_assignment_values(self, target_contract, job, date_start):
+        job_role_assignment_values = []
+        for role_assignment_id in job.role_assignment_ids:
+            if role_assignment_id.date_end is False or role_assignment_id.date_end > target_contract.date_start:
+                job_role_assignment_values.append(
+                    Command.create({
+                        'role_assignment_id': role_assignment_id.role_assignment_id.id,
+                        'date_start': date_start,
+                        'date_end': role_assignment_id.date_end,
+                        'role_assignment_file': role_assignment_id.role_assignment_file,
+                        'role_assignment_filename': role_assignment_id.role_assignment_filename
+                    })
+                )
+        return job_role_assignment_values
