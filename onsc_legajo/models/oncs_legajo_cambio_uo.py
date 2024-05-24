@@ -418,7 +418,6 @@ class ONSCLegajoCambioUO(models.Model):
 
         if is_change_department_id or is_change_security_job_id:
             job_role_assignment_values = self._get_job_role_assignment_values(
-                self.contract_id,
                 self.job_id,
                 self.date_start)
             if self.job_id.start_date == self.date_start:
@@ -452,10 +451,10 @@ class ONSCLegajoCambioUO(models.Model):
                     'error_message_synchronization': warning_message})
         return new_job
 
-    def _get_job_role_assignment_values(self, target_contract, job, date_start):
+    def _get_job_role_assignment_values(self, job, date_start):
         job_role_assignment_values = []
         for role_assignment_id in job.role_assignment_ids:
-            if role_assignment_id.date_end is False or role_assignment_id.date_end > target_contract.date_start:
+            if role_assignment_id.date_end is False or role_assignment_id.date_end > date_start:
                 job_role_assignment_values.append(
                     Command.create({
                         'role_assignment_id': role_assignment_id.role_assignment_id.id,
