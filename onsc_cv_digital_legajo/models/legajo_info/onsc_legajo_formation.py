@@ -57,6 +57,9 @@ ADVANCED_HISTORY_COLUMNS = [
     'homologated_certificate_filename',
     'apostille_file',
     'apostille_filename',
+    'is_require_thesis'
+    'study_certificate_file',
+    'study_certificate_filename',
 ]
 
 ADVANCED_TREE_HISTORY_COLUMNS = {
@@ -179,3 +182,4 @@ class ONSCLegajoAdvancedFormationHistory(models.Model):
     history_apostille_file = fields.Binary(string="Apostilla")
     history_revalidated_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad")
     history_homologated_certificate_file = fields.Binary(string="Certificado de homologación")
+    history_study_certificate_file = fields.Binary(string="Certificado de estudio")

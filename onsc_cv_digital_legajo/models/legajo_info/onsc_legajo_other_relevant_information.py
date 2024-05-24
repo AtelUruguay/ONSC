@@ -28,7 +28,8 @@ class ONSCLegajoRelevantInformation(models.Model):
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
     origin_record_id = fields.Many2one("onsc.cv.other.relevant.information",
-                                       string=u"Otra información relevante origen")
+                                       string=u"Otra información relevante origen",
+                                       ondelete="set null")
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_relevant_information_form').id

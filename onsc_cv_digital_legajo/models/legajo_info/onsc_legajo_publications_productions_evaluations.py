@@ -13,12 +13,15 @@ HISTORY_COLUMNS = [
     'subtype_evaluation_id',
     'date',
     'other_subtype_evaluation',
+    'subtype_other_id',
     'other_subtype_other',
     'tittle',
     'description',
     'location',
     'arbitrated',
     'paid_activity',
+    'additional_information',
+    'subtype'
 ]
 
 TREE_HISTORY_COLUMNS = {
@@ -55,7 +58,11 @@ class ONSCLegajoPublicationProductionEvaluation(models.Model):
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
     origin_record_id = fields.Many2one("onsc.cv.publication.production.evaluation",
-                                       string=u"Publicación, Producción y Evaluación")
+                                       string=u"Publicación, Producción y Evaluación",
+                                       ondelete="set null")
+
+    is_arbitrated = fields.Boolean('¿Arbitrado?', history=True)
+    subtype = fields.Char(string="Sub tipo", history=True)
 
     authors_ids = fields.One2many('onsc.legajo.authors', 'legajo_publications_productions_evaluations_id',
                                   string=u'Autores',
