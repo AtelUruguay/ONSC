@@ -378,14 +378,13 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def _update_job_role_assignments_date_end(self):
         if len(self.job_role_assignment_ids) > 1:
-            last_job_role_assignment = self.job_role_assignment_ids.sorted(key=lambda x: x.date_start, reverse=True)[0]
+            last_job_role_assignment = self.job_role_assignment_ids.sorted(key=lambda x: x.id, reverse=True)[0]
         else:
             last_job_role_assignment = self.job_role_assignment_ids
         ws7_operation = self._context.get('ws7_operation', False)
         if ws7_operation:
             last_job_role_assignment.job_id._message_log(
                 body=_('Se finaliza la Asignación de funciones por notificación de %s' % (ws7_operation)))
-        # for job_role_assignment_id in self.job_role_assignment_ids.sorted(key=lambda x: x.date_end, reverse=True):
         cond1 = not last_job_role_assignment.date_end or last_job_role_assignment.date_end != self.date_end
         cond2 = last_job_role_assignment.date_end and not self.date_end
         if cond1 or cond2:
