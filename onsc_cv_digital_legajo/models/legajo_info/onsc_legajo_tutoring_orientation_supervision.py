@@ -79,7 +79,7 @@ class ONSCLegajoTutorialOrientationSupervision(models.Model):
         ondelete="set null"
     )
 
-    area_ids = fields.One2many('onsc.cv.education.area.tutoring', 'tutoring_id', 'Área de actividad', copy=True)
+    area_ids = fields.One2many('onsc.legajo.education.area.tutoring', 'legajo_tutoring_id', 'Área de actividad', copy=True)
     knowledge_acquired_ids = fields.Many2many(
         'onsc.cv.knowledge',
         relation='legajo_knowledge_acquired_tutoring_rel',
