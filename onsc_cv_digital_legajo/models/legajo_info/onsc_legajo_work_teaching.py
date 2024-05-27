@@ -2,7 +2,7 @@
 from odoo import Command
 from odoo import fields, models
 
-WE_HISTORY_COLUMNS = [
+HISTORY_COLUMNS = [
     'country_id',
     'institution_id',
     'subinstitution_id',
@@ -18,7 +18,7 @@ WE_HISTORY_COLUMNS = [
     'hours_worked_monthly',
     'other_relevant_information'
 ]
-WE_TREE_HISTORY_COLUMNS = {
+TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',
     'end_date': 'Fin',
     'professional_link_id': 'Vínculo profesional',
@@ -47,8 +47,8 @@ class ONSCLegajoWorkTeaching(models.Model):
     _inherit = ['onsc.cv.work.teaching', 'model.history']
     _description = 'Legajo - Docencia'
     _history_model = 'onsc.legajo.work.teaching.history'
-    _history_columns = WE_HISTORY_COLUMNS
-    _tree_history_columns = WE_TREE_HISTORY_COLUMNS
+    _history_columns = HISTORY_COLUMNS
+    _tree_history_columns = TREE_HISTORY_COLUMNS
 
     employee_id = fields.Many2one("hr.employee", string=u"Funcionario")
     legajo_id = fields.Many2one("onsc.legajo", string=u"Legajo")
