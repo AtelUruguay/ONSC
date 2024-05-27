@@ -124,3 +124,5 @@ class ONSCLegajoWorkTeachingHistory(models.Model):
     _name = 'onsc.legajo.work.teaching.history'
     _inherit = ['model.history.data']
     _parent_model = 'onsc.legajo.work.teaching'
+
+    history_receipt_file = fields.Binary(string="Comprobante")

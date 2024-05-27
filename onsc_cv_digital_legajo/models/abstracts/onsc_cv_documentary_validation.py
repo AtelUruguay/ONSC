@@ -11,13 +11,43 @@ DOCUMENTARY_VALIDATION_STATES = [('to_validate', 'Para validar'),
 class ONSCCVAbstractFileValidation(models.AbstractModel):
     _inherit = 'onsc.cv.abstract.documentary.validation'
 
+    def _get_validation_config(self):
+        if self._context.get('force_show_validation_section'):
+            return self.env["onsc.cv.documentary.validation.config"].get_config()
+        return self.env["onsc.cv.documentary.validation.config"].get_config(self._name)
+
     def _check_todisable_dynamic_fields(self):
         return super(ONSCCVAbstractFileValidation,
                      self)._check_todisable_dynamic_fields() or self.cv_digital_id.is_docket
 
     @property
     def widget_call_documentary_button(self):
-        if self._context.get('is_legajo'):
+        if self._context.get('is_legajo') and self._context.get('show_only_status'):
+            return etree.XML("""
+                            <div>
+                                <field name="documentary_validation_state" invisible="1"/>
+                                <div class="alert alert-danger" role="alert"
+                                    attrs="{'invisible': [('documentary_validation_state', '!=', 'rejected')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            El registro ha sido rechazado. Motivo del rechazo: <field name="documentary_reject_reason" class="oe_inline" readonly="1"/>
+                                            <p/>
+                                            Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
+                                        </strong>
+                                    </p>
+                                </div>
+                                <div class="alert alert-success" role="alert"
+                                    attrs="{'invisible': [('documentary_validation_state', '!=', 'validated')]}">
+                                    <p class="mb-0">
+                                        <strong>
+                                            El registro ha sido validado
+                                            <p/>
+                                            Fecha: <field name="documentary_validation_date" class="oe_inline" readonly="1"/> Usuario: <field name="documentary_user_id" class="oe_inline" options="{'no_open': True, 'no_quick_create': True, 'no_create': True}" readonly="1"/>
+                                        </strong>
+                                    </p>
+                                </div>
+                            </div>""")
+        elif self._context.get('is_legajo'):
             return etree.XML("""
                             <div>
                                 <field name="documentary_validation_state" invisible="1"/>
@@ -121,9 +151,10 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             'documentary_user_id': _user_id,
         }
         self.with_context(updating_call_instances = True).update_call_instances(args)
+        result = super(ONSCCVAbstractFileValidation, self).button_documentary_approve()
         if not self._context.get('updating_call_instances') and len(self) == 1 and self.cv_digital_id.type:
             self.set_legajo_validated_records()
-        return super(ONSCCVAbstractFileValidation, self).button_documentary_approve()
+        return result
 
     def set_legajo_validated_records(self):
         """

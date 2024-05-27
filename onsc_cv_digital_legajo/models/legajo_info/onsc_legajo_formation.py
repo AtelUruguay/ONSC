@@ -49,17 +49,15 @@ ADVANCED_HISTORY_COLUMNS = [
     'max_scholarship',
     'credits_far',
     'credits_training',
-    'egress_certificate_file',
-    'egress_certificate_filename',
-    'revalidated_certificate_file',
-    'revalidated_certificate_filename'
-    'homologated_certificate_file',
-    'homologated_certificate_filename',
     'apostille_file',
     'apostille_filename',
-    'is_require_thesis',
-    'study_certificate_file',
-    'study_certificate_filename',
+    'egress_certificate_file',
+    'egress_certificate_filename',
+    'homologated_certificate_file',
+    'homologated_certificate_filename',
+    'revalidated_certificate_file',
+    'revalidated_certificate_filename',
+    'is_require_thesis'
 ]
 ADVANCED_TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',
@@ -179,6 +177,6 @@ class ONSCLegajoAdvancedFormationHistory(models.Model):
     _parent_model = 'onsc.legajo.advanced.formation'
 
     history_apostille_file = fields.Binary(string="Apostilla")
-    history_revalidated_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad")
+    history_egress_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad")
     history_homologated_certificate_file = fields.Binary(string="Certificado de homologación")
-    history_study_certificate_file = fields.Binary(string="Certificado de estudio")
+    history_revalidated_certificate_file = fields.Binary(string="Certificado de egreso / título / escolaridad")
