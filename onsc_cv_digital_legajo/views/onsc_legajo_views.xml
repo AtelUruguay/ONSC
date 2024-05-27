@@ -19,18 +19,18 @@
                         <div>
                             <h4>Formación básica</h4>
                         </div>
-                        <field name="basic_formation_ids"/>
+                        <field name="basic_formation_ids" context="{'hide_conditional_info': True}"/>
                         <br/>
                         <div>
                             <h4>Formación avanzada</h4>
                         </div>
-                        <field name="advanced_formation_ids"/>
+                        <field name="advanced_formation_ids" context="{'hide_conditional_info': True}"/>
                     </page>
                     <page name="course_certificate" string="Cursos y certificados">
                         <div>
                             <h4>Cursos, talleres y otras capacitaciones</h4>
                         </div>
-                        <field name="course_ids"/>
+                        <field name="course_ids" context="{'hide_conditional_info': True}"/>
                         <br/>
                         <div>
                             <h4>Certificados</h4>

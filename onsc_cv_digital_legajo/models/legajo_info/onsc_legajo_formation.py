@@ -13,9 +13,8 @@ HISTORY_COLUMNS = [
     'coursed_years',
     'other_relevant_information',
     'study_certificate_file',
-    'study_certificate_filename'
+    'study_certificate_filename',
 ]
-
 TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',
     'end_date': 'Fin',
@@ -23,6 +22,7 @@ TREE_HISTORY_COLUMNS = {
     'institution_id': 'Institución',
     'subinstitution_id': 'Sub institución',
 }
+
 ADVANCED_HISTORY_COLUMNS = [
     'country_id',
     'institution_id',
@@ -46,7 +46,7 @@ ADVANCED_HISTORY_COLUMNS = [
     'tutor',
     'country_code',
     'scholarship',
-    'max_scholarship'
+    'max_scholarship',
     'credits_far',
     'credits_training',
     'egress_certificate_file',
@@ -57,11 +57,10 @@ ADVANCED_HISTORY_COLUMNS = [
     'homologated_certificate_filename',
     'apostille_file',
     'apostille_filename',
-    'is_require_thesis'
+    'is_require_thesis',
     'study_certificate_file',
     'study_certificate_filename',
 ]
-
 ADVANCED_TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',
     'egress_date': 'Fin',
@@ -112,7 +111,7 @@ class ONSCLegajoBasicFormationHistory(models.Model):
     history_study_certificate_file = fields.Binary(string="Certificado de estudio")
 
 
-class ONSCCVDigitalLegajoAdvancedFormation(models.Model):
+class ONSCCVFormationAdvanced(models.Model):
     _inherit = 'onsc.cv.advanced.formation'
     _legajo_model = 'onsc.legajo.advanced.formation'
     _order = 'start_date desc'

@@ -23,10 +23,10 @@ HISTORY_COLUMNS = [
     'is_paid_activity',
     'is_relevant_work',
     'is_tutoring_finished',
-    'other_tutor_type'
-    'co_tutor_name'
-    'other_divulgation_media'
-    'receipt_file'
+    'other_tutor_type',
+    'co_tutor_name',
+    'other_divulgation_media',
+    'receipt_file',
     'receipt_filename',
 ]
 TREE_HISTORY_COLUMNS = [
