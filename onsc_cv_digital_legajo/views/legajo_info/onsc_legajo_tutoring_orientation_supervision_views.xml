@@ -54,6 +54,7 @@
                             <field name="knowledge_acquired_ids" widget="many2many_tags"/>
                             <field name="is_relevant_work"/>
                             <field name="receipt_file"
+                                   widget="binary"
                                    filename="receipt_filename"
                                    options="{'accepted_file_extensions': '.pdf'}"/>
                             <field name="receipt_filename" invisible="1"/>
