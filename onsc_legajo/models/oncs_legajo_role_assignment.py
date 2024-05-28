@@ -328,7 +328,10 @@ class ONSCLegajoRoleAssignment(models.Model):
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
         if len(job_ids) == 1:
             self.job_id = job_ids[0].id
-            self.security_job_id = job_ids[0].security_job_id.id
+            if job_ids[0].security_job_id.active:
+                self.security_job_id = job_ids[0].security_job_id.id
+            else:
+                self.security_job_id = False
         else:
             self.job_id = False
             self.security_job_id = False
