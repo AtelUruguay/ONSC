@@ -1,6 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-
+ <record id="onsc_desempeno_evaluation_report_search" model="ir.ui.view">
+        <field name="name">onsc.desempeno.evaluation.report.search</field>
+        <field name="model">onsc.desempeno.evaluation.report</field>
+        <field name="arch" type="xml">
+             <search string="Consulta General del Ciclo de Evaluación">
+                <field name="evaluation_id" invisible="1"/>
+                <field name="consolidated_id" invisible="1"/>
+                <field name="inciso_id"/>
+                <field name="operating_unit_id"/>
+                <field name="general_cycle_id"/>
+                <field name="evaluation_type"/>
+                <field name="evaluator_id"/>
+                <field name="evaluated_id"/>
+                <field name="state"/>
+            </search>
+        </field>
+    </record>
     <record id="onsc_desempeno_evaluation_report_tree" model="ir.ui.view">
         <field name="name">onsc.desempeno.evaluation.report.tree</field>
         <field name="model">onsc.desempeno.evaluation.report</field>
