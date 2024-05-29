@@ -28,6 +28,8 @@ HISTORY_COLUMNS = [
     'other_divulgation_media',
     'receipt_file',
     'receipt_filename',
+    'other_relevant_information',
+    'description',
 ]
 TREE_HISTORY_COLUMNS = [
     'start_date',
@@ -86,6 +88,11 @@ class ONSCLegajoTutorialOrientationSupervision(models.Model):
         string='Conocimientos aplicados',
         required=True,
         ondelete='restrict', )
+    is_orientation_type_pie = fields.Boolean(string="Es tipo de orientacion pie ? ", history=True)
+    is_tutor_docent = fields.Boolean(string="Es Docente tutor ? ", history=True)
+    is_tutor_master = fields.Boolean(string="Es tutor? ", history=True)
+    is_tutor_option_other_enable = fields.Boolean(string='Permitir opción otra/o?', history=True)
+    is_divulgation_option_other_enable = not fields.Boolean(string='Otro medio de divulgación?', history=True)
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_tutoring_orientation_supervision_form').id

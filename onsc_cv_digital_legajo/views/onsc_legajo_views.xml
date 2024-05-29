@@ -19,20 +19,20 @@
                         <div>
                             <h4>Formación básica</h4>
                         </div>
-                        <field name="basic_formation_ids"
+                        <field name="basic_formation_ids" readonly="1"
                                context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                         <br/>
                         <div>
                             <h4>Formación avanzada</h4>
                         </div>
-                        <field name="advanced_formation_ids"
+                        <field name="advanced_formation_ids" readonly="1"
                                context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
                     <page name="course_certificate" string="Cursos y certificados">
                         <div>
                             <h4>Cursos, talleres y otras capacitaciones</h4>
                         </div>
-                        <field name="course_ids"
+                        <field name="course_ids" readonly="1"
                                 context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                         <br/>
                         <div>

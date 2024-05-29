@@ -71,6 +71,8 @@ class ONSCLegajoCourseCertificate(models.Model):
                                               copy=True,
                                               ondelete='restrict',
                                               store=True)
+    is_numeric_max_evaluation = fields.Boolean(string="Es numerico nota maxima?", history=True)
+    is_numeric_evaluation = fields.Boolean(string="Es numerico nota?", history=True)
 
     def button_show_history(self):
         model_view_form_id = self.env.ref('onsc_cv_digital_legajo.onsc_legajo_course_certificate_form').id
