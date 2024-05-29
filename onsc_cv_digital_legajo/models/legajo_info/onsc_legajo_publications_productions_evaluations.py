@@ -64,6 +64,10 @@ class ONSCLegajoPublicationProductionEvaluation(models.Model):
 
     is_arbitrated = fields.Boolean('¿Arbitrado?', history=True)
     subtype = fields.Char(string="Sub tipo", history=True)
+    is_subtype_publication = fields.Boolean(string="Es otro sub tipo de publicación?", history=True)
+    is_subtype_production = fields.Boolean(string="Es otro sub tipo de producción?", history=True)
+    is_subtype_evaluation = fields.Boolean(string="Es otro sub tipo de evaluación?", history=True)
+    is_subtype_other = fields.Boolean(string="Es otro sub tipo otro?", history=True)
 
     authors_ids = fields.One2many('onsc.legajo.authors', 'legajo_publications_productions_evaluations_id',
                                   string=u'Autores',
