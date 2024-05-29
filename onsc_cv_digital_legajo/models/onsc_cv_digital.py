@@ -831,7 +831,7 @@ class ONSCCVDigital(models.Model):
         self.env['ir.config_parameter'].sudo().set_param(
             'parameter_cv_digital_sections2validate_last_id',
             str(last_cv_digital.id))
-        _logger.info("PROCESO DE SECCIONES A VALIDAR SI CAMBIA LA CONFIGURACION: FIN, ULTIMO ID: %s") % (str(last_cv_digital.id))
+        _logger.info("PROCESO DE SECCIONES A VALIDAR SI CAMBIA LA CONFIGURACION: FIN, ULTIMO ID: %s" % (str(last_cv_digital.id)))
 
 
 class ONSCCVInformationContact(models.Model):

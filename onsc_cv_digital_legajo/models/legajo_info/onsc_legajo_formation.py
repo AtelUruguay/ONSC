@@ -63,7 +63,8 @@ ADVANCED_HISTORY_COLUMNS = [
     'study_certificate_file',
     'study_certificate_filename',
     'other_relevant_information',
-    'knowledge_acquired_ids'
+    'knowledge_acquired_ids',
+    'knowledge_thesis_ids'
 ]
 ADVANCED_TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',
