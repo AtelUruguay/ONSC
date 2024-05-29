@@ -12,6 +12,11 @@
                 <field name="evaluator_id"/>
                 <field name="evaluated_id"/>
                 <field name="state"/>
+                <group string="Agrupar por">
+                    <filter name="group_state" string="Estado" context="{'group_by': 'state'}"/>
+                    <filter name="group_general_cycle_id" string="Ciclo general" context="{'group_by': 'general_cycle_id'}"/>
+                    <filter name="group_evaluated_id" string="Evaluado" context="{'group_by': 'evaluated_id'}"/>
+                </group>
             </search>
         </field>
     </record>
