@@ -85,6 +85,12 @@ class ONSCCVTutorialOrientationSupervision(models.Model):
     def onchange_divulgation_media_id(self):
         self.other_divulgation_media = False
 
+    @api.onchange('subinstitution_id')
+    def onchange_academic_program_id_parents(self):
+        program = self.academic_program_id
+        if self.subinstitution_id.id is False or (self.subinstitution_id != program.subinstitution_id):
+            self.academic_program_id = False
+
     def _get_json_dict(self):
         json_dict = super(ONSCCVTutorialOrientationSupervision, self)._get_json_dict()
         json_dict.extend([

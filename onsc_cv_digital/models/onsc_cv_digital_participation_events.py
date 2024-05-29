@@ -30,6 +30,14 @@ class ONSCCVDigitalParticipationEvent(models.Model):
     documentation_file = fields.Binary(string="Documentación o comprobante")
     documentation_filename = fields.Char('Nombre documentación o comprobante')
 
+    knowledge_acquired_ids = fields.Many2many(
+        'onsc.cv.knowledge',
+        relation='knowledge_acquired_participation_event_rel',
+        string="Conocimientos adquiridos",
+        ondelete='restrict',
+        store=True
+    )
+
     @api.onchange('hourly_load')
     def onchange_hourly_load(self):
         try:

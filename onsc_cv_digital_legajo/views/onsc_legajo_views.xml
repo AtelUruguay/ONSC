@@ -39,6 +39,7 @@
                             <h4>Certificados</h4>
                         </div>
                         <field name="certificate_ids"
+                               readonly="1"
                                context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
                     <page name="work_experience" string="Experiencia laboral">

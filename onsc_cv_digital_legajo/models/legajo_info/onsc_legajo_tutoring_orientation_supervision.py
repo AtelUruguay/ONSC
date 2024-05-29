@@ -30,6 +30,7 @@ HISTORY_COLUMNS = [
     'receipt_filename',
     'other_relevant_information',
     'description',
+    'knowledge_acquired_ids'
 ]
 TREE_HISTORY_COLUMNS = [
     'start_date',
