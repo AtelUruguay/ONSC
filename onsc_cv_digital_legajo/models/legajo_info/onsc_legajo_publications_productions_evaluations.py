@@ -21,7 +21,8 @@ HISTORY_COLUMNS = [
     'arbitrated',
     'paid_activity',
     'additional_information',
-    'subtype'
+    'subtype',
+    'applied_knowledge_ids'
 ]
 
 TREE_HISTORY_COLUMNS = {

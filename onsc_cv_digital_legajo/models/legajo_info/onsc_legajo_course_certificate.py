@@ -22,6 +22,7 @@ HISTORY_COLUMNS = [
     'digital_doc_filename',
     'other_relevant_information',
     'evaluation_str',
+    'knowledge_acquired_ids'
 ]
 
 TREE_HISTORY_COLUMNS = {
