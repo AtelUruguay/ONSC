@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models
-
+from odoo import fields, models, api
+from odoo.exceptions import AccessError, MissingError, ValidationError, UserError
 # CAMPOS A GUARDAR EN HISTORICO. UTIL PARA EN HERENCIAS NO REPETIR CAMPOS PARA SOLO PONER history=True
 HISTORY_COLUMNS = [
     'position',
@@ -58,7 +58,7 @@ class ONSCLegajoWorkExperience(models.Model):
         "onsc.legajo.work.experience.task",
         inverse_name="legajo_work_experience_id",
         string="Tareas",
-        # history_fields="key_task_id,area_id"
+        history_fields="key_task_id,area_id"
     )
 
     def button_show_history(self):
@@ -70,10 +70,67 @@ class ONSCLegajoWorkExperience(models.Model):
         )
 
 
-class ONSCLegajoOriginInstitutionTask(models.Model):
+class ONSCLegajoWorkExperienceTask(models.Model):
     _name = 'onsc.legajo.work.experience.task'
     _inherit = 'onsc.cv.work.experience.task'
     _description = 'Legajo - Tareas de experiencia laboral'
+    def read(self, fields=None, load='_classic_read'):
+        """ read([fields])
+
+        Reads the requested fields for the records in ``self``, low-level/RPC
+        method. In Python code, prefer :meth:`~.browse`.
+
+        :param fields: list of field names to return (default is all fields)
+        :return: a list of dictionaries mapping field names to their values,
+                 with one dictionary per record
+        :raise AccessError: if user has no read rights on some of the given
+                records
+        """
+        fields = self.check_field_access_rights('read', fields)
+
+        # fetch stored fields from the database to the cache
+        stored_fields = set()
+        for name in fields:
+            field = self._fields.get(name)
+            if not field:
+                raise ValueError("Invalid field %r on model %r" % (name, self._name))
+            if field.store:
+                stored_fields.add(name)
+            elif field.compute:
+                # optimization: prefetch direct field dependencies
+                for dotname in self.pool.field_depends[field]:
+                    f = self._fields[dotname.split('.')[0]]
+                    if f.prefetch and (not f.groups or self.user_has_groups(f.groups)):
+                        stored_fields.add(f.name)
+        self._read(stored_fields)
+
+        result = self._read_format(fnames=fields, load=load)
+        return result
+
+    def _read_format(self, fnames, load='_classic_read'):
+        """Returns a list of dictionaries mapping field names to their values,
+        with one dictionary per record that exists.
+
+        The output format is similar to the one expected from the `read` method.
+
+        The current method is different from `read` because it retrieves its
+        values from the cache without doing a query when it is avoidable.
+        """
+        data = [(record, {'id': record._ids[0]}) for record in self]
+        use_name_get = (load == '_classic_read')
+        for name in fnames:
+            convert = self._fields[name].convert_to_read
+            for record, vals in data:
+                # missing records have their vals empty
+                if not vals:
+                    continue
+                try:
+                    vals[name] = self._fields[name].convert_to_read(record[name], record, use_name_get)
+                except MissingError:
+                    vals.clear()
+        result = [vals for record, vals in data if vals]
+
+        return result
 
     legajo_work_experience_id = fields.Many2one(
         "onsc.legajo.work.experience",

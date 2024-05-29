@@ -28,6 +28,7 @@ HISTORY_COLUMNS = [
     'other_divulgation_media',
     'receipt_file',
     'receipt_filename',
+    'knowledge_acquired_ids'
 ]
 TREE_HISTORY_COLUMNS = [
     'start_date',

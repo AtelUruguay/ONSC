@@ -20,12 +20,14 @@
                             <h4>Formación básica</h4>
                         </div>
                         <field name="basic_formation_ids"
+                               readonly="1"
                                context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                         <br/>
                         <div>
                             <h4>Formación avanzada</h4>
                         </div>
                         <field name="advanced_formation_ids"
+                               readonly="1"
                                context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
                     <page name="course_certificate" string="Cursos y certificados">
@@ -33,12 +35,14 @@
                             <h4>Cursos, talleres y otras capacitaciones</h4>
                         </div>
                         <field name="course_ids"
-                                context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
+                               readonly="1"
+                               context="{'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                         <br/>
                         <div>
                             <h4>Certificados</h4>
                         </div>
                         <field name="certificate_ids"
+                               readonly="1"
                                context="{'tree_view_ref': 'onsc_cv_digital.onsc_cv_certificate_view_tree', 'default_record_type': 'certificate', 'hide_conditional_info': True, 'is_call_documentary_validation': True, 'is_legajo': True, 'force_show_validation_section': True, 'show_only_status': True}"/>
                     </page>
                     <page name="work_experience" string="Experiencia laboral">

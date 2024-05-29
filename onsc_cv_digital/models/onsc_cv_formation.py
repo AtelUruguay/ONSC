@@ -146,7 +146,13 @@ class ONSCCVFormationAdvanced(models.Model):
         if self.state == 'completed' and self.is_require_thesis:
             self.state_thesis = 'completed'
         else:
-            self.state_thesis = ''
+            self.state_thesis = False
+            self.title_thesis = False
+            self.description_thesis = False
+            self.final_note_thesis = float(0)
+            self.final_note_thesis = float(0)
+            self.tutor = False
+            self.knowledge_thesis_ids = [(5,)]
 
     @api.onchange('advanced_study_level_id', 'subinstitution_id')
     def onchange_academic_program_id_parents(self):

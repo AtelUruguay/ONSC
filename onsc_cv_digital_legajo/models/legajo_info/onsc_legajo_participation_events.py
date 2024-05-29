@@ -22,6 +22,7 @@ HISTORY_COLUMNS = [
     'documentation_file',
     'documentation_filename',
     'other_relevant_information',
+    'knowledge_acquired_ids'
 ]
 
 TREE_HISTORY_COLUMNS = [
@@ -37,14 +38,6 @@ TREE_HISTORY_COLUMNS = [
 class ONSCCVDigitalParticipationEvent(models.Model):
     _inherit = 'onsc.cv.participation.event'
     _legajo_model = 'onsc.legajo.participation.event'
-
-    knowledge_acquired_ids = fields.Many2many(
-        'onsc.cv.knowledge',
-        relation='knowledge_acquired_rel',
-        string="Conocimientos adquiridos",
-        ondelete='restrict',
-        store=True
-    )
 
     def _update_legajo_record_vals(self, vals):
         if 'activity_area_ids' in vals:
@@ -69,7 +62,7 @@ class ONSCLegajoParticipationEvent(models.Model):
     )
     knowledge_acquired_ids = fields.Many2many(
         'onsc.cv.knowledge',
-        relation='legajo_knowledge_acquired_rel',
+        relation='legajo_knowledge_acquired_event_rel',
         string="Conocimientos adquiridos",
         ondelete='restrict',
         store=True
