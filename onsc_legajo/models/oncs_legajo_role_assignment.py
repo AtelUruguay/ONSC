@@ -328,7 +328,10 @@ class ONSCLegajoRoleAssignment(models.Model):
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
         if len(job_ids) == 1:
             self.job_id = job_ids[0].id
-            self.security_job_id = job_ids[0].security_job_id.id
+            if job_ids[0].security_job_id.active:
+                self.security_job_id = job_ids[0].security_job_id.id
+            else:
+                self.security_job_id = False
         else:
             self.job_id = False
             self.security_job_id = False
@@ -393,8 +396,19 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def _copy_job_and_create_job_role_assignment(self):
         Job = self.env['hr.job']
-        self.job_id.suspend_security().with_context(no_check_write=True, is_copy_job=True).deactivate(
-            self.date_start - relativedelta(days=1))
+        if self.job_id and self.date_start < self.job_id.start_date:
+            raise ValidationError(_("La fecha de inicio debe ser mayor o igual a la fecha del puesto actual"))
+        # SI LA FECHA DE INICIO ES LA MISMA FECHA DE INICIO DEL PUESTO ACTUAL ES UNA CORRECCION DE PUESTO
+        # ESTO SIGNIFICA QUE SE DEBE CERRAR EL MISMO DIA (NO EL DIA ANTES) Y ARCHIVARLO
+        if self.job_id and self.date_start == self.job_id.start_date:
+            self.job_id.suspend_security().with_context(no_check_write=True, is_copy_job=True).deactivate(
+                self.date_start)
+            self.job_id.suspend_security().write({'active': False})
+        # SINO ES UNA DESACTIVACION NORMAL
+        else:
+            self.job_id.suspend_security().with_context(no_check_write=True, is_copy_job=True).deactivate(
+                self.date_start - relativedelta(days=1))
+
         new_job = Job.suspend_security().with_context(no_check_write=True, is_copy_job=True).create_job(
             self.contract_id,
             self.department_id,
