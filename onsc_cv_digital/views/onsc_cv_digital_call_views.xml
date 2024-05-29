@@ -578,18 +578,7 @@
                         </page>
                         <page name="other_relevant_information"
                               string="Otra información relevante">
-                            <field name="other_relevant_information_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False),'is_zip': is_zip}">
-                                <tree editable="top">
-                                    <field name="theme"/>
-                                    <field name="description"/>
-                                </tree>
-                                <form>
-                                    <group>
-                                        <field name="theme"/>
-                                        <field name="description"/>
-                                    </group>
-                                </form>
-                            </field>
+                            <field name="other_relevant_information_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False),'is_zip': is_zip}"/>
                         </page>
                         <page name="reference" string="Referencias">
                             <field name="reference_ids" context="{'is_call_documentary_validation': context.get('is_call_documentary_validation', False),'is_zip': is_zip}"/>
@@ -614,6 +603,32 @@
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
             </p>
+        </field>
+    </record>
+    
+    <record id="onsc_cv_other_relevant_information_form_view" model="ir.ui.view">
+        <field name="name">onsc.cv.other.relevant.information.form</field>
+        <field name="model">onsc.cv.other.relevant.information</field>
+        <field name="arch" type="xml">
+            <form string="Otra información relevante">
+                <sheet>
+                    <group>
+                        <field name="theme"/>
+                        <field name="description"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="onsc_cv_other_relevant_information_tree_view" model="ir.ui.view">
+        <field name="name">onsc.cv.other.relevant.information.tree</field>
+        <field name="model">onsc.cv.other.relevant.information</field>
+        <field name="arch" type="xml">
+            <tree editable="top">
+                <field name="theme"/>
+                <field name="description"/>
+            </tree>
         </field>
     </record>
 
