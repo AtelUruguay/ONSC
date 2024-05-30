@@ -158,7 +158,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     def set_legajo_validated_records(self):
         """
-        METODO PARA LLENAR ELEMENTOS DEL LEGAJO DESDE LA VALIDACION DOCUMENTAL DEL CV
+        METODO PARA LLENAR ELEMENTOS DEL LEGAJO DESDE LA VALIDACION DOCUMENTAL DEL CV (TANTO EN LLAMADOS COMO EN VDL)
         :return:
         """
         if hasattr(self, '_legajo_model'):
@@ -166,9 +166,13 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             employee = self.cv_digital_id.employee_id
             legajo = self.env['onsc.legajo'].sudo().search([('employee_id', '=', employee.id)], limit=1)
             # SI EXISTE YA UN RECORD ASOCIADO ACTUALIZO
+            if self.cv_digital_id.type == 'call' and self.original_instance_identifier:
+                origin_record_id = self.original_instance_identifier
+            else:
+                origin_record_id = self.id
             legajo_record = LegajoModel.search([
                 ('employee_id', '=', employee.id),
-                ('origin_record_id', '=', self.id),
+                ('origin_record_id', '=', origin_record_id),
             ], limit=1)
             # si ya esta el record de legajo actualizo
             if legajo_record:
@@ -180,7 +184,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                 legajo_record_vals = self.copy_data(default={
                     'employee_id': employee.id,
                     'legajo_id': legajo.id,
-                    'origin_record_id': self.id
+                    'origin_record_id': origin_record_id
                 })
                 LegajoModel.with_context(is_legajo_record=True).create(legajo_record_vals)
         return True
