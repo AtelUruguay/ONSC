@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
+from odoo import fields, models
 
 HISTORY_COLUMNS = [
     'theme',
@@ -42,11 +42,6 @@ class ONSCLegajoRelevantInformation(models.Model):
             history_id=False,
             res_id=self.id,
         )
-
-    @api.model
-    def create(self, vals):
-        record = super(ONSCLegajoRelevantInformation, self).create(vals)
-        return record
 
 
 # HISTORICOS
