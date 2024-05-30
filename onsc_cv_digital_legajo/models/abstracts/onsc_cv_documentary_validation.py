@@ -182,7 +182,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                     'legajo_id': legajo.id,
                     'origin_record_id': self.id
                 })
-                legajo_record = LegajoModel.create(legajo_record_vals)
+                LegajoModel.create(legajo_record_vals)
         return True
 
     def _update_legajo_record_vals(self, vals):
