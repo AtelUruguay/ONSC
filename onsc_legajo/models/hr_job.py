@@ -434,13 +434,14 @@ class HrJobRoleLine(models.Model):
             rec.user_role_id_domain = self._user_role_id_domain()
 
     def _user_role_id_domain(self):
+        user_level = self.env.user.employee_id.job_id.sequence
         if self._context.get('bulked_creation'):
             return json.dumps([('id', '!=', False)])
         if self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc'):
-            args = []
+            args = [('sequence', '>=', user_level)]
         else:
-            args = [('is_byinciso', '=', True)]
+            args = [('sequence', '>=', user_level), ('is_byinciso', '=', True)]
         roles = self.env['res.users.role'].search(args)
         return json.dumps([('id', 'in', roles.ids)])
 
