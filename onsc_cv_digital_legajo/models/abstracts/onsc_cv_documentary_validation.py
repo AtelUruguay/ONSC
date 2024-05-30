@@ -128,7 +128,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
 
     def write(self, vals):
         result = super(ONSCCVAbstractFileValidation, self).write(vals)
-        if hasattr(self, 'cv_digital_id'):
+        if hasattr(self, 'cv_digital_id') and not self._context.get('ignore_documentary_status'):
             self.mapped('cv_digital_id').button_legajo_update_documentary_validation_sections_tovalidate()
         return result
 
@@ -153,7 +153,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         self.with_context(updating_call_instances = True).update_call_instances(args)
         result = super(ONSCCVAbstractFileValidation, self).button_documentary_approve()
         if not self._context.get('updating_call_instances') and len(self) == 1 and self.cv_digital_id.type:
-            self.set_legajo_validated_records()
+            self.with_context(ignore_documentary_status = True).set_legajo_validated_records()
         return result
 
     def set_legajo_validated_records(self):
@@ -174,7 +174,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
             if legajo_record:
                 legajo_record_vals = self.copy_data()
                 legajo_record_vals = self._update_legajo_record_vals(legajo_record_vals[0])
-                legajo_record.write(legajo_record_vals)
+                legajo_record.with_context(is_legajo_record=True).write(legajo_record_vals)
             # sino creo uno nuevo
             else:
                 legajo_record_vals = self.copy_data(default={
@@ -182,7 +182,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
                     'legajo_id': legajo.id,
                     'origin_record_id': self.id
                 })
-                LegajoModel.create(legajo_record_vals)
+                LegajoModel.with_context(is_legajo_record=True).create(legajo_record_vals)
         return True
 
     def _update_legajo_record_vals(self, vals):

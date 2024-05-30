@@ -16,7 +16,11 @@ HISTORY_COLUMNS = [
     'professional_link_id',
     'responsible_type',
     'hours_worked_monthly',
-    'other_relevant_information'
+    'other_relevant_information',
+    # HISTORICOS
+    'documentary_validation_date',
+    'documentary_validation_state',
+    'documentary_user_id'
 ]
 TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',

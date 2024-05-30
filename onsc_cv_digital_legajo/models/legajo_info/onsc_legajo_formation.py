@@ -14,6 +14,10 @@ HISTORY_COLUMNS = [
     'other_relevant_information',
     'study_certificate_file',
     'study_certificate_filename',
+    # HISTORICOS
+    'documentary_validation_date',
+    'documentary_validation_state',
+    'documentary_user_id'
 ]
 TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',
@@ -64,7 +68,11 @@ ADVANCED_HISTORY_COLUMNS = [
     'study_certificate_filename',
     'other_relevant_information',
     'knowledge_acquired_ids',
-    'knowledge_thesis_ids'
+    'knowledge_thesis_ids',
+    # HISTORICOS
+    'documentary_validation_date',
+    'documentary_validation_state',
+    'documentary_user_id'
 ]
 ADVANCED_TREE_HISTORY_COLUMNS = {
     'start_date': 'Inicio',

@@ -22,7 +22,11 @@ HISTORY_COLUMNS = [
     'hours_worked_monthly',
     'additional_information',
     'other_relevant_information',
-    'knowledge_acquired_ids'
+    'knowledge_acquired_ids',
+    # HISTORICOS
+    'documentary_validation_date',
+    'documentary_validation_state',
+    'documentary_user_id'
 ]
 
 TREE_HISTORY_COLUMNS = {

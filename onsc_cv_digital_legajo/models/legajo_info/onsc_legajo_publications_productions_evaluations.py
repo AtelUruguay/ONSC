@@ -22,7 +22,11 @@ HISTORY_COLUMNS = [
     'paid_activity',
     'additional_information',
     'subtype',
-    'applied_knowledge_ids'
+    'applied_knowledge_ids',
+    # HISTORICOS
+    'documentary_validation_date',
+    'documentary_validation_state',
+    'documentary_user_id'
 ]
 
 TREE_HISTORY_COLUMNS = {
