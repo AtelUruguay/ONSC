@@ -817,7 +817,7 @@ class ONSCCVDigital(models.Model):
     def _get_abstract_ue_security(self):
         return self.user_has_groups('onsc_cv_digital_legajo.group_legajo_validador_doc_ue')
 
-    def cron_legajo_update_documentary_validation_sections_tovalidate(self):
+    def cron_legajo_update_documentary_validation_sections_tovalidate(self, cv_ids = []):
         """
         RECUPERACIÓN DE SECCIONES A VALIDAR SI CAMBIA LA CONFIGURACION
         """
@@ -825,7 +825,10 @@ class ONSCCVDigital(models.Model):
         CVDigital = self.sudo().with_context(ignore_restrict=True)
         offset = self.env['ir.config_parameter'].sudo().get_param('parameter_cv_digital_sections2validate_offset')
         last_id = self.env['ir.config_parameter'].sudo().get_param('parameter_cv_digital_sections2validate_last_id')
-        cv_digitals = CVDigital.search([('type', '=', 'cv'), ('id', '>', int(last_id))], limit=int(offset))
+        if len(cv_ids):
+            cv_digitals = CVDigital.search([('type', '=', 'cv'), ('id', 'in', cv_ids)])
+        else:
+            cv_digitals = CVDigital.search([('type', '=', 'cv'), ('id', '>', int(last_id))], limit=int(offset))
         last_cv_digital = cv_digitals[-1]
         cv_digitals._compute_legajo_documentary_validation_state()
         self.env['ir.config_parameter'].sudo().set_param(
