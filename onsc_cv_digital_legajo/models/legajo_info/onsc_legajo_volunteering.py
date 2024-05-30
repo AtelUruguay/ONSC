@@ -15,7 +15,11 @@ HISTORY_COLUMNS = [
     'description_tasks',
     'inciso_id',
     'operating_unit_id',
-    'company_name_calc'
+    'company_name_calc',
+    # HISTORICOS
+    'documentary_validation_date',
+    'documentary_validation_state',
+    'documentary_user_id'
 ]
 
 TREE_HISTORY_COLUMNS = {

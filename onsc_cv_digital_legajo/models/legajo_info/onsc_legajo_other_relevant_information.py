@@ -4,6 +4,10 @@ from odoo import fields, models
 HISTORY_COLUMNS = [
     'theme',
     'description',
+    # HISTORICOS
+    'documentary_validation_date',
+    'documentary_validation_state',
+    'documentary_user_id'
 ]
 
 TREE_HISTORY_COLUMNS = [

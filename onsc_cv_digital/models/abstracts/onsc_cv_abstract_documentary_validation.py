@@ -144,7 +144,7 @@ class ONSCCVAbstractFileValidation(models.AbstractModel):
         return res
 
     def write(self, vals):
-        if not vals.get('documentary_validation_state', False) and self._update_custom_write_date(vals):
+        if not self._context.get('ignore_documentary_status', False) and not vals.get('documentary_validation_state', False) and self._update_custom_write_date(vals):
             vals.update({
                 'custom_write_date': fields.Datetime.now(),
                 'documentary_validation_state': 'to_validate'
