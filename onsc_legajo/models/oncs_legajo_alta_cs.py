@@ -187,9 +187,8 @@ class ONSCLegajoAltaCS(models.Model):
                                                               'cancelled': [('readonly', True)]})
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
     state_id = fields.Many2one(
-        'res.country.state',
-        string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False)
+        'onsc.legajo.res.country.department',
+        string='Departamento donde desempeña funciones', copy=False)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False,
                                     readonly=False, states={'confirmed': [('readonly', True)],
                                                             'cancelled': [('readonly', True)]})

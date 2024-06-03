@@ -109,9 +109,8 @@ class ONSCLegajoCambioUO(models.Model):
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
     state_id = fields.Many2one(
-        'res.country.state',
-        string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False)
+        'onsc.legajo.res.country.department',
+        string='Departamento donde desempeña funciones', copy=False)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
 
     attached_document_discharge_ids = fields.One2many('onsc.legajo.attached.document', 'cambio_uo_id',

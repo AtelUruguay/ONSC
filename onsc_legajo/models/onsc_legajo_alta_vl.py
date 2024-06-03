@@ -183,9 +183,8 @@ class ONSCLegajoAltaVL(models.Model):
     ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN", copy=False)
 
     state_id = fields.Many2one(
-        'res.country.state',
-        string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False)
+        'onsc.legajo.res.country.department',
+        string='Departamento donde desempeña funciones', copy=False)
 
     should_disable_form_edit = fields.Boolean(string="Deshabilitar botón de editar",
                                               compute='_compute_should_disable_form_edit')
