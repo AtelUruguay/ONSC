@@ -178,7 +178,7 @@ class HrContract(models.Model):
     state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones',
-        copy=False)
+        copy=False, history=True)
 
     legajo_id = fields.Many2one('onsc.legajo', string='Legajo', compute='_compute_legajo_id', store=True)
 
