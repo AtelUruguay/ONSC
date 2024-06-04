@@ -424,8 +424,8 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append(record._fields['nroPlaza'].string)
             if record.income_mechanism_id.is_call_number_required and not record.call_number:
                 message.append(record._fields['call_number'].string)
-            if not record.state_id:
-                message.append(record._fields['state_id'].string)
+            if not record.legajo_state_id:
+                message.append(record._fields['legajo_state_id'].string)
             if not self.env.context.get('not_check_attached_document', False) and not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
             if record.health_provider_id and record.health_provider_id.code:
