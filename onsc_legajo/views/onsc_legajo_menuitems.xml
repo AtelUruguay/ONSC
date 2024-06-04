@@ -219,6 +219,13 @@
               parent="onsc_legajo_catalog_menu"
               groups="onsc_legajo.group_legajo_configurador"
               sequence="19"/>
+     <menuitem id="onsc_legajo_country_department_menu"
+              name="Departamento donde desempeña funciones"
+              action="onsc_legajo_res_country_department_action"
+              parent="onsc_legajo_catalog_menu"
+              groups="onsc_legajo.group_legajo_configurador"
+              sequence="20"/>
+
 
     <menuitem id="onsc_legajo_logs_menu"
               name="Logs"
