@@ -193,7 +193,7 @@
                                 <field name="security_job_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="is_responsable_uo"/>
-                                <field name="state_id"
+                                <field name="legajo_state_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                                 <field name="occupation_id"
                                        options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
