@@ -188,11 +188,6 @@ class ONSCLegajoAltaCS(models.Model):
                                                               'cancelled': [('readonly', True)]})
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
     is_responsable_uo = fields.Boolean(string="¿Responsable de UO?")
-    state_id = fields.Many2one(
-        'res.country.state',
-        string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False,
-        readonly=False, states={'confirmed': [('readonly', True)], 'cancelled': [('readonly', True)]})
     legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones', copy=False,
