@@ -108,7 +108,7 @@ class ONSCLegajoCambioUO(models.Model):
 
     security_job_id = fields.Many2one("onsc.legajo.security.job", string="Seguridad de puesto")
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
-    state_id = fields.Many2one(
+    legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones', copy=False)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación')
@@ -199,10 +199,10 @@ class ONSCLegajoCambioUO(models.Model):
             if record.job_id and record.date_start < record.job_id.start_date:
                 raise ValidationError(_("La fecha desde debe ser mayor o igual a la fecha del puesto actual"))
 
-    @api.constrains("department_id", "job_id", "security_job_id", "state_id")
+    @api.constrains("department_id", "job_id", "security_job_id", "legajo_state_id")
     def _check_department_id(self):
         for record in self:
-            is_same_state_id = record.contract_id.state_id == record.state_id
+            is_same_state_id = record.contract_id.legajo_state_id == record.legajo_state_id
             is_same_department = record.job_id.department_id == record.department_id
             is_same_security = record.job_id.security_job_id == record.security_job_id
             if is_same_state_id and is_same_department and is_same_security:
@@ -265,7 +265,7 @@ class ONSCLegajoCambioUO(models.Model):
     def onchange_contract_id(self):
         self.occupation_id = False
         self.security_job_id = False
-        self.state_id = self.contract_id.state_id.id
+        self.legajo_state_id = self.contract_id.legajo_state_id.id
 
     def unlink(self):
         if self.filtered(lambda x: x.state != 'borrador'):
@@ -363,7 +363,7 @@ class ONSCLegajoCambioUO(models.Model):
         if (self.department_id.id and not self.security_job_id.id) or (self.security_job_id.id and not self.department_id.id):
             raise ValidationError(_("Los valores de UO y Seguridad de puesto deben estar ambos vacíos o definidos. "
                                     "No se permite esa combinación con uno de los dos sin definir."))
-        if not self.department_id and not self.security_job_id and not self.state_id:
+        if not self.department_id and not self.security_job_id and not self.legajo_state_id:
             raise ValidationError(_("Si los valores de UO y Seguridad de puesto no están definidos "
                                     "al menos el Departamento donde desempeña funciones debe estar establecido."))
         self._check_security_job_id()
@@ -389,7 +389,7 @@ class ONSCLegajoCambioUO(models.Model):
         show_warning = False
         is_change_department_id = self.job_id.department_id != self.department_id
         is_change_security_job_id = self.job_id.security_job_id != self.security_job_id
-        is_change_state_id = self.contract_id.state_id != self.state_id
+        is_change_state_id = self.contract_id.legajo_state_id != self.legajo_state_id
 
         if is_change_department_id or is_change_security_job_id:
             if self.job_id.start_date == self.date_start:
@@ -412,7 +412,7 @@ class ONSCLegajoCambioUO(models.Model):
             new_job = Job
         if is_change_state_id:
             self.contract_id.write({
-                'state_id': self.state_id.id,
+                'legajo_state_id': self.legajo_state_id.id,
                 'eff_date': fields.Date.today()
             })
         self.write({'state': 'confirmado', 'is_error_synchronization': show_warning,

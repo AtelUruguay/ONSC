@@ -182,7 +182,7 @@ class ONSCLegajoAltaVL(models.Model):
     descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal", copy=False)
     ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN", copy=False)
 
-    state_id = fields.Many2one(
+    legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones', copy=False)
 

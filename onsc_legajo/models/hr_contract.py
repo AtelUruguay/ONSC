@@ -175,7 +175,7 @@ class HrContract(models.Model):
     extinction_commission_id = fields.Many2one("onsc.legajo.reason.extinction.commission",
                                                string="Motivo extinción de la comisión")
 
-    state_id = fields.Many2one(
+    legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones',
         copy=False, history=True)

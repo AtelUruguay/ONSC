@@ -186,7 +186,7 @@ class ONSCLegajoAltaCS(models.Model):
                                       readonly=False, states={'confirmed': [('readonly', True)],
                                                               'cancelled': [('readonly', True)]})
     security_job_id_domain = fields.Char(compute='_compute_security_job_id_domain')
-    state_id = fields.Many2one(
+    legajo_state_id = fields.Many2one(
         'onsc.legajo.res.country.department',
         string='Departamento donde desempeña funciones', copy=False)
     occupation_id = fields.Many2one('onsc.catalog.occupation', string='Ocupación', copy=False,
@@ -669,7 +669,7 @@ class ONSCLegajoAltaCS(models.Model):
         self.date_end_commission = False
         self.department_id = False
         self.security_job_id = False
-        self.state_id = False
+        self.Legajo_state_id = False
         self.occupation_id = False
         self.regime_commission_id = False
         self.reason_description = False
@@ -703,8 +703,8 @@ class ONSCLegajoAltaCS(models.Model):
             for required_field in REQUIRED_FIELDS:
                 if not eval('record.%s' % required_field):
                     message.append(record._fields[required_field].string)
-            if record.inciso_destination_id.is_central_administration and not record.state_id:
-                message.append(record._fields['state_id'].string)
+            if record.inciso_destination_id.is_central_administration and not record.legajo_state_id:
+                message.append(record._fields['legajo_state_id'].string)
             if record.inciso_origin_id.is_central_administration and not record.contract_id.sec_position:
                 message.append(record._fields['secPlaza'].string)
             if record.inciso_origin_id.is_central_administration and not record.inciso_origin_id:
@@ -844,7 +844,7 @@ class ONSCLegajoAltaCS(models.Model):
             'inciso_origin_id': self.inciso_origin_id.id,
             'operating_unit_origin_id': self.operating_unit_origin_id.id,
             'eff_date': fields.Date.today(),
-            'state_id': self.state_id.id,
+            'legajo_state_id': self.legajo_state_id.id,
         }
         if self.type_cs == 'out2ac':
             _regime_id = self.env['onsc.legajo.regime'].sudo().search([('is_fac2ac', '=', True)], limit=1).id
