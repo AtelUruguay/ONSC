@@ -11,7 +11,7 @@ class ONSCLegajoCountryDepartment(models.Model):
     _description = "Departamento donde desempeña funciones"
 
     name = fields.Char(string="Nombre", required=True)
-    code = fields.Char(string="Codigo")
+    code = fields.Char(string="Código", required=True)
     active = fields.Boolean("Activo", default=True)
     state_id = fields.Many2one('res.country.state', string='Departamento',
                                domain="[('country_id.code','=','UY')]", copy=False)
