@@ -472,9 +472,9 @@ class ONSCLegajoAltaVL(models.Model):
                 if not count and record.department_id.manager_id:
                     message.append("La UO ya tiene un responsable")
 
-            if len(record.reason_description) > 50:
+            if record.reason_description and len(record.reason_description) > 50:
                 raise ValidationError("El campo Descripción del motivo no puede tener más de 50 caracteres.")
-            if len(record.resolution_description) > 100:
+            if record.resolution_description and len(record.resolution_description) > 100:
                 raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
         if message:
             fields_str = '\n'.join(message)
