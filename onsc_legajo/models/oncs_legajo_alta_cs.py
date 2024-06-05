@@ -633,6 +633,13 @@ class ONSCLegajoAltaCS(models.Model):
             if record.date_end_commission and record.date_start_commission and record.date_end_commission < record.date_start_commission:
                 raise ValidationError(_("La fecha hasta debe ser mayor o igual que la fecha desde"))
 
+    @api.constrains("reason_description", "resolution_description")
+    def _check_len_description(self):
+        for record in self:
+            if record.reason_description and len(record.reason_description) > 50:
+                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+            if record.resolution_description and len(record.resolution_description) > 100:
+                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
     @api.onchange('employee_id', 'partner_id')
     def onchange_employee_id(self):
         contracts = self.env['hr.contract'].sudo().search([
