@@ -550,7 +550,7 @@ class ONSCLegajoAltaVL(models.Model):
             'description_day': self.descripcionJornadaFormal,
             'retributive_day_id': self.retributive_day_id.id,
             'id_alta': self.id_alta,
-            'state_id': self.state_id.id,
+            'legajo_state_id': self.legajo_state_id.id,
             'eff_date': fields.Date.today(),
             #
             'wage': 1
