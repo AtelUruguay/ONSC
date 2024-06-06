@@ -760,6 +760,7 @@ class ONSCMigrationLine(models.Model):
     resolution_dis_type = fields.Char(string='Tipo de resolución de la baja')
 
     partner_id = fields.Many2one('res.partner', string='Contacto')
+    is_uo_manager = fields.Boolean(string="Responsable UO")
 
     def validate_line(self, message_error):
         for required_field in REQUIRED_FIELDS:
