@@ -278,7 +278,9 @@ class ONSCLegajoRoleAssignment(models.Model):
                 raise ValidationError(_("No se ha identificado un Puesto para ese Funcionario en ese Contrato"))
             if record.security_job_id and not record.is_uo_manager:
                 raise ValidationError(_("La Seguridad de puesto debe ser de Responsable de UO"))
-            if record.security_job_id and not Job.is_job_available_for_manager(record.department_id, record.date_start):
+            isnt_same_security = (record.security_job_id != record.job_id.security_job_id or not record.job_id.is_uo_manager)
+            if record.security_job_id and isnt_same_security and not Job.is_this_job_available_for_manager(
+                    record.job_id, record.department_id, record.date_start):
                 raise ValidationError(_("No se puede tener más de un responsable para la misma UO"))
 
     @api.constrains("security_job_id", "department_id", "date_start", "legajo_state", "job_id")
@@ -326,8 +328,10 @@ class ONSCLegajoRoleAssignment(models.Model):
                 lambda x: x.end_date is False or x.end_date >= fields.Date.today())
         if len(job_ids) == 1:
             self.job_id = job_ids[0].id
-            if job_ids[0].is_uo_manager:
+            if job_ids[0].security_job_id.active:
                 self.security_job_id = job_ids[0].security_job_id.id
+            else:
+                self.security_job_id = False
         else:
             self.job_id = False
             self.security_job_id = False
@@ -367,7 +371,8 @@ class ONSCLegajoRoleAssignment(models.Model):
     def action_confirm(self):
         self.ensure_one()
         self._validate_confirm()
-        if self.job_security_job_id == self.security_job_id:
+        # TODO MISMO PUESTO ES MISMA SEGURIDAD Y QUE EL PUESTO TENGA LA MARCA DE RESPONSABLE DE UO
+        if self.job_security_job_id == self.security_job_id and self.job_id.is_uo_manager:
             self.suspend_security()._create_job_role_assignment(self.job_id)
         else:
             self.suspend_security()._copy_job_and_create_job_role_assignment()
@@ -375,14 +380,13 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def _update_job_role_assignments_date_end(self):
         if len(self.job_role_assignment_ids) > 1:
-            last_job_role_assignment = self.job_role_assignment_ids.sorted(key=lambda x: x.date_start, reverse=True)[0]
+            last_job_role_assignment = self.job_role_assignment_ids.sorted(key=lambda x: x.id, reverse=True)[0]
         else:
             last_job_role_assignment = self.job_role_assignment_ids
         ws7_operation = self._context.get('ws7_operation', False)
         if ws7_operation:
             last_job_role_assignment.job_id._message_log(
                 body=_('Se finaliza la Asignación de funciones por notificación de %s' % (ws7_operation)))
-        # for job_role_assignment_id in self.job_role_assignment_ids.sorted(key=lambda x: x.date_end, reverse=True):
         cond1 = not last_job_role_assignment.date_end or last_job_role_assignment.date_end != self.date_end
         cond2 = last_job_role_assignment.date_end and not self.date_end
         if cond1 or cond2:
@@ -392,8 +396,19 @@ class ONSCLegajoRoleAssignment(models.Model):
 
     def _copy_job_and_create_job_role_assignment(self):
         Job = self.env['hr.job']
-        self.job_id.suspend_security().with_context(no_check_write=True, is_copy_job=True).deactivate(
-            self.date_start - relativedelta(days=1))
+        if self.job_id and self.date_start < self.job_id.start_date:
+            raise ValidationError(_("La fecha de inicio debe ser mayor o igual a la fecha del puesto actual"))
+        # SI LA FECHA DE INICIO ES LA MISMA FECHA DE INICIO DEL PUESTO ACTUAL ES UNA CORRECCION DE PUESTO
+        # ESTO SIGNIFICA QUE SE DEBE CERRAR EL MISMO DIA (NO EL DIA ANTES) Y ARCHIVARLO
+        if self.job_id and self.date_start == self.job_id.start_date:
+            self.job_id.suspend_security().with_context(no_check_write=True, is_copy_job=True).deactivate(
+                self.date_start)
+            self.job_id.suspend_security().write({'active': False})
+        # SINO ES UNA DESACTIVACION NORMAL
+        else:
+            self.job_id.suspend_security().with_context(no_check_write=True, is_copy_job=True).deactivate(
+                self.date_start - relativedelta(days=1))
+
         new_job = Job.suspend_security().with_context(no_check_write=True, is_copy_job=True).create_job(
             self.contract_id,
             self.department_id,

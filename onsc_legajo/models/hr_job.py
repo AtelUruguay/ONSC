@@ -291,7 +291,7 @@ class HrJob(models.Model):
     def deactivate(self, date_end):
         for job in self.suspend_security().filtered(
                 lambda x: (x.end_date is False or x.end_date > date_end) and x.start_date <= date_end):
-            job.role_assignment_ids.write({
+            job.role_assignment_ids.filtered(lambda x: x.date_end is False or x.date_end > date_end).write({
                 'date_end': date_end
             })
             job.end_date = date_end
@@ -336,6 +336,27 @@ class HrJob(models.Model):
                 '&', ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date),
                 ('department_id.is_manager_reserved', '=', True)
             ]
+        return self.search_count(args) == 0
+
+    def is_this_job_available_for_manager(self, job, department, date):
+        """
+
+        :param job: Record of hr.job
+        :param date: Fecha a chequear
+        :param nro_doc: Si se pasa es para chequear si no es el mismo funcionario
+        :return:
+        """
+        # TODO no se precisa por ahora definir para periodos cerrados
+        args = [
+            ('id', '!=', job.id),
+            ('department_id', '=', department.id),
+            ('is_uo_manager', '=', True),
+            '|',
+            '|',
+            ('start_date', '>=', date),
+            '&', ('start_date', '<=', date), '|', ('end_date', '=', False), ('end_date', '>=', date),
+            ('department_id.is_manager_reserved', '=', True)
+        ]
         return self.search_count(args) == 0
 
     def update_managers(self):
@@ -413,13 +434,14 @@ class HrJobRoleLine(models.Model):
             rec.user_role_id_domain = self._user_role_id_domain()
 
     def _user_role_id_domain(self):
+        user_level = self.env.user.employee_id.job_id.sequence
         if self._context.get('bulked_creation'):
             return json.dumps([('id', '!=', False)])
         if self.user_has_groups(
                 'onsc_legajo.group_legajo_configurador_puesto_ajuste_seguridad_manual_informatica_onsc'):
-            args = []
+            args = [('sequence', '>=', user_level)]
         else:
-            args = [('is_byinciso', '=', True)]
+            args = [('sequence', '>=', user_level), ('is_byinciso', '=', True)]
         roles = self.env['res.users.role'].search(args)
         return json.dumps([('id', 'in', roles.ids)])
 

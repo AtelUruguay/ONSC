@@ -27,7 +27,7 @@ class ONSCLegajoSecurityJob(models.Model):
         for rec in self:
             rec.user_role_ids_domain = self._user_role_ids_domain()
 
-    @api.depends('user_role_ids', 'user_role_ids.sequence')
+    @api.depends('user_role_ids')
     def _compute_sequence(self):
         for rec in self:
             rec.sequence = rec.user_role_ids and rec.user_role_ids.sorted(
@@ -49,33 +49,34 @@ class ONSCLegajoSecurityJob(models.Model):
         JobLine = self.env['hr.job.role.line'].sudo()
         try:
             for record in self:
-                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO')
-                today = fields.Date.today()
-                jobs = Job.search([
-                    ('security_job_id', '=', record.id),
-                    '|', ('end_date', '>=', today), ('end_date', '=', False),
-                ])
-                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO LIMPIANDO LINEAS')
-                sql_query = """DELETE FROM hr_job_role_line WHERE hr_job_role_line.type='system' AND job_id IN %s"""
-                self.env.cr.execute(sql_query, [tuple(jobs.ids)])
-                sql_query = """DELETE FROM hr_job_role_line WHERE hr_job_role_line.type='manual' AND job_id IN %s AND user_role_id IN %s"""
-                self.env.cr.execute(sql_query, [tuple(jobs.ids), tuple(record.user_role_ids.ids)])
-                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO INICIANDO BURBLE')
-                for user_role_id in record.user_role_ids:
-                    new_lines = []
-                    counter = 0
-                    for job in jobs:
-                        new_lines.append({
-                            'job_id': job.id,
-                            'user_role_id': user_role_id.id,
-                            'type': 'system',
-                            'start_date': job.start_date if job.start_date else fields.Date.today(),
-                            'end_date': job.end_date
-                        })
-                        counter += 1
-                    _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO BULKED CREATION %s' % (counter))
-                    JobLine.with_context(bulked_creation=True).create(new_lines)
-                # jobs.write({'role_ids': new_lines})
-                _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO FINALIZANDO')
+                with self._cr.savepoint():
+                    _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO')
+                    today = fields.Date.today()
+                    jobs = Job.search([
+                        ('security_job_id', '=', record.id),
+                        '|', ('end_date', '>=', today), ('end_date', '=', False),
+                    ])
+                    _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO LIMPIANDO LINEAS')
+                    sql_query = """DELETE FROM hr_job_role_line WHERE hr_job_role_line.type='system' AND job_id IN %s"""
+                    self.env.cr.execute(sql_query, [tuple(jobs.ids)])
+                    sql_query = """DELETE FROM hr_job_role_line WHERE hr_job_role_line.type='manual' AND job_id IN %s AND user_role_id IN %s"""
+                    self.env.cr.execute(sql_query, [tuple(jobs.ids), tuple(record.user_role_ids.ids)])
+                    _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO INICIANDO BURBLE')
+                    for user_role_id in record.user_role_ids:
+                        new_lines = []
+                        counter = 0
+                        for job in jobs:
+                            new_lines.append({
+                                'job_id': job.id,
+                                'user_role_id': user_role_id.id,
+                                'type': 'system',
+                                'start_date': job.start_date if job.start_date else fields.Date.today(),
+                                'end_date': job.end_date
+                            })
+                            counter += 1
+                        _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO BULKED CREATION %s' % (counter))
+                        JobLine.with_context(bulked_creation=True).create(new_lines)
+                    # jobs.write({'role_ids': new_lines})
+                    _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO FINALIZANDO')
         except Exception as e:
             pass
