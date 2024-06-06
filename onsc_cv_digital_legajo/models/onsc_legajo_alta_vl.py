@@ -423,8 +423,8 @@ class ONSCLegajoAltaVL(models.Model):
                 message.append(record._fields['nroPlaza'].string)
             if record.income_mechanism_id.is_call_number_required and not record.call_number:
                 message.append(record._fields['call_number'].string)
-            if not record.state_id:
-                message.append(record._fields['state_id'].string)
+            if not record.legajo_state_id:
+                message.append(record._fields['legajo_state_id'].string)
             if not self.env.context.get('not_check_attached_document', False) and not record.attached_document_ids:
                 message.append(_("Debe haber al menos un documento adjunto"))
             if record.health_provider_id and record.health_provider_id.code:
@@ -447,9 +447,9 @@ class ONSCLegajoAltaVL(models.Model):
                 if not count and record.department_id.manager_id:
                     message.append("La UO ya tiene un responsable")
 
-            if len(record.reason_description) > 50:
+            if record.reason_description and len(record.reason_description) > 50:
                 raise ValidationError("El campo Descripción del motivo no puede tener más de 50 caracteres.")
-            if len(record.resolution_description) > 100:
+            if record.resolution_description and len(record.resolution_description) > 100:
                 raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
         if message:
             fields_str = '\n'.join(message)
