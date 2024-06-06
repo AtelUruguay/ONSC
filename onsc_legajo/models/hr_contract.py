@@ -280,6 +280,21 @@ class HrContract(models.Model):
         for rec in self:
             rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
 
+    @api.constrains("reason_description", "resolution_description", "reason_discharge", "reason_deregistration",
+                    "resolution_description_deregistration")
+    def _check_len_description(self):
+        for record in self:
+            if record.reason_description and len(record.reason_description) > 50:
+                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+            if record.reason_discharge and len(record.reason_discharge) > 50:
+                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+            if record.reason_deregistration and len(record.reason_deregistration) > 50:
+                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+            if record.resolution_description and len(record.resolution_description) > 100:
+                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+            if record.resolution_description_deregistration and len(record.resolution_description_deregistration) > 100:
+                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+
     @api.onchange('inciso_id')
     def onchange_inciso(self):
         self.operating_unit_id = False
