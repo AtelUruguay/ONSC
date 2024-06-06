@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import fields, models, api
+from odoo.exceptions import ValidationError
 
 
 class ONSCLegajoCausesDischarge(models.Model):
@@ -30,6 +31,14 @@ class ONSCLegajoCausesDischarge(models.Model):
         ('name_uniq', 'unique(name)', u'El nombre del causal de egreso debe ser único'),
     ]
 
+    @api.constrains("reason_description", "resolution_description")
+    def _check_len_description(self):
+        for record in self:
+            if record.reason_description and len(record.reason_description) > 50:
+                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+            if record.resolution_description and len(record.resolution_description) > 100:
+                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")
+
     @api.onchange('is_require_extended')
     def onchange_require_extended(self):
         if not self.is_require_extended:
@@ -58,3 +67,11 @@ class ONSCLegajoCausesDischargeLine(models.Model):
     reason_description = fields.Char(string='Descripción del motivo')
     resolution_description = fields.Char(string='Descripción de la resolución')
     norm_id = fields.Many2one('onsc.legajo.norm', string='Norma')
+
+    @api.constrains("reason_description", "resolution_description")
+    def _check_len_description(self):
+        for record in self:
+            if record.reason_description and len(record.reason_description) > 50:
+                raise ValidationError("El campo Descripción del Motivo no puede tener más de 50 caracteres.")
+            if record.resolution_description and len(record.resolution_description) > 100:
+                raise ValidationError("El campo Descripción de la resolución no puede tener más de 100 caracteres.")

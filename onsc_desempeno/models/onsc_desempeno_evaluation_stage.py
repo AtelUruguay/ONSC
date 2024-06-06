@@ -193,6 +193,8 @@ class ONSCDesempenoEvaluationStage(models.Model):
             if int(record.start_date.strftime('%Y')) != record.general_cycle_id.year:
                 raise ValidationError(
                     _("La fecha inicio debe estar dentro del año %s") % record.general_cycle_id.year)
+            if record.start_date > record.end_date_environment:
+                raise ValidationError(_(u"La fecha inicio debe ser menor o igual a la Fecha fin def. entorno"))
 
     @api.onchange('general_cycle_id')
     def onchange_general_cycle_id(self):
