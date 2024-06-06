@@ -182,10 +182,9 @@ class ONSCLegajoAltaVL(models.Model):
     descripcionJornadaFormal = fields.Char(string="Descripción Jornada Formal", copy=False)
     ws4_user_id = fields.Many2one("res.users", string="Usuario que manda aprobación a CGN", copy=False)
 
-    state_id = fields.Many2one(
-        'res.country.state',
-        string='Departamento donde desempeña funciones',
-        domain="[('country_id.code','=','UY')]", copy=False,
+    legajo_state_id = fields.Many2one(
+        'onsc.legajo.res.country.department',
+        string='Departamento donde desempeña funciones', copy=False,
         readonly=True,
         states={'borrador': [('readonly', False)], 'error_sgh': [('readonly', False)]}
     )
@@ -502,7 +501,7 @@ class ONSCLegajoAltaVL(models.Model):
             'description_day': self.descripcionJornadaFormal,
             'retributive_day_id': self.retributive_day_id.id,
             'id_alta': self.id_alta,
-            'state_id': self.state_id.id,
+            'legajo_state_id': self.legajo_state_id.id,
             'eff_date': fields.Date.today(),
             #
             'wage': 1
