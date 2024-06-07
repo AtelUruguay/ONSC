@@ -125,7 +125,8 @@ class ONSCMigration(models.Model):
             'resolution_date': self.convert_datetime(row[58]),
             'resolution_type': row[59],
             'retributive_day_formal': self.convert_int(row[83]),
-            'retributive_day_formal_desc': row[84], })
+            'retributive_day_formal_desc': row[84],
+            'is_uo_manager': row[98]})
 
     def _set_m2o_values(self, row_dict, row):
         country_id = row[0] and self.get_country(str(row[0])) or False
@@ -180,6 +181,8 @@ class ONSCMigration(models.Model):
                                                                       program_project_id and program_project_id[
                                                                           0]) or False
 
+        legajo_state_id = row[99] and self.get_legajo_state_id(str(row[99])) or False
+
         row_dict.update({
             'country_id': country_id and country_id[0],
             'doc_type_id': doc_type_id and doc_type_id[0],
@@ -208,6 +211,8 @@ class ONSCMigration(models.Model):
             'retributive_day_id': row[82] and retributive_day_id and retributive_day_id[0],
             # 'retributive_day_formal_id': retributive_day_formal_id,
             'security_job_id': security_job_id and security_job_id[0],
+            'legajo_state_id': legajo_state_id and legajo_state_id[0]
+
         })
         if not row[71]:
             department_id = row[69] and self.get_department(str(row[69]),
@@ -325,6 +330,7 @@ class ONSCMigration(models.Model):
                         row_dict['resolution_dis_description'] = row[5]
                         row_dict['resolution_dis_date'] = self.convert_datetime(row[96])
                         row_dict['resolution_dis_type'] = row[97]
+
 
                     cleaned_data = {}
                     for clave, valor in row_dict.items():
@@ -630,6 +636,11 @@ class ONSCMigration(models.Model):
         self._cr.execute("""SELECT id FROM onsc_legajo_commission_regime WHERE cgn_code = %s """, (code,))
         return self._cr.fetchone()
 
+    def get_legajo_state_id(self, code):
+        self._cr.execute("""SELECT id FROM onsc_legajo_res_country_department WHERE code = %s""",
+                         (code,))
+        return self._cr.fetchone()
+
 
 class ONSCMigrationLine(models.Model):
     _name = "onsc.migration.line"
@@ -761,6 +772,8 @@ class ONSCMigrationLine(models.Model):
 
     partner_id = fields.Many2one('res.partner', string='Contacto')
     is_uo_manager = fields.Boolean(string="Responsable UO")
+    legajo_state_id = fields.Many2one('onsc.legajo.res.country.department',
+                                      string='Departamento donde desempeña funciones')
 
     def validate_line(self, message_error):
         for required_field in REQUIRED_FIELDS:
@@ -1209,7 +1222,9 @@ class ONSCMigrationLine(models.Model):
                 'cv_address_zip': self.address_zip,
                 'cv_address_block': self.address_block,
                 'cv_address_sandlot': self.address_sandlot,
-                'id_alta': self.id_movimiento
+                'id_alta': self.id_movimiento,
+                'is_uo_manager': self.is_uo_manager,
+                'legajo_state_id': self.legajo_state_id.id if self.legajo_state_id else False
 
             }
             altavl = AltaVL.with_context(is_migration=True).create(data_alta_vl)
@@ -1283,7 +1298,8 @@ class ONSCMigrationLine(models.Model):
             'regime_id': self.regime_id.id,
             'state_square_id': self.state_place_id.id,
             'call_number': self.call_number,
-            'wage': 1
+            'wage': 1,
+            'legajo_state_id': self.legajo_state_id.id,
         }
 
         if not self.type_commission:
@@ -1301,18 +1317,18 @@ class ONSCMigrationLine(models.Model):
                 'resolution_type': self.resolution_type,
                 'norm_code_id': self.norm_id.id,
                 'occupation_id': self.occupation_id.id,
-
             })
             contracts = Contract.suspend_security().create(vals_contract1)
-            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
-                                                                                           self.create_date):
+            if self.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+                                                                           self.create_date):
                 raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.department_id and self.security_job_id:
                 Job.create_job(
                     contracts,
                     self.department_id,
                     self.date_start,
-                    self.security_job_id
+                    self.security_job_id,
+                    is_uo_manager=self.is_uo_manager,
                 )
         else:
 
@@ -1386,15 +1402,16 @@ class ONSCMigrationLine(models.Model):
             if not self.inciso_des_id.is_central_administration:
                 contracts |= contract1
 
-            if self.security_job_id.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
-                                                                                           self.date_start_commission):
+            if self.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+                                                                           self.date_start_commission):
                 raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:
                 Job.create_job(
                     contract2,
                     self.department_id,
                     self.date_start_commission,
-                    self.security_job_id
+                    self.security_job_id,
+                    is_uo_manager=self.is_uo_manager,
                 )
 
         return contracts
