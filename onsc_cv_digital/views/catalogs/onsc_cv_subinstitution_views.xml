@@ -39,6 +39,7 @@
                 <field name="institution_id"/>
                 <field name="company_id" groups="base.group_multi_company" invisible="1"/>
                 <field name="state"/>
+                <field name="is_default"/>
                 <field name="active" invisible="1"/>
             </tree>
         </field>
@@ -73,6 +74,7 @@
                                    readonly="context.get('is_readonly') and context.get('default_institution_id')"
                                    force_save="1"/>
                             <field name="company_id" options="{'no_create': True}" groups="base.group_multi_company" invisible="1"/>
+                            <field name="is_default" readonly="context.get('is_readonly')"/>
                             <field name="active" invisible="1"/>
                         </group>
                         <group>
