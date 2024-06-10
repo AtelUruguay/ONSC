@@ -59,7 +59,6 @@ class ONSCCVCourseCertificate(models.Model):
     internal_course = fields.Boolean(
         "¿Fue dictado/a internamente por un miembro de su empresa/organismo/institución en el que trabaja o trabajó?")
     internal_course_name = fields.Char("Nombre de la empresa/organismo/institución")
-    is_readonly_institution = fields.Boolean("Institución y Sub institución solo lectura")
 
     @api.onchange('certificate_start_date')
     def onchange_certificate_start_date(self):
@@ -163,12 +162,12 @@ class ONSCCVCourseCertificate(models.Model):
             self.institution_id = Institution.search([('is_default', '=', True)]).id
             self.subinstitution_id = Subinstitution.search(
                 [('institution_id', '=', self.institution_id.id), ('is_default', '=', True)]).id
-            self.is_readonly_institution = True
         else:
             self.internal_course_name = False
-            self.is_readonly_institution = False
+            self.institution_id = False
+            self.subinstitution_id = False
 
-    # Auxiliary functions
+            # Auxiliary functions
     def _clear_fields(self):
         self.ensure_one()
         fields_list = []

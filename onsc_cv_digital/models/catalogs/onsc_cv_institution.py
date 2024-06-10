@@ -3,6 +3,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
+
 class ONSCCVIntitution(models.Model):
     _name = 'onsc.cv.institution'
     _description = 'Institución'
@@ -36,6 +37,7 @@ class ONSCCVIntitution(models.Model):
             if self.search_count([('is_default', '=', True),
                                   ('id', '!=', record.id)]):
                 raise ValidationError(u"La Institución por defecto debe ser única")
+
     def _get_conditional_unicity_message(self):
         return _("Ya existe un registro validado para %s, País: %s" % (self.name,
                                                                        self.country_id.display_name))
