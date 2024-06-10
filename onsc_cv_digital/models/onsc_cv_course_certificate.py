@@ -157,7 +157,7 @@ class ONSCCVCourseCertificate(models.Model):
     def onchange_internal_course(self):
         Institution = self.env['onsc.cv.institution'].suspend_security()
         Subinstitution = self.env['onsc.cv.subinstitution'].suspend_security()
-        fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución")
+
         if self.internal_course:
             self.institution_id = Institution.search([('is_default', '=', True)]).id
             self.subinstitution_id = Subinstitution.search(
