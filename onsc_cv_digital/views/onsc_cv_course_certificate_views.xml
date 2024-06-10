@@ -19,7 +19,7 @@
                             <field name="internal_course"  attrs="{'invisible': [('record_type', '!=', 'course')]}" />
                             <field name="internal_course_name" attrs="{'invisible': [('internal_course', '=', False)]}"/>
                             <field name="institution_id"
-                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': [('is_readonly_institution', '=', True)}"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': [('is_readonly_institution', '=', True)]}"
                                    domain="institution_id_domain"
                                    context="{'default_is_unformal_education': True,'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="subinstitution_id"

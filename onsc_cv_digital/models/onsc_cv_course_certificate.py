@@ -67,8 +67,6 @@ class ONSCCVCourseCertificate(models.Model):
             self.start_date = False
             return cv_warning(_(u"La fecha de inicio debe ser menor que la fecha actual"))
 
-
-
     @api.depends('course_title', 'certificate_id', 'record_type')
     def _compute_name(self):
         for rec in self:
@@ -158,7 +156,13 @@ class ONSCCVCourseCertificate(models.Model):
 
     @api.onchange('internal_course')
     def onchange_internal_course(self):
+        Institution = self.env['onsc.cv.institution'].suspend_security()
+        Subinstitution = self.env['onsc.cv.subinstitution'].suspend_security()
+        fields.Many2one("onsc.cv.subinstitution", string=u"Sub institución")
         if self.internal_course:
+            self.institution_id = Institution.search([('is_default', '=', True)]).id
+            self.subinstitution_id = Subinstitution.search(
+                [('institution_id', '=', self.institution_id.id), ('is_default', '=', True)]).id
             self.is_readonly_institution = True
         else:
             self.internal_course_name = False
