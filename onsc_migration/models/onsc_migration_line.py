@@ -1223,6 +1223,7 @@ class ONSCMigrationLine(models.Model):
                 'cv_address_block': self.address_block,
                 'cv_address_sandlot': self.address_sandlot,
                 'id_alta': self.id_movimiento,
+                'is_responsable_uo': self.is_uo_manager,
                 'legajo_state_id': self.legajo_state_id.id if self.legajo_state_id else False
 
             }
