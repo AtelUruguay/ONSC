@@ -16,12 +16,14 @@
                                    attrs="{'invisible': [('record_type', '!=', 'course')],'required': [('record_type', '=', 'course')]}"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="internal_course"  attrs="{'invisible': [('record_type', '!=', 'course')]}" />
+                            <field name="internal_course_name" attrs="{'invisible': [('internal_course', '=', False)]}"/>
                             <field name="institution_id"
-                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')]}"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': [('is_readonly_institution', '=', True)}"
                                    domain="institution_id_domain"
                                    context="{'default_is_unformal_education': True,'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="subinstitution_id"
-                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': [('institution_id', '=', False)]}"
+                                   attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': ['|',('institution_id', '=', False),('is_readonly_institution', '=', False)]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
                             <field name="institution_cert_id"
@@ -54,6 +56,7 @@
                             <field name="record_type" invisible="1"/>
                             <field name="institution_id_domain" invisible="1"/>
                             <field name="country_id_domain" invisible="1"/>
+                            <field name="is_readonly_institution" invisible="1"/>
                         </group>
                         <group>
                             <field name="state"

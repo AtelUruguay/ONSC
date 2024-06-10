@@ -2,8 +2,9 @@
 
 import json
 
-from odoo import fields, models, api, _
 from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as cv_warning
+
+from odoo import fields, models, api, _
 
 TYPES = [('course', 'Curso'), ('certificate', 'Certificado')]
 MODES = [('face_to_face', 'Presencial'), ('virtual', 'Virtual'), ('hybrid', 'Híbrido')]
@@ -55,12 +56,18 @@ class ONSCCVCourseCertificate(models.Model):
     certificate_start_date = fields.Date('Fecha de obtención del certificado / constancia',
                                          related='start_date', readonly=False)
     institution_id_domain = fields.Char(compute='_compute_institution_id_domain')
+    internal_course = fields.Boolean(
+        "¿Fue dictado/a internamente por un miembro de su empresa/organismo/institución en el que trabaja o trabajó?")
+    internal_course_name = fields.Char("Nombre de la empresa/organismo/institución")
+    is_readonly_institution = fields.Boolean("Institución y Sub institución solo lectura")
 
     @api.onchange('certificate_start_date')
     def onchange_certificate_start_date(self):
         if self.certificate_start_date and self.certificate_start_date > fields.Date.today():
             self.start_date = False
             return cv_warning(_(u"La fecha de inicio debe ser menor que la fecha actual"))
+
+
 
     @api.depends('course_title', 'certificate_id', 'record_type')
     def _compute_name(self):
@@ -149,6 +156,14 @@ class ONSCCVCourseCertificate(models.Model):
     def onchange_calc_name(self):
         self.name = self._calc_name_by_record_type()
 
+    @api.onchange('internal_course')
+    def onchange_internal_course(self):
+        if self.internal_course:
+            self.is_readonly_institution = True
+        else:
+            self.internal_course_name = False
+            self.is_readonly_institution = False
+
     # Auxiliary functions
     def _clear_fields(self):
         self.ensure_one()
@@ -232,6 +247,7 @@ class ONSCCVCourseCertificate(models.Model):
             ("certificate_id", ['id', 'name']),
             ("line_ids", self.env['onsc.cv.education.area.course']._get_json_dict()),
             ("knowledge_acquired_ids", ['id', 'name']),
+            "internal_course_name",
         ])
         return json_dict
 
