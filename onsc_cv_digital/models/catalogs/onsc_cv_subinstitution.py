@@ -13,7 +13,7 @@ class ONSCCVSubintitution(models.Model):
     name = fields.Char("Nombre de la sub institución", required=True, tracking=True)
     country_id = fields.Many2one('res.country', string=u'País', ondelete='restrict', required=True, tracking=True)
     institution_id = fields.Many2one('onsc.cv.institution', string=u'Institución', tracking=True, required=True)
-    is_default = fields.Boolean(string=u'Usar por defecto?', tracking=True)
+    is_default = fields.Boolean(string=u'¿Usar por defecto?', tracking=True)
 
     @api.constrains('institution_id', 'is_default')
     def _check_subinstitution_default_unicity(self):
