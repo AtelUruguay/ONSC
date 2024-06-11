@@ -78,6 +78,16 @@ class ONSCLegajo(models.Model):
         string="Otra información relevante"
     )
 
+    is_user_available_to_print_legajo = fields.Boolean(
+        string='¿Impresión de Legajo disponible para el usuario?',
+        compute='_compute_is_user_available_to_print_legajo'
+    )
+
+    def _compute_is_user_available_to_print_legajo(self):
+        is_user_valid = self.env.user.has_group('onsc_cv_digital_legajo.group_legajo_reporte_legajo')
+        for record in self:
+            record.is_user_available_to_print_legajo = is_user_valid or self._context.get('mi_legajo', False)
+
     def _compute_formations(self):
         for record in self:
             record.certificate_ids = record.cv_digital_id.certificate_ids.filtered(

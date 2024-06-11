@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <template id="external_layout_legajo">
+        <t t-if="not o" t-set="o" t-value="doc"/>
+
+        <t t-if="not company">
+            <!-- Multicompany -->
+            <t t-if="company_id">
+                <t t-set="company" t-value="company_id"/>
+            </t>
+            <t t-elif="o and 'company_id' in o and o.company_id.sudo()">
+                <t t-set="company" t-value="o.company_id.sudo()"/>
+            </t>
+            <t t-else="else">
+                <t t-set="company" t-value="res_company"/>
+            </t>
+        </t>
+
+
+        <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout {{  'o_layout_background' if company.layout_background in ['Geometric', 'Custom']  else  '' }}"
+             t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % company.layout_background_image.decode('utf-8') if company.layout_background_image and company.layout_background == 'Custom' else '/base/static/img/bg_background_template.jpg' if company.layout_background == 'Geometric' else ''}});"
+             t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
+             t-att-data-oe-lang="o and o.env.context.get('lang')">
+
+            <t t-out="0"/>
+        </div>
+
+        <div t-attf-class="footer o_standard_footer o_company_#{company.id}_layout">
+
+            <table style="border-spacing: 0; width:100% ;max-width: 600px;">
+                <tr>
+                    <td>
+                        <div t-if="report_type == 'pdf'">
+                            Generado el:
+                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M:%S')"/>
+                        </div>
+                    </td>
+                    <td></td>
+                    <td>
+                        <div t-if="report_type == 'pdf'">
+                            Hoja:
+                            <span class="page"/>
+                            de
+                            <span class="topage"/>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </template>
+
+    <template id="onsc_legajo_document">
+        <t t-call="onsc_cv_digital.external_layout_cv">
+            <div class="page">
+                <t t-set="partner_id" t-value="o.cv_digital_id.partner_id"/>
+                <t t-set="employee_id" t-value="o.employee_id"/>
+                <div class="container text-white py-1" style="background-color:rgb(82, 113, 255)">
+                    <div class="row">
+                        <div t-if="employee_id.image_1920" class="col-2 text-left text-md-center">
+                            <img t-att-src="image_data_uri(employee_id.image_1920)"
+                                 class="rounded-circle img-fluid" alt="Partner Photo"/>
+                        </div>
+                        <div class="col-10">
+                            <h1>
+                                <span t-field="employee_id.full_name"/>
+                            </h1>
+                            <table style="border-spacing: 0; width: 100%; max-width: 800px;">
+                                <tr>
+                                    <td style="width:55%">
+                                        <i class="fa fa-fw fa-envelope mr-2"/>
+                                        <span t-field="partner_id.institutional_email"/>
+                                    </td>
+                                    <td>País:
+                                        <span t-if="employee_id.cv_emissor_country_id" t-field="employee_id.cv_emissor_country_id.name"/>
+                                        <img t-if="employee_id.cv_emissor_country_id"
+                                             t-attf-src="{{employee_id.cv_emissor_country_id.image_url}}" alt="image"
+                                             title="image" class="img-fluid" width="20"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <t t-if="employee_id.cv_birthdate">Fecha de nacimiento: <span t-field="employee_id.cv_birthdate" t-options='{"format": "dd/MM/yyyy"}'/></t>
+                                    </td>
+                                    <td>
+                                        <t t-if="employee_id.cv_document_type_id">Tipo de documento:<span t-field="employee_id.cv_document_type_id.name"/></t>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <t t-if="o.public_admin_entry_date">Fecha de ingreso a la administración pública: <span t-field="o.public_admin_entry_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
+                                    </td>
+                                    <td>
+                                        Número de documento: <span t-field="employee_id.cv_nro_doc"/>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <t t-if="o.public_admin_inactivity_years_qty > 0">Años de inactividad: <span t-field="o.public_admin_inactivity_years_qty"/></t>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <t t-if="o.public_admin_entry_date">Fecha de graduación: <span t-field="o.public_admin_entry_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
+                                    </td>
+                                    <td>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <div class="pt-1 pb-1" style="font-size: 12px !important;">
+                    <div class="row">
+                        <div class="col-12">
+                            <t t-if="'personal_data' in env.context.get('seccions', True)">
+                                <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">DATOS PERSONALES</h3>
+                                <ul style="list-style:none; font-size: 1.5rem;">
+                                    <li>
+                                        <table style="border-spacing: 0; width: 100%; max-width: 600px;">
+                                        <tr>
+                                            <td>País de nacimiento: <span t-field="employee_id.country_of_birth_id.name"/></td>
+                                            <td>Ciudadanía uruguaya: <span t-field="employee_id.uy_citizenship"/></td>
+                                        </tr>
+                                        </table>
+                                    </li>
+                                    <li t-if="employee_id.uy_citizenship!='extranjero'">
+                                        Credencial cívica: <span t-field="employee_id.crendencial_serie"/> <span t-field="employee_id.credential_number"/>
+                                    </li>
+                                    <li t-if="employee_id.marital_status_id">
+                                        Estado civil: <span t-field="employee_id.marital_status_id.name"/>
+                                    </li>
+                                    <li t-if="employee_id.personal_phone">
+                                        <i class="fa fa-fw fa-phone mr-2"/>
+                                        <span t-field="employee_id.prefix_phone_id"/>
+                                        <span t-field="employee_id.personal_phone"/>
+                                    </li>
+                                    <li t-if="employee_id.mobile_phone">
+                                        <i class="fa fa-fw fa-mobile mr-2"/>
+                                        <span t-field="employee_id.prefix_mobile_phone_id"/>
+                                        <span t-field="employee_id.mobile_phone"/>
+                                    </li>
+                                    <li>
+                                        <i class="fa fa-fw fa-envelope mr-2"/> <span t-field="employee_id.email"/>
+                                    </li>
+                                </ul>
+                                <ul t-if="employee_id.is_driver_license and employee_id.drivers_license_ids" style="font-size: 1.5rem;">
+                                    Licencia de conducir
+                                    <t t-foreach="employee_id.drivers_license_ids" t-as="lc">
+                                    <li class="ml-4">
+                                        Categoría: <span t-field="lc.category_id.name"/> - Vencimiento: <span t-field="lc.validation_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                                    </li>
+                                    </t>
+                                </ul>
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_address">
+                                    <t t-set="employee_id" t-value="employee_id"/>
+                                </t>
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_sens_data">
+                                    <t t-set="employee_id" t-value="employee_id"/>
+                                </t>
+                            </t>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+
+    <template id="report_onsc_legajo">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="onsc_cv_digital_legajo.onsc_legajo_document" t-lang="o.cv_digital_id.partner_id.lang"/>
+            </t>
+        </t>
+    </template>
+
+    <record id="action_report_onsc_legajo" model="ir.actions.report">
+        <field name="name">Legajo PDF</field>
+        <field name="model">onsc.legajo</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">onsc_cv_digital_legajo.report_onsc_legajo</field>
+        <field name="report_file">onsc_cv_digital_legajo.report_onsc_legajo</field>
+        <field name="print_report_name">'Legajo %s' % (object.full_name)</field>
+        <field name="paperformat_id" ref="onsc_cv_digital_legajo.paperformat_report_legajo"/>
+        <field name="binding_type">report</field>
+    </record>
+
+
+</odoo>
