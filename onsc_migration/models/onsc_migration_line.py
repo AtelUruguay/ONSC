@@ -771,7 +771,7 @@ class ONSCMigrationLine(models.Model):
     resolution_dis_type = fields.Char(string='Tipo de resolución de la baja')
 
     partner_id = fields.Many2one('res.partner', string='Contacto')
-    is_uo_manager = fields.Boolean(string="Responsable UO")
+    is_uo_manager = fields.Selection(string="Responsable UO", selection=[('S', 'SI'), ('N', 'NO')])
     legajo_state_id = fields.Many2one('onsc.legajo.res.country.department',
                                       string='Departamento donde desempeña funciones')
 
@@ -1223,7 +1223,7 @@ class ONSCMigrationLine(models.Model):
                 'cv_address_block': self.address_block,
                 'cv_address_sandlot': self.address_sandlot,
                 'id_alta': self.id_movimiento,
-                'is_uo_manager': self.is_uo_manager,
+                'is_responsable_uo': self.is_uo_manager,
                 'legajo_state_id': self.legajo_state_id.id if self.legajo_state_id else False
 
             }
