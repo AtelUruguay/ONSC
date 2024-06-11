@@ -356,6 +356,8 @@ class ONSCMigration(models.Model):
             message_error.append("Sexo no es válido")
         if row[13] and row_dict['citizenship'] not in [tupla[0] for tupla in CITIZENSHIP]:
             message_error.append("El campo Ciudadanía no es válido")
+        if row[25] and not row_dict['is_uo_manager'] not in ['S', 'N']:
+            message_error.append("El campo Responsable UO no es válido")
 
         if (not row[65] and not row[66] and not row[67]) and (not row[45] and not row[46] and not row[47]):
             message_error.append("Los campo Plaza, Sec. Plaza y Puesto no son válidos")
@@ -1223,7 +1225,7 @@ class ONSCMigrationLine(models.Model):
                 'cv_address_block': self.address_block,
                 'cv_address_sandlot': self.address_sandlot,
                 'id_alta': self.id_movimiento,
-                'is_responsable_uo': self.is_uo_manager,
+                'is_responsable_uo': True if self.is_uo_manager.upper() == 'S' else False,
                 'legajo_state_id': self.legajo_state_id.id if self.legajo_state_id else False
 
             }
@@ -1319,7 +1321,7 @@ class ONSCMigrationLine(models.Model):
                 'occupation_id': self.occupation_id.id,
             })
             contracts = Contract.suspend_security().create(vals_contract1)
-            if self.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+            if self.is_uo_manager.upper() == 'S' and not Job.is_job_available_for_manager(self.department_id,
                                                                            self.create_date):
                 raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.department_id and self.security_job_id:
@@ -1328,7 +1330,7 @@ class ONSCMigrationLine(models.Model):
                     self.department_id,
                     self.date_start,
                     self.security_job_id,
-                    is_uo_manager=self.is_uo_manager,
+                    is_uo_manager=True if self.is_uo_manager.upper() == 'S' else False,
                 )
         else:
 
@@ -1402,7 +1404,7 @@ class ONSCMigrationLine(models.Model):
             if not self.inciso_des_id.is_central_administration:
                 contracts |= contract1
 
-            if self.is_uo_manager and not Job.is_job_available_for_manager(self.department_id,
+            if self.is_uo_manager.upper() == 'S' and not Job.is_job_available_for_manager(self.department_id,
                                                                            self.date_start_commission):
                 raise ValidationError(_("Ya existe un responsable de UO para el departamento seleccionado."))
             if self.inciso_des_id and self.inciso_des_id.is_central_administration and self.department_id and self.security_job_id:
@@ -1411,7 +1413,7 @@ class ONSCMigrationLine(models.Model):
                     self.department_id,
                     self.date_start_commission,
                     self.security_job_id,
-                    is_uo_manager=self.is_uo_manager,
+                    is_uo_manager=True if self.is_uo_manager.upper() == 'S' else False,
                 )
 
         return contracts
