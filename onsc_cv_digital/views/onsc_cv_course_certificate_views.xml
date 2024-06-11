@@ -18,11 +18,11 @@
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="internal_course"  attrs="{'invisible': [('record_type', '!=', 'course')]}" />
                             <field name="internal_course_name" attrs="{'invisible': [('internal_course', '=', False)], 'required': [('internal_course', '=', True)]}"/>
-                            <field name="institution_id"
+                            <field name="institution_id" force_save="1"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': [('internal_course', '=', True)]}"
                                    domain="institution_id_domain"
                                    context="{'default_is_unformal_education': True,'default_country_id': country_id, 'is_readonly': True}"/>
-                            <field name="subinstitution_id"
+                            <field name="subinstitution_id"  force_save="1"
                                    attrs="{'invisible': [('record_type', '!=', 'course')], 'required': [('record_type', '=', 'course')], 'readonly': ['|',('institution_id', '=', False),('internal_course', '=', True)]}"
                                    domain="[('institution_id', '=', institution_id)]"
                                    context="{'default_institution_id': institution_id, 'default_country_id': country_id, 'is_readonly': True}"/>
