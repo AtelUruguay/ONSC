@@ -103,7 +103,8 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <t t-if="o.public_admin_entry_date">Fecha de graduación: <span t-field="o.public_admin_entry_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
+                                        <t t-set="last_contract" t-value="o._get_contracts_sorted(only_most_recent=True)"/>
+                                        <t t-if="last_contract">Fecha de graduación: <span t-field="last_contract.graduation_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
                                     </td>
                                     <td>
                                     </td>
@@ -160,10 +161,12 @@
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_sens_data">
                                     <t t-set="employee_id" t-value="employee_id"/>
                                 </t>
-
                             </t>
+                            <!--INFORMACION FUNCIONAL-->
+                            <t t-if="'funcional_info' in env.context.get('seccions', True)" t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"/>
 
-                             <t t-if="'formation' in env.context.get('seccions', True)">
+                            <!--FORMACION-->
+                            <t t-if="'formation' in env.context.get('seccions', True)">
                                  <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
                                     <strong>FORMACIÓN</strong>
                                 </h3>
@@ -172,7 +175,6 @@
                                     <t t-set="values" t-value="values"/>
                                 </t>
                                <br></br>
-
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_formation_basic">
                                     <t t-set="name_section" t-value="'SECUNDARIA'"/>
                                     <t t-set="objects"
@@ -203,8 +205,8 @@
                                        t-value="o.course_ids.filtered(lambda tx: tx.course_type =='other')"/>
                                 </t>
                                <br></br>
-
                             </t>
+
                         </div>
                     </div>
                 </div>
@@ -222,7 +224,7 @@
     </template>
 
     <record id="action_report_onsc_legajo" model="ir.actions.report">
-        <field name="name">Legajo PDF</field>
+        <field name="name">Legajo</field>
         <field name="model">onsc.legajo</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">onsc_cv_digital_legajo.report_onsc_legajo</field>

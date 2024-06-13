@@ -26,7 +26,9 @@ HISTORY_COLUMNS = [
     # HISTORICOS
     'documentary_validation_date',
     'documentary_validation_state',
-    'documentary_user_id'
+    'documentary_user_id',
+    'internal_course',
+    'internal_course_name',
 ]
 
 TREE_HISTORY_COLUMNS = {

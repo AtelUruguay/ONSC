@@ -13,7 +13,9 @@
                             <field name="country_id"
                                    domain="country_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
-                            <field name="institution_id"
+                            <field name="internal_course" />
+                            <field name="internal_course_name" attrs="{'invisible': [('internal_course', '=', False)]}"/>
+                         <field name="institution_id"
                                    domain="institution_id_domain"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true, 'is_readonly': True}"
                                    context="{'default_is_unformal_education': True,'default_country_id': country_id, 'is_readonly': True}"/>
