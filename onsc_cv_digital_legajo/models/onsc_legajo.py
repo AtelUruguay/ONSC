@@ -115,9 +115,6 @@ class ONSCLegajo(models.Model):
         return super(ONSCLegajo, self).unlink()
 
     # REPORT UTILITIES
-
-
-
     def _get_contracts_sorted(self, only_most_recent=False):
         contracts_sorted = self.contract_ids.sorted(key=lambda contract_id: (
             _CUSTOM_ORDER.get(contract_id.legajo_state, 10),
@@ -133,3 +130,16 @@ class ONSCLegajo(models.Model):
         if len(active_jobs):
             return active_jobs[0]
         return active_jobs
+
+    def _get_report_legajo_formation_seccion(self):
+        result = {}
+        report_cv_seccions = []
+        formations = self.advanced_formation_ids
+        seccions = formations.mapped('advanced_study_level_id')
+        seccions = sorted(seccions, key=lambda x: x.report_cv_order)
+        for seccion in seccions:
+            if seccion.report_cv_seccion not in report_cv_seccions:
+                result[seccion.report_cv_seccion] = formations.filtered(
+                    lambda x: x.advanced_study_level_id.report_cv_seccion == seccion.report_cv_seccion)
+                report_cv_seccions.append(seccion.report_cv_seccion)
+        return result
