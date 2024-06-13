@@ -47,6 +47,7 @@ ONSC CV Digital - Legajo
 
         # REPORTE LEGAJO
         'report/legajo_report_sections/onsc_legajo_report_sections.xml',
+        'report/legajo_report_sections/onsc_legajo_report_formation_course_sections.xml',
         'report/onsc_legajo_report.xml',
     ],
     'demo': [],

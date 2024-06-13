@@ -96,3 +96,16 @@ class ONSCLegajo(models.Model):
     def unlink(self):
         self.mapped('cv_digital_id').write({'is_docket': False, 'is_docket_active': False})
         return super(ONSCLegajo, self).unlink()
+
+    def _get_report_legajo_formation_seccion(self):
+        result = {}
+        report_cv_seccions = []
+        formations = self.advanced_formation_ids
+        seccions = formations.mapped('advanced_study_level_id')
+        seccions = sorted(seccions, key=lambda x: x.report_cv_order)
+        for seccion in seccions:
+            if seccion.report_cv_seccion not in report_cv_seccions:
+                result[seccion.report_cv_seccion] = formations.filtered(
+                    lambda x: x.advanced_study_level_id.report_cv_seccion == seccion.report_cv_seccion)
+                report_cv_seccions.append(seccion.report_cv_seccion)
+        return result
