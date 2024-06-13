@@ -161,10 +161,12 @@
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_sens_data">
                                     <t t-set="employee_id" t-value="employee_id"/>
                                 </t>
-
                             </t>
+                            <!--INFORMACION FUNCIONAL-->
+                            <t t-if="'funcional_info' in env.context.get('seccions', True)" t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"/>
 
-                             <t t-if="'formation' in env.context.get('seccions', True)">
+                            <!--FORMACION-->
+                            <t t-if="'formation' in env.context.get('seccions', True)">
                                  <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
                                     <strong>FORMACIÓN</strong>
                                 </h3>
@@ -173,7 +175,6 @@
                                     <t t-set="values" t-value="values"/>
                                 </t>
                                <br></br>
-
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_formation_basic">
                                     <t t-set="name_section" t-value="'SECUNDARIA'"/>
                                     <t t-set="objects"
@@ -204,9 +205,8 @@
                                        t-value="o.course_ids.filtered(lambda tx: tx.course_type =='other')"/>
                                 </t>
                                <br></br>
-
                             </t>
-                            <t t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"/>
+
                         </div>
                     </div>
                 </div>
@@ -224,7 +224,7 @@
     </template>
 
     <record id="action_report_onsc_legajo" model="ir.actions.report">
-        <field name="name">Legajo PDF</field>
+        <field name="name">Legajo</field>
         <field name="model">onsc.legajo</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">onsc_cv_digital_legajo.report_onsc_legajo</field>
