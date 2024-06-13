@@ -7,6 +7,10 @@ from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
+_CUSTOM_ORDER = {
+    'confirm': 1,
+    'end': 2
+}
 
 class HrContract(models.Model):
     _name = 'hr.contract'
@@ -189,6 +193,22 @@ class HrContract(models.Model):
         string='Leyenda de legajo',
         compute='_compute_show_law_legajo_legend'
     )
+
+    # LEGAJO REPORT UTILITIES
+    role_assignment_ids = fields.One2many(
+        comodel_name='onsc.legajo.role.assignment',
+        inverse_name='contract_id',
+        string='Asignaciones de funciones')
+
+    def _get_role_assignments_sorted(self, only_most_recent=False):
+        contracts_sorted = self.role_assignment_ids.sorted(key=lambda contract_id: (
+            _CUSTOM_ORDER.get(contract_id.legajo_state, 10),
+            -to_timestamp(contract_id.date_start)
+        ))
+        if only_most_recent and len(contracts_sorted):
+            return contracts_sorted[0]
+        else:
+            return contracts_sorted
 
     def name_get(self):
         res = []
