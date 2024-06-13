@@ -2,6 +2,23 @@
 
 from odoo import models, fields
 
+# REPORT UTILITIES
+_CUSTOM_ORDER = {
+    'active': 1,
+    'outgoing_commission': 2,
+    'incoming_commission': 3,
+    'baja': 4,
+    'reserved': 5,
+}
+
+
+def to_timestamp(date_str):
+    if date_str:
+        # Convertir la fecha de cadena a objeto datetime
+        dt = fields.Datetime.from_string(date_str)
+        # Obtener el timestamp
+        return dt.timestamp()
+    return 0
 
 class ONSCLegajo(models.Model):
     _inherit = "onsc.legajo"
@@ -96,3 +113,23 @@ class ONSCLegajo(models.Model):
     def unlink(self):
         self.mapped('cv_digital_id').write({'is_docket': False, 'is_docket_active': False})
         return super(ONSCLegajo, self).unlink()
+
+    # REPORT UTILITIES
+
+
+
+    def _get_contracts_sorted(self, only_most_recent=False):
+        contracts_sorted = self.contract_ids.sorted(key=lambda contract_id: (
+            _CUSTOM_ORDER.get(contract_id.legajo_state, 10),
+            -to_timestamp(contract_id.date_start)
+        ))
+        if only_most_recent and len(contracts_sorted):
+            return contracts_sorted[0]
+        else:
+            return contracts_sorted
+
+    def _get_contract_active_job(self, contract_id):
+        active_jobs = contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date > fields.Date.today())
+        if len(active_jobs):
+            return active_jobs[0]
+        return active_jobs

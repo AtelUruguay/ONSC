@@ -103,7 +103,8 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <t t-if="o.public_admin_entry_date">Fecha de graduación: <span t-field="o.public_admin_entry_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
+                                        <t t-set="last_contract" t-value="o._get_contracts_sorted(only_most_recent=True)"/>
+                                        <t t-if="last_contract">Fecha de graduación: <span t-field="last_contract.graduation_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
                                     </td>
                                     <td>
                                     </td>
@@ -161,6 +162,7 @@
                                     <t t-set="employee_id" t-value="employee_id"/>
                                 </t>
                             </t>
+                            <t t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional"/>
                         </div>
                     </div>
                 </div>
