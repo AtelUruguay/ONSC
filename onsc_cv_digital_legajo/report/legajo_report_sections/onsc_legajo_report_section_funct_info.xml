@@ -7,7 +7,7 @@
         </h3>
         <t t-foreach="o._get_contracts_sorted()" t-as="contract">
         <ul style="list-style:none; font-size: 1.5rem;">
-            <li style="background-color:rgb(82 113 255 / 44%);border-radius:5px">
+            <li style="background-color: rgba(82, 113, 255, 0.44); border-radius: 5px;">
                 Estado: <span t-field="contract.legajo_state"/>-
                 Fecha de alta: <span t-field="contract.date_start" t-options='{"format": "dd/MM/yyyy"}'/>-
                 <t t-if="contract.date_end">Fecha de baja: <span t-field="contract.date_end" t-options='{"format": "dd/MM/yyyy"}'/>-</t>
