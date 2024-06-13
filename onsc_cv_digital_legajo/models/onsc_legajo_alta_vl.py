@@ -342,7 +342,9 @@ class ONSCLegajoAltaVL(models.Model):
                             ('program', '=', alta_vl.program_project_id.programa),
                             ('project','=', alta_vl.program_project_id.proyecto),
                             ('operating_unit_id', '=', alta_vl.operating_unit_id.id),
-                            ('employee_id', '=', alta_vl.employee_id.id),
+                            ('legajo_id.emissor_country_id', '=', alta_vl.cv_emissor_country_id.id),
+                            ('legajo_id.document_type_id', '=', alta_vl.cv_document_type_id.id),
+                            ('legajo_id.nro_doc', '=', alta_vl.partner_id.cv_nro_doc),
                             ('legajo_state', '=', 'active')])):
                          show_exist_altaVL_warning = True
             rec.show_exist_altaVL_warning = show_exist_altaVL_warning
