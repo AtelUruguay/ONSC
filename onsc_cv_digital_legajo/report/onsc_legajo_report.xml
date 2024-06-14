@@ -177,34 +177,44 @@
                                <br></br>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_formation_basic">
                                     <t t-set="name_section" t-value="'SECUNDARIA'"/>
-                                    <t t-set="objects"
-                                       t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level =='secondary')"/>
+                                    <t t-set="objects" t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level =='secondary')"/>
                                 </t>
                                 <br></br>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_formation_basic">
                                     <t t-set="name_section" t-value="'PRIMARIA'"/>
-                                    <t t-set="objects"
-                                       t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level !='secondary')"/>
+                                    <t t-set="objects" t-value="o.basic_formation_ids.filtered(lambda tx: tx.basic_education_level !='secondary')"/>
                                 </t>
                                 <br></br>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_course_workshop">
                                     <t t-set="name_section" t-value="'CURSOS'"/>
-                                    <t t-set="objects"
-                                       t-value="o.course_ids.filtered(lambda tx: tx.course_type =='course')"/>
+                                    <t t-set="objects" t-value="o.course_ids.filtered(lambda tx: tx.course_type =='course')"/>
                                 </t>
                                 <br></br>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_course_workshop">
                                     <t t-set="name_section" t-value="'TALLERES'"/>
-                                    <t t-set="objects"
-                                       t-value="o.course_ids.filtered(lambda tx: tx.course_type =='workshop')"/>
+                                    <t t-set="objects" t-value="o.course_ids.filtered(lambda tx: tx.course_type =='workshop')"/>
                                 </t>
                                 <br></br>
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_course_workshop">
                                     <t t-set="name_section" t-value="'OTRA CAPACITACION'"/>
-                                    <t t-set="objects"
-                                       t-value="o.course_ids.filtered(lambda tx: tx.course_type =='other')"/>
+                                    <t t-set="objects" t-value="o.course_ids.filtered(lambda tx: tx.course_type =='other')"/>
                                 </t>
                                <br></br>
+                            </t>
+                           <t t-if="'work_experience' in env.context.get('seccions', True)">
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_work">
+                                    <t t-set="name_section" t-value="'EXPERIENCIA LABORAL'"/>
+                                    <t t-set="objects" t-value="o.work_experience_ids"/>
+                                </t>
+                                <br></br>
+                            </t>
+                             <t t-if="'work_teaching' in env.context.get('seccions', True)">
+                                 <!--Docencia-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_teaching">
+                                    <t t-set="name_section" t-value="'DOCENCIA'"/>
+                                    <t t-set="objects" t-value="o.work_teaching_ids"/>
+                                </t>
+                                <br></br>
                             </t>
 
                         </div>
