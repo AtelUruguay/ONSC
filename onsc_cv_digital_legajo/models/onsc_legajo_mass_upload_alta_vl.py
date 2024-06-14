@@ -718,7 +718,9 @@ class ONSCMassUploadLegajoAltaVL(models.Model):
                 ('program', '=', office.programa),
                 ('project', '=', office.proyecto),
                 ('operating_unit_id', '=', self.operating_unit_id.id),
-                ('employee_id', '=', employee.id),
+                ('legajo_id.emissor_country_id', '=', country_uy_id.id),
+                ('legajo_id.document_type_id', '=', cv_document_type_id),
+                ('legajo_id.nro_doc', '=', values['document_number']),
                 ('legajo_state', '=', 'active')])):
                 exist_altaVL = True
         return exist_altaVL
