@@ -75,8 +75,10 @@
                             <table style="border-spacing: 0; width: 100%; max-width: 800px;">
                                 <tr>
                                     <td style="width:55%">
-                                        <i class="fa fa-fw fa-envelope mr-2"/>
-                                        <span t-field="partner_id.institutional_email"/>
+                                        <t t-if="employee_id.institutional_email">
+                                            <i class="fa fa-fw fa-envelope mr-2"/>
+                                            <span t-field="employee_id.institutional_email"/>
+                                        </t>
                                     </td>
                                     <td>País:
                                         <span t-if="employee_id.cv_emissor_country_id" t-field="employee_id.cv_emissor_country_id.name"/>
@@ -90,12 +92,12 @@
                                         <t t-if="employee_id.cv_birthdate">Fecha de nacimiento: <span t-field="employee_id.cv_birthdate" t-options='{"format": "dd/MM/yyyy"}'/></t>
                                     </td>
                                     <td>
-                                        <t t-if="employee_id.cv_document_type_id">Tipo de documento:<span t-field="employee_id.cv_document_type_id.name"/></t>
+                                        <t t-if="employee_id.cv_document_type_id">Tipo de documento: <span t-field="employee_id.cv_document_type_id.name"/></t>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td>
-                                        <t t-if="o.public_admin_entry_date">Fecha de ingreso a la administración pública: <span t-field="o.public_admin_entry_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
+                                        <t t-if="o.public_admin_entry_date">Fecha de ingreso a la Adm. Pública: <span t-field="o.public_admin_entry_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
                                     </td>
                                     <td>
                                         Número de documento: <span t-field="employee_id.cv_nro_doc"/>
@@ -103,7 +105,7 @@
                                 </tr>
                                 <tr>
                                     <td>
-                                        <t t-if="o.public_admin_inactivity_years_qty > 0">Años de inactividad: <span t-field="o.public_admin_inactivity_years_qty"/></t>
+                                        Años de inactividad: <span t-field="o.public_admin_inactivity_years_qty"/>
                                     </td>
                                     <td>
                                     </td>
@@ -111,7 +113,7 @@
                                 <tr>
                                     <td>
                                         <t t-set="last_contract" t-value="o._get_contracts_sorted(only_most_recent=True)"/>
-                                        <t t-if="last_contract">Fecha de graduación: <span t-field="last_contract.graduation_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
+                                        <t t-if="last_contract and last_contract.graduation_date">Fecha de graduación: <span t-field="last_contract.graduation_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
                                     </td>
                                     <td>
                                     </td>

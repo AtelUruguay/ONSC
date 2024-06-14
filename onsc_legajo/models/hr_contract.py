@@ -194,21 +194,10 @@ class HrContract(models.Model):
         compute='_compute_show_law_legajo_legend'
     )
 
-    # LEGAJO REPORT UTILITIES
     role_assignment_ids = fields.One2many(
         comodel_name='onsc.legajo.role.assignment',
         inverse_name='contract_id',
         string='Asignaciones de funciones')
-
-    def _get_role_assignments_sorted(self, only_most_recent=False):
-        contracts_sorted = self.role_assignment_ids.sorted(key=lambda contract_id: (
-            _CUSTOM_ORDER.get(contract_id.legajo_state, 10),
-            -to_timestamp(contract_id.date_start)
-        ))
-        if only_most_recent and len(contracts_sorted):
-            return contracts_sorted[0]
-        else:
-            return contracts_sorted
 
     def name_get(self):
         res = []
@@ -395,6 +384,17 @@ class HrContract(models.Model):
             return self.env.ref('onsc_legajo.onsc_legajo_o')
         else:
             return self.env['onsc.legajo.state.square']
+
+            # LEGAJO REPORT UTILITIES
+    def _get_role_assignments_sorted(self, only_most_recent=False):
+        role_assignments_sorted = self.role_assignment_ids.sorted(key=lambda role_assignment_id: (
+            _CUSTOM_ORDER.get(role_assignment_id.state, 10),
+            role_assignment_id.date_start
+        ))
+        if only_most_recent and len(role_assignments_sorted):
+            return role_assignments_sorted[0]
+        else:
+            return role_assignments_sorted
 
 
 class HrContractHistory(models.Model):
