@@ -30,7 +30,6 @@
              t-attf-style="background-image: url({{ 'data:image/png;base64,%s' % company.layout_background_image.decode('utf-8') if company.layout_background_image and company.layout_background == 'Custom' else '/base/static/img/bg_background_template.jpg' if company.layout_background == 'Geometric' else ''}});"
              t-att-data-oe-model="o and o._name" t-att-data-oe-id="o and o.id"
              t-att-data-oe-lang="o and o.env.context.get('lang')">
-
             <t t-out="0"/>
         </div>
 
@@ -39,17 +38,13 @@
                 <tr>
                     <td>
                         <div t-if="report_type == 'pdf'">
-                            Generado el:
-                            <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M:%S')"/>
+                            Generado el: <span t-esc="context_timestamp(datetime.datetime.now()).strftime('%d/%m/%Y %H:%M:%S')"/>
                         </div>
                     </td>
                     <td><span t-field="o.employee_id.full_name"/></td>
                     <td>
                         <div t-if="report_type == 'pdf'">
-                            Hoja:
-                            <span class="page"/>
-                            de
-                            <span class="topage"/>
+                            Página: <span class="page"/> de <span class="topage"/>
                         </div>
                     </td>
                 </tr>
