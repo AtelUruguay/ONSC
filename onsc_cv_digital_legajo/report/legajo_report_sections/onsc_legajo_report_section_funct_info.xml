@@ -53,6 +53,14 @@
             <li t-if="contract.resolution_type_deregistration">Tipo de resolución baja: <span t-field="contract.resolution_type_deregistration"/></li>
             <li t-if="contract.causes_discharge_id">Causal de egreso: <span t-field="contract.causes_discharge_id.name"/></li>
             <li t-if="contract.additional_information_deregistration">Información adicional baja: <span t-field="contract.additional_information_deregistration"/></li>
+
+            <!--ASIGNACION DE FUNCIONES PARA CADA VINCULO-->
+<!--            <li style="background-color: rgba(82, 113, 255, 0.60); border-radius: 5px;">-->
+<!--                ASIGNACIÓN DE FUNCIONES-->
+<!--            </li>-->
+<!--            <t t-foreach="contract._get_role_assignments_sorted()" t-as="role_assignment">-->
+<!--                <li t-if="contract.norm_article_deregistration">Artículo de norma baja: <span t-field="contract.norm_article_deregistration"/></li>-->
+<!--            </t>-->
         </ul>
         </t>
     </template>
