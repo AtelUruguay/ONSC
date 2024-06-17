@@ -168,11 +168,11 @@
 
     <!--    DISCAPACIDAD    -->
     <template id="legajo_section_disabilitie">
-        <h3 t-if="objects" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
-            <strong>
-                <t t-esc="name_section"/>
-            </strong>
-        </h3>
+<!--        <h3 t-if="objects" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">-->
+<!--            <strong>-->
+<!--                <t t-esc="name_section"/>-->
+<!--            </strong>-->
+<!--        </h3>-->
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none; font-size: 1.5rem;">
                 <li t-if="object.situation_disability">
