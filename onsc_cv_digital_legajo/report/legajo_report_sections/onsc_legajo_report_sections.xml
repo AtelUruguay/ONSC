@@ -176,7 +176,7 @@
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none; font-size: 1.5rem;">
                 <li t-if="object.situation_disability">
-                    Discapacidad <span t-field="object.situation_disability"/>
+                    Discapacidad: <span t-field="object.situation_disability"/>
                 </li>
                 <li t-if="object.people_disabilitie">
                     ¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social? <span t-field="object.people_disabilitie"/>
