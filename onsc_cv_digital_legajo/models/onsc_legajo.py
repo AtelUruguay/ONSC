@@ -143,3 +143,14 @@ class ONSCLegajo(models.Model):
                     lambda x: x.advanced_study_level_id.report_cv_seccion == seccion.report_cv_seccion)
                 report_cv_seccions.append(seccion.report_cv_seccion)
         return result
+
+    def _get_vote_registry_details(self):
+        result = []
+        for vote_registry in self.vote_registry_ids:
+            for electoral_act in vote_registry.electoral_act_ids:
+                result.append({
+                    'electoral_act': electoral_act.display_name,
+                    'date': vote_registry.date.strftime('%d/%m/%Y')
+                })
+        return result
+

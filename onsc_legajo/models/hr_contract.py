@@ -194,11 +194,6 @@ class HrContract(models.Model):
         compute='_compute_show_law_legajo_legend'
     )
 
-    role_assignment_ids = fields.One2many(
-        comodel_name='onsc.legajo.role.assignment',
-        inverse_name='contract_id',
-        string='Asignaciones de funciones')
-
     def name_get(self):
         res = []
         for record in self:
@@ -387,8 +382,9 @@ class HrContract(models.Model):
 
             # LEGAJO REPORT UTILITIES
     def _get_role_assignments_sorted(self, only_most_recent=False):
-        role_assignments_sorted = self.role_assignment_ids.sorted(key=lambda role_assignment_id: (
-            _CUSTOM_ORDER.get(role_assignment_id.state, 10),
+        current_jobs = self.job_ids.filtered(lambda x: not x.end_date or x.end_date > fields.Date.today())
+
+        role_assignments_sorted = current_jobs.mapped('role_assignment_ids').sorted(key=lambda role_assignment_id: (
             role_assignment_id.date_start
         ))
         if only_most_recent and len(role_assignments_sorted):
