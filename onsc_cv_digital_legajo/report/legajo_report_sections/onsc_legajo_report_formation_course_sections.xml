@@ -12,11 +12,9 @@
             <t t-foreach="values[value]" t-as="object">
             <ul style="list-style:none; font-size: 1.5rem;">
                 <li>
-                    <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/>
-                    -
+                    <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
                     <t t-if="object.state!='completed'"><span>Actualidad</span></t>
-                    <t t-else=""><span t-field="object.egress_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
-                    :
+                    <t t-else=""><span t-field="object.egress_date" t-options='{"format": "dd/MM/yyyy"}'/></t>:
                     <span t-field="object.academic_program_id.name"/>
                 </li>
                 <li t-if="object.institution_id">
@@ -115,8 +113,7 @@
                 <li style="font-weight:bold;">
                     <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/>-
                     <t t-if="object.state!='completed'"><span>Actualidad</span></t>
-                    <t t-else=""><span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
-                    :
+                    <t t-else=""><span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/></t>:
                     <span t-field="object.institution_id.name_country"/>
                     <t t-if="object.institution_id.id!=object.subinstitution_id.id"> / <span t-field="object.subinstitution_id.name"/></t>
                 </li>

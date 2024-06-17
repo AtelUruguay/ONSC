@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+     <!--Expreriencia laboral-->
+    <template id="legajo_section_work">
+        <h3 t-if="objects" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
+            <strong><t t-esc="name_section"/></strong>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul name="ul_work_experience_header" style="list-style:none; font-size: 1.5rem;">
+                <li style="font-weight:bold;">
+                    <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
+                    <t t-if="object.currently_working=='yes'"><span>Actualidad</span></t>
+                    <t t-else=""><span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/></t>:
+                    <t t-if="object.country_code in ['UY',False] and object.company_type in ['public','both',False]">
+                        <span t-field="object.inciso_id.name"/> - <span t-field="object.operating_unit_id.name"/>
+                    </t>
+                    <t t-else=""><span t-field="object.company_name"/></t>
+                    (<span t-field="object.country_id.name"/>/<span t-field="object.city_id.name"/>)
+               </li>
+                <li t-if="object.company_type">Tipo de empresa: <span t-field="object.company_type"/></li>
+                <li t-if="object.position">Cargo: <span t-field="object.position"/></li>
+                <li t-if="object.unit_name">Área/Unidad: <span t-field="object.unit_name"/></li>
+                <li t-if="object.entry_institution_id">Rubro: <span t-field="object.entry_institution_id.name"/></li>
+                <li>
+                    <span t-if="object.hierarchical_level_id" t-field="object.hierarchical_level_id.name"/>
+                    <t t-if="object.take_decisions">/<span t-field="object.take_decisions"/></t>
+                </li>
+                <li t-if="object.is_paid_activity">Actividad remunerada: <span t-esc="object.is_paid_activity and 'SI' or 'NO'"/></li>
+                <li t-if="object.people_charge_qty">Cantidad de personas a cargo: <span t-field="object.people_charge_qty"/></li>
+                <li t-if="object.organizational_units_charge">Cantidad de unidades organizativas a cargo: <span t-field="object.organizational_units_charge"/></li>
+                <li t-if="object.hours_worked_monthly">Cantidad de horas trabajadas mensualmente: <span t-field="object.hours_worked_monthly"/></li>
+                <li t-if="object.description_tasks">Descripción de tareas: <span t-field="object.description_tasks"/></li>
+                <li t-if="object.task_ids">Tareas clave:</li>
+                <t t-foreach="object.task_ids" t-as="line">
+                    <ul>
+                        <li> <span t-field="line.key_task_id.name"/>/<span t-esc="line.area_id.name"/></li>
+                    </ul>
+                </t>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+</odoo>
