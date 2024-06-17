@@ -2,9 +2,9 @@
 <odoo>
     <!--    VINCULO     -->
     <template id="legajo_section_informacion_funcional_contracts">
-        <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
-            <strong>VÍNCULOS</strong>
-        </h3>
+        <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
+            Vínculos
+        </h4>
         <t t-foreach="o._get_contracts_sorted()" t-as="contract">
         <ul style="list-style:none; font-size: 1.5rem;">
             <li style="background-color: rgba(82, 113, 255, 0.44); border-radius: 5px;">
@@ -57,11 +57,13 @@
             <!--ASIGNACION DE FUNCIONES PARA CADA VINCULO-->
             <t t-value="contract._get_role_assignments_sorted()" t-set="role_assignments"/>
             <li t-if="len(role_assignments) > 0">
-                ASIGNACIÓN DE FUNCIONES
+                <u style="list-style:none; font-size: 1.5rem;">
+                    Asignación de funciones
+                </u>
             </li>
             <li t-foreach="contract._get_role_assignments_sorted()" t-as="role_assignment">
-                <t t-if="role_assignment.date_start">Fecha de inicio: <span t-field="role_assignment.date_start"/></t> - <t t-if="role_assignment.date_end">Fecha de fin: <span t-field="role_assignment.date_end"/></t> -
-                <t t-if="role_assignment.role_assignment_mecanism">Mecanismo de asignación de funciones: <span t-field="role_assignment.role_assignment_mecanism"/></t>
+                <t t-if="role_assignment.date_start">Fecha de inicio: <span t-field="role_assignment.date_start"/></t><t t-if="role_assignment.date_end"> - Fecha de fin: <span t-field="role_assignment.date_end"/></t>
+                <t t-if="role_assignment.role_assignment_mecanism"> - Mecanismo de asignación de funciones: <span t-field="role_assignment.role_assignment_mecanism"/></t>
             </li>
 
         </ul>
@@ -69,15 +71,15 @@
     </template>
 
     <template id="legajo_section_informacion_funcional">
-        <h5 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
+        <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
             <strong>INFORMACIÓN FUNCIONAL</strong>
-        </h5>
+        </h3>
         <t t-call="onsc_cv_digital_legajo.legajo_section_informacion_funcional_contracts"/>
 
         <!--INFORMACIÓN PERSONAL EN LA FUNCIÓN PÚBLICA-->
-        <u t-if="o.juramento_bandera_date or o.juramento_bandera_presentacion_date" style="list-style:none; font-size: 1.5rem;">
+        <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
             Jura de la bandera
-        </u>
+        </h4>
         <ul style="list-style:none; font-size: 1.5rem;">
             <li t-if="o.juramento_bandera_date">Fecha de jura de la bandera: <span t-field="o.juramento_bandera_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
             <li t-if="o.juramento_bandera_presentacion_date">Fecha de presentación de juramento: <span t-field="o.juramento_bandera_presentacion_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
@@ -86,9 +88,9 @@
         <!--CONTROL DE VOTOS-->
         <t t-value="o._get_vote_registry_details()" t-set="vote_registry_details"/>
         <t t-if="len(vote_registry_details) > 0">
-            <u style="list-style:none; font-size: 1.5rem;">
+            <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
                 Control de votos
-            </u>
+            </h4>
             <ul style="list-style:none; font-size: 1.5rem;">
                 <t t-foreach="vote_registry_details" t-as="vote_registry_detail">
                     <li>Elección: <span t-esc="vote_registry_detail['electoral_act']"/> - Fecha de presentación: <span t-esc="vote_registry_detail['date']"/></li>
@@ -99,9 +101,9 @@
         <!--Declaración Ley 19.574 Decreto 380-2018 -->
         <t t-value="o.declaration_law_ids" t-set="declaration_law_ids"/>
         <t t-if="len(declaration_law_ids) > 0">
-            <u style="list-style:none; font-size: 1.5rem;">
+            <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
                 Declaración Ley 19.574 Decreto 380-2018
-            </u>
+            </h4>
             <ul style="list-style:none; font-size: 1.5rem;">
                 <t t-foreach="declaration_law_ids" t-as="declaration_law_id">
                 <li>Fecha de declaración: <span t-field="declaration_law_id.declaration_date" t-options='{"format": "dd/MM/yyyy"}'/> - Fecha de registro: <span t-field="declaration_law_id.create_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
@@ -112,9 +114,9 @@
         <!--Antecedentes judiciales -->
         <t t-value="o.judicial_antecedents_ids" t-set="judicial_antecedents_ids"/>
         <t t-if="len(judicial_antecedents_ids) > 0">
-            <u style="list-style:none; font-size: 1.5rem;">
+            <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
                 Antecedentes judiciales
-            </u>
+            </h4>
             <ul style="list-style:none; font-size: 1.5rem;">
                 <t t-foreach="judicial_antecedents_ids" t-as="judicial_antecedents_id">
                 <li>Fecha del documento: <span t-field="judicial_antecedents_id.document_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
@@ -125,15 +127,68 @@
         <!--Otra información del funcionario-->
         <t t-value="o.other_information_ids" t-set="other_information_ids"/>
         <t t-if="len(other_information_ids) > 0">
-            <u style="list-style:none; font-size: 1.5rem;">
+            <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
                 Otra información del funcionario
-            </u>
+            </h4>
             <ul style="list-style:none; font-size: 1.5rem;">
                 <t t-foreach="other_information_ids" t-as="other_information_id">
-                <li>Fecha de ingreso de información: <span t-field="other_information_id.entry_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+                <li>Fecha de ingreso de información: <span t-field="other_information_id.entry_date" t-options='{"format": "dd/MM/yyyy"}'/> - Título: <span t-field="other_information_id.title"/> - Descripción: <span t-field="other_information_id.description"/></li>
                 </t>
             </ul>
         </t>
 
+        <!--Méritos-->
+        <t t-value="o.merito_ids" t-set="merito_ids"/>
+        <t t-if="len(merito_ids) > 0">
+            <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
+                Méritos
+            </h4>
+            <ul style="list-style:none; font-size: 1.5rem;">
+                <t t-foreach="merito_ids" t-as="merito_id">
+                <li>Mérito: <span t-field="merito_id.title"/></li>
+                <li>Inciso UE: <span t-field="merito_id.inciso_id.name"/> - <span t-field="merito_id.operating_unit_id.name"/></li>
+                <li>Descripción del mérito: <span t-field="merito_id.description"/></li>
+                <li>Fecha de notificación: <span t-field="merito_id.notification_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+                <li>Fecha del mérito: <span t-field="merito_id.document_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+                <li>Fecha del sistema: <span t-field="merito_id.create_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+                <br/>
+                </t>
+            </ul>
+        </t>
+
+        <!--Demeritos-->
+        <t t-value="o.demerito_ids" t-set="demerito_ids"/>
+        <t t-if="len(demerito_ids) > 0">
+            <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
+                Deméritos
+            </h4>
+            <ul style="list-style:none; font-size: 1.5rem;">
+                <t t-foreach="demerito_ids" t-as="demerito_id">
+                <li>Tipo de demérito: <span t-field="demerito_id.demerit_id.name"/></li>
+                <li>Título: <span t-field="demerito_id.title"/></li>
+                <li>Inciso UE: <span t-field="merito_id.inciso_id.name"/> - <span t-field="merito_id.operating_unit_id.name"/></li>
+                <li>Tipo de sanción: <span t-field="demerito_id.type_sanction_id.name"/></li>
+                <li>Descripción del demérito: <span t-field="demerito_id.description"/></li>
+                <li>Fecha de notificación: <span t-field="demerito_id.notification_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+                <li>Fecha de inicio: <span t-field="demerito_id.start_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+                <li>Fecha hasta: <span t-field="demerito_id.end_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+                <li>Fecha del sistema: <span t-field="demerito_id.create_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+                <br/>
+                </t>
+            </ul>
+        </t>
+
+        <!--Puntajes-->
+        <t t-value="o.score_ids" t-set="score_ids"/>
+        <t t-if="len(score_ids) > 0">
+            <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
+                Ciclo de evaluación 360º
+            </h4>
+            <ul style="list-style:none; font-size: 1.5rem;">
+                <t t-foreach="score_ids" t-as="score_id">
+                <li>Año del ciclo de evaluación: <span t-field="score_id.year" t-options="{'widget': 'text'}"/> - Puntaje total del ciclo: <span t-field="score_id.score"/></li>
+                </t>
+            </ul>
+        </t>
     </template>
 </odoo>

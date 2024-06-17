@@ -3,9 +3,9 @@
     <!--    DATOS PERSONALES    -->
     <!--    DOMICILIO    -->
     <template id="legajo_section_address">
-        <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
-            <strong>DOMICILIO</strong>
-        </h3>
+        <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
+            Domicilio
+        </h4>
         <ul style="list-style:none; font-size: 1.5rem;">
             <li>
                 <t t-if="employee_id.cv_address_street_id">
@@ -49,9 +49,9 @@
 
     <!--   INFORMACIÓN DE SALUD     -->
     <template id="legajo_section_sens_data">
-        <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
-            <strong>DATOS SENSIBLES</strong>
-        </h3>
+        <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
+            Datos sensibles
+        </h4>
         <ul style="list-style:none; font-size: 1.5rem;">
             <li t-if="employee_id.is_cv_gender_public == True">
                 <t t-if="employee_id.cv_gender_id">Género: <span t-field="employee_id.cv_gender_id.name"/></t>
@@ -105,13 +105,13 @@
         <br/>
         <t t-if="employee_id.allow_content_public == 'si'"
            t-call="onsc_cv_digital_legajo.legajo_section_disabilitie">
-            <t t-set="name_section" t-value="'DISCAPACIDAD'"/>
+            <t t-set="name_section" t-value="'Discapacidad'"/>
             <t t-set="objects" t-value="employee_id"/>
         </t>
 
-        <h3 class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
-            <strong>INFORMACIÓN DE SALUD</strong>
-        </h3>
+        <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
+            Información de salud
+        </h4>
         <ul style="list-style:none; font-size: 1.5rem;">
             <li t-if="employee_id.emergency_service_id">
                 Servicio de emergencia móvil: <span t-field="employee_id.emergency_service_id.name"/>
@@ -176,13 +176,13 @@
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none; font-size: 1.5rem;">
                 <li t-if="object.situation_disability">
-                    ¿Está en situación de discapacidad y/o requiere algún apoyo para cumplir con sus actividades laborales? <span t-field="object.situation_disability"/>
+                    Discapacidad <span t-field="object.situation_disability"/>
                 </li>
                 <li t-if="object.people_disabilitie">
                     ¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social? <span t-field="object.people_disabilitie"/>
                 </li>
                 <li t-if="object.certificate_date and object.situation_disability=='si'">
-                    Fecha de certificado <span t-field="object.certificate_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                    Fecha de certificado: <span t-field="object.certificate_date" t-options='{"format": "dd/MM/yyyy"}'/>
                 </li>
                 <li t-if="object.to_date and object.situation_disability=='si'">
                     Fecha hasta: <span t-field="object.to_date" t-options='{"format": "dd/MM/yyyy"}'/>
