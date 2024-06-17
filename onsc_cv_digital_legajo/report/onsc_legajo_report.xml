@@ -220,6 +220,23 @@
                                 </t>
                                 <br></br>
                             </t>
+                             <t t-if="'investigation' in env.context.get('seccions', True)">
+                                 <!--INVESTIGACIONES-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_investigation">
+                                    <t t-set="name_section" t-value="'INVESTIGACIONES'"/>
+                                    <t t-set="objects"
+                                       t-value="o.work_investigation_ids"/>
+                                </t>
+                                <br></br>
+                            </t>
+                             <t t-if="'volunteering' in env.context.get('seccions', True)">
+                                <!--VOLUNTARIADO-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_volunteering">
+                                    <t t-set="name_section" t-value="'VOLUNTARIADO'"/>
+                                    <t t-set="objects" t-value="o.volunteering_ids"/>
+                                </t>
+                                <br></br>
+                            </t>
 
                         </div>
                     </div>
