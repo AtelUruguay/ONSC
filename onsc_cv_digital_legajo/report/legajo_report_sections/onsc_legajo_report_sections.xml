@@ -72,7 +72,7 @@
                 Otra identidad étnico-racial: <span><t t-esc="employee_id.cv_race2"/></span>
             </li>
             <li t-if="employee_id.cv_first_race_id and employee_id.is_multiple_cv_race_selected">
-                ¿Con cuál se reconoce principalmente?: <span><t t-esc="employee_id.cv_first_race_id.name"/></span>
+                Identidad con la que se reconoce principalmente: <span><t t-esc="employee_id.cv_first_race_id.name"/></span>
             </li>
             <li>
                 Afrodescendientes (Art. 4 Ley N°19.122): <span><t t-esc="employee_id.is_afro_descendants and 'SI' or 'NO'"/></span>
@@ -190,13 +190,13 @@
                 <li t-if="object.situation_disability=='si'">
                     Dificultad para:
                     <ul>
-                        <li t-if="object.see"> Ver, aún si usa anteojos o lentes: <span t-field="object.see"/></li>
-                        <li t-if="object.walk">Caminar o subir escalones: <span t-field="object.walk"/></li>
-                        <li t-if="object.realize">Realizar tareas de cuidado personal como comer, bañarse o vestirse solo: <span t-field="object.realize"/></li>
-                        <li t-if="object.interaction">Interactuar y/o relacionarse con otras personas: <span t-field="object.interaction"/></li>
-                        <li t-if="object.hear">Oír, aún si usa audífono: <span t-field="object.hear"/></li>
-                        <li t-if="object.speak">Hablar o comunicarse aún usando lengua de señas: <span t-field="object.speak"/></li>
-                        <li t-if="object.lear">Entender y/o aprender: <span t-field="object.lear"/></li>
+                        <li t-if="object.see">Ver, ¿aún si usa anteojos o lentes? <span t-field="object.see"/></li>
+                        <li t-if="object.walk">¿Caminar o subir escalones? <span t-field="object.walk"/></li>
+                        <li t-if="object.realize">¿Realizar tareas de cuidado personal como comer, bañarse o vestirse solo? <span t-field="object.realize"/></li>
+                        <li t-if="object.interaction">¿Interacciones y/o relacionarse interpersonales? <span t-field="object.interaction"/></li>
+                        <li t-if="object.hear">Oír, ¿aún si usa audífono? <span t-field="object.hear"/></li>
+                        <li t-if="object.speak">¿Hablar o comunicarse aún usando lengua de señas? <span t-field="object.speak"/></li>
+                        <li t-if="object.lear">¿Entender y/o aprender? <span t-field="object.lear"/></li>
                     </ul>
                 </li>
 
