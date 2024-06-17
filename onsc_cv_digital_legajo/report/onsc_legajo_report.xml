@@ -19,8 +19,10 @@
 
         <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
             <div class="row zero_min_height">
-                <div class="col-12">
-                    LEGAJO
+                <div class="col-12 text-center">
+                    <h4>
+                        LEGAJO
+                    </h4>
                 </div>
             </div>
         </div>
