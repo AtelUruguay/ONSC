@@ -53,6 +53,7 @@ ONSC CV Digital - Legajo
         'report/legajo_report_sections/onsc_legajo_report_teaching_sections.xml',
         'report/legajo_report_sections/onsc_legajo_report_investigation_sections.xml',
         'report/legajo_report_sections/onsc_legajo_report_volunteering_sections.xml',
+        'report/legajo_report_sections/onsc_legajo_report_section_ppe.xml',
         'report/onsc_legajo_report.xml',
     ],
     'demo': [],
