@@ -17,15 +17,15 @@
             </t>
         </t>
 
-        <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">
-            <div class="row zero_min_height">
-                <div class="col-12 text-center">
-                    <h4>
-                        LEGAJO
-                    </h4>
-                </div>
-            </div>
-        </div>
+<!--        <div t-attf-class="header o_company_#{company.id}_layout" t-att-style="report_header_style">-->
+<!--            <div class="row zero_min_height">-->
+<!--                <div class="col-12 text-center">-->
+<!--                    <h4>-->
+<!--                        LEGAJO-->
+<!--                    </h4>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
 
 
         <div t-attf-class="article o_report_layout_standard o_company_#{company.id}_layout {{  'o_layout_background' if company.layout_background in ['Geometric', 'Custom']  else  '' }}"
@@ -75,44 +75,31 @@
                                         <t t-if="employee_id.institutional_email">
                                             <i class="fa fa-fw fa-envelope mr-2"/>
                                             <span t-field="employee_id.institutional_email"/>
+                                            <br/>
                                         </t>
-                                    </td>
-                                    <td>País:
-                                        <span t-if="employee_id.cv_emissor_country_id" t-field="employee_id.cv_emissor_country_id.name"/>
-                                        <img t-if="employee_id.cv_emissor_country_id"
-                                             t-attf-src="{{employee_id.cv_emissor_country_id.image_url}}" alt="image"
-                                             title="image" class="img-fluid" width="20"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <t t-if="employee_id.cv_birthdate">Fecha de nacimiento: <span t-field="employee_id.cv_birthdate" t-options='{"format": "dd/MM/yyyy"}'/></t>
-                                    </td>
-                                    <td>
-                                        <t t-if="employee_id.cv_document_type_id">Tipo de documento: <span t-field="employee_id.cv_document_type_id.name"/></t>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        <t t-if="o.public_admin_entry_date">Fecha de ingreso a la Adm. Pública: <span t-field="o.public_admin_entry_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
-                                    </td>
-                                    <td>
-                                        Número de documento: <span t-field="employee_id.cv_nro_doc"/>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
+                                        <t t-if="employee_id.cv_birthdate">
+                                            Fecha de nacimiento: <span t-field="employee_id.cv_birthdate" t-options='{"format": "dd/MM/yyyy"}'/>
+                                            <br/>
+                                        </t>
+                                        <t t-if="o.public_admin_entry_date">
+                                            Fecha de ingreso a la Adm. Pública: <span t-field="o.public_admin_entry_date" t-options='{"format": "dd/MM/yyyy"}'/>
+                                            <br/>
+                                        </t>
                                         Años de inactividad: <span t-field="o.public_admin_inactivity_years_qty"/>
                                     </td>
                                     <td>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
+                                        País: <span t-if="employee_id.cv_emissor_country_id" t-field="employee_id.cv_emissor_country_id.name"/><br/>
+                                        <img t-if="employee_id.cv_emissor_country_id"
+                                             t-attf-src="{{employee_id.cv_emissor_country_id.image_url}}" alt="image"
+                                             title="image" class="img-fluid" width="20"/>
+                                        <t t-if="employee_id.cv_document_type_id">
+                                            Tipo de documento: <span t-field="employee_id.cv_document_type_id.name"/>
+                                            <br/>
+                                        </t>
+                                        Número de documento: <span t-field="employee_id.cv_nro_doc"/> <br/>
                                         <t t-set="last_contract" t-value="o._get_contracts_sorted(only_most_recent=True)"/>
-                                        <t t-if="last_contract and last_contract.graduation_date">Fecha de graduación: <span t-field="last_contract.graduation_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
-                                    </td>
-                                    <td>
+                                        <t t-if="last_contract and last_contract.graduation_date">
+                                            Fecha de graduación: <span t-field="last_contract.graduation_date" t-options='{"format": "dd/MM/yyyy"}'/></t>
                                     </td>
                                 </tr>
                             </table>
@@ -222,7 +209,7 @@
                                 </t>
                                 <br></br>
                             </t>
-                             <t t-if="'investigation' in env.context.get('seccions', True)">
+                            <t t-if="'investigation' in env.context.get('seccions', True)">
                                  <!--INVESTIGACIONES-->
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_investigation">
                                     <t t-set="name_section" t-value="'INVESTIGACIONES'"/>
@@ -231,7 +218,7 @@
                                 </t>
                                 <br></br>
                             </t>
-                             <t t-if="'volunteering' in env.context.get('seccions', True)">
+                            <t t-if="'volunteering' in env.context.get('seccions', True)">
                                 <!--VOLUNTARIADO-->
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_volunteering">
                                     <t t-set="name_section" t-value="'VOLUNTARIADO'"/>
@@ -239,6 +226,40 @@
                                 </t>
                                 <br></br>
                             </t>
+                            <t t-if="'ppe' in env.context.get('seccions', True)">
+                                <br></br>
+                                <!--PUBLICACIONES-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
+                                    <t t-set="name_section"
+                                       t-value="'PUBLICACIONES'"/>
+                                    <t t-set="objects"
+                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='publication')"/>
+                                </t>
+                                <br></br>
+                                <!--PRODUCCIONES-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
+                                    <t t-set="name_section"
+                                       t-value="'PRODUCCIONES'"/>
+                                    <t t-set="objects"
+                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='productions')"/>
+                                </t>
+                                <br></br>
+                                <!--EVALUACIONES-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
+                                    <t t-set="name_section"
+                                       t-value="'EVALUACIONES'"/>
+                                    <t t-set="objects"
+                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='evaluation')"/>
+                                </t>
+                                <!--PUBLICACIONES OTRO-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
+                                    <t t-set="name_section"
+                                       t-value="'OTRO'"/>
+                                    <t t-set="objects"
+                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='other')"/>
+                                </t>
+                            </t>
+                            <br></br>
                             <t t-if="'tos' in env.context.get('seccions', True)">
                                 <!--Tutorias-->
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_supervision">
