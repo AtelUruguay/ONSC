@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="legajo_section_publication">
+        <h3 t-if="objects" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
+            <strong>
+                <t t-esc="name_section"/>
+            </strong>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none; font-size: 1.5rem;">
+                <li>
+                    <h4 style="font-weight:bold;">
+                        <span t-field="object.date" t-options='{"format": "dd/MM/yyyy"}'/> - <span t-field="object.tittle"/>
+                    </h4>
+                    <t t-if="object.subtype_production_id">Sub tipo: <span t-field="object.subtype_production_id.name"/><br/></t>
+                    <t t-if="object.subtype_other_id">Sub tipo: <span t-field="object.subtype_other_id.name"/><br/></t>
+                    <t t-if="object.subtype_publication_id">Sub tipo: <span t-field="object.subtype_publication_id.name"/><br/></t>
+                    <t t-if="object.subtype_evaluation_id">Sub tipo: <span t-field="object.subtype_evaluation_id.name"/><br/></t>
+                    <t t-if="object.description">Descripción: <span t-field="object.description"/><br/></t>
+                    <t t-if="object.location">Ubicación: <span t-field="object.location"/><br/></t>
+                    <t t-if="object.paid_activity">Actividad remunerada: <span t-esc="object.paid_activity == 'yes' and 'SI' or 'NO'"/><br/></t>
+                    <t t-if="object.type == 'publication' and object.is_arbitrated == True">Actividad Arbitrada: <span t-esc="object.arbitrated == 'yes' and 'SI' or 'NO'"/><br/></t>
+                    <t t-if="object.applied_knowledge_ids">
+                        Conocimientos aplicados:
+                        <t t-set="emp_count" t-value="0"/>
+                        <t t-foreach="object.applied_knowledge_ids" t-as="knowledge">
+                            <t t-set="emp_count" t-value="emp_count + 1"/>
+                            <t t-if="emp_count!=1">
+                                /
+                            </t>
+                            <span t-field="knowledge.name"/>
+                        </t>
+                        <br/>
+                    </t>
+                </li>
+                <t t-if="object.authors_ids">Autores:</t>
+                <ul>
+                    <t t-foreach="object.authors_ids" t-as="line">
+                        <li>
+                            Autor: <span t-field="line.author"/><br/>
+                            Citación: <span t-field="line.citation"/><br/>
+                            Autor principal: <span t-esc="line.is_primary_author and 'SI' or 'NO'"/><br/>
+                        </li>
+                    </t>
+                </ul>
+                <h4 t-if="object.activity_area_ids">Areas de Actividad:</h4>
+                <t t-foreach="object.activity_area_ids" t-as="line">
+                    <ul>
+                        <li>
+                            <h4><span t-field="line.educational_area_id.name"/>/
+                                <span t-field="line.educational_subarea_id.name"/>
+                                /
+                                <span t-field="line.discipline_educational_id.name"/>
+                                /
+                                <span t-field="line.speciality"/>
+                            </h4>
+                        </li>
+                    </ul>
+                </t>
+                <h4 t-if="object.additional_information">Información adicional:
+                    <span t-esc="object.additional_information"/>
+                </h4>
+            </ul>
+            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
+            <br></br>
+        </t>
+    </template>
+</odoo>

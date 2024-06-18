@@ -209,7 +209,7 @@
                                 </t>
                                 <br></br>
                             </t>
-                             <t t-if="'investigation' in env.context.get('seccions', True)">
+                            <t t-if="'investigation' in env.context.get('seccions', True)">
                                  <!--INVESTIGACIONES-->
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_investigation">
                                     <t t-set="name_section" t-value="'INVESTIGACIONES'"/>
@@ -218,7 +218,7 @@
                                 </t>
                                 <br></br>
                             </t>
-                             <t t-if="'volunteering' in env.context.get('seccions', True)">
+                            <t t-if="'volunteering' in env.context.get('seccions', True)">
                                 <!--VOLUNTARIADO-->
                                 <t t-call="onsc_cv_digital_legajo.legajo_section_volunteering">
                                     <t t-set="name_section" t-value="'VOLUNTARIADO'"/>
@@ -226,7 +226,40 @@
                                 </t>
                                 <br></br>
                             </t>
-
+                            <t t-if="'ppe' in env.context.get('seccions', True)">
+                                <br></br>
+                                <!--PUBLICACIONES-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
+                                    <t t-set="name_section"
+                                       t-value="'PUBLICACIONES'"/>
+                                    <t t-set="objects"
+                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='publication')"/>
+                                </t>
+                                <br></br>
+                                <!--PRODUCCIONES-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
+                                    <t t-set="name_section"
+                                       t-value="'PRODUCCIONES'"/>
+                                    <t t-set="objects"
+                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='productions')"/>
+                                </t>
+                                <br></br>
+                                <!--EVALUACIONES-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
+                                    <t t-set="name_section"
+                                       t-value="'EVALUACIONES'"/>
+                                    <t t-set="objects"
+                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='evaluation')"/>
+                                </t>
+                                <!--PUBLICACIONES OTRO-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_publication">
+                                    <t t-set="name_section"
+                                       t-value="'OTRO'"/>
+                                    <t t-set="objects"
+                                       t-value="o.publication_production_evaluation_ids.filtered(lambda tx: tx.type =='other')"/>
+                                </t>
+                            </t>
+                            <br></br>
                         </div>
                     </div>
                 </div>

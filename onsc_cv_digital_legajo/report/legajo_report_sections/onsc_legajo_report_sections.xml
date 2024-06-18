@@ -163,12 +163,8 @@
             <br/>
             </t>
         </ul>
-        <ul t-if="employee_id.other_information_official" style="font-size: 1.5rem;">
-            <li>
-            <u style="list-style:none; font-size: 1.5rem;">
-                Otra información
-            </u>
-            </li>
+        <ul t-if="employee_id.other_information_official" style="font-size: 1.5rem;list-style:none;">
+            <li><u>Otra información</u></li>
             <li class="ml-4">
                 <span t-field="employee_id.other_information_official"/>
             </li>
