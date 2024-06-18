@@ -159,7 +159,7 @@ class ONSCCVCourseCertificate(models.Model):
         Subinstitution = self.env['onsc.cv.subinstitution'].suspend_security()
 
         if self.internal_course:
-            self.institution_id = Institution.search([('is_default', '=', True)]).id
+            self.institution_id = Institution.search([('is_default', '=', True),('country_id', '=', self.country_id.id)]).id
             self.subinstitution_id = Subinstitution.search(
                 [('institution_id', '=', self.institution_id.id), ('is_default', '=', True)]).id
         else:
