@@ -44,25 +44,15 @@
                     </t>
                 </ul>
                 <h4 t-if="object.activity_area_ids">Areas de Actividad:</h4>
+                <ul>
                 <t t-foreach="object.activity_area_ids" t-as="line">
-                    <ul>
-                        <li>
-                            <h4><span t-field="line.educational_area_id.name"/>/
-                                <span t-field="line.educational_subarea_id.name"/>
-                                /
-                                <span t-field="line.discipline_educational_id.name"/>
-                                /
-                                <span t-field="line.speciality"/>
-                            </h4>
-                        </li>
-                    </ul>
+                    <li>
+                    <span t-field="line.educational_area_id.name"/> / <span t-field="line.educational_subarea_id.name"/> / <span t-field="line.discipline_educational_id.name"/> / <span t-field="line.speciality"/>
+                    </li>
                 </t>
-                <h4 t-if="object.additional_information">Información adicional:
-                    <span t-esc="object.additional_information"/>
-                </h4>
+                </ul>
+                <t t-if="object.additional_information">Información adicional: <span t-esc="object.additional_information"/></t>
             </ul>
-            <t t-call="onsc_cv_digital.cv_documentary_validation"/>
-            <br></br>
         </t>
     </template>
 </odoo>
