@@ -239,6 +239,22 @@
                                 </t>
                                 <br></br>
                             </t>
+                            <t t-if="'tos' in env.context.get('seccions', True)">
+                                <!--Tutorias-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_supervision">
+                                    <t t-set="name_section" t-value="'TUTORÍAS, ORIENTACIONES, SUPERVISIONES'"/>
+                                    <t t-set="objects" t-value="o.tutoring_orientation_supervision_ids"/>
+                                </t>
+                                <br></br>
+                            </t>
+                            <t t-if="'events' in env.context.get('seccions', True)">
+                                <!--PARTICIPACIÓN EN EVENTOS-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_event">
+                                    <t t-set="name_section" t-value="'PARTICIPACIÓN EN EVENTOS'"/>
+                                    <t t-set="objects" t-value="o.participation_event_ids"/>
+                                </t>
+                                <br></br>
+                            </t>
 
                         </div>
                     </div>
