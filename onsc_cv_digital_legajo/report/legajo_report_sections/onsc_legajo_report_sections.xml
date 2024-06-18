@@ -112,7 +112,13 @@
         <h4 class="mb-4 ml-4" style="background-color:rgb(82, 113, 255);color:white;">
             Información de salud
         </h4>
+
         <ul style="list-style:none; font-size: 1.5rem;">
+            <li t-if="employee_id.emergency_service_id or employee_id.emergency_service_telephone or employee_id.health_department_id">
+            <u style="list-style:none; font-size: 1.5rem;">
+                Servicio de Salud/Emergencia
+            </u>
+            </li>
             <li t-if="employee_id.emergency_service_id">
                 Servicio de emergencia móvil: <span t-field="employee_id.emergency_service_id.name"/>
             </li>
@@ -129,50 +135,48 @@
                 Prestador de Salud: <span t-field="employee_id.health_provider_id.name"/>
             </li>
             <li t-if="employee_id.blood_type">
+            <br/>
+            <u style="list-style:none; font-size: 1.5rem;">
+                Otros datos
+            </u>
+            </li>
+            <li t-if="employee_id.blood_type">
                 Tipo de sangre: <span t-field="employee_id.blood_type"/>
             </li>
         </ul>
-        <ul t-if="len(employee_id.information_contact_ids) > 0" style="list-style:none; font-size: 1.5rem;">
-            INFORMACIÓN DE CONTACTO (Datos de la persona de contacto ********MEJORARTEXO**********)
+        <ul t-if="len(employee_id.information_contact_ids) > 0" style="font-size: 1.5rem;">
+            <li style="list-style:none;">
+            <u style="font-size: 1.5rem;">
+                Información de contacto
+            </u>
+            </li>
             <t t-foreach="employee_id.information_contact_ids" t-as="information_contact_id">
             <li class="ml-4">
-                Nombre: <span t-field="information_contact_id.name_contact"/>; Teléfono: <span t-field="information_contact_id.contact_person_telephone"/>; Observación: <span t-field="information_contact_id.remark_contact_person"/>
+                <span t-field="information_contact_id.name_contact"/>
             </li>
+            <li class="ml-4">
+                <span t-field="information_contact_id.contact_person_telephone"/>
+            </li>
+            <li class="ml-4">
+                <span t-field="information_contact_id.remark_contact_person"/>
+            </li>
+            <br/>
             </t>
-            <table class="table table-sm table-striped">
-                <thead>
-                    <tr>
-                        <th colspan="3">INFORMACIÓN DE CONTACTO (Datos de la persona de contacto ********MEJORARTEXO**********)</th>
-                    </tr>
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Teléfono</th>
-                        <th>Observación</th>
-                    </tr>
-                </thead>
-                <tr t-foreach="employee_id.information_contact_ids" t-as="information_contact_id">
-                    <td>
-                        <span t-field="information_contact_id.name_contact"/>
-                    </td>
-                    <td>
-                        <span t-field="information_contact_id.prefix_phone_id"/>
-                        <span t-field="information_contact_id.contact_person_telephone"/>
-                    </td>
-                    <td>
-                        <span t-field="information_contact_id.remark_contact_person"/>
-                    </td>
-                </tr>
-            </table>
+        </ul>
+        <ul t-if="employee_id.other_information_official" style="font-size: 1.5rem;">
+            <li>
+            <u style="list-style:none; font-size: 1.5rem;">
+                Otra información
+            </u>
+            </li>
+            <li class="ml-4">
+                <span t-field="employee_id.other_information_official"/>
+            </li>
         </ul>
     </template>
 
     <!--    DISCAPACIDAD    -->
     <template id="legajo_section_disabilitie">
-<!--        <h3 t-if="objects" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">-->
-<!--            <strong>-->
-<!--                <t t-esc="name_section"/>-->
-<!--            </strong>-->
-<!--        </h3>-->
         <t t-foreach="objects" t-as="object">
             <ul style="list-style:none; font-size: 1.5rem;">
                 <li t-if="object.situation_disability">
