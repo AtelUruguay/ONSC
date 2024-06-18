@@ -276,6 +276,14 @@
                                 </t>
                                 <br></br>
                             </t>
+                            <t t-if="'other_info' in env.context.get('seccions', True)">
+                                <!--Otra información relevante-->
+                                <t t-call="onsc_cv_digital_legajo.legajo_section_other_relevant_information">
+                                    <t t-set="name_section" t-value="'OTRA INFORMACIÓN RELEVANTE'"/>
+                                    <t t-set="objects" t-value="o.other_relevant_information_ids"/>
+                                </t>
+                                <br></br>
+                            </t>
 
                         </div>
                     </div>
