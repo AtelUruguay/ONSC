@@ -13,13 +13,13 @@
                 - <span t-field="contract.inciso_id.name"/> - <span t-field="contract.operating_unit_id.name"/>
             </li>
 
-            <t t-set="job_id" t-value="o._get_contract_active_job(contract)"/>
-            <t t-if="job_id">
-            <li>UO: <span t-field="job_id.department_id.name"/></li>
-            <li>Fecha desde de la UO: <span t-field="job_id.start_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+            <t t-set="job_info" t-value="o._get_contract_active_job(contract)"/>
+            <t t-if="job_info['job_id']">
+            <li>UO: <span t-esc="job_info['job_id'].department_id.name"/></li>
+            <li>Fecha desde de la UO: <span t-esc="job_info['oldest_start_date']"/></li>
             </t>
-            <li t-if="contract.program">Programa: <span t-field="contract.program"/></li>
-            <li t-if="contract.project">Proyecto: <span t-field="contract.project"/></li>
+            <li t-if="contract.retributive_day_id">Programa: <span t-field="contract.retributive_day_id.office_id.programa"/> <span t-field="contract.retributive_day_id.office_id.programaDescripcion"/></li>
+            <li t-if="contract.retributive_day_id">Proyecto: <span t-field="contract.retributive_day_id.office_id.proyecto"/> <span t-field="contract.retributive_day_id.office_id.proyectoDescripcion"/></li>
             <li t-if="contract.regime_id">Régimen: <span t-field="contract.regime_id.name"/></li>
             <li t-if="contract.descriptor1_id">Descriptor 1: <span t-field="contract.descriptor1_id.name"/></li>
             <li t-if="contract.descriptor2_id">Descriptor 2: <span t-field="contract.descriptor2_id.name"/></li>
@@ -42,7 +42,7 @@
             <li t-if="contract.contract_expiration_date">Vencimiento del contrato: <span t-field="contract.contract_expiration_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
             <li t-if="contract.additional_information">Información adicional alta: <span t-field="contract.additional_information"/></li>
             <li t-if="contract.description_day">Descripción de la Jornada: <span t-field="contract.description_day"/></li>
-            <li t-if="contract.retributive_day_id">Jornada retributiva: <span t-field="contract.code_day"/></li>
+            <li t-if="contract.retributive_day_id">Jornada retributiva: <span t-field="contract.retributive_day_id.codigoJornada"/></li>
             <li t-if="contract.type_norm_deregistration">Tipo de norma baja: <span t-field="contract.type_norm_deregistration"/></li>
             <li t-if="contract.norm_number_deregistration">Número de norma baja: <span t-field="contract.norm_number_deregistration" t-options="{'widget': 'text'}"/></li>
             <li t-if="contract.norm_year_deregistration">Año de norma baja: <span t-field="contract.norm_year_deregistration" t-options="{'widget': 'text'}"/></li>

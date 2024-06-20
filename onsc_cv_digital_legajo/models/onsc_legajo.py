@@ -128,8 +128,15 @@ class ONSCLegajo(models.Model):
     def _get_contract_active_job(self, contract_id):
         active_jobs = contract_id.job_ids.filtered(lambda x: x.end_date is False or x.end_date > fields.Date.today())
         if len(active_jobs):
-            return active_jobs[0]
-        return active_jobs
+            active_job = active_jobs[0]
+            oldest_start_date = active_job.start_date
+            for job in contract_id.job_ids.sorted(key=lambda job_id: (
+                -to_timestamp(job_id.start_date))):
+                if job.id != active_job.id and job.department_id == active_job.department_id and job.end_date and (
+                        active_job.start_date - job.end_date).days in [0, 1]:
+                    oldest_start_date = job.start_date
+            return {'job_id': active_jobs[0], 'oldest_start_date': oldest_start_date.strftime('%d/%m/%Y')}
+        return {'job_id': active_jobs, 'oldest_start_date': False}
 
     def _get_report_legajo_formation_seccion(self):
         result = {}
