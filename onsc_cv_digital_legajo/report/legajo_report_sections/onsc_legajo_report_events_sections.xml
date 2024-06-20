@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+   <!--Eventos-->
+    <template id="legajo_section_event">
+        <h3 t-if="objects" class="mb-4" style="background-color:rgb(82, 113, 255);color:white;">
+            <strong><t t-esc="name_section"/></strong>
+        </h3>
+        <t t-foreach="objects" t-as="object">
+            <ul style="list-style:none; font-size: 1.5rem;">
+                <li style="font-weight:bold;">
+                   <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
+                        <span t-field="object.end_date" t-options='{"format": "dd/MM/yyyy"}'/>:
+                        <span t-field="object.name_event"/> / <span t-field="object.type_event_id.name"/>
+                </li>
+                <li t-if="object.description_event">Descripción del evento: <span t-field="object.description_event"/></li>
+                <li t-if="object.name_institution">Nombre de la institucion organizadora: <span t-field="object.name_institution"/></li>
+                <li t-if="object.mode">Modalidad:  <span t-field="object.mode"/></li>
+                <li t-if="object.country_id">País del evento: <span t-field="object.country_id.name"/></li>
+                <li t-if="object.hours_total">Carga horaria total del evento (en horas): <span t-field="object.hours_total"/></li>
+                <li t-if="object.roll_event_id">Rol en evento: <span t-field="object.roll_event_id.name"/>
+                    <ul>
+                        <li t-if="object.description_topic">Descripción de la temática abordada en el rol: <span t-field="object.description_topic"/>
+                        </li>
+                        <li t-if="object.hourly_load">Carga horaria en el rol (en horas): <span t-field="object.hourly_load"/>
+                        </li>
+                    </ul>
+                </li>
+                <li t-if="object.knowledge_acquired_ids">Conocimientos claves abordados: <t t-set="emp_count" t-value="0"/>
+                    <t t-foreach="object.knowledge_acquired_ids" t-as="knowledge">
+                        <t t-set="emp_count" t-value="emp_count + 1"/>
+                        <t t-if="emp_count!=1"> / </t>
+                        <span t-field="knowledge.name"/>
+                    </t>
+                </li>
+                <li t-if="object.activity_area_ids">Áreas relacionadas</li>
+                <t t-foreach="object.activity_area_ids" t-as="line">
+                    <ul>
+                        <li>
+                            <span t-field="line.educational_area_id.name"/> / <span t-esc="line.educational_subarea_id.name"/> /
+                            <span t-field="line.discipline_educational_id.name"/> / <span t-field="line.speciality"/>
+                        </li>
+                    </ul>
+                </t>
+                <li t-if="object.other_relevant_information">Otra información relevante: <span t-field="object.other_relevant_information"/>
+                </li>
+            </ul>
+            <br></br>
+        </t>
+    </template>
+
+</odoo>

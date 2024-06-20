@@ -153,13 +153,13 @@ class ONSCCVCourseCertificate(models.Model):
     def onchange_calc_name(self):
         self.name = self._calc_name_by_record_type()
 
-    @api.onchange('internal_course')
+    @api.onchange('internal_course','country_id')
     def onchange_internal_course(self):
         Institution = self.env['onsc.cv.institution'].suspend_security()
         Subinstitution = self.env['onsc.cv.subinstitution'].suspend_security()
 
         if self.internal_course:
-            self.institution_id = Institution.search([('is_default', '=', True)]).id
+            self.institution_id = Institution.search([('is_default', '=', True),('country_id', '=', self.country_id.id)]).id
             self.subinstitution_id = Subinstitution.search(
                 [('institution_id', '=', self.institution_id.id), ('is_default', '=', True)]).id
         else:
