@@ -59,11 +59,12 @@
                     Asignación de funciones
                 </u>
             </li>
-            <li t-foreach="contract._get_role_assignments_sorted()" t-as="role_assignment">
-                <t t-if="role_assignment.date_start">Fecha de inicio: <span t-field="role_assignment.date_start"/></t><t t-if="role_assignment.date_end"> - Fecha de fin: <span t-field="role_assignment.date_end"/></t>
-                <t t-if="role_assignment.role_assignment_mecanism"> - Mecanismo de asignación de funciones: <span t-field="role_assignment.role_assignment_mecanism"/></t>
-            </li>
-
+            <t t-foreach="contract._get_role_assignments_sorted()" t-as="role_assignment">
+                <li t-if="role_assignment.date_start">Fecha de inicio: <span t-field="role_assignment.date_start"/></li>
+                <li t-if="role_assignment.date_end">Fecha de fin: <span t-field="role_assignment.date_end"/></li>
+                <li t-if="role_assignment.role_assignment_mecanism">Mecanismo de asignación de funciones: <span t-field="role_assignment.role_assignment_mecanism"/></li>
+                <br/>
+            </t>
         </ul>
         </t>
     </template>
@@ -93,7 +94,9 @@
                 <u style="list-style:none; font-size: 1.5rem;">Control de votos</u>
             </li>
             <t t-foreach="vote_registry_details" t-as="vote_registry_detail">
-                <li>Elección: <span t-esc="vote_registry_detail['electoral_act']"/> - Fecha de presentación: <span t-esc="vote_registry_detail['date']"/></li>
+                <li>Elección: <span t-esc="vote_registry_detail['electoral_act']"/></li>
+                <li>Fecha de presentación: <span t-esc="vote_registry_detail['date']"/></li>
+                <br/>
             </t>
         </ul>
         </t>
@@ -106,7 +109,9 @@
                 <u style="list-style:none; font-size: 1.5rem;">Declaración Ley 19.574 Decreto 380-2018</u>
             </li>
             <t t-foreach="declaration_law_ids" t-as="declaration_law_id">
-            <li>Fecha de declaración: <span t-field="declaration_law_id.declaration_date" t-options='{"format": "dd/MM/yyyy"}'/> - Fecha de registro: <span t-field="declaration_law_id.create_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+            <li>Fecha de declaración: <span t-field="declaration_law_id.declaration_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+            <li>Fecha de registro: <span t-field="declaration_law_id.create_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+            <br/>
             </t>
         </ul>
         </t>
@@ -127,14 +132,14 @@
         <!--Otra información del funcionario-->
         <t t-value="o.other_information_ids" t-set="other_information_ids"/>
         <t t-if="len(other_information_ids) > 0">
-        <ul style="font-size: 1.5rem;">
+        <ul style="list-style:none; font-size: 1.5rem;">
             <li style="list-style:none;">
                 <u style="list-style:none; font-size: 1.5rem;">Otra información del funcionario</u>
             </li>
             <t t-foreach="other_information_ids" t-as="other_information_id">
-            <li class="ml-4">Fecha de ingreso de información: <span t-field="other_information_id.entry_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
-            <li class="ml-4">Título: <span t-field="other_information_id.title"/></li>
-            <li class="ml-4">Descripción: <span t-field="other_information_id.description"/></li>
+            <li>Fecha de ingreso de información: <span t-field="other_information_id.entry_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
+            <li>Título: <span t-field="other_information_id.title"/></li>
+            <li>Descripción: <span t-field="other_information_id.description"/></li>
             <br/>
             </t>
         </ul>
@@ -149,7 +154,7 @@
             <ul style="list-style:none; font-size: 1.5rem;">
                 <t t-foreach="merito_ids" t-as="merito_id">
                 <li>Mérito: <span t-field="merito_id.title"/></li>
-                <li>Inciso UE: <span t-field="merito_id.inciso_id.name"/> - <span t-field="merito_id.operating_unit_id.name"/></li>
+                <li>Inciso - UE: <span t-field="merito_id.inciso_id.name"/> - <span t-field="merito_id.operating_unit_id.name"/></li>
                 <li>Descripción del mérito: <span t-field="merito_id.description"/></li>
                 <li>Fecha de notificación: <span t-field="merito_id.notification_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
                 <li>Fecha del mérito: <span t-field="merito_id.document_date" t-options='{"format": "dd/MM/yyyy"}'/></li>
@@ -169,7 +174,7 @@
                 <t t-foreach="demerito_ids" t-as="demerito_id">
                 <li>Tipo de demérito: <span t-field="demerito_id.demerit_id.name"/></li>
                 <li>Título: <span t-field="demerito_id.title"/></li>
-                <li>Inciso UE: <span t-field="merito_id.inciso_id.name"/> - <span t-field="merito_id.operating_unit_id.name"/></li>
+                <li>Inciso - UE: <span t-field="merito_id.inciso_id.name"/> - <span t-field="merito_id.operating_unit_id.name"/></li>
                 <li>Tipo de sanción: <span t-field="demerito_id.type_sanction_id.name"/></li>
                 <li>Descripción del demérito: <span t-field="demerito_id.description"/></li>
                 <li>Fecha de notificación: <span t-field="demerito_id.notification_date" t-options='{"format": "dd/MM/yyyy"}'/></li>

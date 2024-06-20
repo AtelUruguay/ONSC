@@ -133,7 +133,7 @@ class ONSCLegajo(models.Model):
             for job in contract_id.job_ids.sorted(key=lambda job_id: (
                 -to_timestamp(job_id.start_date))):
                 if job.id != active_job.id and job.department_id == active_job.department_id and job.end_date and (
-                        active_job.start_date - job.end_date).days in [0, 1]:
+                        oldest_start_date - job.end_date).days in [0, 1]:
                     oldest_start_date = job.start_date
             return {'job_id': active_jobs[0], 'oldest_start_date': oldest_start_date.strftime('%d/%m/%Y')}
         return {'job_id': active_jobs, 'oldest_start_date': False}
