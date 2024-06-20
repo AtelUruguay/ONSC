@@ -73,6 +73,18 @@
                             <field name="operating_unit_origin_id"
                                    readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                             <field name="descriptor1_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor2_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                              <field name="descriptor3_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="descriptor4_origin_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="extinction_commission_id"
                                    readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
@@ -89,6 +101,12 @@
                             <field name="descriptor3_id"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="descriptor4_id"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                             <field name="inciso_dest_id"
+                                   readonly="1"
+                                   options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
+                            <field name="operating_unit_dest_id"
+                                   readonly="1"
                                    options="{'no_create_edit':true, 'no_quick_create':true, 'no_open':true}"/>
                             <field name="graduation_date" />
                             <field name="is_occupation_visible" invisible="1"/>
