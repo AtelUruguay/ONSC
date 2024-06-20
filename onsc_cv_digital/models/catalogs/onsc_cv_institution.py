@@ -36,7 +36,7 @@ class ONSCCVIntitution(models.Model):
         for record in self.filtered(lambda x: x.active):
             if record.is_default and self.search_count([('is_default', '=',True) ,('country_id', '=', record.country_id.id),
                                   ('id', '!=', record.id)]):
-                raise ValidationError(u"La Institución por defecto debe ser única")
+                raise ValidationError(u"La Institución por defecto debe ser única para el país")
 
     def _get_conditional_unicity_message(self):
         return _("Ya existe un registro validado para %s, País: %s" % (self.name,
