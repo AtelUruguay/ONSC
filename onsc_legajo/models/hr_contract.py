@@ -388,9 +388,9 @@ class HrContract(models.Model):
             role_assignment_id.date_start
         ))
         if only_most_recent and len(role_assignments_sorted):
-            return role_assignments_sorted[0]
+            return role_assignments_sorted[0].role_assignment_id
         else:
-            return role_assignments_sorted
+            return role_assignments_sorted.role_assignment_id
 
 
 class HrContractHistory(models.Model):
