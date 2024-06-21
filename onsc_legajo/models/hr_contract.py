@@ -12,6 +12,7 @@ _CUSTOM_ORDER = {
     'end': 2
 }
 
+
 class HrContract(models.Model):
     _name = 'hr.contract'
     _rec_name = 'legajo_name'
@@ -193,6 +194,15 @@ class HrContract(models.Model):
         string='Leyenda de legajo',
         compute='_compute_show_law_legajo_legend'
     )
+    descriptor1_origin_id = fields.Many2one('onsc.catalog.descriptor1', string='Descriptor1 origen')
+    descriptor2_origin_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2 origen')
+    descriptor3_origin_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3 origen')
+    descriptor4_origin_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4 origen')
+    inciso_dest_id = fields.Many2one('onsc.catalog.inciso', string='Inciso destino', history=True)
+    operating_unit_dest_id = fields.Many2one("operating.unit",
+                                             string="Unidad ejecutora Destino",
+                                             domain="[('inciso_id','=', inciso_dest_id)]",
+                                             history=True)
 
     def name_get(self):
         res = []
@@ -279,7 +289,6 @@ class HrContract(models.Model):
                 rec.show_law_legajo_legend = False
                 rec.law_legajo_legend = False
 
-
     def _compute_is_mi_legajo(self):
         for rec in self:
             rec.is_mi_legajo = rec.employee_id.user_id.id == self.env.user.id
@@ -347,7 +356,8 @@ class HrContract(models.Model):
             vals.update({'eff_date': fields.Date.today()})
         self.write(vals)
 
-    def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False):
+    def deactivate_legajo_contract(self, date_end, legajo_state='baja', eff_date=False, inciso_dest_id=False,
+                                   operating_unit_dest_id=False):
         if self.eff_date and eff_date and self.eff_date > eff_date:
             raise ValidationError(_("No se puede modificar la historia del contrato para la fecha enviada."))
         vals = {'legajo_state': legajo_state}
@@ -357,6 +367,9 @@ class HrContract(models.Model):
             vals.update({'eff_date': str(eff_date)})
         else:
             vals.update({'eff_date': fields.Date.today()})
+
+        vals.update({'inciso_dest_id': inciso_dest_id})
+        vals.update({'operating_unit_dest_id': operating_unit_dest_id})
         self.suspend_security().write(vals)
         self.job_ids.deactivate(date_end)
 
@@ -381,6 +394,7 @@ class HrContract(models.Model):
             return self.env['onsc.legajo.state.square']
 
             # LEGAJO REPORT UTILITIES
+
     def _get_role_assignments_sorted(self, only_most_recent=False):
         current_jobs = self.job_ids.filtered(lambda x: not x.end_date or x.end_date > fields.Date.today())
 
@@ -397,4 +411,3 @@ class HrContractHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'hr.contract.model.history'
     _parent_model = 'hr.contract'
-
