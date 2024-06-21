@@ -1,4 +1,4 @@
-image: python:3.9.18
+image: python:3.10.11
 stages:
   - test
 
