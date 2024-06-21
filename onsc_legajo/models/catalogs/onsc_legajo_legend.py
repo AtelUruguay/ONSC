@@ -25,5 +25,6 @@ class ONSCLegajoLegend(models.Model):
             if Legend.search_count([
                 ('regime_id', '=', record.regime_id.id),
                 ('descriptor1_id', '=', record.descriptor1_id.id),
-                ('id', '!=', record.id)]) > 0:
+                ('id', '!=', record.id)
+            ]) > 0:
                 raise ValidationError(_("Ya existe una Leyenda para el Régimen y Descriptor 1 ingresado"))

@@ -400,7 +400,8 @@ class ONSCLegajoCambioUO(models.Model):
             is_same_manager = record.job_id.is_uo_manager == record.is_responsable_uo
             if (not is_same_manager or not is_same_department) and JobRoleAssignment.search_count([
                 ('job_id', '=', record.job_id.id),
-                '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())]):
+                '|', ('date_end', '=', False), ('date_end', '>=', fields.Date.today())
+            ]):
                 raise ValidationError(
                     _("El funcionario tiene una asignación de funciones vigente que no le permite realizar el cambio."
                       "Debe actualizar la situación de la asignación de función previo a esta acción."))

@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo.addons.onsc_base.onsc_useful_tools import profiler
 
-from odoo import fields, models, tools, api
-from odoo.osv import expression
+from odoo import fields, models, tools
 
 
 class ONSCLegajoBaseView(models.Model):
@@ -58,7 +56,7 @@ FROM
     hr_contract contract
 LEFT JOIN hr_job job ON job.contract_id = contract.id
 LEFT JOIN onsc_legajo legajo ON contract.legajo_id = legajo.id
-WHERE 
+WHERE
     (job.start_date <= CURRENT_DATE AND (job.end_date IS NULL OR job.end_date >= CURRENT_DATE)) OR
-	job.id IS NULL AND contract.legajo_state <> 'baja'
+    job.id IS NULL AND contract.legajo_state <> 'baja'
 )''' % (self._table,))

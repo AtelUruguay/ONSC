@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-from odoo.addons.onsc_base.onsc_useful_tools import profiler
 
 from odoo import fields, models, tools, api
 from odoo.osv import expression
@@ -125,71 +124,71 @@ SELECT
 row_number() OVER(ORDER BY legajo_id, contract_id, type, job_id) AS id, *
 FROM
 --CONTRATO ACTIVO SIN PUESTOS ACTIVOS
-(SELECT 
-	base_contract_view.*,
-	NULL AS job_id,
-	NULL AS job_name,
-	NULL AS security_job_id,
-	NULL AS department_id,
-	NULL AS start_date,
-	NULL AS end_date
+(SELECT
+    base_contract_view.*,
+    NULL AS job_id,
+    NULL AS job_name,
+    NULL AS security_job_id,
+    NULL AS department_id,
+    NULL AS start_date,
+    NULL AS end_date
 FROM
- (SELECT
+(SELECT
     contract.legajo_id AS legajo_id,
     contract.id AS contract_id,
     contract.legajo_state AS contract_legajo_state,
-	contract.inciso_id,
+    contract.inciso_id,
     contract.operating_unit_id,
     contract.employee_id,
-	'active' AS type,
-	(SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
+    'active' AS type,
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
 FROM
     hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 WHERE contract_legajo_state IN ('active','incoming_commission','reserved') AND active_job_qty = 0
 UNION ALL
 --CONTRATO ACTIVO CON PUESTOS ACTIVOS
-SELECT 
-	base_contract_view.*,
-	hr_job.id AS job_id,
-	hr_job.name AS job_name,
-	hr_job.security_job_id AS security_job_id,
-	hr_job.department_id AS department_id,
-	hr_job.start_date AS start_date,
-	hr_job.end_date AS end_date
+SELECT
+    base_contract_view.*,
+    hr_job.id AS job_id,
+    hr_job.name AS job_name,
+    hr_job.security_job_id AS security_job_id,
+    hr_job.department_id AS department_id,
+    hr_job.start_date AS start_date,
+    hr_job.end_date AS end_date
 FROM
  (SELECT
     contract.legajo_id AS legajo_id,
     contract.id AS contract_id,
     contract.legajo_state AS contract_legajo_state,
-	contract.inciso_id,
+    contract.inciso_id,
     contract.operating_unit_id,
     contract.employee_id,
-	'active' AS type,
-	(SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
+    'active' AS type,
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
 FROM
     hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 LEFT JOIN hr_job ON hr_job.contract_id = base_contract_view.contract_id
 WHERE contract_legajo_state IN ('active','incoming_commission','reserved') AND active_job_qty > 0 AND (end_date IS NULL OR end_date > CURRENT_DATE)
 --CONTRATO SALIENTE TOMAR EL ULTIMO PUESTO
 UNION ALL
-SELECT 
-	base_contract_view.*,
-	(SELECT id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS job_id,
-	(SELECT name FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS job_name,
-	(SELECT security_job_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS security_job_id,
-	(SELECT department_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS department_id,
-	(SELECT start_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS start_date,
-	(SELECT end_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS end_date
+SELECT
+    base_contract_view.*,
+    (SELECT id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS job_id,
+    (SELECT name FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS job_name,
+    (SELECT security_job_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS security_job_id,
+    (SELECT department_id FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS department_id,
+    (SELECT start_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS start_date,
+    (SELECT end_date FROM hr_job WHERE contract_id = base_contract_view.contract_id ORDER BY end_date DESC, id DESC limit 1) AS end_date
 FROM
  (SELECT
     contract.legajo_id AS legajo_id,
     contract.id AS contract_id,
     contract.legajo_state AS contract_legajo_state,
-	contract.inciso_id,
+    contract.inciso_id,
     contract.operating_unit_id,
     contract.employee_id,
-	'active' AS type,
-	(SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
+    'active' AS type,
+    (SELECT COUNT(id) FROM hr_job WHERE active = True AND (end_date IS NULL OR end_date > CURRENT_DATE) AND contract_id = contract.id) AS active_job_qty
 FROM
     hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 WHERE contract_legajo_state = 'outgoing_commission') AS main_query)''' % (self._table,))

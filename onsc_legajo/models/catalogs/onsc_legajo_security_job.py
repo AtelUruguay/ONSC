@@ -2,9 +2,9 @@
 import json
 import logging
 
-_logger = logging.getLogger(__name__)
-
 from odoo import fields, models, api
+
+_logger = logging.getLogger(__name__)
 
 
 class ONSCLegajoSecurityJob(models.Model):
@@ -78,5 +78,5 @@ class ONSCLegajoSecurityJob(models.Model):
                         JobLine.with_context(bulked_creation=True).create(new_lines)
                     # jobs.write({'role_ids': new_lines})
                     _logger.warning('ACTUALIZANDO SEGURIDAD PUESTO FINALIZANDO')
-        except Exception as e:
+        except Exception:
             pass
