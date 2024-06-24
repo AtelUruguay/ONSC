@@ -6,7 +6,7 @@
             <strong><t t-esc="name_section"/></strong>
         </h3>
         <t t-foreach="objects" t-as="object">
-            <ul style="list-style:none; font-size: 1.5rem;">
+            <ul style="font-size: 1.5rem;">
                 <li style="font-weight:bold;">
                   <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
                     <t t-if="object.currently_volunteering=='si'"><span>Actualidad</span></t>
@@ -17,14 +17,14 @@
                     <t t-else=""><span t-field="object.company_name"/></t>
                     ( <span t-field="object.country_id.name"/> )
                 </li>
-                <li t-if="object.company_type">Tipo de empresa: <span t-field="object.company_type"/></li>
-                <li t-if="object.unit_name">Área/Unidad: <span t-field="object.unit_name"/></li>
-                <li t-if="object.currently_volunteering">Voluntario actualmente:
+                <li style="list-style:none;" t-if="object.company_type">Tipo de empresa: <span t-field="object.company_type"/></li>
+                <li style="list-style:none;" t-if="object.unit_name">Área/Unidad: <span t-field="object.unit_name"/></li>
+                <li style="list-style:none;" t-if="object.currently_volunteering">Voluntario actualmente:
                     <span t-esc="object.currently_volunteering and 'SI' or 'NO'"/></li>
-                <li t-if="object.hours_monthly">Cantidad de horas mensuales: <span t-esc="object.hours_monthly"/></li>
-                <li t-if="object.description_tasks">Descripción de tareas: <span t-field="object.description_tasks"/></li>
+                <li style="list-style:none;" t-if="object.hours_monthly">Cantidad de horas mensuales: <span t-esc="object.hours_monthly"/></li>
+                <li style="list-style:none;" t-if="object.description_tasks">Descripción de tareas: <span t-field="object.description_tasks"/></li>
                 <br></br>
-                <li t-if="object.volunteering_task_ids">Tareas clave:</li>
+                <li style="list-style:none;" t-if="object.volunteering_task_ids">Tareas clave:</li>
                 <t t-foreach="object.volunteering_task_ids" t-as="line">
                     <ul>
                         <li><span t-field="line.key_task_id.name"/>/<span t-esc="line.area_id.name"/> </li>

@@ -6,7 +6,7 @@
             <strong><t t-esc="name_section"/></strong>
         </h3>
         <t t-foreach="objects" t-as="object">
-            <ul style="list-style:none; font-size: 1.5rem;">
+            <ul style="font-size: 1.5rem;">
                 <li style="font-weight:bold;">
                     <span t-field="object.start_date" t-options='{"format": "dd/MM/yyyy"}'/> -
                     <t t-if="object.currently_working=='yes'"> <span>Actualidad</span> </t>
@@ -14,14 +14,14 @@
                     <span t-field="object.institution_id.name_country"/>
                     <t t-if="object.institution_id.id!=object.subinstitution_id.id">/ <span t-field="object.subinstitution_id.name"/></t>
                  </li>
-                <li t-if="object.position">Cargo: <span t-field="object.position"/></li>
-                <li t-if="object.position_type">Tipo de Cargo: <span t-field="object.position_type"/></li>
-                <li>Tiene dedicación total: <span t-esc="object.is_full_time and 'SI' or 'NO'"/></li>
-                <li t-if="object.is_paid_activity">Actividad remunerada: <span t-esc="object.is_paid_activity and 'SI' or 'NO'"/></li>
-                <li t-if="object.professional_link_id">Vinculo profesional: <span t-field="object.professional_link_id.name"/></li>
-                <li t-if="object.responsible_type">Es responsable de cátedra o de programa académico: <span t-field="object.responsible_type"/></li>
-                <li t-if="object.hours_worked_monthly">Cantidad de horas mensuales en el instituto: <span t-field="object.hours_worked_monthly"/></li>
-                <li t-if="object.subject_ids">Materias dictadas:</li>
+                <li style="list-style:none;" t-if="object.position">Cargo: <span t-field="object.position"/></li>
+                <li style="list-style:none;" t-if="object.position_type">Tipo de Cargo: <span t-field="object.position_type"/></li>
+                <li style="list-style:none;">Tiene dedicación total: <span t-esc="object.is_full_time and 'SI' or 'NO'"/></li>
+                <li style="list-style:none;" t-if="object.is_paid_activity">Actividad remunerada: <span t-esc="object.is_paid_activity and 'SI' or 'NO'"/></li>
+                <li style="list-style:none;" t-if="object.professional_link_id">Vinculo profesional: <span t-field="object.professional_link_id.name"/></li>
+                <li style="list-style:none;" t-if="object.responsible_type">Es responsable de cátedra o de programa académico: <span t-field="object.responsible_type"/></li>
+                <li style="list-style:none;" t-if="object.hours_worked_monthly">Cantidad de horas mensuales en el instituto: <span t-field="object.hours_worked_monthly"/></li>
+                <li style="list-style:none;" t-if="object.subject_ids">Materias dictadas:</li>
                 <t t-foreach="object.subject_ids" t-as="line">
                     <ul>
                        <li><span t-esc="line.subject"/></li>
@@ -41,7 +41,7 @@
                         </ul>
                     </ul>
                 </t>
-                <li t-if="object.education_area_ids">Áreas relacionadas</li>
+                <li style="list-style:none;" t-if="object.education_area_ids">Áreas relacionadas</li>
                 <t t-foreach="object.education_area_ids" t-as="line">
                   <ul>
                       <li><span t-field="line.educational_area_id.name"/>/<span t-esc="line.educational_subarea_id.name"/>/
@@ -49,7 +49,7 @@
                     </li>
                   </ul>
                 </t>
-                <li t-if="object.other_relevant_information">Otra información relevante: <span t-field="object.other_relevant_information"/></li>
+                <li style="list-style:none;" t-if="object.other_relevant_information">Otra información relevante: <span t-field="object.other_relevant_information"/></li>
             </ul>
             <br></br>
         </t>

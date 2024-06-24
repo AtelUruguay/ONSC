@@ -115,7 +115,7 @@
 
         <ul style="list-style:none; font-size: 1.5rem;">
             <li t-if="employee_id.emergency_service_id or employee_id.emergency_service_telephone or employee_id.health_department_id">
-            <u style="list-style:none; font-size: 1.5rem;">
+            <u style="list-style:none; font-size: 1.5rem;font-weight:bold;">
                 Servicio de Salud/Emergencia
             </u>
             </li>
@@ -136,7 +136,7 @@
             </li>
             <li t-if="employee_id.blood_type">
             <br/>
-            <u style="list-style:none; font-size: 1.5rem;">
+            <u style="list-style:none; font-size: 1.5rem;font-weight:bold;">
                 Otros datos
             </u>
             </li>
@@ -146,25 +146,19 @@
         </ul>
         <ul t-if="len(employee_id.information_contact_ids) > 0" style="font-size: 1.5rem;">
             <li style="list-style:none;">
-            <u style="font-size: 1.5rem;">
+            <u style="font-size: 1.5rem;font-weight:bold;">
                 Información de contacto
             </u>
             </li>
             <t t-foreach="employee_id.information_contact_ids" t-as="information_contact_id">
-            <li class="ml-4">
-                <span t-field="information_contact_id.name_contact"/>
-            </li>
-            <li class="ml-4">
-                <span t-field="information_contact_id.contact_person_telephone"/>
-            </li>
-            <li class="ml-4">
-                <span t-field="information_contact_id.remark_contact_person"/>
-            </li>
+            <li class="ml-4" style="font-weight:bold;"><span t-field="information_contact_id.name_contact"/></li>
+            <li style="list-style:none;" class="ml-4"><span t-field="information_contact_id.contact_person_telephone"/></li>
+            <li style="list-style:none;" class="ml-4"><span t-field="information_contact_id.remark_contact_person"/></li>
             <br/>
             </t>
         </ul>
         <ul t-if="employee_id.other_information_official" style="font-size: 1.5rem;list-style:none;">
-            <li><u>Otra información</u></li>
+            <li><u style="font-weight:bold;">Otra información</u></li>
             <li class="ml-4">
                 <span t-field="employee_id.other_information_official"/>
             </li>
@@ -178,8 +172,8 @@
                 <li t-if="object.situation_disability">
                     Discapacidad: <span t-field="object.situation_disability"/>
                 </li>
-                <li t-if="object.people_disabilitie">
-                    ¿Está inscripto en el registro de personas con discapacidad del Ministerio de Desarrollo Social? <span t-field="object.people_disabilitie"/>
+                <li t-if="object.people_disabilitie and object.people_disabilitie == 'si'">
+                    Estoy inscripto en el registro de personas con discapacidad del MIDES
                 </li>
                 <li t-if="object.certificate_date and object.situation_disability=='si'">
                     Fecha de certificado: <span t-field="object.certificate_date" t-options='{"format": "dd/MM/yyyy"}'/>

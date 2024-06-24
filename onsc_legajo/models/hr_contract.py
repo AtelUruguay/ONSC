@@ -6,6 +6,7 @@ from lxml import etree
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
+from odoo.addons.onsc_base.onsc_useful_tools import to_timestamp as to_timestamp
 
 _CUSTOM_ORDER = {
     'confirm': 1,
@@ -399,7 +400,7 @@ class HrContract(models.Model):
         current_jobs = self.job_ids.filtered(lambda x: not x.end_date or x.end_date > fields.Date.today())
 
         role_assignments_sorted = current_jobs.mapped('role_assignment_ids').sorted(key=lambda role_assignment_id: (
-            role_assignment_id.date_start
+            -to_timestamp(role_assignment_id.date_start)
         ))
         if only_most_recent and len(role_assignments_sorted):
             return role_assignments_sorted[0].role_assignment_id

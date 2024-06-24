@@ -6,7 +6,7 @@
             <strong><t t-esc="name_section"/></strong>
         </h3>
         <t t-foreach="objects" t-as="object">
-            <ul style="list-style:none; font-size: 1.5rem;">
+            <ul style="font-size: 1.5rem;">
                 <li t-if="object.theme">Tema: <span t-field="object.theme"/>
                 </li>
                 <li t-if="object.description">Descripción: <span t-field="object.description"/>
