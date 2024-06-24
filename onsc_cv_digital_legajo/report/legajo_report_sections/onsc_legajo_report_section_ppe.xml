@@ -7,7 +7,7 @@
             </strong>
         </h3>
         <t t-foreach="objects" t-as="object">
-            <ul style="list-style:none; font-size: 1.5rem;">
+            <ul style="font-size: 1.5rem;">
                 <li>
                     <h4 style="font-weight:bold;">
                         <span t-field="object.date" t-options='{"format": "dd/MM/yyyy"}'/> - <span t-field="object.tittle"/>

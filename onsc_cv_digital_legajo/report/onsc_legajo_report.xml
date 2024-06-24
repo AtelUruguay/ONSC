@@ -67,6 +67,9 @@
                         </div>
                         <div class="col-10">
                             <h1>
+                                Legajo
+                            </h1>
+                            <h1>
                                 <span t-field="employee_id.full_name"/>
                             </h1>
                             <table style="border-spacing: 0; width: 100%; max-width: 800px;">

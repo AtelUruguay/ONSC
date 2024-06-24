@@ -3,7 +3,7 @@
 import logging
 from functools import wraps
 
-from odoo import tools, _
+from odoo import tools, fields, _
 from odoo.exceptions import MissingError
 
 _logger = logging.getLogger(__name__)
@@ -79,3 +79,11 @@ def calc_full_name(first_name, second_name, last_name_1, last_name_2):
                    last_name_1,
                    last_name_2]
     return ' '.join([x for x in name_values if x])
+
+def to_timestamp(date_str):
+    if date_str:
+        # Convertir la fecha de cadena a objeto datetime
+        dt = fields.Datetime.from_string(date_str)
+        # Obtener el timestamp
+        return dt.timestamp()
+    return 0

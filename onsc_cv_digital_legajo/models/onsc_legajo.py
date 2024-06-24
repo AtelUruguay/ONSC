@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from odoo import models, fields
+from odoo.addons.onsc_base.onsc_useful_tools import to_timestamp as to_timestamp
 
 # REPORT UTILITIES
 _CUSTOM_ORDER = {
@@ -10,15 +11,6 @@ _CUSTOM_ORDER = {
     'baja': 4,
     'reserved': 5,
 }
-
-
-def to_timestamp(date_str):
-    if date_str:
-        # Convertir la fecha de cadena a objeto datetime
-        dt = fields.Datetime.from_string(date_str)
-        # Obtener el timestamp
-        return dt.timestamp()
-    return 0
 
 class ONSCLegajo(models.Model):
     _inherit = "onsc.legajo"
