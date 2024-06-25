@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
+
 from odoo import fields, models, api, _
 from odoo.exceptions import ValidationError
-from odoo.addons.onsc_base.onsc_useful_tools import get_onchange_warning_response as warning_response
 
 
 class ONSCLegajoDemerito(models.Model):
@@ -37,7 +38,8 @@ class ONSCLegajoDemerito(models.Model):
         return self.user_has_groups('onsc_legajo.group_legajo_hr_ue')
 
     def _is_group_consulta_security(self):
-        return self.user_has_groups('onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_consulta_milegajos')
+        return self.user_has_groups(
+            'onsc_legajo.group_legajo_consulta_legajos,onsc_legajo.group_legajo_consulta_milegajos')
 
     demerit_id = fields.Many2one(
         comodel_name="onsc.legajo.type.demerit",
@@ -66,13 +68,13 @@ class ONSCLegajoDemerito(models.Model):
     def _check_document_date(self):
         for record in self:
             if record.document_date > fields.Date.today():
-                raise ValidationError("La fecha del documento debe ser menor o igual al día de hoy")
+                raise ValidationError(_("La fecha del documento debe ser menor o igual al día de hoy"))
 
     @api.constrains("notification_date")
     def _check_notification_date(self):
         for record in self:
             if record.notification_date > fields.Date.today():
-                raise ValidationError("La fecha de notificación debe ser menor o igual al día de hoy")
+                raise ValidationError(_("La fecha de notificación debe ser menor o igual al día de hoy"))
 
     @api.onchange('document_date')
     def onchange_document_date(self):
@@ -88,7 +90,7 @@ class ONSCLegajoDemerito(models.Model):
 
     @api.onchange("end_date")
     def onchange_end_date(self):
-        if self.end_date and self.start_date and self.end_date < self.start_date :
+        if self.end_date and self.start_date and self.end_date < self.start_date:
             self.end_date = False
             return warning_response(_(u"La Fecha hasta debe ser mayor o igual a la Fecha inicio"))
 
@@ -109,10 +111,10 @@ class ONSCLegajoDemerito(models.Model):
             res_id=self.id,
         )
 
+
 class ONSCLegajoHistory(models.Model):
     _inherit = ['model.history.data']
     _name = 'onsc.legajo.demerito.history'
     _parent_model = 'onsc.legajo.demerito'
 
     history_digital_file = fields.Binary(string="Documento digitalizado")
-

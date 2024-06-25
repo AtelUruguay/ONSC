@@ -46,7 +46,7 @@ class ONSCLegajoVoteRegistry(models.Model):
                 ('date_since_consultation_control', '<=', fields.Date.today()),
                 ('date_until_consultation_control', '>=', fields.Date.today())])
             args = expression.AND([[('electoral_act_ids', 'in', electoral_act_ids.ids)], args])
-        return super(ONSCLegajoVoteRegistry, self.with_context(only_active_contracts = True))._search(
+        return super(ONSCLegajoVoteRegistry, self.with_context(only_active_contracts=True))._search(
             args,
             offset=offset,
             limit=limit,
@@ -62,9 +62,12 @@ class ONSCLegajoVoteRegistry(models.Model):
                 ('date_since_consultation_control', '<=', fields.Date.today()),
                 ('date_until_consultation_control', '>=', fields.Date.today())])
             domain = expression.AND([[('electoral_act_ids', 'in', electoral_act_ids.ids)], domain])
-        return super(ONSCLegajoVoteRegistry, self.with_context(only_active_contracts = True)).read_group(domain, fields, groupby, offset=offset,
-                                                                        limit=limit, orderby=orderby,
-                                                                        lazy=lazy)
+        return super(ONSCLegajoVoteRegistry, self.with_context(only_active_contracts=True)).read_group(domain, fields,
+                                                                                                       groupby,
+                                                                                                       offset=offset,
+                                                                                                       limit=limit,
+                                                                                                       orderby=orderby,
+                                                                                                       lazy=lazy)
 
     employee_id = fields.Many2one(
         comodel_name="hr.employee",
@@ -110,7 +113,7 @@ class ONSCLegajoVoteRegistry(models.Model):
     def _check_date(self):
         for record in self:
             if record.date > fields.Date.today():
-                raise ValidationError("La Fecha del presentación debe ser menor o igual al día de hoy")
+                raise ValidationError(_("La Fecha del presentación debe ser menor o igual al día de hoy"))
 
     @api.onchange('date')
     def onchange_date(self):
@@ -119,7 +122,7 @@ class ONSCLegajoVoteRegistry(models.Model):
             return warning_response(_(u"La Fecha de presentación debe ser menor o igual al día de hoy"))
 
     @api.onchange('employee_id')
-    def onchange_date(self):
+    def onchange_employee_id(self):
         self.electoral_act_ids = [(5,)]
 
     def _search_any_electoral_act_active(self, operator, operand):

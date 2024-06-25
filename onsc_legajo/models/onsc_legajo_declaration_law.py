@@ -18,7 +18,7 @@ class ONSCLegajoDeclarationLaw(models.Model):
     def _check_date(self):
         for record in self:
             if record.declaration_date > fields.Date.today():
-                raise ValidationError("La Fecha de declaración debe ser menor o igual al día de hoy")
+                raise ValidationError(_("La Fecha de declaración debe ser menor o igual al día de hoy"))
 
     @api.onchange('declaration_date')
     def onchange_declaration_date(self):

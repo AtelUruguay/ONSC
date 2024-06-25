@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
-from odoo import fields, models, api
-from odoo.exceptions import AccessError, MissingError, ValidationError, UserError
+from odoo import fields, models
+
 # CAMPOS A GUARDAR EN HISTORICO. UTIL PARA EN HERENCIAS NO REPETIR CAMPOS PARA SOLO PONER history=True
 HISTORY_COLUMNS = [
     'position',

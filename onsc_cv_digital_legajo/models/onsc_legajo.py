@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import models, fields
 from odoo.addons.onsc_base.onsc_useful_tools import to_timestamp as to_timestamp
+
+from odoo import models, fields
 
 # REPORT UTILITIES
 _CUSTOM_ORDER = {
@@ -11,6 +12,7 @@ _CUSTOM_ORDER = {
     'baja': 4,
     'reserved': 5,
 }
+
 
 class ONSCLegajo(models.Model):
     _inherit = "onsc.legajo"
@@ -22,7 +24,7 @@ class ONSCLegajo(models.Model):
     # FORMACION
 
     basic_formation_ids = fields.One2many(
-        'onsc.legajo.basic.formation', string=u'Formación básica', inverse_name="legajo_id",)
+        'onsc.legajo.basic.formation', string=u'Formación básica', inverse_name="legajo_id", )
     advanced_formation_ids = fields.One2many(
         'onsc.legajo.advanced.formation', string=u'Formación avanzada', inverse_name="legajo_id")
 
@@ -123,7 +125,7 @@ class ONSCLegajo(models.Model):
             active_job = active_jobs[0]
             oldest_start_date = active_job.start_date
             for job in contract_id.job_ids.sorted(key=lambda job_id: (
-                -to_timestamp(job_id.start_date))):
+                    -to_timestamp(job_id.start_date))):
                 if job.id != active_job.id and job.department_id == active_job.department_id and job.end_date and (
                         oldest_start_date - job.end_date).days in [0, 1]:
                     oldest_start_date = job.start_date
@@ -152,4 +154,3 @@ class ONSCLegajo(models.Model):
                     'date': vote_registry.date.strftime('%d/%m/%Y')
                 })
         return result
-

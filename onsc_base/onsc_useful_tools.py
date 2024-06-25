@@ -80,6 +80,7 @@ def calc_full_name(first_name, second_name, last_name_1, last_name_2):
                    last_name_2]
     return ' '.join([x for x in name_values if x])
 
+
 def to_timestamp(date_str):
     if date_str:
         # Convertir la fecha de cadena a objeto datetime

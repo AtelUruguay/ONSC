@@ -19,11 +19,11 @@ class ONSCCVSubintitution(models.Model):
     def _check_subinstitution_default_unicity(self):
         for record in self.filtered(lambda x: x.active):
             if not record.institution_id.is_default and record.is_default:
-                raise ValidationError(u"La institución debe tener el campo usar por defecto seleccionado")
+                raise ValidationError(_("La institución debe tener el campo usar por defecto seleccionado"))
             if self.search_count([('is_default', '=', True),
                                   ('institution_id', '=', record.institution_id.id),
                                   ('id', '!=', record.id)]):
-                raise ValidationError(u"La Sub institución por defecto debe ser única para la Institución")
+                raise ValidationError(_("La Sub institución por defecto debe ser única para la Institución"))
 
     @api.onchange('country_id')
     def onchange_country_id(self):

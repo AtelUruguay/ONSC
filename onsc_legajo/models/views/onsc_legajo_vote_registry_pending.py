@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from odoo import fields, models, tools, api
 import json
-from odoo.osv import expression
+
+from odoo import fields, models, tools, api
 
 
 class ONSCLegajoVoteRegistryPendingConsult(models.Model):
@@ -40,7 +40,7 @@ class ONSCLegajoVoteRegistryPendingConsult(models.Model):
     nro_doc = fields.Char(string='CI')
     legajo_id = fields.Many2one('onsc.legajo', string="Funcionario")
     employee_id = fields.Many2one('hr.employee', string="Funcionario")
-    conc_valid_electoral_act_id = fields.Char(string='Actos electorales (ids concatenados)',)
+    conc_valid_electoral_act_id = fields.Char(string='Actos electorales (ids concatenados)', )
     conc_valid_electoral_act_name = fields.Char(string='Actos electorales')
 
     electoral_act_ids = fields.Many2many(
@@ -55,39 +55,39 @@ class ONSCLegajoVoteRegistryPendingConsult(models.Model):
 SELECT
 row_number() OVER(ORDER BY employee_id, conc_valid_electoral_act_id) AS id, *
 FROM
-(SELECT 
-	nro_doc,
- 	employee_id,
-	legajo_id,
-	STRING_AGG(CAST(electoral_act_id AS VARCHAR), ',') AS conc_valid_electoral_act_id,
-	STRING_AGG(electoral_act_name, ', ') AS conc_valid_electoral_act_name
+(SELECT
+    nro_doc,
+    employee_id,
+    legajo_id,
+    STRING_AGG(CAST(electoral_act_id AS VARCHAR), ',') AS conc_valid_electoral_act_id,
+    STRING_AGG(electoral_act_name, ', ') AS conc_valid_electoral_act_name
 FROM
 (SELECT nro_doc, employee_id,legajo_id, electoral_act_id, electoral_act_name FROM
 (
-	--PRODUCTO FUNCIONARIO,ELECCIONES VIGENTES
-	SELECT 
-		nro_doc,
-		employee_id AS employee_id,
-		onsc_legajo.id AS legajo_id,
-		onsc_legajo_electoral_act.id AS electoral_act_id,
-		onsc_legajo_electoral_act.name AS electoral_act_name,
-		CONCAT('EMP:', employee_id, ',EA:', onsc_legajo_electoral_act.id) AS manual_key
-	FROM onsc_legajo, onsc_legajo_electoral_act
-	WHERE 
-	    onsc_legajo.legajo_state = 'active' AND
-		onsc_legajo_electoral_act.date_since_entry_control <= CURRENT_DATE AND 
-		onsc_legajo_electoral_act.date_until_entry_control >= CURRENT_DATE) AS employee_all_electoral_act
+    --PRODUCTO FUNCIONARIO,ELECCIONES VIGENTES
+    SELECT
+        nro_doc,
+        employee_id AS employee_id,
+        onsc_legajo.id AS legajo_id,
+        onsc_legajo_electoral_act.id AS electoral_act_id,
+        onsc_legajo_electoral_act.name AS electoral_act_name,
+        CONCAT('EMP:', employee_id, ',EA:', onsc_legajo_electoral_act.id) AS manual_key
+    FROM onsc_legajo, onsc_legajo_electoral_act
+    WHERE
+        onsc_legajo.legajo_state = 'active' AND
+        onsc_legajo_electoral_act.date_since_entry_control <= CURRENT_DATE AND
+        onsc_legajo_electoral_act.date_until_entry_control >= CURRENT_DATE) AS employee_all_electoral_act
 WHERE
-	manual_key NOT IN (
-		--VOTOS REGISTRADOS
-		SELECT
-			CONCAT('EMP:', employee_id, ',EA:', onsc_legajo_vote_registry_electoral_act.onsc_legajo_electoral_act_id)
-		FROM 
-			onsc_legajo_vote_registry_electoral_act INNER JOIN 
-			onsc_legajo_vote_registry
-		ON
-			onsc_legajo_vote_registry_electoral_act.onsc_legajo_vote_registry_id = onsc_legajo_vote_registry.id
-	) ORDER BY employee_id, electoral_act_id) main_query
+    manual_key NOT IN (
+    --VOTOS REGISTRADOS
+        SELECT
+            CONCAT('EMP:', employee_id, ',EA:', onsc_legajo_vote_registry_electoral_act.onsc_legajo_electoral_act_id)
+        FROM
+            onsc_legajo_vote_registry_electoral_act INNER JOIN
+            onsc_legajo_vote_registry
+        ON
+            onsc_legajo_vote_registry_electoral_act.onsc_legajo_vote_registry_id = onsc_legajo_vote_registry.id
+        ) ORDER BY employee_id, electoral_act_id) main_query
 GROUP BY nro_doc, employee_id, legajo_id ORDER BY conc_valid_electoral_act_id) AS full_querry
 )''' % (self._table,))
 
@@ -113,4 +113,3 @@ GROUP BY nro_doc, employee_id, legajo_id ORDER BY conc_valid_electoral_act_id) A
         action = self.env.ref('onsc_legajo.onsc_legajo_vote_registry_pending_consult_wizard_action').suspend_security()
         action.res_id = self.id
         return action.read()[0]
-
