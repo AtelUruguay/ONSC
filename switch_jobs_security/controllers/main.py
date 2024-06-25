@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# flake8: noqa: R8180
 from odoo import models
 from odoo.http import request
 
