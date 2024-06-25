@@ -153,7 +153,6 @@
             <t t-foreach="employee_id.information_contact_ids" t-as="information_contact_id">
             <li class="ml-4" style="font-weight:bold;"><span t-field="information_contact_id.name_contact"/></li>
             <li t-if="information_contact_id.contact_person_telephone" style="list-style:none;" class="ml-4">
-                <i class="fa fa-fw fa-phone"/>
                 <span t-field="information_contact_id.prefix_phone_id"/>
                 <span t-field="information_contact_id.contact_person_telephone"/>
             </li>
