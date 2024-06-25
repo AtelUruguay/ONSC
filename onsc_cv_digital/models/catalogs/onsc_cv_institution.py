@@ -31,11 +31,12 @@ class ONSCCVIntitution(models.Model):
             else:
                 record.name_country = ''
 
-    @api.constrains('institution_id', 'is_default','country_id')
+    @api.constrains('institution_id', 'is_default', 'country_id')
     def _check_institution_default_unicity(self):
         for record in self.filtered(lambda x: x.active):
-            if record.is_default and self.search_count([('is_default', '=',True) ,('country_id', '=', record.country_id.id),
-                                  ('id', '!=', record.id)]):
+            if record.is_default and self.search_count(
+                    [('is_default', '=', True), ('country_id', '=', record.country_id.id),
+                     ('id', '!=', record.id)]):
                 raise ValidationError(u"La Institución por defecto debe ser única para el país")
 
     def _get_conditional_unicity_message(self):
