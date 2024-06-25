@@ -18,8 +18,8 @@
             <li>UO: <span t-esc="job_info['job_id'].department_id.name"/></li>
             <li>Fecha desde de la UO: <span t-esc="job_info['oldest_start_date']"/></li>
             </t>
-            <li t-if="contract.retributive_day_id">Programa: <span t-field="contract.retributive_day_id.office_id.programa"/> <span t-field="contract.retributive_day_id.office_id.programaDescripcion"/></li>
-            <li t-if="contract.retributive_day_id">Proyecto: <span t-field="contract.retributive_day_id.office_id.proyecto"/> <span t-field="contract.retributive_day_id.office_id.proyectoDescripcion"/></li>
+            <li t-if="contract.retributive_day_id">Programa: <span t-field="contract.retributive_day_id.office_id.programaDescripcion"/></li>
+            <li t-if="contract.retributive_day_id">Proyecto: <span t-field="contract.retributive_day_id.office_id.proyectoDescripcion"/></li>
             <li t-if="contract.regime_id">Régimen: <span t-field="contract.regime_id.name"/></li>
             <li t-if="contract.descriptor1_id">Descriptor 1: <span t-field="contract.descriptor1_id.name"/></li>
             <li t-if="contract.descriptor2_id">Descriptor 2: <span t-field="contract.descriptor2_id.name"/></li>
@@ -29,7 +29,10 @@
             <li t-if="contract.legajo_state_id">Departamento donde desempeña funciones: <span t-field="contract.legajo_state_id.name"/></li>
             <li t-if="contract.inciso_origin_id">Inciso origen: <span t-field="contract.inciso_origin_id.name"/></li>
             <li t-if="contract.operating_unit_origin_id">Unidad ejecutora origen: <span t-field="contract.operating_unit_origin_id.name"/></li>
-            <!--            TODO DESCRIPTORES ORIGEN-->
+            <li t-if="contract.descriptor1_origin_id">Descriptor1 de origen: <span t-field="contract.descriptor1_origin_id.name"/></li>
+            <li t-if="contract.descriptor2_origin_id">Descriptor2 de origen: <span t-field="contract.descriptor2_origin_id.name"/></li>
+            <li t-if="contract.descriptor3_origin_id">Descriptor3 de origen: <span t-field="contract.descriptor3_origin_id.name"/></li>
+            <li t-if="contract.descriptor4_origin_id">Descriptor4 de origen: <span t-field="contract.descriptor4_origin_id.name"/></li>
             <li t-if="contract.extinction_commission_id">Motivo extinción de la comisión: <span t-field="contract.extinction_commission_id.name"/></li>
             <li t-if="contract.date_end_commission">Fecha hasta de la Comisión: <span t-field="contract.date_end_commission" t-options='{"format": "dd/MM/yyyy"}'/></li>
             <li t-if="contract.reason_description">Descripción del motivo alta: <span t-field="contract.reason_description"/></li>
