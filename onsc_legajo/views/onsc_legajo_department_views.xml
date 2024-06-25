@@ -19,6 +19,18 @@
                 <field name="operating_unit_id" string="Unidad ejecutora" optional="hide"/>
                 <field name="contract_id" string="Contrato" optional="hide"/>
                 <field name="start_date"/>
+                <field name="inciso_origin_id" optional="hide" />
+                <field name="operating_unit_origin_id" optional="hide"/>
+                <field name="inciso_dest_id" optional="hide"/>
+                <field name="operating_unit_dest_id"  optional="hide"/>
+                <field name="is_uo_manager" optional="show"/>
+                <field name="regime_id" optional="show"/>
+                <field name="commission_regime_id" optional="show"/>
+                <field name="descriptor1_id" optional="hide"/>
+                <field name="descriptor2_id" optional="hide"/>
+                <field name="descriptor3_id"  optional="hide"/>
+                <field name="descriptor4_id" optional="hide"/>
+                <field name="nro_doc" optional="show"/>
                 <field name="type" invisible="1"/>
                 <button name="button_open_legajo" type="object" string="Ver Vínculo" icon="fa-edit"/>
             </tree>
