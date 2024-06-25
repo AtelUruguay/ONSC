@@ -350,7 +350,7 @@ class HrContract(models.Model):
     def activate_legajo_contract(self, legajo_state='active', eff_date=False):
         if self.eff_date and eff_date and self.eff_date > eff_date:
             raise ValidationError(_("No se puede modificar la historia del contrato para la fecha enviada."))
-        vals = {'legajo_state': legajo_state}
+        vals = {'legajo_state': legajo_state, 'inciso_dest_id': False, 'operating_unit_dest_id': False}
         if eff_date:
             vals.update({'eff_date': str(eff_date)})
         else:
