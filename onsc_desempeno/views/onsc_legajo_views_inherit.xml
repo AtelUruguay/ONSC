@@ -8,7 +8,7 @@
         <field name="arch" type="xml">
             <xpath expr="//notebook[last()]"  position="inside">
                <page name="desempenno" string="Evaluación de desempeño"
-                      attrs="{'invisible': [('is_any_regime_legajo', '=', False)]}">
+                      attrs="{'invisible': ['|',('is_any_regime_legajo', '=', False),('show_legajo_info', '=', False)]}">
                      <field name="show_alert" invisible ="1"/>
                      <div class="alert alert-info" role="alert"
                          name="div_alert_env_form"
