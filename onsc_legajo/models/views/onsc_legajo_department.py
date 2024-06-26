@@ -130,7 +130,7 @@ class ONSCLegajoDepartment(models.Model):
     descriptor2_id = fields.Many2one('onsc.catalog.descriptor2', string='Descriptor2')
     descriptor3_id = fields.Many2one('onsc.catalog.descriptor3', string='Descriptor3')
     descriptor4_id = fields.Many2one('onsc.catalog.descriptor4', string='Descriptor4')
-    nro_doc = fields.Char(u'Número de documento', related='employee_id.cv_nro_doc')
+    nro_doc = fields.Char(u'Número de documento')
 
     def init(self):
         tools.drop_view_if_exists(self.env.cr, self._table)
@@ -167,7 +167,8 @@ FROM
     contract.descriptor1_id AS descriptor1_id,
     contract.descriptor2_id AS descriptor2_id,
     contract.descriptor3_id AS descriptor3_id,
-    contract.descriptor4_id AS descriptor4_id
+    contract.descriptor4_id AS descriptor4_id,
+    contract.nro_doc
 FROM
     hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 WHERE contract_legajo_state IN ('active','incoming_commission','reserved') AND active_job_qty = 0
@@ -201,7 +202,8 @@ FROM
     contract.descriptor1_id AS descriptor1_id,
     contract.descriptor2_id AS descriptor2_id,
     contract.descriptor3_id AS descriptor3_id,
-    contract.descriptor4_id AS descriptor4_id
+    contract.descriptor4_id AS descriptor4_id,
+    contract.nro_doc
 FROM
     hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 LEFT JOIN hr_job ON hr_job.contract_id = base_contract_view.contract_id
@@ -236,7 +238,8 @@ FROM
     contract.descriptor1_id AS descriptor1_id,
     contract.descriptor2_id AS descriptor2_id,
     contract.descriptor3_id AS descriptor3_id,
-    contract.descriptor4_id AS descriptor4_id
+    contract.descriptor4_id AS descriptor4_id,
+    contract.nro_doc
 FROM
     hr_contract contract WHERE legajo_id IS NOT NULL) AS base_contract_view
 WHERE contract_legajo_state = 'outgoing_commission') AS main_query)''' % (self._table,))
