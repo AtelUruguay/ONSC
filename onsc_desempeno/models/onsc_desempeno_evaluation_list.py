@@ -3,7 +3,7 @@ import logging
 import random
 from collections import defaultdict
 
-from odoo import fields, models, api, tools, _
+from odoo import fields, models, api, Command, tools, _
 from odoo.exceptions import ValidationError
 from odoo.osv import expression
 
@@ -658,6 +658,58 @@ class ONSCDesempenoEvaluationList(models.Model):
     def get_start_date(self):
         return fields.Datetime.today().strftime('%d/%m/%Y')
 
+    def fix_25_8_upload_jobs_to_evaluation_lists(self):
+        exluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
+
+        jobs_inlist_ids = self.line_ids.mapped('job_id').ids
+        jobs_toadd_inlist_ids = self.env['hr.job'].sudo().search([
+            ('department_id', '=', self.department_id.id),
+            ('is_uo_manager', '=', False),
+            ('id', 'not in', jobs_inlist_ids),
+            # base args to find the correct jobs like manage evaluation lists
+            ('contract_id.legajo_state', 'in', ['active', 'incoming_commission']),
+            ('contract_id.descriptor1_id', 'not in', exluded_descriptor1_ids),
+            '|',
+            ('end_date', '>=', fields.Date.today()),
+            ('end_date', '=', False),
+        ]).ids
+        new_data = []
+        for jobs_toadd_inlist_id in jobs_toadd_inlist_ids:
+            new_data.append(Command.create({
+               'job_id': jobs_toadd_inlist_id
+            }))
+        self.sudo().write({
+            'line_ids': new_data
+        })
+
+    def fix_25_8_upload_manager_to_parent_evaluation_list(self):
+        exluded_descriptor1_ids = self.env.company.descriptor1_ids.ids
+
+        parent_department = self.department_id.parent_id
+        parent_list = self.search([
+            ('department_id', '=', parent_department.id)
+        ])
+        if parent_list:
+            jobs_toadd_inlist_ids = self.env['hr.job'].sudo().search([
+                ('employee_id', '=', self.manager_id.id),
+                ('department_id', '=', self.department_id.id),
+                ('is_uo_manager', '=', True),
+                # base args to find the correct jobs like manage evaluation lists
+                ('contract_id.legajo_state', 'in', ['active', 'incoming_commission']),
+                ('contract_id.descriptor1_id', 'not in', exluded_descriptor1_ids),
+                '|',
+                ('end_date', '>=', fields.Date.today()),
+                ('end_date', '=', False),
+            ]).ids
+            new_data = []
+            for jobs_toadd_inlist_id in jobs_toadd_inlist_ids:
+                if jobs_toadd_inlist_id not in parent_list.line_ids.mapped('job_id').ids:
+                    new_data.append(Command.create({
+                       'job_id': jobs_toadd_inlist_id
+                    }))
+            self.sudo().write({
+                'line_ids': new_data
+            })
 
 class ONSCDesempenoEvaluationListLine(models.Model):
     _name = 'onsc.desempeno.evaluation.list.line'
