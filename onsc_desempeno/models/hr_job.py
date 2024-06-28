@@ -80,7 +80,8 @@ class HrJob(models.Model):
 
             evaluation_lists = EvaluationList.search([
                 ('state', '=', 'in_progress'),
-                ('evaluation_stage_id.start_date', '<=', self.start_date),
+                # se elimina restricción por movimientos de legajos anteriores a la fecha desde de la lista de participantes
+                # ('evaluation_stage_id.start_date', '<=', self.start_date),
                 ('evaluation_stage_id.general_cycle_id.end_date_max', '>=', self.start_date),
                 ('department_id', '=', _department.id),
             ])
